@@ -1,0 +1,13 @@
+{
+    "extends": "eslint:recommended",
+    "--todo--parser": "typescript-eslint-parser",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {}
+    },
+    "env": {
+        "browser": true
+    },
+    "rules": {}
+}

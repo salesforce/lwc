@@ -1,0 +1,6 @@
+*.log
+-local-*
+.DS_Store
+node_modules
+fake-cdn/*.js
+fake-cdn/*.map
