@@ -67,6 +67,7 @@ const configs = [{
     output: {
         dest: 'fake-cdn/bar.js',
         format: 'amd',
+        moduleId: 'bar',
         sourceMap: true,
     },
 }];

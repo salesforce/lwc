@@ -4,8 +4,8 @@
   "description": "Mr. Frankenstein (aka Mr. Frank) POC",
   "scripts": {
     "clean": "rimraf fake-cdn/ && git checkout fake-cdn",
-    "start": "forever --uid frank fake-server/server.js & node rollup.build.js && forever stop frank",
-    "build": "npm run clean && NODE_ENV=production node rollup.build.js",
+    "start": "forever --uid frank fake-server/server.js & node scripts/rollup.build.js && forever stop frank",
+    "build": "npm run clean && NODE_ENV=production node scripts/rollup.build.js",
     "lint": "eslint src/",
     "pretest": "npm run lint",
     "preversion": "npm run clean && npm run build",
