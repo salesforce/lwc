@@ -1,4 +1,4 @@
-# Frankenstein (aka Frank) POC
+# Mr. Frankenstein (aka Mr. Frank) POC
 
 ## Getting Start
 
@@ -9,7 +9,7 @@
 ### Installation
 
 ```bash
-git clone https://git.soma.salesforce.com/cpatino/frank.git
+git clone https://git.soma.salesforce.com/cpatino/mr.frank.git
 cd frank
 npm install .
 npm start

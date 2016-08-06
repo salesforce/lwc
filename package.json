@@ -1,19 +1,19 @@
 {
-  "name": "frank",
+  "name": "mr.frank",
   "version": "1.0.0-alfa",
-  "description": "Frankenstein (aka Frank) POC",
+  "description": "Mr. Frankenstein (aka Mr. Frank) POC",
   "scripts": {
-    "clean": "rimraf fake-cdn/",
+    "clean": "rimraf fake-cdn/ && git checkout fake-cdn",
     "start": "forever --uid frank fake-server/server.js & node rollup.build.js && forever stop frank",
-    "build": "NODE_ENV=production && npm run clean && node rollup.build.js",
+    "build": "npm run clean && NODE_ENV=production node rollup.build.js",
     "lint": "eslint src/",
     "pretest": "npm run lint",
-    "preversion": "npm run clean && npm run build && npm run test",
+    "preversion": "npm run clean && npm run build",
     "prepublish": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "https://git.soma.salesforce.com/cpatino/frank.git"
+    "url": "https://git.soma.salesforce.com/cpatino/mr.frank.git"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
