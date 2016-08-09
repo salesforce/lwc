@@ -3,3 +3,5 @@ export function foo (message) {
 }
 
 export {loaderImportMethod as loaderImportMethodTemporary} from "./loader.js";
+
+export {AuraComponent} from "./component.js";

@@ -8,4 +8,8 @@ $A.loaderImportMethodTemporary('bar')
     .then(function (bar) {
         console.log('bundle bar returned value: ', bar());
     })
+$A.loaderImportMethodTemporary('ifFoo')
+    .then(function (foo) {
+        console.log('bundle bar returned value: ', foo.Compiled);
+    })
 </script>
