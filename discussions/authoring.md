@@ -45,7 +45,7 @@ export default class {
 
 ### `static` versus `@attribute`
 
-`static` is definitely simpler to implement, it is what react uses today, and aurelia uses something very similar.
+`static` is definitely simpler to implement, it is what react uses today, but `@attribute()` seems more ergonomic, but might have some performance implications, a prototype is needed.
 
 ## References
 
