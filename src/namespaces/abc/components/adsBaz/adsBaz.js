@@ -1,25 +1,36 @@
 import {
     ADS,
-} from "aura:service";
+} from "aura";
+
+import {
+    method,
+    attribute,
+} from "aura";
 
 class adsBaz {
+    @attribute({ required: true })
     foo = [];
     bar = {};
     @attribute()
     baz = "3453";
+    @method()
+    focus() {
+        // do something
+    }
 }
 
-const adsBazProxyHandler = {
-    get(name) {
-        if (name === 'baz') {
-            return target[name] || "3453"; // or default value
-        }
+// desugaring version of the class adsBaz
+class adsBazInternal {
+    foo = [];
+    bar = {};
+    baz = "3453";
+    static attrsTypes = {
+        foo: AuraTypes.Array.required,
+        baz: AuraTypes.String,
     }
-    set(name, value) {
-        if (name === 'baz') {
-            assert('value for baz attribute to validate during dev')
-            target[name] = value;
-        }
+    static attrsValues = {
+        foo: [],
+        baz: "3453",
     }
 }
 
@@ -27,13 +38,12 @@ export default ADS(adsBaz, {
   fragments: {
     user: () => ADS.QL`
       fragment on User {
-        profilePhoto(size: $baz) {
+        profilePhoto(size: $baz, f: $foo) {
           uri,
         },
       }
     `,
   },
 });
-
 
 <adsBaz foo="something" />
