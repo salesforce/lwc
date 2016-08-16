@@ -1,0 +1,9 @@
+<template>
+    <div dataFoo.bind="foo">
+        <div if.bind="exp1">
+            <button>${label1}</button>
+        </div>
+        <superbutton if.bind="!exp1" label.bind="label2" />
+        <input value.bind="foo2x" onChange.trigger="onChange" label.bind="label2" />
+    </div>
+</template>

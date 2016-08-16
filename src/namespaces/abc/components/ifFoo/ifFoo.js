@@ -3,40 +3,34 @@ import {
 } from "aura";
 
 export default class extends AuraComponent {
-    constructor() {
-        super();
-    }
     get label1() {
         return 'first';
     }
     get label2() {
-        this.counter++;
+        this.counter++; // forcing to have a side effect
         return 'second';
     }
-    get foo() {
-        return 1;
-    }
-    get bar() {
-        return 2;
-    }
+    counter = 0
+    foo = 1
+    bar = 2
     get exp1() {
         return this.bar === 1 || this.bar === 2;
     }
     get foo2x() {
         return this.foo * 2;
     }
-    render() {
-        return <div dataFoo={this.foo}>
-            {if (this.exp1) {
-                <div>
-                    <button>{this.label1}</button>
-                </div>
-            } else {
-                <superbutton label={this.label2} />
-            }}
-            <input value={this.foo2x} onChange={(e) => this.onChange(e)} label={this.label2} />
-        </div>
-    }
+    // render() {
+    //     return <div dataFoo={this.foo}>
+    //         {if (this.exp1) {
+    //             <div>
+    //                 <button>{this.label1}</button>
+    //             </div>
+    //         } else {
+    //             <superbutton label={this.label2} />
+    //         }}
+    //         <input value={this.foo2x} onChange={(e) => this.onChange(e)} label={this.label2} />
+    //     </div>
+    // }
     onChange(e) {
         this.set('foo', e.target.value);
     }
