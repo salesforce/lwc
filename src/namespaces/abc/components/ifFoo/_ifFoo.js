@@ -27,7 +27,7 @@ export class Compiled extends AuraComponent {
     render({
         isDirty,
         updateAttributeInMarkup,
-        updateRefComponetAttribute,
+        updateRefComponentAttribute,
         updateContentInMarkup,
         unmountRefComponent,
         mountComponentAfterMarker,
@@ -42,14 +42,14 @@ export class Compiled extends AuraComponent {
                 updateAttributeInMarkup(this, 'divRef1', 'dataFoo', this.foo);
             }
             if (isDirty(this, 'exp2')) {
-                updateRefComponetAttribute(this, 'buttonRef3', 'value', this.exp1);
+                updateRefComponentAttribute(this, 'buttonRef3', 'value', this.exp1);
             }
             if (isDirty(this, 'label1')) {
                 updateContentInMarkup(this, 'buttonRef1', 'label', this.label1);
             }
             if (isDirty(this, 'label2')) {
-                updateRefComponetAttribute(this, 'buttonRef2', this.label2);
-                updateRefComponetAttribute(this, 'buttonRef3', this.label2);
+                updateRefComponentAttribute(this, 'buttonRef2', this.label2);
+                updateRefComponentAttribute(this, 'buttonRef3', this.label2);
             }
             // set values in children refs
             if (isDirty(this, 'exp1')) {
@@ -79,6 +79,7 @@ export class Compiled extends AuraComponent {
         return isDirty(this) ? rehydrate() : render();
     }
     onChange(e) {
+        // this.foo = e.target.value;
         this.set('foo', e.target.value);
     }
 }
