@@ -1,20 +1,22 @@
+/* @flow */
+
 const registry = {};
 
-function loaderEvaluate(moduleStatus) {
-    let exports;
-    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name) => name === 'exports' ? Promise.resolve((exports = {})) : loaderEvaluate(name)))
-        .then((resolvedNamespaces) => {
+function loaderEvaluate(moduleStatus: Object): Promise {
+    let exports: Object;
+    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Array<Promise> => name === 'exports' ? Promise.resolve((exports = {})) : loaderEvaluate(name)))
+        .then((resolvedNamespaces: Array<Object>): Promise => {
             let returnedValue = moduleStatus.definition(resolvedNamespaces);
             return exports || returnedValue;
         });
     return moduleStatus.ns;
 }
 
-function loaderLoadAndEvaluate(name) {
+function loaderLoadAndEvaluate(name: string): Promise {
     return Promise.reject(new TypeError(`Bundle ${name} does not exists in the registry.`));
 }
 
-function loaderImportMethod(name) {
+function loaderImportMethod(name: string): Promise {
     if (!name) {
         return Promise.reject(new TypeError(`loader.import()'s name is required to be a non-empty string value.`));
     }
@@ -28,7 +30,7 @@ function loaderImportMethod(name) {
     return moduleStatus.ns;
 }
 
-function amdDefineMethod(name, deps, definition) {
+function amdDefineMethod(name: string, deps: any, definition?: any) {
     if (!definition) {
         amdDefineMethod(name, [], deps);
         return;

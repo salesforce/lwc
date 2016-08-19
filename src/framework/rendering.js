@@ -1,3 +1,5 @@
+/* @flow */
+
 import {
     updateAttr,
 } from "dom";
@@ -13,7 +15,7 @@ import {
     isValidElement,
 } from "./createElement.js";
 
-function isComputedPropertyDirty(deps, dirtyPropNames) {
+function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): boolean {
     // the propName is a computed property, and should be computed accordingly
     for (let depPropName in deps) {
         if (dirtyPropNames[depPropName]) {
@@ -25,7 +27,7 @@ function isComputedPropertyDirty(deps, dirtyPropNames) {
 
 export const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
 
-export function isDirty(component, propName) {
+export function isDirty(component: Object, propName: string): boolean {
     const {isDirty, dirtyPropNames} = getContext(component);
     if (!propName) {
         return isDirty;
@@ -46,13 +48,13 @@ export function isDirty(component, propName) {
     return dirtyPropNames[propName] || false;
 }
 
-export function markComponentAsDirty(component, propName) {
+export function markComponentAsDirty(component: Object, propName: string) {
     const ctx = getContext(component);
     ctx.isDirty = true;
     ctx.dirtyPropNames[propName] = true;
 }
 
-export function updateAttributeInMarkup(componentInstance, refId, attrName, attrValue) {
+export function updateAttributeInMarkup(componentInstance: Object, refId: string, attrName: string, attrValue: any) {
     let refInstance = getRef(componentInstance, refId);
     // TODO: this might not work at all, and we should go thru the actually setters
     if (refInstance && refInstance.domNode) {
@@ -60,7 +62,7 @@ export function updateAttributeInMarkup(componentInstance, refId, attrName, attr
     }
 }
 
-export function updateRefComponentAttribute(componentInstance, refId, attrName, attrValue) {
+export function updateRefComponentAttribute(componentInstance: Object, refId: string, attrName: string, attrValue: any) {
     let refInstance = getRef(componentInstance, refId);
     if (refInstance) {
         refInstance[attrName] = attrValue;
@@ -70,7 +72,7 @@ export function updateContentInMarkup() {}
 export function unmountRefComponent() {}
 export function mountComponentAfterMarker() {}
 
-export function componentWasRehydrated(component) {
+export function componentWasRehydrated(component: Object): any {
     const ctx = getContext(component);
     const {dirtyPropNames} = ctx;
     ctx.isDirty = false;
@@ -80,7 +82,7 @@ export function componentWasRehydrated(component) {
     return rehydratedSymbol;
 }
 
-export function renderComponent(component) {
+export function renderComponent(component: Object) {
     const outerContext = currentContext;
     const ctx = getContext(component);
     establishContext(ctx);
