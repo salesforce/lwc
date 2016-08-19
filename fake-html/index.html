@@ -1,15 +1,24 @@
+<script src="dom.js"></script>
 <script src="fw.js"></script>
 <script src="bar.js"></script>
 <script>
-$A.foo('booted! check the console');
+var $D = dom(); // temporary hack to make dom lib available
 
 // trying the loader
 $A.loaderImportMethodTemporary('bar')
     .then(function (bar) {
-        console.log('bundle bar returned value: ', bar());
-    })
-$A.loaderImportMethodTemporary('ifFoo')
-    .then(function (foo) {
-        console.log('bundle bar returned value: ', foo.Compiled);
+        console.log('bundle bar returned value: ', bar);
+        var opaqueElement = $A.createElement(bar, {a: 1, b: 2});
+
+        // var opaqueElement = $A.createElement(bar, {a: 1, b: 2}, [
+        //     $A.createElement('div'),
+        //     $A.createElement('div')
+        //     $A.createElement(bar)
+        // ]);
+
+        var domNodeContainer = document.getElementById('container');
+        $A.mountToDom(opaqueElement, domNodeContainer);
     })
 </script>
+<div id="container">
+</div>

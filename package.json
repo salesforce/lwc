@@ -16,6 +16,7 @@
     "url": "https://git.soma.salesforce.com/cpatino/mr.frank.git"
   },
   "devDependencies": {
+    "dom": "git://git.soma.salesforce.com/cpatino/dom",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-es2015-rollup": "^1.1.1",
     "eslint": "^3.0.1",

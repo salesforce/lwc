@@ -69,6 +69,9 @@ const configs = [{
         format: 'amd',
         moduleId: 'bar',
         sourceMap: true,
+        globals: {
+            aura: '$A',
+        },
     },
 }];
 
@@ -84,7 +87,10 @@ const fwConfig = {
         format: 'umd',
         moduleName: '$A',
         sourceMap: true,
-    },
+        globals: {
+            dom: '$D',
+        },
+    }
 };
 // adding the framework as the first config
 configs.unshift(fwConfig);

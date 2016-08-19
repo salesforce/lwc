@@ -57,7 +57,7 @@ export class Compiled extends AuraComponent {
                 unmountRefComponent(this, 'buttonRef2');
                 mountComponentAfterMarker(this, 'if1', renderIf1());
             }
-            componentWasRehydrated(this);
+            return componentWasRehydrated(this);
         };
         const renderIf1 = () => {
             if (this.exp1) {

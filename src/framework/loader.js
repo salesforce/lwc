@@ -7,6 +7,7 @@ function loaderEvaluate(moduleStatus) {
             let returnedValue = moduleStatus.definition(resolvedNamespaces);
             return exports || returnedValue;
         });
+    return moduleStatus.ns;
 }
 
 function loaderLoadAndEvaluate(name) {
@@ -19,10 +20,10 @@ function loaderImportMethod(name) {
     }
     let moduleStatus = registry[name];
     if (!moduleStatus) {
-        loaderLoadAndEvaluate(name);
+        return loaderLoadAndEvaluate(name);
     }
     if (!moduleStatus.ns) {
-        loaderEvaluate(moduleStatus);
+        return loaderEvaluate(moduleStatus);
     }
     return moduleStatus.ns;
 }
