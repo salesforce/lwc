@@ -3,13 +3,14 @@ import {
 } from "dom";
 
 import {
+    getContext,
+    establishContext,
     currentContext,
 } from "./context.js";
 
 import {
     getRef,
     isValidElement,
-    ComponentStateMap,
 } from "./createElement.js";
 
 function isComputedPropertyDirty(deps, dirtyPropNames) {
@@ -22,8 +23,10 @@ function isComputedPropertyDirty(deps, dirtyPropNames) {
     return false;
 }
 
+export const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
+
 export function isDirty(component, propName) {
-    const {isDirty, dirtyPropNames} = ComponentStateMap.get(component);
+    const {isDirty, dirtyPropNames} = getContext(component);
     if (!propName) {
         return isDirty;
     }
@@ -41,6 +44,12 @@ export function isDirty(component, propName) {
         }
     }
     return dirtyPropNames[propName] || false;
+}
+
+export function markComponentAsDirty(component, propName) {
+    const ctx = getContext(component);
+    ctx.isDirty = true;
+    ctx.dirtyPropNames[propName] = true;
 }
 
 export function updateAttributeInMarkup(componentInstance, refId, attrName, attrValue) {
@@ -62,17 +71,20 @@ export function unmountRefComponent() {}
 export function mountComponentAfterMarker() {}
 
 export function componentWasRehydrated(component) {
-    const state = ComponentStateMap.get(component);
-    const {dirtyPropNames} = state;
-    state.isDirty = false;
+    const ctx = getContext(component);
+    const {dirtyPropNames} = ctx;
+    ctx.isDirty = false;
     for (let propName of dirtyPropNames) {
         dirtyPropNames[propName] = false;
     }
+    return rehydratedSymbol;
 }
 
 export function renderComponent(component) {
-    const ctx = currentContext;
-    let element = component.render({
+    const outerContext = currentContext;
+    const ctx = getContext(component);
+    establishContext(ctx);
+    let elementOrNullOrSymbol = component.render({
         isDirty,
         updateAttributeInMarkup,
         updateRefComponentAttribute,
@@ -81,8 +93,12 @@ export function renderComponent(component) {
         mountComponentAfterMarker,
         componentWasRehydrated,
     });
-    if (!isValidElement(element)) {
-        throw new Error(`Invariant Violation: ${ctx.name}.render(): A valid Aura element (or null) must be returned. You have returned ${element} instead.`);
+    if (elementOrNullOrSymbol === rehydratedSymbol) {
+        // do nothing
     }
-    ctx.tree = element;
+    if (!isValidElement(elementOrNullOrSymbol)) {
+        throw new Error(`Invariant Violation: ${ctx.name}.render(): A valid Component element (or null) must be returned. You have returned ${element} instead.`);
+    }
+    throw new Error('TBI');
+    establishContext(outerContext);
 }

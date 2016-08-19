@@ -1,5 +1,8 @@
 export const ComponentToContextMap = new WeakMap();
-export let currentContext;
+export const topLevelContextSymbol = Symbol('Top Level Context');
+export let currentContext = {
+    [topLevelContextSymbol]: true,
+};
 
 export function createNewContext(newContextObj = {}) {
     currentContext = newContextObj;
@@ -21,6 +24,6 @@ export function getContext(component) {
     return ctx;
 }
 
-export function stablishContext(ctx) {
+export function establishContext(ctx) {
     currentContext = ctx;
 }
