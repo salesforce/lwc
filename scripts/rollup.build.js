@@ -6,8 +6,8 @@ const fs = require('fs');
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
-const typescript = require('rollup-plugin-typescript');
 const strip = require('rollup-plugin-strip');
+const flow = require('rollup-plugin-flow');
 const rollup = require('rollup');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -19,7 +19,7 @@ babelConfig.presets = babelConfig.presets.map((preset) => {
 });
 
 const plugins = [
-    // typescript(), // TODO: we should enable typescript at some point
+    flow(),
     babel(babelConfig),
     commonjs({
         sourceMap: true

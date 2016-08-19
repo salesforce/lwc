@@ -1,3 +1,5 @@
+// @flow
+
 import {
     currentContext,
     createNewContext,
@@ -15,7 +17,7 @@ export function getRef(component, refId) {
     return ctx.ref[refId];
 }
 
-function storeReferenceInContext(context, component, ref) {
+function storeReferenceInContext(context, component, ref: string) {
     if (typeof ref !== 'string') {
         throw new Error(`Ref ${ref} should be a string value in component ${component}.`);
     }
