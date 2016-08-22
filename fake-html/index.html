@@ -10,7 +10,6 @@ var $D = dom(); // temporary hack to make dom lib available
 // trying the loader
 $A.loaderImportMethodTemporary('bar')
     .then(function (bar) {
-        console.log('bundle bar returned value: ', bar);
         var opaqueElement = $A.createElement(bar, {a: 1, b: 2});
 
         // var opaqueElement = $A.createElement(bar, {a: 1, b: 2}, [

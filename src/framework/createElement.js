@@ -46,14 +46,6 @@ function createEmptyComponentContextAndEstablishIt(name: string): Object {
      return context;
 }
 
-export function isValidElement(opaque: any): boolean {
-    if (opaque === null) {
-        return true;
-    }
-    // check if the element is an opaque element
-    return opaqueToComponentMap.has(opaque);
-}
-
 function createTextNodeElement(text: string) {
     throw new Error('TBD', text);
 }
@@ -63,13 +55,14 @@ function createChildrenElements(children: Array<any>): Array<any> {
         throw new Error(`The 3rd argument of createElement() should be an array instead of ${children}.`);
     }
     const elements = [];
-    for (let obj in children) {
-        if (typeof obj === 'string') {
-            elements.push(createTextNodeElement(obj));
-        } else if (isValidElement(obj)) {
-            elements.push(obj);
+    const len = children.length;
+    let i = 0;
+    for (i; i < len; i += 1) {
+        let opaque = children[i];
+        if (typeof opaque === 'string' || opaque === null || opaqueToComponentMap.has(opaque)) {
+            elements[i] = opaque;
         } else {
-            throw new Error(`Invalid children ${obj}.`);
+            throw new Error(`Invalid children ${opaque}.`);
         }
     }
     return elements;

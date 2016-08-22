@@ -15,7 +15,6 @@ import {
     getRef,
     createElement,
     opaqueToComponentMap,
-    isValidElement,
 } from "./createElement.js";
 
 import {
@@ -153,7 +152,7 @@ export function renderComponent(component: Object) {
         newChildComponent = childComponent;
     } else if (opaque === null) {
         newChildComponent = null;
-    } else if (isValidElement(opaque)) {
+    } else if (opaqueToComponentMap.has(opaque)) {
         newChildComponent = opaqueToComponentMap.get(opaque);
         renderComponent(newChildComponent);
     } else {

@@ -5,13 +5,18 @@ export default class Bar {
         return this.a + this.b;
     }
     constructor(attrs) {
-        console.log(attrs);
-        console.log(sValue);
         this.a = attrs.a;
         this.b = attrs.b;
     }
+    onClick() {
+        console.log('clicked');
+    }
     render(api) {
-        console.log(api);
-        return api.createElement('p', undefined, []);
+        return api.createElement('button', {
+            name: 'mybutton',
+            onClick: (e) => this.onClick(e)
+        }, [
+            'something'
+        ]);
     }
 }

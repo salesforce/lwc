@@ -6,6 +6,10 @@ import {
 } from "./rendering.js";
 
 import {
+    opaqueToComponentMap,
+} from "./createElement";
+
+import {
     createElement,
     releaseNode,
     updateAttr,
@@ -43,8 +47,14 @@ export default function HTMLComponentFactory(tagName: string): Class {
                     }
                 }
                 let children = this.attrs.children || [];
-                for (let childComponent in children) {
-                    if (childComponent !== null) {
+                const len = children.length;
+                let i = 0;
+                for (i; i < len; i += 1) {
+                    let opaque = children[i];
+                    if (typeof opaque === 'string') {
+                        this.domNode.appendChild(document.createTextNode(opaque));
+                    } else if (opaque !== null) {
+                        const childComponent = opaqueToComponentMap.get(opaque);
                         renderComponent(childComponent);
                         const tree = computeTree(childComponent);
                         this.domNode.appendChild(tree);
