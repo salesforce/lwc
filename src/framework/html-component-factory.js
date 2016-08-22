@@ -2,7 +2,7 @@
 
 import {
     renderComponent,
-    computeTree,
+    getRootNodeFromComponent,
 } from "./rendering.js";
 
 import {
@@ -13,7 +13,7 @@ import {
     createElement,
     releaseNode,
     updateAttr,
-} from "dom";
+} from "aura-dom";
 
 const cache = {};
 const HTMLComponentSet = new WeakSet();
@@ -56,7 +56,7 @@ export default function HTMLComponentFactory(tagName: string): Class {
                     } else if (opaque !== null) {
                         const childComponent = opaqueToComponentMap.get(opaque);
                         renderComponent(childComponent);
-                        const tree = computeTree(childComponent);
+                        const tree = getRootNodeFromComponent(childComponent);
                         this.domNode.appendChild(tree);
                     }
                 }

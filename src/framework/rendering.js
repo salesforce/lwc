@@ -1,9 +1,8 @@
 /* @flow */
 
 import {
-    replace,
     updateAttr,
-} from "dom";
+} from "aura-dom";
 
 import {
     getContext,
@@ -31,7 +30,7 @@ function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): b
     return false;
 }
 
-export const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
+const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
 
 export function isDirty(component: Object, propName: string): boolean {
     const {isDirty, dirtyPropNames} = getContext(component);
@@ -55,8 +54,8 @@ export function isDirty(component: Object, propName: string): boolean {
 }
 
 function attemptToUpdate(component: Object) {
-    const {isMounted} = getContext(component);
-    if (isMounted) {
+    const {isMounted, isDirty} = getContext(component);
+    if (isMounted && isDirty) {
         renderComponent(component);
     }
 }
@@ -68,6 +67,8 @@ export function markComponentAsDirty(component: Object, propName: string) {
     }
     ctx.isDirty = true;
     ctx.dirtyPropNames[propName] = true;
+    // TODO: this promise might need to be controlled so we only render once in the next tick
+    // maybe storing the promise into the component's context
     Promise.resolve(component).then(attemptToUpdate);
 }
 
@@ -163,22 +164,23 @@ export function renderComponent(component: Object) {
     }
 }
 
+// TODO: this may not be needed if we can guarantee that all the rehyadration will take care of it.
 function digestNewChildComponent(component: Object, newChildComponent: Object) {
     const ctx = getContext(component);
     const {childComponent, tree} = ctx;
     ctx.childComponent = newChildComponent;
     if (ctx.isMounted) {
         // generate new tree
-        const newTree = computeTree(component);
-        // replace trees
-        replace(tree, newTree);
+        const newTree = getRootNodeFromComponent(component);
+        // TODO: replace should be in dom
+        tree.parentNode.replaceChild(tree, newTree);
     }
     if (childComponent !== null) {
         dismountComponent(childComponent);
     }
 }
 
-export function computeTree(component: Object): Node {
+export function getRootNodeFromComponent(component: Object): Node {
     const ctx = getContext(component);
     const {childComponent, isRendered} = ctx;
     if (!isRendered) {
@@ -188,7 +190,7 @@ export function computeTree(component: Object): Node {
     if (isHTMLComponent(component)) {
         tree = component.domNode;
     } else if (childComponent) {
-        tree = computeTree(childComponent);
+        tree = getRootNodeFromComponent(childComponent);
     } else {
         // generate a marker
         tree = document.createComment('facet');

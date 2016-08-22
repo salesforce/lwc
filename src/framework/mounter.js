@@ -4,7 +4,7 @@ import {
 } from "./context.js";
 
 import {
-    computeTree,
+    getRootNodeFromComponent,
     renderComponent,
 } from "./rendering.js";
 
@@ -14,7 +14,7 @@ import {
 
 import {
     append,
-} from "dom";
+} from "aura-dom";
 
 export function mountToDom(opaque: Object, domNode: Node) {
     const component = opaque && opaqueToComponentMap.get(opaque);
@@ -26,7 +26,7 @@ export function mountToDom(opaque: Object, domNode: Node) {
         throw new Error(`Invariant Violation: $A.mountToDom(): Component element can only be mounted once.`);
     }
     renderComponent(component);
-    const tree = computeTree(component);
+    const tree = getRootNodeFromComponent(component);
     // append(domNode, tree);
     domNode.appendChild(tree);
 }

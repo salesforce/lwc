@@ -1,7 +1,8 @@
 /* @flow */
 
-export const ComponentToContextMap = new WeakMap();
-export const topLevelContextSymbol = Symbol('Top Level Context');
+const ComponentToContextMap = new WeakMap();
+const topLevelContextSymbol = Symbol('Top Level Context');
+
 export let currentContext = {
     [topLevelContextSymbol]: true,
 };

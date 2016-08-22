@@ -8,6 +8,7 @@ const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -80,16 +81,15 @@ const fwConfig = {
     folder: 'src/framework',
     input: {
         entry: 'src/framework/main.js',
-        plugins,
+        plugins: plugins.concat(nodeResolve({
+            jsnext: true,
+        })),
     },
     output: {
         dest: 'fake-cdn/fw.js',
         format: 'umd',
         moduleName: '$A',
         sourceMap: true,
-        globals: {
-            dom: '$D',
-        },
     }
 };
 // adding the framework as the first config
