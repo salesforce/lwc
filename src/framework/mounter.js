@@ -1,22 +1,23 @@
+/* @flow */
 import {
     getContext,
-    currentContext,
 } from "./context.js";
 
 import {
+    computeTree,
     renderComponent,
 } from "./rendering.js";
 
 import {
     opaqueToComponentMap,
-    isValidElement,
 } from "./createElement.js";
 
-export function mountToDom(opaque, domNode) {
-    if (opaque === null) {
-        throw new Error('...');
-    }
-    const component = opaqueToComponentMap.get(opaque);
+import {
+    append,
+} from "dom";
+
+export function mountToDom(opaque: Object, domNode: Node) {
+    const component = opaque && opaqueToComponentMap.get(opaque);
     if (!component) {
         throw new Error(`Invariant Violation: $A.mountToDom(): Invalid component element ${opaque}.`);
     }
@@ -24,13 +25,12 @@ export function mountToDom(opaque, domNode) {
     if (ctx.isMounted) {
         throw new Error(`Invariant Violation: $A.mountToDom(): Component element can only be mounted once.`);
     }
-    if (!ctx.isRendered) {
-        renderComponent(component);
-    }
-    console.log(component, domNode);
-    throw new Error('TBI');
+    renderComponent(component);
+    const tree = computeTree(component);
+    // append(domNode, tree);
+    domNode.appendChild(tree);
 }
 
-export function unmountFromDom(opaque) {
+export function dismountComponent(component: Object) {
     throw new Error('TBI');
 }

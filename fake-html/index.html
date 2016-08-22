@@ -1,9 +1,12 @@
 <script src="dom.js"></script>
-<script src="fw.js"></script>
-<script src="bar.js"></script>
 <script>
 var $D = dom(); // temporary hack to make dom lib available
-
+</script>
+<script src="fw.js"></script>
+<script src="bar.js"></script>
+<div id="container">
+</div>
+<script>
 // trying the loader
 $A.loaderImportMethodTemporary('bar')
     .then(function (bar) {
@@ -20,5 +23,3 @@ $A.loaderImportMethodTemporary('bar')
         $A.mountToDom(opaqueElement, domNodeContainer);
     })
 </script>
-<div id="container">
-</div>

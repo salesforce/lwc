@@ -12,6 +12,6 @@ export default class Bar {
     }
     render(api) {
         console.log(api);
-        return null;
+        return api.createElement('p', undefined, []);
     }
 }

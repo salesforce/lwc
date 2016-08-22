@@ -1,6 +1,7 @@
 /* @flow */
 
 import {
+    replace,
     updateAttr,
 } from "dom";
 
@@ -12,8 +13,14 @@ import {
 
 import {
     getRef,
+    createElement,
+    opaqueToComponentMap,
     isValidElement,
 } from "./createElement.js";
+
+import {
+    isHTMLComponent,
+} from "./html-component-factory.js";
 
 function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): boolean {
     // the propName is a computed property, and should be computed accordingly
@@ -48,22 +55,33 @@ export function isDirty(component: Object, propName: string): boolean {
     return dirtyPropNames[propName] || false;
 }
 
-export function markComponentAsDirty(component: Object, propName: string) {
-    const ctx = getContext(component);
-    ctx.isDirty = true;
-    ctx.dirtyPropNames[propName] = true;
+function attemptToUpdate(component: Object) {
+    const {isMounted} = getContext(component);
+    if (isMounted) {
+        renderComponent(component);
+    }
 }
 
-export function updateAttributeInMarkup(componentInstance: Object, refId: string, attrName: string, attrValue: any) {
-    let refInstance = getRef(componentInstance, refId);
+export function markComponentAsDirty(component: Object, propName: string) {
+    const ctx = getContext(component);
+    if (ctx.isRendering) {
+        throw new Error(`Invariant Violation: ${ctx.name}.render() method has side effects on the state of the component.`);
+    }
+    ctx.isDirty = true;
+    ctx.dirtyPropNames[propName] = true;
+    Promise.resolve(component).then(attemptToUpdate);
+}
+
+export function updateAttributeInMarkup(component: Object, refId: string, attrName: string, attrValue: any) {
+    let refInstance = getRef(component, refId);
     // TODO: this might not work at all, and we should go thru the actually setters
     if (refInstance && refInstance.domNode) {
         updateAttr(refInstance.domNode, attrName, attrValue);
     }
 }
 
-export function updateRefComponentAttribute(componentInstance: Object, refId: string, attrName: string, attrValue: any) {
-    let refInstance = getRef(componentInstance, refId);
+export function updateRefComponentAttribute(component: Object, refId: string, attrName: string, attrValue: any) {
+    let refInstance = getRef(component, refId);
     if (refInstance) {
         refInstance[attrName] = attrValue;
     }
@@ -76,18 +94,22 @@ export function componentWasRehydrated(component: Object): any {
     const ctx = getContext(component);
     const {dirtyPropNames} = ctx;
     ctx.isDirty = false;
-    for (let propName of dirtyPropNames) {
+    for (let propName in dirtyPropNames) {
         dirtyPropNames[propName] = false;
     }
     return rehydratedSymbol;
 }
 
-export function renderComponent(component: Object) {
+function invokeComponentRender(component: Object): any {
+    if (!component.render) {
+        return null;
+    }
     const outerContext = currentContext;
     const ctx = getContext(component);
     establishContext(ctx);
-    let elementOrNullOrSymbol = component.render({
+    const element = component.render({
         isDirty,
+        createElement,
         updateAttributeInMarkup,
         updateRefComponentAttribute,
         updateContentInMarkup,
@@ -95,12 +117,98 @@ export function renderComponent(component: Object) {
         mountComponentAfterMarker,
         componentWasRehydrated,
     });
-    if (elementOrNullOrSymbol === rehydratedSymbol) {
-        // do nothing
-    }
-    if (!isValidElement(elementOrNullOrSymbol)) {
-        throw new Error(`Invariant Violation: ${ctx.name}.render(): A valid Component element (or null) must be returned. You have returned ${element} instead.`);
-    }
-    throw new Error('TBI');
     establishContext(outerContext);
+    return element;
+}
+
+function invokeComponentAttach(component: Object) {
+    if (component.attach) {
+        const outerContext = currentContext;
+        const ctx = getContext(component);
+        establishContext(ctx);
+        component.attach(ctx.tree);
+        establishContext(outerContext);
+    }
+}
+
+function invokeComponentDetach(component: Object) {
+    if (component.detach) {
+        const outerContext = currentContext;
+        const ctx = getContext(component);
+        establishContext(ctx);
+        component.detach(ctx.tree);
+        establishContext(outerContext);
+    }
+}
+
+export function renderComponent(component: Object) {
+    const ctx = getContext(component);
+    const {childComponent} = ctx;
+    ctx.isRendering = true;
+    let opaque = invokeComponentRender(component);
+    ctx.isRendering = false;
+    ctx.isRendered = true;
+    let newChildComponent = null;
+    if (opaque === rehydratedSymbol) {
+        newChildComponent = childComponent;
+    } else if (opaque === null) {
+        newChildComponent = null;
+    } else if (isValidElement(opaque)) {
+        newChildComponent = opaqueToComponentMap.get(opaque);
+        renderComponent(newChildComponent);
+    } else {
+        throw new Error(`Invariant Violation: ${ctx.name}.render(): A valid Component element (or null) must be returned. You have returned ${opaque} instead.`);
+    }
+    if (childComponent !== newChildComponent) {
+        digestNewChildComponent(component, newChildComponent);
+    }
+}
+
+function digestNewChildComponent(component: Object, newChildComponent: Object) {
+    const ctx = getContext(component);
+    const {childComponent, tree} = ctx;
+    ctx.childComponent = newChildComponent;
+    if (ctx.isMounted) {
+        // generate new tree
+        const newTree = computeTree(component);
+        // replace trees
+        replace(tree, newTree);
+    }
+    if (childComponent !== null) {
+        dismountComponent(childComponent);
+    }
+}
+
+export function computeTree(component: Object): Node {
+    const ctx = getContext(component);
+    const {childComponent, isRendered} = ctx;
+    if (!isRendered) {
+        throw new Error(`Assert: Component element must be rendered.`);
+    }
+    let tree = null;
+    if (isHTMLComponent(component)) {
+        tree = component.domNode;
+    } else if (childComponent) {
+        tree = computeTree(childComponent);
+    } else {
+        // generate a marker
+        tree = document.createComment('facet');
+    }
+    ctx.tree = tree;
+    invokeComponentAttach(component);
+    return tree;
+}
+
+function dismountComponent(component: Object) {
+    const ctx = getContext(component);
+    const {childComponent, isMounted} = ctx;
+    if (!isMounted) {
+        throw new Error(`Assert: Component element must be mounted.`);
+    }
+    // TODO: we might want to inverse this to dismounting childComponent before component
+    invokeComponentDetach(component);
+    if (childComponent) {
+        dismountComponent(childComponent);
+    }
+    ctx.isMounted = false;
 }

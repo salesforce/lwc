@@ -12,12 +12,12 @@ import HTMLComponentFactory from "./html-component-factory.js";
 
 export const opaqueToComponentMap = new WeakMap();
 
-export function getRef(component, refId) {
+export function getRef(component: Object, refId: string): any {
     const ctx = getContext(component);
     return ctx.ref[refId];
 }
 
-function storeReferenceInContext(context, component, ref: string) {
+function storeReferenceInContext(context: Object, component: Object, ref: string) {
     if (typeof ref !== 'string') {
         throw new Error(`Ref ${ref} should be a string value in component ${component}.`);
     }
@@ -30,20 +30,23 @@ function storeReferenceInContext(context, component, ref: string) {
     context.refs[ref] = component;
 }
 
-function createEmptyComponentContextAndEstablishIt() {
+function createEmptyComponentContextAndEstablishIt(name: string): Object {
      const context = createNewContext({
          refs: {},
+         name,
          isMounted: false,
          isDirty: false,
+         isUpdating: false,
          isRendered: false,
-         dirtyPropNames: {},
+         dirtyPropNames: Object.create(null),
+         childComponent: null,
          tree: null,
      });
      establishContext(context);
      return context;
 }
 
-export function isValidElement(opaque) {
+export function isValidElement(opaque: any): boolean {
     if (opaque === null) {
         return true;
     }
@@ -51,11 +54,11 @@ export function isValidElement(opaque) {
     return opaqueToComponentMap.has(opaque);
 }
 
-function createTextNodeElement(text) {
+function createTextNodeElement(text: string) {
     throw new Error('TBD', text);
 }
 
-function createChildrenElements(children) {
+function createChildrenElements(children: Array<any>): Array<any> {
     if (!Array.isArray(children)) {
         throw new Error(`The 3rd argument of createElement() should be an array instead of ${children}.`);
     }
@@ -72,7 +75,7 @@ function createChildrenElements(children) {
     return elements;
 }
 
-export function createElement(ComponentClass, attrs = {}, children = []) {
+export function createElement(ComponentClass: any, attrs: any = {}, children: Array<any> = []): Object {
     if (typeof ComponentClass === "string") {
         ComponentClass = HTMLComponentFactory(ComponentClass);
     }
@@ -80,7 +83,7 @@ export function createElement(ComponentClass, attrs = {}, children = []) {
     const config = Object.assign(attrs, {
         children: createChildrenElements(children),
     });
-    const innerContext = createEmptyComponentContextAndEstablishIt();
+    const innerContext = createEmptyComponentContextAndEstablishIt(ComponentClass.name);
     const component = new ComponentClass(config);
     if (attrs.__ref) {
         // keeping track of anything with ref within the current rendering process...

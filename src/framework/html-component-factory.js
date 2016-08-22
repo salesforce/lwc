@@ -1,6 +1,8 @@
+/* @flow */
+
 import {
-    isDirty,
-    componentWasRehydrated,
+    renderComponent,
+    computeTree,
 } from "./rendering.js";
 
 import {
@@ -10,42 +12,45 @@ import {
 } from "dom";
 
 const cache = {};
+const HTMLComponentSet = new WeakSet();
 
-export default function HTMLComponentFactory(tagName) {
+export function isHTMLComponent(component: Object): boolean {
+    return HTMLComponentSet.has(component);
+}
+
+export default function HTMLComponentFactory(tagName: string): Class {
     if (!cache[tagName]) {
         // instances of this class will never be exposed to user-land
-        // instead, a proxy to them will be used, which can deal with
-        // the marks to dirty, and the state on attrs.
         cache[tagName] = class HTMLComponent {
-            constructor(attrs) {
+            constructor(attrs: Object) {
                 this.tagName = tagName;
                 this.attrs = attrs;
                 this.domNode = undefined;
+                HTMLComponentSet.add(this);
+            }
+            attach() {
+                // TODO: support for two ways data binding
             }
             dettach() {
                 releaseNode(this.domNode);
                 this.domNode = undefined;
             }
-            render() {
-                // TODO: two ways data binding will have to be implemented
-                //       for inputs and other live elements.
-                const rehydrate = () => {
-                    for (let {attrName, attrVal} of this.attrs) {
-                        if (isDirty(this, attrName)) {
-                            updateAttr(this.domNode, attrName, attrVal);
-                        }
-                    }
-                    componentWasRehydrated(this);
-                    return this.domNode;
-                };
-                const render = () => {
-                    this.domNode = createElement(this.tagName);
-                    for (let {attrName, attrVal} of this.attrs) {
+            render(): any {
+                this.domNode = createElement(this.tagName);
+                for (let [attrName, attrVal] of Object.entries(this.attrs)) {
+                    if (attrName !== 'children') {
                         updateAttr(this.domNode, attrName, attrVal);
                     }
-                    return this.domNode;
-                };
-                return isDirty(this) && this.domNode ? rehydrate() : render();
+                }
+                let children = this.attrs.children || [];
+                for (let childComponent in children) {
+                    if (childComponent !== null) {
+                        renderComponent(childComponent);
+                        const tree = computeTree(childComponent);
+                        this.domNode.appendChild(tree);
+                    }
+                }
+                return null;
             }
         };
     }
