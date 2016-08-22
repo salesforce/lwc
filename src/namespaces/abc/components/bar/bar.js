@@ -16,7 +16,7 @@ export default class Bar {
             name: 'mybutton',
             onClick: (e) => this.onClick(e)
         }, [
-            'something'
+            api.createElement('span', {}, ['something'])
         ]);
     }
 }

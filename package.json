@@ -19,7 +19,7 @@
     "babel-eslint": "^6.1.2",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-es2015-rollup": "^1.1.1",
-    "dom": "git://git.soma.salesforce.com/cpatino/dom",
+    "dom-lib": "git://git.soma.salesforce.com/cpatino/dom",
     "eslint": "^3.0.1",
     "eslint-plugin-flowtype": "^2.7.1",
     "express": "^4.14.0",
