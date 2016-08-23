@@ -57,11 +57,10 @@ function createChildrenElements(children: Array<any>): Array<any> {
     let i = 0;
     for (i; i < len; i += 1) {
         let opaque = children[i];
-        if (typeof opaque === 'string' || opaque === null || opaqueToComponentMap.has(opaque)) {
-            elements[i] = opaque;
-        } else {
+        if (typeof opaque === 'object' && opaque !== null && !opaqueToComponentMap.has(opaque)) {
             throw new Error(`Invalid children ${opaque}.`);
         }
+        elements[i] = opaque;
     }
     return elements;
 }

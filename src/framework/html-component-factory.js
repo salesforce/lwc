@@ -54,14 +54,17 @@ export default function HTMLComponentFactory(tagName: string): Class {
                 let i = 0;
                 for (i; i < len; i += 1) {
                     let opaque = children[i];
-                    if (typeof opaque === 'string') {
-                        this.domNode.appendChild(document.createTextNode(opaque));
-                    } else if (opaque !== null) {
+                    let childNode;
+                    if (opaque === null) {
+                        childNode = document.createComment(`facet${i}`);
+                    } else if (typeof opaque === 'object') {
                         const childComponent = opaqueToComponentMap.get(opaque);
                         renderComponent(childComponent);
-                        const tree = getComponentRootNode(childComponent);
-                        this.domNode.appendChild(tree);
+                        childNode = getComponentRootNode(childComponent);
+                    } else {
+                        childNode = document.createTextNode(opaque);
                     }
+                    this.domNode.appendChild(childNode);
                 }
                 return null;
             }

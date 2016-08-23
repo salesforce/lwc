@@ -72,10 +72,9 @@ export function markComponentAsDirty(component: Object, propName: string) {
 }
 
 export function updateAttributeInMarkup(component: Object, refId: string, attrName: string, attrValue: any) {
-    let refInstance = getRef(component, refId);
-    // TODO: this might not work at all, and we should go thru the actually setters
-    if (refInstance && refInstance.domNode) {
-        updateAttr(refInstance.domNode, attrName, attrValue);
+    let { domNode } = getRef(component, refId);
+    if (domNode) {
+        updateAttr(domNode, attrName, attrValue);
     }
 }
 
@@ -85,7 +84,22 @@ export function updateRefComponentAttribute(component: Object, refId: string, at
         refInstance[attrName] = attrValue;
     }
 }
-export function updateContentInMarkup() {}
+export function updateContentInMarkup(component: Object, refId: string, childIndex: integer, content: string) {
+    let { domNode } = getRef(component, refId);
+    if (domNode) {
+        const textNode = document.createTextNode(content);
+        let childNodes = domNode.childNodes;
+        let len = childNodes.length;
+        if (len > childIndex) {
+            const oldTextNode = childNodes[childIndex];
+            domNode.replaceChild(textNode, oldTextNode);
+        } else if (len === childIndex) {
+            domNode.appendChild(textNode);
+        } else {
+            throw new Error('Out of bound index when updating content in markup.');
+        }
+    }
+}
 export function unmountRefComponent() {}
 export function mountComponentAfterMarker() {}
 

@@ -74,8 +74,8 @@ export function mountNewChildComponent(component: Object, newChildComponent: Obj
     if (ctx.isMounted) {
         // generate new tree
         const newTree = getComponentRootNode(component);
-        // TODO: replace should be in dom: replace(tree, newTree);
-        tree.parentNode.replaceChild(tree, newTree);
+        // TODO: replace should be in dom: replace(newTree, tree);
+        tree.parentNode.replaceChild(newTree, tree);
     }
     if (childComponent !== null) {
         dismountComponent(childComponent);
