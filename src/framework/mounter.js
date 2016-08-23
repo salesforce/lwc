@@ -48,6 +48,7 @@ export function getComponentRootNode(component: Object): Node {
     }
     ctx.tree = tree;
     invokeComponentAttachMethod(component);
+    ctx.isMounted = true;
     return tree;
 }
 

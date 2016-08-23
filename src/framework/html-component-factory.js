@@ -45,7 +45,7 @@ export default function HTMLComponentFactory(tagName: string): Class {
             render(): any {
                 this.domNode = createElement(this.tagName);
                 for (let [attrName, attrVal] of Object.entries(this.attrs)) {
-                    if (attrName !== 'children') {
+                    if (attrName !== 'children' && attrName !== '__ref') {
                         updateAttr(this.domNode, attrName, attrVal);
                     }
                 }

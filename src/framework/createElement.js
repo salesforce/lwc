@@ -8,13 +8,15 @@ import {
     establishContext,
 } from "./context.js";
 
+import live from "./decorator/live.js";
+
 import HTMLComponentFactory from "./html-component-factory.js";
 
 export const opaqueToComponentMap = new WeakMap();
 
 export function getRef(component: Object, refId: string): any {
     const ctx = getContext(component);
-    return ctx.ref[refId];
+    return ctx.refs[refId];
 }
 
 function storeReferenceInContext(context: Object, component: Object, ref: string) {
@@ -46,10 +48,6 @@ function createEmptyComponentContextAndEstablishIt(name: string): Object {
      return context;
 }
 
-function createTextNodeElement(text: string) {
-    throw new Error('TBD', text);
-}
-
 function createChildrenElements(children: Array<any>): Array<any> {
     if (!Array.isArray(children)) {
         throw new Error(`The 3rd argument of createElement() should be an array instead of ${children}.`);
@@ -69,7 +67,9 @@ function createChildrenElements(children: Array<any>): Array<any> {
 }
 
 export function createElement(ComponentClass: any, attrs: any = {}, children: Array<any> = []): Object {
-    if (typeof ComponentClass === "string") {
+    // TODO: validate if it is a valid tag
+    const isHTMLTagName = typeof ComponentClass === "string";
+    if (isHTMLTagName) {
         ComponentClass = HTMLComponentFactory(ComponentClass);
     }
     const ownerContext = currentContext;
@@ -86,8 +86,14 @@ export function createElement(ComponentClass: any, attrs: any = {}, children: Ar
     establishContext(ownerContext);
     const opaque = {};
     opaqueToComponentMap.set(opaque, component);
-    // for debugging only:
-    opaque.__component__ = component;
+    // attempting to decorate the component to be a live component
+    if (!isHTMLTagName) {
+        live(component);
+    }
+    if (DEVELOPMENT) {
+        opaque.__component__ = component;
+    }
+
     // returning the opaque element
     return opaque;
 }

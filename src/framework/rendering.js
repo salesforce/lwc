@@ -36,7 +36,7 @@ export function isDirty(component: Object, propName: string): boolean {
     if (!propName) {
         return isDirty;
     }
-    if (!dirtyPropNames.hasOwnProperty(propName)) {
+    if (!dirtyPropNames[propName]) {
         let descriptor = Object.getOwnPropertyDescriptor(component, propName);
         if (descriptor && descriptor.get) {
             let deps = descriptor.get.dependencies;
