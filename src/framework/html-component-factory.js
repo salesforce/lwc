@@ -1,9 +1,12 @@
-/* @flow */
+// @flow
 
 import {
     renderComponent,
-    getRootNodeFromComponent,
 } from "./rendering.js";
+
+import {
+    getComponentRootNode,
+} from "./mounter.js";
 
 import {
     opaqueToComponentMap,
@@ -56,7 +59,7 @@ export default function HTMLComponentFactory(tagName: string): Class {
                     } else if (opaque !== null) {
                         const childComponent = opaqueToComponentMap.get(opaque);
                         renderComponent(childComponent);
-                        const tree = getRootNodeFromComponent(childComponent);
+                        const tree = getComponentRootNode(childComponent);
                         this.domNode.appendChild(tree);
                     }
                 }

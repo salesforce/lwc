@@ -1,6 +1,6 @@
-/* @flow */
+// @flow
 
-const ComponentToContextMap = new WeakMap();
+const ObjectToContextMap = new WeakMap();
 const topLevelContextSymbol = Symbol('Top Level Context');
 
 export let currentContext = {
@@ -12,17 +12,19 @@ export function createNewContext(newContextObj: Object|null = {}): Object {
     return currentContext;
 }
 
-export function setContext(component: Object, context: Object) {
-    if (ComponentToContextMap.get(component)) {
-        throw new Error('A context already exist for component ' + component);
+export function setContext(obj: Object, context: Object) {
+    if (DEVELOPMENT) {
+        if (ObjectToContextMap.get(obj)) {
+            throw new Error('A context already exist for ' + obj);
+        }
     }
-    ComponentToContextMap.set(component, context);
+    ObjectToContextMap.set(obj, context);
 }
 
-export function getContext(component: Object): Object {
-    let ctx = ComponentToContextMap.get(component);
+export function getContext(obj: Object): Object {
+    let ctx = ObjectToContextMap.get(obj);
     if (!ctx) {
-        throw new Error('No context found for component ' + component);
+        throw new Error('No context found for obj ' + obj);
     }
     return ctx;
 }

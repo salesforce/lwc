@@ -41,5 +41,8 @@
         "flowtype": {
             "onlyFilesWithFlowAnnotation": false
         }
+    },
+    "globals": {
+        "DEVELOPMENT": true
     }
 }

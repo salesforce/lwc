@@ -9,6 +9,7 @@ const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const replace = require('rollup-plugin-replace');
 const rollup = require('rollup');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -21,6 +22,9 @@ babelConfig.presets = babelConfig.presets.map((preset) => {
 
 const plugins = [
     flow(),
+    replace({
+        DEVELOPMENT: !isProduction
+    }),
     babel(babelConfig),
     commonjs({
         sourceMap: true

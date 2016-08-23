@@ -1,4 +1,6 @@
-/* @flow */
+// @flow
+
+const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
 
 import {
     updateAttr,
@@ -17,11 +19,10 @@ import {
 } from "./createElement.js";
 
 import {
-    isHTMLComponent,
-} from "./html-component-factory.js";
+    mountNewChildComponent,
+} from "./mounter.js";
 
 function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): boolean {
-    // the propName is a computed property, and should be computed accordingly
     for (let depPropName in deps) {
         if (dirtyPropNames[depPropName]) {
             return true;
@@ -29,8 +30,6 @@ function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): b
     }
     return false;
 }
-
-const rehydratedSymbol = Symbol('Signal when the component is rehydrated during rendering.');
 
 export function isDirty(component: Object, propName: string): boolean {
     const {isDirty, dirtyPropNames} = getContext(component);
@@ -100,7 +99,7 @@ export function componentWasRehydrated(component: Object): any {
     return rehydratedSymbol;
 }
 
-function invokeComponentRender(component: Object): any {
+function invokeComponentRenderMethod(component: Object): any {
     if (!component.render) {
         return null;
     }
@@ -121,31 +120,11 @@ function invokeComponentRender(component: Object): any {
     return element;
 }
 
-function invokeComponentAttach(component: Object) {
-    if (component.attach) {
-        const outerContext = currentContext;
-        const ctx = getContext(component);
-        establishContext(ctx);
-        component.attach(ctx.tree);
-        establishContext(outerContext);
-    }
-}
-
-function invokeComponentDetach(component: Object) {
-    if (component.detach) {
-        const outerContext = currentContext;
-        const ctx = getContext(component);
-        establishContext(ctx);
-        component.detach(ctx.tree);
-        establishContext(outerContext);
-    }
-}
-
 export function renderComponent(component: Object) {
     const ctx = getContext(component);
     const {childComponent} = ctx;
     ctx.isRendering = true;
-    let opaque = invokeComponentRender(component);
+    let opaque = invokeComponentRenderMethod(component);
     ctx.isRendering = false;
     ctx.isRendered = true;
     let newChildComponent = null;
@@ -160,56 +139,6 @@ export function renderComponent(component: Object) {
         throw new Error(`Invariant Violation: ${ctx.name}.render(): A valid Component element (or null) must be returned. You have returned ${opaque} instead.`);
     }
     if (childComponent !== newChildComponent) {
-        digestNewChildComponent(component, newChildComponent);
+        mountNewChildComponent(component, newChildComponent);
     }
-}
-
-// TODO: this may not be needed if we can guarantee that all the rehyadration will take care of it.
-function digestNewChildComponent(component: Object, newChildComponent: Object) {
-    const ctx = getContext(component);
-    const {childComponent, tree} = ctx;
-    ctx.childComponent = newChildComponent;
-    if (ctx.isMounted) {
-        // generate new tree
-        const newTree = getRootNodeFromComponent(component);
-        // TODO: replace should be in dom
-        tree.parentNode.replaceChild(tree, newTree);
-    }
-    if (childComponent !== null) {
-        dismountComponent(childComponent);
-    }
-}
-
-export function getRootNodeFromComponent(component: Object): Node {
-    const ctx = getContext(component);
-    const {childComponent, isRendered} = ctx;
-    if (!isRendered) {
-        throw new Error(`Assert: Component element must be rendered.`);
-    }
-    let tree = null;
-    if (isHTMLComponent(component)) {
-        tree = component.domNode;
-    } else if (childComponent) {
-        tree = getRootNodeFromComponent(childComponent);
-    } else {
-        // generate a marker
-        tree = document.createComment('facet');
-    }
-    ctx.tree = tree;
-    invokeComponentAttach(component);
-    return tree;
-}
-
-function dismountComponent(component: Object) {
-    const ctx = getContext(component);
-    const {childComponent, isMounted} = ctx;
-    if (!isMounted) {
-        throw new Error(`Assert: Component element must be mounted.`);
-    }
-    // TODO: we might want to inverse this to dismounting childComponent before component
-    invokeComponentDetach(component);
-    if (childComponent) {
-        dismountComponent(childComponent);
-    }
-    ctx.isMounted = false;
 }
