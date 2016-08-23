@@ -7,7 +7,7 @@ export let currentContext = {
     [topLevelContextSymbol]: true,
 };
 
-export function createNewContext(newContextObj: Object|null = {}): Object {
+export function createNewContext(newContextObj?: Object = {}): Object {
     currentContext = newContextObj;
     return currentContext;
 }
