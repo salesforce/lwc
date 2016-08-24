@@ -1,10 +1,6 @@
 // @flow
 
 import {
-    renderComponent,
-} from "./rendering.js";
-
-import {
     getComponentRootNode,
 } from "./mounter.js";
 
@@ -55,11 +51,10 @@ export default function HTMLComponentFactory(tagName: string): Class {
                 for (i; i < len; i += 1) {
                     let opaque = children[i];
                     let childNode;
-                    if (opaque === null) {
+                    if (opaque === null || opaque === undefined) {
                         childNode = document.createComment(`facet${i}`);
                     } else if (typeof opaque === 'object') {
                         const childComponent = opaqueToComponentMap.get(opaque);
-                        renderComponent(childComponent);
                         childNode = getComponentRootNode(childComponent);
                     } else {
                         childNode = document.createTextNode(opaque);

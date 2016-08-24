@@ -7,10 +7,6 @@ import {
 } from "./context.js";
 
 import {
-    dismountComponent,
-} from "./dismounter.js"
-
-import {
     renderComponent,
 } from "./rendering.js";
 
@@ -33,10 +29,12 @@ function invokeComponentAttachMethod(component: Object) {
 }
 export function getComponentRootNode(component: Object): Node {
     const ctx = getContext(component);
-    const {childComponent, isRendered} = ctx;
+    const { isRendered } = ctx;
     if (!isRendered) {
-        throw new Error(`Assert: Component element must be rendered.`);
+        renderComponent(component);
     }
+    // if the component is rendered, it is very likely that it has a child component
+    const { childComponent } = ctx;
     let tree = null;
     if (isHTMLComponent(component)) {
         tree = component.domNode;
@@ -61,23 +59,20 @@ export function mountToDom(opaque: Object, domNode: Node) {
     if (ctx.isMounted) {
         throw new Error(`Invariant Violation: $A.mountToDom(): Component element can only be mounted once.`);
     }
-    renderComponent(component);
     const tree = getComponentRootNode(component);
     // TODO: append should be in dom: append(domNode, tree);
     domNode.appendChild(tree);
 }
 
-export function mountNewChildComponent(component: Object, newChildComponent: Object) {
+export function mountChildComponent(component: Object, childComponent: Object) {
     const ctx = getContext(component);
-    const {childComponent, tree} = ctx;
-    ctx.childComponent = newChildComponent;
-    if (ctx.isMounted) {
-        // generate new tree
-        const newTree = getComponentRootNode(component);
-        // TODO: replace should be in dom: replace(newTree, tree);
-        tree.parentNode.replaceChild(newTree, tree);
+    const { tree } = ctx;
+    ctx.childComponent = childComponent;
+    if (!ctx.isMounted) {
+        throw new Error(`Invariant Violation: A component can only be mounted inside a mounted component.`);
     }
-    if (childComponent !== null) {
-        dismountComponent(childComponent);
-    }
+    // assert: tree is a domNode and has a parentNode
+    const newTree = getComponentRootNode(childComponent);
+    // TODO: replace should be in dom: replace(newTree, tree);
+    tree.parentNode.replaceChild(newTree, tree);
 }

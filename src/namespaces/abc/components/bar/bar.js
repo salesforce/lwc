@@ -2,8 +2,8 @@ import sValue from './helpers/some.js';
 
 export default class Bar {
     constructor(attrs) {
-        this.a = attrs.a || sValue;
-        this.b = attrs.b;
+        this.a = attrs.a;
+        this.b = attrs.b || sValue;
     }
     get c() {
         return this.a + this.b;
@@ -21,20 +21,28 @@ export default class Bar {
         isDirty,
         createElement,
         updateAttributeInMarkup,
-        // updateRefComponentAttribute,
         updateContentInMarkup,
-        // unmountRefComponent,
-        // mountComponentAfterMarker,
+        mountElementAsChild,
         componentWasRehydrated,
     }) {
         const rehydrate = () => {
             if (isDirty(this, 'a')) {
                 updateAttributeInMarkup(this, 'button1', 'name', this.a);
+                mountElementAsChild(this, 'button1', 1, renderIf1());
             }
             if (isDirty(this, 'b')) {
                 updateContentInMarkup(this, 'span1', 0, this.b);
             }
             return componentWasRehydrated(this);
+        };
+        const renderIf1 = () => {
+            if (this.a) {
+                return createElement('span', {
+                    __ref: 'span2',
+                }, ['something']);
+            } else {
+                return null;
+            }
         };
         const render = () => {
             return createElement('button', {
@@ -44,7 +52,8 @@ export default class Bar {
             }, [
                 createElement('span', {
                     __ref: 'span1',
-                }, [this.b])
+                }, [this.b]),
+                renderIf1(),
             ]);
         };
         return isDirty(this) ? rehydrate() : render();

@@ -27,7 +27,7 @@ function storeReferenceInContext(context: Object, component: Object, ref: string
         return; // ignoring top level calls, not need to track them
     }
     if (context.refs[ref]) {
-        throw new Error(`Ref ${ref} already exists in owner of component ${component}.`);
+        console.log(`Ref ${ref} is being replaced with with component ${component} in ${context.name}.`);
     }
     context.refs[ref] = component;
 }

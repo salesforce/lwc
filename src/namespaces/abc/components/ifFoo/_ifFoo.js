@@ -3,11 +3,6 @@ import {
 } from "aura";
 
 import {
-    createElement,
-    marker,
-} from "aura:component";
-
-import {
     Compiled as superbutton,
 } from "mynamespace:superbutton"
 
@@ -63,7 +58,7 @@ export class Compiled extends AuraComponent {
             if (isDirty(this, 'exp1')) {
                 unmountRefComponent(this, 'divRef2');
                 unmountRefComponent(this, 'buttonRef2');
-                mountComponentAfterMarker(this, 'if1', renderIf1());
+                mountNewChildComponent(this, 'if1', 0, renderIf1());
             }
             return componentWasRehydrated(this);
         };
@@ -79,7 +74,6 @@ export class Compiled extends AuraComponent {
         const render = () => {
             // compiled version of render()
             return createElement('div', {__ref: "divRef1", dataFoo: this.foo}, [
-                marker('if1'),
                 renderIf1(),
                 createElement('input', {__ref: "buttonRef3", value: this.foo2x, onChange: (e) => this.onChange(e), label: this.label2}),
             ]);
