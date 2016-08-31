@@ -16,7 +16,7 @@
     "url": "https://git.soma.salesforce.com/cpatino/mr.frank.git"
   },
   "devDependencies": {
-    "aura-dom": "git://git.soma.salesforce.com/aura/dom",
+    "aura-dom": "git+ssh://git.soma.salesforce.com/aura/dom",
     "babel-eslint": "^6.1.2",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.9.0",
