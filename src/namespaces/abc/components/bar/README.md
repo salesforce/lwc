@@ -15,5 +15,9 @@
     <button name.bind="a" onclick.trigger="onclick">
         <span>something</span>
     </button>
+
+
+    <foo if.something="a">something</foo>
+    <span if.something="a">another</span>
 </template>
 ```

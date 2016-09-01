@@ -1,10 +1,6 @@
 // this map can be used by the framework to construct the proxy per component class
 export const AttributeMap = new WeakMap();
 
-import {
-    markComponentAsDirty,
-} from "./rendering.js";
-
 export default function attribute(config = {}) {
     return function decorator(target, key, descriptor) {
         // for now, we need to use the runtime to inspect each class and
@@ -20,18 +16,7 @@ export default function attribute(config = {}) {
             attrs[key] = config;
         }
         // setting up the descriptor's getter and setter for the public attribute
-        let value = target[key];
-        descriptor.configurable = false;
-        if (!descriptor.get) {
-            descriptor.get = () => value;
-            descriptor.set = (newValue) => {
-                value = newValue;
-                if (value !== newValue) {
-                    value = newValue;
-                    markComponentAsDirty(target, key);
-                }
-            };
-        }
+        // -> nothing to be done for now
         return descriptor;
     }
 }
