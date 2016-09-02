@@ -32,9 +32,10 @@ function createCtor(tagName: string): Class {
             if (attrName === 'body') {
                 this.body = attrValue;
                 this.mountBody();
+            } else {
+                this.attrs[attrName] = attrValue;
+                updateAttr(this.domNode, attrName, attrValue);
             }
-            this.attrs[attrName] = attrValue;
-            updateAttr(this.domNode, attrName, attrValue);
         }
 
         toBeDismount() {
@@ -48,7 +49,9 @@ function createCtor(tagName: string): Class {
             // this is possible because events can't be binding... they are set once
             // while the handler can deal with any provider updates, not here in the dom
             for (let [attrName, attrValue] of Object.entries(attrs)) {
-                updateAttr(domNode, attrName, attrValue);
+                if (attrName !== 'body') {
+                    updateAttr(domNode, attrName, attrValue);
+                }
             }
             this.mountBody();
         }
@@ -95,7 +98,9 @@ function createCtor(tagName: string): Class {
             }
             // dismounting the rest
             for (let elementToBeDismounted of condemned) {
+                const domNode = getElementDomNode(elementToBeDismounted);
                 dismounter(elementToBeDismounted);
+                domNode.parentNode.removeChild(domNode);
             }
             this.bodyMap = newMap;
         }

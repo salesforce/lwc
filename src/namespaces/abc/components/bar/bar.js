@@ -14,7 +14,7 @@ export default class Bar {
     }
     onClick() {
         console.log('clicked');
-        this.foo = [ { x: 1 }, { x: 2 }, { x: 3 } ];
+        this.foo = [ { x: 1 }, this.foo[1], { x: 3 } ];
     }
 
     attach(domNode) {
