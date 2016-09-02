@@ -1,107 +1,80 @@
 // @flow
 
-import {
-    updateAttr,
-} from "aura-dom";
+import { factory as ComponentFactory } from "./vnode-component.js";
+import { factory as HTMLFactory } from "./vnode-html.js";
+import Text from "./vnode-text.js";
+import Facet from "./vnode-facet.js";
 
 import {
-    getContext,
-} from "./context.js";
+    EmptyObject,
+    EmptyArray,
+} from "./utils.js";
 
-import {
-    getRef,
-    opaqueToComponentMap,
-} from "./createElement.js";
+// [h]tml node
+export function h(tagName: string, attrs: Object = EmptyObject, children: array<any> = EmptyArray): Object {
+    const Ctor = HTMLFactory(tagName);
+    return {
+        Ctor,
+        attrs,
+        children,
+        vnode: undefined,
+        key: undefined,
+    };
+}
 
-import {
-    getComponentRootNode,
-} from "./mounter.js";
+// [v]irtual node
+export function v(ComponentCtor: Class, attrs: Object = EmptyObject, children: array<any> = EmptyArray): Object {
+    const Ctor = ComponentFactory(ComponentCtor);
+    return {
+        Ctor,
+        attrs,
+        children,
+        vnode: undefined,
+        key: undefined,
+    };
+}
 
-function isComputedPropertyDirty(deps: Array<string>, dirtyPropNames: Object): boolean {
-    for (let depPropName in deps) {
-        if (dirtyPropNames[depPropName]) {
-            return true;
+// [i]terable node
+export function i(items: array<any> = EmptyArray, factory: Function): Array {
+    const len = items.length;
+    const list = new Array(len);
+    for (let i = 0; i < len; i += 1) {
+        const item = items[i];
+        const element = factory(item);
+        if (element.Ctor) {
+            // storing metadata about the iterator in element to facilitate diffing
+            element.key = item;
         }
+        list[i] = element;
     }
-    return false;
+    return list;
 }
 
-function getChildNodeByIndex(domNode: Node, childIndex: integer): Node|undefined {
-    let o = domNode.childNodes[childIndex];
-    if (!o) {
-        throw new Error('Out of bound index ${childIndex} in markup ${domNode}.');
-    }
-    return o;
+// empty [f]acet node
+export function f(): Object {
+    return {
+        Ctor: Facet,
+        attrs: EmptyObject,
+        children: EmptyArray,
+        vnode: undefined,
+        key: undefined,
+    };
 }
 
-export { createElement } from "./createElement.js";
-
-export function isDirty(component: Object, propName: string): boolean {
-    const {isDirty, dirtyPropNames} = getContext(component);
-    if (!propName) {
-        return isDirty;
-    }
-    if (!dirtyPropNames[propName]) {
-        let descriptor = Object.getOwnPropertyDescriptor(component, propName);
-        if (descriptor && descriptor.get) {
-            let deps = descriptor.get.dependencies;
-            if (deps) {
-                if (isComputedPropertyDirty(deps, dirtyPropNames)) {
-                    return true;
-                }
-             } else {
-                dirtyPropNames[propName] = false;
-            }
-        }
-    }
-    return dirtyPropNames[propName] || false;
+// [t]ext node
+export function t(value: string): Object {
+    return {
+        Ctor: Text,
+        attrs: {
+            textContent: value.toString(),
+        },
+        children: EmptyArray,
+        vnode: undefined,
+        key: undefined,
+    };
 }
 
-export function updateAttributeInMarkup(component: Object, refId: string, attrName: string, attrValue: any) {
-    let { domNode } = getRef(component, refId);
-    if (domNode) {
-        updateAttr(domNode, attrName, attrValue);
-    }
-}
-
-export function updateRefComponentAttribute(component: Object, refId: string, attrName: string, attrValue: any) {
-    let refInstance = getRef(component, refId);
-    if (refInstance) {
-        refInstance[attrName] = attrValue;
-    }
-}
-
-export function updateContentInMarkup(component: Object, refId: string, childIndex: integer, content: string) {
-    const { domNode } = getRef(component, refId);
-    if (domNode) {
-        const oldTextNode = getChildNodeByIndex(domNode, childIndex);
-        // assert: oldTextNode should be a dom text node
-        const textNode = document.createTextNode(content);
-        domNode.replaceChild(textNode, oldTextNode);
-    }
-}
-
-export function mountElementAsChild(component: Object, refId: string, position: integer, opaque: Object) {
-    const { domNode } = getRef(component, refId);
-    if (domNode) {
-        const oldNode = getChildNodeByIndex(domNode, position);
-        let tree = null;
-        // assert: oldTextNode should be a dom text node
-        if (opaque !== null) {
-            const newChildComponent = opaqueToComponentMap.get(opaque);
-            tree = getComponentRootNode(newChildComponent);
-        } else {
-            tree = document.createComment('facet');
-        }
-        domNode.replaceChild(tree, oldNode);
-    }
-}
-
-export function componentWasRehydrated(component: Object): any {
-    const ctx = getContext(component);
-    const {dirtyPropNames} = ctx;
-    ctx.isDirty = false;
-    for (let propName in dirtyPropNames) {
-        dirtyPropNames[propName] = false;
-    }
+// [m]emoized node
+export function m() {
+    throw new Error('TBI');
 }

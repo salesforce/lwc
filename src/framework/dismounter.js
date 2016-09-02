@@ -1,31 +1,16 @@
 // @flow
 
 import {
-    getContext,
-    establishContext,
-    currentContext,
-} from "./context.js";
+    assert,
+    assertElement,
+} from "./utils.js";
 
-function invokeComponentDetachMethod(component: Object) {
-    if (component.detach) {
-        const outerContext = currentContext;
-        const ctx = getContext(component);
-        establishContext(ctx);
-        component.detach(ctx.tree);
-        establishContext(outerContext);
+export default function dismounter(oldElement: Object) {
+    assertElement(oldElement);
+    const { vnode } = oldElement;
+    if (!vnode.isMounted) {
+        throw new Error(`Assert: Component element ${oldElement} must be mounted.`);
     }
-}
-
-export function dismountComponent(component: Object) {
-    const ctx = getContext(component);
-    const {childComponent, isMounted} = ctx;
-    if (!isMounted) {
-        throw new Error(`Assert: Component element must be mounted.`);
-    }
-    // TODO: we might want to inverse this to dismounting childComponent before component
-    invokeComponentDetachMethod(component);
-    if (childComponent) {
-        dismountComponent(childComponent);
-    }
-    ctx.isMounted = false;
+    vnode.toBeDismount();
+    assert(vnode.isMounted === false, `Failed to dismount element ${oldElement}.`);
 }
