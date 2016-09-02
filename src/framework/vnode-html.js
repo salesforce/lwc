@@ -1,6 +1,8 @@
 // @flow
 
 import mounter from "./mounter.js";
+import patcher from "./patcher.js";
+import dismounter from "./dismounter.js";
 
 import {
     createElement,
@@ -8,35 +10,30 @@ import {
     updateAttr,
 } from "aura-dom";
 
-function mountChildren(domNode: Node, refs: array<Object>) {
-    const len = refs.length;
-    let i = 0;
-    for (i; i < len; i += 1) {
-        const tree = mounter(refs[i]);
-        domNode.appendChild(tree);
-    }
-}
-
-import vnode from "./vnode.js";
+import vnode, {
+    getElementDomNode,
+} from "./vnode.js";
 
 function createCtor(tagName: string): Class {
     // instances of this class will never be exposed to user-land
-    return class vnodeHTML extends vnode {
+    return class HTML extends vnode {
 
-        constructor(attrs: Object, childRefs: array<Object>) {
+        constructor(attrs: Object, body: array<Object>) {
             super();
-            this.events = Object.create(null);
             this.domNode = createElement(tagName);
-            // this is possible because events can't be binding... they are set once
-            // while the handler can deal with any provider updates, not here in the dom
-            for (let [attrName, attrValue] of Object.entries(attrs)) {
-                updateAttr(this.domNode, attrName, attrValue);
-            }
-            mountChildren(this.domNode, childRefs);
+            this.bodyMap = new Map();
+            // TODO: keep track of tagName-s that can have body
+            this.hasBodyAttribute = true;
+            this.attrs = attrs;
+            this.body = body;
         }
 
         set(attrName: string, attrValue: any) {
-            // TODO: we might want to batch these changes
+            if (attrName === 'body') {
+                this.body = attrValue;
+                this.mountBody();
+            }
+            this.attrs[attrName] = attrValue;
             updateAttr(this.domNode, attrName, attrValue);
         }
 
@@ -47,11 +44,61 @@ function createCtor(tagName: string): Class {
 
         toBeMounted() {
             super.toBeMounted();
-            for (let attrName in this.events) {
-                updateAttr(this.domNode, attrName, this.events[attrName]);
+            const { domNode, attrs } = this;
+            // this is possible because events can't be binding... they are set once
+            // while the handler can deal with any provider updates, not here in the dom
+            for (let [attrName, attrValue] of Object.entries(attrs)) {
+                updateAttr(domNode, attrName, attrValue);
             }
+            this.mountBody();
         }
 
+        toBeHydrated() {
+            // nothing to be done here... :)
+        }
+
+        // TODO: This is problably the most important method of all...
+        mountBody() {
+            const { body, bodyMap, domNode } = this;
+            const condemned = new Set(bodyMap.values());
+            const newMap = new Map();
+            const childNodes = [...domNode.childNodes];
+            let len = body.length;
+            let i = 0;
+            for (i; i < len; i += 1) {
+                const oldDomNode = childNodes[i] || null;
+                let newElement = body[i];
+                const index = newElement.key || '>' + i;
+                const reflectiveElement = bodyMap.get(index);
+                let reflectiveDomNode;
+                if (reflectiveElement) {
+                    condemned.delete(reflectiveElement);
+                    reflectiveDomNode = getElementDomNode(reflectiveElement);
+                    // I found the best match
+                    newElement = patcher(reflectiveElement, newElement);
+                } else {
+                    mounter(newElement);
+                }
+                newMap.set(index, newElement);
+                // todo: this need to be reworked...
+                let newDomNode = getElementDomNode(newElement);
+                if (newDomNode !== oldDomNode) {
+                    if (oldDomNode) {
+                        oldDomNode.parentNode.insertBefore(newDomNode, oldDomNode);
+                    } else {
+                        domNode.appendChild(newDomNode);
+                    }
+                    if (reflectiveDomNode && reflectiveDomNode !== newDomNode) {
+                        reflectiveDomNode.parentNode.removeChild(reflectiveDomNode);
+                    }
+                }
+            }
+            // dismounting the rest
+            for (let elementToBeDismounted of condemned) {
+                dismounter(elementToBeDismounted);
+            }
+            this.bodyMap = newMap;
+        }
     }
 }
 

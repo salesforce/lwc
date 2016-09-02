@@ -1,19 +1,21 @@
 // @flow
 
+import {
+    assertElement,
+    assert,
+} from "./utils.js";
+
 // instances of this class will never be exposed to user-land
 export default class vnode {
 
     constructor() {
+        this.hasBodyAttribute = false;
         this.isMounted = false;
         this.domNode = null;
     }
 
     set(attrName: string, attrValue: any) {
-        throw new ReferenceError('Abstract Method set() invoked.');
-    }
-
-    dispatch(name: string) {
-        throw new ReferenceError('Abstract Method dispatch() invoked.');
+        assert(false, 'Abstract Method set() invoked.');
     }
 
     toBeMounted() {
@@ -24,6 +26,13 @@ export default class vnode {
         this.isMounted = false;
     }
 
-    toBeHydrated() {}
+    toBeHydrated() {
+        assert(false, 'Abstract Method dispatch() invoked.');
+    }
 
+}
+
+export function getElementDomNode(element: Object): Node {
+    assertElement(element);
+    return element.vnode.domNode;
 }

@@ -11,21 +11,23 @@ import {
     establishContext,
 } from "./context.js";
 
-import vnode from "./vnode.js";
+import vnode, {
+    getElementDomNode,
+} from "./vnode.js";
 
 function createCtor(Ctor: Class): Class {
     // instances of this class will never be exposed to user-land
-    return class vnodeComponent extends vnode {
+    return class Component extends vnode {
         constructor(attrs: Object, childRefs: Array<Object>) {
             super();
             this.isRendering = false;
             this.aboutToBeHydrated = false;
             this.component = null;
             this.offspring = null;
-            this.context = Object.create(null);
             attrs = Object.assign({}, attrs, { children: childRefs });
             this.name = Ctor.name;
             this.component = new Ctor(attrs);
+            this.hasBodyAttribute = 'body' in this.component;
             this.wireTape();
         }
 
@@ -39,16 +41,12 @@ function createCtor(Ctor: Class): Class {
             this.aboutToBeHydrated = false;
         }
 
-        dispatch(name: string, args: array<any>) {
-            this.component[name](...args);
-        }
-
         toBeMounted() {
             super.toBeMounted();
             const newElement = this.invokeComponentRenderMethod();
             const oldElement = this.offspring;
             this.offspring = patcher(oldElement, newElement);
-            this.domNode = this.offspring.domNode;
+            this.domNode = getElementDomNode(this.offspring);
             this.invokeComponentAttachMethod();
         }
 
@@ -64,7 +62,7 @@ function createCtor(Ctor: Class): Class {
                 const oldElement = this.offspring;
                 this.offspring = patcher(oldElement, newElement);
                 const { domNode } = this;
-                this.domNode = this.offspring.domNode;
+                this.domNode = getElementDomNode(this.offspring);
                 if (this.domNode !== domNode) {
                     domNode.parentNode.replaceChild(this.domNode, domNode);
                 }
@@ -74,7 +72,7 @@ function createCtor(Ctor: Class): Class {
         invokeComponentDetachMethod() {
             if (this.component.detach) {
                 const ctx = currentContext;
-                establishContext(this.context);
+                establishContext(this);
                 this.component.detach(this.domNode);
                 establishContext(ctx);
             }
@@ -83,7 +81,7 @@ function createCtor(Ctor: Class): Class {
         invokeComponentAttachMethod() {
             if (this.component.attach) {
                 const ctx = currentContext;
-                establishContext(this.context);
+                establishContext(this);
                 this.component.attach(this.domNode);
                 establishContext(ctx);
             }
@@ -92,7 +90,7 @@ function createCtor(Ctor: Class): Class {
         invokeComponentRenderMethod(): Object {
             if (this.component.render) {
                 const ctx = currentContext;
-                establishContext(this.context);
+                establishContext(this);
                 this.isRendering = true;
                 const newElement = this.component.render(api);
                 this.isRendering = false;

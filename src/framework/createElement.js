@@ -6,15 +6,14 @@ import {
 } from "./api.js";
 
 import {
+    flattenElements,
     EmptyObject,
     EmptyArray,
 } from "./utils.js";
 
 export default function createElement(ComponentCtorOrTagName: any, attrs: any = EmptyObject, children: Array<any> = EmptyArray): Object {
     const isHTMLTagName = typeof ComponentCtorOrTagName === "string";
-    if (!Array.isArray(children)) {
-        throw new Error(`The 3rd argument of createElement() should be an array instead of ${children}.`);
-    }
+    children = flattenElements(children);
     if (isHTMLTagName) {
         return h(ComponentCtorOrTagName, attrs, children);
     } else {

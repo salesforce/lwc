@@ -2,11 +2,12 @@
 
 import { factory as ComponentFactory } from "./vnode-component.js";
 import { factory as HTMLFactory } from "./vnode-html.js";
+import Text from "./vnode-text.js";
+import Facet from "./vnode-facet.js";
+
 import {
-    duplex,
     EmptyObject,
     EmptyArray,
-    EmptyNode,
 } from "./utils.js";
 
 // [h]tml node
@@ -17,6 +18,7 @@ export function h(tagName: string, attrs: Object = EmptyObject, children: array<
         attrs,
         children,
         vnode: undefined,
+        key: undefined,
     };
 }
 
@@ -28,6 +30,7 @@ export function v(ComponentCtor: Class, attrs: Object = EmptyObject, children: a
         attrs,
         children,
         vnode: undefined,
+        key: undefined,
     };
 }
 
@@ -37,19 +40,38 @@ export function i(items: array<any> = EmptyArray, factory: Function): Array {
     const list = new Array(len);
     for (let i = 0; i < len; i += 1) {
         const item = items[i];
-        list[i] = duplex(item, factory(item));
+        const element = factory(item);
+        if (element.Ctor) {
+            // storing metadata about the iterator in element to facilitate diffing
+            element.key = item;
+        }
+        list[i] = element;
     }
     return list;
 }
 
 // empty [f]acet node
 export function f(): Object {
-    return EmptyNode;
+    return {
+        Ctor: Facet,
+        attrs: EmptyObject,
+        children: EmptyArray,
+        vnode: undefined,
+        key: undefined,
+    };
 }
 
 // [t]ext node
 export function t(value: string): Object {
-    return value.toString();
+    return {
+        Ctor: Text,
+        attrs: {
+            textContent: value.toString(),
+        },
+        children: EmptyArray,
+        vnode: undefined,
+        key: undefined,
+    };
 }
 
 // [m]emoized node

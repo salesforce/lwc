@@ -1,14 +1,16 @@
 // @flow
 
-export default function dismounter(vnode: Object): Node {
-    if (!vnode) {
-        return null;
-    }
-    const { isMounted, domNode } = vnode;
-    if (!isMounted) {
-        throw new Error(`Assert: Component element ${vnode} must be mounted.`);
+import {
+    assert,
+    assertElement,
+} from "./utils.js";
+
+export default function dismounter(oldElement: Object) {
+    assertElement(oldElement);
+    const { vnode } = oldElement;
+    if (!vnode.isMounted) {
+        throw new Error(`Assert: Component element ${oldElement} must be mounted.`);
     }
     vnode.toBeDismount();
-    // assert: vnode.isMounted === true
-    return domNode;
+    assert(vnode.isMounted === false, `Failed to dismount element ${oldElement}.`);
 }

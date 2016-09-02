@@ -13,10 +13,8 @@ export default class Bar {
         return this.a + this.b;
     }
     onClick() {
-        this.a += 1;
-        this.a.y.z = 2;
-        this.b += '.';
         console.log('clicked');
+        this.foo = [ { x: 1 }, { x: 2 }, { x: 3 } ];
     }
 
     attach(domNode) {
@@ -32,12 +30,12 @@ export default class Bar {
     render({f,h,t,i}) {
         const iter1 = (item) => {
             return h('li', {
-                a: item.x
-            }, ['iterator', this.b]);
+                class: item.b
+            }, ['iterator', this.x]);
         };
         return h('button', {
             name: this.a,
-            'onClick.call': 'onClick',
+            onClick: () => this.onClick(...arguments),
         }, [
             h('span', {}, [
                 t(this.b),
