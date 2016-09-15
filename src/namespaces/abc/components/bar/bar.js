@@ -2,6 +2,7 @@ import sValue from './helpers/some.js';
 
 export default class Bar {
     constructor(attrs) {
+        this.counter = 0;
         this.a = attrs.a;
         this.b = attrs.b || sValue;
         this.foo = [ { x: 1 }, { x: 2 } ];
@@ -14,7 +15,8 @@ export default class Bar {
     }
     onClick() {
         console.log('clicked');
-        this.foo = [ { x: 1 }, this.foo[1], { x: 3 } ];
+        this.counter += 1;
+        this.foo = [ { x: this.counter }, this.foo[1], { x: 3 } ];
     }
 
     attach(domNode) {
