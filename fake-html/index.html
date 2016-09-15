@@ -6,7 +6,12 @@
 // trying the loader
 $A.loaderImportMethodTemporary('bar')
     .then(function (bar) {
-        var opaqueElement = $A.createElement(bar, {a: 1});
+        var opaqueElement = $A.createElement(bar, {
+            min: 5,
+            max: 10,
+            label: 're-shuffle',
+            title: 'super awesome demo',
+        });
 
         // var opaqueElement = $A.createElement(bar, {a: 1, b: 2}, [
         //     $A.createElement('div'),

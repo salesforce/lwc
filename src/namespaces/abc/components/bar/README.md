@@ -1,11 +1,11 @@
 ### Aura Markup
 
 ```html
-<aura:component>
+<aura:markup>
     <button name="{! v.a }" onclick="{! c.onclick }">
         <span>something</span>
     </button>
-</aura:component>
+</aura:markup>
 ```
 
 ### Standard Shadow DOM Template + Annotations
