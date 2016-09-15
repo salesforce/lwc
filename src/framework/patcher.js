@@ -3,25 +3,42 @@
 import dismounter from "./dismounter.js";
 import mounter from "./mounter.js";
 import {
+    assert,
     assertElement,
     flattenElements,
 } from "./utils.js";
 
-function rehydrate(element: Object, newAttrs: Object, newChildren: array): Object {
-    const { attrs, children, vnode } = element;
+function rehydrate(oldElement: Object, newElement: Object): Object {
+    const { attrs: oldAttrs, children: oldChildren, vnode } = oldElement;
+    const { attrs: newAttrs, children: newChildren } = newElement;
+    assert(vnode, 'rehydrate() method expects the first argument to be a fully funtional element.');
     let isDirty = false;
-    if (vnode.hasBodyAttribute && children !== newChildren) {
-        newChildren = flattenElements(newChildren);
-        element.children = newChildren;
-        vnode.set('body', newChildren);
+    newElement.vnode = vnode;
+    if (vnode.hasBodyAttribute && oldChildren !== newChildren) {
+        const children = flattenElements(newChildren);
+        newElement.children = children;
+        vnode.set('body', children);
         isDirty = true;
     }
-    if (attrs !== newAttrs) {
-        element.attrs = newAttrs;
+    if (oldAttrs !== newAttrs) {
+        const newKeys = Object.keys(newAttrs);
+        const oldKeys = Object.keys(oldAttrs);
+        const overlap = {};
         // infuse new attrs into element.vnode
-        for (let [attrName, attrValue] of Object.entries(newAttrs)) {
-            if (attrs[attrName] !== attrValue) {
-                vnode.set(attrName, attrValue);
+        let newKeysLen = newKeys.length;
+        for (let i = 0; i < newKeysLen; i += 1) {
+            const attrName = newKeys[i];
+            if (oldAttrs[attrName] !== newAttrs[attrName]) {
+                vnode.set(attrName, newAttrs[attrName]);
+                isDirty = true;
+            }
+            overlap[attrName] = true;
+        }
+        let oldKeysLen = oldKeys.length;
+        for (let i = 0; i < oldKeysLen; i += 1) {
+            const attrName = oldKeys[i];
+            if (!overlap[attrName]) {
+                vnode.set(attrName, undefined);
                 isDirty = true;
             }
         }
@@ -29,7 +46,7 @@ function rehydrate(element: Object, newAttrs: Object, newChildren: array): Objec
     if (isDirty) {
         vnode.toBeHydrated();
     }
-    return element;
+    return newElement;
 }
 
 export default function patcher(oldElement: any, newElement: any): Object {
@@ -37,9 +54,9 @@ export default function patcher(oldElement: any, newElement: any): Object {
     if (oldElement === newElement) {
         return oldElement;
     }
-    const { Ctor, attrs, children } = newElement;
+    const { Ctor } = newElement;
     if (oldElement && oldElement.Ctor === Ctor) {
-        return rehydrate(oldElement, attrs, children);
+        return rehydrate(oldElement, newElement);
     } else {
         if (oldElement) {
             dismounter(oldElement);
