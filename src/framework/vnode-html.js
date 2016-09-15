@@ -22,6 +22,7 @@ function createCtor(tagName: string): Class {
             super();
             this.domNode = createElement(tagName);
             this.bodyMap = new Map();
+            this.itemMap = new Map();
             // TODO: keep track of tagName-s that can have body
             this.hasBodyAttribute = true;
             this.attrs = attrs;
@@ -34,6 +35,7 @@ function createCtor(tagName: string): Class {
                 this.mountBody();
             } else {
                 this.attrs[attrName] = attrValue;
+                console.log('Updating: ', this.domNode, attrName, attrValue);
                 updateAttr(this.domNode, attrName, attrValue);
             }
         }
@@ -46,10 +48,15 @@ function createCtor(tagName: string): Class {
         toBeMounted() {
             super.toBeMounted();
             const { domNode, attrs } = this;
+            const keys = Object.keys(attrs);
+            const len = keys.length;
             // this is possible because events can't be binding... they are set once
             // while the handler can deal with any provider updates, not here in the dom
-            for (let [attrName, attrValue] of Object.entries(attrs)) {
+            for (let i = 0; i < len; i += 1) {
+                const attrName = keys[i];
                 if (attrName !== 'body') {
+                    const attrValue = attrs[attrName];
+                    console.log('Updating before mounting: ', domNode, attrName, attrValue);
                     updateAttr(domNode, attrName, attrValue);
                 }
             }
@@ -60,49 +67,69 @@ function createCtor(tagName: string): Class {
             // nothing to be done here... :)
         }
 
+        findBestMatch(newElement: Object): Object {
+            const { bodyMap, itemMap } = this;
+            const item = newElement.item;
+            const key = newElement.key;
+            let reflectiveElementByItem;
+            let reflectiveElementByKey;
+            if (item && itemMap.has(item)) {
+                reflectiveElementByItem = bodyMap.get(item);
+            }
+            if (bodyMap.has(key)) {
+                reflectiveElementByKey = bodyMap.get(key);
+            }
+            return reflectiveElementByItem || reflectiveElementByKey || null;
+        }
+
         // TODO: This is problably the most important method of all...
         mountBody() {
-            const { body, bodyMap, domNode } = this;
-            const condemned = new Set(bodyMap.values());
-            const newMap = new Map();
+            const { body, bodyMap, itemMap, domNode } = this;
+            const newBodyMap = new Map();
+            const newItemMap = new Map();
             const childNodes = [...domNode.childNodes];
             let len = body.length;
-            let i = 0;
-            for (i; i < len; i += 1) {
-                const oldDomNode = childNodes[i] || null;
+            for (let i = 0; i < len; i += 1) {
                 let newElement = body[i];
-                const index = newElement.key || '>' + i;
-                const reflectiveElement = bodyMap.get(index);
                 let reflectiveDomNode;
+                const oldDomNodeInIndex = childNodes[i] || null;
+                newElement.key = '>' + i;
+                const reflectiveElement = this.findBestMatch(newElement);
                 if (reflectiveElement) {
-                    condemned.delete(reflectiveElement);
+                    // if a reflective element is found, we can reuse its vnode
+                    // to rehydrate the ui elements
+                    bodyMap.delete(reflectiveElement.key);
+                    itemMap.delete(reflectiveElement.item);
                     reflectiveDomNode = getElementDomNode(reflectiveElement);
-                    // I found the best match
                     newElement = patcher(reflectiveElement, newElement);
                 } else {
                     mounter(newElement);
                 }
-                newMap.set(index, newElement);
-                // todo: this need to be reworked...
+                newBodyMap.set(newElement.key, newElement);
+                if (newElement.item) {
+                    newItemMap.set(newElement.item, newElement);
+                }
                 let newDomNode = getElementDomNode(newElement);
-                if (newDomNode !== oldDomNode) {
-                    if (oldDomNode) {
-                        oldDomNode.parentNode.insertBefore(newDomNode, oldDomNode);
-                    } else {
+                if (newDomNode !== oldDomNodeInIndex) {
+                    if (!oldDomNodeInIndex) {
                         domNode.appendChild(newDomNode);
-                    }
-                    if (reflectiveDomNode && reflectiveDomNode !== newDomNode) {
-                        reflectiveDomNode.parentNode.removeChild(reflectiveDomNode);
+                    } else {
+                        domNode.insertBefore(newDomNode, oldDomNodeInIndex);
                     }
                 }
+                if (reflectiveDomNode && reflectiveDomNode !== newDomNode) {
+                    domNode.removeChild(reflectiveDomNode);
+                }
             }
-            // dismounting the rest
+            // dismounting the rest of the hanging elements
+            const condemned = new Set(bodyMap.values());
             for (let elementToBeDismounted of condemned) {
                 const domNode = getElementDomNode(elementToBeDismounted);
                 dismounter(elementToBeDismounted);
                 domNode.parentNode.removeChild(domNode);
             }
-            this.bodyMap = newMap;
+            this.bodyMap = newBodyMap;
+            this.itemMap = newItemMap;
         }
     }
 }
