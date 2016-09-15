@@ -1,6 +1,6 @@
 // @flow
 
-import * as api from "./api.js";
+import * as baseAPI from "./api.js";
 
 import dismounter from "./dismounter.js";
 
@@ -20,6 +20,7 @@ function createCtor(Ctor: Class): Class {
     return class Component extends vnode {
         constructor(attrs: Object, childRefs: Array<Object>) {
             super();
+            this.api = this.createRenderInterface();
             this.isRendering = false;
             this.aboutToBeHydrated = false;
             this.component = null;
@@ -92,7 +93,7 @@ function createCtor(Ctor: Class): Class {
                 const ctx = currentContext;
                 establishContext(this);
                 this.isRendering = true;
-                const newElement = this.component.render(api);
+                const newElement = this.component.render(this.api);
                 this.isRendering = false;
                 establishContext(ctx);
                 return newElement;
@@ -123,6 +124,26 @@ function createCtor(Ctor: Class): Class {
                     });
                 }
             });
+        }
+
+        createRenderInterface(): Object {
+            var cache = new Map();
+            // this object wraps the static base api plus those bits that are bound to
+            // the vnode instance, so we can apply memoization for some operations.
+            return Object.create(baseAPI, {
+                // [m]emoized node
+                m: {
+                    value: (key: number, value: any): any => {
+                        if (cache.has(key)) {
+                            return cache.get(key);
+                        }
+                        cache.set(key, value);
+                        return value;
+                    },
+                    writable: false,
+                    enumerable: true,
+                }
+            })
         }
 
     }
