@@ -12,6 +12,7 @@ export default class vnode {
         this.hasBodyAttribute = false;
         this.isMounted = false;
         this.domNode = null;
+        this.name = undefined;
     }
 
     set(attrName: string, attrValue: any) {

@@ -7,6 +7,7 @@ export default class Text extends vnode {
 
     constructor(attrs: Object) {
         super();
+        this.name = 'textNode';
         this.domNode = document.createTextNode(attrs.textContent);
     }
 

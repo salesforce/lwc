@@ -6,17 +6,20 @@ import {
     assert,
     assertElement,
     flattenElements,
+    log,
 } from "./utils.js";
 
 function rehydrate(oldElement: Object, newElement: Object): Object {
     const { attrs: oldAttrs, children: oldChildren, vnode } = oldElement;
     const { attrs: newAttrs, children: newChildren } = newElement;
     assert(vnode, 'rehydrate() method expects the first argument to be a fully funtional element.');
+    DEVELOPMENT && log(`Rehydrating ${vnode.name}`);
     let isDirty = false;
     newElement.vnode = vnode;
     if (vnode.hasBodyAttribute && oldChildren !== newChildren) {
         const children = flattenElements(newChildren);
         newElement.children = children;
+        DEVELOPMENT && log(`Setting new children list for ${vnode.name}`);
         vnode.set('body', children);
         isDirty = true;
     }
@@ -28,8 +31,10 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
         let newKeysLen = newKeys.length;
         for (let i = 0; i < newKeysLen; i += 1) {
             const attrName = newKeys[i];
-            if (oldAttrs[attrName] !== newAttrs[attrName]) {
-                vnode.set(attrName, newAttrs[attrName]);
+            const attrValue = newAttrs[attrName];
+            if (oldAttrs[attrName] !== attrValue) {
+                DEVELOPMENT && log(`Updating attribute ${attrName}="${attrValue}" in ${vnode.name}`);
+                vnode.set(attrName, attrValue);
                 isDirty = true;
             }
             overlap[attrName] = true;
@@ -38,6 +43,7 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
         for (let i = 0; i < oldKeysLen; i += 1) {
             const attrName = oldKeys[i];
             if (!overlap[attrName]) {
+                DEVELOPMENT && log(`Removing attribute ${attrName} in ${vnode.name}`);
                 vnode.set(attrName, undefined);
                 isDirty = true;
             }

@@ -52,3 +52,9 @@ export function assertElement(element: Object) {
         throw new Error(`Invariant Violation: Invalid element ${element}.`);
     }
 }
+
+export function log() {
+    if (DEVELOPMENT) {
+        console.log(...arguments);
+    }
+}

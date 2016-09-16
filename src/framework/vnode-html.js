@@ -3,6 +3,7 @@
 import mounter from "./mounter.js";
 import patcher from "./patcher.js";
 import dismounter from "./dismounter.js";
+import { log } from "./utils.js";
 
 import {
     createElement,
@@ -20,6 +21,7 @@ function createCtor(tagName: string): Class {
 
         constructor(attrs: Object, body: array<Object>) {
             super();
+            this.name = tagName;
             this.domNode = createElement(tagName);
             this.bodyMap = new Map();
             this.itemMap = new Map();
@@ -27,16 +29,17 @@ function createCtor(tagName: string): Class {
             this.hasBodyAttribute = true;
             this.attrs = attrs;
             this.body = body;
+            this.dirtyAttrs = [];
+            this.dirtyBody = false;
         }
 
         set(attrName: string, attrValue: any) {
             if (attrName === 'body') {
+                this.dirtyBody = true;
                 this.body = attrValue;
-                this.mountBody();
             } else {
+                this.dirtyAttrs.push(attrName);
                 this.attrs[attrName] = attrValue;
-                console.log('Updating: ', this.domNode, attrName, attrValue);
-                updateAttr(this.domNode, attrName, attrValue);
             }
         }
 
@@ -56,7 +59,7 @@ function createCtor(tagName: string): Class {
                 const attrName = keys[i];
                 if (attrName !== 'body') {
                     const attrValue = attrs[attrName];
-                    console.log('Updating before mounting: ', domNode, attrName, attrValue);
+                    DEVELOPMENT && log('Updating before mounting: ', domNode, attrName, attrValue);
                     updateAttr(domNode, attrName, attrValue);
                 }
             }
@@ -64,7 +67,17 @@ function createCtor(tagName: string): Class {
         }
 
         toBeHydrated() {
-            // nothing to be done here... :)
+            const { dirtyAttrs, dirtyBody, attrs, domNode } = this;
+            const len = dirtyAttrs.length;
+            this.dirtyAttrs = [];
+            for (let i = 0; i < len; i += 1) {
+                const attrName = dirtyAttrs[i];
+                updateAttr(domNode, attrName, attrs[attrName]);
+            }
+            if (dirtyBody) {
+                this.dirtyBody = false;
+                this.mountBody();
+            }
         }
 
         findBestMatch(newElement: Object): Object {
@@ -82,17 +95,33 @@ function createCtor(tagName: string): Class {
             return reflectiveElementByItem || reflectiveElementByKey || null;
         }
 
-        // TODO: This is problably the most important method of all...
+        patchChildrenNodes(newChildNodes: Array<Node>) {
+            const { domNode } = this;
+            const oldChildNodes = [...domNode.childNodes];
+            let len = Math.max(oldChildNodes.length, newChildNodes.length);
+            for (let i = 0; i < len; i += 1) {
+                const oldDomNode = oldChildNodes[i];
+                const newDomNode = newChildNodes[i];
+                if (newDomNode !== oldDomNode) {
+                    if (newDomNode && !oldDomNode) {
+                        domNode.appendChild(newDomNode);
+                    } else if (newDomNode && oldDomNode) {
+                        domNode.insertBefore(newDomNode, oldDomNode);
+                    } else {
+                        domNode.removeChild(oldDomNode);
+                    }
+                }
+            }
+        }
+
         mountBody() {
-            const { body, bodyMap, itemMap, domNode } = this;
+            const { body, bodyMap, itemMap } = this;
             const newBodyMap = new Map();
             const newItemMap = new Map();
-            const childNodes = [...domNode.childNodes];
+            const newChildNodes = new Array(len);
             let len = body.length;
             for (let i = 0; i < len; i += 1) {
                 let newElement = body[i];
-                let reflectiveDomNode;
-                const oldDomNodeInIndex = childNodes[i] || null;
                 newElement.key = '>' + i;
                 const reflectiveElement = this.findBestMatch(newElement);
                 if (reflectiveElement) {
@@ -100,7 +129,6 @@ function createCtor(tagName: string): Class {
                     // to rehydrate the ui elements
                     bodyMap.delete(reflectiveElement.key);
                     itemMap.delete(reflectiveElement.item);
-                    reflectiveDomNode = getElementDomNode(reflectiveElement);
                     newElement = patcher(reflectiveElement, newElement);
                 } else {
                     mounter(newElement);
@@ -110,26 +138,19 @@ function createCtor(tagName: string): Class {
                     newItemMap.set(newElement.item, newElement);
                 }
                 let newDomNode = getElementDomNode(newElement);
-                if (newDomNode !== oldDomNodeInIndex) {
-                    if (!oldDomNodeInIndex) {
-                        domNode.appendChild(newDomNode);
-                    } else {
-                        domNode.insertBefore(newDomNode, oldDomNodeInIndex);
-                    }
-                }
-                if (reflectiveDomNode && reflectiveDomNode !== newDomNode) {
-                    domNode.removeChild(reflectiveDomNode);
-                }
+                newChildNodes[i] = newDomNode;
             }
             // dismounting the rest of the hanging elements
             const condemned = new Set(bodyMap.values());
             for (let elementToBeDismounted of condemned) {
-                const domNode = getElementDomNode(elementToBeDismounted);
                 dismounter(elementToBeDismounted);
-                domNode.parentNode.removeChild(domNode);
             }
             this.bodyMap = newBodyMap;
             this.itemMap = newItemMap;
+            // at this point, we have the new list of nodes, which is already
+            // reusing as much as possible the existing dom elements, we need
+            // to apply the diffing algo for vdom here:
+            this.patchChildrenNodes(newChildNodes);
         }
     }
 }

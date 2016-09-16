@@ -4,6 +4,7 @@ import {
     flattenElements,
     assertElement,
     assert,
+    log,
 } from "./utils.js";
 
 import {
@@ -14,6 +15,7 @@ export default function mounter(newElement: Object) {
     assertElement(newElement);
     const { Ctor, attrs, children } = newElement;
     const vnode = new Ctor(attrs, flattenElements(children));
+    DEVELOPMENT && log(`Mounting ${vnode.name}`);
     vnode.toBeMounted();
     assert(vnode.isMounted, `Failed to mount element ${newElement}.`);
     newElement.vnode = vnode;
