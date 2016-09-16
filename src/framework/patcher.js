@@ -13,15 +13,13 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
     const { attrs: oldAttrs, children: oldChildren, vnode } = oldElement;
     const { attrs: newAttrs, children: newChildren } = newElement;
     assert(vnode, 'rehydrate() method expects the first argument to be a fully funtional element.');
-    DEVELOPMENT && log(`Rehydrating ${vnode.name}`);
-    let isDirty = false;
+    DEVELOPMENT && log(`Rehydrating ${vnode}`);
     newElement.vnode = vnode;
     if (vnode.hasBodyAttribute && oldChildren !== newChildren) {
         const children = flattenElements(newChildren);
         newElement.children = children;
-        DEVELOPMENT && log(`Setting new children list for ${vnode.name}`);
+        DEVELOPMENT && log(`Setting new children list for ${vnode}`);
         vnode.set('body', children);
-        isDirty = true;
     }
     if (oldAttrs !== newAttrs) {
         const newKeys = Object.keys(newAttrs);
@@ -33,9 +31,8 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
             const attrName = newKeys[i];
             const attrValue = newAttrs[attrName];
             if (oldAttrs[attrName] !== attrValue) {
-                DEVELOPMENT && log(`Updating attribute ${attrName}="${attrValue}" in ${vnode.name}`);
+                DEVELOPMENT && log(`Updating attribute ${attrName}="${attrValue}" in ${vnode}`);
                 vnode.set(attrName, attrValue);
-                isDirty = true;
             }
             overlap[attrName] = true;
         }
@@ -43,14 +40,10 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
         for (let i = 0; i < oldKeysLen; i += 1) {
             const attrName = oldKeys[i];
             if (!overlap[attrName]) {
-                DEVELOPMENT && log(`Removing attribute ${attrName} in ${vnode.name}`);
+                DEVELOPMENT && log(`Removing attribute ${attrName} in ${vnode}`);
                 vnode.set(attrName, undefined);
-                isDirty = true;
             }
         }
-    }
-    if (isDirty) {
-        vnode.toBeHydrated();
     }
     return newElement;
 }

@@ -10,7 +10,7 @@ function flattenArray(items: array, newList: array) {
         const item = items[i];
         if (Array.isArray(item)) {
             flattenArray(item, newList);
-        } else if (typeof item === 'string' || typeof item === 'number') {
+        } else if (typeof item === 'string' || typeof item === 'number' || item === undefined) {
             newList.push(t(item));
         } else {
             newList.push(item);

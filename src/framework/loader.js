@@ -1,10 +1,14 @@
 // @flow
 
-const registry = {};
+const registry = {
+    aura: {
+        ns: Promise.resolve(null),
+    }
+};
 
 function loaderEvaluate(moduleStatus: Object): Promise {
     let exports: Object;
-    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Array<Promise> => name === 'exports' ? Promise.resolve((exports = {})) : loaderEvaluate(name)))
+    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Array<Promise> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
         .then((resolvedNamespaces: Array<Object>): Promise => {
             let returnedValue = moduleStatus.definition(resolvedNamespaces);
             return exports || returnedValue;

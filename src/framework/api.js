@@ -56,7 +56,8 @@ export function f(): Object {
 
 // [t]ext node
 export function t(value: string): Object {
+    const textContent = value === undefined ? '' : value + '';
     return elementFactory(Text, {
-        textContent: value.toString(),
+        textContent: textContent,
     }, EmptyArray);
 }

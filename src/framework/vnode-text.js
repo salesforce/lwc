@@ -5,9 +5,10 @@ import { assert } from "./utils.js";
 
 export default class Text extends vnode {
 
+    static vnodeType = 'textNode';
+
     constructor(attrs: Object) {
         super();
-        this.name = 'textNode';
         this.domNode = document.createTextNode(attrs.textContent);
     }
 
@@ -18,10 +19,6 @@ export default class Text extends vnode {
             return;
         }
         assert(false, `textNode element does not support ${attrName} attribute.`);
-    }
-
-    toBeHydrated() {
-        // nothing to be done here... :)
     }
 
 }

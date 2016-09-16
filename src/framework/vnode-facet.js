@@ -4,14 +4,11 @@ import vnode from "./vnode.js";
 
 export default class Facet extends vnode {
 
+    static vnodeType = 'facet';
+
     constructor() {
         super();
-        this.name = 'facet';
         this.domNode = document.createComment('facet');
-    }
-
-    toBeHydrated() {
-        // nothing to be done here... :)
     }
 
 }

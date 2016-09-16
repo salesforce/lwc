@@ -18,28 +18,40 @@ import vnode, {
 function createCtor(Ctor: Class): Class {
     // instances of this class will never be exposed to user-land
     return class Component extends vnode {
+
+        static vnodeType = Ctor.name;
+
         constructor(attrs: Object, childRefs: Array<Object>) {
             super();
             this.api = this.createRenderInterface();
             this.isRendering = false;
+            this.isUpdating = false;
             this.aboutToBeHydrated = false;
             this.component = null;
             this.offspring = null;
             attrs = Object.assign({}, attrs, { children: childRefs });
-            this.name = Ctor.name;
             this.component = new Ctor(attrs);
+            // TODO: formal verification that body is an attribute is needed
             this.hasBodyAttribute = 'body' in this.component;
             this.wireTape();
+            // setting all the initial values
+            for (let attrName in attrs) {
+                this.set(attrName, attrs[attrName]);
+            }
+            this.invokeComponentUpdatedMethod();
         }
 
         set(attrName: string, attrValue: any) {
             if (this.isRendering) {
-                throw new Error(`Invariant Violation: ${this.name}.render() method has side effects on the state of the component.`);
+                throw new Error(`Invariant Violation: ${this}.render() method has side effects on the state of the component.`);
+            }
+            if (this.isUpdating) {
+                throw new Error(`Invariant Violation: Setting attribute ${this}.${attrName} has side effects on the state of the component.`);
             }
             // TODO: process the attribute
-            this.aboutToBeHydrated = true;
+            this.isUpdating = true;
             this.component[attrName] = attrValue;
-            this.aboutToBeHydrated = false;
+            this.isUpdating = false;
         }
 
         toBeMounted() {
@@ -57,8 +69,17 @@ function createCtor(Ctor: Class): Class {
             this.invokeComponentDetachMethod();
         }
 
+        scheduleRehydration() {
+            if (!this.aboutToBeHydrated) {
+                this.aboutToBeHydrated = true;
+                Promise.resolve().then((): any => this.toBeHydrated());
+            }
+        }
+
         toBeHydrated() {
-            if (this.isMounted) {
+            if (this.isMounted && this.aboutToBeHydrated) {
+                this.invokeComponentUpdatedMethod()
+                this.aboutToBeHydrated = false;
                 const newElement = this.invokeComponentRenderMethod();
                 const oldElement = this.offspring;
                 this.offspring = patcher(oldElement, newElement);
@@ -101,11 +122,21 @@ function createCtor(Ctor: Class): Class {
             return null;
         }
 
+        invokeComponentUpdatedMethod() {
+            if (this.component.updated) {
+                const ctx = currentContext;
+                establishContext(this);
+                this.component.updated();
+                establishContext(ctx);
+            }
+        }
+
         wireTape() {
             const { component } = this;
-            // this decorator is responsible for adding setters and getters for all properties on
+            // this routine is responsible for adding setters and getters for all properties on
             // target as a way for users to apply mutations to their components and get the instance
             // rerendered
+            // TODO: attributes should throw if set is called
             Object.getOwnPropertyNames(component).forEach((propName: string) => {
                 let { get, value, configurable, enumerable } = Object.getOwnPropertyDescriptor(component, propName);
                 if (!get && configurable) {
@@ -114,9 +145,7 @@ function createCtor(Ctor: Class): Class {
                         set: (newValue: any) => {
                             if (value !== newValue) {
                                 value = newValue;
-                                if (!this.aboutToBeHydrated) {
-                                    Promise.resolve().then((): any => this.toBeHydrated());
-                                }
+                                this.scheduleRehydration();
                             }
                         },
                         configurable: false,
@@ -145,7 +174,6 @@ function createCtor(Ctor: Class): Class {
                 }
             })
         }
-
     }
 }
 

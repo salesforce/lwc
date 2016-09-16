@@ -19,9 +19,10 @@ function createCtor(tagName: string): Class {
     // instances of this class will never be exposed to user-land
     return class HTML extends vnode {
 
+        static vnodeType = tagName;
+
         constructor(attrs: Object, body: array<Object>) {
             super();
-            this.name = tagName;
             this.domNode = createElement(tagName);
             this.bodyMap = new Map();
             this.itemMap = new Map();
@@ -31,6 +32,7 @@ function createCtor(tagName: string): Class {
             this.body = body;
             this.dirtyAttrs = [];
             this.dirtyBody = false;
+            this.aboutToBeHydrated = false;
         }
 
         set(attrName: string, attrValue: any) {
@@ -41,6 +43,7 @@ function createCtor(tagName: string): Class {
                 this.dirtyAttrs.push(attrName);
                 this.attrs[attrName] = attrValue;
             }
+            this.scheduleRehydration();
         }
 
         toBeDismount() {
@@ -66,17 +69,27 @@ function createCtor(tagName: string): Class {
             this.mountBody();
         }
 
-        toBeHydrated() {
-            const { dirtyAttrs, dirtyBody, attrs, domNode } = this;
-            const len = dirtyAttrs.length;
-            this.dirtyAttrs = [];
-            for (let i = 0; i < len; i += 1) {
-                const attrName = dirtyAttrs[i];
-                updateAttr(domNode, attrName, attrs[attrName]);
+        scheduleRehydration() {
+            if (!this.aboutToBeHydrated) {
+                this.aboutToBeHydrated = true;
+                Promise.resolve().then((): any => this.toBeHydrated());
             }
-            if (dirtyBody) {
-                this.dirtyBody = false;
-                this.mountBody();
+        }
+
+        toBeHydrated() {
+            if (this.isMounted && this.aboutToBeHydrated) {
+                this.aboutToBeHydrated = false;
+                const { dirtyAttrs, dirtyBody, attrs, domNode } = this;
+                const len = dirtyAttrs.length;
+                this.dirtyAttrs = [];
+                for (let i = 0; i < len; i += 1) {
+                    const attrName = dirtyAttrs[i];
+                    updateAttr(domNode, attrName, attrs[attrName]);
+                }
+                if (dirtyBody) {
+                    this.dirtyBody = false;
+                    this.mountBody();
+                }
             }
         }
 

@@ -15,9 +15,9 @@ export default function mounter(newElement: Object) {
     assertElement(newElement);
     const { Ctor, attrs, children } = newElement;
     const vnode = new Ctor(attrs, flattenElements(children));
-    DEVELOPMENT && log(`Mounting ${vnode.name}`);
+    DEVELOPMENT && log(`Mounting ${vnode}`);
     vnode.toBeMounted();
-    assert(vnode.isMounted, `Failed to mount element ${newElement}.`);
+    assert(vnode.isMounted, `Failed to mount element ${vnode}.`);
     newElement.vnode = vnode;
 }
 

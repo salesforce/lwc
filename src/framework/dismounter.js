@@ -10,10 +10,9 @@ export default function dismounter(oldElement: Object) {
     assertElement(oldElement);
     const { vnode } = oldElement;
     if (!vnode.isMounted) {
-        DEVELOPMENT && log(`ERROR!!!! Component element ${vnode.name} was already dismounted.`);
-        // throw new Error(`Assert: Component element ${vnode.name} must be mounted.`);
+        throw new Error(`Assert: Component element ${vnode} must be mounted.`);
     }
-    DEVELOPMENT && log(`Dismounting ${vnode.name}`);
+    DEVELOPMENT && log(`Dismounting ${vnode}`);
     vnode.toBeDismount();
-    assert(vnode.isMounted === false, `Failed to dismount element ${oldElement}.`);
+    assert(vnode.isMounted === false, `Failed to dismount element ${vnode}.`);
 }

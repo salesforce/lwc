@@ -5,14 +5,12 @@ import {
     assert,
 } from "./utils.js";
 
-// instances of this class will never be exposed to user-land
 export default class vnode {
 
     constructor() {
         this.hasBodyAttribute = false;
         this.isMounted = false;
         this.domNode = null;
-        this.name = undefined;
     }
 
     set(attrName: string, attrValue: any) {
@@ -27,8 +25,9 @@ export default class vnode {
         this.isMounted = false;
     }
 
-    toBeHydrated() {
-        assert(false, 'Abstract Method dispatch() invoked.');
+    toString(): string {
+        const type = Object.getPrototypeOf(this).constructor.vnodeType;
+        return `<${type}>`;
     }
 
 }
