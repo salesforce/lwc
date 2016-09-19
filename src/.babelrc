@@ -3,7 +3,7 @@
         "es2015"
     ],
      "plugins": [
-         "transform-class-properties",
-         "transform-decorators-legacy"
+         "transform-decorators-legacy",
+         "transform-class-properties"
     ]
 }

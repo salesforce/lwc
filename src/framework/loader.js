@@ -4,7 +4,9 @@ import { warn } from "./utils.js";
 
 const registry = {
     aura: {
-        ns: Promise.resolve(null),
+        get ns(): Promise {
+            return Promise.resolve(window.$A);
+        }
     }
 };
 
@@ -12,7 +14,7 @@ function loaderEvaluate(moduleStatus: Object): Promise {
     let exports: Object;
     moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Array<Promise> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
         .then((resolvedNamespaces: Array<Object>): Promise => {
-            let returnedValue = moduleStatus.definition(resolvedNamespaces);
+            let returnedValue = moduleStatus.definition.apply(undefined, resolvedNamespaces);
             return exports || returnedValue;
         });
     return moduleStatus.ns;
