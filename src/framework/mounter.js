@@ -7,11 +7,9 @@ import {
     log,
 } from "./utils.js";
 
-import {
-    getElementDomNode
-} from "./vnode.js";
+import { getElementDomNode } from "./vnode.js";
 
-export default function mounter(newElement: Object) {
+export function mount(newElement: Object) {
     assertElement(newElement);
     const { Ctor, attrs, children } = newElement;
     const vnode = new Ctor(attrs, flattenElements(children));
@@ -23,7 +21,7 @@ export default function mounter(newElement: Object) {
 
 export function mountToDom(newElement: Object, domNode: Node) {
     assertElement(newElement);
-    mounter(newElement);
+    mount(newElement);
     let newDomNode = getElementDomNode(newElement);
     // TODO: append should be in dom: append(domNode, newDomNode);
     domNode.appendChild(newDomNode);

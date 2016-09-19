@@ -1,37 +1,10 @@
-import {
-    ADS,
-} from "aura";
-
-import {
-    method,
-    attribute,
-} from "aura";
+import { ADS } from "aura";
+import { attribute } from "aura";
 
 class adsBaz {
-    @attribute({ required: true })
-    foo = [];
+    @attribute({ required: true }) foo = [];
     bar = {};
-    @attribute()
-    baz = "3453";
-    @method()
-    focus() {
-        // do something
-    }
-}
-
-// desugaring version of the class adsBaz
-class adsBazInternal {
-    foo = [];
-    bar = {};
-    baz = "3453";
-    static attrsTypes = {
-        foo: AuraTypes.Array.required,
-        baz: AuraTypes.String,
-    }
-    static attrsValues = {
-        foo: [],
-        baz: "3453",
-    }
+    @attribute() baz = "3453";
 }
 
 export default ADS(adsBaz, {
@@ -46,4 +19,7 @@ export default ADS(adsBaz, {
   },
 });
 
-<adsBaz foo="something" />
+// Usage:
+// <adsBaz foo="something">
+//     <p>do something</p>
+// </adsBaz>

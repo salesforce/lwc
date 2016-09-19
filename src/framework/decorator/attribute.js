@@ -1,5 +1,9 @@
+// @flow
+
+import { assert } from "../utils.js";
+
 // this map can be used by the framework to construct the proxy per component class
-export const AttributeMap = new WeakMap();
+const AttributeMap = new WeakMap();
 
 export default function attribute(config = {}) {
     return function decorator(target, key, descriptor) {
@@ -19,4 +23,11 @@ export default function attribute(config = {}) {
         // -> nothing to be done for now
         return descriptor;
     }
+}
+
+export function getAttributesConfig(component: Object): Object {
+    const proto = Object.getPrototypeOf(component);
+    const attrs = AttributeMap.get(proto);
+    assert(attrs, `Invariant: ${component} is an invalid component instance.`);
+    return attrs;
 }

@@ -58,3 +58,9 @@ export function log() {
         console.log(...arguments);
     }
 }
+
+export function warn() {
+    if (DEVELOPMENT) {
+        console.warn(...arguments);
+    }
+}

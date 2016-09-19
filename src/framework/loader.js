@@ -1,5 +1,7 @@
 // @flow
 
+import { warn } from "./utils.js";
+
 const registry = {
     aura: {
         ns: Promise.resolve(null),
@@ -43,7 +45,7 @@ function amdDefineMethod(name: string, deps: any, definition?: any) {
         throw new TypeError('Invalid AMD define() call.');
     }
     if (registry[name]) {
-        console.warn(`Duplicated AMD entry ignored for name=${name}`);
+        DEVELOPMENT && warn(`Duplicated AMD entry ignored for name=${name}`);
     }
     registry[name] = {
         deps,

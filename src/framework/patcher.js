@@ -1,7 +1,7 @@
 // @flow
 
-import dismounter from "./dismounter.js";
-import mounter from "./mounter.js";
+import { dismount } from "./dismounter.js";
+import { mount } from "./mounter.js";
 import {
     assert,
     assertElement,
@@ -48,7 +48,7 @@ function rehydrate(oldElement: Object, newElement: Object): Object {
     return newElement;
 }
 
-export default function patcher(oldElement: any, newElement: any): Object {
+export function patch(oldElement: any, newElement: any): Object {
     assertElement(newElement);
     if (oldElement === newElement) {
         return oldElement;
@@ -58,9 +58,9 @@ export default function patcher(oldElement: any, newElement: any): Object {
         return rehydrate(oldElement, newElement);
     } else {
         if (oldElement) {
-            dismounter(oldElement);
+            dismount(oldElement);
         }
-        mounter(newElement);
+        mount(newElement);
         return newElement;
     }
 }

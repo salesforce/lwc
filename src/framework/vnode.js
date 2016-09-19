@@ -17,6 +17,10 @@ export default class vnode {
         assert(false, 'Abstract Method set() invoked.');
     }
 
+    toBeHydrated() {
+        assert(false, 'Abstract Method toBeHydrated() invoked.');
+    }
+
     toBeMounted() {
         this.isMounted = true;
     }
@@ -35,4 +39,11 @@ export default class vnode {
 export function getElementDomNode(element: Object): Node {
     assertElement(element);
     return element.vnode.domNode;
+}
+
+export function scheduleRehydration(vnode: Object) {
+    if (!vnode.aboutToBeHydrated) {
+        vnode.aboutToBeHydrated = true;
+        Promise.resolve().then((): any => vnode.toBeHydrated());
+    }
 }

@@ -1,19 +1,20 @@
 // @flow
 
-import mounter from "./mounter.js";
-import patcher from "./patcher.js";
-import dismounter from "./dismounter.js";
+import { patch } from "./patcher.js";
+import vnode, {
+    getElementDomNode,
+    scheduleRehydration,
+} from "./vnode.js";
+import { mount } from "./mounter.js";
+import { dismountElements } from "./dismounter.js";
 import { log } from "./utils.js";
+import { patchChildrenNodes } from "./vdom.js";
 
 import {
     createElement,
     releaseNode,
     updateAttr,
 } from "aura-dom";
-
-import vnode, {
-    getElementDomNode,
-} from "./vnode.js";
 
 function createCtor(tagName: string): Class {
     // instances of this class will never be exposed to user-land
@@ -43,7 +44,7 @@ function createCtor(tagName: string): Class {
                 this.dirtyAttrs.push(attrName);
                 this.attrs[attrName] = attrValue;
             }
-            this.scheduleRehydration();
+            scheduleRehydration(this);
         }
 
         toBeDismount() {
@@ -67,13 +68,6 @@ function createCtor(tagName: string): Class {
                 }
             }
             this.mountBody();
-        }
-
-        scheduleRehydration() {
-            if (!this.aboutToBeHydrated) {
-                this.aboutToBeHydrated = true;
-                Promise.resolve().then((): any => this.toBeHydrated());
-            }
         }
 
         toBeHydrated() {
@@ -100,51 +94,49 @@ function createCtor(tagName: string): Class {
             let reflectiveElementByItem;
             let reflectiveElementByKey;
             if (item && itemMap.has(item)) {
-                reflectiveElementByItem = bodyMap.get(item);
+                const r = itemMap.get(item);
+                // ignoring reflective method that does not match item's simetry
+                if (r.item) {
+                    reflectiveElementByItem = r;
+                }
             }
             if (bodyMap.has(key)) {
-                reflectiveElementByKey = bodyMap.get(key);
+                const r = bodyMap.get(key);
+                // ignoring reflective method that does not match item's simetry
+                if ((r.item && item) || (!r.item && !item)) {
+                    reflectiveElementByKey = r;
+                }
             }
             return reflectiveElementByItem || reflectiveElementByKey || null;
         }
 
-        patchChildrenNodes(newChildNodes: Array<Node>) {
-            const { domNode } = this;
-            const oldChildNodes = [...domNode.childNodes];
-            let len = Math.max(oldChildNodes.length, newChildNodes.length);
-            for (let i = 0; i < len; i += 1) {
-                const oldDomNode = oldChildNodes[i];
-                const newDomNode = newChildNodes[i];
-                if (newDomNode !== oldDomNode) {
-                    if (newDomNode && !oldDomNode) {
-                        domNode.appendChild(newDomNode);
-                    } else if (newDomNode && oldDomNode) {
-                        domNode.insertBefore(newDomNode, oldDomNode);
-                    } else {
-                        domNode.removeChild(oldDomNode);
-                    }
-                }
-            }
-        }
-
         mountBody() {
-            const { body, bodyMap, itemMap } = this;
+            const { body, bodyMap, itemMap, domNode } = this;
             const newBodyMap = new Map();
             const newItemMap = new Map();
             const newChildNodes = new Array(len);
             let len = body.length;
             for (let i = 0; i < len; i += 1) {
                 let newElement = body[i];
-                newElement.key = '>' + i;
-                const reflectiveElement = this.findBestMatch(newElement);
-                if (reflectiveElement) {
-                    // if a reflective element is found, we can reuse its vnode
-                    // to rehydrate the ui elements
-                    bodyMap.delete(reflectiveElement.key);
-                    itemMap.delete(reflectiveElement.item);
-                    newElement = patcher(reflectiveElement, newElement);
+                if (newElement.vnode) {
+                    if (!newElement.vnode.isMounted) {
+                        mount(newElement);
+                    }
+                    bodyMap.delete(newElement.key);
+                    itemMap.delete(newElement.item);
+                    newElement.key = '>' + i;
                 } else {
-                    mounter(newElement);
+                    newElement.key = '>' + i;
+                    const reflectiveElement = this.findBestMatch(newElement);
+                    if (reflectiveElement) {
+                        // if a reflective element is found, we can reuse its vnode
+                        // to rehydrate the ui elements
+                        bodyMap.delete(reflectiveElement.key);
+                        itemMap.delete(reflectiveElement.item);
+                        newElement = patch(reflectiveElement, newElement);
+                    } else {
+                        mount(newElement);
+                    }
                 }
                 newBodyMap.set(newElement.key, newElement);
                 if (newElement.item) {
@@ -154,16 +146,13 @@ function createCtor(tagName: string): Class {
                 newChildNodes[i] = newDomNode;
             }
             // dismounting the rest of the hanging elements
-            const condemned = new Set(bodyMap.values());
-            for (let elementToBeDismounted of condemned) {
-                dismounter(elementToBeDismounted);
-            }
+            dismountElements(bodyMap.values());
             this.bodyMap = newBodyMap;
             this.itemMap = newItemMap;
             // at this point, we have the new list of nodes, which is already
             // reusing as much as possible the existing dom elements, we need
             // to apply the diffing algo for vdom here:
-            this.patchChildrenNodes(newChildNodes);
+            patchChildrenNodes(domNode, newChildNodes);
         }
     }
 }
