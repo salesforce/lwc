@@ -5,6 +5,7 @@ import vnode, {
     getElementDomNode,
     scheduleRehydration,
 } from "./vnode.js";
+import { assert } from "./utils.js";
 import { mount } from "./mounter.js";
 import { dismountElements } from "./dismounter.js";
 import { log } from "./utils.js";
@@ -19,21 +20,21 @@ import {
 function createCtor(tagName: string): Class {
     // instances of this class will never be exposed to user-land
     return class HTML extends vnode {
-
+        hasBodyAttribute = false;
+        dirtyAttrs = [];
+        dirtyBody = false;
         static vnodeType = tagName;
 
         constructor(attrs: Object, body: array<Object>) {
             super();
+            this.attrs = attrs;
+            this.body = body;
             this.domNode = createElement(tagName);
             this.bodyMap = new Map();
             this.itemMap = new Map();
             // TODO: keep track of tagName-s that can have body
             this.hasBodyAttribute = true;
-            this.attrs = attrs;
-            this.body = body;
-            this.dirtyAttrs = [];
-            this.dirtyBody = false;
-            this.aboutToBeHydrated = false;
+            this.isReady = true;
         }
 
         set(attrName: string, attrValue: any) {
@@ -71,8 +72,9 @@ function createCtor(tagName: string): Class {
         }
 
         toBeHydrated() {
-            if (this.isMounted && this.aboutToBeHydrated) {
-                this.aboutToBeHydrated = false;
+            const { isMounted, isScheduled } = this;
+            if (isMounted) {
+                assert(isScheduled, `Invariant: Arbitrary call to ${this}.toBeHydrated()`);
                 const { dirtyAttrs, dirtyBody, attrs, domNode } = this;
                 const len = dirtyAttrs.length;
                 this.dirtyAttrs = [];
@@ -84,6 +86,7 @@ function createCtor(tagName: string): Class {
                     this.dirtyBody = false;
                     this.mountBody();
                 }
+                this.isScheduled = false;
             }
         }
 

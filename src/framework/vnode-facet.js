@@ -9,6 +9,7 @@ export default class Facet extends vnode {
     constructor() {
         super();
         this.domNode = document.createComment('facet');
+        this.isReady = true;
     }
 
 }

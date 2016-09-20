@@ -10,6 +10,7 @@ export default class Text extends vnode {
     constructor(attrs: Object) {
         super();
         this.domNode = document.createTextNode(attrs.textContent);
+        this.isReady = true;
     }
 
     set(attrName: string, attrValue: any) {
@@ -18,7 +19,7 @@ export default class Text extends vnode {
             this.domNode.textContent = attrValue || '';
             return;
         }
-        assert(false, `textNode element does not support ${attrName} attribute.`);
+        assert(false, `Invariant: textNode element does not support attribute ${attrName}.`);
     }
 
 }

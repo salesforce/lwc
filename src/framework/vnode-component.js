@@ -2,12 +2,14 @@
 
 import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
-import vnode, { getElementDomNode } from "./vnode.js";
+import vnode, {
+    getElementDomNode,
+    scheduleRehydration,
+} from "./vnode.js";
+import { assert } from "./utils.js";
 import { dismount } from "./dismounter.js";
-import {
-    memoizerDescriptorFactory,
-    pinch,
-} from "./watcher.js";
+import { initComponentAttributes } from "./attribute.js";
+import { initComponentProperties } from "./property.js";
 import {
     invokeComponentDetachMethod,
     invokeComponentAttachMethod,
@@ -18,40 +20,29 @@ import {
 function createCtor(Ctor: Class): Class {
     // instances of this class will never be exposed to user-land
     return class Component extends vnode {
-
+        isRendering = false;
+        hasBodyAttribute = false;
+        component = null;
+        offspring = null;
         static vnodeType = Ctor.name;
 
         constructor(attrs: Object, childRefs: Array<Object>) {
             super();
             this.api = this.createRenderInterface();
-            this.isRendering = false;
-            this.isUpdating = false;
-            this.aboutToBeHydrated = false;
-            this.component = null;
-            this.offspring = null;
-            attrs = Object.assign({}, attrs, { children: childRefs });
-            this.component = new Ctor(attrs);
-            // TODO: formal verification that body is an attribute is needed
-            this.hasBodyAttribute = 'body' in this.component;
-            // setting all the initial values
-            for (let attrName in attrs) {
-                this.set(attrName, attrs[attrName]);
-            }
+            this.attrs = attrs;
+            this.component = new Ctor();
+            initComponentAttributes(this, attrs, childRefs);
+            initComponentProperties(this);
             invokeComponentUpdatedMethod(this);
-            pinch(this);
+            this.isReady = true;
         }
 
         set(attrName: string, attrValue: any) {
             if (this.isRendering) {
                 throw new Error(`Invariant Violation: ${this}.render() method has side effects on the state of the component.`);
             }
-            if (this.isUpdating) {
-                throw new Error(`Invariant Violation: Setting attribute ${this}.${attrName} has side effects on the state of the component.`);
-            }
-            // TODO: process the attribute
-            this.isUpdating = true;
-            this.component[attrName] = attrValue;
-            this.isUpdating = false;
+            this.attrs[attrName] = attrValue;
+            scheduleRehydration(this);
         }
 
         toBeMounted() {
@@ -70,9 +61,10 @@ function createCtor(Ctor: Class): Class {
         }
 
         toBeHydrated() {
-            if (this.isMounted && this.aboutToBeHydrated) {
+            const { isMounted, isScheduled } = this;
+            if (isMounted) {
+                assert(isScheduled, `Invariant: Arbitrary call to ${this}.toBeHydrated()`);
                 invokeComponentUpdatedMethod(this);
-                this.aboutToBeHydrated = false;
                 const newElement = invokeComponentRenderMethod(this);
                 const oldElement = this.offspring;
                 this.offspring = patch(oldElement, newElement);
@@ -81,15 +73,27 @@ function createCtor(Ctor: Class): Class {
                 if (this.domNode !== domNode) {
                     domNode.parentNode.replaceChild(this.domNode, domNode);
                 }
+                this.isScheduled = false;
             }
         }
 
         createRenderInterface(): Object {
+            var cache = new Map();
             // this object wraps the static base api plus those bits that are bound to
             // the vnode instance, so we can apply memoization for some operations.
             return Object.create(baseAPI, {
                 // [m]emoized node
-                m: memoizerDescriptorFactory()
+                m: {
+                    value: (key: number, value: any): any => {
+                        if (cache.has(key)) {
+                            return cache.get(key);
+                        }
+                        cache.set(key, value);
+                        return value;
+                    },
+                    writable: false,
+                    enumerable: true,
+                }
             })
         }
     }

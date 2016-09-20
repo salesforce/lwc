@@ -6,12 +6,11 @@ import {
 } from "./utils.js";
 
 export default class vnode {
-
-    constructor() {
-        this.hasBodyAttribute = false;
-        this.isMounted = false;
-        this.domNode = null;
-    }
+    hasBodyAttribute = false;
+    isReady = false;
+    isScheduled = false;
+    isMounted = false;
+    domNode = null;
 
     set(attrName: string, attrValue: any) {
         assert(false, 'Abstract Method set() invoked.');
@@ -42,8 +41,10 @@ export function getElementDomNode(element: Object): Node {
 }
 
 export function scheduleRehydration(vnode: Object) {
-    if (!vnode.aboutToBeHydrated) {
-        vnode.aboutToBeHydrated = true;
-        Promise.resolve().then((): any => vnode.toBeHydrated());
+    if (!vnode.isScheduled && vnode.isReady) {
+        vnode.isScheduled = true;
+        Promise.resolve().then((): any => {
+            vnode.toBeHydrated();
+        });
     }
 }
