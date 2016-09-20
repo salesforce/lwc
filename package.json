@@ -1,5 +1,5 @@
 {
-  "name": "mr.frank",
+  "name": "frankenstein",
   "version": "1.0.0-alfa",
   "description": "Mr. Frankenstein (aka Mr. Frank) POC",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.soma.salesforce.com/cpatino/mr.frank.git"
+    "url": "https://git.soma.salesforce.com/cpatino/frankenstein.git"
   },
   "devDependencies": {
     "aura-dom": "git+ssh://git.soma.salesforce.com/aura/dom",
