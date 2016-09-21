@@ -1,10 +1,11 @@
 <script src="fw.js"></script>
 <script src="bar.js"></script>
+<script src="foo.js"></script>
 <div id="container">
 </div>
 <script>
 // trying the loader
-$A.loaderImportMethodTemporary('bar')
+$A.loaderImportMethodTemporary('abc:bar')
     .then(function (bar) {
         var opaqueElement = $A.createElement(bar, {
             min: 5,

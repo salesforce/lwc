@@ -72,7 +72,22 @@ const configs = [{
     output: {
         dest: 'fake-cdn/bar.js',
         format: 'amd',
-        moduleId: 'bar',
+        moduleId: 'abc:bar',
+        sourceMap: true,
+        globals: {
+            aura: '$A',
+        },
+    },
+}, {
+    folder: 'src/namespaces/abc/components/foo',
+    input: {
+        entry: 'src/namespaces/abc/components/foo/foo.js',
+        plugins,
+    },
+    output: {
+        dest: 'fake-cdn/foo.js',
+        format: 'amd',
+        moduleId: 'abc:foo',
         sourceMap: true,
         globals: {
             aura: '$A',
