@@ -36,7 +36,7 @@ export function initComponentAttributes(vnode: Object, attrs: Object, bodyAttrVa
     const config = AttributeMap.get(target) || {};
 
     for (let attrName in config) {
-        let { configurable, enumerable, initializer } = Object.getOwnPropertyDescriptor(component, attrName);
+        let { configurable, enumerable, initializer } = Object.getOwnPropertyDescriptor(component, attrName) || Object.getOwnPropertyDescriptor(target, attrName);
         assert(configurable, `Invariant: component ${vnode} has tampered with decorated @attribute ${attrName} during constructor() routine.`);
         Object.defineProperty(component, attrName, {
             get: (): any => attrs[attrName],
