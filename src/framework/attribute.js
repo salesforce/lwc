@@ -6,14 +6,6 @@ import { assert } from "./utils.js";
 const AttributeMap = new WeakMap();
 const preventExtensions = Object.preventExtensions;
 
-function empty() {}
-
-export function getAttributeConfig(component: Object, attrName: string): Object {
-    const target = Object.getPrototypeOf(component);
-    const config = AttributeMap.get(target);
-    return config && config[attrName];
-}
-
 export function decorator(config?: Object = {}): decorator {
     return function attribute(target: Object, attrName: string, { initializer }: Object): Object {
         let attrs = AttributeMap.get(target);
@@ -27,15 +19,13 @@ export function decorator(config?: Object = {}): decorator {
         config.initializer = initializer;
         return {
             get: () => {
-                throw new Error(`Invariant: component ${target} can not access decorated @attribute ${attrName} until its updated() callback is invoked.`);
+                throw new Error(`Invariant: component <${target.constructor.name}> can not access decorated @attribute ${attrName} until its updated() callback is invoked.`);
             },
             set: () => {
-                // TODO: consider two-ways data binding configuration
-                throw new Error(`Invariant: component ${target} can not set a new value for decorated @attribute ${attrName}.`);
+                throw new Error(`Invariant: component <${target.constructor.name}> can not set a new value for decorated @attribute ${attrName}.`);
             },
             enumerable: true,
-            configurable: true,
-            initializer: empty,
+            configurable: true
         };
     }
 }
