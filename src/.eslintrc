@@ -13,6 +13,7 @@
         "flowtype"
     ],
     "rules": {
+        "no-console": 0,
         "flowtype/define-flow-type": 1,
         "flowtype/require-parameter-type": 1,
         "flowtype/require-return-type": [
@@ -41,8 +42,5 @@
         "flowtype": {
             "onlyFilesWithFlowAnnotation": false
         }
-    },
-    "globals": {
-        "DEVELOPMENT": true
     }
 }

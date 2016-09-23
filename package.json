@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "rimraf fake-cdn/ && git checkout fake-cdn",
     "start": "forever --uid frank fake-server/server.js & node scripts/rollup.build.js && forever stop frank",
+    "stop": "forever stopall",
     "build": "npm run clean && NODE_ENV=production node scripts/rollup.build.js",
     "lint": "eslint src/",
     "pretest": "npm run lint",
@@ -27,6 +28,7 @@
     "eslint-plugin-flowtype": "^2.7.1",
     "express": "^4.14.0",
     "forever": "^0.15.2",
+    "glob": "^7.1.0",
     "rollup": "^0.34.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^3.3.1",
