@@ -1,7 +1,5 @@
 // @flow
 
-import { assert } from "./utils.js";
-
 // this map can be used by the framework to construct the proxy per component class
 export const MethodMap = new WeakMap();
 

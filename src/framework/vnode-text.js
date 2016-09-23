@@ -1,7 +1,7 @@
 // @flow
 
 import vnode from "./vnode.js";
-import { assert } from "./utils.js";
+import assert from "./assert.js";
 
 export default class Text extends vnode {
 
@@ -19,7 +19,7 @@ export default class Text extends vnode {
             this.domNode.textContent = attrValue || '';
             return;
         }
-        assert(false, `Invariant: textNode element does not support attribute ${attrName}.`);
+        assert.fail(`textNode element does not support attribute ${attrName}.`);
     }
 
 }

@@ -1,9 +1,6 @@
 // @flow
 
-import {
-    assertElement,
-    assert,
-} from "./utils.js";
+import assert from "./assert.js";
 
 export default class vnode {
     hasBodyAttribute = false;
@@ -13,11 +10,11 @@ export default class vnode {
     domNode = null;
 
     set(attrName: string, attrValue: any) {
-        assert(false, 'Abstract Method set() invoked.');
+        assert.fail('Abstract Method set() invoked.');
     }
 
     toBeHydrated() {
-        assert(false, 'Abstract Method toBeHydrated() invoked.');
+        assert.fail('Abstract Method toBeHydrated() invoked.');
     }
 
     toBeMounted() {
@@ -36,7 +33,7 @@ export default class vnode {
 }
 
 export function getElementDomNode(element: Object): Node {
-    assertElement(element);
+    assert.element(element);
     return element.vnode.domNode;
 }
 

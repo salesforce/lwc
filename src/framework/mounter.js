@@ -2,25 +2,22 @@
 
 import {
     flattenElements,
-    assertElement,
-    assert,
-    log,
 } from "./utils.js";
-
+import assert from "./assert.js";
 import { getElementDomNode } from "./vnode.js";
 
 export function mount(newElement: Object) {
-    assertElement(newElement);
+    assert.element(newElement);
     const { Ctor, attrs, children } = newElement;
     const vnode = new Ctor(attrs, flattenElements(children));
-    DEVELOPMENT && log(`Mounting ${vnode}`);
+    console.log(`Mounting ${vnode}`);
     vnode.toBeMounted();
-    assert(vnode.isMounted, `Failed to mount element ${vnode}.`);
+    assert.isTrue(vnode.isMounted, `Failed to mount element ${vnode}.`);
     newElement.vnode = vnode;
 }
 
 export function mountToDom(newElement: Object, domNode: Node) {
-    assertElement(newElement);
+    assert.element(newElement);
     mount(newElement);
     let newDomNode = getElementDomNode(newElement);
     // TODO: append should be in dom: append(domNode, newDomNode);

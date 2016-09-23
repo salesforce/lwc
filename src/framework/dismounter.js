@@ -1,20 +1,16 @@
 // @flow
 
-import {
-    assert,
-    assertElement,
-    log,
-} from "./utils.js";
+import assert from "./assert.js";
 
 export function dismount(element: Object) {
-    assertElement(element);
+    assert.element(element);
     const { vnode } = element;
     if (!vnode.isMounted) {
-        throw new Error(`Assert: Component element ${vnode} must be mounted.`);
+        assert.fail(`Component element ${vnode} must be mounted.`);
     }
-    DEVELOPMENT && log(`Dismounting ${vnode}`);
+    console.log(`Dismounting ${vnode}`);
     vnode.toBeDismount();
-    assert(vnode.isMounted === false, `Failed to dismount element ${vnode}.`);
+    assert.isFalse(vnode.isMounted, `Failed to dismount element ${vnode}.`);
 }
 
 export function dismountElements(elements: array<Object>) {

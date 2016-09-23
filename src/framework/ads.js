@@ -11,7 +11,7 @@ export default function ADS(Ctor: Object, annotations: Object): Class {
 
         render({v,t}: Object): Object {
             if (this.isDataReady) {
-                return v(this.Ctor, this.computeNewAttributes());
+                return v(this.Ctor, this.computeNewAttributes(), this.body);
             } else {
                 return t('still loading...');
             }

@@ -5,10 +5,9 @@ import vnode, {
     getElementDomNode,
     scheduleRehydration,
 } from "./vnode.js";
-import { assert } from "./utils.js";
+import assert from "./assert.js";
 import { mount } from "./mounter.js";
 import { dismountElements } from "./dismounter.js";
-import { log } from "./utils.js";
 import { patchChildrenNodes } from "./vdom.js";
 
 import {
@@ -64,7 +63,7 @@ function createCtor(tagName: string): Class {
                 const attrName = keys[i];
                 if (attrName !== 'body') {
                     const attrValue = attrs[attrName];
-                    DEVELOPMENT && log('Updating before mounting: ', domNode, attrName, attrValue);
+                    console.log('Updating before mounting: ', domNode, attrName, attrValue);
                     updateAttr(domNode, attrName, attrValue);
                 }
             }
@@ -74,7 +73,7 @@ function createCtor(tagName: string): Class {
         toBeHydrated() {
             const { isMounted, isScheduled } = this;
             if (isMounted) {
-                assert(isScheduled, `Invariant: Arbitrary call to ${this}.toBeHydrated()`);
+                assert.invariant(isScheduled, `Arbitrary call to ${this}.toBeHydrated()`);
                 const { dirtyAttrs, dirtyBody, attrs, domNode } = this;
                 const len = dirtyAttrs.length;
                 this.dirtyAttrs = [];

@@ -6,7 +6,7 @@ import vnode, {
     getElementDomNode,
     scheduleRehydration,
 } from "./vnode.js";
-import { assert } from "./utils.js";
+import assert from "./assert.js";
 import { dismount } from "./dismounter.js";
 import { initComponentAttributes } from "./attribute.js";
 import { initComponentProperties } from "./property.js";
@@ -38,9 +38,7 @@ function createCtor(Ctor: Class): Class {
         }
 
         set(attrName: string, attrValue: any) {
-            if (this.isRendering) {
-                throw new Error(`Invariant Violation: ${this}.render() method has side effects on the state of the component.`);
-            }
+            assert.invariant(!this.isRendering, `${this}.render() method has side effects on the state of the component.`);
             this.attrs[attrName] = attrValue;
             scheduleRehydration(this);
         }
@@ -63,7 +61,7 @@ function createCtor(Ctor: Class): Class {
         toBeHydrated() {
             const { isMounted, isScheduled } = this;
             if (isMounted) {
-                assert(isScheduled, `Invariant: Arbitrary call to ${this}.toBeHydrated()`);
+                assert.invariant(isScheduled, `Arbitrary call to ${this}.toBeHydrated()`);
                 invokeComponentUpdatedMethod(this);
                 const newElement = invokeComponentRenderMethod(this);
                 const oldElement = this.offspring;
