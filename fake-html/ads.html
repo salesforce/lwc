@@ -1,0 +1,17 @@
+<script src="fw.js"></script>
+<script src="ads.js"></script>
+<script src="baz.js"></script>
+<div id="container">
+</div>
+<script>
+// trying the loader
+$A.loaderImportMethodTemporary('abc:baz')
+    .then(function (baz) {
+        var opaqueElement = $A.createElement(baz, {
+            x: 1,
+            y: 2
+        });
+        var domNodeContainer = document.getElementById('container');
+        $A.mountToDom(opaqueElement, domNodeContainer);
+    })
+</script>
