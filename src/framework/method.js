@@ -1,13 +1,9 @@
 // @flow
 
+import assert from "./assert.js";
+
 // this map can be used by the framework to construct the proxy per component class
 export const MethodMap = new WeakMap();
-
-export function getMethodConfig(component: Object, methodName: string): Object {
-    const target = Object.getPrototypeOf(component);
-    const config = MethodMap.get(target);
-    return config && config[methodName];
-}
 
 export function decorator(config?: Object = {}): decorator {
     return function attribute(target: Object, methodName: string, descriptor: Object): Object {
@@ -19,13 +15,19 @@ export function decorator(config?: Object = {}): decorator {
             methods = {};
             MethodMap.set(target, methods);
         }
-        if (!methods[methodName]) {
-            methods[methodName] = config;
-        }
+        assert.isFalse(methods[methodName], `Duplicated decorated method ${methodName} in component <${target.constructor.name}>.`);
+        methods[methodName] = Object.create({}, config);
+        assert.block(() => {
+            Object.freeze(methods[methodName]);
+        });
         // setting up the descriptor for the public method
         descriptor.configurable = false;
         descriptor.enumerable = false;
         descriptor.writable = false;
         return descriptor;
     }
+}
+
+export function getMethodsConfig(target: Object): Object {
+    return MethodMap.get(target) || {};
 }

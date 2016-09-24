@@ -13,10 +13,13 @@ export function decorator(config?: Object = {}): decorator {
             attrs = {};
             AttributeMap.set(target, attrs);
         }
-        if (!attrs[attrName]) {
-            attrs[attrName] = Object.create(config);
-        }
-        config.initializer = initializer;
+        assert.isFalse(attrs[attrName], `Duplicated decorated attribute ${attrName} in component <${target.constructor.name}>.`);
+        attrs[attrName] = Object.assign({}, config, {
+            initializer,
+        });
+        assert.block(() => {
+            Object.freeze(attrs[attrName]);
+        });
         return {
             get: () => {
                 assert.fail(`Component <${target.constructor.name}> can not access decorated @attribute ${attrName} until its updated() callback is invoked.`);
@@ -28,6 +31,10 @@ export function decorator(config?: Object = {}): decorator {
             configurable: true
         };
     }
+}
+
+export function getAttributesConfig(target: Object): Object {
+    return AttributeMap.get(target) || {};
 }
 
 export function initComponentAttributes(vnode: Object, attrs: Object, bodyAttrValue: array<Object>) {

@@ -93,6 +93,32 @@ glob.sync('src/namespaces/*/components/*/*.js').forEach(function (p) {
     }
 });
 
+// seaching for all services
+glob.sync('src/services/*/*.js').forEach(function (p) {
+    const entry = path.basename(p, '.js');
+    p = path.dirname(p);
+    const pieces = p.split(path.sep);
+    const name = pieces.pop();
+    if (name === entry) {
+        configs.push({
+            folder: p,
+            input: {
+                entry: path.join(p, name + '.js'),
+                plugins,
+            },
+            output: {
+                dest: 'fake-cdn/' + name + '.js',
+                format: 'amd',
+                moduleId: ['aura', name].join(':'),
+                sourceMap: true,
+                globals: {
+                    aura: '$A',
+                },
+            },
+        });
+    }
+});
+
 // framework configuration
 const fwConfig = {
     folder: 'src/framework',
