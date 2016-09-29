@@ -1,16 +1,13 @@
 // @flow
 
-import { attribute, implement } from "aura";
+import { attribute, method, implement } from "aura";
 import focusable from "lightning:focusable";
 import classnames from "lightning:classnamesLib";
 
 @implement(focusable)
 export default class button {
 
-    constructor() {
-        this.domNodeElement = null;
-    }
-
+    // public attributes
     @attribute({ required: true }) name;
     @attribute() value;
     @attribute() label;
@@ -22,6 +19,12 @@ export default class button {
     @attribute({ type: Boolean }) disabled = false;
     @attribute({ type: Function }) onclick;
 
+    // public methods
+    @method focus() {
+        this.domNodeElement.focus();
+    }
+
+    // internals only accesible from template
     get hasLeftIcon(): Boolean {
         return this.iconName && this.iconPosition == 'left';
     }
@@ -39,6 +42,7 @@ export default class button {
             'slds-button--inverse'     : this.variant === 'inverse',
         }, this.classes);
     }
+
     handleFocus(event: Event) {
         if (this.onfocus) {
             this.focus(event);
@@ -49,8 +53,10 @@ export default class button {
             this.onblur(event);
         }
     }
-    focus() {
-        this.domNodeElement.focus();
+
+    // lifecycle hooks
+    constructor() {
+        this.domNodeElement = null;
     }
     attach(el: Node) {
         // storing the reference internally after it is attached the first time
@@ -60,4 +66,5 @@ export default class button {
         // releasing the backpointer to the dom
         this.domNodeElement = null;
     }
+
 }
