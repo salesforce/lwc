@@ -20,8 +20,8 @@ export default class Bar {
     render({h,m}) {
         const m0 = m(0, () => this.handleClick(...arguments));
         return h('li', {
-            class: this.computedClasses,
-            onClick: m0,
+            props: { class: this.computedClasses },
+            on: { click: m0 },
         }, ['Value of X = ', this.x]);
     }
 }

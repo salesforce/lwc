@@ -19,9 +19,8 @@ const assert = {
     block(fn: Object) {
         fn.call();
     },
-    element(element: Object) {
-        assert.isTrue(element && 'Ctor' in element, `${element} is not an element.`)
-        assert.isTrue(Array.isArray(element.children), `${element}.children most be an array of element instead of ${element.children}.`);
+    vnode(vnode: Object) {
+        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode, `${vnode} is not a vnode.`);
     },
     fail(msg: string) {
         throw new Error(msg);

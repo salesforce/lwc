@@ -1,0 +1,17 @@
+<template>
+    <button name.bind="name"
+            value.bind="value"
+            class.bind="computedClass"
+            disabled.bind="disabled"
+            accesskey.bind="accesskey"
+            tabindex.bind="tabindex"
+            onfocus.call="handleFocus"
+            onblur.call="handleBlur"
+            onclick.call="handleClick">
+
+        <lightning:primitiveIcon if.bind="hasLeftIcon" iconName.bind="iconName" class="slds-button__icon slds-button__icon--left" variant="bare"/>
+        ${content}
+        <lightning:primitiveIcon if.bind="hasRightIcon" iconName.bind="iconName" class="slds-button__icon slds-button__icon--right" variant="bare"/>
+
+    </button>
+</template>

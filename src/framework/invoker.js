@@ -6,41 +6,45 @@ import {
 } from "./context.js";
 
 export function invokeComponentDetachMethod(vnode: Object) {
-    if (vnode.component.detach) {
+    const { data: { component } } = vnode;
+    if (component.detach) {
         const ctx = currentContext;
         establishContext(this);
-        vnode.component.detach(vnode.domNode);
+        component.detach(vnode.elm);
         establishContext(ctx);
     }
 }
 
 export function invokeComponentAttachMethod(vnode: Object) {
-    if (vnode.component.attach) {
+    const { data: { component } } = vnode;
+    if (component.attach) {
         const ctx = currentContext;
         establishContext(this);
-        vnode.component.attach(vnode.domNode);
+        component.attach(vnode.elm);
         establishContext(ctx);
     }
 }
 
 export function invokeComponentRenderMethod(vnode: Object): Object {
-    if (vnode.component.render) {
+    const { data: { component, api, state } } = vnode;
+    if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        vnode.isRendering = true;
-        const newElement = vnode.component.render(vnode.api);
-        vnode.isRendering = false;
+        state.isRendering = true;
+        const newVnode = component.render(api);
+        state.isRendering = false;
         establishContext(ctx);
-        return newElement;
+        return newVnode;
     }
     return null;
 }
 
 export function invokeComponentUpdatedMethod(vnode: Object) {
-    if (vnode.component.updated) {
+    const { data: { component } } = vnode;
+    if (component.updated) {
         const ctx = currentContext;
         establishContext(this);
-        vnode.component.updated();
+        component.updated();
         establishContext(ctx);
     }
 }
