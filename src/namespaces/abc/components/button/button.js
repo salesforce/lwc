@@ -9,13 +9,13 @@ export default class button {
 
     // public attributes
     @attribute({ required: true }) name;
-    @attribute() value;
-    @attribute() label;
-    @attribute() variant = "neutral";
-    @attribute() iconName;
-    @attribute() iconPosition = "left";
-    @attribute() class;
-    @attribute() body;
+    @attribute value;
+    @attribute label;
+    @attribute variant = "neutral";
+    @attribute iconName;
+    @attribute iconPosition = "left";
+    @attribute class;
+    @attribute body;
     @attribute({ type: Boolean }) disabled = false;
     @attribute({ type: Function }) onclick;
 
