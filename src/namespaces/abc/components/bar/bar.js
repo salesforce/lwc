@@ -45,15 +45,15 @@ export default class Bar {
     // this is a generated method based on the template
     render({h,i,m,v}) {
         const iter1 = (item) => {
-            return h('li', { props: { class: this.itemClassName } }, ['Value of X = ', item.x]);
+            return h('li', { attrs: { class: this.itemClassName } }, ['Value of X = ', item.x]);
         };
         const m0 = m(0, () => this.handleClick(...arguments));
         return h('div', { tabIndex: 2 }, [
             this.title ? h('h1', {}, [this.title]) : f(),
             h('ul', {}, [
-                h('li', { props: { class: 'first' } }, ['header']),
+                h('li', { attrs: { class: 'first' } }, ['header']),
                 ...i(this.data, iter1),
-                h('li', { props: { class: 'last' } }, ['footer']),
+                h('li', { attrs: { class: 'last' } }, ['footer']),
             ]),
             h('button', { on: { click: m0 } }, [this.label]),
         ]);
