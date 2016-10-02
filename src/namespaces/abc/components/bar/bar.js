@@ -4,15 +4,23 @@ const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 
 export default class Bar {
-    @attribute() min = DefaultMinValue;
-    @attribute() max = DefaultMaxValue;
-    @attribute() label;
-    @attribute() title;
+    @attribute min = DefaultMinValue;
+    @attribute max = DefaultMaxValue;
+    @attribute label;
+    @attribute title;
 
     constructor() {
         this.counter = 0;
         this.itemClassName = 'item';
         this.data = [];
+
+        // alternative for the decorator
+        this.___attributes = {
+            min: () => DefaultMinValue,
+            max: () => DefaultMaxValue,
+            label: undefined,
+            title: undefined,
+        }
     }
 
     updated() {
@@ -49,7 +57,7 @@ export default class Bar {
         };
         const m0 = m(0, () => this.handleClick(...arguments));
         return h('div', { tabIndex: 2 }, [
-            this.title ? h('h1', {}, [this.title]) : f(),
+            this.title ? h('h1', {}, [this.title]) : '',
             h('ul', {}, [
                 h('li', { attrs: { class: 'first' } }, ['header']),
                 ...i(this.data, iter1),
