@@ -1,7 +1,7 @@
 // @flow
 
 import h from "snabbdom/h";
-import * as hook from "./thunk.js";
+import * as hook from "./hook.js";
 
 // [h]tml node
 export { h };

@@ -4,7 +4,7 @@ import { init } from "snabbdom";
 import props from "snabbdom/modules/props";
 import attrs from "snabbdom/modules/attributes";
 import on from "snabbdom/modules/eventlisteners";
-import { updateComponent } from "./component.js";
+import { updateComponent } from "./vm.js";
 
 export const patch = init([
     props,
@@ -12,13 +12,13 @@ export const patch = init([
     on,
 ]);
 
-export function scheduleRehydration(vnode: Object) {
-    const { isScheduled, isReady, isDirty } = vnode;
+export function scheduleRehydration(vm: Object) {
+    const { isScheduled, isReady, isDirty } = vm;
     if (!isScheduled && isReady) {
-        vnode.isScheduled = true;
+        vm.isScheduled = true;
         Promise.resolve().then((): any => {
             if (isDirty) {
-                updateComponent(vnode);
+                updateComponent(vm);
             }
         });
     }

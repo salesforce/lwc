@@ -40,10 +40,10 @@ export function getAttributesConfig(target: Object): Object {
     return AttributeMap.get(target) || {};
 }
 
-export function initComponentAttributes(vnode: Object, newAttrs: Object, newBody: array<Object>) {
-    const { component, state } = vnode;
+export function initComponentAttributes(vm: Object, newAttrs: Object, newBody: array<Object>) {
+    const { component, state } = vm;
     const target = Object.getPrototypeOf(component);
-    const config = AttributeMap.get(target) || component.attributes || {};
+    const config = AttributeMap.get(target) || {};
     for (let attrName in config) {
         let { initializer } = config[attrName];
         assert.block(() => {
@@ -62,7 +62,7 @@ export function initComponentAttributes(vnode: Object, newAttrs: Object, newBody
         // default attribute value computed when needed
         state[attrName] = attrName in newAttrs ? newAttrs[attrName] : (initializer && initializer());
     }
-    vnode.hasBodyAttribute = 'body' in config;
+    vm.hasBodyAttribute = 'body' in config;
     if (newBody && newBody.length > 0) {
         state.body = newBody;
     }
@@ -74,11 +74,11 @@ export function initComponentAttributes(vnode: Object, newAttrs: Object, newBody
     });
 }
 
-export function updateComponentAttributes(vnode: Object, newAttrs: Object, newBody: array<Object>) {
-    const { component, isRendering, state } = vnode;
+export function updateComponentAttributes(vm: Object, newAttrs: Object, newBody: array<Object>) {
+    const { component, isRendering, state } = vm;
     assert.invariant(!isRendering, `${component}.render() method has side effects on the attributes received.`);
     const target = Object.getPrototypeOf(component);
-    const config = AttributeMap.get(target) || component.attributes || {};
+    const config = AttributeMap.get(target) || {};
     for (let attrName in config) {
         let attrValue;
         if (!(attrName in newAttrs)) {
@@ -90,14 +90,14 @@ export function updateComponentAttributes(vnode: Object, newAttrs: Object, newBo
         }
         if (state[attrName] !== attrValue) {
             state[attrName] = attrValue;
-            vnode.isDirty = true;
+            vm.isDirty = true;
         } else {
             // TODO: even when the values are the same, the internals of it might be dirty, @diego will add the mark via the watcher and here we should take that mark into consideration
         }
     }
-    if (vnode.body !== newBody && newBody && newBody.length > 0) {
-        vnode.body = newBody;
-        vnode.isDirty = true;
+    if (vm.body !== newBody && newBody && newBody.length > 0) {
+        vm.body = newBody;
+        vm.isDirty = true;
     }
     assert.block(() => {
         for (let attrName in state) {

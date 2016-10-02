@@ -5,42 +5,42 @@ import {
     establishContext,
 } from "./context.js";
 
-export function invokeComponentDetachMethod(vnode: Object) {
-    const { component } = vnode;
+export function invokeComponentDetachMethod(vm: Object) {
+    const { component } = vm;
     if (component.detach) {
         const ctx = currentContext;
         establishContext(this);
-        component.detach(vnode.elm);
+        component.detach(vm.elm);
         establishContext(ctx);
     }
 }
 
-export function invokeComponentAttachMethod(vnode: Object) {
-    const { component } = vnode;
+export function invokeComponentAttachMethod(vm: Object) {
+    const { component } = vm;
     if (component.attach) {
         const ctx = currentContext;
         establishContext(this);
-        component.attach(vnode.elm);
+        component.attach(vm.elm);
         establishContext(ctx);
     }
 }
 
-export function invokeComponentRenderMethod(vnode: Object): Object {
-    const { component, api } = vnode;
+export function invokeComponentRenderMethod(vm: Object): Object {
+    const { component, api } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        vnode.isRendering = true;
-        const newVnode = component.render(api);
-        vnode.isRendering = false;
+        vm.isRendering = true;
+        const vnode = component.render(api);
+        vm.isRendering = false;
         establishContext(ctx);
-        return newVnode;
+        return vnode;
     }
     return null;
 }
 
-export function invokeComponentUpdatedMethod(vnode: Object) {
-    const { component } = vnode;
+export function invokeComponentUpdatedMethod(vm: Object) {
+    const { component } = vm;
     if (component.updated) {
         const ctx = currentContext;
         establishContext(this);
