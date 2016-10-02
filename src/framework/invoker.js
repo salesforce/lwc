@@ -31,6 +31,7 @@ export function invokeComponentRenderMethod(vm: Object): Object {
         const ctx = currentContext;
         establishContext(this);
         vm.isRendering = true;
+        vm.reactiveNames = {};
         const vnode = component.render(api);
         vm.isRendering = false;
         establishContext(ctx);

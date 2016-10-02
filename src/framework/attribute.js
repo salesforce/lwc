@@ -51,7 +51,12 @@ export function initComponentAttributes(vm: Object, newAttrs: Object, newBody: a
             assert.invariant(!descriptor || descriptor.configurable, `component ${component} has tampered with decorated @attribute ${attrName} during constructor() routine.`);
         });
         Object.defineProperty(component, attrName, {
-            get: (): any => state[attrName],
+            get: (): any => {
+                if (vm.isRendering) {
+                    vm.reactiveNames[attrName] = true;
+                }
+                return state[attrName];
+            },
             set: () => {
                 // TODO: consider two-ways data binding configuration
                 assert.fail(`Component ${component} can not set a new value for decorated @attribute ${attrName}.`);
@@ -90,14 +95,18 @@ export function updateComponentAttributes(vm: Object, newAttrs: Object, newBody:
         }
         if (state[attrName] !== attrValue) {
             state[attrName] = attrValue;
-            vm.isDirty = true;
+            if (vm.reactiveNames[attrName]) {
+                vm.isDirty = true;
+            }
         } else {
             // TODO: even when the values are the same, the internals of it might be dirty, @diego will add the mark via the watcher and here we should take that mark into consideration
         }
     }
     if (vm.body !== newBody && newBody && newBody.length > 0) {
         vm.body = newBody;
-        vm.isDirty = true;
+        if (vm.reactiveNames.body) {
+            vm.isDirty = true;
+        }
     }
     assert.block(() => {
         for (let attrName in state) {

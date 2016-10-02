@@ -10,6 +10,7 @@ import {
 import {
     invokeComponentAttachMethod,
     invokeComponentDetachMethod,
+    invokeComponentUpdatedMethod,
 } from "./invoker.js";
 
 import assert from "./assert.js";
@@ -35,7 +36,11 @@ export function prepatch(oldvm: Object, vm: Object) {
                 initFromAnotherVM(vm, oldvm);
             }
             updateComponentAttributes(vm, state, body);
+            // TODO: there is an edge case here that maybe isDirty is not really
+            // a consequence of calling `updateComponentAttributes()`, but something
+            // that is pending to be done in the next tick
             if (vm.isDirty) {
+                invokeComponentUpdatedMethod(vm);
                 updateComponent(vm);
             }
         }

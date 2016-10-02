@@ -59,7 +59,6 @@ export function updateComponent(vm: Object) {
     assert.invariant(vnode, `Component ${vm} does not have a child vnode yet.`);
     assert.invariant(isReady, `Component ${vm} is not ready to be updated.`);
     assert.invariant(isDirty, `Component ${vm} is not dirty.`);
-    invokeComponentUpdatedMethod(vm);
     // TODO: what about null results from render?
     let newVnode = invokeComponentRenderMethod(vm);
     newVnode = patch(vnode, newVnode);
@@ -84,6 +83,7 @@ export function initFromScratch(vm: Object) {
         component: null,
         api: null,
         vnode: null,
+        reactiveNames: {},
         // TODO: maybe don't belong here...
         toString: (): string => {
             const type = vm.Ctor ? vm.Ctor.constructor.vnodeType : vm.sel;
@@ -95,7 +95,7 @@ export function initFromScratch(vm: Object) {
 }
 
 export function initFromAnotherVM(vm: Object, oldvm: Object) {
-    const { hasBodyAttribute, isReady, isScheduled, isRendering, isDirty, component, api, vnode, toString, body, state, children, data } = oldvm;
+    const { hasBodyAttribute, isReady, isScheduled, isRendering, isDirty, component, api, vnode, toString, body, state, children, data, reactiveNames } = oldvm;
     vm.data = data;
     vm.state = state;
     vm.body = body;
@@ -107,6 +107,7 @@ export function initFromAnotherVM(vm: Object, oldvm: Object) {
     vm.component = component;
     vm.api = api;
     vm.vnode = vnode;
+    vm.reactiveNames = reactiveNames;
     vm.toString = toString;
     vm.children = children;
 }
