@@ -13,14 +13,6 @@ export default class Bar {
         this.counter = 0;
         this.itemClassName = 'item';
         this.data = [];
-
-        // alternative for the decorator
-        this.___attributes = {
-            min: () => DefaultMinValue,
-            max: () => DefaultMaxValue,
-            label: undefined,
-            title: undefined,
-        }
     }
 
     updated() {
