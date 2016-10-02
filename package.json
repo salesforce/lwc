@@ -4,9 +4,9 @@
   "description": "Mr. Frankenstein (aka Mr. Frank) POC",
   "scripts": {
     "clean": "rimraf fake-cdn/ && git checkout fake-cdn",
-    "start": "forever --uid frank fake-server/server.js & node scripts/rollup.build.js && forever stop frank",
+    "start": "forever --uid frank fake-server/server.js & node scripts/rollup.build.js --watch && forever stop frank",
     "stop": "forever stopall",
-    "build": "npm run clean && NODE_ENV=production node scripts/rollup.build.js",
+    "build": "npm run clean && node scripts/rollup.build.js --production",
     "lint": "eslint src/",
     "pretest": "npm run lint",
     "preversion": "npm run clean && npm run build",
@@ -17,7 +17,6 @@
     "url": "https://git.soma.salesforce.com/cpatino/frankenstein.git"
   },
   "devDependencies": {
-    "aura-dom": "git+ssh://git.soma.salesforce.com/aura/dom",
     "babel-eslint": "^6.1.2",
     "babel-plugin-transform-class-properties": "^6.11.5",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -40,7 +39,9 @@
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^2.5.0",
     "serve-static": "^1.11.1",
+    "snabbdom": "^0.5.3",
     "typescript-eslint-parser": "eslint/typescript-eslint-parser",
-    "watch": "^0.19.1"
+    "watch": "^0.19.1",
+    "yargs": "^6.0.0"
   }
 }

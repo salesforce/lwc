@@ -4,17 +4,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const argv = require('yargs').argv;
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const replace = require('rollup-plugin-replace');
 const rollup = require('rollup');
-const glob = require("glob")
-
-const isProduction = process.env.NODE_ENV === 'production';
+const glob = require("glob");
 
 let babelConfig = JSON.parse(fs.readFileSync('src/.babelrc', 'utf8'));
 babelConfig.babelrc = false;
@@ -24,16 +22,13 @@ babelConfig.presets = babelConfig.presets.map((preset) => {
 
 const plugins = [
     flow(),
-    replace({
-        DEVELOPMENT: !isProduction
-    }),
     babel(babelConfig),
     commonjs({
         sourceMap: true
     })
 ];
 
-if (isProduction) {
+if (argv.production) {
     plugins.push(
         strip({
             debugger: true,
@@ -138,7 +133,7 @@ const fwConfig = {
 // adding the framework as the first config
 configs.unshift(fwConfig);
 
-if (!isProduction) {
+if (argv.watch) {
     console.log('watching...');
 
     const watch = require('watch');
