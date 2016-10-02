@@ -32,41 +32,41 @@ function createRenderInterface(): Object {
     })
 }
 
-function fold(vnode: Object, newVnode: Object) {
-    vnode.sel = newVnode.sel;
-    vnode.data.props = newVnode.data.props;
-    vnode.data.attrs = newVnode.data.attrs;
-    vnode.data.on = newVnode.data.on;
-    vnode.children = newVnode.children;
-    vnode.text = newVnode.text;
-    vnode.elm = newVnode.elm;
+// at this point, the offspring is ready, and all possible bits that are
+// needed by the engine to render the element, should be propagated from
+// the offspring to its parent, we call this the folding process.
+function foldOffspring(vnode: Object, offspring: Object) {
+    const { sel, children, text, data } = offspring;
+    vnode.sel = sel;
+    vnode.children = children;
+    vnode.text = text;
+    Object.assign(vnode.data, data);
 }
 
 export function createComponent(vnode: Object) {
-    const { data } = vnode;
-    data.api = createRenderInterface();
-    const { attributes, Ctor, body, state } = data;
-    data.component = new Ctor();
-    initComponentAttributes(vnode, attributes, body);
+    const { Ctor, state, body } = vnode;
+    vnode.api = createRenderInterface();
+    vnode.component = new Ctor();
+    initComponentAttributes(vnode, state, body);
     initComponentProperties(vnode);
     invokeComponentUpdatedMethod(vnode);
     let newVnode = invokeComponentRenderMethod(vnode);
-    data.offspring = newVnode;
-    state.isReady = true;
-    fold(vnode, newVnode);
+    vnode.offspring = newVnode;
+    vnode.isReady = true;
+    foldOffspring(vnode, newVnode);
 }
 
 export function updateComponent(vnode: Object) {
-    const { data } = vnode;
-    const { state, offspring: oldVnode } = data;
-    assert.invariant(oldVnode, `Component ${vnode} does not have an offspring yet.`);
-    assert.invariant(state.isReady, `Component ${vnode} is not ready to be updated.`);
-    assert.invariant(state.isScheduled, `Component ${vnode} is not scheduled to be updated.`);
-    assert.invariant(state.isDirty, `Component ${vnode} is not dirty.`);
+    const { isDirty, isReady, offspring } = vnode;
+    assert.invariant(offspring, `Component ${vnode} does not have an offspring yet.`);
+    assert.invariant(isReady, `Component ${vnode} is not ready to be updated.`);
+    assert.invariant(isDirty, `Component ${vnode} is not dirty.`);
     invokeComponentUpdatedMethod(vnode);
-    const newVnode = invokeComponentRenderMethod(vnode);
-    data.offspring = patch(oldVnode, newVnode);
-    state.isScheduled = false;
-    state.isDirty = false;
-    fold(vnode, newVnode);
+    // TODO: what about null results from render?
+    let newVnode = invokeComponentRenderMethod(vnode);
+    newVnode = patch(offspring, newVnode);
+    vnode.offspring = newVnode;
+    vnode.isScheduled = false;
+    vnode.isDirty = false;
+    foldOffspring(vnode, newVnode);
 }

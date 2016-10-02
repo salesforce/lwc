@@ -7,15 +7,13 @@ import * as hook from "./thunk.js";
 export { h };
 
 // [v]irtual node
-export function v(Ctor: Class, data: Object = {}, body?: array<any>): Object {
-    const { key, a: attributes } = data;
-    return h(Ctor.name, {
-        key,
-        hook,
-        Ctor,
-        attributes,
-        body,
-    });
+// based on the structure from vue
+// https://github.com/vuejs/babel-plugin-transform-vue-jsx
+export function v(Ctor: Class, data: Object = {}, children?: array<any>): Object {
+    data.hook = hook;
+    const vnode = h(Ctor.name, data, children);
+    vnode.Ctor = Ctor;
+    return vnode;
 }
 
 // [i]terable node

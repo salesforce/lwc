@@ -4,7 +4,7 @@ import assert from "./assert.js";
 const AttributeMap = new WeakMap();
 
 export function decorator(config?: Object = {}): decorator {
-    return function attribute(target: Object, attrName: string, { initializer }: Object): Object {
+    function attribute(target: Object, attrName: string, { initializer }: Object): Object {
         let attrs = AttributeMap.get(target);
         if (!attrs) {
             attrs = {};
@@ -28,73 +28,79 @@ export function decorator(config?: Object = {}): decorator {
             configurable: true
         };
     }
+    if (typeof arguments[1] === 'string') {
+        config = undefined;
+        return attribute(...arguments);
+    } else {
+        return attribute;
+    }
 }
 
 export function getAttributesConfig(target: Object): Object {
     return AttributeMap.get(target) || {};
 }
 
-export function initComponentAttributes(vnode: Object, attributes: Object, bodyAttrValue: array<Object>) {
-    const { data: { component, state } } = vnode;
+export function initComponentAttributes(vnode: Object, newAttrs: Object, newBody: array<Object>) {
+    const { component, state } = vnode;
     const target = Object.getPrototypeOf(component);
-    const config = AttributeMap.get(target) || {};
+    const config = AttributeMap.get(target) || component.attributes || {};
     for (let attrName in config) {
         let { initializer } = config[attrName];
-        let { configurable, enumerable } = Object.getOwnPropertyDescriptor(component, attrName) || Object.getOwnPropertyDescriptor(target, attrName);
-        assert.invariant(configurable, `component ${component} has tampered with decorated @attribute ${attrName} during constructor() routine.`);
+        assert.block(() => {
+            let descriptor = Object.getOwnPropertyDescriptor(component, attrName) || Object.getOwnPropertyDescriptor(target, attrName);
+            assert.invariant(!descriptor || descriptor.configurable, `component ${component} has tampered with decorated @attribute ${attrName} during constructor() routine.`);
+        });
         Object.defineProperty(component, attrName, {
-            get: (): any => attributes[attrName],
+            get: (): any => state[attrName],
             set: () => {
                 // TODO: consider two-ways data binding configuration
                 assert.fail(`Component ${component} can not set a new value for decorated @attribute ${attrName}.`);
             },
             configurable: false,
-            enumerable,
+            enumerable: true,
         });
         // default attribute value computed when needed
-        if (!(attrName in attributes) && initializer) {
-            attributes[attrName] = initializer();
-        }
+        state[attrName] = attrName in newAttrs ? newAttrs[attrName] : (initializer && initializer());
     }
-    state.hasBodyAttribute = 'body' in config;
-    if (bodyAttrValue && bodyAttrValue.length > 0) {
-        attributes.body = bodyAttrValue;
+    vnode.hasBodyAttribute = 'body' in config;
+    if (newBody && newBody.length > 0) {
+        state.body = newBody;
     }
     assert.block(() => {
-        for (let attrName in attributes) {
+        for (let attrName in newAttrs) {
             assert.isTrue(attrName in config, `component ${component} does not have decorated @attribute ${attrName}.`);
         }
-        Object.preventExtensions(attributes);
+        Object.preventExtensions(state);
     });
 }
 
-export function updateComponentAttributes(vnode: Object, attributes: Object, bodyAttrValue: array<Object>) {
-    const { data: { component, state } } = vnode;
-    assert.invariant(!state.isRendering, `${component}.render() method has side effects on the attributes received.`);
+export function updateComponentAttributes(vnode: Object, newAttrs: Object, newBody: array<Object>) {
+    const { component, isRendering, state } = vnode;
+    assert.invariant(!isRendering, `${component}.render() method has side effects on the attributes received.`);
     const target = Object.getPrototypeOf(component);
-    const config = AttributeMap.get(target) || {};
+    const config = AttributeMap.get(target) || component.attributes || {};
     for (let attrName in config) {
         let attrValue;
-        if (!(attrName in attributes)) {
+        if (!(attrName in newAttrs)) {
             // default attribute value computed when needed
-            const { initializer } = config[attrName];
-            attrValue = initializer ? initializer() : undefined;
+            const initializer = config[attrName];
+            attrValue = initializer && initializer();
         } else {
-            attrValue = attributes[attrName];
+            attrValue = newAttrs[attrName];
         }
-        if (attributes[attrName] !== attrValue) {
-            attributes[attrName] = attrValue;
-            state.isDirty = true;
+        if (state[attrName] !== attrValue) {
+            state[attrName] = attrValue;
+            vnode.isDirty = true;
         } else {
             // TODO: even when the values are the same, the internals of it might be dirty, @diego will add the mark via the watcher and here we should take that mark into consideration
         }
     }
-    if (attributes.body !== bodyAttrValue && bodyAttrValue && bodyAttrValue.length > 0) {
-        attributes.body = bodyAttrValue;
-        state.isDirty = true;
+    if (vnode.body !== newBody && newBody && newBody.length > 0) {
+        vnode.body = newBody;
+        vnode.isDirty = true;
     }
     assert.block(() => {
-        for (let attrName in attributes) {
+        for (let attrName in state) {
             assert.isTrue(attrName in config, `component ${component} does not have decorated @attribute ${attrName}.`);
         }
     });

@@ -3,7 +3,7 @@
 import { scheduleRehydration } from "./patcher.js";
 
 export function initComponentProperties(vnode: Object) {
-    const { data: { component, state } } = vnode;
+    const { component } = vnode;
     // this routine is responsible for adding setters and getters for all properties on
     // target as a way for users to apply mutations to their components and get the instance
     // rerendered
@@ -15,7 +15,7 @@ export function initComponentProperties(vnode: Object) {
                 set: (newValue: any) => {
                     if (value !== newValue) {
                         value = newValue;
-                        state.isDirty = true;
+                        vnode.isDirty = true;
                         scheduleRehydration(vnode);
                     }
                 },

@@ -6,7 +6,7 @@ import {
 } from "./context.js";
 
 export function invokeComponentDetachMethod(vnode: Object) {
-    const { data: { component } } = vnode;
+    const { component } = vnode;
     if (component.detach) {
         const ctx = currentContext;
         establishContext(this);
@@ -16,7 +16,7 @@ export function invokeComponentDetachMethod(vnode: Object) {
 }
 
 export function invokeComponentAttachMethod(vnode: Object) {
-    const { data: { component } } = vnode;
+    const { component } = vnode;
     if (component.attach) {
         const ctx = currentContext;
         establishContext(this);
@@ -26,13 +26,13 @@ export function invokeComponentAttachMethod(vnode: Object) {
 }
 
 export function invokeComponentRenderMethod(vnode: Object): Object {
-    const { data: { component, api, state } } = vnode;
+    const { component, api } = vnode;
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        state.isRendering = true;
+        vnode.isRendering = true;
         const newVnode = component.render(api);
-        state.isRendering = false;
+        vnode.isRendering = false;
         establishContext(ctx);
         return newVnode;
     }
@@ -40,7 +40,7 @@ export function invokeComponentRenderMethod(vnode: Object): Object {
 }
 
 export function invokeComponentUpdatedMethod(vnode: Object) {
-    const { data: { component } } = vnode;
+    const { component } = vnode;
     if (component.updated) {
         const ctx = currentContext;
         establishContext(this);
