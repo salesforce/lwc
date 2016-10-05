@@ -12,7 +12,7 @@ import {
     invokeComponentUpdatedMethod,
 } from "./invoker.js";
 
-function createRenderInterface(): Object {
+function createRenderInterface(): RenderAPI {
     var cache = new Map();
     // this object wraps the static base api plus those bits that are bound to
     // the vnode instance, so we can apply memoization for some operations.
@@ -65,7 +65,6 @@ export function updateComponent(vm: VM) {
     let newVnode = invokeComponentRenderMethod(vm);
     newVnode = patch(vnode, newVnode);
     vm.vnode = newVnode;
-    vm.isScheduled = false;
     vm.isDirty = false;
     foldVnode(vm, newVnode);
 }

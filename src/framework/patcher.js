@@ -1,5 +1,8 @@
 // @flow
 
+///<reference path="types.d.ts"/>
+
+import assert from "./assert.js";
 import { init } from "snabbdom";
 import props from "snabbdom/modules/props";
 import attrs from "snabbdom/modules/attributes";
@@ -12,14 +15,22 @@ export const patch = init([
     on,
 ]);
 
-export function scheduleRehydration(vm: Object) {
-    const { isScheduled, isReady, isDirty } = vm;
+function rehydrate(vm: VM) {
+    assert.vm(vm);
+    const { isDirty } = vm;
+    if (isDirty) {
+        updateComponent(vm);
+    }
+    vm.isScheduled = false;
+}
+
+export function scheduleRehydration(vm: VM) {
+    assert.vm(vm);
+    const { isScheduled, isReady } = vm;
     if (!isScheduled && isReady) {
         vm.isScheduled = true;
-        Promise.resolve().then((): any => {
-            if (isDirty) {
-                updateComponent(vm);
-            }
+        Promise.resolve(vm).then(rehydrate).catch((error: Error) => {
+            assert.fail('Error attempting to rehydrate component <${vm}>: ' + error.message);
         });
     }
 }

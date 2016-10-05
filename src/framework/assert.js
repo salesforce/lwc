@@ -1,5 +1,7 @@
 // @flow
 
+///<reference path="types.d.ts"/>
+
 const assert = {
     invariant(value: any, msg: string) {
         if (!value) {
@@ -19,10 +21,10 @@ const assert = {
     block(fn: Object) {
         fn.call();
     },
-    vnode(vnode: Object) {
+    vnode(vnode: VNode) {
         assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode, `${vnode} is not a vnode.`);
     },
-    vm(vm: Object) {
+    vm(vm: VM) {
         assert.isTrue(vm && "Ctor" in vm && "data" in vm && "children" in vm && "text" in vm && "elm" in vm && "key" in vm, `${vm} is not a vm.`);
     },
     fail(msg: string) {
