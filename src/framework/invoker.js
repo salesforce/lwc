@@ -1,11 +1,13 @@
 // @flow
 
+///<reference path="types.d.ts"/>
+
 import {
     currentContext,
     establishContext,
 } from "./context.js";
 
-export function invokeComponentDetachMethod(vm: Object) {
+export function invokeComponentDetachMethod(vm: VM) {
     const { component } = vm;
     if (component.detach) {
         const ctx = currentContext;
@@ -15,7 +17,7 @@ export function invokeComponentDetachMethod(vm: Object) {
     }
 }
 
-export function invokeComponentAttachMethod(vm: Object) {
+export function invokeComponentAttachMethod(vm: VM) {
     const { component } = vm;
     if (component.attach) {
         const ctx = currentContext;
@@ -25,7 +27,7 @@ export function invokeComponentAttachMethod(vm: Object) {
     }
 }
 
-export function invokeComponentRenderMethod(vm: Object): Object {
+export function invokeComponentRenderMethod(vm: VM): VNode {
     const { component, api } = vm;
     if (component.render) {
         const ctx = currentContext;
@@ -40,7 +42,7 @@ export function invokeComponentRenderMethod(vm: Object): Object {
     return null;
 }
 
-export function invokeComponentUpdatedMethod(vm: Object) {
+export function invokeComponentUpdatedMethod(vm: VM) {
     const { component } = vm;
     if (component.updated) {
         const ctx = currentContext;

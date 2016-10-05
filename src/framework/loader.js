@@ -8,9 +8,9 @@ const registry = {
     }
 };
 
-function loaderEvaluate(moduleStatus: Object): Promise {
+function loaderEvaluate(moduleStatus: Object): Promise<Namespace> {
     let exports: Object;
-    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Array<Promise> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
+    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Promise<Array> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
         .then((resolvedNamespaces: Array<Object>): Promise => {
             let returnedValue = moduleStatus.definition.apply(undefined, resolvedNamespaces);
             return exports || returnedValue;

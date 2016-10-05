@@ -1,5 +1,7 @@
 // @flow
 
+///<reference path="types.d.ts"/>
+
 import {
     createComponent,
     updateComponent,
@@ -17,13 +19,13 @@ import assert from "./assert.js";
 
 import { updateComponentAttributes } from "./attribute.js";
 
-export function init(vm: Object) {
+export function init(vm: VM) {
     assert.vm(vm);
     initFromScratch(vm);
     createComponent(vm);
 }
 
-export function prepatch(oldvm: Object, vm: Object) {
+export function prepatch(oldvm: VM, vm: VM) {
     assert.vm(oldvm);
     assert.vm(vm);
     const { Ctor: oldCtor } = oldvm;
@@ -47,7 +49,7 @@ export function prepatch(oldvm: Object, vm: Object) {
     }
 }
 
-export function insert(vm: Object) {
+export function insert(vm: VM) {
     assert.vm(vm);
     const { vnode } = vm;
     assert.vnode(vnode, 'The insert hook in a Component cannot be called if there is not a child vnode.');
@@ -59,7 +61,7 @@ export function insert(vm: Object) {
     invokeComponentAttachMethod(vm);
 }
 
-export function destroy(vm: Object) {
+export function destroy(vm: VM) {
     assert.vm(vm);
     const { vnode } = vm;
     assert.vnode(vnode, 'The destroy hook in a Component cannot be called if there is not a child vnode.');

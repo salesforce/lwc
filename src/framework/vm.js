@@ -1,5 +1,7 @@
 // @flow
 
+///<reference path="types.d.ts"/>
+
 import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
 import assert from "./assert.js";
@@ -33,7 +35,7 @@ function createRenderInterface(): Object {
 // at this point, the child vnode is ready, and all possible bits that are
 // needed by the engine to render the element, should be propagated from
 // the vnode to the parent vm, we call this the folding process.
-function foldVnode(vm: Object, vnode: Object) {
+function foldVnode(vm: VM, vnode: VNode) {
     const { sel, children, text, data } = vnode;
     vm.sel = sel;
     vm.children = children;
@@ -41,7 +43,7 @@ function foldVnode(vm: Object, vnode: Object) {
     Object.assign(vm.data, data);
 }
 
-export function createComponent(vm: Object) {
+export function createComponent(vm: VM) {
     const { Ctor, state, body } = vm;
     vm.api = createRenderInterface();
     vm.component = new Ctor();
@@ -54,7 +56,7 @@ export function createComponent(vm: Object) {
     foldVnode(vm, vnode);
 }
 
-export function updateComponent(vm: Object) {
+export function updateComponent(vm: VM) {
     const { isDirty, isReady, vnode } = vm;
     assert.invariant(vnode, `Component ${vm} does not have a child vnode yet.`);
     assert.invariant(isReady, `Component ${vm} is not ready to be updated.`);
@@ -68,7 +70,7 @@ export function updateComponent(vm: Object) {
     foldVnode(vm, newVnode);
 }
 
-export function initFromScratch(vm: Object) {
+export function initFromScratch(vm: VM) {
     const { data, children: body } = vm;
     const { props: state = {} } = data;
     const emptyvm = {
@@ -94,7 +96,7 @@ export function initFromScratch(vm: Object) {
     vm.data.props = undefined;
 }
 
-export function initFromAnotherVM(vm: Object, oldvm: Object) {
+export function initFromAnotherVM(vm: VM, oldvm: VM) {
     const { hasBodyAttribute, isReady, isScheduled, isRendering, isDirty, component, api, vnode, toString, body, state, children, data, reactiveNames } = oldvm;
     vm.data = data;
     vm.state = state;

@@ -8,7 +8,7 @@ import classnames from "lightning:classnamesLib";
 export default class button {
 
     // public attributes
-    @attribute({ required: true }) name;
+    @required @attribute name;
     @attribute value;
     @attribute label;
     @attribute variant = "neutral";
@@ -16,8 +16,8 @@ export default class button {
     @attribute iconPosition = "left";
     @attribute class;
     @attribute body;
-    @attribute({ type: Boolean }) disabled = false;
-    @attribute({ type: Function }) onclick;
+    @attribute disabled: Boolean = false;
+    @attribute onclick;
 
     // public methods
     @method focus() {

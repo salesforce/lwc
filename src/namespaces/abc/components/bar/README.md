@@ -38,10 +38,8 @@ button {
 import { attribute, method } from "aura";
 
 export default class {
-    @attribute();
-    foo = 1;
-    @attribute();
-    bar = 2;
+    @attribute foo = 1;
+    @attribute bar = 2;
 
     constructor() {
         this.counter = 0;
@@ -51,8 +49,7 @@ export default class {
         this.counter += 1;
     }
 
-    @method()
-    reset() {
+    @method reset() {
         this.counter = 0;
     }
 }

@@ -2,8 +2,8 @@ import ADS from "aura:ads";
 import { attribute } from "aura";
 
 class adsBaz {
-    @attribute({ isRequired: true }) foo;
-    @attribute() bar;
+    @attribute foo;
+    @attribute bar;
 
     // this method has generated code
     render({h}) {

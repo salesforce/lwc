@@ -24,6 +24,7 @@ At this point, the app is running in watch mode, and it is accessible via http:/
  * [x] implement memoization `m()` in api.
  * implement the tricks to determine when an array or object was passed as attributes down, and do the corresponding getters to detect changes and re-render the component that owns the data structure. (the `watcher`).
  * [x] activate decorators.
- * [x] connect `@attribute()` decorator with the validation of the attributes in `vm.js`.
+ * [x] connect `@attribute` and `@method` decorator with the validation of the attributes in `vm.js`.
+ * implement `@required` decorator.
  * template parser.
  * [x] finish an example of ADS, and finish the ADS service.

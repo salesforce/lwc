@@ -3,37 +3,27 @@
 import assert from "./assert.js";
 const AttributeMap = new WeakMap();
 
-export function decorator(config?: Object = {}): decorator {
-    function attribute(target: Object, attrName: string, { initializer }: Object): Object {
-        let attrs = AttributeMap.get(target);
-        if (!attrs) {
-            attrs = {};
-            AttributeMap.set(target, attrs);
-        }
-        assert.isFalse(attrs[attrName], `Duplicated decorated attribute ${attrName} in component <${target.constructor.name}>.`);
-        attrs[attrName] = Object.assign({}, config, {
-            initializer,
-        });
-        assert.block(() => {
-            Object.freeze(attrs[attrName]);
-        });
-        return {
-            get: () => {
-                assert.fail(`Component <${target.constructor.name}> can not access decorated @attribute ${attrName} until its updated() callback is invoked.`);
-            },
-            set: () => {
-                assert.fail(`Component <${target.constructor.name}> can not set a new value for decorated @attribute ${attrName}.`);
-            },
-            enumerable: true,
-            configurable: true
-        };
+export function attribute(target: Object, attrName: string, { initializer }: Object): PropertyDescriptor {
+    let attrs = AttributeMap.get(target);
+    if (!attrs) {
+        attrs = {};
+        AttributeMap.set(target, attrs);
     }
-    if (typeof arguments[1] === 'string') {
-        config = undefined;
-        return attribute(...arguments);
-    } else {
-        return attribute;
-    }
+    assert.isFalse(attrs[attrName], `Duplicated decorated attribute ${attrName} in component <${target.constructor.name}>.`);
+    attrs[attrName] = { initializer };
+    assert.block(() => {
+        Object.freeze(attrs[attrName]);
+    });
+    return {
+        get: () => {
+            assert.fail(`Component <${target.constructor.name}> can not access decorated @attribute ${attrName} until its updated() callback is invoked.`);
+        },
+        set: () => {
+            assert.fail(`Component <${target.constructor.name}> can not set a new value for decorated @attribute ${attrName}.`);
+        },
+        enumerable: true,
+        configurable: true
+    };
 }
 
 export function getAttributesConfig(target: Object): Object {
