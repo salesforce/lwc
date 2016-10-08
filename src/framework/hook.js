@@ -4,53 +4,42 @@
 
 import {
     createComponent,
-    updateComponent,
-    initFromScratch,
-    initFromAnotherVM,
+    patchComponent,
 } from "./vm.js";
 
 import {
     invokeComponentAttachMethod,
     invokeComponentDetachMethod,
-    invokeComponentUpdatedMethod,
 } from "./invoker.js";
+
+import { makeComponentPropertiesInactive } from "./reactivity.js"; 
 
 import assert from "./assert.js";
 
-import { updateComponentAttributes } from "./attribute.js";
-
 export function init(vm: VM) {
     assert.vm(vm);
-    initFromScratch(vm);
+    console.log(`<${vm.Ctor.name}> is being initialized.`);
     createComponent(vm);
 }
 
 export function prepatch(oldvm: VM, vm: VM) {
-    assert.vm(oldvm);
     assert.vm(vm);
-    const { Ctor: oldCtor } = oldvm;
-    const { Ctor, api, data: { props: state }, children: body } = vm;
+    console.log(`<${vm.Ctor.name}> is being patched.`);
     if (oldvm !== vm) {
-        if (oldCtor !== Ctor) {
+        const { Ctor: oldCtor } = oldvm;
+        const { Ctor } = vm;
+        if (!oldCtor || oldCtor !== Ctor) {
             createComponent(vm);
         } else {
-            if (api === undefined) {
-                initFromAnotherVM(vm, oldvm);
-            }
-            updateComponentAttributes(vm, state, body);
-            // TODO: there is an edge case here that maybe isDirty is not really
-            // a consequence of calling `updateComponentAttributes()`, but something
-            // that is pending to be done in the next tick
-            if (vm.isDirty) {
-                invokeComponentUpdatedMethod(vm);
-                updateComponent(vm);
-            }
+            assert.vm(oldvm);
+            patchComponent(vm, oldvm);
         }
     }
 }
 
 export function insert(vm: VM) {
     assert.vm(vm);
+    console.log(`${vm} is being inserted.`);
     const { vnode } = vm;
     assert.vnode(vnode, 'The insert hook in a Component cannot be called if there is not a child vnode.');
     vnode.elm = vm.elm;
@@ -63,6 +52,7 @@ export function insert(vm: VM) {
 
 export function destroy(vm: VM) {
     assert.vm(vm);
+    console.log(`${vm} is being destroyed.`);
     const { vnode } = vm;
     assert.vnode(vnode, 'The destroy hook in a Component cannot be called if there is not a child vnode.');
     const { data: { hook: subHook } } = vnode;
@@ -70,5 +60,5 @@ export function destroy(vm: VM) {
         destroy(vnode);
     }
     invokeComponentDetachMethod(vm);
-    vm.vnode = null;
+    makeComponentPropertiesInactive(vm);
 }

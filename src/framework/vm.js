@@ -5,12 +5,18 @@
 import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
 import assert from "./assert.js";
-import { initComponentAttributes } from "./attribute.js";
-import { initComponentProperties } from "./property.js";
+import {
+    makeComponentPropertiesActive,
+} from "./reactivity.js";
+import {
+    updateComponentAttributes,
+    initComponentAttributes,
+} from "./attribute.js";
 import {
     invokeComponentRenderMethod,
     invokeComponentUpdatedMethod,
 } from "./invoker.js";
+import { addComponentSetHook } from "./set.js";
 
 function createRenderInterface(): RenderAPI {
     var cache = new Map();
@@ -43,72 +49,89 @@ function foldVnode(vm: VM, vnode: VNode) {
     Object.assign(vm.data, data);
 }
 
-export function createComponent(vm: VM) {
-    const { Ctor, state, body } = vm;
-    vm.api = createRenderInterface();
-    vm.component = new Ctor();
-    initComponentAttributes(vm, state, body);
-    initComponentProperties(vm);
-    invokeComponentUpdatedMethod(vm);
-    let vnode = invokeComponentRenderMethod(vm);
+function initFromAnotherVM(vm: VM, oldvm: VM) {
+    const { component, api, vnode, toString, body, state, children, data, flags, reactiveNames, listeners } = oldvm;
+    vm.data = data;
+    vm.state = state;
+    vm.body = body;
+    vm.flags = flags;
+    vm.component = component;
+    vm.api = api;
     vm.vnode = vnode;
-    vm.isReady = true;
-    foldVnode(vm, vnode);
+    vm.reactiveNames = reactiveNames;
+    vm.listeners = listeners;
+    vm.toString = toString;
+    vm.children = children;
 }
 
-export function updateComponent(vm: VM) {
-    const { isDirty, isReady, vnode } = vm;
-    assert.invariant(vnode, `Component ${vm} does not have a child vnode yet.`);
-    assert.invariant(isReady, `Component ${vm} is not ready to be updated.`);
-    assert.invariant(isDirty, `Component ${vm} is not dirty.`);
-    // TODO: what about null results from render?
-    let newVnode = invokeComponentRenderMethod(vm);
-    newVnode = patch(vnode, newVnode);
-    vm.vnode = newVnode;
-    vm.isDirty = false;
-    foldVnode(vm, newVnode);
-}
-
-export function initFromScratch(vm: VM) {
-    const { data, children: body } = vm;
+export function createComponent(vm: VM) {
+    const { Ctor, data, children: body } = vm;
     const { props: state = {} } = data;
-    const emptyvm = {
-        state,
-        body,
-        data,
+    const flags = {
         hasBodyAttribute: false,
         isReady: false,
         isScheduled: false,
         isRendering: false,
         isDirty: false,
+    };
+    const emptyvm = {
+        state,
+        body,
+        data,
+        flags,
         component: null,
         api: null,
         vnode: null,
         reactiveNames: {},
+        listeners: {},
         // TODO: maybe don't belong here...
         toString: (): string => {
-            const type = vm.Ctor ? vm.Ctor.constructor.vnodeType : vm.sel;
+            const type = Ctor.name;
             return `<${type}>`;
         },
     };
     initFromAnotherVM(vm, emptyvm);
     vm.data.props = undefined;
+    vm.api = createRenderInterface();
+    vm.component = new Ctor();
+    initComponentAttributes(vm, state, body);
+    makeComponentPropertiesActive(vm);
+    addComponentSetHook(vm);
+    invokeComponentUpdatedMethod(vm);
+    let vnode = invokeComponentRenderMethod(vm);
+    vm.vnode = vnode;
+    flags.isReady = true;
+    foldVnode(vm, vnode);
 }
 
-export function initFromAnotherVM(vm: VM, oldvm: VM) {
-    const { hasBodyAttribute, isReady, isScheduled, isRendering, isDirty, component, api, vnode, toString, body, state, children, data, reactiveNames } = oldvm;
-    vm.data = data;
-    vm.state = state;
-    vm.body = body;
-    vm.hasBodyAttribute = hasBodyAttribute;
-    vm.isReady = isReady;
-    vm.isScheduled = isScheduled;
-    vm.isRendering = isRendering;
-    vm.isDirty = isDirty;
-    vm.component = component;
-    vm.api = api;
-    vm.vnode = vnode;
-    vm.reactiveNames = reactiveNames;
-    vm.toString = toString;
-    vm.children = children;
+export function updateComponent(vm: VM) {
+    const { flags, vnode } = vm;
+    const { isDirty, isReady } = flags;
+    assert.invariant(vnode, `Component ${vm} does not have a child vnode yet.`);
+    assert.invariant(isReady, `Component ${vm} is not ready to be updated.`);
+    assert.invariant(isDirty, `Component ${vm} is not dirty.`);
+    console.log(`${vm} is being updated.`);
+    // TODO: what about null results from render?
+    let newVnode = invokeComponentRenderMethod(vm);
+    newVnode = patch(vnode, newVnode);
+    vm.vnode = newVnode;
+    flags.isDirty = false;
+    foldVnode(vm, newVnode);
+}
+
+export function patchComponent(vm: VM, oldvm: VM) {
+    assert.vm(vm);
+    assert.vm(oldvm);
+    assert.isTrue(vm.Ctor === oldvm.Ctor, `patchComponent() can only be used with two equivalent vm objects.`);
+    console.log(`${oldvm} is being rehydrated.`);
+    const { data: { props: state }, children: body } = vm;
+    initFromAnotherVM(vm, oldvm);
+    updateComponentAttributes(vm, state, body);
+    // TODO: there is an edge case here that maybe isDirty is not really
+    // a consequence of calling `updateComponentAttributes()`, but something
+    // that is pending to be done in the next tick
+    if (vm.flags.isDirty) {
+        invokeComponentUpdatedMethod(vm);
+        updateComponent(vm);
+    }
 }

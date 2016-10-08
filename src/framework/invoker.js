@@ -6,6 +6,12 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
+import {
+    makeComponentPropertiesInactive,
+} from "./reactivity.js";
+import {
+    addComponentWatchers,
+} from "./watcher.js";
 
 export function invokeComponentDetachMethod(vm: VM) {
     const { component } = vm;
@@ -28,14 +34,15 @@ export function invokeComponentAttachMethod(vm: VM) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNode {
-    const { component, api } = vm;
+    const { component, api, flags } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        vm.isRendering = true;
-        vm.reactiveNames = {};
+        flags.isRendering = true;
+        makeComponentPropertiesInactive(vm);
+        addComponentWatchers(vm);
         const vnode = component.render(api);
-        vm.isRendering = false;
+        flags.isRendering = false;
         establishContext(ctx);
         return vnode;
     }
