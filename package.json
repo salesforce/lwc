@@ -28,6 +28,7 @@
     "express": "^4.14.0",
     "forever": "^0.15.2",
     "glob": "^7.1.0",
+    "rimraf": "^2.5.4",
     "rollup": "^0.34.3",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^3.3.1",
