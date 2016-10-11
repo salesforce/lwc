@@ -30,7 +30,6 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
         return value;
     };
     const set = function reactiveSetter(newValue: any) {
-        // TODO: how to opt out when the newValue is the same as the old value...
         if (originalSetter && newValue !== oldValue) {
             originalSetter.call(this, newValue);
             const callbacks = reactiveSetter[watchers];

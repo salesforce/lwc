@@ -1,14 +1,25 @@
 ### Aura Markup
 
 ```html
-<aura:markup>
-    <button name="{! v.a }" onclick="{! c.onclick }">
+<aura:component>
+    ...
+    <button name="{! v.a }" onclick="{! c.clickHandler }">
         <span>something</span>
     </button>
-</aura:markup>
+</aura:component>
 ```
 
 ### Standard Shadow DOM Template + Annotations
+
+```html
+<template>
+    <button name:bind="a" onclick:call="clickHandler">
+        <span>something</span>
+    </button>
+</template>
+```
+
+### Standard Shadow DOM Template + Annotations + Inline Styles
 
 ```html
 <template>
@@ -17,7 +28,7 @@
             color: red;
         }
     </style>
-    <button name.bind="a" onclick.trigger="onclick">
+    <button name:bind="a" onclick:call="clickHandler">
         <span>something</span>
     </button>
 </template>
@@ -26,8 +37,18 @@
 
 ## CSS
 
+## Standard Shadow DOM CSS
+
 ```css
 button {
+    color: red;
+}
+```
+
+### Equivalent to existing CSS
+
+```css
+THIS button {
     color: red;
 }
 ```
@@ -45,7 +66,7 @@ export default class {
         this.counter = 0;
     }
 
-    onclick(event) {
+    clickHandler(event) {
         this.counter += 1;
     }
 
