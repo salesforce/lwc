@@ -24,7 +24,9 @@ $A.loaderImportMethodTemporary('abc:bar')
         //     $A.createElement(bar)
         // ]);
 
+        console.time('createAndRender');
         var domNodeContainer = document.getElementById('container');
         $A.mountToDom(opaqueElement, domNodeContainer);
+        console.timeEnd('createAndRender');
     })
 </script>
