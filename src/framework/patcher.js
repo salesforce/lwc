@@ -6,7 +6,7 @@ import assert from "./assert.js";
 import { init } from "snabbdom";
 import props from "snabbdom/modules/props";
 import attrs from "snabbdom/modules/attributes";
-import on from "snabbdom/modules/eventlisteners";
+import on from "./listener.js";
 import { updateComponent } from "./vm.js";
 
 export const patch = init([
