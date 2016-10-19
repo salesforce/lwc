@@ -1,4 +1,4 @@
-# Mr. Frankenstein POC
+# Raptor Engine
 
 ## Getting Start
 
@@ -9,8 +9,8 @@
 ### Installation
 
 ```bash
-git clone https://git.soma.salesforce.com/cpatino/frankenstein.git
-cd frank
+git clone https://git.soma.salesforce.com/raptor/raptor.git
+cd raptor
 npm install .
 npm start
 ```
