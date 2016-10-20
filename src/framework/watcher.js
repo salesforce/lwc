@@ -2,58 +2,60 @@
 
 import assert from "./assert.js";
 import { scheduleRehydration } from "./patcher.js";
-import { getAttributesConfig } from "./attribute.js";
-import { isRendering } from "./invoker.js";
 import {
-    markEntryAsReactive,
-    markEntryAsDirty,
+    isRendering,
+    vmBeingRendered,
+} from "./invoker.js";
+import {
+    markVMAsDirty,
 } from "./reactivity.js";
 
-const watchers = Symbol();
+const WatcherFlag = Symbol('watcher');
+const TargetToPropsMap = new WeakMap();
+
+function notifyListeners(target: Object, propName: string) {
+    if (TargetToPropsMap.has(target)) {
+        const PropNameToListenersMap = TargetToPropsMap.get(target); 
+        if (PropNameToListenersMap.has(propName)) {
+            const set = PropNameToListenersMap.get(propName);
+            set.forEach((vm: VM) => {
+                assert.vm(vm);
+                const { flags } = vm;
+                if (!flags.isDirty) {
+                    markVMAsDirty(vm);
+                    scheduleRehydration(vm);
+                }
+            });
+        }
+    }
+}
 
 function getWatchPropertyDescriptor(target: Object, propName: string, originalGetter: Function, originalSetter: Function): PropertyDescriptor {
     let { enumerable, value: oldValue } = Object.getOwnPropertyDescriptor(target, propName);
     let isFirstTimeGetterIsCalled = true;
     const get = function reactiveGetter(): any {
         const value = originalGetter ? originalGetter.call(this) : undefined;
-        if (oldValue !== value || isFirstTimeGetterIsCalled) {
-            if (value !== null && typeof value === 'object') {
-                Object.getOwnPropertyNames(value).forEach((propName: string): any => watchProperty(value, propName));
+        if (isRendering) {
+            subscribeToSetHook(vmBeingRendered, target, propName);
+            if (oldValue !== value || isFirstTimeGetterIsCalled) {
+                if (value !== null && typeof value === 'object') {
+                    Object.getOwnPropertyNames(value).forEach((propName: string): any => watchProperty(value, propName));
+                }
             }
         }
         isFirstTimeGetterIsCalled = false;
         oldValue = value;
-        const callbacks = reactiveGetter[watchers];
-        const len = callbacks.length;
-        for (let i = 0; i < len; i += 1) {
-            callbacks[i](value);
-        }
         return value;
     };
     const set = function reactiveSetter(newValue: any) {
+        assert.invariant(!isRendering, `Invalid attempting to mutate property ${propName} of ${target} during an ongoing rendering process for ${vmBeingRendered}.`);
         if (originalSetter && newValue !== oldValue) {
             originalSetter.call(this, newValue);
-            const callbacks = reactiveSetter[watchers];
-            const len = callbacks.length;
-            for (let i = 0; i < len; i += 1) {
-                callbacks[i](newValue);
-            }
+            notifyListeners(target, propName);
         }
     };
-    const getters = [];
-    Object.defineProperty(get, watchers, {
-        value: getters,
-        enumerable: false,
-        configurable: false,
-        writable: false,
-    });
-    const setters = [];
-    Object.defineProperty(set, watchers, {
-        value: setters,
-        enumerable: false,
-        configurable: false,
-        writable: false,
-    });
+    get[WatcherFlag] = 1;
+    set[WatcherFlag] = 1;
     return {
         get,
         set,
@@ -62,9 +64,10 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
     };
 }
 
-function watchProperty(target: Object, propName: string): Boolean {
+export function watchProperty(target: Object, propName: string): Boolean {
+    // TODO: maybe this should only work if target is a plain object
     let { get, set, value, configurable } = Object.getOwnPropertyDescriptor(target, propName);
-    if (get && watchers in get) {
+    if (get && WatcherFlag in get) {
         return true;
     }
     if (configurable) {
@@ -83,54 +86,23 @@ function watchProperty(target: Object, propName: string): Boolean {
     return false;
 }
 
-function addPropertyListener(target: Object, propName: string, getPropertyCallback: Function, setPropertyCallback: Function): array<array<Function>>|void {
-    let { get, set } = Object.getOwnPropertyDescriptor(target, propName);
-    assert.invariant(get && get[watchers], `addPropertyListener(${target}, "${propName}") cannot be called because it is not being watched.`);
-    const getters = get[watchers];
-    const setters = set[watchers];
-    getters.push(getPropertyCallback);
-    setters.push(setPropertyCallback);
-    return [getters, setters];
-}
-
-function setPropertyWatcher(vm: VM, target: Object, propName: string, ns: string, isAttribute: boolean) {
+export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
     assert.vm(vm);
-    const entry = ns ? `${ns}.${propName}` : propName;
-    const { flags, listeners } = vm;
-    if (listeners[entry]) {
-        return;
-    }
     if (watchProperty(target, propName)) {
-        const getPropertyCallback = (value: any) => {
-            if (isRendering) {
-                markEntryAsReactive(vm, entry);
-                if (value !== null && typeof value === 'object') {
-                    Object.getOwnPropertyNames(value).forEach((propName: string) => {
-                        setPropertyWatcher(vm, value, propName, entry, isAttribute);
-                    });
-                }
-            }
-        };
-        const setPropertyCallback = () => {
-            assert.invariant(!isRendering, `${vm}.render() method has side effects on the property ${propName}.`);
-            assert.invariant(entry.charAt(0) !== '@', `Component ${target} can not set a new value for decorated @attribute ${propName}.`);
-            if (!flags.isDirty) {
-                markEntryAsDirty(vm, entry);
-                if (flags.isDirty) {
-                    scheduleRehydration(vm);
-                }
-            }
-        };
-        const [getters, setters] = addPropertyListener(target, propName, getPropertyCallback, setPropertyCallback);
-        listeners[entry] = [getters, getPropertyCallback, setters, setPropertyCallback];
-    }
-}
+        if (!TargetToPropsMap.has(target)) {
+            TargetToPropsMap.set(target, new Map());
+        }
+        const PropNameToListenersMap = TargetToPropsMap.get(target);
 
-export function addComponentWatchers(vm: VM) {
-    assert.vm(vm);
-    const { component } = vm;
-    let attributes = getAttributesConfig(Object.getPrototypeOf(component));
-    Object.getOwnPropertyNames(component).forEach((propName: string) => {
-        setPropertyWatcher(vm, component, propName, '', propName in attributes);
-    });
+        if (!PropNameToListenersMap.has(propName)) {
+            PropNameToListenersMap.set(propName, new Set());
+        }
+        const set = PropNameToListenersMap.get(propName);
+
+        if (!set.has(vm)) {
+            set.add(vm);
+            // we keep track of the sets that vm is listening from to be able to do some clean up later on
+            vm.listeners.add(set);
+        }
+    }
 }

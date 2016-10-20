@@ -1,12 +1,16 @@
 // @flow
 
 import assert from "./assert.js";
-
-import { markEntryAsDirty } from "./reactivity.js";
-import { isRendering } from "./invoker.js";
+import { markVMAsDirty } from "./reactivity.js";
+import { subscribeToSetHook } from "./watcher.js";
+import {
+    isRendering,
+    vmBeingRendered,
+} from "./invoker.js";
 
 const AttributeMap = new WeakMap();
 const internal = Symbol();
+const ObjectAttributeToProxyMap = new WeakMap();
 
 export function attribute(target: Object, attrName: string, { initializer }: Object): PropertyDescriptor {
     let attrs = AttributeMap.get(target);
@@ -51,7 +55,8 @@ export function initComponentAttributes(vm: Object, newAttrs: Object, newBody: a
         });
         Object.defineProperty(component, attrName, {
             get: (): any => {
-                return state[attrName];
+                const value = state[attrName];
+                return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
             },
             set: () => {
                 assert.fail(`Component ${vm} can not set a new value for decorated @attribute ${attrName}.`);
@@ -68,7 +73,7 @@ export function initComponentAttributes(vm: Object, newAttrs: Object, newBody: a
     }
     assert.block(() => {
         for (let attrName in newAttrs) {
-            assert.isTrue(attrName in config, `component ${vm} does not have decorated @attribute ${attrName}.`);
+            assert.isTrue(attrName in config, `Component ${vm} does not have decorated @attribute ${attrName}.`);
         }
         Object.preventExtensions(state);
     });
@@ -91,19 +96,42 @@ export function updateComponentAttributes(vm: Object, newAttrs: Object, newBody:
         if (state[attrName] !== attrValue) {
             state[attrName] = attrValue;
             if (!isDirty) {
-                markEntryAsDirty(vm, `@${attrName}`);
+                markVMAsDirty(vm, `@${attrName}`);
             }
         }
     }
     if (state.body !== newBody && newBody && newBody.length > 0) {
         state.body = newBody;
         if (!isDirty) {
-            markEntryAsDirty(vm, '@body');
+            markVMAsDirty(vm, '@body');
         }
     }
     assert.block(() => {
         for (let attrName in state) {
-            assert.isTrue(attrName in config, `component ${vm} does not have decorated @attribute ${attrName}.`);
+            assert.isTrue(attrName in config, `Component ${vm} does not have decorated @attribute ${attrName}.`);
         }
     });
+}
+
+const attributeProxyHandler = {
+    get(target: Object, name: String): any {
+        const value = target[name];
+        if (isRendering) {
+            subscribeToSetHook(vmBeingRendered, target, name);
+        }
+        return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
+    },
+    set(target: Object, name: String, value: any) {
+        assert.invariant(false, `Property ${name} of ${target} cannot be set to ${value} because it belongs to a decorated @attribute.`);
+    },
+};
+
+function getAttributeProxy(value: Object): Object {
+    if (value === null) {
+        return null;
+    }
+    if (ObjectAttributeToProxyMap.has(value)) {
+        return ObjectAttributeToProxyMap.get(value);
+    }
+    ObjectAttributeToProxyMap.set(value, new Proxy(value, attributeProxyHandler));
 }

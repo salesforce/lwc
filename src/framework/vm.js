@@ -6,16 +6,15 @@ import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
 import assert from "./assert.js";
 import {
-    makeComponentPropertiesActive,
-} from "./reactivity.js";
-import {
     updateComponentAttributes,
     initComponentAttributes,
+    getAttributesConfig,
 } from "./attribute.js";
 import {
     invokeComponentRenderMethod,
     invokeComponentUpdatedMethod,
 } from "./invoker.js";
+import { watchProperty } from "./watcher.js";
 import { addComponentSetHook } from "./set.js";
 
 function createRenderInterface(): RenderAPI {
@@ -59,9 +58,27 @@ function initFromAnotherVM(vm: VM, oldvm: VM) {
     vm.api = api;
     vm.vnode = vnode;
     vm.reactiveNames = reactiveNames;
-    vm.listeners = listeners;
+    vm.listeners = new Set();
     vm.toString = toString;
     vm.children = children;
+}
+
+function watchComponentProperties(vm: VM) {
+    assert.vm(vm);
+    const { component } = vm;
+    const attributes = getAttributesConfig(Object.getPrototypeOf(component));
+    Object.getOwnPropertyNames(component).forEach((propName: string) => {
+        if (!(propName in attributes)) {
+            watchProperty(component, propName);
+        }
+    });
+}
+
+function clearListeners(vm: VM) {
+    assert.vm(vm);
+    const { listeners } = vm;
+    listeners.forEach((propSet: Set): void => propSet.delete(vm));
+    listeners.clear();
 }
 
 export function createComponent(vm: VM) {
@@ -94,7 +111,7 @@ export function createComponent(vm: VM) {
     vm.api = createRenderInterface();
     vm.component = new Ctor();
     initComponentAttributes(vm, state, body);
-    makeComponentPropertiesActive(vm);
+    watchComponentProperties(vm);
     addComponentSetHook(vm);
     invokeComponentUpdatedMethod(vm);
     let vnode = invokeComponentRenderMethod(vm);
@@ -110,6 +127,7 @@ export function updateComponent(vm: VM) {
     assert.invariant(isReady, `Component ${vm} is not ready to be updated.`);
     assert.invariant(isDirty, `Component ${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
+    clearListeners(vm);
     // TODO: what about null results from render?
     let newVnode = invokeComponentRenderMethod(vm);
     newVnode = patch(vnode, newVnode);
@@ -133,4 +151,9 @@ export function patchComponent(vm: VM, oldvm: VM) {
         invokeComponentUpdatedMethod(vm);
         updateComponent(vm);
     }
+}
+
+export function destroyComponent(vm: VM) {
+    assert.vm(vm);
+    clearListeners(vm);
 }

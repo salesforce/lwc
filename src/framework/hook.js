@@ -5,14 +5,13 @@
 import {
     createComponent,
     patchComponent,
+    destroyComponent,
 } from "./vm.js";
 
 import {
     invokeComponentAttachMethod,
     invokeComponentDetachMethod,
 } from "./invoker.js";
-
-import { makeComponentPropertiesInactive } from "./reactivity.js"; 
 
 import assert from "./assert.js";
 
@@ -60,5 +59,5 @@ export function destroy(vm: VM) {
         destroy(vnode);
     }
     invokeComponentDetachMethod(vm);
-    makeComponentPropertiesInactive(vm);
+    destroyComponent(vm);
 }
