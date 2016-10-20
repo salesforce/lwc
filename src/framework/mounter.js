@@ -8,7 +8,7 @@ import { createEmptyElement } from "./utils.js";
 
 export function mountToDom(vnode: VNode, domNode: Node) {
     assert.vnode(vnode);
-    vnode = patch(createEmptyElement(vnode.sel), vnode);
+    vnode = patch(createEmptyElement('fake'), vnode);
     domNode.innerHTML = '';
     domNode.appendChild(vnode.elm);
 }

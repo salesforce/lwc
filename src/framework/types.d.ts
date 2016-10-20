@@ -9,8 +9,8 @@ declare class Component {
 
 interface VM extends VNode {
     Ctor: () => void;
-    component: Component,
-    isReady: boolean;
+    component: Component;
+    flag: Object;
 }
 
 interface VNode {

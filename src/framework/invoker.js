@@ -7,6 +7,9 @@ import {
     establishContext,
 } from "./context.js";
 
+export let isRendering: Boolean = false;
+export let vmBeingRendered: VM|null = null;
+
 export function invokeComponentDetachMethod(vm: VM) {
     const { component } = vm;
     if (component.detach) {
@@ -32,10 +35,11 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        vm.isRendering = true;
-        vm.reactiveNames = {};
+        isRendering = true;
+        vmBeingRendered = vm;
         const vnode = component.render(api);
-        vm.isRendering = false;
+        isRendering = false;
+        vmBeingRendered = null;
         establishContext(ctx);
         return vnode;
     }

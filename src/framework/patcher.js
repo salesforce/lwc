@@ -17,18 +17,18 @@ export const patch = init([
 
 function rehydrate(vm: VM) {
     assert.vm(vm);
-    const { isDirty } = vm;
-    if (isDirty) {
+    const { flags } = vm;
+    if (flags.isDirty) {
         updateComponent(vm);
     }
-    vm.isScheduled = false;
+    flags.isScheduled = false;
 }
 
 export function scheduleRehydration(vm: VM) {
     assert.vm(vm);
-    const { isScheduled, isReady } = vm;
-    if (!isScheduled && isReady) {
-        vm.isScheduled = true;
+    const { flags } = vm;
+    if (!flags.isScheduled && flags.isReady) {
+        flags.isScheduled = true;
         Promise.resolve(vm).then(rehydrate).catch((error: Error) => {
             assert.fail('Error attempting to rehydrate component <${vm}>: ' + error.message);
         });

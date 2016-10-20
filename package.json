@@ -42,7 +42,7 @@
     "serve-static": "^1.11.1",
     "snabbdom": "^0.5.3",
     "typescript-eslint-parser": "eslint/typescript-eslint-parser",
-    "watch": "^0.19.1",
+    "watch": "1.0.0",
     "yargs": "^6.0.0"
   }
 }
