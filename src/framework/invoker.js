@@ -13,6 +13,9 @@ import {
     addComponentWatchers,
 } from "./watcher.js";
 
+export let isRendering: Boolean = false;
+export let vmBeingRendered: VM|null = null;
+
 export function invokeComponentDetachMethod(vm: VM) {
     const { component } = vm;
     if (component.detach) {
@@ -38,11 +41,13 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);
-        flags.isRendering = true;
+        isRendering = true;
+        vmBeingRendered = vm;
         makeComponentPropertiesInactive(vm);
         addComponentWatchers(vm);
         const vnode = component.render(api);
-        flags.isRendering = false;
+        isRendering = false;
+        vmBeingRendered = null;
         establishContext(ctx);
         return vnode;
     }

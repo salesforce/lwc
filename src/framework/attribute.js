@@ -3,6 +3,7 @@
 import assert from "./assert.js";
 
 import { markEntryAsDirty } from "./reactivity.js";
+import { isRendering } from "./invoker.js";
 
 const AttributeMap = new WeakMap();
 const internal = Symbol();
@@ -74,7 +75,7 @@ export function initComponentAttributes(vm: Object, newAttrs: Object, newBody: a
 }
 
 export function updateComponentAttributes(vm: Object, newAttrs: Object, newBody: array<Object>) {
-    const { component, flags: { isRendering, isDirty }, state } = vm;
+    const { component, flags: { isDirty }, state } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the attributes received.`);
     const target = Object.getPrototypeOf(component);
     const config = AttributeMap.get(target) || {};

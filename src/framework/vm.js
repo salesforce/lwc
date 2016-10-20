@@ -71,7 +71,6 @@ export function createComponent(vm: VM) {
         hasBodyAttribute: false,
         isReady: false,
         isScheduled: false,
-        isRendering: false,
         isDirty: false,
     };
     const emptyvm = {

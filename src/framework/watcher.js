@@ -3,6 +3,7 @@
 import assert from "./assert.js";
 import { scheduleRehydration } from "./patcher.js";
 import { getAttributesConfig } from "./attribute.js";
+import { isRendering } from "./invoker.js";
 import {
     markEntryAsReactive,
     markEntryAsDirty,
@@ -101,7 +102,7 @@ function setPropertyWatcher(vm: VM, target: Object, propName: string, ns: string
     }
     if (watchProperty(target, propName)) {
         const getPropertyCallback = (value: any) => {
-            if (flags.isRendering) {
+            if (isRendering) {
                 markEntryAsReactive(vm, entry);
                 if (value !== null && typeof value === 'object') {
                     Object.getOwnPropertyNames(value).forEach((propName: string) => {
@@ -111,7 +112,7 @@ function setPropertyWatcher(vm: VM, target: Object, propName: string, ns: string
             }
         };
         const setPropertyCallback = () => {
-            assert.invariant(!flags.isRendering, `${vm}.render() method has side effects on the property ${propName}.`);
+            assert.invariant(!isRendering, `${vm}.render() method has side effects on the property ${propName}.`);
             assert.invariant(entry.charAt(0) !== '@', `Component ${target} can not set a new value for decorated @attribute ${propName}.`);
             if (!flags.isDirty) {
                 markEntryAsDirty(vm, entry);

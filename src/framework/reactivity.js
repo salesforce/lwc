@@ -2,6 +2,7 @@
 
 import assert from "./assert.js";
 import { addComponentWatchers } from "./watcher.js";
+import { isRendering } from "./invoker.js";
 
 export function makeComponentPropertiesActive(vm: VM) {
     assert.vm(vm);
@@ -43,7 +44,7 @@ export function markEntryAsReactive(vm: VM, entry: string) {
 export function markEntryAsDirty(vm: VM, entry: string) {
     const { reactiveNames, flags } = vm;
     assert.isFalse(flags.isDirty, `markEntryAsDirty(${vm}, "${entry}") should not be called when the componet is already dirty.`);
-    assert.isFalse(flags.isRendering, `markEntryAsDirty(${vm}, "${entry}") cannot be called during rendering.`);
+    assert.isFalse(isRendering, `markEntryAsDirty(${vm}, "${entry}") cannot be called during rendering.`);
     if (reactiveNames[entry]) {
         console.log(`${vm}.${entry} property was marked as dirty.`);
         flags.isDirty = true;
