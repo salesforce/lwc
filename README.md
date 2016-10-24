@@ -15,7 +15,7 @@ npm install .
 npm start
 ```
 
-At this point, the app is running in watch mode, and it is accessible via http://localhost:8080/
+At this point, the app is running in watch mode, and it is accessible via http://localhost:8181/
 
 ## TODO
 
