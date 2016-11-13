@@ -8,6 +8,8 @@ import {
 import esutils from 'esutils';
 import groupProps from './group-props';
 
+const PRIMITIVE_ITERATOR = 'i';
+
 //import metadata from './metadata';
 export default function ({ types: t }) {
     return {
@@ -186,7 +188,7 @@ export default function ({ types: t }) {
                     const forSyntax = parseForStatement(attrValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(t.identifier('l'), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
+                    const expr = t.callExpression(t.identifier(PRIMITIVE_ITERATOR), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
                     
                     elems.push(expr);
                     continue;

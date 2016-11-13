@@ -27,7 +27,11 @@ export function compileClass(src, options = {}) {
         babelrc: false,
         presets: BASE_CONFIG.presets,
         plugins: [
-            [classPlugin, {}],
+            [classPlugin, {
+                methodName  : 'render',
+                methodProps : options.methodProps,
+                methodAST   : options.templateAST
+            }],
             ...BASE_CONFIG.plugins,
         ]
     };
@@ -50,8 +54,10 @@ export { compileTemplate };
 
 // -- DELETE ME ----
 export function test() {
-    const { code: codeTemplate } = compileTemplateFromFile('test/fixtures/classAndtemplate/classAndTemplate.html');
-    console.log('Template code: \n ', codeTemplate);
-    const { code: codeClass } = compileClassFromFile('test/fixtures/classAndtemplate/classAndTemplate.js');
-    console.log(codeClass); 
+    const templateResult = compileTemplateFromFile('test/fixtures/classAndtemplate/classAndTemplate.html');
+    const classResult = compileClassFromFile('test/fixtures/classAndtemplate/classAndTemplate.js', {
+        templateAST: templateResult.ast.program.body[0].expression
+    });
+
+    console.log(classResult.code);
 }
