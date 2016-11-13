@@ -52,6 +52,6 @@ export { compileTemplate };
 export function test() {
     const { code: codeTemplate } = compileTemplateFromFile('test/fixtures/classAndtemplate/classAndTemplate.html');
     console.log('Template code: \n ', codeTemplate);
-    // const { code: codeClass } = compileClassFromFile('test/fixtures/classAndtemplate/classAndTemplate.js');
-    // console.log(codeClass); 
+    const { code: codeClass } = compileClassFromFile('test/fixtures/classAndtemplate/classAndTemplate.js');
+    console.log(codeClass); 
 }

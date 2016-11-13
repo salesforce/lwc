@@ -1,7 +1,7 @@
 {
-  "name": "raptor-compiler",
+  "name": "raptor-compiler-core",
   "version": "0.0.1",
-  "description": "Raptor compiler",
+  "description": "Raptor compiler core",
   "main": "dist/index.js",
   "author": "",
   "license": "ISC",
