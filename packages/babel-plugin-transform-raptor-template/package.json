@@ -1,0 +1,37 @@
+{
+  "name": "babel-plugin-transform-raptor-template",
+  "version": "0.0.1",
+  "description": "Babel plugin to transform Raptor templates",
+  "main": "dist/index.js",
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "plugin-cli": "./bin/cli.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.0",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015-without-strict": "0.0.4",
+    "eslint": "^3.9.1",
+    "eslint-plugin-react": "^6.6.0",
+    "mocha": "^3.1.2",
+    "power-assert": "^1.4.1",
+    "rimraf": "^2.5.4"
+  },
+  "dependencies": {
+    "css-parse": "^2.0.0",
+    "esutils": "^2.0.2",
+    "to-camel-case": "^1.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "babel src/ --out-dir dist/",
+    "build:fixtures": "babel-node ./scripts/build-fixtures.js",
+    "test": "mocha --compilers js:babel-register",
+    "lint": "eslint src/",
+    "preversion": "npm run lint && npm run clean && npm run build"
+  }
+}
