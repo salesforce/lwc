@@ -28,7 +28,7 @@
     "raptor-template-compiler": "^0.0.1"
   },
   "scripts": {
-    "clean": "rimraf lib/",
+    "clean": "rimraf dist/",
     "build": "babel src/ --out-dir dist/",
     "lint": "eslint src/",
     "preversion": "npm run lint && npm run clean && npm run build"
