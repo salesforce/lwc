@@ -4,10 +4,7 @@
   "description": "Babel plugin to transform Raptor templates",
   "main": "dist/index.js",
   "author": "",
-  "license": "ISC",
-  "bin": {
-    "plugin-cli": "./bin/cli.js"
-  },
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
