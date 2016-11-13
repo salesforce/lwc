@@ -1,8 +1,8 @@
-import {transform} from 'babel-core';
-import {compile as compileTemplate} from 'raptor-template-compiler';
 import * as fs from 'fs';
-import classPlugin from './class-plugin';
 
+import classPlugin from './class-plugin';
+import {compile as compileTemplate} from 'raptor-template-compiler';
+import {transform} from 'babel-core';
 
 export function compile(config, options = {}) {
 // WIP!
