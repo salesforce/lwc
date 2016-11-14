@@ -1,17 +1,10 @@
 import * as babelTypes from 'babel-types';
 import * as fs from 'fs';
+import * as path from 'path';
 
 import classPlugin from 'babel-plugin-transform-add-class-method';
 import {compile as compileTemplate} from 'raptor-template-compiler';
 import {transform} from 'babel-core';
-
-export function compile(config, options = {}) {
-// WIP!
-}
-
-export function compileComponent(cmpPath, options = {}) {
-// WIP!
-}
 
 const BASE_CONFIG = {
     presets: [
@@ -41,29 +34,41 @@ export function compileClass(src, options = {}) {
             ...BASE_CONFIG.plugins,
         ]
     };
-
+    
     return transform(src, config);
-}
-
-export function compileClassFromFile(classPath, options = {}) {
-    const src = fs.readFileSync(classPath).toString();
-    return compileClass(src, options);
-}
-
-export function compileTemplateFromFile(templatePath, options = {}) {
-    const src = fs.readFileSync(templatePath).toString();
-    const result = compileTemplate(src);
-    return result;
 }
 
 export { compileTemplate };
 
-// -- DELETE ME ----
-export function test() {
-    const templateResult = compileTemplateFromFile('test/fixtures/classAndtemplate/classAndTemplate.html');
-    const classResult = compileClassFromFile('test/fixtures/classAndtemplate/classAndTemplate.js', {
-        templateAST: templateResult.ast.program.body[0].expression
-    });
+export function compile(config) {
+    const componentPath = config.componentPath;
+    const opts = {};
+    let templateSrc = config.templateSrc;
+    let classSrc = config.classSrc;
 
-    console.log(classResult.code);
+    if (componentPath) {
+        const cmpPath = path.normalize(componentPath).replace(/\/$/, '');
+        const parts = cmpPath.split(path.sep);
+        const name = parts.pop(); 
+        const templatePath = path.join(cmpPath, path.sep, name + '.html');
+        const classPath = path.join(cmpPath, path.sep, name + '.js');
+
+        templateSrc = fs.readFileSync(templatePath).toString();
+        classSrc = fs.readFileSync(classPath).toString();
+    }
+
+    if (templateSrc) {
+        const templateResult = compileTemplate(templateSrc);
+        opts.templateAST = templateResult.ast.program.body[0].expression;
+    }
+
+    const compiled = compileClass(classSrc, opts);
+    console.log(compiled.code);
+
+    return compiled;
+}
+
+// -- DELETE ME --------------------------------------------------------------------
+export function test() {
+    compile({ componentPath: 'test/fixtures/classAndtemplate/' });
 }
