@@ -1,0 +1,12 @@
+{
+  "name": "babel-plugin-transform-add-class-method",
+  "version": "0.0.1",
+  "description": "Babel plugin to transform class - adding method",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.0",
+    "mocha": "^3.1.2"
+  }
+}

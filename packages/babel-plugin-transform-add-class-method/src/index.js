@@ -2,7 +2,7 @@ export default function ({ types: t }) {
     const ASTClassVisitor = {
         ClassDeclaration(path) {
             const classBody = path.get('body').node.body;
-            const {methodName, methodProps, methodAST } = this;
+            const {methodName, methodPropsAST, methodBodyAST } = this;
 
             // If there
             if (classBody.find((nodepath) => t.isClassMethod(nodepath) && nodepath.key.name === methodName)) {
@@ -12,16 +12,8 @@ export default function ({ types: t }) {
             classBody.push(t.classMethod(
                 'method',
                 t.identifier(methodName),
-                [t.objectPattern([
-                    t.objectProperty(t.identifier('h'), t.identifier('h'), false, true),
-                    t.objectProperty(t.identifier('i'), t.identifier('i'), false, true),
-                    t.objectProperty(t.identifier('m'), t.identifier('m'), false, true),
-                    t.objectProperty(t.identifier('v'), t.identifier('v'), false, true),
-
-                ])],
-                t.blockStatement([
-                    t.returnStatement(methodAST)
-                ])
+                methodPropsAST,
+                t.blockStatement([t.returnStatement(methodBodyAST)])
             ));
 
             path.stop();

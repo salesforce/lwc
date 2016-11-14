@@ -1,6 +1,7 @@
+import * as babelTypes from 'babel-types';
 import * as fs from 'fs';
 
-import classPlugin from './class-plugin';
+import classPlugin from 'babel-plugin-transform-add-class-method';
 import {compile as compileTemplate} from 'raptor-template-compiler';
 import {transform} from 'babel-core';
 
@@ -14,7 +15,7 @@ export function compileComponent(cmpPath, options = {}) {
 
 const BASE_CONFIG = {
     presets: [
-        'es2015'
+        //'es2015'
     ],
     plugins: [
         'transform-runtime',
@@ -22,15 +23,20 @@ const BASE_CONFIG = {
         'transform-class-properties'
     ]
 };
+
+function generatePropsAST(t) {
+    return [t.objectPattern(['h', 'i'].map((n) => t.objectProperty(t.identifier(n), t.identifier(n), false, true)))];
+}
+
 export function compileClass(src, options = {}) {
     const config = {
         babelrc: false,
         presets: BASE_CONFIG.presets,
         plugins: [
             [classPlugin, {
-                methodName  : 'render',
-                methodProps : options.methodProps,
-                methodAST   : options.templateAST
+                methodName     : 'render',
+                methodPropsAST : generatePropsAST(babelTypes),
+                methodBodyAST  : options.templateAST
             }],
             ...BASE_CONFIG.plugins,
         ]
