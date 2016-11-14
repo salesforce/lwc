@@ -14,7 +14,7 @@ export function compileComponent(cmpPath, options = {}) {
 
 const BASE_CONFIG = {
     presets: [
-        //'es2015'
+        'es2015'
     ],
     plugins: [
         'transform-runtime',
