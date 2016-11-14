@@ -1,1 +1,1 @@
-h("section",null,[l(this.items,(item,index)=>{return h("div",{"class":"my-list"},[item])})]);
+h("section",null,[i(this.items,(item,index)=>{return h("div",{"class":"my-list"},[item])})]);
