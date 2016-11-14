@@ -8,5 +8,12 @@
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
     "mocha": "^3.1.2"
+  },
+   "scripts": {
+    "clean": "rimraf dist/",
+    "build": "babel src/ --out-dir dist/",
+    "test": "mocha --compilers js:babel-register",
+    "lint": "eslint src/",
+    "preversion": "npm run lint && npm run clean && npm run build"
   }
 }
