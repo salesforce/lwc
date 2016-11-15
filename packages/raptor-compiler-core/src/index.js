@@ -11,7 +11,6 @@ const BASE_CONFIG = {
         //'es2015'
     ],
     plugins: [
-        'transform-runtime',
         'transform-decorators-legacy',
         'transform-class-properties'
     ]
