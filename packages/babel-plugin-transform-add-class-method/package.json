@@ -7,7 +7,8 @@
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
-    "mocha": "^3.1.2"
+    "mocha": "^3.1.2",
+     "rimraf": "^2.5.4"
   },
    "scripts": {
     "clean": "rimraf dist/",
