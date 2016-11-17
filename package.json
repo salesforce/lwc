@@ -13,5 +13,9 @@
     "eslint": "^3.9.1",
     "eslint-plugin-react": "^6.6.0",
     "lerna": "2.0.0-beta.30"
+  },
+  "dependencies": {
+    "rollup": "^0.36.3",
+    "raptor-template-compiler": "^0.0.1"
   }
 }
