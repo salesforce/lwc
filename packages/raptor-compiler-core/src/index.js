@@ -1,37 +1,19 @@
-import babel from 'rollup-plugin-babel';
-import injectTemplate from './lib/injectTemplate';
+import injectRenderer from './lib/rollup-plugin-inject-renderer';
 import {rollup} from 'rollup';
-
-function moduleResolver ({ sources = {} } = {}) {
-    return {
-        name : 'moduleResolver',
-        resolveId (importee, importer) {
-            console.log('> resolve:', importee, importer);
-        },
-        load (id) {
-            console.log('> Load resource: ', id);
-            if (sources[id]) {
-                return sources[id];
-            }
-        }
-    };
-}
-
-const entry = 'test/fixtures/classAndTemplate/classAndTemplate.js';
+import sourceResolver from './lib/rollup-plugin-source-resolver';
+import templateParser from './lib/rollup-plugin-template-parser';
 
 const BASE_CONFIG = {
-    babelRenderMethod: {
-        babelrc: false,
-       // presets: ['react'],
-        plugins: [
-            [injectTemplate, { name: 'classAndTemplate.html' }],
-        ]
-    }
+    babelrc: false
 };
 
 const plugins = [
-    moduleResolver(BASE_CONFIG),
+    sourceResolver(BASE_CONFIG),
+    templateParser(BASE_CONFIG),
+    injectRenderer(BASE_CONFIG)
 ];
+
+const entry = 'test/fixtures/classAndTemplate/classAndTemplate.js';
 
 rollup({
     entry,
