@@ -1,7 +1,0 @@
-{
-  "presets": ["babel-preset-es2015-without-strict"],
-  "plugins": [
-        "transform-object-rest-spread"
-  ],
-  "ignore": ["node_modules"]
-}
