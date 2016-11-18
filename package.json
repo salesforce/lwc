@@ -1,17 +1,16 @@
 {
   "license": "MIT",
   "scripts": {
+    "prepublish": "lerna bootstrap && lerna run build",
     "clean": "rimraf dist/",
     "build": "babel src/ --out-dir dist/",
     "lint": "eslint src/",
     "preversion": "npm run lint && npm run clean && npm run build"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
     "rimraf": "^2.5.4",
     "mocha": "^3.1.2",
     "eslint": "^3.9.1",
-    "eslint-plugin-react": "^6.6.0",
     "lerna": "2.0.0-beta.30"
   },
   "dependencies": {}
