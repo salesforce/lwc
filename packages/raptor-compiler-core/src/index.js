@@ -1,5 +1,5 @@
-import injectRenderer from './lib/rollup-plugin-inject-renderer';
 import {rollup} from 'rollup';
+import injectRenderer from './lib/rollup-plugin-inject-renderer';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
 
