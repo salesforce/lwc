@@ -1,5 +1,5 @@
 import babel from 'rollup-plugin-babel';
-import babelInjectPlugin from './babel-plugin-transform-inject-renderer';
+import babelInjectPlugin from 'babel-plugin-transform-inject-renderer';
 
 export default function (options = {}) {
     const babelConfig = {

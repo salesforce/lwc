@@ -1,16 +1,16 @@
-import { basename } from 'path';
+const pathLib = require('path');
 
 const METHOD_NAME = 'render'; 
 const METHOD_ARGUMENT_NAME = 'p';
 
-export default function ({ types: t }) {
+module.exports = function ({ types: t }) {
     const ASTClassVisitor = {
         ClassDeclaration(path, state) {
             let name = state.opts.name;
 
             if (!name) {
                 const classPath = state.file.opts.filename;
-                const cmpName = basename(classPath, '.js');
+                const cmpName = pathLib.basename(classPath, '.js');
                 name = './' + cmpName + '.html';
             }
 
@@ -36,6 +36,7 @@ export default function ({ types: t }) {
             path.stop();
         }
     };
+
     return {
         visitor: {
             ExportDefaultDeclaration(path, state) {
@@ -43,4 +44,4 @@ export default function ({ types: t }) {
             }
         }
     };
-}
+};
