@@ -1,8 +1,8 @@
+import * as babel from 'babel-core';
 import * as fs from 'fs';
 import * as p from 'path';
 
 import plugin from '../src/index';
-import * as babel from 'babel-core';
 
 const baseDir = p.resolve(`${__dirname}/../test/fixtures`);
 
@@ -31,12 +31,9 @@ fixtures.forEach((fixture) => {
     }
 
     const src = fs.readFileSync(`${baseDir}/${name}/actual.html`);
-    const {code, metadata} = babel.transform(src, {
+    const {code} = babel.transform(src, {
         plugins: [
-            [plugin, {
-                ...BASE_OPTIONS,
-                ...options
-            }],
+            [plugin, BASE_OPTIONS],
         ],
     });
 

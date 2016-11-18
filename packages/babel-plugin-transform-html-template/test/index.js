@@ -46,19 +46,14 @@ describe('emit errors', () => {
 
 });
 
-const BASE_OPTIONS = {};
-
 function transform(filePath, options = {}) {
     function getPluginConfig() {
-        return [plugin, {
-            ...BASE_OPTIONS,
-            ...options,
-        }];
+        return [plugin, options];
     }
     const src = fs.readFileSync(filePath);
 
     return babel.transform(src, {
-        plugins:  [getPluginConfig()],
+        plugins: [getPluginConfig()],
     }).code;
 }
 

@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-transform-raptor-template",
+  "name": "babel-plugin-transform-html-template",
   "version": "0.0.1",
-  "description": "Babel plugin to transform Raptor templates",
+  "description": "Babel plugin to transform HTML templates",
   "main": "dist/index.js",
   "author": "",
   "license": "MIT",
@@ -9,8 +9,8 @@
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
     "eslint": "^3.9.1",
-    "eslint-plugin-react": "^6.6.0",
     "mocha": "^3.1.2",
     "power-assert": "^1.4.1",
     "rimraf": "^2.5.4"
@@ -29,6 +29,6 @@
     "preversion": "npm run lint && npm run clean && npm run build"
   },
   "babel": {
-    "babelrc": false
+     "presets": ["es2015"]
   }
 }

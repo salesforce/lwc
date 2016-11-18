@@ -1,73 +1,45 @@
-import * as babelTypes from 'babel-types';
-import * as fs from 'fs';
-import * as path from 'path';
+import babel from 'rollup-plugin-babel';
+import injectTemplate from './lib/injectTemplate';
+import {rollup} from 'rollup';
 
-import classPlugin from 'babel-plugin-transform-add-class-method';
-import {compile as compileTemplate} from 'raptor-template-compiler';
-import {transform} from 'babel-core';
+function moduleResolver ({ sources = {} } = {}) {
+    return {
+        name : 'moduleResolver',
+        resolveId (importee, importer) {
+            console.log('> resolve:', importee, importer);
+        },
+        load (id) {
+            console.log('> Load resource: ', id);
+            if (sources[id]) {
+                return sources[id];
+            }
+        }
+    };
+}
+
+const entry = 'test/fixtures/classAndTemplate/classAndTemplate.js';
 
 const BASE_CONFIG = {
-    presets: [
-        //'es2015'
-    ],
-    plugins: [
-        'transform-decorators-legacy',
-        'transform-class-properties'
-    ]
+    babelRenderMethod: {
+        babelrc: false,
+       // presets: ['react'],
+        plugins: [
+            [injectTemplate, { name: 'classAndTemplate.html' }],
+        ]
+    }
 };
 
-function generatePropsAST(t) {
-    return [t.objectPattern(['h', 'i'].map((n) => t.objectProperty(t.identifier(n), t.identifier(n), false, true)))];
-}
+const plugins = [
+    moduleResolver(BASE_CONFIG),
+];
 
-export function compileClass(src, options = {}) {
-    const config = {
-        babelrc: false,
-        presets: BASE_CONFIG.presets,
-        plugins: [
-            [classPlugin, {
-                methodName     : 'render',
-                methodPropsAST : generatePropsAST(babelTypes),
-                methodBodyAST  : options.templateAST
-            }],
-            ...BASE_CONFIG.plugins,
-        ]
-    };
-    
-    return transform(src, config);
-}
-
-export { compileTemplate };
-
-export function compile(config) {
-    const componentPath = config.componentPath;
-    const opts = {};
-    let templateSrc = config.templateSrc;
-    let classSrc = config.classSrc;
-
-    if (componentPath) {
-        const cmpPath = path.normalize(componentPath).replace(/\/$/, '');
-        const parts = cmpPath.split(path.sep);
-        const name = parts.pop(); 
-        const templatePath = path.join(cmpPath, path.sep, name + '.html');
-        const classPath = path.join(cmpPath, path.sep, name + '.js');
-
-        templateSrc = fs.readFileSync(templatePath).toString();
-        classSrc = fs.readFileSync(classPath).toString();
-    }
-
-    if (templateSrc) {
-        const templateResult = compileTemplate(templateSrc);
-        opts.templateAST = templateResult.ast.program.body[0].expression;
-    }
-
-    const compiled = compileClass(classSrc, opts);
-    console.log(compiled.code);
-
-    return compiled;
-}
-
-// -- DELETE ME --------------------------------------------------------------------
-export function test() {
-    compile({ componentPath: 'test/fixtures/classAndtemplate/' });
-}
+rollup({
+    entry,
+    plugins
+})
+.then((bundle) => {
+    console.log(bundle.generate({}).code);
+})
+.catch((err) => {
+    console.log(err);
+});

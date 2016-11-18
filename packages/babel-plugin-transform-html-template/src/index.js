@@ -11,7 +11,13 @@ import groupProps from './group-props';
 const PRIMITIVE_ITERATOR = 'i';
 
 //import metadata from './metadata';
-export default function ({ types: t }) {
+export default function ({ types: t, template }) {
+    const exportsTemplate = template(`
+        export default function ({h,i}) {
+            return BODY;
+        }
+    `, { sourceType : 'module' });
+
     return {
         // Include JSX grammar (https://facebook.github.io/jsx)
         inherits: require('babel-plugin-syntax-jsx'),
@@ -25,8 +31,17 @@ export default function ({ types: t }) {
                 if (filteredChildren.length !== 1) {
                     throw new Error('A component must have only one root element');
                 }
-                // Remove the first template node
-                expression.replaceWith(t.ExpressionStatement(filteredChildren[0]));
+
+                // Remove  <template> node
+                expression.replaceWith(t.expressionStatement(filteredChildren[0]));
+                
+                // Add exports
+                const exportDeclaration = exportsTemplate({ BODY: expression });
+                path.node.body.unshift(exportDeclaration);
+
+                // Delete the rest
+                expression.remove();
+
             },
             JSXElement: {
                 enter(path, file) {
