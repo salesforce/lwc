@@ -1,5 +1,6 @@
 {
   "license": "MIT",
+  "private": true,
   "scripts": {
     "prepublish": "lerna bootstrap && lerna run build",
     "clean": "rimraf dist/",
