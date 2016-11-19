@@ -2,7 +2,7 @@ import {rollup} from 'rollup';
 import injectRenderer from './lib/rollup-plugin-inject-renderer';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
-import { extname, normalize, join, sep } from 'path';
+import {normalizeEntryPath} from './lib/utils';
 
 const BASE_CONFIG = {
     babelrc: false
@@ -14,25 +14,20 @@ const plugins = [
     injectRenderer(BASE_CONFIG)
 ];
 
-
-
-export function compile (config, options) {
+export function compile(config) {
     let componentPath = config.componentPath;
     let entry = config.entry;
+
     if (componentPath) {
-        componentPath = normalize(config.componentPath.replace(/\/$/, ''));
-        entry = extname(componentPath) === '.js' ? componentPath : join(componentPath, componentPath.split(sep).pop() + '.js' );  
+        entry = normalizeEntryPath(componentPath);
     }
-
-    rollup({
-        entry,
-        plugins
-    })
-    .then((bundle) => {
-        console.log(bundle.generate({}).code);
-    })
-    .catch((err) => {
-        console.log(err);
+    return new Promise((resolve, reject) => {
+        rollup({ entry, plugins })
+        .then((bundle) => {
+            resolve({ code: bundle.generate({}).code });
+        })
+        .catch((err) => {
+            reject(err);
+        });
     });
-
 }
