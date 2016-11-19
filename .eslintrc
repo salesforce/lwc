@@ -35,9 +35,6 @@
         "no-this-before-super": 2,
         "no-unexpected-multiline": 2,
         "no-var": 2,
-        "no-warning-comments": 1,
-
-        "react/jsx-uses-react": 2,
-        "react/jsx-uses-vars": 2
+        "no-warning-comments": 1
     }
 }
