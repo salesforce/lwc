@@ -1,4 +1,4 @@
-import babel from 'rollup-plugin-babel';
+import { transform } from 'babel-core';
 import babelInjectPlugin from 'babel-plugin-transform-inject-renderer';
 
 export default function (options = {}) {
@@ -9,26 +9,22 @@ export default function (options = {}) {
         ]
     };
 
-    // Singleton wrapper
-    const babelPlugin = babel(babelConfig);
-
     return {
         name : 'inject-renderer',
         injected: false,
-        
-        resolveId (id) {
-            return babelPlugin.resolveId(id);
-        },
-
-        load (id) {
-            return babelPlugin.load(id);
-        },
-
+    
         transform (code, id) {
             console.log('> [rollup-plugin-inject-renderer] - Transform: ', id);
+            const localOptions = Object.assign({ filename: id }, babelConfig);
+
             if (!this.injected) {
                 this.injected = true;
-                return babelPlugin.transform(code, id);
+                const result = transform(code, localOptions);
+
+                return {
+                    code: result.code,
+                    map: result.map
+                };
             }
         }
         

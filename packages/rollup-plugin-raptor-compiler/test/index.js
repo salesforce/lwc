@@ -1,8 +1,8 @@
-import * as fs from 'fs';
-import * as path from 'path';
-
-import assert from 'power-assert';
-import {compile} from '../src/index';
+const fs = require('fs');
+const path = require('path');
+const assert = require('power-assert');
+const rollup = require('rollup');
+const rollupCompile = require('../src/index');
 
 function trim(str) {
     return str.toString().replace(/^\s+|\s+$/, '');
@@ -21,11 +21,10 @@ describe('emit asserts for: ', () => {
 
         it(`output match: ${caseName}`, () => {
             const fixtureCaseDir = path.join(fixturesDir, caseName);
-            return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
-            .then((result) => {
-                const actual = result.code;
+            return doRollup(path.join(fixtureCaseDir, caseName + '.js'))
+            .then((bundle) => {
+                const actual = bundle.generate({}).code;
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
-                
                 assert.equal(trim(actual), trim(expected));
             })
             .catch((error) => {
@@ -35,7 +34,11 @@ describe('emit asserts for: ', () => {
     });
 });
 
-function runCompile(filePath, options = {}) {
-    return compile({ entry: filePath }, options);
+function doRollup(filePath, options = {}) {
+    return rollup.rollup({
+        entry: filePath,
+        plugins: [
+            rollupCompile(options)
+        ]
+    });
 }
-
