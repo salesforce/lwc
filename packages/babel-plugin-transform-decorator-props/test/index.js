@@ -1,5 +1,4 @@
-/* eslint-env node */
-/* global describe it */
+/* eslint-env node, mocha */
 
 const babel = require('babel-core');
 const fs = require('fs');

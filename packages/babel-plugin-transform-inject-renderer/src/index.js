@@ -1,3 +1,4 @@
+/* eslint-env node */
 const pathLib = require('path');
 
 const METHOD_NAME = 'render'; 
