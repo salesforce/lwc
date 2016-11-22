@@ -1,5 +1,4 @@
-export default function ({ types: t }) {
-
+module.exports = function ({ types: t }) {
     function addTypesStaticGetter(blockStatement) {
         return t.classMethod(
             'get',

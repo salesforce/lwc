@@ -1,5 +1,6 @@
 export default class Greeter {
-    greeting: string;
+    @prop
+    greeting: string = 5;
     constructor(message: string) {
         this.greeting = message;
     }

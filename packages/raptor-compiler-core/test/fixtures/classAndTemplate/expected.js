@@ -10,7 +10,6 @@ var _t = function ({
 };
 
 class Greeter {
-
     constructor(message) {
         this.greeting = message;
     }
@@ -20,6 +19,12 @@ class Greeter {
 
     render(p) {
         return _t.call(this, p);
+    }
+
+    static get props() {
+        return {
+            greeting: true
+        };
     }
 
 }

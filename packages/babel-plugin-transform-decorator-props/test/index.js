@@ -1,5 +1,5 @@
 /* eslint-env node */
-/* global describe, it */
+/* global describe it */
 
 const babel = require('babel-core');
 const fs = require('fs');
@@ -12,9 +12,11 @@ const fixturesDir = path.join(__dirname, 'fixtures');
 const BABEL_CONFIG = {
     babelrc: false,
     plugins: [plugin],
-    filename: './test.js'
+    filename: './test.js',
+    parserOpts: {
+        plugins: ['*']
+    }
 };
-
 
 function trim(str) {
     return str.toString().replace(/^\s+|\s+$/, '');
@@ -22,11 +24,12 @@ function trim(str) {
 
 describe('assert', () => {
     it ('import and render added', () => {
-        const fixtureClass = path.join(fixturesDir, 'classMethod');
-        const config = Object.assign(BABEL_CONFIG, { filename: './classMethod.js' });
+        const fixtureClass = path.join(fixturesDir, 'simpleProp');
+        const config = Object.assign(BABEL_CONFIG, { filename: './simpleProp.js' });
         const src = fs.readFileSync(path.join(fixtureClass, 'actual.js')).toString();
 
         const actual = babel.transform(src, config).code;
+        console.log(actual);
         const expected = fs.readFileSync(path.join(fixtureClass, 'expected.js')).toString();
  
         assert.equal(trim(actual), trim(expected));

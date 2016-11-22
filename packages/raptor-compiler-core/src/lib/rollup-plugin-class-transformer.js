@@ -1,10 +1,14 @@
+import babelDecoratorProps from 'babel-plugin-transform-decorator-props';
 import babelInjectPlugin from 'babel-plugin-transform-inject-renderer';
 import { transform } from 'babel-core';
 
 export default function (options = {}) {
     const babelConfig = {
         babelrc: false,
-        plugins: [ babelInjectPlugin ],
+        plugins: [ 
+            babelInjectPlugin,
+            babelDecoratorProps 
+        ],
         parserOpts: { plugins: ['*'] }
     };
 

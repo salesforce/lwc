@@ -1,5 +1,5 @@
 import flowPlugin from './lib/rollup-plugin-flow';
-import injectRenderer from './lib/rollup-plugin-inject-renderer';
+import injectRenderer from './lib/rollup-plugin-class-transformer';
 import {normalizeEntryPath} from './lib/utils';
 import {rollup} from 'rollup';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
