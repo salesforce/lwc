@@ -7,8 +7,9 @@ import {
 
 import esutils from 'esutils';
 import groupProps from './group-props';
+import { RENDER_PRIMITIVES } from './constants';
 
-const PRIMITIVE_ITERATOR = 'i';
+const { ITERATOR, FOR_LOOP, CREATE_ELEMENT } = RENDER_PRIMITIVES;
 
 //import metadata from './metadata';
 export default function ({ types: t, template }) {
@@ -191,7 +192,7 @@ export default function ({ types: t, template }) {
                     if (hasElse) {
                         nextChild._processed = true;
                     } else {
-                        nextChild = t.callExpression(t.identifier('f'), []);
+                        nextChild = t.callExpression(t.identifier(FOR_LOOP), []);
                     }
 
                     elems.push(t.conditionalExpression(testExpression, child, nextChild));
@@ -203,7 +204,7 @@ export default function ({ types: t, template }) {
                     const forSyntax = parseForStatement(attrValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(t.identifier(PRIMITIVE_ITERATOR), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
+                    const expr = t.callExpression(t.identifier(ITERATOR), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
                     
                     elems.push(expr);
                     continue;
@@ -262,7 +263,7 @@ export default function ({ types: t, template }) {
 
         args.push(attribs);
 
-        const createElementExpression = t.callExpression(t.identifier('h'), args);
+        const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
         createElementExpression._statement = attribs._statementReference;
         
         return createElementExpression;

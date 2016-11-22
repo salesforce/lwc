@@ -1,5 +1,6 @@
 import ParserCSS from './style-parser';
 import {makeMap} from './utils';
+import { PROPS, DIRECTIVE_STATEMENT, DIRECTIVE_PREFIX } from './constants';
 
 const isTopLevel = makeMap('class,staticClass,style,key,ref,slot');
 const css = new ParserCSS();
@@ -24,13 +25,13 @@ export default function groupProps(props, t) {
             const prefixIndex = name.indexOf('-');
             const prefix = prefixIndex > 0 && name.slice(0, prefixIndex);
 
-            if (prefix === 'aura') {
+            if (prefix === DIRECTIVE_PREFIX) {
                 name = name.slice(prefixIndex + 1);
                 let statement = currentNestedObjects.statement;
 
                 if (!statement) {
                     statement = currentNestedObjects.statement = t.objectProperty(
-                        t.identifier('statement'),
+                        t.identifier(DIRECTIVE_STATEMENT),
                         t.identifier(name)
                      );
 
@@ -42,7 +43,7 @@ export default function groupProps(props, t) {
                 let attrs = currentNestedObjects.attrs;
                 if (!attrs) {
                     attrs = currentNestedObjects.attrs = t.objectProperty(
-                        t.identifier('attrs'),
+                        t.identifier(PROPS),
                         t.objectExpression([prop])
                     );
                     newProps.push(attrs);

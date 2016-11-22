@@ -8,9 +8,11 @@
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.0",
+    "babel-eslint": "^7.1.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
     "eslint": "^3.9.1",
+    "eslint-plugin-flowtype": "^2.25.0",
     "mocha": "^3.1.2",
     "power-assert": "^1.4.1",
     "rimraf": "^2.5.4"
