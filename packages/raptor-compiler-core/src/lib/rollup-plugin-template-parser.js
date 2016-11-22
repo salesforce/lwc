@@ -1,6 +1,6 @@
+import { extname } from 'path';
 import templateParserPlugin from 'babel-plugin-transform-html-template';
 import { transform } from 'babel-core';
-import { extname } from 'path';
 
 export default function (options = {}) {
     const babelConfig = {
@@ -8,13 +8,15 @@ export default function (options = {}) {
         plugins: [ templateParserPlugin ]
     };
 
+    options = Object.assign({}, babelConfig, options);
+
     return {
         name : 'template-parser',
         injected: false,
 
         transform (code, id) {
             const isHTML = extname(id) === '.html';
-            const localOptions = Object.assign({ filename: id }, babelConfig);
+            const localOptions = Object.assign(options, { filename: id });
             if (isHTML && !this.injected) {
                 this.injected = true;
                 const result = transform(code, localOptions);

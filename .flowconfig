@@ -1,0 +1,11 @@
+[ignore]
+<PROJECT_ROOT>/node_modules/.*
+<PROJECT_ROOT>/node_modules/dom/.*
+
+[include]
+./src/**/*.js
+
+[libs]
+
+[options]
+esproposal.class_instance_fields=enable

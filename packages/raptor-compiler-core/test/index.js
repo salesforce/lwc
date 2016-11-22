@@ -10,7 +10,7 @@ function trim(str) {
 
 const skipTests = [
     '.babelrc',
-    '.DS_Store',
+    '.DS_Store'
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -34,8 +34,10 @@ describe('emit asserts for: ', () => {
         });
     });
 });
+const BASE_CONFIG = {};
 
 function runCompile(filePath, options = {}) {
-    return compile({ entry: filePath }, options);
+    const config = Object.assign({}, BASE_CONFIG, options);
+    return compile({ entry: filePath }, config);
 }
 

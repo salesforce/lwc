@@ -1,5 +1,3 @@
-import 'aura';
-
 var _t = function ({
     h,
     i
@@ -11,31 +9,13 @@ var _t = function ({
     );
 };
 
-function produceNewData(oldData, min, max) {
-    data.push(1);
-}
+class Greeter {
 
-class Bar {
-    // @attribute min = DefaultMinValue;
-    // @attribute max = DefaultMaxValue;
-    // @attribute label;
-    // @attribute title;
-
-    constructor() {
-        this.counter = 0;
-        this.itemClassName = 'item';
-        this.data = [];
+    constructor(message) {
+        this.greeting = message;
     }
-
-    updated() {
-        this.data = produceNewData(this.data, this.min, this.max);
-    }
-
-    handleClick() {
-        this.counter += 1;
-        const newData = produceNewData(this.data, this.min, this.max);
-        this.data = newData;
-        console.log('clicked');
+    greet() {
+        return "Hello, " + this.greeting;
     }
 
     render(p) {
@@ -44,4 +24,4 @@ class Bar {
 
 }
 
-export default Bar;
+export default Greeter;
