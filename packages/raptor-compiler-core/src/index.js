@@ -10,10 +10,10 @@ const BASE_CONFIG = {
 };
 
 const plugins = [
-    [flowPlugin, { checkPragma: false }],
     sourceResolver,
     templateParser,
     injectRenderer,
+    [flowPlugin, { checkPragma: false }],
 ];
 
 export function compile(config, options = {}) {

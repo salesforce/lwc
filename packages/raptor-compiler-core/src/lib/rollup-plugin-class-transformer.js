@@ -5,9 +5,9 @@ import { transform } from 'babel-core';
 export default function (options = {}) {
     const babelConfig = {
         babelrc: false,
-        plugins: [ 
-            babelInjectPlugin,
-            babelDecoratorProps 
+        plugins: [
+            babelDecoratorProps, 
+            babelInjectPlugin
         ],
         parserOpts: { plugins: ['*'] }
     };
@@ -17,7 +17,7 @@ export default function (options = {}) {
         injected: false,
     
         transform (code, id) {
-            console.log('> [rollup-plugin-inject-renderer] - Transform: ', id);
+            //console.log('> [rollup-plugin-inject-renderer] - Transform: ', id);
             const localOptions = Object.assign({ filename: id }, babelConfig);
 
             if (!this.injected) {

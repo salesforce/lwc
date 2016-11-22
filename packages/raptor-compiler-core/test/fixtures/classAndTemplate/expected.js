@@ -9,24 +9,34 @@ var _t = function ({
     );
 };
 
-class Greeter {
-    constructor(message) {
-        this.greeting = message;
+class Bar {
+
+    constructor() {
+        this.counter = 0;
+        this.itemClassName = 'item';
+        this.data = [];
     }
-    greet() {
-        return "Hello, " + this.greeting;
+
+    handleClick() {
+        this.counter += 1;
+        const newData = [];
+        this.data = newData;
+        console.log('clicked');
+    }
+
+    static get props() {
+        return {
+            min: true,
+            max: true,
+            label: true,
+            title: true
+        };
     }
 
     render(p) {
         return _t.call(this, p);
     }
 
-    static get props() {
-        return {
-            greeting: true
-        };
-    }
-
 }
 
-export default Greeter;
+export default Bar;
