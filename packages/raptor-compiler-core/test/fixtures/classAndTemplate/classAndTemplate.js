@@ -13,6 +13,11 @@ export default class Bar {
         this.data = [];
     }
 
+    @method
+    publicMethod () {
+        console.log('test');
+    }
+
     handleClick() {
         this.counter += 1;
         const newData = [];

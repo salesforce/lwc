@@ -48,7 +48,7 @@ module.exports = function ({ types: t }) {
                         propDecorators.reduce((r, d) => {
                             if (t.isIdentifier(d.expression) && d.expression.name === DECORATOR_PROP) {
                                 let value = prop.node.value || t.nullLiteral();
-                                if (!t.isLiteral(value)) {
+                                if (!t.isLiteral(value) && !t.isIdentifier(value)) {
                                     value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
                                 }
                                 r.push(t.objectProperty(t.identifier(prop.node.key.name), value));
@@ -61,13 +61,17 @@ module.exports = function ({ types: t }) {
                 }
 
                 if (prop.isClassMethod({ kind: 'method' }) && prop.node.decorators) {
-                    publicMethods.push(t.objectProperty(t.identifier(prop.node.key.name), t.numberLiteral(1)));
+                    publicMethods.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
                     prop.node.decorators = null;
                 }
             }
+			if (publicProps.length) {
+	            path.pushContainer('body', addTypesStaticGetter('props', t.objectExpression(publicProps)));
+            }
 
-            path.pushContainer('body', addTypesStaticGetter('props', t.objectExpression(publicProps)));
-            path.pushContainer('body', addTypesStaticGetter('methods', t.objectExpression(publicMethods)));
+            if (publicMethods.length) {
+	            path.pushContainer('body', addTypesStaticGetter('methods', t.objectExpression(publicMethods)));
+            }
             path.stop();
         }
     };
