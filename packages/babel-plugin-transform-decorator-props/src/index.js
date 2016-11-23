@@ -1,8 +1,12 @@
+const KEY_PROPS = 'props';
+const KEY_METHODS = 'methods';
+const DECORATOR_PROP = 'prop';
+
 module.exports = function ({ types: t }) {
-    function addTypesStaticGetter(blockStatement) {
+    function addTypesStaticGetter(name, blockStatement) {
         return t.classMethod(
             'get',
-            t.identifier('props'), [],
+            t.identifier(name), [],
             t.blockStatement([t.returnStatement(blockStatement)]),
             false,
             true
@@ -10,39 +14,61 @@ module.exports = function ({ types: t }) {
     }
 
     const ASTClassVisitor = {
-        ClassBody(path) {
+        ClassBody(path, state) {
             const classBody = path.get('body');
-            const propDefs = {};
-            let propertyDefs;
+            const publicProps = [];
+            const publicMethods = [];
 
             for (let prop of classBody) {
+
                 // Type definition
-                if (prop.node.key.name === 'props' && prop.isClassMethod({ kind: 'get', static: true})) {
-                    propertyDefs = prop;
-                    break;
+                if (prop.node.key.name === KEY_PROPS || prop.node.key.name === KEY_METHODS) {
+                    throw new Error(prop.node.key.name + ' is a reserved key for static class properties');
+                }
 
+                // Props
+                if (prop.isClassProperty()) {
                     // Decorators
-                } else if (prop.isClassProperty() && prop.node.decorators.length) {
-                    const attrTypeDef = {};
-                    const propDecorators = prop.node.decorators;
+                    if (!prop.node.decorators) {
+                        throw new Error(`
+                            Static non-public properties are not allowed. 
+                            You can either make them the property public (using @prop decorator) 
+                            or move it to the constructor.`);
+                    }
 
-                    propDecorators.reduce((r, d) => {
-                        if (t.isIdentifier(d.expression) && d.expression.name !== 'prop') {
-                            attrTypeDef[d.expression.name] = true;
-                        }
-                        return r;
-                    }, propDefs);
+                    if (prop.node.decorators) {
+                        const value = prop.get('value');
+                        prop.traverse({
+                            ThisExpression() {
+                                throw new Error('Reference to the instance is now allowed in class properties');
+                            }
+                        });
+                        const propDecorators = prop.node.decorators;
 
-                    propDefs[prop.node.key.name] = Object.keys(attrTypeDef).length ? attrTypeDef : true;
-                    prop.remove();
+                        propDecorators.reduce((r, d) => {
+                            if (t.isIdentifier(d.expression) && d.expression.name === DECORATOR_PROP) {
+                                let value = prop.node.value || t.nullLiteral();
+                                if (!t.isLiteral(value)) {
+                                    value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
+                                }
+                                r.push(t.objectProperty(t.identifier(prop.node.key.name), value));
+                            }
+                            return r;
+                        }, publicProps);
+
+                        prop.remove();
+                    }
+                }
+
+                if (prop.isClassMethod({ kind: 'method' }) && prop.node.decorators) {
+                    publicMethods.push(t.objectProperty(t.identifier(prop.node.key.name), t.numberLiteral(1)));
+                    prop.node.decorators = null;
                 }
             }
 
-            if (propertyDefs) {
-                return;
-            }
-
-            path.pushContainer('body', addTypesStaticGetter(t.valueToNode(propDefs)));
+            path.pushContainer('body', addTypesStaticGetter('props', t.objectExpression(publicProps)));
+            path.pushContainer('body', addTypesStaticGetter('methods', t.objectExpression(publicMethods)));
+            path.stop();
         }
     };
 
