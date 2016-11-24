@@ -3,6 +3,8 @@ const KEY_METHODS = 'methods';
 const DECORATOR_PROP = 'prop';
 
 module.exports = function ({ types: t }) {
+    /*
+    * Helper for static getter on a class
     function addTypesStaticGetter(name, blockStatement) {
         return t.classMethod(
             'get',
@@ -10,6 +12,21 @@ module.exports = function ({ types: t }) {
             t.blockStatement([t.returnStatement(blockStatement)]),
             false,
             true
+        );
+    }
+    */
+
+    function generateClassName(path) {
+        return path.scope.generateUidIdentifier("className");
+    }
+
+    function addClassStaticMember(className, prop, blockStatement) {
+        return t.expressionStatement(
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(t.identifier(className), t.identifier(prop)),
+                blockStatement
+            )
         );
     }
 
@@ -60,18 +77,26 @@ module.exports = function ({ types: t }) {
                     }
                 }
 
-                if (prop.isClassMethod({ kind: 'method' }) && prop.node.decorators) {
+                if (prop.isClassMethod({
+                        kind: 'method'
+                    }) && prop.node.decorators) {
                     publicMethods.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
                     prop.node.decorators = null;
                 }
             }
+
+            const root = path.find((p) => p.isProgram());
+
+            root.pushContainer('body', addClassStaticMember(state.opts.className, '$p$', t.objectExpression(publicProps)));
+            root.pushContainer('body', addClassStaticMember(state.opts.className, '$m$', t.objectExpression(publicMethods)));
+
+            /*
+             * For a static  getter
 			if (publicProps.length) {
 	            path.pushContainer('body', addTypesStaticGetter('props', t.objectExpression(publicProps)));
             }
+            */
 
-            if (publicMethods.length) {
-	            path.pushContainer('body', addTypesStaticGetter('methods', t.objectExpression(publicMethods)));
-            }
             path.stop();
         }
     };
@@ -80,6 +105,16 @@ module.exports = function ({ types: t }) {
         visitor: {
             // Only transform the main class
             ExportDefaultDeclaration(path, state) {
+                const exportDeclaration = path.get('declaration').node;
+                let className = exportDeclaration.id && exportDeclaration.id.name;
+
+                if (!className) {
+                    const classNameId = generateClassName(path, state);
+                    exportDeclaration.id = classNameId;
+                    className = classNameId.name;
+                }
+
+                state.opts.className = className;
                 path.traverse(ASTClassVisitor, state);
             }
         }
