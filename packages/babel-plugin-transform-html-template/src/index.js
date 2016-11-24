@@ -1,15 +1,10 @@
-import {
-    addScopeForLoop,
-    getVarsScopeForLoop,
-    hasScopeForLoop,
-    removeScopeForLoop,
-} from './for-scope';
+import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
+import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
+import {isTopLevel, parseStyles} from './utils';
 
 import esutils from 'esutils';
-import groupProps from './group-props';
-import { RENDER_PRIMITIVES } from './constants';
 
-const { ITERATOR, FOR_LOOP, CREATE_ELEMENT } = RENDER_PRIMITIVES;
+const { ITERATOR, EMPTY, CREATE_ELEMENT } = RENDER_PRIMITIVES;
 
 //import metadata from './metadata';
 export default function ({ types: t, template }) {
@@ -20,9 +15,8 @@ export default function ({ types: t, template }) {
     `, { sourceType : 'module' });
 
     return {
-        // Include JSX grammar (https://facebook.github.io/jsx)
         inherits: require('babel-plugin-syntax-jsx'),
-
+        
         visitor: {
             Program(path) {
                 const expression = path.get('body.0.expression');
@@ -36,11 +30,11 @@ export default function ({ types: t, template }) {
                 // Remove  <template> node
                 expression.replaceWith(t.expressionStatement(filteredChildren[0]));
                 
-                // Add exports
+                // Add exports declaration
                 const exportDeclaration = exportsTemplate({ BODY: expression });
                 path.node.body.unshift(exportDeclaration);
 
-                // Delete the rest
+                // Delete everything else
                 expression.remove();
 
             },
@@ -53,8 +47,8 @@ export default function ({ types: t, template }) {
                     
                     openingElement.attributes = expr;
 
-                    if (statement && statement.type === 'for') {
-                        addScopeForLoop(path, parseForStatement(statement.value.value)); 
+                    if (statement && statement.directive === 'repeat') {
+                        addScopeForLoop(path, parseForStatement(statement.attrs.for.value)); 
                     }
                 },
                 exit(path, file) {
@@ -75,6 +69,7 @@ export default function ({ types: t, template }) {
             }
         }
     };
+
 
     function isCompatTag(tagName) {
         return !!tagName && /^[a-z]|\-/.test(tagName);
@@ -147,7 +142,11 @@ export default function ({ types: t, template }) {
     function transformBindingLiteralOnScope (onForScope, literal) {
         const objectMember = literal.split('.').shift();
         if (!onForScope.includes(objectMember)) {
-            return t.memberExpression(t.identifier('this'), t.identifier(literal));
+            const memberExpression = t.memberExpression(t.identifier('this'), t.identifier(literal));
+            // Add the value expando to mimic the api from identifier.
+            // We should probably find a better way... 
+            memberExpression.value = literal; 
+            return memberExpression;
         }
 
         return t.identifier(literal);
@@ -174,33 +173,33 @@ export default function ({ types: t, template }) {
                 // metadata.addExpression(child, file); // Record metadata
 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
-                tranformExpressionInScope(onForScope, child);
+                child = tranformExpressionInScope(onForScope, child);
             }
 
             if (t.isCallExpression(child) && child._statement) {
-                if (child._statement.type === 'else') {
+                if (child._statement.directive === 'else') {
                     throw new Error('Else statement found before if statement');
                 }
 
-                const {type, value } = child._statement;
+                const {directive, attrs } = child._statement;
 
-                if (child._statement.type === 'if') {
+                if (directive === 'if') {
                     let nextChild = children[i + 1];
-                    const testExpression = transformBindingLiteralOnScope(onForScope, value.value);
-                    const hasElse = nextChild && nextChild._statement && nextChild._statement.type === 'else';
+                    const testExpression = transformBindingLiteralOnScope(onForScope, attrs.bind.name);
+                    const hasElse = nextChild && nextChild._statement && nextChild._statement.directive === 'else';
 
                     if (hasElse) {
                         nextChild._processed = true;
                     } else {
-                        nextChild = t.callExpression(t.identifier(FOR_LOOP), []);
+                        nextChild = t.callExpression(t.identifier(EMPTY), []);
                     }
 
                     elems.push(t.conditionalExpression(testExpression, child, nextChild));
                     continue;   
                 }
 
-                if (type === 'for') {
-                    const attrValue = value.value;
+                if (directive === 'repeat') {
+                    const attrValue = attrs.for.value;
                     const forSyntax = parseForStatement(attrValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
@@ -292,27 +291,76 @@ export default function ({ types: t, template }) {
         return node;
     }
 
-    function buildOpeningElementAttributes(attribs, file, path) {
-        let _props = [];
-        let objs = [];
+     function getDirective (attr) {
+        const parts = attr.split(DIRECTIVE_SYMBOL);    
+        const directive = DIRECTIVE_PRIMITIVES[parts[0]];
+        return {
+            directive: directive,
+            type: parts[1],
+            propName: parts[0]
+        }; 
+    }
 
-        function pushProps() {
-            if (!_props.length) return;
-            objs.push(t.objectExpression(_props));
-            _props = [];
-        }
+    function hasDirective(attr) {
+        return DIRECTIVE_PRIMITIVES[attr.split(DIRECTIVE_SYMBOL)[0]];
+    }
 
-        while (attribs.length) {
-            _props.push(convertAttribute(attribs.shift(), path));
-        }
+    function groupProps(props) {
+        const newProps = [];
+        const currentNestedObjects = {};
+        let statementReference;
 
-        pushProps();
+        props.forEach((prop) => {
+            let name = prop.key.value || prop.key.name;
+            if (isTopLevel(name)) { // top-level special props
+                
+                // Parse style
+                if (name === 'style') {
+                    prop.value = t.valueToNode(parseStyles(prop.value.value));
+                }
+                newProps.push(prop);
+            } else {
 
-        objs = objs.map((o) => {
-            return groupProps(o.properties, t);
+                const {directive, type, propName} = getDirective(name);
+                if (directive) {
+                    if (!statementReference) {
+                        statementReference = { directive: directive, attrs: {} };
+                    }
+
+                    statementReference.attrs[type] = prop.value;
+                } else {
+                    if (propName) {
+                        prop.key.value = propName;
+                    }
+                    // Rest are nested under attrs/props
+                    let attrs = currentNestedObjects.attrs;
+                    if (!attrs) {
+                        attrs = currentNestedObjects.attrs = t.objectProperty(
+                            t.identifier(PROPS),
+                            t.objectExpression([prop])
+                        );
+                        newProps.push(attrs);
+                    } else {
+                        attrs.value.properties.push(prop);
+                    }
+                }
+            }
         });
 
-        attribs = objs[0];
+        const objExpression = t.objectExpression(newProps);
+        objExpression._statementReference = statementReference;
+        return objExpression;
+    }
+
+    function buildOpeningElementAttributes(attribs, file, path) {
+        let props = [];
+  
+        while (attribs.length) {
+            props.push(convertAttribute(attribs.shift(), path));
+        }
+
+        const objs = t.objectExpression(props);
+        attribs = groupProps(objs.properties, t);
 
         return attribs;
     }
@@ -329,7 +377,7 @@ export default function ({ types: t, template }) {
         // Check name type
         if (t.isJSXNamespacedName(node.name)) { // An attribute of the type: foo:bind="literal"
             let nsNode = node.name;
-            node.name = t.stringLiteral(nsNode.namespace.name);
+            node.name = t.stringLiteral(nsNode.namespace.name + ':' + nsNode.name.name);
             value = transformBindingLiteralOnScope(onForScope, value.value);
 
         } else if (t.isValidIdentifier(node.name.name)) {

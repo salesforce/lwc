@@ -1,3 +1,4 @@
+#!/usr/bin/env babel-node
 /*
  * THIS IS A TEMPORAL TEST CLI
  * DON'T COMMIT CHANGES ON THIS FILE TO GIT! 
@@ -9,27 +10,16 @@ import plugin from '../src/index';
 
 const testSrc = `
    <template>
-    <section class:bind="computeMyClass">
-
-         <!-- conditional (binded by default) -->
-        <p if:true="test">True</p>
-
-         <!-- Negation condition the idea is compile both in a ternary operator -->
-        <p if:false="test">False</p> 
-
-        <!-- For loop -->
-        <ul repeat:for="(index, item) of items">
-             <!-- Bind to a function (should be memoizable) -->
-            <p label:bind="publicComputeLabel(index)"></p>
+    <section class="section">
+        <ul class="ul!!" style="font-size:12px" data-foo:bind="bar">
+            <li>Header: {title}</li>
+            <li class="x" repeat:for="(index, item) of items" repeat:index="index">
+                <p if:bind="item.yes">{pefix} : {item.x}</p>
+                <p foo:bind="r"></p>
+            </li>
         </ul>
-
-          <!-- Binding callback -->
-        <lightning:button label="btn1" press:bind="pressCallback" />
-
-        <!-- We want to fail here?, we shouldn't allow empty functions in favor of getters -->
-        <lightning:button label:bind="publicComputeLabel()" press:bind="pressCallback" />
     </section>
-</template>
+   </template>
 `;
 
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);

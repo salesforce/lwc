@@ -25,4 +25,5 @@ export function hasScopeForLoop (path) {
     return forScope && forScope.length && forScope[forScope.length - 1].node === path.node;
 }
 
+
 // -- End for loop utils
