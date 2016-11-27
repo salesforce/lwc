@@ -8,5 +8,8 @@
 export function addDependency(node, state) {
     const meta = state.file.metadata;
     meta.usedProps = meta.usedProps || {};
-    meta.usedProps[node.name] = meta.usedProps[node.name] ? meta.usedProps[node.name] + 1 : 1 ; 
+    let name = node.name || node;
+
+    name = name.split(' ').pop();
+    meta.usedProps[name] = meta.usedProps[name] ? meta.usedProps[name] + 1 : 1;
 }

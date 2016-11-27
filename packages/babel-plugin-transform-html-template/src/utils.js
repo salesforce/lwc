@@ -1,5 +1,7 @@
 import StyleParser from './style-parser';
 import { TOP_LEVEL_PROPS } from './constants';
+import toCamelCase from 'to-camel-case';
+
 const  parserCss = new StyleParser();
 
 export function makeMap (str) {
@@ -21,4 +23,6 @@ export function parseStyles(styles) {
 export function isCompatTag(tagName) {
     return !!tagName && /^[a-z]|\-/.test(tagName);
 }
+
+export { toCamelCase };
 

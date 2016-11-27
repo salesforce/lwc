@@ -1,7 +1,7 @@
 /* eslint-env node */
 import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import {isCompatTag, isTopLevel, parseStyles} from './utils';
+import {isCompatTag, isTopLevel, parseStyles, toCamelCase} from './utils';
 
 import {addDependency} from './metadata';
 import { keyword }  from 'esutils';
@@ -46,7 +46,9 @@ export default function ({ types: t, template }) {
 
                     // Add scope while going down
                     if (directiveRef && directiveRef.directive === DIRECTIVE_PRIMITIVES.repeat) {
-                        addScopeForLoop(path, parseForStatement(directiveRef.attrs.for.value)); 
+                        const forExpr = directiveRef.attrs.for;
+                        const forValue  = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                        addScopeForLoop(path, parseForStatement(forValue)); 
                     }
                 },
                 exit(path, file) {
@@ -132,14 +134,9 @@ export default function ({ types: t, template }) {
     }
 
     function transformBindingLiteralOnScope (onForScope, literal) {
-        debugger;
         const objectMember = literal.split('.').shift();
         if (!onForScope.includes(objectMember)) {
-            const memberExpression = t.memberExpression(t.identifier('this'), t.identifier(literal));
-            // Add the value expando to mimic the api from identifier.
-            // We should probably find a better way to do this... 
-            memberExpression.value = literal; 
-            return memberExpression;
+            return t.memberExpression(t.identifier('this'), t.identifier(literal));
         }
 
         return t.identifier(literal);
@@ -163,6 +160,10 @@ export default function ({ types: t, template }) {
 
             if (t.isJSXExpressionContainer(child)) {
                 child = child.expression; // remove the JSXContainer <wrapper></wrapper>
+
+                if (!onForScope.includes(child.name)) {
+                    addDependency(child, state);
+                }
                 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
                 child = tranformExpressionInScope(onForScope, child);
@@ -177,7 +178,10 @@ export default function ({ types: t, template }) {
 
                 if (directive === DIRECTIVE_PRIMITIVES.if) {
                     let nextChild = children[i + 1];
-                    const testExpression = transformBindingLiteralOnScope(onForScope, attrs.bind.value || attrs.bind.name);
+
+                    const ifExpr = attrs.bind;
+                    const ifValue  = t.isMemberExpression(ifExpr) ? ifExpr.property.name : ifExpr.value || ifExpr.name;
+                    const testExpression = transformBindingLiteralOnScope(onForScope, ifValue);
                     const hasElse = nextChild && nextChild._directiveReference && nextChild._directiveReference.directive === DIRECTIVE_PRIMITIVES.else;
 
                     if (hasElse) {
@@ -191,12 +195,13 @@ export default function ({ types: t, template }) {
                 }
 
                 if (directive === DIRECTIVE_PRIMITIVES.repeat) {
-                    const attrValue = attrs.for.value;
-                    const forSyntax = parseForStatement(attrValue);
+                    const forExpr = attrs.for;
+                    const forValue  = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                    const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
                     const expr = t.callExpression(t.identifier(ITERATOR), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
-                    
+
                     elems.push(expr);
                     continue;
                 }
@@ -293,17 +298,17 @@ export default function ({ types: t, template }) {
         }; 
     }
 
-    function groupProps(props) {
+    function groupAndNormalizeProps(props) {
         const newProps = [];
         const currentNestedObjects = {};
         let directiveReference;
 
         props.forEach((prop) => {
-            let name = prop.key.value || prop.key.name;
+            let name = prop.key.value || prop.key.name; // Identifier | StringLiteral
             if (isTopLevel(name)) { // top-level special props
                 newProps.push(prop);
             } else {
-                const {directive, type, propName} = getDirective(name);
+                let {directive, type, propName} = getDirective(name);
                 if (directive) {
                     if (!directiveReference) {
                         directiveReference = { directive: directive, attrs: {} };
@@ -311,8 +316,13 @@ export default function ({ types: t, template }) {
                     directiveReference.attrs[type] = prop.value;
                 } else {
                     if (propName) {
-                        prop.key.value = propName;
+                        propName = toCamelCase(propName);
                     }
+                    
+                    // Normalize to identifier
+                    prop.key.type = 'Identifier';
+                    prop.key.name = propName;
+                    
                     // Rest are nested under attrs/props
                     let attrs = currentNestedObjects.attrs;
                     if (!attrs) {
@@ -335,7 +345,7 @@ export default function ({ types: t, template }) {
 
     function buildOpeningElementAttributes(attribs, path, state) {
         attribs = attribs.map((attr) => convertAttribute(attr, path, state) ); 
-        return groupProps(attribs); // Group attributes and generate directives
+        return groupAndNormalizeProps(attribs); // Group attributes and generate directives
     }
 
     function convertAttribute(node, path, state) {
@@ -343,7 +353,13 @@ export default function ({ types: t, template }) {
         let nameNode = cleanAttributeName(node);
 
         if (t.isJSXNamespacedName(node.name)) {
-            valueNode = transformBindingLiteralOnScope(getVarsScopeForLoop(path), valueNode.value);
+            const onScope = getVarsScopeForLoop(path);
+
+            if (!onScope.includes(valueNode.value)) {
+                addDependency(valueNode.value, state);
+            }
+
+            valueNode = transformBindingLiteralOnScope(onScope, valueNode.value);
         }
 
         // Parse style

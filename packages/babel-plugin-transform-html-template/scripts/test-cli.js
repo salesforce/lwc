@@ -14,7 +14,9 @@ const testSrc = `
         <p if:bind="first">x</p>
         <ul>
             <li repeat:for="item of items">
-                <lightning:button label="foo" other-prop:bind="second" foo:bind="third">Foo: {fourth}</lightning:button>
+                <lightning:button label="foo" other-prop:bind="second" foo:bind="third" bar:bind="item">
+                    G: {fourth}, {item}
+                </lightning:button>
             </li>
         </ul>
     </section>
