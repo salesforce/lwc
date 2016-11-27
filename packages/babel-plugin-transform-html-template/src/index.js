@@ -133,7 +133,7 @@ export default function ({ types: t, template }) {
         return child;
     }
 
-    function transformBindingLiteralOnScope (onForScope, literal) {
+    function transformBindingLiteralOnScope (onForScope, literal) {   
         const objectMember = literal.split('.').shift();
         if (!onForScope.includes(objectMember)) {
             return t.memberExpression(t.identifier('this'), t.identifier(literal));
@@ -358,8 +358,10 @@ export default function ({ types: t, template }) {
             if (!onScope.includes(valueNode.value)) {
                 addDependency(valueNode.value, state);
             }
-
-            valueNode = transformBindingLiteralOnScope(onScope, valueNode.value);
+            
+            if (t.isStringLiteral(valueNode)) {
+                valueNode = transformBindingLiteralOnScope(onScope, valueNode.value);
+            }
         }
 
         // Parse style

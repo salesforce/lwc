@@ -10,17 +10,24 @@ import plugin from '../src/index';
 
 const testSrc = `
    <template>
-    <section class="section" style="margin: 10px">
-        <p if:bind="first">x</p>
-        <ul>
-            <li repeat:for="item of items">
-                <lightning:button label="foo" other-prop:bind="second" foo:bind="third" bar:bind="item">
-                    G: {fourth}, {item}
-                </lightning:button>
-            </li>
-        </ul>
+    <section>
+        <ns:outerItem class="" repeat:for="(item, index) of items">
+            <div class="wrapper">
+                <p if:bind="item.x">x</p> 
+                <p else:bind>y</p> 
+                <ns:otherWrapper c="item.literal" d:bind="otherProp.literal"> 
+                    <div class="my-list" repeat:for="(innerItem, index2) of item.otherList">
+                        <a:b c="innerItem.literal" d:bind="innerItem.literal" e:bind="otherProp2.literal" f:bind="item.x" >
+                            {item} {item.foo} {innerItem.x} {nonScoped.bar} {foo} {Math.random()}
+                        </a:b>  
+                    </div>
+                </ns:otherWrapper>
+            </div>
+        </ns:outerItem>
     </section>
-   </template>
+</template>
+
+
 `;
 
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);

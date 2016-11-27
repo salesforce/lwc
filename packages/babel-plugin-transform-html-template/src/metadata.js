@@ -6,9 +6,14 @@
 * since this module is only for collecting metadata dependencies
 */
 export function addDependency(node, state) {
+    let name = node.name || node;
+    
+    if (typeof name !== 'string') {
+        return;
+    }    
+
     const meta = state.file.metadata;
     meta.usedProps = meta.usedProps || {};
-    let name = node.name || node;
 
     name = name.split(' ').pop();
     meta.usedProps[name] = meta.usedProps[name] ? meta.usedProps[name] + 1 : 1;
