@@ -11,7 +11,11 @@ import plugin from '../src/index';
 const testSrc = `
    <template>
     <section class="section" style="margin: 10px">
-        <lightning:button label="foo" other-prop="Other">Foo: {bar}</lightning:button>
+        <ul>
+            <li repeat:for="item of items">
+                <lightning:button label="foo" other-prop="Other">Foo: {bar}</lightning:button>
+            </li>
+        </ul>
     </section>
    </template>
 `;
@@ -23,4 +27,5 @@ const result = babel.transform(src, {
     plugins: [ plugin ]
 });
 
-console.log(result.code);
+console.log('>> Metadata:\n', result.metadata.usedProps);
+console.log('>> Code:\n', result.code);

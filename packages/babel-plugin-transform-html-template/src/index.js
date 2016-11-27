@@ -3,12 +3,12 @@ import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
 import {isCompatTag, isTopLevel, parseStyles} from './utils';
 
+import {addDependency} from './metadata';
 import { keyword }  from 'esutils';
 
 const { ITERATOR, EMPTY, CREATE_ELEMENT } = RENDER_PRIMITIVES;
 const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
-//import metadata from './metadata';
 export default function ({ types: t, template }) {
     const exportsTemplate = template(`export default function ({ ${PRIMITIVE_KEYS} }) { return BODY; }`, { sourceType : 'module' });
 
@@ -145,7 +145,7 @@ export default function ({ types: t, template }) {
     }
 
     // Convert JSX AST into regular javascript AST
-    function buildChildren(node, file, path) {
+    function buildChildren(node, state, path) {
         const elems = [];
         const children = [];
         const onForScope = getVarsScopeForLoop(path);
@@ -162,7 +162,7 @@ export default function ({ types: t, template }) {
 
             if (t.isJSXExpressionContainer(child)) {
                 child = child.expression; // remove the JSXContainer wrapper
-                // metadata.addExpression(child, file); // Record metadata
+                addDependency(child, state); // Record metadata
 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
                 child = tranformExpressionInScope(onForScope, child);
@@ -232,8 +232,8 @@ export default function ({ types: t, template }) {
         return forSyntax;
     }
 
-    function buildElementCall(path, file) {
-        path.parent.children = buildChildren(path.parent, file, path);
+    function buildElementCall(path, state) {
+        path.parent.children = buildChildren(path.parent, state, path);
 
         const tagExpr = convertJSXIdentifier(path.node.name, path.node);
         const args = [];

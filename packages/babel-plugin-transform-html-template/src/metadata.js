@@ -5,8 +5,8 @@
 * We need to guarantee all this methods are side-effect free
 * since this module is only for collecting metadata dependencies
 */
-function addExpression(expression) {
-    console.log('Collecting metadata:addExpression', expression.name);
+export function addDependency(node, state) {
+    const meta = state.file.metadata;
+    meta.usedProps = meta.usedProps || {};
+    meta.usedProps[node.name] = meta.usedProps[node.name] ? meta.usedProps[node.name] + 1 : 1 ; 
 }
-
-export default { addExpression };
