@@ -11,9 +11,10 @@ import plugin from '../src/index';
 const testSrc = `
    <template>
     <section class="section" style="margin: 10px">
+        <p if:bind="first">x</p>
         <ul>
             <li repeat:for="item of items">
-                <lightning:button label="foo" other-prop="Other">Foo: {bar}</lightning:button>
+                <lightning:button label="foo" other-prop:bind="second" foo:bind="third">Foo: {fourth}</lightning:button>
             </li>
         </ul>
     </section>

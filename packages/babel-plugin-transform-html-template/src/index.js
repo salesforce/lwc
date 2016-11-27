@@ -36,10 +36,10 @@ export default function ({ types: t, template }) {
 
             },
             JSXElement: {
-                enter(path, file) {
+                enter(path, state) {
                     const openingElement = path.get('openingElement').node; 
                     const attrs = openingElement.attributes;
-                    const expr = attrs.length ? buildOpeningElementAttributes(attrs, file, path) : t.nullLiteral();
+                    const expr = attrs.length ? buildOpeningElementAttributes(attrs, path, state) : t.nullLiteral();
                     const directiveRef = expr._directiveReference;
                     
                     openingElement.attributes = expr;
@@ -132,6 +132,7 @@ export default function ({ types: t, template }) {
     }
 
     function transformBindingLiteralOnScope (onForScope, literal) {
+        debugger;
         const objectMember = literal.split('.').shift();
         if (!onForScope.includes(objectMember)) {
             const memberExpression = t.memberExpression(t.identifier('this'), t.identifier(literal));
@@ -145,7 +146,7 @@ export default function ({ types: t, template }) {
     }
 
     // Convert JSX AST into regular javascript AST
-    function buildChildren(node, state, path) {
+    function buildChildren(node, path, state) {
         const elems = [];
         const children = [];
         const onForScope = getVarsScopeForLoop(path);
@@ -161,24 +162,23 @@ export default function ({ types: t, template }) {
             }
 
             if (t.isJSXExpressionContainer(child)) {
-                child = child.expression; // remove the JSXContainer wrapper
-                addDependency(child, state); // Record metadata
-
+                child = child.expression; // remove the JSXContainer <wrapper></wrapper>
+                
                 // If the expressions are not in scope we need to add the `this` memberExpression:
                 child = tranformExpressionInScope(onForScope, child);
             }
 
-            if (t.isCallExpression(child) && child._statement) {
-                if (child._statement.directive === DIRECTIVE_PRIMITIVES.else) {
+            if (t.isCallExpression(child) && child._directiveReference) {
+                if (child._directiveReference.directive === DIRECTIVE_PRIMITIVES.else) {
                     throw new Error('Else statement found before if statement');
                 }
 
-                const {directive, attrs } = child._statement;
+                const {directive, attrs } = child._directiveReference;
 
                 if (directive === DIRECTIVE_PRIMITIVES.if) {
                     let nextChild = children[i + 1];
-                    const testExpression = transformBindingLiteralOnScope(onForScope, attrs.bind.name);
-                    const hasElse = nextChild && nextChild._statement && nextChild._statement.directive === DIRECTIVE_PRIMITIVES.else;
+                    const testExpression = transformBindingLiteralOnScope(onForScope, attrs.bind.value || attrs.bind.name);
+                    const hasElse = nextChild && nextChild._directiveReference && nextChild._directiveReference.directive === DIRECTIVE_PRIMITIVES.else;
 
                     if (hasElse) {
                         nextChild._processed = true;
@@ -233,7 +233,7 @@ export default function ({ types: t, template }) {
     }
 
     function buildElementCall(path, state) {
-        path.parent.children = buildChildren(path.parent, state, path);
+        path.parent.children = buildChildren(path.parent, path, state);
 
         const tagExpr = convertJSXIdentifier(path.node.name, path.node);
         const args = [];
@@ -255,7 +255,7 @@ export default function ({ types: t, template }) {
         args.push(attribs);
 
         const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
-        createElementExpression._statement = attribs._directiveReference; // Push reference up
+        createElementExpression._directiveReference = attribs._directiveReference; // Push reference up
         
         return createElementExpression;
     }
@@ -333,12 +333,12 @@ export default function ({ types: t, template }) {
         return objExpression;
     }
 
-    function buildOpeningElementAttributes(attribs, file, path) {
-        attribs = attribs.map((attr) => convertAttribute(attr, path) ); 
+    function buildOpeningElementAttributes(attribs, path, state) {
+        attribs = attribs.map((attr) => convertAttribute(attr, path, state) ); 
         return groupProps(attribs); // Group attributes and generate directives
     }
 
-    function convertAttribute(node, path) {
+    function convertAttribute(node, path, state) {
         let valueNode = cleanAttributeValue(node);
         let nameNode = cleanAttributeName(node);
 
