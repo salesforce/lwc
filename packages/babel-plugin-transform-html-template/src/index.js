@@ -1,8 +1,7 @@
 /* eslint-env node */
-
 import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import {isTopLevel, parseStyles} from './utils';
+import {isCompatTag, isTopLevel, parseStyles} from './utils';
 
 import { keyword }  from 'esutils';
 
@@ -70,18 +69,12 @@ export default function ({ types: t, template }) {
         }
     };
 
-
-    function isCompatTag(tagName) {
-        return !!tagName && /^[a-z]|\-/.test(tagName);
-    }
-
     // Parts of this code were levaraged from:
     // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
     function cleanJSXElementLiteralChild(args, child) {
         if (t.isJSXText(child)) {
             const lines = child.value.split(/\r\n|\n|\r/);
             let lastNonEmptyLine = 0;
-
             for (let i = 0; i < lines.length; i++) {
                 if (lines[i].match(/[^ \t]/)) {
                     lastNonEmptyLine = i;
@@ -89,7 +82,6 @@ export default function ({ types: t, template }) {
             }
 
             let str = '';
-
             for (let _i = 0; _i < lines.length; _i++) {
                 const line = lines[_i];
                 const isFirstLine = _i === 0;
@@ -144,7 +136,7 @@ export default function ({ types: t, template }) {
         if (!onForScope.includes(objectMember)) {
             const memberExpression = t.memberExpression(t.identifier('this'), t.identifier(literal));
             // Add the value expando to mimic the api from identifier.
-            // We should probably find a better way... 
+            // We should probably find a better way to do this... 
             memberExpression.value = literal; 
             return memberExpression;
         }
@@ -177,16 +169,16 @@ export default function ({ types: t, template }) {
             }
 
             if (t.isCallExpression(child) && child._statement) {
-                if (child._statement.directive === 'else') {
+                if (child._statement.directive === DIRECTIVE_PRIMITIVES.else) {
                     throw new Error('Else statement found before if statement');
                 }
 
                 const {directive, attrs } = child._statement;
 
-                if (directive === 'if') {
+                if (directive === DIRECTIVE_PRIMITIVES.if) {
                     let nextChild = children[i + 1];
                     const testExpression = transformBindingLiteralOnScope(onForScope, attrs.bind.name);
-                    const hasElse = nextChild && nextChild._statement && nextChild._statement.directive === 'else';
+                    const hasElse = nextChild && nextChild._statement && nextChild._statement.directive === DIRECTIVE_PRIMITIVES.else;
 
                     if (hasElse) {
                         nextChild._processed = true;
@@ -198,7 +190,7 @@ export default function ({ types: t, template }) {
                     continue;   
                 }
 
-                if (directive === 'repeat') {
+                if (directive === DIRECTIVE_PRIMITIVES.repeat) {
                     const attrValue = attrs.for.value;
                     const forSyntax = parseForStatement(attrValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
@@ -263,14 +255,14 @@ export default function ({ types: t, template }) {
         args.push(attribs);
 
         const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
-        createElementExpression._statement = attribs._directiveReference;
+        createElementExpression._statement = attribs._directiveReference; // Push reference up
         
         return createElementExpression;
     }
 
     function convertJSXIdentifier(node) {
         if (t.isJSXNamespacedName(node)) {
-            return t.identifier(node.namespace.name + ':' + node.name.name);
+            return t.identifier(node.namespace.name + DIRECTIVE_SYMBOL + node.name.name);
         }
 
         if (t.isJSXMemberExpression(node)) {
@@ -342,8 +334,8 @@ export default function ({ types: t, template }) {
     }
 
     function buildOpeningElementAttributes(attribs, file, path) {
-        attribs = attribs.map((attr) => convertAttribute(attr, path) );
-        return groupProps(attribs);
+        attribs = attribs.map((attr) => convertAttribute(attr, path) ); 
+        return groupProps(attribs); // Group attributes and generate directives
     }
 
     function convertAttribute(node, path) {
@@ -365,7 +357,7 @@ export default function ({ types: t, template }) {
     function cleanAttributeName(node) {
         if (t.isJSXNamespacedName(node.name)) {
             let nsNode = node.name;
-            return t.stringLiteral(nsNode.namespace.name + ':' + nsNode.name.name);
+            return t.stringLiteral(nsNode.namespace.name + DIRECTIVE_SYMBOL + nsNode.name.name);
         } else if (t.isValidIdentifier(node.name.name)) {
             node.name.type = 'Identifier';
             return node.name;

@@ -18,4 +18,7 @@ export function parseStyles(styles) {
     return parserCss.parse(styles);
 }
 
+export function isCompatTag(tagName) {
+    return !!tagName && /^[a-z]|\-/.test(tagName);
+}
 
