@@ -1,6 +1,8 @@
 export default function ({
-    h,
-    i
+    i,
+    f,
+    e,
+    h
 }) {
     return h(
         "p",

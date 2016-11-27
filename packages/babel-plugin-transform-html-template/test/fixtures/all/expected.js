@@ -1,46 +1,50 @@
 export default function ({
-    h,
-    i
+    i,
+    f,
+    e,
+    h
 }) {
     return h(
         "section",
         null,
-        [i(this.items, (item, index) => {
-            return h(
-                "ns:outerItem",
-                { "class": "" },
+        [h(
+            "ns:outerItem",
+            { "class": "", props: { "aura-for": "(item, index) of items" }
+            },
+            [h(
+                "div",
+                { "class": "wrapper" },
                 [h(
-                    "div",
-                    { "class": "wrapper" },
-                    [item.x ? h(
-                        "p",
-                        {},
-                        ["x"]
-                    ) : h(
-                        "p",
-                        {},
-                        ["x"]
-                    ), h(
-                        "ns:otherWrapper",
-                        {
-                            attrs: { c: "item.literal", "d": this.otherProp.literal }
+                    "p",
+                    {
+                        props: { "aura-if": "item.x" }
+                    },
+                    ["x"]
+                ), h(
+                    "p",
+                    {
+                        props: { "aura-else": true }
+                    },
+                    ["x"]
+                ), h(
+                    "ns:otherWrapper",
+                    {
+                        props: { c: "item.literal", "d": this.otherProp.literal }
+                    },
+                    [h(
+                        "div",
+                        { "class": "my-list", props: { "aura-for": "(innerItem, index2) of item.otherList" }
                         },
-                        [i(this.item.otherList, (innerItem, index2) => {
-                            return h(
-                                "div",
-                                { "class": "my-list" },
-                                [h(
-                                    "a:b",
-                                    {
-                                        attrs: { c: "innerItem.literal", "d": innerItem.literal, "e": this.otherProp2.literal, "f": item.x }
-                                    },
-                                    [item, " ", item.foo, " ", innerItem.x, " ", this.nonScoped.bar, " ", foo, " ", Math.random()]
-                                )]
-                            );
-                        })]
+                        [h(
+                            "a:b",
+                            {
+                                props: { c: "innerItem.literal", "d": this.innerItem.literal, "e": this.otherProp2.literal, "f": this.item.x }
+                            },
+                            [this.item, " ", this.item.foo, " ", this.innerItem.x, " ", this.nonScoped.bar, " ", this.foo, " ", Math.random()]
+                        )]
                     )]
                 )]
-            );
-        })]
+            )]
+        )]
     );
 }

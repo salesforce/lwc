@@ -1,22 +1,20 @@
+/* eslint-env node */
+
 import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
 import {isTopLevel, parseStyles} from './utils';
 
-import esutils from 'esutils';
+import { keyword }  from 'esutils';
 
 const { ITERATOR, EMPTY, CREATE_ELEMENT } = RENDER_PRIMITIVES;
+const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
 //import metadata from './metadata';
 export default function ({ types: t, template }) {
-    const exportsTemplate = template(`
-        export default function ({h,i}) {
-            return BODY;
-        }
-    `, { sourceType : 'module' });
+    const exportsTemplate = template(`export default function ({ ${PRIMITIVE_KEYS} }) { return BODY; }`, { sourceType : 'module' });
 
     return {
         inherits: require('babel-plugin-syntax-jsx'),
-        
         visitor: {
             Program(path) {
                 const expression = path.get('body.0.expression');
@@ -29,26 +27,27 @@ export default function ({ types: t, template }) {
 
                 // Remove  <template> node
                 expression.replaceWith(t.expressionStatement(filteredChildren[0]));
-                
+
                 // Add exports declaration
                 const exportDeclaration = exportsTemplate({ BODY: expression });
                 path.node.body.unshift(exportDeclaration);
-
-                // Delete everything else
+                
+                // Delete remaining nodes
                 expression.remove();
 
             },
             JSXElement: {
                 enter(path, file) {
                     const openingElement = path.get('openingElement').node; 
-                    let attrs = openingElement.attributes;
+                    const attrs = openingElement.attributes;
                     const expr = attrs.length ? buildOpeningElementAttributes(attrs, file, path) : t.nullLiteral();
-                    const statement = expr._statementReference;
+                    const directiveRef = expr._directiveReference;
                     
                     openingElement.attributes = expr;
 
-                    if (statement && statement.directive === 'repeat') {
-                        addScopeForLoop(path, parseForStatement(statement.attrs.for.value)); 
+                    // Add scope while going down
+                    if (directiveRef && directiveRef.directive === DIRECTIVE_PRIMITIVES.repeat) {
+                        addScopeForLoop(path, parseForStatement(directiveRef.attrs.for.value)); 
                     }
                 },
                 exit(path, file) {
@@ -62,6 +61,7 @@ export default function ({ types: t, template }) {
 
                     path.replaceWith(t.inherits(callExpr, path.node));
 
+                    // Remove scope while going up
                     if (hasScopeForLoop(path)) { 
                         removeScopeForLoop(path);
                     }
@@ -263,7 +263,7 @@ export default function ({ types: t, template }) {
         args.push(attribs);
 
         const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
-        createElementExpression._statement = attribs._statementReference;
+        createElementExpression._statement = attribs._directiveReference;
         
         return createElementExpression;
     }
@@ -281,7 +281,7 @@ export default function ({ types: t, template }) {
         }
 
         if (t.isJSXIdentifier(node)) {
-            if (esutils.keyword.isIdentifierNameES6(node.name)) {
+            if (keyword.isIdentifierNameES6(node.name)) {
                 node.type = 'Identifier';
             } else {
                 return t.stringLiteral(node.name);
@@ -295,39 +295,28 @@ export default function ({ types: t, template }) {
         const parts = attr.split(DIRECTIVE_SYMBOL);    
         const directive = DIRECTIVE_PRIMITIVES[parts[0]];
         return {
-            directive: directive,
-            type: parts[1],
-            propName: parts[0]
+            directive : directive,
+            type      : parts[1],
+            propName  : parts[0]
         }; 
-    }
-
-    function hasDirective(attr) {
-        return DIRECTIVE_PRIMITIVES[attr.split(DIRECTIVE_SYMBOL)[0]];
     }
 
     function groupProps(props) {
         const newProps = [];
         const currentNestedObjects = {};
-        let statementReference;
+        let directiveReference;
 
         props.forEach((prop) => {
             let name = prop.key.value || prop.key.name;
             if (isTopLevel(name)) { // top-level special props
-                
-                // Parse style
-                if (name === 'style') {
-                    prop.value = t.valueToNode(parseStyles(prop.value.value));
-                }
                 newProps.push(prop);
             } else {
-
                 const {directive, type, propName} = getDirective(name);
                 if (directive) {
-                    if (!statementReference) {
-                        statementReference = { directive: directive, attrs: {} };
+                    if (!directiveReference) {
+                        directiveReference = { directive: directive, attrs: {} };
                     }
-
-                    statementReference.attrs[type] = prop.value;
+                    directiveReference.attrs[type] = prop.value;
                 } else {
                     if (propName) {
                         prop.key.value = propName;
@@ -348,49 +337,50 @@ export default function ({ types: t, template }) {
         });
 
         const objExpression = t.objectExpression(newProps);
-        objExpression._statementReference = statementReference;
+        objExpression._directiveReference = directiveReference;
         return objExpression;
     }
 
     function buildOpeningElementAttributes(attribs, file, path) {
-        let props = [];
-  
-        while (attribs.length) {
-            props.push(convertAttribute(attribs.shift(), path));
-        }
-
-        const objs = t.objectExpression(props);
-        attribs = groupProps(objs.properties, t);
-
-        return attribs;
+        attribs = attribs.map((attr) => convertAttribute(attr, path) );
+        return groupProps(attribs);
     }
 
     function convertAttribute(node, path) {
-        let value = convertAttributeValue(node.value || t.booleanLiteral(true));
-        const onForScope = getVarsScopeForLoop(path);
+        let valueNode = cleanAttributeValue(node);
+        let nameNode = cleanAttributeName(node);
 
-        // Clean value
-        if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
-            value.value = value.value.replace(/\n\s+/g, ' ');
+        if (t.isJSXNamespacedName(node.name)) {
+            valueNode = transformBindingLiteralOnScope(getVarsScopeForLoop(path), valueNode.value);
         }
 
-        // Check name type
-        if (t.isJSXNamespacedName(node.name)) { // An attribute of the type: foo:bind="literal"
-            let nsNode = node.name;
-            node.name = t.stringLiteral(nsNode.namespace.name + ':' + nsNode.name.name);
-            value = transformBindingLiteralOnScope(onForScope, value.value);
-
-        } else if (t.isValidIdentifier(node.name.name)) {
-            node.name.type = 'Identifier';
-        } else {
-            node.name = t.stringLiteral(node.name.name);
+        // Parse style
+        if (nameNode.name === 'style') {
+            valueNode = t.valueToNode(parseStyles(valueNode.value));
         }
-
-        let prop = t.objectProperty(node.name, value);
-        return t.inherits(prop, node);
+        
+        return t.inherits(t.objectProperty(nameNode, valueNode), node);
     }
 
-    function convertAttributeValue(node) {
-        return t.isJSXExpressionContainer(node) ? node.expression : node; 
+    function cleanAttributeName(node) {
+        if (t.isJSXNamespacedName(node.name)) {
+            let nsNode = node.name;
+            return t.stringLiteral(nsNode.namespace.name + ':' + nsNode.name.name);
+        } else if (t.isValidIdentifier(node.name.name)) {
+            node.name.type = 'Identifier';
+            return node.name;
+        } else {
+            return t.stringLiteral(node.name.name);
+        }
+    }
+
+    function cleanAttributeValue(node) {
+        const value = node.value || t.booleanLiteral(true);
+        const expression = t.isJSXExpressionContainer(value) ? value.expression : value;
+        if (t.isStringLiteral(expression) && !t.isJSXExpressionContainer(node.value)) {
+            expression.value = expression.value.replace(/\n\s+/g, ' ');
+        }
+
+        return expression;
     }
 }

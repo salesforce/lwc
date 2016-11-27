@@ -50,9 +50,9 @@ function transform(filePath, options = {}) {
     function getPluginConfig() {
         return [plugin, options];
     }
-    const src = fs.readFileSync(filePath);
 
-    return babel.transform(src, {
+    return babel.transformFileSync(filePath, {
+        babelrc: false,
         plugins: [getPluginConfig()],
     }).code;
 }
