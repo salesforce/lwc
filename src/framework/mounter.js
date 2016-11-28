@@ -2,13 +2,13 @@
 
 ///<reference path="types.d.ts"/>
 
-import assert from "./assert.js";
-import { patch } from "./patcher.js";
-import { createEmptyElement } from "./utils.js";
+import { ObjectElementToVMMap } from "./createElement.js"; 
 
-export function mountToDom(vnode: VNode, domNode: Node) {
-    assert.vnode(vnode);
-    vnode = patch(createEmptyElement('fake'), vnode);
+export function mountToDom(element: RaptorElement, domNode: HTMLElement) {
+    if (typeof element !== 'object' || !ObjectElementToVMMap.has(element)) {
+        throw new Error(`Invalid raptor element ${element}. Raptor.mountToDom() can only be called with a raptor element created via Raptor.createElement().`);
+    }
+    const { elm } = ObjectElementToVMMap.get(element);
     domNode.innerHTML = '';
-    domNode.appendChild(vnode.elm);
+    domNode.appendChild(elm);
 }

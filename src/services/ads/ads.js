@@ -2,8 +2,7 @@
 
 import {
     getComponentDef,
-    attribute,
-} from "aura";
+} from "raptor";
 
 function parseAnnotations(annotations: any): Object {
     // TODO: do the real parsing and/or validation somehow...

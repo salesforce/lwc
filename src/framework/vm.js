@@ -6,16 +6,14 @@ import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
 import assert from "./assert.js";
 import {
-    updateComponentAttributes,
-    initComponentAttributes,
-    getAttributesConfig,
-} from "./attribute.js";
+    batchUpdateComponentProps,
+    initComponentProps,
+} from "./props.js";
 import {
     invokeComponentRenderMethod,
-    invokeComponentUpdatedMethod,
 } from "./invoker.js";
 import { watchProperty } from "./watcher.js";
-import { addComponentSetHook } from "./set.js";
+import { getComponentDef } from "./def.js";
 
 function createRenderInterface(): RenderAPI {
     var cache = new Map();
@@ -49,28 +47,26 @@ function foldVnode(vm: VM, vnode: VNode) {
 }
 
 function initFromAnotherVM(vm: VM, oldvm: VM) {
-    const { component, api, vnode, toString, body, state, children, data, flags, reactiveNames, listeners } = oldvm;
+    const { component, api, vnode, tostring, body, state, children, data, flags, reactiveNames, listeners, def } = oldvm;
     vm.data = data;
     vm.state = state;
     vm.body = body;
     vm.flags = flags;
+    vm.def = def;
     vm.component = component;
     vm.api = api;
     vm.vnode = vnode;
     vm.reactiveNames = reactiveNames;
-    vm.listeners = new Set();
-    vm.toString = toString;
+    vm.listeners = listeners;
+    vm.tostring = tostring;
     vm.children = children;
 }
 
 function watchComponentProperties(vm: VM) {
     assert.vm(vm);
-    const { component } = vm;
-    const attributes = getAttributesConfig(Object.getPrototypeOf(component));
-    Object.getOwnPropertyNames(component).forEach((propName: string) => {
-        if (!(propName in attributes)) {
-            watchProperty(component, propName);
-        }
+    const { component, def: { observedProps } } = vm;
+    Object.keys(observedProps).forEach((propName: string) => {
+        watchProperty(component, propName);
     });
 }
 
@@ -90,18 +86,20 @@ export function createComponent(vm: VM) {
         isScheduled: false,
         isDirty: false,
     };
+    const def = getComponentDef(Ctor);
     const emptyvm = {
         state,
         body,
         data,
         flags,
+        def,
         component: null,
         api: null,
         vnode: null,
         reactiveNames: {},
-        listeners: {},
+        listeners: new Set(),
         // TODO: maybe don't belong here...
-        toString: (): string => {
+        tostring: (): string => {
             const type = Ctor.name;
             return `<${type}>`;
         },
@@ -110,10 +108,8 @@ export function createComponent(vm: VM) {
     vm.data.props = undefined;
     vm.api = createRenderInterface();
     vm.component = new Ctor();
-    initComponentAttributes(vm, state, body);
+    initComponentProps(vm, state, body);
     watchComponentProperties(vm);
-    addComponentSetHook(vm);
-    invokeComponentUpdatedMethod(vm);
     let vnode = invokeComponentRenderMethod(vm);
     vm.vnode = vnode;
     flags.isReady = true;
@@ -143,12 +139,11 @@ export function patchComponent(vm: VM, oldvm: VM) {
     console.log(`${oldvm} is being rehydrated.`);
     const { data: { props: state }, children: body } = vm;
     initFromAnotherVM(vm, oldvm);
-    updateComponentAttributes(vm, state, body);
+    batchUpdateComponentProps(vm, state, body);
     // TODO: there is an edge case here that maybe isDirty is not really
-    // a consequence of calling `updateComponentAttributes()`, but something
+    // a consequence of calling `batchUpdateComponentProps()`, but something
     // that is pending to be done in the next tick
     if (vm.flags.isDirty) {
-        invokeComponentUpdatedMethod(vm);
         updateComponent(vm);
     }
 }

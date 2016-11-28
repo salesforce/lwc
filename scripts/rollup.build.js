@@ -81,7 +81,7 @@ glob.sync('src/namespaces/*/components/*/*.js').forEach(function (p) {
                 moduleId: [namespace, name].join(':'),
                 sourceMap: true,
                 globals: {
-                    aura: '$A',
+                    raptor: 'Raptor',
                 },
             },
         });
@@ -104,10 +104,10 @@ glob.sync('src/services/*/*.js').forEach(function (p) {
             output: {
                 dest: 'fake-cdn/' + name + '.js',
                 format: 'amd',
-                moduleId: ['aura', name].join(':'),
+                moduleId: ['raptor', name].join(':'),
                 sourceMap: true,
                 globals: {
-                    aura: '$A',
+                    raptor: 'Raptor',
                 },
             },
         });
@@ -126,7 +126,7 @@ const fwConfig = {
     output: {
         dest: 'fake-cdn/fw.js',
         format: 'umd',
-        moduleName: '$A',
+        moduleName: 'Raptor',
         sourceMap: true,
     }
 };

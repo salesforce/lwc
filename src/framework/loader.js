@@ -1,9 +1,9 @@
 // @flow
 
 const registry = {
-    aura: {
+    raptor: {
         get ns(): Promise {
-            return Promise.resolve(window.$A);
+            return Promise.resolve(window.Raptor);
         }
     }
 };

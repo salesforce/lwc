@@ -1,5 +1,3 @@
-import { attribute } from "aura";
-
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 
@@ -19,10 +17,12 @@ function produceNewData(oldData, min, max) {
 }
 
 export default class Bar {
-    @attribute min = DefaultMinValue;
-    @attribute max = DefaultMaxValue;
-    @attribute label;
-    @attribute title;
+    /*
+    @prop min = DefaultMinValue;
+    @prop max = DefaultMaxValue;
+    @prop label;
+    @prop title;
+    */
 
     constructor() {
         this.counter = 0;
@@ -30,7 +30,11 @@ export default class Bar {
         this.data = [];
     }
 
-    updated() {
+    static get observedAttributes() {
+        return ['min', 'max'];
+    }
+
+    attributeChangedCallback() {
         this.data = produceNewData(this.data, this.min, this.max);
     }
 
@@ -50,17 +54,26 @@ export default class Bar {
             return h('li', { attrs: { class: this.itemClassName } }, ['Value of X = ', item.x]);
         };
         const m0 = m(0, () => this.handleClick(...arguments));
-        return h('div', { tabIndex: 2 }, [
+        return h('div', { attrs: { tabindex: 2 } }, [
             this.title ? h('h1', {}, [this.title]) : '',
             h('ul', {}, [
                 h('li', { attrs: { class: 'first' } }, ['header']),
                 ...i(this.data, iter1),
                 h('li', { attrs: { class: 'last' } }, ['footer']),
             ]),
-            h('button', { on: { click: m0 } }, [this.label]),
+            h('button', { on: { click: m0 } }, [this.label || '']),
         ]);
     }
 }
+
+Bar.$p$ = {
+    min: DefaultMinValue,
+    max: function () { return DefaultMaxValue },
+    title: null,
+    label: null,
+};
+Bar.$m$ = [];
+Bar.$t$ = ['title', 'itemClassName', 'data', 'label', 'handleClick'];
 
 // Example of usage:
 // <Bar min="5" max="10" label="re-shuffle" />

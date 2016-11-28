@@ -1,9 +1,8 @@
-import { attribute } from "aura";
 import { concatClassnames } from "./helper/classname.js";
 
 export default class Bar {
-    @attribute x;
-    @attribute y = 0;
+    @prop x;
+    @prop y = 0;
 
     get computedClasses() {
         return concatClassnames('slds-list-item', 'item-' + this.y);

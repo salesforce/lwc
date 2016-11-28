@@ -7,25 +7,27 @@ import {
     establishContext,
 } from "./context.js";
 
-export let isRendering: Boolean = false;
+import { ObjectElementToVMMap } from "./createElement.js"; 
+
+export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export function invokeComponentDetachMethod(vm: VM) {
+export function invokeComponentDisconnectedCallback(vm: VM) {
     const { component } = vm;
-    if (component.detach) {
+    if (component.disconnectedCallback) {
         const ctx = currentContext;
         establishContext(this);
-        component.detach(vm.elm);
+        component.disconnectedCallback();
         establishContext(ctx);
     }
 }
 
-export function invokeComponentAttachMethod(vm: VM) {
+export function invokeComponentConnectedCallback(vm: VM) {
     const { component } = vm;
-    if (component.attach) {
+    if (component.connectedCallback) {
         const ctx = currentContext;
         establishContext(this);
-        component.attach(vm.elm);
+        component.connectedCallback();
         establishContext(ctx);
     }
 }
@@ -41,17 +43,22 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
         isRendering = false;
         vmBeingRendered = null;
         establishContext(ctx);
+        // TODO: find a way to not having to search inside the weakmap for every render
+        //       invocation, and only doing so if we know it is raptor element.
+        if (vnode && ObjectElementToVMMap.has(vnode)) {
+            return ObjectElementToVMMap.get(vnode);
+        }
         return vnode;
     }
     return null;
 }
 
-export function invokeComponentUpdatedMethod(vm: VM) {
+export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
     const { component } = vm;
-    if (component.updated) {
+    if (component.attributeChangedCallback) {
         const ctx = currentContext;
         establishContext(this);
-        component.updated();
+        component.attributeChangedCallback(attrName, oldValue, newValue);
         establishContext(ctx);
     }
 }

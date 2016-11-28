@@ -1,9 +1,8 @@
-import ADS from "aura:ads";
-import { attribute } from "aura";
+import ADS from "raptor:ads";
 
 class adsBaz {
-    @attribute foo;
-    @attribute bar;
+    @prop foo;
+    @prop bar;
 
     // this method has generated code
     render({h}) {
