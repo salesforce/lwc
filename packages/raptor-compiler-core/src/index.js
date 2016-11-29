@@ -4,6 +4,7 @@ import {normalizeEntryPath} from './lib/utils';
 import {rollup} from 'rollup';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
+import { transform as optimizeClassTransform } from './lib/class-optimization-transform';
 
 const BASE_CONFIG = {
     babelConfig: { babelrc: false },
@@ -42,7 +43,9 @@ export function compile(config, options = {}) {
             })
         })
         .then((bundle) => {
-            resolve({ code: bundle.generate({}).code });
+            const bundleResult = bundle.generate();
+            const result = optimizeClassTransform(bundleResult.code, BASE_CONFIG);
+            resolve({ code: result.code });
         })
         .catch((err) => {
             reject(err);
