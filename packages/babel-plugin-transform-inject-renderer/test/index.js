@@ -20,10 +20,36 @@ function trim(str) {
 }
 
 describe('assert', () => {
-    it ('import and render added', () => {
+    it('import and render added', () => {
         const fixtureClass = path.join(fixturesDir, 'classMethod');
         const config = Object.assign(BABEL_CONFIG, { filename: './classMethod.js' });
         const src = fs.readFileSync(path.join(fixtureClass, 'actual.js')).toString();
+
+        const actual = babel.transform(src, config).code;
+        const expected = fs.readFileSync(path.join(fixtureClass, 'expected.js')).toString();
+ 
+        assert.equal(trim(actual), trim(expected));
+    });
+
+    it('throws when class already contains a render method', () => {
+        const fixtureClass = path.join(fixturesDir, 'classAlreadyContainsRender');
+        const src = fs.readFileSync(path.join(fixtureClass, 'actual.js')).toString();
+
+        assert.throws(
+            () => babel.transform(src, BABEL_CONFIG).code,
+            /do not allow a render method/
+        );
+    });
+
+    it('allows to specify the file name via the plugin options', () => {
+        const fixtureClass = path.join(fixturesDir, 'classMethod');
+        const src = fs.readFileSync(path.join(fixtureClass, 'actual.js')).toString();
+        const config = Object.assign(BABEL_CONFIG, {
+            filename: './foo.js',
+            plugins: [
+                [plugin, { name: './classMethod.html' }]
+            ]
+        });
 
         const actual = babel.transform(src, config).code;
         const expected = fs.readFileSync(path.join(fixtureClass, 'expected.js')).toString();
