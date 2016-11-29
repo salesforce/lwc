@@ -1,18 +1,19 @@
+import classTransformer from './lib/rollup-plugin-class-transformer';
 import flowPlugin from './lib/rollup-plugin-flow';
-import injectRenderer from './lib/rollup-plugin-class-transformer';
 import {normalizeEntryPath} from './lib/utils';
 import {rollup} from 'rollup';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
 
 const BASE_CONFIG = {
-    babelrc: false
+    babelConfig: { babelrc: false },
+    sharedMetadata: {}
 };
 
 const plugins = [
     sourceResolver,
     templateParser,
-    injectRenderer,
+    classTransformer,
     [flowPlugin, { checkPragma: false }],
 ];
 
@@ -25,9 +26,10 @@ export function compile(config, options = {}) {
     if (componentPath) {
         entry = normalizeEntryPath(componentPath);
     }
+
     return new Promise((resolve, reject) => {
-        rollup({ 
-            entry, 
+        rollup({
+            entry,
             plugins : plugins.map((pluginConfig) => {
                 if (Array.isArray(pluginConfig)) {
                     let [plugin, pluginOptions] = pluginConfig;

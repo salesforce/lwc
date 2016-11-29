@@ -2,31 +2,30 @@ import { extname } from 'path';
 import templateParserPlugin from 'babel-plugin-transform-html-template';
 import { transform } from 'babel-core';
 
-export default function (options = {}) {
-    const babelConfig = {
+export default function (options = { babelConfig : {} }) {
+    const sharedMetadata = options.sharedMetadata;
+    const localBabelConfig = {
         babelrc: false,
         plugins: [ templateParserPlugin ]
     };
-
-    options = Object.assign({}, babelConfig, options);
-
+    options = Object.assign({}, options.babelConfig, localBabelConfig);
+        
     return {
         name : 'template-parser',
         injected: false,
 
-        transform (code, id) {
-            const isHTML = extname(id) === '.html';
-            const localOptions = Object.assign(options, { filename: id });
-            if (isHTML && !this.injected) {
+        transform (src, id) {
+            if (extname(id) === '.html' && !this.injected) {
                 this.injected = true;
-                const result = transform(code, localOptions);
+                const localOptions = Object.assign(options, { filename: id });
+                const {code, map, metadata} = transform(src, localOptions);
 
-                return {
-                    code: result.code,
-                    map: result.map
-                };
+                if (sharedMetadata) {
+                    sharedMetadata.templateProps = metadata.usedProps;
+                }
+
+                return { code, map };
             }
-        }
-        
+        }       
     };
 }

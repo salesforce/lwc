@@ -2,8 +2,8 @@ import babelDecoratorProps from 'babel-plugin-transform-decorator-props';
 import babelInjectPlugin from 'babel-plugin-transform-inject-renderer';
 import { transform } from 'babel-core';
 
-export default function (options = {}) {
-    const babelConfig = {
+export default function (options = {babelConfig: {}}) {
+    const localBabelConfig = {
         babelrc: false,
         plugins: [
             babelDecoratorProps, 
@@ -12,16 +12,15 @@ export default function (options = {}) {
         parserOpts: { plugins: ['*'] }
     };
 
+    options = Object.assign({}, options.babelConfig, localBabelConfig);
+
     return {
         name : 'inject-renderer',
         injected: false,
-    
         transform (code, id) {
-            //console.log('> [rollup-plugin-inject-renderer] - Transform: ', id);
-            const localOptions = Object.assign({ filename: id }, babelConfig);
-
             if (!this.injected) {
                 this.injected = true;
+                const localOptions = Object.assign(options, { filename: id });
                 const result = transform(code, localOptions);
                 return {
                     code: result.code,
