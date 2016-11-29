@@ -1,5 +1,3 @@
-import { attribute } from "aura";
-
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 

@@ -1,8 +1,8 @@
-import 'aura';
-
 var _t = function ({
-    h,
-    i
+    i,
+    f,
+    e,
+    h
 }) {
     return h(
         "section",
@@ -43,5 +43,7 @@ class Bar {
     }
 
 }
+Bar.$p$ = {};
+Bar.$m$ = {};
 
 export default Bar;

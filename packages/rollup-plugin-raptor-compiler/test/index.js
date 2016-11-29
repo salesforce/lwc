@@ -25,6 +25,7 @@ describe('emit asserts for: ', () => {
             .then((bundle) => {
                 const actual = bundle.generate({}).code;
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
+                console.log(actual);
                 assert.equal(trim(actual), trim(expected));
             })
             .catch((error) => {
