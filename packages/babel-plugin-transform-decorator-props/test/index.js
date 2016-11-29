@@ -28,7 +28,6 @@ describe('assert', () => {
         const src = fs.readFileSync(path.join(fixtureClass, 'actual.js')).toString();
 
         const actual = babel.transform(src, config).code;
-        console.log(actual);
         const expected = fs.readFileSync(path.join(fixtureClass, 'expected.js')).toString();
  
         assert.equal(trim(actual), trim(expected));

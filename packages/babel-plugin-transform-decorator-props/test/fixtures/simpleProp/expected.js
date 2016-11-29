@@ -2,11 +2,8 @@ export default class Test {
     constructor() {}
 
     test() {}
-
-    static get props() {
-        return {
-            test: true
-        };
-    }
-
 }
+Test.$p$ = {
+    test: 1
+};
+Test.$m$ = {};
