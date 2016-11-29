@@ -29,3 +29,12 @@ To run the compiler with an example:
 cd packages/raptor-compiler-core
 ./bin/cli.js
 ```
+
+## Test the packages
+
+We have an [internal npm repo](http://npm.sfdc.es:8081) where you can fetch the packages.
+If you want to use it, set is as part of your npm config:
+
+```
+npm config set registry "http://npm.sfdc.es:8080"
+```
