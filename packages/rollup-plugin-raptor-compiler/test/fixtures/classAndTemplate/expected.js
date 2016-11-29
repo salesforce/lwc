@@ -4,11 +4,7 @@ var _t = function ({
     e,
     h
 }) {
-    return h(
-        "section",
-        null,
-        ["Test"]
-    );
+    return h("section", null, ["Test"]);
 };
 
 function produceNewData(oldData, min, max) {
@@ -45,5 +41,7 @@ class Bar {
 }
 Bar.$p$ = {};
 Bar.$m$ = {};
+
+Bar.$t$ = {};
 
 export default Bar;
