@@ -35,6 +35,7 @@
     "lint": "eslint src/",
     "build": "babel src/ --out-dir dist/",
     "test": "mocha --compilers js:babel-register",
-    "preversion": "npm run lint && npm run clean && npm run build"
+    "preversion": "npm run lint && npm run clean && npm run build",
+    "prepublish": "npm run build"
   }
 }

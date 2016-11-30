@@ -14,6 +14,7 @@ export default function ({ types: t, template }) {
 
     return {
         inherits: require('babel-plugin-syntax-jsx'),
+
         visitor: {
             Program(path) {
                 const expression = path.get('body.0.expression');

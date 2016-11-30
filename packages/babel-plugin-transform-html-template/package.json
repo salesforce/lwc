@@ -28,7 +28,8 @@
     "build:fixtures": "babel-node ./scripts/build-fixtures.js",
     "test": "mocha --compilers js:babel-register",
     "lint": "eslint src/",
-    "preversion": "npm run lint && npm run clean && npm run build"
+    "preversion": "npm run lint && npm run clean && npm run build",
+    "prepublish": "npm run build"
   },
   "babel": {
     "presets": [
