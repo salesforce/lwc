@@ -53,28 +53,26 @@ module.exports = function ({ types: t }) {
                             or move it to the constructor.`);
                     }
 
-                    if (prop.node.decorators) {
-                        const value = prop.get('value');
-                        prop.traverse({
-                            ThisExpression() {
-                                throw new Error('Reference to the instance is now allowed in class properties');
-                            }
-                        });
-                        const propDecorators = prop.node.decorators;
+                    prop.traverse({
+                        ThisExpression() {
+                            throw new Error('Reference to the instance is now allowed in class properties');
+                        }
+                    });
+                    
+                    const propDecorators = prop.node.decorators;
 
-                        propDecorators.reduce((r, d) => {
-                            if (t.isIdentifier(d.expression) && d.expression.name === DECORATOR_PROP) {
-                                let value = prop.node.value || t.nullLiteral();
-                                if (!t.isLiteral(value) && !t.isIdentifier(value)) {
-                                    value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
-                                }
-                                r.push(t.objectProperty(t.identifier(prop.node.key.name), value));
+                    propDecorators.reduce((r, d) => {
+                        if (t.isIdentifier(d.expression) && d.expression.name === DECORATOR_PROP) {
+                            let value = prop.node.value || t.nullLiteral();
+                            if (!t.isLiteral(value) && !t.isIdentifier(value)) {
+                                value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
                             }
-                            return r;
-                        }, publicProps);
+                            r.push(t.objectProperty(t.identifier(prop.node.key.name), value));
+                        }
+                        return r;
+                    }, publicProps);
 
-                        prop.remove();
-                    }
+                    prop.remove();
                 }
 
                 if (prop.isClassMethod({

@@ -1,9 +1,11 @@
 export default class Test {
+
     constructor() {}
 
     test() {}
 }
-Test.$p$ = {
-    test: 1
+Test.publicProps = {
+    test: 1,
+    bar: null
 };
-Test.$m$ = {};
+Test.publicMethods = [];
