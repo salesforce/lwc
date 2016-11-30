@@ -1,13 +1,14 @@
 import optimizeClassTransform from './babel-plugin-optimize-class';
 import * as babel from 'babel-core';
 
-export function transform (code, options) {
+export function transform (src, options) {
     const localBabelConfig = {
         babelrc: false,
-        plugins: [
-            [optimizeClassTransform, options.sharedMetadata ? options.sharedMetadata : {}] 
-        ]
+        plugins: [optimizeClassTransform]
     };
     
-    return babel.transform(code, localBabelConfig);
+    //const { code, map } = babel.transform(src, localBabelConfig);
+    //return { code, map };
+
+    return src;
 }

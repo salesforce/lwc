@@ -17,17 +17,15 @@ export default function (options = {babelConfig: {}}) {
     return {
         name : 'inject-renderer',
         injected: false,
-        transform (code, id) {
-            if (!this.injected) {
-                this.injected = true;
-                const localOptions = Object.assign(options, { filename: id });
-                const result = transform(code, localOptions);
-                return {
-                    code: result.code,
-                    map: result.map
-                };
+        transform (src, id) {
+            if (this.injected) {
+                return src;
             }
+
+            this.injected = true;
+            const localOptions = Object.assign(options, { filename: id });
+            const {code, map } = transform(src, localOptions);
+            return {code, map};
         }
-        
     };
 }

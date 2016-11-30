@@ -1,55 +1,99 @@
 /* eslint-env node */
-import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
-import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import {isCompatTag, isTopLevel, parseStyles, toCamelCase} from './utils';
+import {
+    DIRECTIVE_PRIMITIVES,
+    DIRECTIVE_SYMBOL,
+    PROPS,
+    RENDER_PRIMITIVES
+} from './constants';
+import {
+    addScopeForLoop,
+    getVarsScopeForLoop,
+    hasScopeForLoop,
+    removeScopeForLoop
+} from './for-scope';
+import {
+    isCompatTag,
+    isTopLevel,
+    parseStyles,
+    toCamelCase
+} from './utils';
 
-import {addDependency} from './metadata';
-import { keyword }  from 'esutils';
+import {
+    addDependency
+} from './metadata';
+import {
+    keyword
+} from 'esutils';
 
-const { ITERATOR, EMPTY, CREATE_ELEMENT } = RENDER_PRIMITIVES;
+const {
+    ITERATOR,
+    EMPTY,
+    CREATE_ELEMENT
+} = RENDER_PRIMITIVES;
 const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
-export default function ({ types: t, template }) {
-    const exportsTemplate = template(`export default function ({ ${PRIMITIVE_KEYS} }) { return BODY; }`, { sourceType : 'module' });
+export default function ({
+    types: t,
+    template
+}) {
+    const exportsDefaultTemplate = template(`export default function ({ ${PRIMITIVE_KEYS} }) { return BODY; }`, {
+        sourceType: 'module'
+    });
 
     return {
         inherits: require('babel-plugin-syntax-jsx'),
 
         visitor: {
-            Program(path) {
-                const expression = path.get('body.0.expression');
-                const children = expression.get('children');
-                const filteredChildren = children.filter((c) => !t.isJSXText(c));
+            Program: {
+                enter(path) {
+                    const expression = path.get('body.0.expression');
+                    const children = expression.get('children');
+                    const filteredChildren = children.filter((c) => !t.isJSXText(c));
 
-                if (filteredChildren.length !== 1) {
-                    throw new Error('A component must have only one root element');
+                    if (filteredChildren.length !== 1) {
+                        throw new Error('A component must have only one root element');
+                    }
+
+                    // Remove  <template> node
+                    expression.replaceWith(t.expressionStatement(filteredChildren[0]));
+
+                    // Add exports declaration
+                    const exportDeclaration = exportsDefaultTemplate({
+                        BODY: expression
+                    });
+                    path.node.body.unshift(exportDeclaration);
+
+                    // Delete remaining nodes
+                    expression.remove();
+                },
+                exit(path, state) {
+                    // Generate used identifiers
+                    const usedIds = state.file.metadata.usedIdentifiers || {};
+                    const usedKeys = Object.keys(usedIds);
+
+                    path.pushContainer('body',
+                        t.exportNamedDeclaration(
+                            t.variableDeclaration('const', [
+                                t.variableDeclarator(t.identifier('usedIdentifiers'), t.valueToNode(usedKeys))
+                            ]), []
+                        )
+                    );
                 }
-
-                // Remove  <template> node
-                expression.replaceWith(t.expressionStatement(filteredChildren[0]));
-
-                // Add exports declaration
-                const exportDeclaration = exportsTemplate({ BODY: expression });
-                path.node.body.unshift(exportDeclaration);
-                
-                // Delete remaining nodes
-                expression.remove();
-
             },
             JSXElement: {
                 enter(path, state) {
-                    const openingElement = path.get('openingElement').node; 
+                    const openingElement = path.get('openingElement').node;
                     const attrs = openingElement.attributes;
                     const expr = attrs.length ? buildOpeningElementAttributes(attrs, path, state) : t.nullLiteral();
                     const directiveRef = expr._directiveReference;
-                    
+
                     openingElement.attributes = expr;
 
                     // Add scope while going down
                     if (directiveRef && directiveRef.directive === DIRECTIVE_PRIMITIVES.repeat) {
                         const forExpr = directiveRef.attrs.for;
-                        const forValue  = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
-                        addScopeForLoop(path, parseForStatement(forValue)); 
+                        const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                        addScopeForLoop(path, parseForStatement(forValue));
                     }
                 },
                 exit(path, file) {
@@ -64,7 +108,7 @@ export default function ({ types: t, template }) {
                     path.replaceWith(t.inherits(callExpr, path.node));
 
                     // Remove scope while going up
-                    if (hasScopeForLoop(path)) { 
+                    if (hasScopeForLoop(path)) {
                         removeScopeForLoop(path);
                     }
                 }
@@ -120,7 +164,7 @@ export default function ({ types: t, template }) {
         return args;
     }
 
-    function tranformExpressionInScope (onForScope, child) {
+    function tranformExpressionInScope(onForScope, child) {
         // {foo} => this.foo
         if (t.isIdentifier(child) && !onForScope.includes(child.name)) {
             return t.memberExpression(t.identifier('this'), child);
@@ -134,7 +178,7 @@ export default function ({ types: t, template }) {
         return child;
     }
 
-    function transformBindingLiteralOnScope (onForScope, literal) {   
+    function transformBindingLiteralOnScope(onForScope, literal) {
         const objectMember = literal.split('.').shift();
         if (!onForScope.includes(objectMember)) {
             return t.memberExpression(t.identifier('this'), t.identifier(literal));
@@ -154,7 +198,7 @@ export default function ({ types: t, template }) {
 
         for (let i = 0; i < children.length; i++) {
             let child = children[i];
-            
+
             if (t.isJSXEmptyExpression(child) || child._processed) {
                 continue;
             }
@@ -165,7 +209,7 @@ export default function ({ types: t, template }) {
                 if (!onForScope.includes(child.name)) {
                     addDependency(child, state);
                 }
-                
+
                 // If the expressions are not in scope we need to add the `this` memberExpression:
                 child = t.callExpression(t.identifier('s'), [tranformExpressionInScope(onForScope, child)]);
             }
@@ -175,13 +219,16 @@ export default function ({ types: t, template }) {
                     throw new Error('Else statement found before if statement');
                 }
 
-                const {directive, attrs } = child._directiveReference;
+                const {
+                    directive,
+                    attrs
+                } = child._directiveReference;
 
                 if (directive === DIRECTIVE_PRIMITIVES.if) {
                     let nextChild = children[i + 1];
 
                     const ifExpr = attrs.bind;
-                    const ifValue  = t.isMemberExpression(ifExpr) ? ifExpr.property.name : ifExpr.value || ifExpr.name;
+                    const ifValue = t.isMemberExpression(ifExpr) ? ifExpr.property.name : ifExpr.value || ifExpr.name;
                     const testExpression = transformBindingLiteralOnScope(onForScope, ifValue);
                     const hasElse = nextChild && nextChild._directiveReference && nextChild._directiveReference.directive === DIRECTIVE_PRIMITIVES.else;
 
@@ -192,16 +239,16 @@ export default function ({ types: t, template }) {
                     }
 
                     elems.push(t.conditionalExpression(testExpression, child, nextChild));
-                    continue;   
+                    continue;
                 }
 
                 if (directive === DIRECTIVE_PRIMITIVES.repeat) {
                     const forExpr = attrs.for;
-                    const forValue  = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                    const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
                     const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(t.identifier(ITERATOR), [ t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
+                    const expr = t.callExpression(t.identifier(ITERATOR), [t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
 
                     elems.push(expr);
                     continue;
@@ -214,13 +261,16 @@ export default function ({ types: t, template }) {
         return elems;
     }
 
-    function parseForStatement (attrValue) {
+    function parseForStatement(attrValue) {
         const inMatch = attrValue.match(/(.*?)\s+(?:in|of)\s+(.*)/);
         if (!inMatch) {
             throw new Error('for syntax is not correct');
         }
 
-        const forSyntax = { for : null, args : [] };
+        const forSyntax = {
+            for: null,
+            args: []
+        };
         const alias = inMatch[1].trim();
         const iteratorMatch = alias.match(/\(([^,]*),([^,]*)(?:,([^,]*))?\)/);
         forSyntax.for = inMatch[2].trim();
@@ -262,7 +312,7 @@ export default function ({ types: t, template }) {
 
         const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
         createElementExpression._directiveReference = attribs._directiveReference; // Push reference up
-        
+
         return createElementExpression;
     }
 
@@ -289,14 +339,14 @@ export default function ({ types: t, template }) {
         return node;
     }
 
-     function getDirective (attr) {
-        const parts = attr.split(DIRECTIVE_SYMBOL);    
+    function getDirective(attr) {
+        const parts = attr.split(DIRECTIVE_SYMBOL);
         const directive = DIRECTIVE_PRIMITIVES[parts[0]];
         return {
-            directive : directive,
-            type      : parts[1],
-            propName  : parts[0]
-        }; 
+            directive: directive,
+            type: parts[1],
+            propName: parts[0]
+        };
     }
 
     function groupAndNormalizeProps(props) {
@@ -309,21 +359,28 @@ export default function ({ types: t, template }) {
             if (isTopLevel(name)) { // top-level special props
                 newProps.push(prop);
             } else {
-                let {directive, type, propName} = getDirective(name);
+                let {
+                    directive,
+                    type,
+                    propName
+                } = getDirective(name);
                 if (directive) {
                     if (!directiveReference) {
-                        directiveReference = { directive: directive, attrs: {} };
+                        directiveReference = {
+                            directive: directive,
+                            attrs: {}
+                        };
                     }
                     directiveReference.attrs[type] = prop.value;
                 } else {
                     if (propName) {
                         propName = toCamelCase(propName);
                     }
-                    
+
                     // Normalize to identifier
                     prop.key.type = 'Identifier';
                     prop.key.name = propName;
-                    
+
                     // Rest are nested under attrs/props
                     let attrs = currentNestedObjects.attrs;
                     if (!attrs) {
@@ -345,7 +402,7 @@ export default function ({ types: t, template }) {
     }
 
     function buildOpeningElementAttributes(attribs, path, state) {
-        attribs = attribs.map((attr) => convertAttribute(attr, path, state) ); 
+        attribs = attribs.map((attr) => convertAttribute(attr, path, state));
         return groupAndNormalizeProps(attribs); // Group attributes and generate directives
     }
 
@@ -359,7 +416,7 @@ export default function ({ types: t, template }) {
             if (!onScope.includes(valueNode.value)) {
                 addDependency(valueNode.value, state);
             }
-            
+
             if (t.isStringLiteral(valueNode)) {
                 valueNode = transformBindingLiteralOnScope(onScope, valueNode.value);
             }
@@ -369,7 +426,7 @@ export default function ({ types: t, template }) {
         if (nameNode.name === 'style') {
             valueNode = t.valueToNode(parseStyles(valueNode.value));
         }
-        
+
         return t.inherits(t.objectProperty(nameNode, valueNode), node);
     }
 

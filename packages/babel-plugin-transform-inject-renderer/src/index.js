@@ -5,6 +5,16 @@ const METHOD_NAME = 'render';
 const METHOD_ARGUMENT_NAME = 'p';
 
 module.exports = function ({ types: t }) {
+  function addClassStaticMember(className, prop, blockStatement) {
+        return t.expressionStatement(
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(t.identifier(className), t.identifier(prop)),
+                blockStatement
+            )
+        );
+    }
+  
     const ASTClassVisitor = {
         ClassDeclaration(path, state) {
             let name = state.opts.name;
@@ -14,8 +24,9 @@ module.exports = function ({ types: t }) {
                 const cmpName = pathLib.basename(classPath, '.js');
                 name = './' + cmpName + '.html';
             }
-
-            const id = state.file.addImport(name, 'default', 't');
+			
+            const className = path.node.id.name;
+            const id = state.file.addImport(name, 'default', 'tmpl');
             const classBody = path.get('body').node.body;
 
             if (classBody.find((nodepath) => t.isClassMethod(nodepath) && nodepath.key.name === METHOD_NAME)) {
@@ -33,6 +44,10 @@ module.exports = function ({ types: t }) {
                     )
                 )])
             ));
+          
+            const templateProps = state.file.addImport(name, 'usedIdentifiers', 't');
+            const root = path.find((p) => t.isProgram(p));
+            root.pushContainer('body', addClassStaticMember(className, 'templateUsedProps', templateProps));
 
             path.stop();
         }

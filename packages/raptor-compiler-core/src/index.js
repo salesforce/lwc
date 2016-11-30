@@ -3,17 +3,15 @@ import {normalizeEntryPath} from './lib/utils';
 import classTransformer from './lib/rollup-plugin-class-transformer';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
-import annotationsTransform from './lib/rollup-plugin-remove-annotations';
-import { transform as optimizeClassTransform } from './lib/class-optimization-transform';
+import removeAnnotations from './lib/rollup-plugin-remove-annotations';
 
 const BASE_CONFIG = {
-    babelConfig: { babelrc: false },
-    sharedMetadata: {}
+    babelConfig: { babelrc: false }
 };
 
 const plugins = [
-    annotationsTransform,
     sourceResolver,
+    removeAnnotations,
     templateParser,
     classTransformer,
 ];
@@ -48,8 +46,7 @@ export function compile(config, options = {}) {
         })
         .then((bundle) => {
             const bundleResult = bundle.generate({});
-            const result = optimizeClassTransform(bundleResult.code, BASE_CONFIG);
-            resolve(result);
+            resolve(bundleResult);
         })
         .catch((err) => {
             reject(err);

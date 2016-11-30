@@ -13,8 +13,8 @@ export function addDependency(node, state) {
     }    
 
     const meta = state.file.metadata;
-    meta.usedProps = meta.usedProps || {};
+    meta.usedIdentifiers = meta.usedIdentifiers || {};
 
     name = name.split(' ').pop();
-    meta.usedProps[name] = meta.usedProps[name] ? meta.usedProps[name] + 1 : 1;
+    meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
 }

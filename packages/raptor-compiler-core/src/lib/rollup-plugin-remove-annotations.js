@@ -18,8 +18,13 @@ export default function (options = { babelConfig : {} }) {
         injected: false,
 
         transform (src, id) {
+            if (extname(id) !== '.js') {
+                return src;
+            }
             const localOptions = Object.assign(options, { filename: id });
-            return transform(src, localOptions);
+            const {code, map} = transform(src, localOptions);
+            return { code, map }
+            
         }       
     };
 }
