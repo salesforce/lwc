@@ -18,7 +18,6 @@ export default function (options = { babelConfig : {} }) {
                 this.injected = true;
                 const localOptions = Object.assign(options, { filename: id });
                 const {code, map} = transform(src, localOptions);
-                console.log(code);
                 return {code, map};
             }
         }       

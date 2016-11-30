@@ -11,19 +11,13 @@ import plugin from '../src/index';
 const testSrc = `
    <template>
     <section class="bar">
-        <ns:outerItem class="foo" repeat:for="(item, index) of items">
-            <div class="wrapper">
-                <p if:bind="item.x">x</p> 
-                <p else:bind>y</p> 
-                <ns:otherWrapper c="item.literal" d:bind="otherProp.literal"> 
-                    <div class="my-list" repeat:for="(innerItem, index2) of item.otherList">
-                        <a:b c="innerItem.literal" d:bind="innerItem.literal" e:bind="otherProp2.literal" f:bind="item.x" >
-                            {item} {item.foo} {innerItem.x} {nonScoped.bar} {foo} {Math.random()}
-                        </a:b>  
-                    </div>
-                </ns:otherWrapper>
-            </div>
-        </ns:outerItem>
+        <ul class="my-list">
+            <a:b>first</a:b>
+            <li class="item" repeat:for="item of items">
+                {item}
+            </li>
+            {last}
+        </ul>
     </section>
 </template>
 
@@ -32,10 +26,5 @@ const testSrc = `
 
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
-
-const result = babel.transform(src, {
-    plugins: [ plugin ]
-});
-
-console.log('>> Metadata:\n', result.metadata.usedProps);
+const result = babel.transform(src, { babelrc:false, plugins: [ plugin ] });
 console.log('>> Code:\n', result.code);

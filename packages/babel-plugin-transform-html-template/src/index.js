@@ -1,35 +1,11 @@
 /* eslint-env node */
-import {
-    DIRECTIVE_PRIMITIVES,
-    DIRECTIVE_SYMBOL,
-    PROPS,
-    RENDER_PRIMITIVES
-} from './constants';
-import {
-    addScopeForLoop,
-    getVarsScopeForLoop,
-    hasScopeForLoop,
-    removeScopeForLoop
-} from './for-scope';
-import {
-    isCompatTag,
-    isTopLevel,
-    parseStyles,
-    toCamelCase
-} from './utils';
+import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
+import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
+import { isCompatTag, isTopLevel, parseStyles, toCamelCase } from './utils';
+import { addDependency } from './metadata';
+import { keyword } from 'esutils';
 
-import {
-    addDependency
-} from './metadata';
-import {
-    keyword
-} from 'esutils';
-
-const {
-    ITERATOR,
-    EMPTY,
-    CREATE_ELEMENT
-} = RENDER_PRIMITIVES;
+const { ITERATOR, EMPTY, CREATE_ELEMENT, FLATTENING } = RENDER_PRIMITIVES;
 const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
 export default function ({
@@ -58,9 +34,7 @@ export default function ({
                     expression.replaceWith(t.expressionStatement(filteredChildren[0]));
 
                     // Add exports declaration
-                    const exportDeclaration = exportsDefaultTemplate({
-                        BODY: expression
-                    });
+                    const exportDeclaration = exportsDefaultTemplate({ BODY: expression });
                     path.node.body.unshift(exportDeclaration);
 
                     // Delete remaining nodes
@@ -82,12 +56,9 @@ export default function ({
             },
             JSXElement: {
                 enter(path, state) {
-                    const openingElement = path.get('openingElement').node;
-                    const attrs = openingElement.attributes;
-                    const expr = attrs.length ? buildOpeningElementAttributes(attrs, path, state) : t.nullLiteral();
-                    const directiveRef = expr._directiveReference;
-
-                    openingElement.attributes = expr;
+                    const openingNode = path.get('openingElement').node;
+                    openingNode.attributes = openingNode.attributes ? buildOpeningElementAttributes(openingNode.attributes, path, state) : t.nullLiteral();
+                    const directiveRef = openingNode.attributes._directiveReference;
 
                     // Add scope while going down
                     if (directiveRef && directiveRef.directive === DIRECTIVE_PRIMITIVES.repeat) {
@@ -96,9 +67,8 @@ export default function ({
                         addScopeForLoop(path, parseForStatement(forValue));
                     }
                 },
-                exit(path, file) {
-                    const callExpr = buildElementCall(path.get('openingElement'), file);
-                    callExpr.arguments.push(t.arrayExpression(path.node.children)); // Add children array as 3rd arg
+                exit(path, status) {
+                    const callExpr = buildElementCall(path.get('openingElement'), status);
 
                     if (callExpr.arguments.length >= 3) {
                         // Dependency on babel-plugin-transform-template-jsx generator to prettify it
@@ -189,9 +159,10 @@ export default function ({
 
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, state) {
-        const elems = [];
         const children = [];
         const onForScope = getVarsScopeForLoop(path);
+        let hasForLoopDirective = false;
+        let elems = [];
 
         // Filter children that are just whitespaces, tabs, etc
         node.children.reduce(cleanJSXElementLiteralChild, children);
@@ -219,10 +190,7 @@ export default function ({
                     throw new Error('Else statement found before if statement');
                 }
 
-                const {
-                    directive,
-                    attrs
-                } = child._directiveReference;
+                const { directive, attrs } = child._directiveReference;
 
                 if (directive === DIRECTIVE_PRIMITIVES.if) {
                     let nextChild = children[i + 1];
@@ -251,6 +219,8 @@ export default function ({
                     const expr = t.callExpression(t.identifier(ITERATOR), [t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
 
                     elems.push(expr);
+                    hasForLoopDirective = true;
+
                     continue;
                 }
             }
@@ -258,7 +228,8 @@ export default function ({
             elems.push(child);
         }
 
-        return elems;
+        elems = t.arrayExpression(elems);
+        return hasForLoopDirective ? t.callExpression(t.identifier(FLATTENING), [elems]): elems;
     }
 
     function parseForStatement(attrValue) {
@@ -289,26 +260,13 @@ export default function ({
     }
 
     function buildElementCall(path, state) {
-        path.parent.children = buildChildren(path.parent, path, state);
-
         const tagExpr = convertJSXIdentifier(path.node.name, path.node);
-        const args = [];
-        let attribs = path.node.attributes;
-        let tagName;
+        const tagName = t.isIdentifier(tagExpr) ? tagExpr.name : tagExpr.value;
+        const tag = isCompatTag(tagName) ? t.stringLiteral(tagName) : tagExpr;
 
-        if (t.isIdentifier(tagExpr)) {
-            tagName = tagExpr.name;
-        } else if (t.isLiteral(tagExpr)) {
-            tagName = tagExpr.value;
-        }
-
-        if (isCompatTag(tagName)) { // Either a lower-case string or a constructor
-            args.push(t.stringLiteral(tagName));
-        } else {
-            args.push(tagExpr);
-        }
-
-        args.push(attribs);
+        const children = buildChildren(path.parent, path, state);
+        const attribs = path.node.attributes;
+        const args = [tag, attribs, children];
 
         const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
         createElementExpression._directiveReference = attribs._directiveReference; // Push reference up
