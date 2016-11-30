@@ -13,6 +13,10 @@ export default class Bar {
         this.data = [];
     }
 
+    broza (x: string) {
+        return x;
+    }
+
     @method
     publicMethod () {
         console.log('test');
