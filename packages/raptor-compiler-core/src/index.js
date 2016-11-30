@@ -1,10 +1,10 @@
-import classTransformer from './lib/rollup-plugin-class-transformer';
-import flowPlugin from './lib/rollup-plugin-flow';
-import {normalizeEntryPath} from './lib/utils';
-import { transform as optimizeClassTransform } from './lib/class-optimization-transform';
 import {rollup} from 'rollup';
+import {normalizeEntryPath} from './lib/utils';
+import classTransformer from './lib/rollup-plugin-class-transformer';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
+import annotationsTransform from './lib/rollup-plugin-remove-annotations';
+import { transform as optimizeClassTransform } from './lib/class-optimization-transform';
 
 const BASE_CONFIG = {
     babelConfig: { babelrc: false },
@@ -12,10 +12,10 @@ const BASE_CONFIG = {
 };
 
 const plugins = [
+    annotationsTransform,
     sourceResolver,
     templateParser,
     classTransformer,
-    [flowPlugin, { checkPragma: false }],
 ];
 
 export function compile(config, options = {}) {
@@ -26,6 +26,10 @@ export function compile(config, options = {}) {
 
     if (componentPath) {
         entry = normalizeEntryPath(componentPath);
+    }
+
+    if (options.minify) {
+        console.log('TODO!');
     }
 
     return new Promise((resolve, reject) => {
