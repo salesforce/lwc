@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-transform-decorator-props",
   "description": "Babel plugin to transform decorators into props",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
