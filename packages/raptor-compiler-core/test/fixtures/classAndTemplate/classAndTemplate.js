@@ -16,6 +16,10 @@ export default class Bar {
     broza (x: string) {
         return x;
     }
+    
+    static get ObserveAttribute() : Array {
+        return ['x'];
+    }
 
     @method
     publicMethod () {
