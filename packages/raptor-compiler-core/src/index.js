@@ -1,6 +1,6 @@
 import {rollup} from 'rollup';
 import {normalizeEntryPath} from './lib/utils';
-import classTransformer from './lib/rollup-plugin-class-transformer';
+import injectTemplate from './lib/rollup-plugin-inject-template';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import templateParser from './lib/rollup-plugin-template-parser';
 import removeAnnotations from './lib/rollup-plugin-remove-annotations';
@@ -13,7 +13,7 @@ const plugins = [
     sourceResolver,
     removeAnnotations,
     templateParser,
-    classTransformer,
+    injectTemplate,
 ];
 
 export function compile(config, options = {}) {

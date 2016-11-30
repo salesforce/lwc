@@ -54,6 +54,7 @@ module.exports = function ({ types: t }) {
     };
 
     return {
+        name: 'inject-template',
         visitor: {
             ExportDefaultDeclaration(path, state) {
                 path.traverse(ASTClassVisitor, state);

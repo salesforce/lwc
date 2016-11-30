@@ -1,5 +1,5 @@
 import babelDecoratorProps from 'babel-plugin-transform-decorator-props';
-import babelInjectPlugin from 'babel-plugin-transform-inject-renderer';
+import babelInjectPlugin from 'babel-plugin-transform-inject-template';
 import { transform } from 'babel-core';
 
 export default function (options = {babelConfig: {}}) {

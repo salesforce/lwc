@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-transform-inject-renderer",
+  "name": "babel-plugin-transform-inject-template",
   "version": "0.0.7",
-  "description": "Babel plugin to inject a render method and an imports statement",
+  "description": "Babel plugin to inject a render method and an imports statements",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
