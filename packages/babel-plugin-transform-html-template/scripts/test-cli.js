@@ -10,8 +10,8 @@ import plugin from '../src/index';
 
 const testSrc = `
    <template>
-    <section>
-        <ns:outerItem class="" repeat:for="(item, index) of items">
+    <section class="bar">
+        <ns:outerItem class="foo" repeat:for="(item, index) of items">
             <div class="wrapper">
                 <p if:bind="item.x">x</p> 
                 <p else:bind>y</p> 

@@ -14,7 +14,8 @@ export const RENDER_PRIMITIVES = {
     ITERATOR       : 'i',
     FOR_LOOP       : 'f',
     EMPTY          : 'e',
-    CREATE_ELEMENT : 'h'
+    CREATE_ELEMENT : 'h',
+    STRING         : 's',
 };
 
 export const TOP_LEVEL_PROPS = [

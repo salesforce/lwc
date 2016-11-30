@@ -166,7 +166,7 @@ export default function ({ types: t, template }) {
                 }
                 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
-                child = tranformExpressionInScope(onForScope, child);
+                child = t.callExpression(t.identifier('s'), [tranformExpressionInScope(onForScope, child)]);
             }
 
             if (t.isCallExpression(child) && child._directiveReference) {
