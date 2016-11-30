@@ -80,15 +80,15 @@ module.exports = function ({ types: t }) {
                 if (prop.isClassMethod({
                         kind: 'method'
                     }) && prop.node.decorators) {
-                    publicMethods.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
+                    publicMethods.push(prop.node.key.name);
                     prop.node.decorators = null;
                 }
             }
 
             const root = path.find((p) => p.isProgram());
 
-            root.pushContainer('body', addClassStaticMember(state.opts.className, '$p$', t.objectExpression(publicProps)));
-            root.pushContainer('body', addClassStaticMember(state.opts.className, '$m$', t.objectExpression(publicMethods)));
+            root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
+            root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
 
             /*
              * For a static  getter

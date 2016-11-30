@@ -17,7 +17,7 @@ export default function ({ types: t }) {
             throw new Error();
         }
 
-        body.push(addClassStaticMember(exportDeclaration.declaration.name, '$t$', t.valueToNode(templateProps)));
+        body.push(addClassStaticMember(exportDeclaration.declaration.name, 'templateBoundIdentifiers', t.valueToNode(templateProps)));
         body.push(exportDeclaration);
     }
 

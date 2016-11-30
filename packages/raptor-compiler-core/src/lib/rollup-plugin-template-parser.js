@@ -21,7 +21,7 @@ export default function (options = { babelConfig : {} }) {
                 const {code, map, metadata} = transform(src, localOptions);
 
                 if (sharedMetadata) {
-                    sharedMetadata.templateProps = metadata.usedProps;
+                    sharedMetadata.templateProps = Object.keys(metadata.usedProps);
                 }
 
                 return { code, map };

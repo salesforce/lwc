@@ -18,6 +18,9 @@ fs.readdirSync(fixturesDir).map((caseName) => {
     if (skipTests.indexOf(caseName) >= 0) return;
 
     const fixtureCaseDir = path.join(fixturesDir, caseName);
+
+    console.log('Compiling: ', caseName, '\n');
+
     return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
     .then((actual) => {
         console.log(actual.code);
