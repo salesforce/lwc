@@ -1,9 +1,9 @@
 import {rollup} from 'rollup';
 import {normalizeEntryPath} from './lib/utils';
-import injectTemplate from './lib/rollup-plugin-inject-template';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
-import templateParser from './lib/rollup-plugin-template-parser';
 import removeAnnotations from './lib/rollup-plugin-remove-annotations';
+import templateParser from './lib/rollup-plugin-template-parser';
+import injectTemplate from './lib/rollup-plugin-inject-template';
 
 const BASE_CONFIG = {
     babelConfig: { babelrc: false }
