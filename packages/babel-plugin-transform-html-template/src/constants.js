@@ -12,7 +12,7 @@ export const DIRECTIVE_PRIMITIVES = {
 
 export const RENDER_PRIMITIVES = {
     ITERATOR       : 'i',
-    FOR_LOOP       : 'f',
+    FLATTENING     : 'f',
     EMPTY          : 'e',
     CREATE_ELEMENT : 'h',
     STRING         : 's',

@@ -49,7 +49,7 @@ export function compile(config, options = {}) {
         .then((bundle) => {
             const bundleResult = bundle.generate({});
             const result = optimizeClassTransform(bundleResult.code, BASE_CONFIG);
-            resolve({ code: result.code });
+            resolve(result);
         })
         .catch((err) => {
             reject(err);
