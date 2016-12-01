@@ -1,6 +1,5 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/.*
-<PROJECT_ROOT>/node_modules/dom/.*
 
 [include]
 ./src/**/*.js

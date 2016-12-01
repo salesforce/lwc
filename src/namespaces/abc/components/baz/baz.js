@@ -3,11 +3,6 @@ import ADS from "raptor:ads";
 class adsBaz {
     @prop foo;
     @prop bar;
-
-    // this method has generated code
-    render({h}) {
-        return h('div', {}, ['foo = ', this.foo, ' and bar = ', this.bar]);
-    }
 }
 
 export default ADS(adsBaz, ADS.QL`

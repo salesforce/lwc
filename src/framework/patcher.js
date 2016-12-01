@@ -30,7 +30,7 @@ export function scheduleRehydration(vm: VM) {
     if (!flags.isScheduled && flags.isReady) {
         flags.isScheduled = true;
         Promise.resolve(vm).then(rehydrate).catch((error: Error) => {
-            assert.fail('Error attempting to rehydrate component <${vm}>: ' + error.message);
+            assert.fail(`Error attempting to rehydrate component <${vm}>: ${error.message}`);
         });
     }
 }

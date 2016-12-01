@@ -1,10 +1,8 @@
 // @flow
 
-import { implement } from "raptor";
 import focusable from "lightning:focusable";
 import classnames from "lightning:classnamesLib";
 
-@implement(focusable)
 export default class button {
 
     // public attributes

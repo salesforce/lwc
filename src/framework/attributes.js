@@ -7,7 +7,7 @@ import {
     vmBeingRendered,
     invokeComponentAttributeChangedCallback,
 } from "./invoker.js";
-import { updateComponentProp } from "./props.js";
+import { updateComponentPropAndRehydrateWhenNeeded } from "./props.js";
 
 const ObjectAttributeToProxyMap = new WeakMap();
 
@@ -38,9 +38,9 @@ export function setAttribute(vm: VM, attrName: string, newValue: any) {
     const { def: { attrs } } = vm;
     attrName = attrName.toLocaleLowerCase();
     const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called @{attrName}.`);
+    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
     if (attrConfig) {
-        updateComponentProp(vm, attrConfig.propName, newValue);
+        updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, newValue);
     }
 }
 
@@ -48,9 +48,9 @@ export function removeAttribute(vm: VM, attrName: string) {
     const { def: { attrs } } = vm;
     attrName = attrName.toLocaleLowerCase();
     const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called @{attrName}.`);
+    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
     if (attrConfig) {
-        updateComponentProp(vm, attrConfig.propName, null);
+        updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, null);
     }
 }
 
@@ -64,7 +64,7 @@ export function getAttribute(vm: VM, attrName: string): any {
     const { def: { attrs }, state } = vm;
     attrName = attrName.toLocaleLowerCase();
     const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called @{attrName}.`);
+    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
     return attrConfig ? state[attrConfig.propName] : null;
 }
 

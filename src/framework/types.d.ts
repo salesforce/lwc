@@ -1,10 +1,9 @@
 declare class Component {
     constructor();
 
-    update(): void;
     render(): VNode;
-    attach(domNode: EventTarget): void;
-    detach(domNode: EventTarget): void;
+    attach(): void;
+    detach(): void;
 }
 
 interface HashTable<T> {

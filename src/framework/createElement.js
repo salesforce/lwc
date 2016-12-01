@@ -8,7 +8,7 @@ import {
     hasAttribute,
     getAttribute,
 } from "./attributes.js";
-import { updateComponentProp } from "./props.js";
+import { updateComponentPropAndRehydrateWhenNeeded } from "./props.js";
 import { patch } from "./patcher.js";
 
 const WebComponentPublicAPI = {
@@ -34,7 +34,7 @@ const RaptorElementProxy = {
         assert.vm(vm);
         const { def: { props } } = vm;
         if (props.hasOwnProperty(propName)) {
-            updateComponentProp(vm, propName, newValue);
+            updateComponentPropAndRehydrateWhenNeeded(vm, propName, newValue);
             return true;
         } else {
             assert.fail(`Property name ${propName} cannot be set to ${newValue} for component ${vm}.`);

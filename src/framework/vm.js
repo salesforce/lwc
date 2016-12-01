@@ -47,7 +47,7 @@ function foldVnode(vm: VM, vnode: VNode) {
 }
 
 function initFromAnotherVM(vm: VM, oldvm: VM) {
-    const { component, api, vnode, tostring, body, state, children, data, flags, reactiveNames, listeners, def } = oldvm;
+    const { component, api, vnode, toString, body, state, children, data, flags, reactiveNames, listeners, def } = oldvm;
     vm.data = data;
     vm.state = state;
     vm.body = body;
@@ -58,7 +58,7 @@ function initFromAnotherVM(vm: VM, oldvm: VM) {
     vm.vnode = vnode;
     vm.reactiveNames = reactiveNames;
     vm.listeners = listeners;
-    vm.tostring = tostring;
+    vm.toString = toString;
     vm.children = children;
 }
 
@@ -99,7 +99,7 @@ export function createComponent(vm: VM) {
         reactiveNames: {},
         listeners: new Set(),
         // TODO: maybe don't belong here...
-        tostring: (): string => {
+        toString: (): string => {
             const type = Ctor.name;
             return `<${type}>`;
         },

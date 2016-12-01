@@ -53,7 +53,7 @@ export function getComponentDef(Ctor: Object): ComponentDef {
 }
 
 function getPropsHash(target: Object): HashTable<PropDef> {
-    const props: HashTable = target.$p$ || {};
+    const props: HashTable = target.publicProps || {};
     return Object.keys(props).reduce((propsHash: HashTable, propName: string) => {
         // expanding the property definition
         propsHash[propName] = {
@@ -98,7 +98,7 @@ function getAttrsHash(props: HashTable<PropDef>): HashTable<AttrDef> {
 }
 
 function getMethodsHash(target: Object): HashTable<Number> {
-    return (target.$m$ || []).reduce((methodsHash: HashTable, methodName: string): HashTable => {
+    return (target.publicMethods || []).reduce((methodsHash: HashTable, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
         assert.block(() => {
             assert.invariant(typeof target.prototype[methodName] !== 'function', `<${target.constructor.name}>.${methodName} have to be a function.`);
@@ -115,7 +115,8 @@ function getMethodsHash(target: Object): HashTable<Number> {
 }
 
 function getObservedPropsHash(target: Object): Object {
-    return (target.$t$ || []).reduce((observedProps: HashTable, attrName: string): HashTable => {
+    // TODO: rename to templateBoundIdentifiers
+    return (target.templateUsedProps || []).reduce((observedProps: HashTable, attrName: string): HashTable => {
         observedProps[attrName] = 1;
         return observedProps;
     }, {});

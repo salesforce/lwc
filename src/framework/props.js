@@ -4,6 +4,7 @@
 
 import assert from "./assert.js";
 import { markVMAsDirty } from "./reactivity.js";
+import { scheduleRehydration } from "./patcher.js";
 import {
     isRendering,
 } from "./invoker.js";
@@ -13,7 +14,7 @@ import {
 } from "./attributes.js";
 import { internal } from "./def.js";
 
-export function initComponentProps(vm: Object, newProps: Object, newBody: array<Object>) {
+export function initComponentProps(vm: VM, newProps: Object, newBody: array<Object>) {
     const { component, state, flags, def: { props: config } } = vm;
     const target = Object.getPrototypeOf(component);
     for (let propName in config) {
@@ -48,7 +49,7 @@ export function initComponentProps(vm: Object, newProps: Object, newBody: array<
     });
 }
 
-export function batchUpdateComponentProps(vm: Object, newProps: Object, newBody: array<Object>) {
+export function batchUpdateComponentProps(vm: VM, newProps: Object, newBody: array<Object>) {
     const { flags: { hasBodyAttribute }, state, def: { props: config } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of the component.`);
     for (let propName in config) {
@@ -65,7 +66,7 @@ export function batchUpdateComponentProps(vm: Object, newProps: Object, newBody:
     });
 }
 
-export function updateComponentProp(vm: Object, propName: string, newValue: any) {
+function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const { flags, state, def: { props: config } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     assert.isTrue(config.hasOwnProperty(propName), `Invalid property name ${propName} of ${vm}.`);
@@ -79,7 +80,15 @@ export function updateComponentProp(vm: Object, propName: string, newValue: any)
         state[propName] = newValue;
         updateAttributeValueFromProp(vm, propName, oldValue, newValue);
         if (!flags.isDirty) {
-            markVMAsDirty(vm, `@${propName}`);
+            markVMAsDirty(vm);
         }
+    }
+}
+
+export function updateComponentPropAndRehydrateWhenNeeded(vm: VM, propName: string, newValue: any) {
+    const { flags } = vm;
+    updateComponentProp(vm, propName, newValue);
+    if (flags.isDirty) {
+        scheduleRehydration(vm);
     }
 }
