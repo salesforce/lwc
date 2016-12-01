@@ -5,6 +5,7 @@ import { transform } from 'babel-core';
 export default function (options = { babelConfig : {} }) {
     const localBabelConfig = {
         babelrc: false,
+        sourceMaps: true,
         plugins: [ templateParserPlugin ]
     };
     options = Object.assign({}, options.babelConfig, localBabelConfig);
@@ -12,14 +13,13 @@ export default function (options = { babelConfig : {} }) {
     return {
         name : 'template-parser',
         injected: false,
-
         transform (src, id) {
-            if (extname(id) === '.html' && !this.injected) {
+            if (!this.injected && extname(id) === '.html') {
                 this.injected = true;
                 const localOptions = Object.assign(options, { filename: id });
                 const {code, map} = transform(src, localOptions);
-                return {code, map};
+                return {code, map};    
             }
-        }       
+        }
     };
 }

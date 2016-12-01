@@ -8,10 +8,7 @@ import { keyword } from 'esutils';
 const { ITERATOR, EMPTY, CREATE_ELEMENT, FLATTENING } = RENDER_PRIMITIVES;
 const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
-export default function ({
-    types: t,
-    template
-}) {
+export default function ({ types: t, template }) {
     const exportsDefaultTemplate = template(`export default function ({ ${PRIMITIVE_KEYS} }) { return BODY; }`, {
         sourceType: 'module'
     });

@@ -1,19 +1,22 @@
 import {rollup} from 'rollup';
 import {normalizeEntryPath} from './lib/utils';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
-import removeAnnotations from './lib/rollup-plugin-remove-annotations';
 import templateParser from './lib/rollup-plugin-template-parser';
 import transformClass from './lib/rollup-plugin-transform-class';
+import removeAnnotations from './lib/rollup-plugin-remove-annotations';
 
 const BASE_CONFIG = {
-    babelConfig: { babelrc: false }
+    babelConfig: { 
+        babelrc: false,
+        sourceMaps: true 
+    }
 };
 
 const plugins = [
     sourceResolver,
-    removeAnnotations,
     templateParser,
     transformClass,
+    removeAnnotations
 ];
 
 export function compile(config, options = {}) {
@@ -46,6 +49,13 @@ export function compile(config, options = {}) {
         })
         .then((bundle) => {
             const bundleResult = bundle.generate({});
+            // bundle.write({
+            //     exports: 'named',
+            //     moduleName: 'test',
+            //     dest: 'bundle.js',
+            //     format: 'umd',
+            //     sourceMap: true
+            // });
             resolve(bundleResult);
         })
         .catch((err) => {

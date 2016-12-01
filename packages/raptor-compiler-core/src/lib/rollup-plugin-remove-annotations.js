@@ -5,6 +5,7 @@ import { transform } from 'babel-core';
 export default function (options = { babelConfig : {} }) {
     const localBabelConfig = {
         babelrc: false,
+        sourceMaps: true,
         plugins: [ annotationsPlugin ],
         parserOpts:  { plugins: ['*'] }
     };
@@ -12,17 +13,18 @@ export default function (options = { babelConfig : {} }) {
     options = Object.assign({}, options.babelConfig, localBabelConfig);
         
     return {
-        name : 'template-parser',
+        name : 'remove-annotations',
         injected: false,
 
         transform (src, id) {
-            if (extname(id) !== '.js') {
-                return src;
+            console.log(this.name, id);
+
+            if (extname(id) === '.js') {
+                const localOptions = Object.assign(options, { filename: id });
+                const {code, map} = transform(src, localOptions);
+                return { code, map }    
             }
-            const localOptions = Object.assign(options, { filename: id });
-            const {code, map} = transform(src, localOptions);
-            return { code, map }
-            
+
         }       
     };
 }

@@ -5,6 +5,7 @@ import { transform } from 'babel-core';
 export default function (options = {babelConfig: {}}) {
     const localBabelConfig = {
         babelrc: false,
+        sourceMaps: true,
         plugins: [
             babelDecoratorProps, 
             babelInjectPlugin
@@ -18,14 +19,12 @@ export default function (options = {babelConfig: {}}) {
         name : 'transform-class',
         injected: false,
         transform (src, id) {
-            if (this.injected) {
-                return src;
-            }
-
-            this.injected = true;
-            const localOptions = Object.assign(options, { filename: id });
-            const { code, map } = transform(src, localOptions);
-            return { code, map };
+            if (!this.injected) {
+                this.injected = true;
+                const localOptions = Object.assign(options, { filename: id });
+                const { code, map } = transform(src, localOptions);
+                return { code, map };    
+            }            
         }
     };
 }
