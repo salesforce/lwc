@@ -6,9 +6,7 @@ export default function (options = { babelConfig : {} }) {
     const localBabelConfig = {
         babelrc: false,
         plugins: [ annotationsPlugin ],
-        parserOpts:  {
-            plugins: ['*']
-        } 
+        parserOpts:  { plugins: ['*'] }
     };
 
     options = Object.assign({}, options.babelConfig, localBabelConfig);

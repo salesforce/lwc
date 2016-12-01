@@ -3,18 +3,6 @@ const KEY_METHODS = 'methods';
 const DECORATOR_PROP = 'prop';
 
 module.exports = function ({ types: t }) {
-    /*
-    * Helper for static getter on a class
-    function addTypesStaticGetter(name, blockStatement) {
-        return t.classMethod(
-            'get',
-            t.identifier(name), [],
-            t.blockStatement([t.returnStatement(blockStatement)]),
-            false,
-            true
-        );
-    }
-    */
 
     function generateClassName(path) {
         return path.scope.generateUidIdentifier("className");
@@ -75,9 +63,7 @@ module.exports = function ({ types: t }) {
                     prop.remove();
                 }
 
-                if (prop.isClassMethod({
-                        kind: 'method'
-                    }) && prop.node.decorators) {
+                if (prop.isClassMethod({kind: 'method'}) && prop.node.decorators) {
                     publicMethods.push(prop.node.key.name);
                     prop.node.decorators = null;
                 }
@@ -87,13 +73,6 @@ module.exports = function ({ types: t }) {
 
             root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
             root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
-
-            /*
-             * For a static  getter
-			if (publicProps.length) {
-	            path.pushContainer('body', addTypesStaticGetter('props', t.objectExpression(publicProps)));
-            }
-            */
 
             path.stop();
         }

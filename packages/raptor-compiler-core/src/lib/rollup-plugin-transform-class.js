@@ -15,7 +15,7 @@ export default function (options = {babelConfig: {}}) {
     options = Object.assign({}, options.babelConfig, localBabelConfig);
 
     return {
-        name : 'inject-renderer',
+        name : 'transform-class',
         injected: false,
         transform (src, id) {
             if (this.injected) {

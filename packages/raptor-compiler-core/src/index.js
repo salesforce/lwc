@@ -3,7 +3,7 @@ import {normalizeEntryPath} from './lib/utils';
 import sourceResolver from './lib/rollup-plugin-source-resolver';
 import removeAnnotations from './lib/rollup-plugin-remove-annotations';
 import templateParser from './lib/rollup-plugin-template-parser';
-import injectTemplate from './lib/rollup-plugin-inject-template';
+import transformClass from './lib/rollup-plugin-transform-class';
 
 const BASE_CONFIG = {
     babelConfig: { babelrc: false }
@@ -13,7 +13,7 @@ const plugins = [
     sourceResolver,
     removeAnnotations,
     templateParser,
-    injectTemplate,
+    transformClass,
 ];
 
 export function compile(config, options = {}) {
