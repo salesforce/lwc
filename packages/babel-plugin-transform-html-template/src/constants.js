@@ -11,11 +11,12 @@ export const DIRECTIVE_PRIMITIVES = {
 };
 
 export const RENDER_PRIMITIVES = {
-    ITERATOR       : 'i',
-    FLATTENING     : 'f',
-    EMPTY          : 'e',
-    CREATE_ELEMENT : 'h',
-    STRING         : 's',
+    ITERATOR        : 'i',
+    FLATTENING      : 'f',
+    EMPTY           : 'e',
+    CREATE_ELEMENT  : 'h',
+    VIRTUAL_ELEMENT : 'v',
+    STRING          : 's',
 };
 
 export const TOP_LEVEL_PROPS = [

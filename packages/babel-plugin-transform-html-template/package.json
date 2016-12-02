@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "css-parse": "^2.0.0",
-    "esutils": "^2.0.2",
     "to-camel-case": "^1.0.0"
   },
   "scripts": {

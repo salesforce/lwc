@@ -1,11 +1,10 @@
 /* eslint-env node */
 import { DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, RENDER_PRIMITIVES } from './constants';
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import { isCompatTag, isTopLevel, parseStyles, toCamelCase } from './utils';
+import { isTopLevel, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
-import { keyword } from 'esutils';
 
-const { ITERATOR, EMPTY, CREATE_ELEMENT, FLATTENING } = RENDER_PRIMITIVES;
+const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = RENDER_PRIMITIVES;
 const PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
 
 export default function ({ types: t, template }) {
@@ -257,38 +256,36 @@ export default function ({ types: t, template }) {
     }
 
     function buildElementCall(path, state) {
-        const tagExpr = convertJSXIdentifier(path.node.name, path.node);
-        const tagName = t.isIdentifier(tagExpr) ? tagExpr.name : tagExpr.value;
-        const tag = isCompatTag(tagName) ? t.stringLiteral(tagName) : tagExpr;
-
+        const tag = convertJSXIdentifier(path.node.name, path, state);
+        const exprTag = t.identifier(tag._virtualCmp ? VIRTUAL_ELEMENT : CREATE_ELEMENT);
         const children = buildChildren(path.parent, path, state);
         const attribs = path.node.attributes;
         const args = [tag, attribs, children];
 
-        const createElementExpression = t.callExpression(t.identifier(CREATE_ELEMENT), args);
+        const createElementExpression = t.callExpression(exprTag, args);
         createElementExpression._directiveReference = attribs._directiveReference; // Push reference up
 
         return createElementExpression;
     }
 
-    function convertJSXIdentifier(node) {
+    function convertJSXIdentifier(node, path, state) {
+        // <a.b.c/>
+        if (t.isJSXMemberExpression(node)) { 
+            throw Error('We do not suport member expressions for now.');
+        }
+
+        // <a:b/>
         if (t.isJSXNamespacedName(node)) {
-            return t.identifier(node.namespace.name + DIRECTIVE_SYMBOL + node.name.name);
+            const name = node.namespace.name + DIRECTIVE_SYMBOL + node.name.name;
+            const devName = node.namespace.name + '$' + node.name.name;
+            const id = state.file.addImport(name, devName);
+            id._virtualCmp = true;
+            return id;
         }
 
-        if (t.isJSXMemberExpression(node)) {
-            return t.memberExpression(
-                convertJSXIdentifier(node.object, node),
-                convertJSXIdentifier(node.property, node)
-            );
-        }
-
+        // <div> -- Any name for now will work
         if (t.isJSXIdentifier(node)) {
-            if (keyword.isIdentifierNameES6(node.name)) {
-                node.type = 'Identifier';
-            } else {
-                return t.stringLiteral(node.name);
-            }
+            return t.stringLiteral(node.name);
         }
 
         return node;
