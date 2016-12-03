@@ -56,11 +56,9 @@ THIS button {
 ## Class
 
 ```js
-import { attribute, method } from "aura";
-
 export default class {
-    @attribute foo = 1;
-    @attribute bar = 2;
+    @prop foo = 1;
+    @prop bar = 2;
 
     constructor() {
         this.counter = 0;

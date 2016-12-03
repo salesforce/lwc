@@ -13,7 +13,7 @@ import {
 const WatcherFlag = Symbol('watcher');
 const TargetToPropsMap = new WeakMap();
 
-function notifyListeners(target: Object, propName: string) {
+export function notifyListeners(target: Object, propName: string) {
     if (TargetToPropsMap.has(target)) {
         const PropNameToListenersMap = TargetToPropsMap.get(target); 
         if (PropNameToListenersMap.has(propName)) {
@@ -64,9 +64,9 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
     };
 }
 
-export function watchProperty(target: Object, propName: string): Boolean {
+export function watchProperty(target: Object, propName: string): boolean {
     // TODO: maybe this should only work if target is a plain object
-    let { get, set, value, configurable } = Object.getOwnPropertyDescriptor(target, propName);
+    let { get, set, value, configurable } = Object.getOwnPropertyDescriptor(target, propName) || {};
     if (get && WatcherFlag in get) {
         return true;
     }

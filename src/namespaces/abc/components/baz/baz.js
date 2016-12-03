@@ -1,14 +1,8 @@
-import ADS from "aura:ads";
-import { attribute } from "aura";
+import ADS from "raptor:ads";
 
 class adsBaz {
-    @attribute foo;
-    @attribute bar;
-
-    // this method has generated code
-    render({h}) {
-        return h('div', {}, ['foo = ', this.foo, ' and bar = ', this.bar]);
-    }
+    @prop foo;
+    @prop bar;
 }
 
 export default ADS(adsBaz, ADS.QL`

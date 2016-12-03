@@ -6,11 +6,13 @@ const fs = require('fs');
 const path = require('path');
 const argv = require('yargs').argv;
 const babel = require('rollup-plugin-babel');
+const raptor = require('rollup-plugin-raptor-compiler');
 const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const babelCore = require('babel-core');
 const rollup = require('rollup');
 const glob = require("glob");
 
@@ -20,7 +22,7 @@ babelConfig.presets = babelConfig.presets.map((preset) => {
     return preset === 'es2015' ? 'es2015-rollup' : preset;
 });
 
-const plugins = [
+const fwPlugins = [
     flow(),
     babel(babelConfig),
     commonjs({
@@ -28,14 +30,42 @@ const plugins = [
     })
 ];
 
+const componentsPlugins = [
+    raptor(),
+    // {
+    //     transform(src, id) {
+    //         const {code, map} = babelCore.transform(src, {
+    //             babelrc: false,
+    //             presets: ['es2015'],
+    //             plugins: [ "transform-class-properties"],
+    //         });
+    //         return { code, map };
+    //     }
+    // },
+    commonjs({
+        sourceMap: true
+    })
+];
+
 if (argv.production) {
-    plugins.push(
+    componentsPlugins.push(
         strip({
             debugger: true,
             functions: [ 'console.*', 'assert.*' ],
         })
     );
-    plugins.push(
+    componentsPlugins.push(
+        uglify({
+            warnings: false
+        })
+    );
+    fwPlugins.push(
+        strip({
+            debugger: true,
+            functions: [ 'console.*', 'assert.*' ],
+        })
+    );
+    fwPlugins.push(
         uglify({
             warnings: false
         })
@@ -61,7 +91,7 @@ function buildBundles(configs) {
 const configs = [];
 
 // seaching for all components in all namespaces
-glob.sync('src/namespaces/*/components/*/*.js').forEach(function (p) {
+glob.sync('src/namespaces/*/components/*/bar.js').forEach(function (p) {
     const entry = path.basename(p, '.js');
     p = path.dirname(p);
     const pieces = p.split(path.sep);
@@ -73,7 +103,7 @@ glob.sync('src/namespaces/*/components/*/*.js').forEach(function (p) {
             folder: p,
             input: {
                 entry: path.join(p, name + '.js'),
-                plugins,
+                plugins: componentsPlugins,
             },
             output: {
                 dest: 'fake-cdn/' + name + '.js',
@@ -81,7 +111,7 @@ glob.sync('src/namespaces/*/components/*/*.js').forEach(function (p) {
                 moduleId: [namespace, name].join(':'),
                 sourceMap: true,
                 globals: {
-                    aura: '$A',
+                    raptor: 'Raptor',
                 },
             },
         });
@@ -99,15 +129,15 @@ glob.sync('src/services/*/*.js').forEach(function (p) {
             folder: p,
             input: {
                 entry: path.join(p, name + '.js'),
-                plugins,
+                plugins: fwPlugins,
             },
             output: {
                 dest: 'fake-cdn/' + name + '.js',
                 format: 'amd',
-                moduleId: ['aura', name].join(':'),
+                moduleId: ['raptor', name].join(':'),
                 sourceMap: true,
                 globals: {
-                    aura: '$A',
+                    raptor: 'Raptor',
                 },
             },
         });
@@ -119,14 +149,14 @@ const fwConfig = {
     folder: 'src/framework',
     input: {
         entry: 'src/framework/main.js',
-        plugins: plugins.concat(nodeResolve({
+        plugins: fwPlugins.concat(nodeResolve({
             jsnext: true,
         })),
     },
     output: {
         dest: 'fake-cdn/fw.js',
         format: 'umd',
-        moduleName: '$A',
+        moduleName: 'Raptor',
         sourceMap: true,
     }
 };

@@ -5,15 +5,12 @@
 </div>
 <script>
 // trying the loader
-$A.loaderImportMethodTemporary('abc:baz')
+Raptor.loaderImportMethodTemporary('abc:baz')
     .then(function (baz) {
-        var opaqueElement = $A.createElement(baz, {
-            props: {
-                x: 1,
-                y: 2
-            },
-        });
+        var raptorElement = Raptor.createElement(baz);
+        raptorElement.x = 1;
+        raptorElement.setAttribute('y', 2);
         var domNodeContainer = document.getElementById('container');
-        $A.mountToDom(opaqueElement, domNodeContainer);
+        Raptor.mountToDom(raptorElement, domNodeContainer);
     })
 </script>
