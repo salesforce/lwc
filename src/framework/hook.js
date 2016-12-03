@@ -4,6 +4,7 @@
 
 import {
     createComponent,
+    spinComponent,
     patchComponent,
     destroyComponent,
 } from "./vm.js";
@@ -17,8 +18,12 @@ import assert from "./assert.js";
 
 export function init(vm: VM) {
     assert.vm(vm);
-    console.log(`<${vm.Ctor.name}> is being initialized.`);
-    createComponent(vm);
+    if (!vm.flags) {
+        createComponent(vm);
+    }
+    if (!vm.flags.isReady) {
+        spinComponent(vm);
+    }
 }
 
 export function prepatch(oldvm: VM, vm: VM) {
@@ -29,6 +34,7 @@ export function prepatch(oldvm: VM, vm: VM) {
         const { Ctor } = vm;
         if (!oldCtor || oldCtor !== Ctor) {
             createComponent(vm);
+            spinComponent(vm);
         } else {
             assert.vm(oldvm);
             patchComponent(vm, oldvm);

@@ -73,12 +73,13 @@ function watchComponentProperties(vm: VM) {
 function clearListeners(vm: VM) {
     assert.vm(vm);
     const { listeners } = vm;
-    listeners.forEach((propSet: Set): void => propSet.delete(vm));
+    listeners.forEach((propSet: Set): boolean => propSet.delete(vm));
     listeners.clear();
 }
 
 export function createComponent(vm: VM) {
     const { Ctor, data, children: body } = vm;
+    console.log(`<${Ctor.name}> is being initialized.`);
     const { props: state = {} } = data;
     const flags = {
         hasBodyAttribute: false,
@@ -109,10 +110,16 @@ export function createComponent(vm: VM) {
     vm.api = createRenderInterface();
     vm.component = new Ctor();
     initComponentProps(vm, state, body);
+}
+
+export function spinComponent(vm: VM) {
+    const { flags } = vm;
+    assert.isFalse(flags.isReady, 'spinComponent() should be invoked once.');
     watchComponentProperties(vm);
+    flags.isReady = true;
     let vnode = invokeComponentRenderMethod(vm);
     vm.vnode = vnode;
-    flags.isReady = true;
+    flags.isDirty = false;
     foldVnode(vm, vnode);
 }
 

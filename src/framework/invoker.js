@@ -7,7 +7,7 @@ import {
     establishContext,
 } from "./context.js";
 
-import { ObjectElementToVMMap } from "./createElement.js"; 
+import { getVM } from "./createElement.js"; 
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -39,15 +39,13 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
         establishContext(this);
         isRendering = true;
         vmBeingRendered = vm;
-        const vnode = component.render(api);
+        let vnode = component.render(api);
         isRendering = false;
         vmBeingRendered = null;
         establishContext(ctx);
         // TODO: find a way to not having to search inside the weakmap for every render
         //       invocation, and only doing so if we know it is raptor element.
-        if (vnode && ObjectElementToVMMap.has(vnode)) {
-            return ObjectElementToVMMap.get(vnode);
-        }
+        vnode = getVM(vnode) || vnode;
         return vnode;
     }
     return null;
