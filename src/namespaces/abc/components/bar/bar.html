@@ -1,13 +1,13 @@
 <template>
     <div class="foo">
-        <h1 if:bind="title">{title}</h1>
+        <h1 if:eval="title">{title}</h1>
         <ul class="foo">
             <li class="first">header</li>
-            <li repeat:for="item of data" class:bind="itemClassName">
+            <li repeat:for="item of data" assign:class="itemClassName">
                 Value of X = {item.x}
             </li>
             <li class="last">footer</li>
         </ul>
-        <button onclick:bind="handleClick">{label}</button>
+        <button bind:onclick="handleClick">{label}</button>
     </div>
 </template>

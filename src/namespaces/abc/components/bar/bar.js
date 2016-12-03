@@ -36,13 +36,11 @@ export default class Bar {
         this.data = produceNewData(this.data, this.min, this.max);
     }
 
-    get handleClick() {
-        return () => {
-            this.counter += 1;
-            const newData = produceNewData(this.data, this.min, this.max);
-            this.data = newData;
-            console.log('clicked');
-        };
+    handleClick() {
+        this.counter += 1;
+        const newData = produceNewData(this.data, this.min, this.max);
+        this.data = newData;
+        console.log('clicked');
     }
 }
 
