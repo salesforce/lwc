@@ -16,15 +16,9 @@ const babelCore = require('babel-core');
 const rollup = require('rollup');
 const glob = require("glob");
 
-let babelConfig = JSON.parse(fs.readFileSync('src/.babelrc', 'utf8'));
-babelConfig.babelrc = false;
-babelConfig.presets = babelConfig.presets.map((preset) => {
-    return preset === 'es2015' ? 'es2015-rollup' : preset;
-});
-
 const fwPlugins = [
     flow(),
-    babel(babelConfig),
+    babel(),
     commonjs({
         sourceMap: true
     })
@@ -32,16 +26,18 @@ const fwPlugins = [
 
 const componentsPlugins = [
     raptor(),
-    // {
-    //     transform(src, id) {
-    //         const {code, map} = babelCore.transform(src, {
-    //             babelrc: false,
-    //             presets: ['es2015'],
-    //             plugins: [ "transform-class-properties"],
-    //         });
-    //         return { code, map };
-    //     }
-    // },
+    {
+       transform(src, id) {
+           const {code, map} = babelCore.transform(src, {
+               babelrc: false,
+               presets: [
+                   ['es2015', { modules: false }]
+               ],
+               plugins: [ 'transform-class-properties' ],
+           });
+           return { code, map };
+       }
+    },
     commonjs({
         sourceMap: true
     })
@@ -54,22 +50,22 @@ if (argv.production) {
             functions: [ 'console.*', 'assert.*' ],
         })
     );
-    componentsPlugins.push(
-        uglify({
-            warnings: false
-        })
-    );
+    // componentsPlugins.push(
+    //     uglify({
+    //         warnings: false
+    //     })
+    // );
     fwPlugins.push(
         strip({
             debugger: true,
             functions: [ 'console.*', 'assert.*' ],
         })
     );
-    fwPlugins.push(
-        uglify({
-            warnings: false
-        })
-    );
+    // fwPlugins.push(
+    //     uglify({
+    //         warnings: false
+    //     })
+    // );
 }
 
 function buildBundle(bundleConfig) {
