@@ -1,14 +1,15 @@
 /* eslint-env node */
-import { RENDER_PRIMITIVES, RENDER_PRIMITIVE_KEYS, DIRECTIVE_PRIMITIVES, DIRECTIVE_SYMBOL, PROPS, EVENT_KEYS } from './constants';
+import * as CONST from './constants';
 import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
 import { isTopLevel, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
 
-const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = RENDER_PRIMITIVES;
+const DIRECTIVE_PRIMITIVES = CONST.DIRECTIVE_PRIMITIVES;
+const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
     const exportsDefaultTemplate = template(
-        `export default function ({ ${RENDER_PRIMITIVE_KEYS} }) { 
+        `export default function ({ ${CONST.RENDER_PRIMITIVE_KEYS} }) { 
             return BODY; 
         }`, { sourceType: 'module' });
 
@@ -276,7 +277,7 @@ export default function ({ types: t, template }) {
 
         // <a:b/>
         if (t.isJSXNamespacedName(node)) {
-            const name = node.namespace.name + DIRECTIVE_SYMBOL + node.name.name;
+            const name = node.namespace.name + CONST.DIRECTIVE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
             const id = state.file.addImport(name, devName);
             id._virtualCmp = true;
@@ -327,7 +328,7 @@ export default function ({ types: t, template }) {
                     // Rest are nested under attrs/props
                     if (!currentNestedObjects.attrs) {
                        let attrs = currentNestedObjects.attrs = t.objectProperty(
-                            t.identifier(PROPS),
+                            t.identifier(CONST.PROPS),
                             t.objectExpression([])
                         );
                         newProps.push(attrs);
@@ -368,7 +369,7 @@ export default function ({ types: t, template }) {
         }
 
         // @dval: Maybe move this code to cleanAttributeName?
-        if (rawName.indexOf(DIRECTIVE_PRIMITIVES.on) === 0 && EVENT_KEYS[rawName.substring(2)]) {
+        if (rawName.indexOf(DIRECTIVE_PRIMITIVES.on) === 0 && CONST.EVENT_KEYS[rawName.substring(2)]) {
             rawName = rawName.substring(2);
             nameNode[nameKey] = nameNode._on = rawName;
             
