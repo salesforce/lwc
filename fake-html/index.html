@@ -5,12 +5,11 @@
 
 Raptor.loaderImportMethodTemporary('prototype:simpleList')
     .then(function (list) {
+        console.time('createAndRender');
         var raptorElement = Raptor.createElement(list);
         raptorElement.min = 30;
-        raptorElement.max = 35;
         raptorElement.setAttribute('label', 're-shuffle');
         raptorElement.setAttribute('title', 'super awesome demo');
-        console.time('createAndRender');
         var domNodeContainer = document.getElementById('container');
         Raptor.mountToDom(raptorElement, domNodeContainer);
         console.timeEnd('createAndRender');

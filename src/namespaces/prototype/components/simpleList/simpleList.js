@@ -1,5 +1,5 @@
 const DefaultMinValue = 5;
-const DefaultMaxValue = 50;
+const DefaultMaxValue = 35;
 
 function produceNewData(oldData, min, max) {
     const len = Math.floor(Math.random() * (max - min)) + min;
@@ -8,9 +8,7 @@ function produceNewData(oldData, min, max) {
         if (Math.round(Math.random()) === 1 && oldData[i]) {
             data.push(oldData[i]);
         } else {
-            data.push({
-                x: Math.floor(Math.random() * 100)
-            });
+            data.push({ x: Math.floor(Math.random() * 100) });
         }
     }
     return data;
