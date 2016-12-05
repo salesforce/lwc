@@ -17,10 +17,10 @@ function produceNewData(oldData, min, max) {
 }
 
 export default class Bar {
-    @prop min = DefaultMinValue;
-    @prop max = DefaultMaxValue;
-    @prop label = 'default label';
-    @prop title = 'default title';
+    min = DefaultMinValue;
+    max = DefaultMaxValue;
+    label = 'default label';
+    title = 'default title';
 
     constructor() {
         this.counter = 0;
@@ -43,6 +43,3 @@ export default class Bar {
         console.log('clicked');
     }
 }
-
-// Example of usage:
-// <Bar min="5" max="10" label="re-shuffle" />

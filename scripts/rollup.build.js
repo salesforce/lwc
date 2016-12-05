@@ -91,7 +91,7 @@ function buildBundles(configs) {
 const configs = [];
 
 // seaching for all components in all namespaces
-glob.sync('src/namespaces/*/components/*/bar.js').forEach(function (p) {
+glob.sync('src/namespaces/*/components/**/*.js').forEach(function (p) {
     const entry = path.basename(p, '.js');
     p = path.dirname(p);
     const pieces = p.split(path.sep);

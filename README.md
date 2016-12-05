@@ -8,6 +8,38 @@
 
 ### Installation
 
+Add this to your bash configuration:
+
+```
+export PATH="./node_modules/.bin:$PATH"
+```
+
+That will put in your path all the necessary binaries.
+Alternatively you can install globally `babel-cli` and `lerna` packages:
+
+```
+$ npm install -g babel-cli
+$ npm install -g lerna
+``` 
+With all global binaries available you can either run `npm install` or: 
+
+```
+yarn install
+``` 
+
+
+### Setting internal npm
+
+You need to configure npm to point to our [internal npm repo](http://npm.sfdc.es:8081) where you can fetch the package dependencies.
+Set it as part of your npm config running:
+
+```
+npm config set registry "http://npm.sfdc.es:8080"
+```
+
+
+### Installing raptor
+
 ```bash
 git clone https://git.soma.salesforce.com/raptor/raptor.git
 cd raptor

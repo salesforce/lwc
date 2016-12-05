@@ -1,17 +1,13 @@
 <script src="fw.js"></script>
-<script src="ads.js"></script>
-<script src="bar.js"></script>
-<script src="foo.js"></script>
-<script src="baz.js"></script>
-<div id="container">
-</div>
+<script src="simpleList.js"></script>
+<div id="container"></div>
 <script>
-// trying the loader
-Raptor.loaderImportMethodTemporary('abc:bar')
-    .then(function (bar) {
-        var raptorElement = Raptor.createElement(bar);
-        raptorElement.min = 5;
-        raptorElement.max = 10;
+
+Raptor.loaderImportMethodTemporary('prototype:simpleList')
+    .then(function (list) {
+        var raptorElement = Raptor.createElement(list);
+        raptorElement.min = 30;
+        raptorElement.max = 35;
         raptorElement.setAttribute('label', 're-shuffle');
         raptorElement.setAttribute('title', 'super awesome demo');
         console.time('createAndRender');
