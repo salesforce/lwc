@@ -10,7 +10,8 @@ export const DIRECTIVE_PRIMITIVES = {
     on: 'on',
     bind: 'bind',
     eval: 'eval',
-    assign: 'assign'
+    assign: 'assign',
+    set: 'set'
 };
 
 export const DIRECTIVE_CONDITIONALS = {

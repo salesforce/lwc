@@ -1,9 +1,6 @@
-const KEY_PROPS = 'props';
-const KEY_METHODS = 'methods';
-const DECORATOR_PROP = 'prop';
+const PUBLIC_METHOD_DECORATOR = 'method';
 
 module.exports = function ({ types: t }) {
-
     function generateClassName(path) {
         return path.scope.generateUidIdentifier("className");
     }
@@ -25,54 +22,46 @@ module.exports = function ({ types: t }) {
             const publicMethods = [];
 
             for (let prop of classBody) {
-
-                // Type definition
-                if (prop.node.key.name === KEY_PROPS || prop.node.key.name === KEY_METHODS) {
-                    throw new Error(prop.node.key.name + ' is a reserved key for static class properties');
-                }
-
                 // Props
                 if (prop.isClassProperty()) {
-                    // Decorators
-                    if (!prop.node.decorators) {
-                        throw new Error(`
-                            Static non-public properties are not allowed. 
-                            You can either make them the property public (using @prop decorator) 
-                            or move it to the constructor.`);
+                    // Remove decorators for now.
+                    if (prop.node.decorators) {
+                        prop.node.decorators = null;
                     }
-
+                    // Throw if we find `this` (needs refinement)
                     prop.traverse({
                         ThisExpression() {
                             throw new Error('Reference to the instance is now allowed in class properties');
                         }
                     });
-                    
-                    const propDecorators = prop.node.decorators;
 
-                    propDecorators.reduce((r, d) => {
-                        if (t.isIdentifier(d.expression) && d.expression.name === DECORATOR_PROP) {
-                            let value = prop.node.value || t.nullLiteral();
-                            if (!t.isLiteral(value) && !t.isIdentifier(value)) {
-                                value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
-                            }
-                            r.push(t.objectProperty(t.identifier(prop.node.key.name), value));
-                        }
-                        return r;
-                    }, publicProps);
+                    let value = prop.node.value || t.nullLiteral();
+                    if (!t.isLiteral(value) && !t.isIdentifier(value)) {
+                        value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
+                    }
 
+                    publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
                     prop.remove();
-                }
 
-                if (prop.isClassMethod({kind: 'method'}) && prop.node.decorators) {
-                    publicMethods.push(prop.node.key.name);
+                } else if (prop.isClassMethod({
+                        kind: 'method'
+                    }) && prop.node.decorators) {
+                    if (prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
+                        publicMethods.push(prop.node.key.name);
+                    }
                     prop.node.decorators = null;
                 }
             }
 
             const root = path.find((p) => p.isProgram());
 
-            root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
-            root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
+            if (publicProps.length) {
+                root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
+            }
+
+            if (publicMethods.length) {
+                root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
+            }
 
             path.stop();
         }

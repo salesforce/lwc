@@ -11,7 +11,7 @@ import plugin from '../src/index';
 const testSrc = `
    <template>
     <section assign:class="bar">
-        <p assign:if="cond1">Yay!</p>
+        <p set:if="cond1">Yay!</p>
         <p assign:else>Yayelse</p>
 
         <ul>
@@ -22,7 +22,7 @@ const testSrc = `
         </ul>
         <div class="my-list">
             <a:b assign:prop-test="val1">first</a:b>
-            <button assign:label="label" bind:onclick="onClick" bind:ondblclick="onDoubleClick">{expchild}</button>
+            <button assign:label="label" bind:onclick="onClick" assign:ondblclick="onDoubleClick">{expchild}</button>
         </div>
     </section>
 </template>
