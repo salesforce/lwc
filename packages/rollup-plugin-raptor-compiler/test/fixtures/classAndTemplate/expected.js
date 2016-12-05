@@ -1,21 +1,29 @@
-var _t = function ({
+var _tmpl = function ({
     i,
     f,
     e,
-    h
+    h,
+    v,
+    s
 }) {
-    return h("section", null, ["Test"]);
+    return h(
+        "section",
+        {
+            "class": "foo"
+        },
+        ["Test"]
+    );
 };
+const usedIdentifiers = [];
+
+const DefaultMinValue = 5;
+const DefaultMaxValue = 50;
 
 function produceNewData(oldData, min, max) {
     data.push(1);
 }
 
 class Bar {
-    // @attribute min = DefaultMinValue;
-    // @attribute max = DefaultMaxValue;
-    // @attribute label;
-    // @attribute title;
 
     constructor() {
         this.counter = 0;
@@ -35,13 +43,16 @@ class Bar {
     }
 
     render(p) {
-        return _t.call(this, p);
+        return _tmpl.call(this, p);
     }
 
 }
-Bar.$p$ = {};
-Bar.$m$ = {};
-
-Bar.$t$ = {};
+Bar.publicProps = {
+    min: DefaultMinValue,
+    max: DefaultMaxValue,
+    label: null,
+    title: null
+};
+Bar.templateUsedProps = usedIdentifiers;
 
 export default Bar;

@@ -2,21 +2,26 @@ export default function ({
     i,
     f,
     e,
-    h
+    h,
+    v,
+    s
 }) {
     return h(
         "section",
-        null,
-        [i(this.items, (item, index) => {
+        {},
+        f([i(this.items, (item, index) => {
             return h(
                 "div",
-                { "class": "my-list" },
+                {
+                    "class": "my-list"
+                },
                 [h(
                     "p",
-                    null,
+                    {},
                     ["items"]
                 )]
             );
-        })]
+        })])
     );
 }
+export const usedIdentifiers = ["items"];

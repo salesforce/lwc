@@ -8,4 +8,3 @@ Test.publicProps = {
     test: 1,
     bar: null
 };
-Test.publicMethods = [];

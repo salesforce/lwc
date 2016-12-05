@@ -6,10 +6,10 @@ function produceNewData(oldData, min, max) {
 }
 
 export default class Bar {
-    // @attribute min = DefaultMinValue;
-    // @attribute max = DefaultMaxValue;
-    // @attribute label;
-    // @attribute title;
+    @attribute min = DefaultMinValue;
+    @attribute max = DefaultMaxValue;
+    @attribute label;
+    @attribute title;
 
     constructor() {
         this.counter = 0;

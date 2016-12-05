@@ -1,6 +1,9 @@
 const PUBLIC_METHOD_DECORATOR = 'method';
 
-module.exports = function ({ types: t }) {
+module.exports = function (babel) {
+    'use strict';
+    const t = babel.types;
+
     function generateClassName(path) {
         return path.scope.generateUidIdentifier("className");
     }

@@ -2,11 +2,14 @@ export default function ({
     i,
     f,
     e,
-    h
+    h,
+    v,
+    s
 }) {
     return h(
         "p",
-        null,
+        {},
         ["Root"]
     );
 }
+export const usedIdentifiers = [];

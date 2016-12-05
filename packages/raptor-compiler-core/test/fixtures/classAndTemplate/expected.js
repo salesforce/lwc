@@ -1,11 +1,40 @@
-var _t = function ({
+import { a$b } from 'a:b';
+
+var _tmpl = function ({
     i,
     f,
     e,
-    h
+    h,
+    v,
+    s
 }) {
-    return h("section", null, [h("p", null, [this.test])]);
+    return h(
+        "section",
+        {
+            "class": "bar"
+        },
+        [h(
+            "ul",
+            {
+                "class": this.my-list
+            },
+            f([v(
+                a$b,
+                {},
+                ["first"]
+            ), i(this.items, item => {
+                return h(
+                    "li",
+                    {
+                        "class": "item"
+                    },
+                    [s(item)]
+                );
+            }), s(this.last)])
+        )]
+    );
 };
+const usedIdentifiers = ["my-list", "items", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
@@ -16,6 +45,10 @@ class Bar {
         this.counter = 0;
         this.itemClassName = 'item';
         this.data = [];
+    }
+
+    broza(x) {
+        return x;
     }
 
     publicMethod() {
@@ -30,21 +63,17 @@ class Bar {
     }
 
     render(p) {
-        return _t.call(this, p);
+        return _tmpl.call(this, p);
     }
 
 }
-Bar.$p$ = {
+Bar.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
     label: null,
     title: null
 };
-Bar.$m$ = {
-    publicMethod: 1
-};
+Bar.publicMethods = ['publicMethod'];
+Bar.templateUsedProps = usedIdentifiers;
 
-Bar.$t$ = {
-    test: 1
-};
 export default Bar;
