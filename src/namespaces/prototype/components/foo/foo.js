@@ -1,8 +1,8 @@
 import { concatClassnames } from "./helper/classname.js";
 
 export default class Bar {
-    @prop x;
-    @prop y = 0;
+    x;
+    y = 0;
 
     get computedClasses() {
         return concatClassnames('slds-list-item', 'item-' + this.y);

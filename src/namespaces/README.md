@@ -13,7 +13,7 @@
 
 ```html
 <template>
-    <button name:bind="a" onclick:call="clickHandler">
+    <button set:name="a" bind:onclick="clickHandler">
         <span>something</span>
     </button>
 </template>
@@ -28,12 +28,11 @@
             color: red;
         }
     </style>
-    <button name:bind="a" onclick:call="clickHandler">
+    <button set:name="a" bind:onclick="clickHandler">
         <span>something</span>
     </button>
 </template>
 ```
-
 
 ## CSS
 
@@ -48,7 +47,7 @@ button {
 ### Equivalent to existing CSS
 
 ```css
-THIS button {
+.THIS button {
     color: red;
 }
 ```
@@ -57,8 +56,8 @@ THIS button {
 
 ```js
 export default class {
-    @prop foo = 1;
-    @prop bar = 2;
+    foo = 1;
+    bar = 2;
 
     constructor() {
         this.counter = 0;

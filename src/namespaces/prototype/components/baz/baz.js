@@ -1,8 +1,8 @@
 import ADS from "raptor:ads";
 
 class adsBaz {
-    @prop foo;
-    @prop bar;
+    // foo = 1;
+    // bar = 2;
 }
 
 export default ADS(adsBaz, ADS.QL`

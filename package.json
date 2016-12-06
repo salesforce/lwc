@@ -4,9 +4,10 @@
   "description": "Raptor Engine",
   "scripts": {
     "clean": "rimraf fake-cdn/ && git checkout fake-cdn",
-    "start": "forever --uid raptor fake-server/server.js & node scripts/rollup.build.js --watch && forever stop raptor",
+    "start": "npm run build-runtime && forever --uid raptor fake-server/server.js & node scripts/rollup.build.js --watch && forever stop raptor",
     "stop": "forever stopall",
-    "build": "npm run clean && node scripts/rollup.build.js --production",
+    "build-runtime": "babel-external-helpers > fake-cdn/babelHelpers.js",
+    "build": "npm run build-runtime && npm run clean && node scripts/rollup.build.js --production",
     "lint": "eslint src/",
     "pretest": "npm run lint",
     "preversion": "npm run clean && npm run build",
@@ -17,6 +18,7 @@
     "url": "https://git.soma.salesforce.com/raptor/raptor.git"
   },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-eslint": "^6.1.2",
     "babel-plugin-transform-class-properties": "^6.11.5",
     "babel-polyfill": "^6.13.0",

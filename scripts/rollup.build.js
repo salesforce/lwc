@@ -18,7 +18,17 @@ const glob = require("glob");
 
 const fwPlugins = [
     flow(),
-    babel(),
+    babel({
+        babelrc: false,
+        presets: [
+            [
+                "es2015",
+                {
+                    "modules": false
+                }
+            ]
+        ],
+    }),
     commonjs({
         sourceMap: true
     })
@@ -26,21 +36,22 @@ const fwPlugins = [
 
 const componentsPlugins = [
     raptor(),
-    {
-       transform(src, id) {
-           const {code, map} = babelCore.transform(src, {
-               babelrc: false,
-               presets: [
-                   ['es2015', { modules: false }]
-               ],
-               plugins: [ 'transform-class-properties' ],
-           });
-           return { code, map };
-       }
-    },
-    commonjs({
-        sourceMap: true
-    })
+    babel({
+        babelrc: false,
+        presets: [
+            [
+                "es2015",
+                {
+                    "modules": false
+                }
+            ]
+        ],
+        plugins: [
+            "external-helpers",
+            "transform-class-properties",
+        ],
+        externalHelpers: true,
+    }),
 ];
 
 if (argv.production) {
