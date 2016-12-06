@@ -14,6 +14,7 @@ export default function (options = { babelConfig : {} }) {
         name : 'template-parser',
         injected: false,
         transform (src, id) {
+            //console.log('[]template-parser', '\t>> ' , id);
             if (!this.injected && extname(id) === '.html') {
                 this.injected = true;
                 const localOptions = Object.assign(options, { filename: id });

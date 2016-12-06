@@ -19,6 +19,7 @@ export default function (options = {babelConfig: {}}) {
         name : 'transform-class',
         injected: false,
         transform (src, id) {
+            //console.log('[]transform-class', '\t>> ' , id);
             if (!this.injected) {
                 this.injected = true;
                 const localOptions = Object.assign(options, { filename: id });

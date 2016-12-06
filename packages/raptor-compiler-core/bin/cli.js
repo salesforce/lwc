@@ -9,18 +9,38 @@ import path from 'path';
 const skipTests = [
     '.babelrc',
     '.DS_Store',
+    'classAndTemplate'
 ];
 
-const BASE_CONFIG = {};
 const fixturesDir = path.join(__dirname + '/../test/', 'fixtures');
+
+const TEST_SRCS = {
+    empty: {
+        sourceTemplate : `
+            <template>
+                <section>
+                    <p>{test}</p>
+                </section>
+            </template>
+        `, 
+        sourceClass: `
+            export default class Bar {
+                test = 'foo';
+                constructor() {}
+            }
+        `,
+        sourceCSS: ''
+    }
+};
 
 fs.readdirSync(fixturesDir).map((caseName) => {
     if (skipTests.indexOf(caseName) >= 0) return;
-
     const fixtureCaseDir = path.join(fixturesDir, caseName);
-    console.log('Compiling: ', caseName, '\n');
 
-    return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
+    const initialConfig = { entry: path.join(fixtureCaseDir, caseName + '.js') };
+    const config = Object.assign({}, TEST_SRCS[caseName] || {}, initialConfig);
+
+    return runCompile(config, {})
     .then((actual) => {
         console.log(actual.code);
     })
@@ -30,35 +50,7 @@ fs.readdirSync(fixturesDir).map((caseName) => {
 });
 
 
-function runCompile(filePath, options = {}) {
-    const config = Object.assign({}, BASE_CONFIG, options);    
-    return compile({ entry: filePath }, config);
+
+function runCompile(config, options = {}) {
+    return compile(config, options);
 }
-
-// -- Acorn test ---------------------------------------------------------------------
-// const src = fs.readFileSync(__dirname+'/../test/fixtures/classAndTemplate/classAndTemplate.js').toString();
-
-// const result = acorn.parse(src, {
-//     sourceType: 'module',
-//     ecmaVersion: 7
-// });
-
-
-// -- Babylon test ----------------------------------------------------------------------------------------
-//const src = fs.readFileSync(__dirname+'/../test/fixtures/classAndTemplate/classAndTemplate.js').toString())
-// const ast = babylon.parse(src, {
-//   // parse in strict mode and allow module declarations
-//   sourceType: "module",
-//   plugins: ['*']
-// });
-
-// console.log('AST: ', !!ast);
-
-
-// const result = babel.transform(src, {
-//     parserOpts: {
-//         plugins: ['*']
-//     }
-// });
-
-// console.log(result.code);

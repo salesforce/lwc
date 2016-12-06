@@ -12,18 +12,18 @@ const BASE_CONFIG = {
     }
 };
 
-const plugins = [
-    sourceResolver,
-    templateParser,
-    transformClass,
-    removeAnnotations
-];
-
 export function compile(config, options = {}) {
-    let componentPath = config.componentPath;
+    const componentPath = config.componentPath;
     let entry = config.entry;
 
     options = Object.assign({}, BASE_CONFIG, options);
+
+    const plugins = [
+        [sourceResolver, config],
+        templateParser,
+        transformClass,
+        removeAnnotations
+    ];
 
     if (componentPath) {
         entry = normalizeEntryPath(componentPath);
@@ -48,15 +48,7 @@ export function compile(config, options = {}) {
             })
         })
         .then((bundle) => {
-            const bundleResult = bundle.generate({});
-            // bundle.write({
-            //     exports: 'named',
-            //     moduleName: 'test',
-            //     dest: 'bundle.js',
-            //     format: 'umd',
-            //     sourceMap: true
-            // });
-            resolve(bundleResult);
+            resolve(bundle.generate());
         })
         .catch((err) => {
             reject(err);

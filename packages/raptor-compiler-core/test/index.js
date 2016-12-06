@@ -1,3 +1,4 @@
+/* eslint-env node, mocha */
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -10,7 +11,8 @@ function trim(str) {
 
 const skipTests = [
     '.babelrc',
-    '.DS_Store'
+    '.DS_Store',
+    'empty'
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');

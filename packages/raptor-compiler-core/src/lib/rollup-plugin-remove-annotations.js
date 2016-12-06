@@ -17,8 +17,7 @@ export default function (options = { babelConfig : {} }) {
         injected: false,
 
         transform (src, id) {
-            console.log(this.name, id);
-
+            //console.log('[]remove-annotation', '\t>> ' , id);
             if (extname(id) === '.js') {
                 const localOptions = Object.assign(options, { filename: id });
                 const {code, map} = transform(src, localOptions);
