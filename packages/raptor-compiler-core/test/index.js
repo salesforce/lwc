@@ -39,6 +39,6 @@ const BASE_CONFIG = {};
 
 function runCompile(filePath, options = {}) {
     const config = Object.assign({}, BASE_CONFIG, options);
-    return compile({ entry: filePath }, config);
+    return compile({ componentPath: filePath }, config);
 }
 

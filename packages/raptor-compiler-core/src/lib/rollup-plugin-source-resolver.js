@@ -8,8 +8,8 @@ function fileParts (filePath) {
 }
 
 export default function (options) {
-    const { entry, sourceTemplate, sourceClass } = options;
-    const entryParts = fileParts(entry);
+    const { componentPath, sourceTemplate, sourceClass } = options;
+    const entryParts = fileParts(componentPath);
 
     return {
         name : 'source-resolver',

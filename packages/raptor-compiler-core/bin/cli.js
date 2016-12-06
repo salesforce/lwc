@@ -37,7 +37,7 @@ fs.readdirSync(fixturesDir).map((caseName) => {
     if (skipTests.indexOf(caseName) >= 0) return;
     const fixtureCaseDir = path.join(fixturesDir, caseName);
 
-    const initialConfig = { entry: path.join(fixtureCaseDir, caseName + '.js') };
+    const initialConfig = { componentPath: path.join(fixtureCaseDir, caseName + '.js') };
     const config = Object.assign({}, TEST_SRCS[caseName] || {}, initialConfig);
 
     return runCompile(config, {})
