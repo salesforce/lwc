@@ -279,7 +279,7 @@ export default function ({ types: t, template }) {
         if (t.isJSXNamespacedName(node)) {
             const name = node.namespace.name + CONST.DIRECTIVE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
-            const id = state.file.addImport(name, devName);
+            const id = state.file.addImport(name, 'default', devName);
             id._virtualCmp = true;
             return id;
         }

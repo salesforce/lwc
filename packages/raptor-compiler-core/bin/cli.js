@@ -9,7 +9,7 @@ import path from 'path';
 const skipTests = [
     '.babelrc',
     '.DS_Store',
-    'classAndTemplate'
+    'empty'
 ];
 
 const fixturesDir = path.join(__dirname + '/../test/', 'fixtures');
