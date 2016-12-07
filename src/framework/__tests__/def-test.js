@@ -1,19 +1,12 @@
-/* globals describe, beforeEach, it, require, jest, expect */
-
-'use strict';
+import expect from 'expect';
+import { getComponentDef } from "../def.js";
 
 describe('getComponentDef', () => {
-    var getComponentDef;
-
-    beforeEach(() => {
-        jest.resetModuleRegistry();
-        getComponentDef = require('../def.js').getComponentDef;
-    });
 
     it('should understand empty constructors', () => {
         class Ctor {} 
         var def = getComponentDef({ Ctor });
-        expect(def).toBeDefined();
+        expect(def).toExist();
     });
 
 });
