@@ -17,9 +17,7 @@ const fixtures = [
     'forLoop',
     'nativeAttributeStyles',
     'all',
-    // ['all', {
-    //     extractSourceLocation: true,
-    // }],
+    'usedAttrs'
 ];
 
 fixtures.forEach((fixture) => {

@@ -60,7 +60,7 @@ export default function ({ types: t, template }) {
 
                     // Add scope while going down
                     if (forExpr) {
-                        const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                        const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
                         addScopeForLoop(path, parseForStatement(forValue));
                     }
                 },
@@ -145,9 +145,17 @@ export default function ({ types: t, template }) {
         return child;
     }
 
+    function isInForScope(onForScope, node) {
+        let literal = t.isMemberExpression(node) ? node.object.name : node;
+        literal = typeof literal === 'string' ? literal.split('.').shift() : '';
+        literal = literal.split(' ').pop();
+
+        console.log('>> isInForScope?: ', literal, onForScope);
+        return onForScope.includes(literal);
+    }
+
     function transformBindingLiteralOnScope(onForScope, literal) {
-        const objectMember = literal.split('.').shift();
-        if (!onForScope.includes(objectMember)) {
+        if (!isInForScope(onForScope, literal)) {
             return t.memberExpression(t.identifier('this'), t.identifier(literal));
         }
 
@@ -173,9 +181,8 @@ export default function ({ types: t, template }) {
 
             if (t.isJSXExpressionContainer(child)) {
                 child = child.expression; // remove the JSXContainer <wrapper></wrapper>
-
-                if (!onForScope.includes(child.name)) {
-                    addDependency(child, state);
+                if (!isInForScope(onForScope, child.name)) {
+                    addDependency(child, state, t);
                 }
 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
@@ -208,7 +215,7 @@ export default function ({ types: t, template }) {
 
                 if (directives[DIRECTIVE_PRIMITIVES.for]) {
                     const forExpr = directives[DIRECTIVE_PRIMITIVES.for];
-                    const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value;
+                    const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
                     const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
@@ -359,8 +366,8 @@ export default function ({ types: t, template }) {
         if (nameNode._directive) {
             const onScope = getVarsScopeForLoop(path);
 
-            if (!onScope.includes(valueNode.value)) {
-                addDependency(valueNode.value, state);
+            if (!isInForScope(onScope, valueNode.value)) {
+                addDependency(valueNode.value, state, t);
             }
 
             if (t.isStringLiteral(valueNode)) {

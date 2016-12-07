@@ -1,6 +1,6 @@
-import { ns$outerItem as _ns$outerItem } from "ns:outerItem";
-import { ns$otherWrapper as _ns$otherWrapper } from "ns:otherWrapper";
-import { a$b as _a$b } from "a:b";
+import _ns$outerItem from "ns:outerItem";
+import _ns$otherWrapper from "ns:otherWrapper";
+import _a$b from "a:b";
 export default function ({
     i,
     f,
