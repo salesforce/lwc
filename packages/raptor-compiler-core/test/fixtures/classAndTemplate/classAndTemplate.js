@@ -2,10 +2,10 @@ const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 
 export default class Bar {
-    @prop min = DefaultMinValue;
-    @prop max = DefaultMaxValue;
-    @prop label;
-    @prop title;
+    min = DefaultMinValue;
+    max = DefaultMaxValue;
+    label;
+    title = {a : 1};
 
     constructor() {
         this.counter = 0;
@@ -16,7 +16,6 @@ export default class Bar {
     broza (x: string) {
         return x;
     }
-
 
     @method
     publicMethod () {

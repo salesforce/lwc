@@ -1,4 +1,4 @@
-import { a$b } from 'a:b';
+import _a$b from 'a:b';
 
 var _tmpl = function ({
     i,
@@ -16,10 +16,10 @@ var _tmpl = function ({
         [h(
             "ul",
             {
-                "class": this.my-list
+                "class": this.myList
             },
             f([v(
-                a$b,
+                _a$b,
                 {},
                 ["first"]
             ), i(this.items, item => {
@@ -34,7 +34,7 @@ var _tmpl = function ({
         )]
     );
 };
-const usedIdentifiers = ["my-list", "items", "last"];
+const usedIdentifiers = ["myList", "items", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
@@ -71,7 +71,9 @@ Bar.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
     label: null,
-    title: null
+    title: function () {
+        return { a: 1 };
+    }
 };
 Bar.publicMethods = ['publicMethod'];
 Bar.templateUsedProps = usedIdentifiers;
