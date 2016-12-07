@@ -28,10 +28,13 @@ export function getAttributeProxy(value: Object): any {
     if (value === null) {
         return null;
     }
+    
     if (ObjectAttributeToProxyMap.has(value)) {
         return ObjectAttributeToProxyMap.get(value);
     }
-    ObjectAttributeToProxyMap.set(value, new Proxy(value, attributeProxyHandler));
+    const proxy = new Proxy(value, attributeProxyHandler);
+    ObjectAttributeToProxyMap.set(value, proxy);
+    return proxy;   
 }
 
 export function setAttribute(vm: VM, attrName: string, newValue: any) {
