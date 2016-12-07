@@ -150,7 +150,6 @@ export default function ({ types: t, template }) {
         literal = typeof literal === 'string' ? literal.split('.').shift() : '';
         literal = literal.split(' ').pop();
 
-        console.log('>> isInForScope?: ', literal, onForScope);
         return onForScope.includes(literal);
     }
 

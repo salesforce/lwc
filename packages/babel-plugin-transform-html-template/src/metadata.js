@@ -16,9 +16,7 @@ export function addDependency(node, state, t) {
 
     const meta = state.file.metadata;
     meta.usedIdentifiers = meta.usedIdentifiers || {};
-
     name = name.split(' ').pop();
 
-    console.log('>> add: ', name);
     meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
 }
