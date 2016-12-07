@@ -1,0 +1,16 @@
+<template>
+    <section>
+        <div style="padding:10px" class="slds-form--horizontal">
+
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="inputSample2">
+                    <span>Email (clicks: {foo}): </span>
+                </label>
+                <div class="slds-form-element__control" style="padding: 10px">
+                    <prototype:inputEmail set:value="record.test" placeholder="Test"/>
+                </div>
+            </div>
+        </div>
+        <button bind:onclick="handleClick">Test</button>
+    </section>
+</template>

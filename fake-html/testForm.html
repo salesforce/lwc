@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="fw.js"></script>
+    <script src="inputEmail.js"></script>
+    <script src="form.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/@salesforce-ux/design-system@1.0.3/assets/styles/salesforce-lightning-design-system.css"></link>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+    Raptor.loaderImportMethodTemporary('prototype:form')
+        .then(function (list) {
+            console.time('createAndRender');
+            var raptorElement = Raptor.createElement(list);
+            var domNodeContainer = document.getElementById('container');
+            Raptor.mountToDom(raptorElement, domNodeContainer);
+            console.timeEnd('createAndRender');
+        })  
+    </script>
+</body>
+</html>
