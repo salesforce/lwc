@@ -16,9 +16,7 @@ function arrayContains(value, arr) {
 
 export default class ParserCSS {
 
-    constructor() {
-
-    }
+    constructor() {}
 
     parse(styleString /*,options = {}*/) {
         const stylesheetString = `body { ${styleString} }`;
@@ -30,7 +28,9 @@ export default class ParserCSS {
         const specialProperties = {};
         ['border', 'border-top', 'border-right', 'border-bottom', 'border-left'].forEach((name) => {
             specialProperties[name] = {
-                regex: /^\s*([0-9]+)(px)?\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
+                /* uncomment to remove `px` */
+                //regex: /^\s*([0-9]+)(px)?\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
+                regex: /^\s*([0-9]+px?)\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
                 map: {
                     1: `${name}-width`,
                     3: name === 'border' ? `${name}-style` : null,
@@ -108,15 +108,17 @@ export default class ParserCSS {
                     if (arrayContains(property, unsupported)) continue;
 
                     if (arrayContains(property, numberize)) {
-                        value = value.replace(/px|\s*/g, '');
-                        styles[toCamelCase(property)] = parseFloat(value);
+                        /* uncomment to remove `px` */
+                        //value = value.replace(/px|\s*/g, '');
+                        styles[toCamelCase(property)] = /*parseFloat(value);*/ value; /* uncomment to remove `px` */
                     } else if (arrayContains(property, changeArr)) {
-
-                        let values = value.replace(/px/g, '').split(/[\s,]+/);
-
-                        values.forEach((value, index, arr) => {
-                            arr[index] = parseInt(value);
-                        });
+                        
+                        let values = value/*.replace(/px/g, '')*/.split(/[\s,]+/);
+                        
+                        /* uncomment to remove `px` */
+                        // values.forEach((value, index, arr) => {
+                        //     arr[index] = parseInt(value);
+                        // });
 
                         const length = values.length;
 

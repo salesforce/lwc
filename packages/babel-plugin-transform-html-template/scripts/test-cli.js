@@ -10,20 +10,7 @@ import plugin from '../src/index';
 
 const testSrc = `
    <template>
-    <section assign:class="bar">
-        <p set:if="cond1">Yay!</p>
-        <p assign:else>Yayelse</p>
-
-        <ul>
-           <li>first</li>
-            <li repeat:for="item of items">
-                <p assign:class="item">{item}</p>
-            </li>
-        </ul>
-        <div class="my-list">
-            <a:b assign:prop-test="val1">first</a:b>
-            <button assign:label="label" bind:onclick="onClick" assign:ondblclick="onDoubleClick">{expchild}</button>
-        </div>
+    <section assign:class="bar" style="padding : 10px 5px; width: 10px; border: 1px solid black">
     </section>
 </template>
 `;

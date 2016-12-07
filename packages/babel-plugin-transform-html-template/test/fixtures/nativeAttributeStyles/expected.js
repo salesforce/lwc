@@ -10,12 +10,12 @@ export default function ({
         "section",
         {
             style: {
-                fontSize: 12,
+                fontSize: "12px",
                 color: "red",
-                marginLeft: 5,
-                marginRight: 5,
-                marginTop: 10,
-                marginBottom: 10
+                marginLeft: "5px",
+                marginRight: "5px",
+                marginTop: "10px",
+                marginBottom: "10px"
             }
         },
         []
