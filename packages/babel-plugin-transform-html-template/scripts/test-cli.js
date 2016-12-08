@@ -9,7 +9,7 @@ import * as babel from 'babel-core';
 import plugin from '../src/index';
 
 const testSrc = `
-   <template>
+<template>
     <section>
         <ns:outerItem class="" repeat:for="(item, index) of items">
             <div class="wrapper">
@@ -26,7 +26,6 @@ const testSrc = `
         </ns:outerItem>
     </section>
 </template>
-
 `;
 
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);

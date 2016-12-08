@@ -36,7 +36,7 @@ export default function ({
                         {
                             props: {
                                 c: "item.literal",
-                                d: this.otherProp.literal
+                                d: this.otherProp.literal.bind(this)
                             }
                         },
                         f([i(this.item.otherList, (innerItem, index2) => {
@@ -51,7 +51,7 @@ export default function ({
                                         props: {
                                             c: "innerItem.literal",
                                             d: innerItem.literal,
-                                            e: this.otherProp2.literal,
+                                            e: this.otherProp2.literal.bind(this),
                                             f: item.x
                                         }
                                     },
@@ -65,4 +65,4 @@ export default function ({
         })])
     );
 }
-export const usedIdentifiers = ["items", "item.x", "otherProp.literal", "item.otherList", "innerItem.literal", "otherProp2.literal", "foo"];
+export const usedIdentifiers = ["items", "otherProp", "otherProp2", "item", "innerItem", "nonScoped", "foo"];

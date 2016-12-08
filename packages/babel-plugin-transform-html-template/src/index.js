@@ -378,17 +378,17 @@ export default function ({ types: t, template }) {
         if (rawName.indexOf(DIRECTIVE_PRIMITIVES.on) === 0 && CONST.EVENT_KEYS[rawName.substring(2)]) {
             rawName = rawName.substring(2);
             nameNode[nameKey] = nameNode._on = rawName;
-            
-            /*
-             * Apply the following transforms for events: 
-             * bind:onclick="handleClick => this.handleClick.bind(this)
-             * assign:onclick="handleClick => this.handleClick
-            */
-            if (nameNode._directive === DIRECTIVE_PRIMITIVES.bind && t.isMemberExpression(valueNode)) {
-                valueNode = t.callExpression(
-                    t.memberExpression(valueNode, t.identifier('bind')), [t.identifier('this')]
-                );
-            }
+        }
+
+        /*
+        * Apply the following transforms for events: 
+        * bind:onclick="handleClick => this.handleClick.bind(this)
+        * assign:onclick="handleClick => this.handleClick
+        */
+        if (nameNode._directive === DIRECTIVE_PRIMITIVES.bind && t.isMemberExpression(valueNode)) {
+            valueNode = t.callExpression(
+                t.memberExpression(valueNode, t.identifier('bind')), [t.identifier('this')]
+            );
         }
 
         // Parse style

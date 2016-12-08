@@ -17,7 +17,8 @@ const fixtures = [
     'forLoop',
     'nativeAttributeStyles',
     'all',
-    'usedAttrs'
+    'usedAttrs',
+    'bind'
 ];
 
 fixtures.forEach((fixture) => {
