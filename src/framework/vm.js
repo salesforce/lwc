@@ -64,8 +64,8 @@ function initFromAnotherVM(vm: VM, oldvm: VM) {
 
 function watchComponentProperties(vm: VM) {
     assert.vm(vm);
-    const { component, def: { observedProps } } = vm;
-    Object.keys(observedProps).forEach((propName: string) => {
+    const { component } = vm;
+    Object.getOwnPropertyNames(component).forEach((propName: string) => {
         watchProperty(component, propName);
     });
 }
