@@ -3,6 +3,7 @@
         "es2015"
     ],
     "plugins": [
-         "transform-class-properties"
+        "babel-plugin-transform-flow-strip-types",
+        "transform-class-properties"
     ]
 }
