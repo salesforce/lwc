@@ -11,5 +11,4 @@ export default class InputEmail {
             this.onChange(e);
         }
     }
-
 }

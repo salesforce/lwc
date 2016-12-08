@@ -1,4 +1,4 @@
-export default class RecordLayout {
+export default class Form {
     constructor() {
         this.counter = 1;
         this.labelClass = "slds-form-element__label";
