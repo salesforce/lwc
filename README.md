@@ -16,6 +16,6 @@ Read our [contributing documentation](https://git.soma.salesforce.com/raptor/rap
 
 ## License
 
-The [Salesforce Developer MSA](http://www.sfdcstatic.com/assets/pdf/misc/salesforce_Developer_MSA.pdf) governs your use of the Lightning Global Components.
+The [Salesforce Developer MSA](http://www.sfdcstatic.com/assets/pdf/misc/salesforce_Developer_MSA.pdf) governs your use of the Raptor Engine.
 
 [project-philosophy]: https://docs.google.com/document/d/1tTUv-rGEnNFYteR7kSh-bpYe-CF12X-PrQoasIRTDOI/edit#heading=h.q2bg3fxu2csu
