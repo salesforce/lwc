@@ -4,5 +4,12 @@ export default class InputEmail {
 
     placeholder = 'default';
     value;
+    onChange;
+
+    onChangeHandler (e) {
+        if (this.onChange) {
+            this.onChange(e);
+        }
+    }
 
 }

@@ -4,13 +4,14 @@
 
             <div class="slds-form-element">
                 <label class="slds-form-element__label" for="inputSample2">
-                    <span>Email (clicks: {foo}): </span>
+                    <span>Email (events: {foo}): </span>
                 </label>
                 <div class="slds-form-element__control" style="padding: 10px">
-                    <prototype:inputEmail set:value="record.test" placeholder="Test"/>
+                    <prototype:inputEmail set:value="record.test" placeholder="Test" bind:onChange="inputChangeHandler"/>
                 </div>
             </div>
         </div>
         <button bind:onclick="handleClick">Test</button>
+        <p>Value: {inputMessage}</p>
     </section>
 </template>
