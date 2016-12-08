@@ -9,7 +9,7 @@
     "build-runtime": "babel-external-helpers > fake-cdn/babelHelpers.js",
     "build": "npm run build-runtime && npm run clean && node scripts/rollup.build.js --production",
     "lint": "eslint src/",
-    "pretest": "npm run lint",
+    "test": "jest --coverage --verbose",
     "preversion": "npm run clean && npm run build",
     "prepublish": "npm run clean && npm run build"
   },
@@ -20,14 +20,18 @@
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-eslint": "^6.1.2",
+    "babel-jest": "17.0.2",
     "babel-plugin-transform-class-properties": "^6.11.5",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015-rollup": "^1.1.1",
     "eslint": "^3.0.1",
     "eslint-plugin-flowtype": "^2.7.1",
+    "expect": "^1.20.2",
     "express": "^4.14.0",
     "forever": "^0.15.2",
     "glob": "^7.1.0",
+    "jest-cli": "17.0.2",
     "rimraf": "^2.5.4",
     "rollup": "^0.34.3",
     "rollup-plugin-babel": "^2.6.1",
@@ -45,5 +49,25 @@
     "typescript-eslint-parser": "eslint/typescript-eslint-parser",
     "watch": "^1.0.0",
     "yargs": "^6.0.0"
+  },
+  "jest": {
+    "testRegex": "/__tests__/",
+    "collectCoverageFrom": [
+      "src/(framework|services)/**/*.js"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "text-summary",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 85,
+        "functions": 100,
+        "lines": 95,
+        "statements": 95
+      }
+    }
   }
 }
