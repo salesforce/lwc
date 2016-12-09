@@ -9,7 +9,10 @@
     "build-runtime": "babel-external-helpers > fake-cdn/components/babelHelpers.js",
     "build-components": "node scripts/rollup.components.js",
     "build": "npm run clean && npm run build-runtime && npm run build-components --production && node scripts/rollup.raptor.js --production",
-    "lint": "eslint src/ && flow",
+    "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
+    "flow": "flow --show-all-errors",
+    "eslint": "eslint src/",
+    "lint": "npm run flow && npm run eslint",
     "test": "jest --coverage --verbose",
     "preversion": "npm run clean && npm run build",
     "prepublish": "npm run clean && npm run build"
@@ -51,6 +54,7 @@
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
     "snabbdom": "^0.5.3",
+    "typedef-converter": "^0.1.4",
     "typescript-eslint-parser": "eslint/typescript-eslint-parser",
     "watch": "^1.0.0",
     "yargs": "^6.0.0"

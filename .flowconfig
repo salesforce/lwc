@@ -13,6 +13,7 @@
 [include]
 
 [libs]
+src/framework/types.flow.js
 
 [options]
 esproposal.class_instance_fields=enable
