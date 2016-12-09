@@ -2,6 +2,6 @@
 -local-*
 .DS_Store
 node_modules
-fake-cdn/*.js
-fake-cdn/*.map
+fake-cdn/**/*.js
+fake-cdn/**/*.map
 coverage

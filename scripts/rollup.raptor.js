@@ -1,11 +1,14 @@
 /*jshint node: true */
 
+/**
+ * This file builds the framework and services.
+ */
+
 'use strict'
 
 const path = require('path');
 const argv = require('yargs').argv;
 const babel = require('rollup-plugin-babel');
-const raptor = require('rollup-plugin-raptor-compiler');
 const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
@@ -32,38 +35,7 @@ const fwPlugins = [
     })
 ];
 
-const componentsPlugins = [
-    raptor(),
-    babel({
-        babelrc: false,
-        presets: [
-            [
-                "es2015",
-                {
-                    "modules": false
-                }
-            ]
-        ],
-        plugins: [
-            "external-helpers",
-            "transform-class-properties",
-        ],
-        externalHelpers: true,
-    }),
-];
-
 if (argv.production) {
-    componentsPlugins.push(
-        strip({
-            debugger: true,
-            functions: [ 'console.*', 'assert.*' ],
-        })
-    );
-    // componentsPlugins.push(
-    //     uglify({
-    //         warnings: false
-    //     })
-    // );
     fwPlugins.push(
         strip({
             debugger: true,
@@ -94,34 +66,6 @@ function buildBundles(configs) {
 }
 
 const configs = [];
-
-// seaching for all components in all namespaces
-glob.sync('fixtures/namespaces/*/components/**/*.js').forEach(function (p) {
-    const entry = path.basename(p, '.js');
-    p = path.dirname(p);
-    const pieces = p.split(path.sep);
-    const name = pieces.pop();
-    const isComponent = pieces.pop() === 'components';
-    const namespace = pieces.pop();
-    if (name === entry && isComponent) {
-        configs.push({
-            folder: p,
-            input: {
-                entry: path.join(p, name + '.js'),
-                plugins: componentsPlugins,
-            },
-            output: {
-                dest: 'fake-cdn/' + name + '.js',
-                format: 'amd',
-                moduleId: [namespace, name].join(':'),
-                sourceMap: true,
-                globals: {
-                    raptor: 'Raptor',
-                },
-            },
-        });
-    }
-});
 
 // seaching for all services
 glob.sync('src/services/*/*.js').forEach(function (p) {
@@ -159,7 +103,7 @@ const fwConfig = {
         })),
     },
     output: {
-        dest: 'fake-cdn/fw.js',
+        dest: 'fake-cdn/raptor.js',
         format: 'umd',
         moduleName: 'Raptor',
         sourceMap: true,
