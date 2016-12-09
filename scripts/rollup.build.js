@@ -2,7 +2,6 @@
 
 'use strict'
 
-const fs = require('fs');
 const path = require('path');
 const argv = require('yargs').argv;
 const babel = require('rollup-plugin-babel');
@@ -12,7 +11,6 @@ const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const babelCore = require('babel-core');
 const rollup = require('rollup');
 const glob = require("glob");
 
@@ -98,7 +96,7 @@ function buildBundles(configs) {
 const configs = [];
 
 // seaching for all components in all namespaces
-glob.sync('src/namespaces/*/components/**/*.js').forEach(function (p) {
+glob.sync('fixtures/namespaces/*/components/**/*.js').forEach(function (p) {
     const entry = path.basename(p, '.js');
     p = path.dirname(p);
     const pieces = p.split(path.sep);

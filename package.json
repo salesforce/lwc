@@ -56,7 +56,7 @@
   "jest": {
     "testRegex": "/__tests__/",
     "collectCoverageFrom": [
-      "src/(framework|services)/**/*.js"
+      "src/**/*.js"
     ],
     "coverageReporters": [
       "lcov",
