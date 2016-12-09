@@ -1,6 +1,4 @@
-// @flow
-
-///<reference path="types.d.ts"/>
+//<reference path="types.d.ts"/>
 
 const assert = {
     invariant(value: any, msg: string) {

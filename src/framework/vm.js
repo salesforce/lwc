@@ -1,6 +1,4 @@
-// @flow
-
-///<reference path="types.d.ts"/>
+//<reference path="types.d.ts"/>
 
 import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";

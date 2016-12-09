@@ -1,5 +1,3 @@
-// @flow
-
 function updateClass (oldVnode: VNode, vnode: VNode) {
     const elm = vnode.elm;
     const oldClass = oldVnode.data.class;

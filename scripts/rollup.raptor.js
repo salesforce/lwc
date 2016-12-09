@@ -18,7 +18,7 @@ const rollup = require('rollup');
 const glob = require("glob");
 
 const fwPlugins = [
-    flow(),
+    flow({ all: true }),
     babel({
         babelrc: false,
         presets: [

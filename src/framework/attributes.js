@@ -1,5 +1,3 @@
-// @flow
-
 import assert from "./assert.js";
 import { subscribeToSetHook } from "./watcher.js";
 import {

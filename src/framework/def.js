@@ -1,5 +1,3 @@
-// @flow
-
 /**
  * This module is responsible for producing the ComponentDef object that is always
  * accessible via `vm.def`. This is lazily created during the creation of the first

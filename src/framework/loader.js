@@ -1,5 +1,3 @@
-// @flow
-
 const registry = {
     raptor: {
         get ns(): Promise {

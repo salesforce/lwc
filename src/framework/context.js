@@ -1,5 +1,3 @@
-// @flow
-
 const topLevelContextSymbol = Symbol('Top Level Context');
 
 export let currentContext = {

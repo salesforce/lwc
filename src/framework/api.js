@@ -1,10 +1,6 @@
-// @flow
-
 import assert from "./assert.js";
 import h from "snabbdom/h";
 import * as hook from "./hook.js";
-
-const toString = Object.prototype.toString;
 
 // [h]tml node
 export { h };

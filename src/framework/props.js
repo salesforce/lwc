@@ -1,6 +1,4 @@
-// @flow
-
-///<reference path="types.d.ts"/>
+//<reference path="types.d.ts"/>
 
 import assert from "./assert.js";
 import { markVMAsDirty } from "./reactivity.js";
@@ -14,7 +12,7 @@ import {
 } from "./attributes.js";
 import { internal } from "./def.js";
 
-export function initComponentProps(vm: VM, newProps: Object, newBody: array<Object>) {
+export function initComponentProps(vm: VM, newProps: Object, newBody: Array<Object>) {
     const { component, state, flags, def: { props: config } } = vm;
     const target = Object.getPrototypeOf(component);
     for (let propName in config) {
@@ -49,7 +47,7 @@ export function initComponentProps(vm: VM, newProps: Object, newBody: array<Obje
     });
 }
 
-export function batchUpdateComponentProps(vm: VM, newProps: Object, newBody: array<Object>) {
+export function batchUpdateComponentProps(vm: VM, newProps: Object, newBody: Array<Object>) {
     const { flags: { hasBodyAttribute }, state, def: { props: config } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of the component.`);
     for (let propName in config) {

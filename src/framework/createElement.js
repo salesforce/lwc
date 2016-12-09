@@ -1,4 +1,3 @@
-// @flow
 import { h, v } from "./api.js";
 import { patch } from "./patcher.js";
 import {

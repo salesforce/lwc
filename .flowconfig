@@ -1,10 +1,19 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/.*
+<PROJECT_ROOT>/examples/.*
+.*/__tests__/.*
+<PROJECT_ROOT>/examples/.*
+<PROJECT_ROOT>/scripts/.*
+<PROJECT_ROOT>/fake-cdn/.*
+<PROJECT_ROOT>/coverage/.*
+<PROJECT_ROOT>/fake-server/.*
+<PROJECT_ROOT>/coverage/.*
+<PROJECT_ROOT>/fixtures/.*
 
 [include]
-./src/**/*.js
 
 [libs]
 
 [options]
 esproposal.class_instance_fields=enable
+all=true

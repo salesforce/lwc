@@ -1,5 +1,3 @@
-// @flow
-
 import assert from "./assert.js";
 import { scheduleRehydration } from "./patcher.js";
 import {
@@ -33,7 +31,7 @@ export function notifyListeners(target: Object, propName: string) {
 function getWatchPropertyDescriptor(target: Object, propName: string, originalGetter: Function, originalSetter: Function): PropertyDescriptor {
     let { enumerable, value: oldValue } = Object.getOwnPropertyDescriptor(target, propName);
     let isFirstTimeGetterIsCalled = true;
-    const get = function reactiveGetter(): any {
+    const getter = function reactiveGetter(): any {
         const value = originalGetter ? originalGetter.call(this) : undefined;
         if (isRendering) {
             subscribeToSetHook(vmBeingRendered, target, propName);
@@ -47,18 +45,18 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
         oldValue = value;
         return value;
     };
-    const set = function reactiveSetter(newValue: any) {
+    const setter = function reactiveSetter(newValue: any) {
         assert.invariant(!isRendering, `Invalid attempting to mutate property ${propName} of ${target} during an ongoing rendering process for ${vmBeingRendered}.`);
         if (originalSetter && newValue !== oldValue) {
             originalSetter.call(this, newValue);
             notifyListeners(target, propName);
         }
     };
-    get[WatcherFlag] = 1;
-    set[WatcherFlag] = 1;
+    getter[WatcherFlag] = 1;
+    setter[WatcherFlag] = 1;
     return {
-        get,
-        set,
+        get: getter,
+        set: setter,
         configurable: true,
         enumerable,
     };

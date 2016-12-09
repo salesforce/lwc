@@ -1,6 +1,4 @@
-// @flow
-
-///<reference path="types.d.ts"/>
+//<reference path="types.d.ts"/>
 
 import assert from "./assert.js";
 import { init } from "snabbdom";
