@@ -17,8 +17,8 @@ export default function ({ types: t, template }) {
     const isWithinJSXExpression = (path) => path.find(p => p.isJSXExpressionContainer());
 
     const BoundThisVisitor = {
-        ThisExpression() {
-            throw new Error('You can\'t use `this` within a template');
+        ThisExpression(path) {
+            throw path.buildCodeFrameError('You can\'t use `this` within a template');
         },
         Identifier: {
             exit(path, state) {
