@@ -25,5 +25,23 @@ export function hasScopeForLoop (path) {
     return forScope && forScope.length && forScope[forScope.length - 1].node === path.node;
 }
 
-
-// -- End for loop utils
+export const customScope = {
+    scoped: [],
+    hasBinding(bindingName) {
+        for (let i = 0; i < this.scoped.length; i++) {
+            if (this.scoped[i] && this.scoped[i].bindings.indexOf(bindingName) !== -1) {
+                return true;
+            }
+        }
+        return false;
+    },
+    registerBindings(path, bindings) {
+        this.scoped.push({ scope: path.node, bindings });
+    },
+    removeBindings(path) {
+        this.scoped.pop();
+    },
+    getAllBindings() {
+        return this.scoped.reduce((l, f) => { l.push(...f.bindings); return l; }, []);
+    }
+};

@@ -1,6 +1,7 @@
 /* eslint-env node */
+
 import * as CONST from './constants';
-import { addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
+import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
 import { isTopLevel, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
 
@@ -8,13 +9,41 @@ const DIRECTIVE_PRIMITIVES = CONST.DIRECTIVE_PRIMITIVES;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
-    const exportsDefaultTemplate = template(
-        `export default function ({ ${CONST.RENDER_PRIMITIVE_KEYS} }) { 
-            return BODY; 
-        }`, { sourceType: 'module' });
 
+    // -- Helpers ------------------------------------------
+
+    const exportsDefaultTemplate = template(`export default function ({ ${CONST.RENDER_PRIMITIVE_KEYS} }) { return BODY; }`, { sourceType: 'module' });
+    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier('this'), path.node));
+    const isWithinJSXExpression = (path) => path.find(p => p.isJSXExpressionContainer());
+
+    const BoundThisVisitor = {
+        ThisExpression() {
+            throw new Error('You can\'t use `this` within a template');
+        },
+        Identifier: {
+            exit(path, state) {
+                path.stop();
+
+                if (state.customScope.hasBinding(path.node.name)) {
+                    state.isThisApplied = true;
+                    return;
+                }
+
+                if (!state.isThisApplied) {
+                    state.isThisApplied = true;
+                    addDependency(path.node, state, t);
+                    applyThisToIdentifier(path);
+                }
+            }
+        }
+    };
+
+   // -- Plugin ------------------------------------------
     return {
-        inherits: require('babel-plugin-syntax-jsx'),
+        inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
+        pre() { 
+            this.customScope = customScope; 
+        },
 
         visitor: {
             Program: {
@@ -24,7 +53,7 @@ export default function ({ types: t, template }) {
                     const filteredChildren = children.filter((c) => !t.isJSXText(c));
 
                     if (filteredChildren.length !== 1) {
-                        throw new Error('A component must have only one root element');
+                        throw path.buildCodeFrameError('A component must have only one root element');
                     }
 
                     // Remove  <template> node
@@ -79,6 +108,22 @@ export default function ({ types: t, template }) {
                         removeScopeForLoop(path);
                     }
                 }
+            },
+            // Transform container expressions from {foo} => {this.foo}
+            Identifier(path, state) {
+                path.stop();
+                if (isWithinJSXExpression(path) && !state.customScope.hasBinding(path.node.name)) {
+                    addDependency(path.node, state, t);
+                    applyThisToIdentifier(path);
+                }
+            },
+            
+            // Transform container expressions from {foo.x.y} => {this.foo.x.y}
+            MemberExpression(path, state) {
+                if (isWithinJSXExpression(path)) {
+                    path.stop();
+                    path.traverse(BoundThisVisitor, state);
+                }
             }
         }
     };
@@ -131,20 +176,6 @@ export default function ({ types: t, template }) {
         return args;
     }
 
-    function tranformExpressionInScope(onForScope, child) {
-        // {foo} => this.foo
-        if (t.isIdentifier(child) && !onForScope.includes(child.name)) {
-            return t.memberExpression(t.identifier('this'), child);
-        }
-
-        // {foo.bar} => this.foo.bar
-        if (t.isMemberExpression(child) && !onForScope.includes(child.object.name)) {
-            child.object = t.memberExpression(t.identifier('this'), child.object);
-        }
-
-        return child;
-    }
-
     function isInForScope(onForScope, node) {
         let literal = t.isMemberExpression(node) ? node.object.name : node;
         literal = typeof literal === 'string' ? literal.split('.').shift() : '';
@@ -185,7 +216,7 @@ export default function ({ types: t, template }) {
                 }
 
                 // If the expressions are not in scope we need to add the `this` memberExpression:
-                child = t.callExpression(t.identifier('s'), [tranformExpressionInScope(onForScope, child)]);
+                child = t.callExpression(t.identifier('s'), [child]);
             }
 
             if (t.isCallExpression(child) && child._directives) {

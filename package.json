@@ -9,6 +9,7 @@
     "preversion": "npm run lint && npm run clean && npm run build"
   },
   "devDependencies": {
+    "babel-cli": "^6.18.0",
     "babel-eslint": "^7.1.1",
     "eslint": "^3.9.1",
     "eslint-plugin-flowtype": "^2.25.0",
@@ -17,7 +18,7 @@
     "rimraf": "^2.5.4"
   },
   "dependencies": {},
-  "engines": { 
-    "node" : ">= v5.9" 
+  "engines": {
+    "node": ">= v5.9"
   }
 }
