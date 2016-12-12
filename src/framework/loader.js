@@ -17,7 +17,7 @@ function loaderEvaluate(moduleStatus: Object): Promise<Namespace> {
 }
 
 function loaderLoadAndEvaluate(name: string): Promise {
-    return Promise.reject(new TypeError(`Bundle ${name} does not exists in the registry.`));
+    return Promise.reject(new TypeError(`Bundle ${name} does not exist in the registry.`));
 }
 
 function loaderImportMethod(name: string): Promise {
