@@ -56,14 +56,18 @@ module.exports = function (babel) {
                 }
             }
 
-            const root = path.find((p) => p.isProgram());
+            const containerNode = path.find((p) => p.isProgram());
+
+            if (state.opts.namespace) {
+                containerNode.pushContainer('body', addClassStaticMember(state.opts.className, 'ns', t.stringLiteral(state.opts.namespace)));
+            }
 
             if (publicProps.length) {
-                root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
+                containerNode.pushContainer('body', addClassStaticMember(state.opts.className, 'publicProps', t.objectExpression(publicProps)));
             }
 
             if (publicMethods.length) {
-                root.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
+                containerNode.pushContainer('body', addClassStaticMember(state.opts.className, 'publicMethods', t.valueToNode(publicMethods)));
             }
 
             path.stop();
@@ -72,19 +76,22 @@ module.exports = function (babel) {
 
     return {
         visitor: {
-            // Only transform the main class
-            ExportDefaultDeclaration(path, state) {
-                const exportDeclaration = path.get('declaration').node;
-                let className = exportDeclaration.id && exportDeclaration.id.name;
-
-                if (!className) {
-                    const classNameId = generateClassName(path, state);
-                    exportDeclaration.id = classNameId;
-                    className = classNameId.name;
+            Program(path, state) {
+                const body = path.node.body;
+                const exports = body.find(n => t.isExportDefaultDeclaration(n));
+                if (!exports) {
+                    throw Error('No default exports');
                 }
 
+                const decl = exports.declaration;
+                const className = t.isClassDeclaration(decl) ? decl.id.name : decl.name;
                 state.opts.className = className;
-                path.traverse(ASTClassVisitor, state);
+            },
+            ClassDeclaration(path, state) {
+                const classId = path.node.id.name;
+                if (classId === state.opts.className) {
+                    path.traverse(ASTClassVisitor, state);
+                }
             }
         }
     };

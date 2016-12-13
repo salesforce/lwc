@@ -7,7 +7,7 @@ export default function (options = {babelConfig: {}}) {
         babelrc: false,
         sourceMaps: true,
         plugins: [
-            babelDecoratorProps, 
+            [babelDecoratorProps, { namespace: options.namespace || 'default' }], 
             babelInjectPlugin
         ],
         parserOpts: { plugins: ['*'] }

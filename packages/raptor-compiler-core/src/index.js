@@ -21,7 +21,7 @@ export function compile(config, options = {}) {
     const plugins = [
         [sourceResolver, config],
         templateParser,
-        transformClass,
+        [transformClass, config],
         removeAnnotations
     ];
 

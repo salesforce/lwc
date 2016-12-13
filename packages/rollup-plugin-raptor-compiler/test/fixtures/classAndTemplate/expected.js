@@ -47,12 +47,12 @@ class Bar {
     }
 
 }
+Bar.templateUsedProps = usedIdentifiers;
 Bar.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
     label: null,
     title: null
 };
-Bar.templateUsedProps = usedIdentifiers;
 
 export default Bar;

@@ -28,13 +28,13 @@ var _tmpl = function ({
                     {
                         "class": "item"
                     },
-                    [s(item)]
+                    [s(this.item)]
                 );
             }), s(this.last)])
         )]
     );
 };
-const usedIdentifiers = ["myList", "items", "last"];
+const usedIdentifiers = ["myList", "items", "item", "this", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
@@ -67,6 +67,8 @@ class Bar {
     }
 
 }
+Bar.templateUsedProps = usedIdentifiers;
+Bar.ns = 'default';
 Bar.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
@@ -76,6 +78,5 @@ Bar.publicProps = {
     }
 };
 Bar.publicMethods = ['publicMethod'];
-Bar.templateUsedProps = usedIdentifiers;
 
 export default Bar;
