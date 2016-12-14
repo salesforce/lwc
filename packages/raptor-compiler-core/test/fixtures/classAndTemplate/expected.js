@@ -34,7 +34,7 @@ var _tmpl = function ({
         )]
     );
 };
-const usedIdentifiers = ["myList", "items", "item", "this", "last"];
+const usedIdentifiers = ["myList", "items", "item", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;

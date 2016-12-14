@@ -23,7 +23,7 @@ function produceNewData(oldData, min, max) {
     data.push(1);
 }
 
-class Bar {
+class ClassAndTemplate {
 
     constructor() {
         this.counter = 0;
@@ -47,13 +47,13 @@ class Bar {
     }
 
 }
-Bar.templateUsedProps = usedIdentifiers;
-Bar.tagName = 'unknown-bar';
-Bar.publicProps = {
+ClassAndTemplate.templateUsedProps = usedIdentifiers;
+ClassAndTemplate.tagName = 'fixtures-classandtemplate';
+ClassAndTemplate.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
     label: null,
     title: null
 };
 
-export default Bar;
+export default ClassAndTemplate;

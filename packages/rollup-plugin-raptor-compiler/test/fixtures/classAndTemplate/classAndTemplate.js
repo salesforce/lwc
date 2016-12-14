@@ -5,7 +5,7 @@ function produceNewData(oldData, min, max) {
     data.push(1);
 }
 
-export default class Bar {
+export default class ClassAndTemplate {
     @attribute min = DefaultMinValue;
     @attribute max = DefaultMaxValue;
     @attribute label;

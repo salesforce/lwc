@@ -18,5 +18,7 @@ export function addDependency(node, state, t) {
     meta.usedIdentifiers = meta.usedIdentifiers || {};
     name = name.split(' ').pop();
 
-    meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
+    if (name !== 'this') {
+        meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
+    }
 }
