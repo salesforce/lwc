@@ -43,7 +43,9 @@ module.exports = function (babel) {
                 publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
                 prop.remove();
 
-            } else if (prop.isClassMethod({ kind: 'method' }) && prop.node.decorators) {
+            } else if (prop.isClassMethod({
+                    kind: 'method'
+                }) && prop.node.decorators) {
                 if (prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
                     publicMethods.push(prop.node.key.name);
                 }
@@ -51,9 +53,15 @@ module.exports = function (babel) {
                 prop.node.decorators = null;
             }
         }
-		console.log(this.entryClass);
-        const prefix = this.entryClass !== className ? 'private-' : '';
-        const tagName = (`${state.opts.cmpNamespace}-${prefix}${className}`).toLowerCase();
+
+        const isEntryClass = state.opts.componentName.toLowerCase() === className.toLowerCase();
+
+        if (isEntryClass) {
+            this.entryClass = className;
+        }
+
+        const prefix = isEntryClass ? '' : 'private-';
+        const tagName = (`${state.opts.componentNamespace}-${prefix}${className}`).toLowerCase();
 
         extraBody.push(addClassStaticMember(className, 'tagName', t.stringLiteral(tagName)));
 
@@ -70,31 +78,32 @@ module.exports = function (babel) {
 
     return {
         pre() {
-            this.compiledClass = {};
-            this.entryClass = null;
+            this.compiledClasses = {};
         },
         visitor: {
             Program: {
-                enter (path, state) {
+                enter(path, state) {
                     const body = path.node.body;
                     const exportD = body.find(n => t.isExportDefaultDeclaration(n));
                     if (!exportD) {
-                        throw Error('No default exports');
+                        throw path.buildCodeFrameError("This module needs to export a default class");
                     }
 
-                    if (!state.opts.componentName) {
-                        const decl = exportD.declaration;
-                        const className = t.isClassDeclaration(decl) ? decl.id.name : decl.name;
-                        state.opts.componentName = className.toLowerCase();
+                    const decl = exportD.declaration;
+
+                    if (t.isClassDeclaration(decl) && decl.id) { 
+                        // Override the name if you explicitly export a named class
+                        state.opts.componentName = decl.id.name || state.opts.componentName;
                     }
 
                     state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
-
-                    console.log('>> ', state.opts);
                 },
-                exit (path) {
-                    if (!this.entryClass) {
-                        throw path.buildCodeFrameError("Error locating entry point class");
+                exit(path, state) {
+                    if(state.opts.componentName && !this.entryClass) {
+                        throw path.buildCodeFrameError("Class name does not match the current bundle entry point");
+                    }
+                    if (this.entryClass && Object.keys(this.compiledClasses) > 1 && this.compiledClasses[state.opts.componentName]) {
+                        throw path.buildCodeFrameError("Ambiguity locating the class entry point");
                     }
                 }
 
@@ -105,12 +114,9 @@ module.exports = function (babel) {
                     throw path.buildCodeFrameError("For debugability purposes we don't allow anonymous classes");
                 }
 
-                this.compiledClass[className] = true;
-                if (className.toLowerCase() === state.opts.cmpName) {
-                    this.entryClass = className;
-                }
-
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
+                this.compiledClasses[className.toLowerCase()] = true;
+
                 if (path.inList) {
                     path.insertAfter(extraBody);
                 } else {

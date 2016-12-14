@@ -28,18 +28,18 @@ var _tmpl = function ({
                     {
                         "class": "item"
                     },
-                    [s(item)]
+                    [s(this.item)]
                 );
             }), s(this.last)])
         )]
     );
 };
-const usedIdentifiers = ["myList", "items", "last"];
+const usedIdentifiers = ["myList", "items", "item", "this", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 
-class Bar {
+class ClassAndTemplate {
 
     constructor() {
         this.counter = 0;
@@ -67,9 +67,9 @@ class Bar {
     }
 
 }
-Bar.templateUsedProps = usedIdentifiers;
-Bar.tagName = 'unknown-bar';
-Bar.publicProps = {
+ClassAndTemplate.templateUsedProps = usedIdentifiers;
+ClassAndTemplate.tagName = 'fixtures-classandtemplate';
+ClassAndTemplate.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
     label: null,
@@ -77,6 +77,6 @@ Bar.publicProps = {
         return { a: 1 };
     }
 };
-Bar.publicMethods = ['publicMethod'];
+ClassAndTemplate.publicMethods = ['publicMethod'];
 
-export default Bar;
+export default ClassAndTemplate;

@@ -1,7 +1,7 @@
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
 
-export default class Bar {
+export default class ClassAndTemplate {
     min = DefaultMinValue;
     max = DefaultMaxValue;
     label;
