@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-html-template",
-  "version": "0.0.22",
+  "version": "0.0.24",
   "description": "Babel plugin to transform HTML templates",
   "main": "dist/index.js",
   "author": "",
