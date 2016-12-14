@@ -1,19 +1,34 @@
 import babelDecoratorProps from 'babel-plugin-transform-decorator-props';
 import babelInjectPlugin from 'babel-plugin-transform-inject-template';
 import { transform } from 'babel-core';
+import { parse } from 'path';
 
-export default function (options = {babelConfig: {}}) {
+function getQualifiedName(options) {
+    let { componentPath, componentName, componentNamespace } = options;
+    const pathObj = parse(componentPath);
+    const dirParts = pathObj.dir.split('/');
+    const customName = dirParts.pop();
+    const customNS = dirParts.pop();
+
+    componentNamespace = componentNamespace || customNS.toLowerCase();;
+    componentName = componentName || customName.toLowerCase(); 
+
+    return { componentName, componentNamespace };
+}
+
+export default function (options = {}) {
+    const { componentNamespace, componentName } = getQualifiedName(options);
     const localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
         plugins: [
-            [babelDecoratorProps, { namespace: options.namespace || 'default' }], 
+            [babelDecoratorProps, { componentNamespace, componentName }],
             babelInjectPlugin
         ],
         parserOpts: { plugins: ['*'] }
     };
 
-    options = Object.assign({}, options.babelConfig, localBabelConfig);
+    options = Object.assign({}, options.babelConfig || {}, localBabelConfig);
 
     return {
         name : 'transform-class',

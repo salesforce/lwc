@@ -4,6 +4,7 @@ export default class Test {
 
     test() {}
 }
+Test.tagName = "unknown-test";
 Test.publicProps = {
     test: 1,
     bar: null

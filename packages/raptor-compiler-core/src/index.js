@@ -5,7 +5,7 @@ import templateParser from './lib/rollup-plugin-template-parser';
 import transformClass from './lib/rollup-plugin-transform-class';
 import removeAnnotations from './lib/rollup-plugin-remove-annotations';
 
-const BASE_CONFIG = {
+const BASE_OPTIONS = {
     babelConfig: { 
         babelrc: false,
         sourceMaps: true 
@@ -16,7 +16,7 @@ export function compile(config, options = {}) {
     const componentPath = config.componentPath;
     let entry = config.entry;
 
-    options = Object.assign({}, BASE_CONFIG, options);
+    options = Object.assign({}, BASE_OPTIONS, options);
 
     const plugins = [
         [sourceResolver, config],
@@ -39,11 +39,11 @@ export function compile(config, options = {}) {
             plugins : plugins.map((pluginConfig) => {
                 if (Array.isArray(pluginConfig)) {
                     let [plugin, pluginOptions] = pluginConfig;
-                    pluginOptions = Object.assign({}, BASE_CONFIG, pluginOptions);
+                    pluginOptions = Object.assign({}, BASE_OPTIONS, pluginOptions);
                     return plugin(pluginOptions);
                 }
 
-                return pluginConfig(BASE_CONFIG);
+                return pluginConfig(BASE_OPTIONS);
                 
             })
         })

@@ -48,6 +48,7 @@ class Bar {
 
 }
 Bar.templateUsedProps = usedIdentifiers;
+Bar.tagName = 'unknown-bar';
 Bar.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,
