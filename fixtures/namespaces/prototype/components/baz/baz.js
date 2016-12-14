@@ -1,6 +1,6 @@
 import ADS from "raptor:ads";
 
-class adsBaz {
+class baz {
     // foo = 1;
     // bar = 2;
 }

@@ -14,7 +14,7 @@ function produceNewData(oldData, min, max) {
     return data;
 }
 
-export default class Bar {
+export default class SimpleList {
     min = DefaultMinValue;
     max = DefaultMaxValue;
     label = 'default label';
