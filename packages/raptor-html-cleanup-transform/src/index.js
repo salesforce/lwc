@@ -1,4 +1,6 @@
 /* eslint-env node */
+'use strict';
+
 const parse5 = require('parse5');
 const Readable = require('stream').Readable;
 const constants = require('./constants');
@@ -16,13 +18,13 @@ function normalizeAttrName(name) {
     return name;
 }
 
-function generateHTMLAttr({ name, value }) {
-    return `${name}="${value}"`;
+function generateHTMLAttr(attr) {
+    return `${attr.name}="${attr.value}"`;
 }
 
 function parseAttrs(attrs) {
-    const normalizedAttrs = attrs.map(({ name, value }) => {
-        return { name: normalizeAttrName(name), value }
+    const normalizedAttrs = attrs.map((attr) => {
+        return { name: normalizeAttrName(attr.name), value : attr.value }
     });
     return normalizedAttrs.map(generateHTMLAttr);
 }

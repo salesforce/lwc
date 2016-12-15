@@ -12,7 +12,8 @@ const BASE_OPTIONS = {
     }
 };
 
-export function compile(config, options = {}) {
+export function compile(config, options) {
+    options = options || {};
     const componentPath = config.componentPath;
     let entry = config.entry;
 
@@ -38,7 +39,8 @@ export function compile(config, options = {}) {
             entry,
             plugins : plugins.map((pluginConfig) => {
                 if (Array.isArray(pluginConfig)) {
-                    let [plugin, pluginOptions] = pluginConfig;
+                    let plugin = pluginConfig[0];
+                    let pluginOptions = pluginConfig[1];
                     pluginOptions = Object.assign({}, BASE_OPTIONS, pluginOptions);
                     return plugin(pluginOptions);
                 }

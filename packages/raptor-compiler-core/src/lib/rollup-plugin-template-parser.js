@@ -3,7 +3,10 @@ import templateParserPlugin from 'babel-plugin-transform-raptor-template';
 import templateCleanupPlugin from 'raptor-html-cleanup-transform';
 import { transform } from 'babel-core';
 
-export default function (options = { babelConfig : {} }) {
+export default function (options) {
+    options = options || {};
+    options.babelConfig = options.babelConfig || {};
+
     const localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
@@ -20,8 +23,8 @@ export default function (options = { babelConfig : {} }) {
                 if (!this.injected && extname(id) === '.html') {
                     this.injected = true;
                     const localOptions = Object.assign(options, { filename: id });
-                    const {code, map} = transform(result, localOptions);
-                    return {code, map};    
+                    const transformed = transform(result, localOptions);
+                    return { code: transformed.code, map: transformed.map };
                 }
             });
         }

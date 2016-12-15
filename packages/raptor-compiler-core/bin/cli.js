@@ -1,6 +1,4 @@
 #!/usr/bin/env babel-node
-
-import * as acorn from 'acorn';
 import * as fs from 'fs';
 
 import {compile} from '../src/index';

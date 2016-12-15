@@ -1,10 +1,13 @@
 import babelDecoratorProps from 'babel-plugin-transform-raptor-class';
 import babelInjectPlugin from 'babel-plugin-transform-raptor-renderer';
 import { transform } from 'babel-core';
-import { basename, extname, dirname } from 'path';
+import { dirname } from 'path';
 
 function getQualifiedName(options) {
-    let { componentPath, componentName, componentNamespace } = options;
+    let componentPath = options.componentPath;
+    let componentName = options.componentName;
+    let componentNamespace = options.componentNamespace;
+
     const dirParts = dirname(componentPath).split('/');
     const customName = dirParts.pop();
     const customNS = dirParts.pop();
@@ -12,16 +15,20 @@ function getQualifiedName(options) {
     componentNamespace = componentNamespace || customNS.toLowerCase();
     componentName = componentName || customName.toLowerCase(); 
 
-    return { componentName, componentNamespace };
+    return { componentName : componentName, componentNamespace : componentNamespace };
 }
 
-export default function (options = {}) {
-    const { componentNamespace, componentName } = getQualifiedName(options);
+export default function (options) {
+    options = options || {};
+    const qualifiedName = getQualifiedName(options);
+    const componentNamespace = qualifiedName.componentNamespace;
+    const componentName = qualifiedName.componentName;
+
     const localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
         plugins: [
-            [babelDecoratorProps, { componentNamespace, componentName }],
+            [babelDecoratorProps, { componentNamespace: componentNamespace, componentName : componentName }],
             babelInjectPlugin
         ],
         parserOpts: { plugins: ['*'] }
@@ -37,8 +44,8 @@ export default function (options = {}) {
             if (!this.injected) {
                 this.injected = true;
                 const localOptions = Object.assign(options, { filename: id });
-                const { code, map } = transform(src, localOptions);
-                return { code, map };    
+                const res = transform(src, localOptions);
+                return { code: res.code, map: res.map };
             }            
         }
     };
