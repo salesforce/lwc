@@ -109,6 +109,12 @@ export default function ({ types: t, template }) {
                     }
                 }
             },
+            JSXExpressionContainer(path) {
+                if (!t.isIdentifier(path.node.expression) && !t.isMemberExpression(path.node.expression)) {
+                    console.log(path.node.expression);
+                    throw path.buildCodeFrameError('Expression evaluation is not allowed');
+                }
+            },
             // Transform container expressions from {foo} => {this.foo}
             Identifier(path, state) {
                 path.stop();
