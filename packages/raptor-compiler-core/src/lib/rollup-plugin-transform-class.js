@@ -1,5 +1,5 @@
-import babelDecoratorProps from 'babel-plugin-transform-decorator-props';
-import babelInjectPlugin from 'babel-plugin-transform-inject-template';
+import babelDecoratorProps from 'babel-plugin-transform-raptor-class';
+import babelInjectPlugin from 'babel-plugin-transform-raptor-renderer';
 import { transform } from 'babel-core';
 import { parse } from 'path';
 

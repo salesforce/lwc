@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import templateParserPlugin from 'babel-plugin-transform-html-template';
+import templateParserPlugin from 'babel-plugin-transform-raptor-template';
 import templateCleanupPlugin from 'raptor-html-cleanup-transform';
 import { transform } from 'babel-core';
 
