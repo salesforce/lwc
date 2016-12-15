@@ -3,9 +3,10 @@
   "private": true,
   "scripts": {
     "prepublish": "lerna bootstrap && lerna run build",
-    "clean": "rimraf dist/",
-    "build": "babel src/ --out-dir dist/",
-    "lint": "eslint src/",
+    "test": "lerna run test",
+    "build": "lerna run build",
+    "clean": "lerna run clean",
+    "lint": "lerna run lint",
     "preversion": "npm run lint && npm run clean && npm run build"
   },
   "devDependencies": {
