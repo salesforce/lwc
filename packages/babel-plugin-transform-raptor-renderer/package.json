@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-transform-decorator-props",
-  "description": "Babel plugin to transform decorators into props",
-  "version": "0.0.24",
+  "name": "babel-plugin-transform-raptor-renderer",
+  "version": "0.0.22",
+  "description": "Babel plugin to inject a render method and an imports statements in raptor",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {

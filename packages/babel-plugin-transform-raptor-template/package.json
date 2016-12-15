@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-transform-html-template",
+  "name": "babel-plugin-transform-raptor-template",
   "version": "0.0.25",
-  "description": "Babel plugin to transform HTML templates",
+  "description": "Babel plugin to transform HTML templates into Raptor format",
   "main": "dist/index.js",
   "author": "",
   "license": "MIT",
