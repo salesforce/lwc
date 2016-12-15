@@ -26,7 +26,7 @@ describe('emit asserts for: ', () => {
             return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
             .then((result) => {
                 const actual = result.code;
-                //console.log(actual);
+                console.log(actual);
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));  
                 assert.equal(trim(actual), trim(expected));
             })

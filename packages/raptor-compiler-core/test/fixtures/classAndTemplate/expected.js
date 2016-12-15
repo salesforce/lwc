@@ -16,7 +16,7 @@ var _tmpl = function ({
         [h(
             "ul",
             {
-                "class": this.myList
+                "class": this["my-list"]
             },
             f([v(
                 _a$b,
@@ -34,7 +34,7 @@ var _tmpl = function ({
         )]
     );
 };
-const usedIdentifiers = ["myList", "items", "last"];
+const usedIdentifiers = ["my-list", "items", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;

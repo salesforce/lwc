@@ -176,6 +176,11 @@ export default function ({ types: t, template }) {
         return args;
     }
 
+    function needsComputedCheck(literal) {
+        //TODO: Look in the spec to the valid values
+        return literal.indexOf('-') !== -1;
+    }
+
     function isInForScope(onForScope, node) {
         let literal = t.isMemberExpression(node) ? node.object.name : node;
         literal = typeof literal === 'string' ? literal.split('.').shift() : '';
@@ -186,7 +191,8 @@ export default function ({ types: t, template }) {
 
     function transformBindingLiteralOnScope(onForScope, literal) {
         if (!isInForScope(onForScope, literal)) {
-            return t.memberExpression(t.identifier('this'), t.identifier(literal));
+            const computed =  needsComputedCheck(literal);
+            return t.memberExpression(t.identifier('this'), computed ? t.stringLiteral(literal) : t.identifier(literal), computed);
         }
 
         return t.identifier(literal);

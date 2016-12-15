@@ -10,17 +10,9 @@ import plugin from '../src/index';
 
 const testSrc = `
 <template>
-    <div class="foo">
-        <h1 eval:if="title">{title}</h1>
-        <ul class="foo">
-            <li class="first">header</li>
-            <li repeat:for="item of data" set:class="itemClassName">
-                Value of X = {item.x}
-            </li> 
-            <li class="last">footer</li>
-        </ul>
-        <button bind:onclick="handleClick">{label}</button>
-    </div>
+    <section>
+        <p set:class="foo-bar"> {yesno}</p>
+    </section>
 </template>
 
 `;
