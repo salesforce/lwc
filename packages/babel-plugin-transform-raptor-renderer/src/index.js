@@ -55,7 +55,7 @@ module.exports = function (babel) {
     };
 
     return {
-        name: 'inject-template',
+        name: 'raptor-renderer',
         visitor: {
             ExportDefaultDeclaration(path, state) {
                 path.traverse(ASTClassVisitor, state);

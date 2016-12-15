@@ -40,11 +40,11 @@ export default function ({ types: t, template }) {
 
    // -- Plugin ------------------------------------------
     return {
+        name: 'raptor-template',
         inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
         pre() { 
             this.customScope = customScope; 
         },
-
         visitor: {
             Program: {
                 enter(path) {

@@ -28,7 +28,7 @@ module.exports = function (babel) {
                 if (prop.node.decorators) {
                     prop.node.decorators = null;
                 }
-                // Throw if we find `this` (needs refinement)
+                // Throw if we find `this`. (needs refinement)
                 prop.traverse({
                     ThisExpression() {
                         throw new Error('Reference to the instance is now allowed in class properties');
@@ -77,6 +77,7 @@ module.exports = function (babel) {
     }
 
     return {
+        name: 'raptor-class',
         pre() {
             this.compiledClasses = {};
         },

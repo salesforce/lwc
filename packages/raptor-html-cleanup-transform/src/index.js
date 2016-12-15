@@ -1,5 +1,4 @@
 /* eslint-env node */
-
 const parse5 = require('parse5');
 const Readable = require('stream').Readable;
 const constants = require('./constants');

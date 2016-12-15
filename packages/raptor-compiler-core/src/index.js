@@ -55,3 +55,5 @@ export function compile(config, options = {}) {
         });
     });
 }
+
+export const version = "@";
