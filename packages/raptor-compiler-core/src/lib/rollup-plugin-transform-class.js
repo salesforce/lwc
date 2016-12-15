@@ -1,16 +1,15 @@
 import babelDecoratorProps from 'babel-plugin-transform-raptor-class';
 import babelInjectPlugin from 'babel-plugin-transform-raptor-renderer';
 import { transform } from 'babel-core';
-import { parse } from 'path';
+import { basename, extname, dirname } from 'path';
 
 function getQualifiedName(options) {
     let { componentPath, componentName, componentNamespace } = options;
-    const pathObj = parse(componentPath);
-    const dirParts = pathObj.dir.split('/');
+    const dirParts = dirname(componentPath).split('/');
     const customName = dirParts.pop();
     const customNS = dirParts.pop();
 
-    componentNamespace = componentNamespace || customNS.toLowerCase();;
+    componentNamespace = componentNamespace || customNS.toLowerCase();
     componentName = componentName || customName.toLowerCase(); 
 
     return { componentName, componentNamespace };

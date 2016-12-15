@@ -20,7 +20,9 @@
     "rimraf": "^2.5.4",
     "webpack": "2.2.0-rc.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "raptor-compiler-core": "^0.0.x"
+  },
   "engines": {
     "node": ">= v5.9"
   }
