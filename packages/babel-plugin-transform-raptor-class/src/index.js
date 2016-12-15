@@ -24,7 +24,7 @@ module.exports = function (babel) {
         for (let prop of classBody) {
             // Props
             if (prop.isClassProperty()) {
-                // Remove decorators for now.
+                // Remove decorators for now
                 if (prop.node.decorators) {
                     prop.node.decorators = null;
                 }

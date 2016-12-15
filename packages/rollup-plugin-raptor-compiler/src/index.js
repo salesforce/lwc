@@ -5,7 +5,6 @@ module.exports = (options) => {
         transform (code, id) {
             const pluginOptions = {};
             const config = { componentPath: id };
-            
             return compiler.compile(config, pluginOptions);
         }
     }

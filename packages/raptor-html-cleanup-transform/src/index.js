@@ -37,7 +37,7 @@ function createStreamParser(output) {
         output.push(tag);
     });
 
-    //sax.on('comment', comment => {/*skip commnents*/});
+    //sax.on('comment', comment => {/* skip commnents */});
     sax.on('endTag', (tag) => output.push(`</${tag}>`));
     sax.on('text', (text) => output.push(text));
 

@@ -1,5 +1,4 @@
 /* eslint-env node */
-
 import * as CONST from './constants';
 import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
 import { isTopLevel, parseStyles, toCamelCase } from './utils';

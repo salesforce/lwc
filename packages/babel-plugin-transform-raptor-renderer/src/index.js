@@ -33,7 +33,7 @@ module.exports = function (babel) {
             const classBody = path.get('body').node.body;
 
             if (classBody.find((nodepath) => t.isClassMethod(nodepath) && nodepath.key.name === METHOD_NAME)) {
-                throw new Error('We do not allow a render method for now!');
+                throw new Error('We do not allow a render method for now');
             }
 
             classBody.push(t.classMethod(
