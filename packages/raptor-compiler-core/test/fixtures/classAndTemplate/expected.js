@@ -28,13 +28,13 @@ var _tmpl = function ({
                     {
                         "class": "item"
                     },
-                    [s(this.item)]
+                    [s(item)]
                 );
             }), s(this.last)])
         )]
     );
 };
-const usedIdentifiers = ["myList", "items", "item", "last"];
+const usedIdentifiers = ["myList", "items", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;

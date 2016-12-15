@@ -1,5 +1,6 @@
 import { extname } from 'path';
 import templateParserPlugin from 'babel-plugin-transform-html-template';
+import templateCleanupPlugin from 'raptor-html-cleanup-transform';
 import { transform } from 'babel-core';
 
 export default function (options = { babelConfig : {} }) {
@@ -14,13 +15,15 @@ export default function (options = { babelConfig : {} }) {
         name : 'template-parser',
         injected: false,
         transform (src, id) {
-            //console.log('[]template-parser', '\t>> ' , id);
-            if (!this.injected && extname(id) === '.html') {
-                this.injected = true;
-                const localOptions = Object.assign(options, { filename: id });
-                const {code, map} = transform(src, localOptions);
-                return {code, map};    
-            }
+            return templateCleanupPlugin.transform(src).then((result) => {
+                //console.log('[]template-parser', '\t>> ' , id);
+                if (!this.injected && extname(id) === '.html') {
+                    this.injected = true;
+                    const localOptions = Object.assign(options, { filename: id });
+                    const {code, map} = transform(result, localOptions);
+                    return {code, map};    
+                }
+            });
         }
     };
 }
