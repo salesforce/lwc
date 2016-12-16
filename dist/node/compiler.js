@@ -36367,7 +36367,7 @@ module.exports = function (babel) {
         for (let prop of classBody) {
             // Props
             if (prop.isClassProperty()) {
-                // Remove decorators for now.
+                // Remove decorators for now
                 if (prop.node.decorators) {
                     prop.node.decorators = null;
                 }
@@ -36511,7 +36511,7 @@ module.exports = function (babel) {
             const classBody = path.get('body').node.body;
 
             if (classBody.find((nodepath) => t.isClassMethod(nodepath) && nodepath.key.name === METHOD_NAME)) {
-                throw new Error('We do not allow a render method for now!');
+                throw new Error('We do not allow a render method for now');
             }
 
             classBody.push(t.classMethod(
@@ -37108,7 +37108,6 @@ var _metadata = __webpack_require__(239);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 /* eslint-env node */
-
 var DIRECTIVE_PRIMITIVES = CONST.DIRECTIVE_PRIMITIVES;
 var _CONST$RENDER_PRIMITI = CONST.RENDER_PRIMITIVES,
     ITERATOR = _CONST$RENDER_PRIMITI.ITERATOR,
@@ -65364,7 +65363,7 @@ function createStreamParser(output) {
         output.push(tag);
     });
 
-    //sax.on('comment', comment => {/*skip commnents*/});
+    //sax.on('comment', comment => {/* skip commnents */});
     sax.on('endTag', (tag) => output.push(`</${tag}>`));
     sax.on('text', (text) => output.push(text));
 
@@ -65481,7 +65480,7 @@ function compile(config, options) {
     }
 
     if (options.minify) {
-        console.log('TODO!');
+        console.log('TODO!!');
     }
 
     return new Promise((resolve, reject) => {
@@ -65508,7 +65507,7 @@ function compile(config, options) {
     });
 }
 
-const version = "0.0.29";
+const version = "0.0.40";
 /* harmony export (immutable) */ exports["version"] = version;
 
 
