@@ -12,7 +12,7 @@
     "rollup": "^0.36.3"
   },
   "dependencies": {
-    "raptor-compiler-core": "^0.0.38"
+    "raptor-compiler-core": "^0.0.40"
   },
   "scripts": {
     "test": "mocha",
