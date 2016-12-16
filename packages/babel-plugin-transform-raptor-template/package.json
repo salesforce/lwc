@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-raptor-template",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "Babel plugin to transform a HTML template into Raptor format",
   "main": "dist/index.js",
   "author": "",
