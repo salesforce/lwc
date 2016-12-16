@@ -1,0 +1,17 @@
+{
+  "name": "package-test",
+  "description": "PackageTest",
+  "version": "0.0.38",
+  "main": "src/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.9.1",
+    "mocha": "^3.1.2",
+    "power-assert": "^1.4.1",
+    "babel-core": "^6.18.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint src/"
+  }
+}
