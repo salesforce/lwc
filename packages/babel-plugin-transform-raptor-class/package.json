@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-raptor-class",
-  "description": "Babel plugin to transform the raptor class",
+  "description": "Babel plugin to transform a raptor class",
   "version": "0.0.39",
   "main": "src/index.js",
   "license": "MIT",
