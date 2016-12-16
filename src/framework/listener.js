@@ -1,46 +1,21 @@
-function invokeHandler(handler, vnode, event) {
-    if (typeof handler === "function") {
-        // call function handler
-        handler.call(vnode, event, vnode);
-    } else if (typeof handler === "object") {
-        // call handler with arguments
-        if (typeof handler[0] === "function") {
-            // special case for single argument for performance
-            if (handler.length === 2) {
-                handler[0].call(vnode, handler[1], event, vnode);
-            } else {
-                var args = handler.slice(1);
-                args.push(event);
-                args.push(vnode);
-                handler[0].apply(vnode, args);
-            }
-        } else {
-            // call multiple handlers
-            for (var i = 0; i < handler.length; i++) {
-                invokeHandler(handler[i]);
-            }
-        }
+// TODO: eventually, try to use the snabbdom version of this file.
+
+function handleEvent(event: Event, vnode: VNode) {
+    const { type } = event;
+    const { data: { on } } = vnode;
+    if (on && on[type]) {
+        on[type].call(vnode, event, vnode);
     }
 }
 
-function handleEvent(event, vnode) {
-    var name = event.type,
-        on = vnode.data.on;
-
-    // call event handler(s) if exists
-    if (on && on[name]) {
-        invokeHandler(on[name], vnode, event);
-    }
-}
-
-function createListener() {
-    return function handler(event) {
+function createListener(): (event: Event) => void {
+    return function handler(event: Event) {
         handleEvent(event, handler.vnode);
     }
 }
 
-function updateEventListeners(oldVnode, vnode) {
-    var oldOn = oldVnode.data.on,
+function updateEventListeners(oldVnode: VNode, vnode: VNode) {
+    let oldOn = oldVnode.data.on,
         oldListener = oldVnode.listener,
         oldElm = oldVnode.elm,
         on = vnode && vnode.data.on,

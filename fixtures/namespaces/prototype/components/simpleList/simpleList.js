@@ -40,4 +40,9 @@ export default class SimpleList {
         this.data = newData;
         console.log('clicked');
     }
+
+    @method foo() {
+        console.log('foo was called: ', arguments);
+        return 1;
+    }
 }

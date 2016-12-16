@@ -1,6 +1,6 @@
 const registry = {
     raptor: {
-        get ns(): Promise {
+        get ns(): Promise<any> {
             return Promise.resolve(window.Raptor);
         }
     }
@@ -8,7 +8,7 @@ const registry = {
 
 function loaderEvaluate(moduleStatus: Object): Promise<Namespace> {
     let exports: Object;
-    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Promise<Array> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
+    moduleStatus.ns = Promise.all(moduleStatus.deps.map((name: string): Promise<Array<any>> => name === 'exports' ? Promise.resolve((exports = {})) : loaderImportMethod(name)))
         .then((resolvedNamespaces: Array<Object>): Promise => {
             let returnedValue = moduleStatus.definition.apply(undefined, resolvedNamespaces);
             return exports || returnedValue;

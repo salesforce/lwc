@@ -4,11 +4,19 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
-
-import { getVM } from "./createElement.js"; 
+import { h } from "./api.js"; 
+import assert from "./assert.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
+
+function wrapHTMLElement(element: HTMLElement): VNode {
+    assert.isTrue(element instanceof HTMLElement);
+    const tagName = element.tagName.toLowerCase();
+    const vnode = h(tagName, {});
+    vnode.elm = element;
+    return vnode;
+}
 
 export function invokeComponentDisconnectedCallback(vm: VM) {
     const { component } = vm;
@@ -37,13 +45,11 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
         establishContext(this);
         isRendering = true;
         vmBeingRendered = vm;
-        let vnode = component.render(api);
+        let elementOrVnode = component.render(api);
         isRendering = false;
         vmBeingRendered = null;
         establishContext(ctx);
-        // TODO: find a way to not having to search inside the weakmap for every render
-        //       invocation, and only doing so if we know it is raptor element.
-        vnode = getVM(vnode) || vnode;
+        const vnode = elementOrVnode instanceof HTMLElement ? wrapHTMLElement(elementOrVnode) : elementOrVnode;
         return vnode;
     }
     return null;

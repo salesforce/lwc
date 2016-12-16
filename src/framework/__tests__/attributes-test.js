@@ -34,4 +34,38 @@ describe('attributes.js', function () {
             assert(attrConfig.bar !== undefined);
         });
     });
+
+    describe('#getAttributeProxy()', () => {
+        it('should throw for non-object values', () => {
+            assert.throws(() => target.getAttributeProxy(undefined), "undefined value");
+            assert.throws(() => target.getAttributeProxy(""), "empty string value");
+            assert.throws(() => target.getAttributeProxy(NaN), "NaN value");
+            assert.throws(() => target.getAttributeProxy(function () {}));
+            assert.throws(() => target.getAttributeProxy(1), "Number value");
+        });
+        it('should return null for null value', () => {
+            assert(target.getAttributeProxy(null) === null);
+        });
+        it('should always return the same proxy', () => {
+            const o = { x: 1 };
+            const first = target.getAttributeProxy(o);
+            const second = target.getAttributeProxy(o);
+            assert(first.x === second.x);
+            assert(first === second);
+        });
+        it('should never rewrap a previously produced proxy', () => {
+            const o = { x: 1 };
+            const first = target.getAttributeProxy(o);
+            const second = target.getAttributeProxy(first);
+            assert(first.x === second.x);
+            assert(first === second);
+        });
+        it('should rewrap unknown proxy', () => {
+            const o = { x: 1 };
+            const first = new Proxy(o, {});
+            const second = target.getAttributeProxy(first);
+            assert(first.x === second.x);
+            assert(first !== second);
+        });
+    });
 });

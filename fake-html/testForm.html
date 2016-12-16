@@ -11,11 +11,12 @@
     <div id="container"></div>
     <script>
     Raptor.loaderImportMethodTemporary('prototype:form')
-        .then(function (list) {
+        .then(function (List) {
             console.time('createAndRender');
-            var raptorElement = Raptor.createElement(list);
-            var domNodeContainer = document.getElementById('container');
-            Raptor.mountToDom(raptorElement, domNodeContainer);
+            var container = document.getElementById('container');
+            var element = document.createElement(List.tagName);
+            Raptor.upgrade(element, List);
+            container.appendChild(element);
             console.timeEnd('createAndRender');
         })  
     </script>

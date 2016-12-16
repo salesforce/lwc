@@ -7,11 +7,12 @@
 <script>
 // trying the loader
 Raptor.loaderImportMethodTemporary('abc:baz')
-    .then(function (baz) {
-        var raptorElement = Raptor.createElement(baz);
-        raptorElement.x = 1;
-        raptorElement.setAttribute('y', 2);
-        var domNodeContainer = document.getElementById('container');
-        Raptor.mountToDom(raptorElement, domNodeContainer);
+    .then(function (Baz) {
+        var container = document.getElementById('container');
+        var element = document.createElement(Baz.tagName);
+        container.appendChild(element);
+        Raptor.upgrade(element, Baz);
+        element.setAttribute('x', 1);
+        element.setAttribute('y', 2);
     })
 </script>

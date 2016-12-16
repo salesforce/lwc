@@ -8,7 +8,7 @@ export { h };
 // [v]irtual node
 // based on the structure from vue
 // https://github.com/vuejs/babel-plugin-transform-vue-jsx
-export function v(Ctor: ObjectConstructor, data: Object = {}, children?: array<any>): Object {
+export function v(Ctor: Component, data: Object = {}, children?: Array<any>): Object {
     data.hook = hook;
     const vnode = h(Ctor.name, data, children);
     vnode.Ctor = Ctor;

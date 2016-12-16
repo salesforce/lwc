@@ -14,8 +14,8 @@ const TargetToPropsMap = new WeakMap();
 export function notifyListeners(target: Object, propName: string) {
     if (TargetToPropsMap.has(target)) {
         const PropNameToListenersMap = TargetToPropsMap.get(target); 
-        if (PropNameToListenersMap.has(propName)) {
-            const set = PropNameToListenersMap.get(propName);
+        const set = PropNameToListenersMap.get(propName);
+        if (set) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
                 const { flags } = vm;
@@ -46,7 +46,7 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
         return value;
     };
     const setter = function reactiveSetter(newValue: any) {
-        assert.invariant(!isRendering, `Invalid attempting to mutate property ${propName} of ${target} during an ongoing rendering process for ${vmBeingRendered}.`);
+        assert.invariant(!isRendering, `Invalid attempting to mutate property ${propName} of ${target.toString()} during an ongoing rendering process for ${vmBeingRendered}.`);
         if (originalSetter && newValue !== oldValue) {
             originalSetter.call(this, newValue);
             notifyListeners(target, propName);
@@ -92,11 +92,11 @@ export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
         }
         const PropNameToListenersMap = TargetToPropsMap.get(target);
 
-        if (!PropNameToListenersMap.has(propName)) {
-            PropNameToListenersMap.set(propName, new Set());
+        let set = PropNameToListenersMap.get(propName);
+        if (!set) {
+            set = new Set();
+            PropNameToListenersMap.set(propName, set);
         }
-        const set = PropNameToListenersMap.get(propName);
-
         if (!set.has(vm)) {
             set.add(vm);
             // we keep track of the sets that vm is listening from to be able to do some clean up later on

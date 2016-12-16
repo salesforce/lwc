@@ -8,6 +8,7 @@ import {
 import { updateComponentPropAndRehydrateWhenNeeded } from "./props.js";
 
 const ObjectAttributeToProxyMap = new WeakMap();
+const ProxySet = new WeakSet();
 
 const attributeProxyHandler = {
     get(target: Object, name: string): any {
@@ -18,7 +19,7 @@ const attributeProxyHandler = {
         return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
     },
     set(target: Object, name: string, value: any) {
-        assert.invariant(false, `Property ${name} of ${target} cannot be set to ${value} because it belongs to a decorated @attribute.`);
+        assert.invariant(false, `Property ${name} of ${target.toString()} cannot be set to ${value} because it belongs to a decorated @attribute.`);
     },
 };
 
@@ -26,12 +27,17 @@ export function getAttributeProxy(value: Object): any {
     if (value === null) {
         return null;
     }
-    
+    assert.isTrue(typeof value === "object", "perf-optimization: avoid calling this method for non-object value.");
+    if (ProxySet.has(value)) {
+        return value;
+    }
+
     if (ObjectAttributeToProxyMap.has(value)) {
         return ObjectAttributeToProxyMap.get(value);
     }
     const proxy = new Proxy(value, attributeProxyHandler);
     ObjectAttributeToProxyMap.set(value, proxy);
+    ProxySet.add(proxy);
     return proxy;   
 }
 
@@ -41,6 +47,7 @@ export function setAttribute(vm: VM, attrName: string, newValue: any) {
     const attrConfig = attrs[attrName];
     assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
     if (attrConfig) {
+        // TODO: apply some basic casting mechanism for newValue if the type is a primite type
         updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, newValue);
     }
 }
@@ -53,20 +60,6 @@ export function removeAttribute(vm: VM, attrName: string) {
     if (attrConfig) {
         updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, null);
     }
-}
-
-export function hasAttribute(vm: VM, attrName: string): boolean {
-    const { def: { attrs } } = vm;
-    attrName = attrName.toLocaleLowerCase();
-    return !!attrs[attrName];
-} 
-
-export function getAttribute(vm: VM, attrName: string): any {
-    const { def: { attrs }, state } = vm;
-    attrName = attrName.toLocaleLowerCase();
-    const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
-    return attrConfig ? state[attrConfig.propName] : null;
 }
 
 export function updateAttributeValueFromProp(vm: VM, propName: string, oldValue: any, newValue: any) {

@@ -22,9 +22,9 @@ export function getComponentDef(Ctor: Object): ComponentDef {
     if (CtorToDefMap.has(Ctor)) {
         return CtorToDefMap.get(Ctor);
     }
-    assert.isTrue(Ctor.constructor, `Missing ${Ctor}.constructor, ${Ctor} should have a constructor property.`);  
+    assert.isTrue(Ctor.constructor, `Missing ${Ctor.name}.constructor, ${Ctor.name} should have a constructor property.`);  
     const name: string = Ctor.constructor && Ctor.constructor.name;
-    assert.isTrue(name, `Missing ${Ctor}.constructor.name, ${Ctor}.constructor should have a name property.`);  
+    assert.isTrue(name, `Missing ${Ctor.name}.constructor.name, ${Ctor.name}.constructor should have a name property.`);  
     const props = getPropsHash(Ctor);
     const attrs = getAttrsHash(props);
     const methods = getMethodsHash(Ctor);
@@ -95,11 +95,11 @@ function getAttrsHash(props: HashTable<PropDef>): HashTable<AttrDef> {
     }, {});
 }
 
-function getMethodsHash(target: Object): HashTable<Number> {
+function getMethodsHash(target: Object): HashTable<number> {
     return (target.publicMethods || []).reduce((methodsHash: HashTable, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
         assert.block(() => {
-            assert.invariant(typeof target.prototype[methodName] !== 'function', `<${target.constructor.name}>.${methodName} have to be a function.`);
+            assert.isTrue(typeof target.prototype[methodName] === 'function', `<${target.constructor.name}>.${methodName} have to be a function.`);
             Object.freeze(target.prototype[methodName]);
             // setting up the descriptor for the public method
             Object.defineProperty(target.prototype, methodName, {
@@ -120,7 +120,7 @@ function getObservedPropsHash(target: Object): Object {
     }, {});
 }
 
-function getObservedAttrsHash(target: Object, attrs: HashTable<AttrDef>): HashTable<Number> {
+function getObservedAttrsHash(target: Object, attrs: HashTable<AttrDef>): HashTable<number> {
     return (target.observedAttributes || []).reduce((observedAttributes: HashTable, attrName: string): HashTable => {
         observedAttributes[attrName] = 1;
         assert.block(() => {
