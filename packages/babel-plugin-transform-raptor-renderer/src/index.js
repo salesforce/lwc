@@ -19,7 +19,7 @@ module.exports = function (babel) {
     }
 
     const ASTClassVisitor = {
-        ClassDeclaration(path, state) {
+        ClassDeclaration (path, state) {
             let name = state.opts.name;
 
             if (!name) {

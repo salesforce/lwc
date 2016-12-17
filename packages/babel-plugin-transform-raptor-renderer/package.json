@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-raptor-renderer",
-  "version": "0.0.40",
+  "version": "0.0.42",
   "description": "Babel plugin to inject render method and an imports statements in raptor",
   "main": "src/index.js",
   "license": "MIT",

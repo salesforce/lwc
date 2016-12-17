@@ -47,7 +47,7 @@ export default function ({ types: t, template }) {
         },
         visitor: {
             Program: {
-                enter(path) {
+                enter (path) {
                     const expression = path.get('body.0.expression');
                     const children = expression.get('children');
                     const filteredChildren = children.filter((c) => !t.isJSXText(c));
@@ -66,7 +66,7 @@ export default function ({ types: t, template }) {
                     // Delete remaining nodes
                     expression.remove();
                 },
-                exit(path, state) {
+                exit (path, state) {
                     // Generate used identifiers
                     const usedIds = state.file.metadata.usedIdentifiers || {};
                     const usedKeys = Object.keys(usedIds);

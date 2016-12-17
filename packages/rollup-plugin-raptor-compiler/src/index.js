@@ -1,6 +1,6 @@
 const compiler = require('raptor-compiler-core');
 
-module.exports = (options) => {
+module.exports = () => {
     return {
         transform (code, id) {
             const pluginOptions = {};

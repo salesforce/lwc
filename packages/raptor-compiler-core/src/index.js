@@ -31,7 +31,7 @@ export function compile(config, options) {
     }
 
     if (options.minify) {
-        console.log('TODO!!');
+        console.log('TODO!');
     }
 
     return new Promise((resolve, reject) => {

@@ -56,7 +56,7 @@ class HTMLReadable extends Readable {
 }
 
 module.exports = {
-    transform(src) {
+    transform (src) {
         return new Promise(function (resolve) {
             const output = [];
             const parser = createStreamParser(output);

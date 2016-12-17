@@ -83,7 +83,7 @@ module.exports = function (babel) {
         },
         visitor: {
             Program: {
-                enter(path, state) {
+                enter (path, state) {
                     const body = path.node.body;
                     const exportD = body.find(n => t.isExportDefaultDeclaration(n));
                     if (!exportD) {
@@ -99,7 +99,7 @@ module.exports = function (babel) {
 
                     state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
                 },
-                exit(path, state) {
+                exit (path, state) {
                     if(state.opts.componentName && !this.entryClass) {
                         throw path.buildCodeFrameError("Class name does not match the current bundle entry point");
                     }
@@ -109,7 +109,7 @@ module.exports = function (babel) {
                 }
 
             },
-            ClassDeclaration(path, state) {
+            ClassDeclaration (path, state) {
                 const className = path.node.id.name;
                 if (!className) {
                     throw path.buildCodeFrameError("For debugability purposes we don't allow anonymous classes");
