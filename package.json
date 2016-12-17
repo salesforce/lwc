@@ -1,4 +1,5 @@
 {
+  "name": "raptor-compiler",
   "license": "MIT",
   "private": true,
   "scripts": {
