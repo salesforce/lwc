@@ -46,7 +46,7 @@
     "rollup-plugin-flow": "^v1.1.0",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-raptor-compiler": "^0.0.x",
+    "rollup-plugin-raptor-compiler": "^0.0.41",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
