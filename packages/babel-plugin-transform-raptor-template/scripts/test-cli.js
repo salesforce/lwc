@@ -11,7 +11,7 @@ import plugin from '../src/index';
 const testSrc = `
 <template>
     <section>
-        <p set:class="foo-bar"> {yesno}</p>
+        <p d:class="foo-bar"> {yesno}</p>
     </section>
 </template>
 

@@ -4,7 +4,8 @@ import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, rem
 import { isTopLevel, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
 
-const DIRECTIVE_PRIMITIVES = CONST.DIRECTIVE_PRIMITIVES;
+const DIRECTIVES = CONST.DIRECTIVES;
+const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
@@ -84,7 +85,7 @@ export default function ({ types: t, template }) {
                     const openingNode = path.get('openingElement').node;
                     openingNode.attributes = openingNode.attributes ? buildOpeningElementAttributes(openingNode.attributes, path, state) : t.nullLiteral();
                     const directiveRef = openingNode.attributes._directives;
-                    const forExpr = directiveRef && directiveRef[DIRECTIVE_PRIMITIVES.for];
+                    const forExpr = directiveRef && directiveRef[MODIFIERS.for];
 
                     // Add scope while going down
                     if (forExpr) {
@@ -231,18 +232,18 @@ export default function ({ types: t, template }) {
             }
 
             if (t.isCallExpression(child) && child._directives) {
-                if (child._directives[DIRECTIVE_PRIMITIVES.else]) {
+                if (child._directives[MODIFIERS.else]) {
                     throw new Error('Else statement found before if statement');
                 }
 
                 const directives = child._directives;
 
-                if (directives[DIRECTIVE_PRIMITIVES.if]) {
+                if (directives[MODIFIERS.if]) {
                     let nextChild = children[i + 1];
-                    const ifExpr = directives[DIRECTIVE_PRIMITIVES.if];
+                    const ifExpr = directives[MODIFIERS.if];
                     const ifValue = t.isMemberExpression(ifExpr) ? ifExpr.property.name : ifExpr.value || ifExpr.name;
                     const testExpression = transformBindingLiteralOnScope(onForScope, ifValue);
-                    const hasElse = nextChild && nextChild._directives && nextChild._directives[DIRECTIVE_PRIMITIVES.else];
+                    const hasElse = nextChild && nextChild._directives && nextChild._directives[MODIFIERS.else];
 
                     if (hasElse) {
                         nextChild._processed = true;
@@ -254,8 +255,8 @@ export default function ({ types: t, template }) {
                     continue;
                 }
 
-                if (directives[DIRECTIVE_PRIMITIVES.for]) {
-                    const forExpr = directives[DIRECTIVE_PRIMITIVES.for];
+                if (directives[MODIFIERS.for]) {
+                    const forExpr = directives[MODIFIERS.for];
                     const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
                     const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
@@ -353,7 +354,7 @@ export default function ({ types: t, template }) {
             if (isTopLevel(name)) { // top-level special props
                 newProps.push(prop);
             } else {
-                if (directive && (name === DIRECTIVE_PRIMITIVES.if || name === DIRECTIVE_PRIMITIVES.for || name === DIRECTIVE_PRIMITIVES.else)) {
+                if (directive && (name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else)) {
                     directives[name] = prop.value; 
                 } else {
                     // Normalize to identifier
@@ -417,7 +418,7 @@ export default function ({ types: t, template }) {
         }
 
         // @dval: Maybe move this code to cleanAttributeName?
-        if (rawName.indexOf(DIRECTIVE_PRIMITIVES.on) === 0 && CONST.EVENT_KEYS[rawName.substring(2)]) {
+        if (rawName.indexOf(DIRECTIVES.on) === 0 && CONST.EVENT_KEYS[rawName.substring(2)]) {
             rawName = rawName.substring(2);
             nameNode[nameKey] = nameNode._on = rawName;
         }
@@ -427,7 +428,7 @@ export default function ({ types: t, template }) {
         * bind:onclick="handleClick => this.handleClick.bind(this)
         * assign:onclick="handleClick => this.handleClick
         */
-        if (nameNode._directive === DIRECTIVE_PRIMITIVES.bind && t.isMemberExpression(valueNode)) {
+        if (nameNode._directive === DIRECTIVES.bind && t.isMemberExpression(valueNode)) {
             valueNode = t.callExpression(
                 t.memberExpression(valueNode, t.identifier('bind')), [t.identifier('this')]
             );
@@ -445,7 +446,7 @@ export default function ({ types: t, template }) {
         if (t.isJSXNamespacedName(node.name)) {
             const nsNode = node.name;
             const directive = nsNode.namespace.name; // {directive}:{attr} <- get the directive part
-            if (directive in DIRECTIVE_PRIMITIVES) {
+            if (directive in DIRECTIVES) {
                 const literal = t.stringLiteral(nsNode.name.name);
                 literal._directive = directive; 
                 return literal;

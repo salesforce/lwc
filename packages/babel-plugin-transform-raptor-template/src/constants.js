@@ -1,31 +1,33 @@
 export const PROPS = 'props';
+
 export const DIRECTIVE_SYMBOL = ':';
 
-export const DIRECTIVE_PRIMITIVES = {
-    if: 'if',
-    else: 'else',
-    ifnot: 'ifnot',
-    repeat: 'repeat',
-    for: 'for',
-    on: 'on',
-    bind: 'bind',
-    eval: 'eval',
-    assign: 'assign',
-    set: 'set'
+export const DIRECTIVES = {
+    repeat    : 'repeat',
+    on        : 'on',
+    bind      : 'bind',
+    eval      : 'eval',
+    assign    : 'assign',
+    set       : 'set',
+    custom    : 'custom',
+    d         : 'd',
+    directive : 'directive',
 };
 
-export const DIRECTIVE_CONDITIONALS = {
-    //TODO: Move here if, else, for, ifnot...
-}
-
+export const MODIFIERS = {
+    if    : 'if',
+    else  : 'else',
+    for   : 'for',
+    ifnot : 'ifnot',
+};
 
 export const RENDER_PRIMITIVES = {
-    ITERATOR: 'i',
-    FLATTENING: 'f',
-    EMPTY: 'e',
-    CREATE_ELEMENT: 'h',
-    VIRTUAL_ELEMENT: 'v',
-    STRING: 's',
+    ITERATOR        : 'i',
+    FLATTENING      : 'f',
+    EMPTY           : 'e',
+    CREATE_ELEMENT  : 'h',
+    VIRTUAL_ELEMENT : 'v',
+    STRING          : 's',
 };
 
 export const RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);
