@@ -49,7 +49,6 @@ declare class VM extends VNode {
     flags: VMFlags;
     def: ComponentDef;
     component: Component;
-    api: RenderAPI;
     vnode: VNode;
     listeners: Set<Set<VM>>;
     toString: () => string;
@@ -66,7 +65,7 @@ declare class VNode {
 }
 
 interface RenderAPI {
-    v(Ctor: Component, data: Object, children?: Array<any>): VM;
+    v(Ctor: ObjectConstructor, data: Object, children?: Array<any>): VM;
     h(tagNAme: string, data: Object, children?: Array<any>, text?: string): VNode;
     i(items: Array<any>, factory: () => VNode | VM): Array<VNode|VM>;
     m(index: number, obj: any): any;

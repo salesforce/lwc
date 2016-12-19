@@ -4,16 +4,16 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
-import { h } from "./api.js"; 
+import * as api from "./api.js"; 
 import assert from "./assert.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
 function wrapHTMLElement(element: HTMLElement): VNode {
-    assert.isTrue(element instanceof HTMLElement);
+    assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
     const tagName = element.tagName.toLowerCase();
-    const vnode = h(tagName, {});
+    const vnode = api.h(tagName, {});
     vnode.elm = element;
     return vnode;
 }
@@ -39,7 +39,7 @@ export function invokeComponentConnectedCallback(vm: VM) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNode {
-    const { component, api } = vm;
+    const { component } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(this);

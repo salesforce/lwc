@@ -1,6 +1,3 @@
-//<reference path="types.d.ts"/>
-
-import * as baseAPI from "./api.js";
 import { patch } from "./patcher.js";
 import assert from "./assert.js";
 import {
@@ -12,26 +9,6 @@ import {
 } from "./invoker.js";
 import { watchProperty } from "./watcher.js";
 import { getComponentDef } from "./def.js";
-
-function createRenderInterface(): RenderAPI {
-    var cache = new Map();
-    // this object wraps the static base api plus those bits that are bound to
-    // the vnode instance, so we can apply memoization for some operations.
-    return Object.create(baseAPI, {
-        // [m]emoized node
-        m: {
-            value: (key: number, value: any): any => {
-                if (cache.has(key)) {
-                    return cache.get(key);
-                }
-                cache.set(key, value);
-                return value;
-            },
-            writable: false,
-            enumerable: true,
-        }
-    })
-}
 
 // at this point, the child vnode is ready, and all possible bits that are
 // needed by the engine to render the element, should be propagated from
@@ -45,14 +22,13 @@ function foldVnode(vm: VM, vnode: VNode) {
 }
 
 function initFromAnotherVM(vm: VM, oldvm: VM) {
-    const { component, api, vnode, toString, body, state, children, data, flags, listeners, def } = oldvm;
+    const { component, vnode, toString, body, state, children, data, flags, listeners, def } = oldvm;
     vm.data = data;
     vm.state = state;
     vm.body = body;
     vm.flags = flags;
     vm.def = def;
     vm.component = component;
-    vm.api = api;
     vm.vnode = vnode;
     vm.listeners = listeners;
     vm.toString = toString;
@@ -70,7 +46,7 @@ function watchComponentProperties(vm: VM) {
 function clearListeners(vm: VM) {
     assert.vm(vm);
     const { listeners } = vm;
-    listeners.forEach((propSet: Set): boolean => propSet.delete(vm));
+    listeners.forEach((propSet: Set<VM>): boolean => propSet.delete(vm));
     listeners.clear();
 }
 
@@ -92,7 +68,6 @@ export function createComponent(vm: VM) {
         flags,
         def,
         component: null,
-        api: null,
         vnode: null,
         listeners: new Set(),
         // TODO: maybe don't belong here...
@@ -103,7 +78,6 @@ export function createComponent(vm: VM) {
     };
     initFromAnotherVM(vm, emptyvm);
     vm.data.props = undefined;
-    vm.api = createRenderInterface();
     vm.component = new Ctor();
     initComponentProps(vm, state, body);
 }
