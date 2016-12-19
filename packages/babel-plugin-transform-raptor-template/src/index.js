@@ -47,7 +47,9 @@ export default function ({ types: t, template }) {
         },
         visitor: {
             Program: {
-                enter (path) {
+                enter(path) {
+                    validateTemplateRootFormat(path);
+
                     const expression = path.get('body.0.expression');
                     const children = expression.get('children');
                     const filteredChildren = children.filter((c) => !t.isJSXText(c));
@@ -111,7 +113,6 @@ export default function ({ types: t, template }) {
             },
             JSXExpressionContainer(path) {
                 if (!t.isIdentifier(path.node.expression) && !t.isMemberExpression(path.node.expression)) {
-                    console.log(path.node.expression);
                     throw path.buildCodeFrameError('Expression evaluation is not allowed');
                 }
             },
@@ -469,5 +470,20 @@ export default function ({ types: t, template }) {
         }
 
         return expression;
+    }
+
+    function validateTemplateRootFormat(path) {
+        const rootChildrens = path.get('body');
+
+        if (!rootChildrens.length) {
+            throw path.buildCodeFrameError('Missing root template tag');
+        } else if (rootChildrens.length > 1) {
+            throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
+        }
+
+        const templateTagName = path.get('body.0.expression.openingElement.name');
+        if (templateTagName.node.name !== 'template') {
+            throw path.buildCodeFrameError('Root tag should be a template');
+        }
     }
 }
