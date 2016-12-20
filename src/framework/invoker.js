@@ -1,5 +1,3 @@
-//<reference path="types.d.ts"/>
-
 import {
     currentContext,
     establishContext,

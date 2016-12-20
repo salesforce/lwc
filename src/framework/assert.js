@@ -1,5 +1,3 @@
-//<reference path="types.d.ts"/>
-
 const assert = {
     invariant(value: any, msg: string) {
         if (!value) {

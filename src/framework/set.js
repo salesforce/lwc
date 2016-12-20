@@ -1,5 +1,3 @@
-//<reference path="types.d.ts"/>
-
 import assert from "./assert.js";
 import { isRendering, vmBeingRendered } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";

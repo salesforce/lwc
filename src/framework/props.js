@@ -1,5 +1,3 @@
-//<reference path="types.d.ts"/>
-
 import assert from "./assert.js";
 import { markVMAsDirty } from "./reactivity.js";
 import { scheduleRehydration } from "./patcher.js";

@@ -7,8 +7,6 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-///<reference path="types.d.ts"/>
-
 import assert from "./assert.js";
 
 const CtorToDefMap = new WeakMap();

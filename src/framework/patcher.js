@@ -1,11 +1,10 @@
-//<reference path="types.d.ts"/>
-
 import assert from "./assert.js";
 import { init } from "snabbdom";
 import props from "snabbdom/modules/props";
 import attrs from "snabbdom/modules/attributes";
 import style from "snabbdom/modules/style";
-import on from "./listener.js";
+import dataset from "snabbdom/modules/dataset";
+import on from "snabbdom/modules/eventlisteners";
 import className from "./className";
 import { updateComponent } from "./vm.js";
 
@@ -13,6 +12,7 @@ export const patch = init([
     props,
     attrs,
     style,
+    dataset,
     className,
     on,
 ]);
