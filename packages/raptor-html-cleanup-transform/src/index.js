@@ -57,10 +57,14 @@ class HTMLReadable extends Readable {
 
 module.exports = {
     transform (src) {
+        // We do a first pass so we get the "correct" beahviour when dealing with broken self-closing/missing tags.
+        const parsed = parse5.serialize(parse5.parseFragment(src.toString()));
+
+        // Now we do our own transformations to make it "JSX" compliant
         return new Promise(function (resolve) {
             const output = [];
             const parser = createStreamParser(output);
-            const sourceStream = new HTMLReadable(src);
+            const sourceStream = new HTMLReadable(parsed);
 
             sourceStream.pipe(parser);
             parser.on('end', () => resolve(output.join('')));
