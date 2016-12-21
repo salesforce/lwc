@@ -1,0 +1,5 @@
+{
+  "message": "This module needs to export a default class",
+  "line": 1,
+  "column": 0
+}
