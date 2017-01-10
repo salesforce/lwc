@@ -1,19 +1,15 @@
+import UI from "./ui.js";
 import ADS from "raptor:ads";
 
-class baz {
-    // foo = 1;
-    // bar = 2;
-}
-
-export default ADS(adsBaz, ADS.QL`
+export default ADS(UI, ADS.QL`
   fragment on User {
-    profilePhoto(size: $baz, f: $foo) {
-      uri,
+    getSomeData(size: $bar, f: $foo) {
+      produce: {x, y} that are the props for baz class
     },
   }`
 );
 
 // Usage:
-// <adsBaz foo="something">
+// <prototype-baz foo="something">
 //     <p>do something</p>
-// </adsBaz>
+// </prototype-baz>
