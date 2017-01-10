@@ -9,11 +9,15 @@ function getQualifiedName(options) {
     let componentNamespace = options.componentNamespace;
 
     const dirParts = dirname(componentPath).split('/');
-    const customName = dirParts.pop();
-    const customNS = dirParts.pop();
+    const pathBasedName = dirParts.pop();
+    let pathBasedNS = dirParts.pop();
 
-    componentNamespace = componentNamespace || customNS.toLowerCase();
-    componentName = componentName || customName.toLowerCase(); 
+    if (pathBasedNS === 'components') {
+        pathBasedNS = dirParts.pop();
+    }
+
+    componentNamespace = componentNamespace || pathBasedNS.toLowerCase();
+    componentName = componentName || pathBasedName.toLowerCase(); 
 
     return { componentName : componentName, componentNamespace : componentNamespace };
 }
