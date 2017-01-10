@@ -16,7 +16,6 @@ const rollup = require('rollup');
 const glob = require("glob");
 
 const componentsPlugins = [
-    raptor(),
     babel({
         babelrc: false,
         presets: [
@@ -80,7 +79,11 @@ glob.sync('fixtures/namespaces/*/components/**/*.js').forEach(function (p) {
             folder: p,
             input: {
                 entry: path.join(p, name + '.js'),
-                plugins: componentsPlugins,
+                // TODO: review by raptor rollup pluging doesn't use componentName and componentNamespace
+                plugins: [raptor({
+                    componentName: name,
+                    componentNamespace: namespace,
+                })].concat(componentsPlugins),
             },
             output: {
                 dest: 'fake-cdn/components/' + name + '.js',

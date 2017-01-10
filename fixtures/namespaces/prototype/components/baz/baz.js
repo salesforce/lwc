@@ -1,6 +1,7 @@
+import { HTMLElement } from "raptor";
 import ADS from "raptor:ads";
 
-class baz {
+class adsBaz extends HTMLElement {
     // foo = 1;
     // bar = 2;
 }

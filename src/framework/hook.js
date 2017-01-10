@@ -1,10 +1,12 @@
 import {
     createComponent,
-    spinComponent,
-    patchComponent,
+    updateComponent,
     destroyComponent,
+    initFromAnotherVM,
 } from "./vm.js";
-
+import {
+    batchUpdateComponentProps,
+} from "./props.js";
 import {
     invokeComponentConnectedCallback,
     invokeComponentDisconnectedCallback,
@@ -14,12 +16,8 @@ import assert from "./assert.js";
 
 export function init(vm: VM) {
     assert.vm(vm);
-    if (!vm.flags) {
-        createComponent(vm);
-    }
-    if (!vm.flags.isReady) {
-        spinComponent(vm);
-    }
+    console.log(`<${vm.Ctor.name}> is being initialized.`);
+    createComponent(vm);
 }
 
 export function prepatch(oldvm: VM, vm: VM) {
@@ -28,12 +26,19 @@ export function prepatch(oldvm: VM, vm: VM) {
     if (oldvm !== vm) {
         const { Ctor: oldCtor } = oldvm;
         const { Ctor } = vm;
-        if (!oldCtor || oldCtor !== Ctor) {
-            createComponent(vm);
-            spinComponent(vm);
-        } else {
+        if (oldCtor === Ctor) {
             assert.vm(oldvm);
-            patchComponent(vm, oldvm);
+            console.log(`${oldvm} is being rehydrated.`);
+            initFromAnotherVM(vm, oldvm);
+        }
+        const { state, body, flags } = vm;
+        batchUpdateComponentProps(vm, state, body);
+        // there is an edge case here that maybe isDirty is not really
+        // a consequence of calling `batchUpdateComponentProps()`, but something
+        // that is pending to be done in the next tick. as a result, the update
+        // will be carry on during the same tick, which is not a problem at all.
+        if (flags.isDirty) {
+            updateComponent(vm);
         }
     }
 }
@@ -41,25 +46,18 @@ export function prepatch(oldvm: VM, vm: VM) {
 export function insert(vm: VM) {
     assert.vm(vm);
     console.log(`${vm} is being inserted.`);
-    const { vnode } = vm;
-    assert.vnode(vnode, `The insert hook in a Component cannot be called if there is not a child vnode.`);
-    vnode.elm = vm.elm;
-    const { data: { hook: subHook } } = vnode;
-    if (subHook && subHook.insert === insert) {
-        insert(vnode);
+    if (vm.flags.hasElement && vm.component.connectedCallback) {
+        invokeComponentConnectedCallback(vm);
     }
-    invokeComponentConnectedCallback(vm);
 }
 
 export function destroy(vm: VM) {
     assert.vm(vm);
     console.log(`${vm} is being destroyed.`);
-    const { vnode } = vm;
-    assert.vnode(vnode, `The destroy hook in a Component cannot be called if there is not a child vnode.`);
-    const { data: { hook: subHook } } = vnode;
-    if (subHook && subHook.destroy === destroy) {
-        destroy(vnode);
+    if (vm.flags.hasElement && vm.component.disconnectedCallback) {
+        invokeComponentDisconnectedCallback(vm);
     }
-    invokeComponentDisconnectedCallback(vm);
-    destroyComponent(vm);
+    if (vm.listeners.size > 0) {
+        destroyComponent(vm);
+    }
 }

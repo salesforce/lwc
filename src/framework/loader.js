@@ -24,6 +24,7 @@ function loaderImportMethod(name: string): Promise {
     if (!name) {
         return Promise.reject(new TypeError(`loader.import()'s name is required to be a non-empty string value.`));
     }
+    name = name.toLowerCase();
     let moduleStatus = registry[name];
     if (!moduleStatus) {
         return loaderLoadAndEvaluate(name);
@@ -42,6 +43,7 @@ function amdDefineMethod(name: string, deps: any, definition?: any) {
     if (typeof name !== 'string') {
         throw new TypeError('Invalid AMD define() call.');
     }
+    name = name.toLowerCase();
     if (registry[name]) {
         console.warn(`Duplicated AMD entry ignored for name=${name}`);
     }
