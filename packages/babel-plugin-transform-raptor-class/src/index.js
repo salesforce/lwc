@@ -5,6 +5,11 @@ module.exports = function (babel) {
     'use strict';
     const t = babel.types;
 
+    function isAnonymousClass (path) {
+        t.assertClassDeclaration(path);
+        return !t.isIdentifier(path.get('id'));
+    }
+
     function addClassStaticMember(className, prop, blockStatement) {
         return t.expressionStatement(
             t.assignmentExpression(
@@ -110,10 +115,11 @@ module.exports = function (babel) {
 
             },
             ClassDeclaration (path, state) {
-                const className = path.node.id.name;
-                if (!className) {
+                if (isAnonymousClass(path)) {
                     throw path.buildCodeFrameError("For debugability purposes we don't allow anonymous classes");
                 }
+
+                const className = path.get('id.name').node;
 
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
                 this.compiledClasses[className.toLowerCase()] = true;

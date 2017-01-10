@@ -1,0 +1,27 @@
+{
+  "name": "raptor-helper-fixture",
+  "description": "Helper package to run fixture testing",
+  "version": "0.0.42",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "eslint": "^3.9.1",
+    "mocha": "^3.1.2",
+    "power-assert": "^1.4.1",
+    "babel-core": "^6.18.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0"
+  },
+  "scripts": {
+    "build": "babel src/ --out-dir dist/",
+    "prepublish": "npm run build"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
