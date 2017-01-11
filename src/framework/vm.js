@@ -1,4 +1,3 @@
-import { patch } from "./patcher.js";
 import assert from "./assert.js";
 import {
     initComponentProps,
@@ -106,14 +105,13 @@ export function createComponent(vm: VM) {
 }
 
 export function updateComponent(vm: VM) {
-    const { flags, children } = vm;
+    const { flags } = vm;
     const { isDirty, hasElement } = flags;
     assert.invariant(isDirty, `Component ${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
     clearListeners(vm);
     let vnode = invokeComponentRenderMethod(vm);
     if (hasElement) {
-        vnode = patch(children[0], vnode);
         vm.vnode = vnode;
         vm.children = [vnode];
     } else {

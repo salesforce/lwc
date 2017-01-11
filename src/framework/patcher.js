@@ -6,7 +6,6 @@ import style from "snabbdom/modules/style";
 import dataset from "snabbdom/modules/dataset";
 import on from "snabbdom/modules/eventlisteners";
 import className from "./className";
-import { updateComponent } from "./vm.js";
 
 export const patch = init([
     props,
@@ -19,9 +18,10 @@ export const patch = init([
 
 function rehydrate(vm: VM) {
     assert.vm(vm);
-    const { flags } = vm;
+    const { flags, elm } = vm;
+    assert.isTrue(elm instanceof HTMLElement, `rehydration can only happen after the element is created instead of ${elm}.`);
     if (flags.isDirty) {
-        updateComponent(vm);
+        patch(elm, vm);
     }
     flags.isScheduled = false;
 }
