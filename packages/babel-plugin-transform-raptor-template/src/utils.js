@@ -51,7 +51,7 @@ export function makeMap (str) {
     return (val) => map[val];
 }
 
-export const isTopLevel = makeMap(TOP_LEVEL_PROPS.join(','));
+export const isTopLevelProp = makeMap(TOP_LEVEL_PROPS.join(','));
 
 export function parseStyles(styles) {
     return parserCss.parse(styles);
