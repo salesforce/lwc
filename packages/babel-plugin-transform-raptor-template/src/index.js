@@ -349,16 +349,7 @@ export default function ({ types: t, template }) {
     // https://html.spec.whatwg.org/multipage/dom.html#dom-dataset
     function fomatDataAttributeName(originalName) {
         let name = originalName.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
-        const keys = name.match(/-[^-]+/g);
-
-        if (keys) {
-            for (const key of keys) {
-                const updatedKey = key.charAt(1).toUpperCase() + key.substring(2);
-                name = name.replace(key, updatedKey);
-            }
-        }
-
-        return name;
+        return name.replace(/-[a-z]/g, match => match[1].toUpperCase());
     }
 
     function isDirectiveName(name) {
