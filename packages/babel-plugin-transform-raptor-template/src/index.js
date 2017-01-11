@@ -359,11 +359,12 @@ export default function ({ types: t, template }) {
                     directives[name] = prop.value; 
                 } else if (name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX)) {
                     name = name.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
-                    while (name.includes('-')) {
-                        const hyphenIndex = name.indexOf('-');
-                        let [left, right] = [name.slice(0, hyphenIndex), name.slice(hyphenIndex + 1)]
-                        right = right[0].toUpperCase() + right.slice(1);
-                        name = left + right;
+                    const keys = name.match(/-[^-]+/g);
+                    if (keys) {
+                        for (const key of keys) {
+                            const updatedKey = key.charAt(1).toUpperCase() + key.substring(2);
+                            name = name.replace(key, updatedKey);
+                        }
                     }
 
                     prop.key.type = 'Identifier';
