@@ -12,6 +12,8 @@
         console.time('createAndRender');
         var container = document.getElementById('container');
         var element = document.createElement('prototype-baz');
+        element.setAttribute('foo', 1);
+        element.setAttribute('bar', 2);
         container.appendChild(element);
         console.timeEnd('createAndRender');
     </script>
