@@ -1,7 +1,7 @@
 /* eslint-env node */
 import * as CONST from './constants';
 import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import { isTopLevel, parseStyles, toCamelCase } from './utils';
+import { isTopLevelProp, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
 
 const DIRECTIVES = CONST.DIRECTIVES;
@@ -342,49 +342,55 @@ export default function ({ types: t, template }) {
         return node;
     }
 
+    function isDataAttributeName(name) {
+        return name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX);
+    }
+
+    // https://html.spec.whatwg.org/multipage/dom.html#dom-dataset
+    function fomatDataAttributeName(originalName) {
+        let name = originalName.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
+        return name.replace(/-[a-z]/g, match => match[1].toUpperCase());
+    }
+
+    function isDirectiveName(name) {
+        return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else;
+    }
+
     function groupAndNormalizeProps(props) {
         const newProps = [];
-        const currentNestedObjects = {};
         const directives = {};
+
+        const addProperty = (topLevelName, value) => {
+            let topLevel = newProps.find(prop => prop.key.name === topLevelName);
+
+            if (!topLevel) {
+                topLevel = t.objectProperty(
+                    t.identifier(topLevelName),
+                    t.objectExpression([])
+                );
+                newProps.push(topLevel);
+            }
+
+            topLevel.value.properties.push(value);
+        }
 
         props.forEach((prop) => {
             const key = prop.key;
             const directive = key._directive;
             let name = key.value || key.name; // Identifier | StringLiteral
 
-            if (isTopLevel(name)) { // top-level special props
+            if (isTopLevelProp(name)) { // top-level special props
                 newProps.push(prop);
+            } else if (directive && isDirectiveName(name)) {
+                directives[name] = prop.value; 
+            } else if (isDataAttributeName(name)) {
+                prop.key = t.identifier(fomatDataAttributeName(name));
+                addProperty(CONST.DATASET, prop);
             } else {
-                if (directive && (name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else)) {
-                    directives[name] = prop.value; 
-                } else {
-                    // Normalize to identifier
-                    name = toCamelCase(name);
-                    prop.key.type = 'Identifier';
-                    prop.key.name = toCamelCase(name);
+                const topLevelName = key._on ? 'on' : CONST.PROPS;
 
-                    if (key._on) {
-                        if (!currentNestedObjects.on) {
-                        let onProps = currentNestedObjects.on = t.objectProperty(
-                                t.identifier('on'),
-                                t.objectExpression([])
-                            );
-                            newProps.push(onProps);
-                        }
-                        currentNestedObjects.on.value.properties.push(prop);
-                        return;
-                    }
-
-                    // Rest are nested under attrs/props
-                    if (!currentNestedObjects.attrs) {
-                       let attrs = currentNestedObjects.attrs = t.objectProperty(
-                            t.identifier(CONST.PROPS),
-                            t.objectExpression([])
-                        );
-                        newProps.push(attrs);
-                    }
-                    currentNestedObjects.attrs.value.properties.push(prop);
-                }
+                prop.key = t.identifier(toCamelCase(name));
+                addProperty(topLevelName, prop);
             }
         });
 

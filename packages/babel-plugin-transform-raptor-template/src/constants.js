@@ -1,5 +1,8 @@
 export const PROPS = 'props';
 
+export const DATASET = 'dataset';
+export const DATA_ATTRIBUTE_PREFIX = 'data-';
+
 export const DIRECTIVE_SYMBOL = ':';
 
 export const DIRECTIVES = {
