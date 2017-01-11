@@ -357,6 +357,20 @@ export default function ({ types: t, template }) {
             } else {
                 if (directive && (name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else)) {
                     directives[name] = prop.value; 
+                } else if (name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX)) {
+                    name = toCamelCase(name.substring(CONST.DATA_ATTRIBUTE_PREFIX.length));
+                    prop.key.type = 'Identifier';
+                    prop.key.name = name;
+
+                    if (!currentNestedObjects.dataset) {
+                       let dataset = currentNestedObjects.dataset = t.objectProperty(
+                            t.identifier(CONST.DATASET),
+                            t.objectExpression([])
+                        );
+                        newProps.push(dataset);
+                    }
+
+                    currentNestedObjects.dataset.value.properties.push(prop);             
                 } else {
                     // Normalize to identifier
                     name = toCamelCase(name);
@@ -387,6 +401,7 @@ export default function ({ types: t, template }) {
                 }
             }
         });
+
 
         const objExpression = t.objectExpression(newProps);
         if (Object.keys(directives).length) {
