@@ -358,7 +358,14 @@ export default function ({ types: t, template }) {
                 if (directive && (name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else)) {
                     directives[name] = prop.value; 
                 } else if (name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX)) {
-                    name = toCamelCase(name.substring(CONST.DATA_ATTRIBUTE_PREFIX.length));
+                    name = name.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
+                    while (name.includes('-')) {
+                        const hyphenIndex = name.indexOf('-');
+                        let [left, right] = [name.slice(0, hyphenIndex), name.slice(hyphenIndex + 1)]
+                        right = right[0].toUpperCase() + right.slice(1);
+                        name = left + right;
+                    }
+
                     prop.key.type = 'Identifier';
                     prop.key.name = name;
 
