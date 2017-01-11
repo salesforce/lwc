@@ -1,14 +1,12 @@
 const PUBLIC_METHOD_DECORATOR = 'method';
 const UNKNOWN_NAMESPACE = 'unknown';
+const KEY_PROPS = 'publicProps';
+const KEY_METHODS = 'publicMethods';
+const KEY_TAG = 'tagName';
 
 module.exports = function (babel) {
     'use strict';
     const t = babel.types;
-
-    function isAnonymousClass (path) {
-        t.assertClassDeclaration(path);
-        return !t.isIdentifier(path.get('id'));
-    }
 
     function addClassStaticMember(className, prop, blockStatement) {
         return t.expressionStatement(
@@ -59,70 +57,46 @@ module.exports = function (babel) {
             }
         }
 
-        const isEntryClass = state.opts.componentName.toLowerCase() === className.toLowerCase();
+        const tagName = (`${state.opts.componentNamespace}-${className}`).toLowerCase();
 
-        if (isEntryClass) {
-            this.entryClass = className;
-        }
-
-        const prefix = isEntryClass ? '' : 'private-';
-        const tagName = (`${state.opts.componentNamespace}-${prefix}${className}`).toLowerCase();
-
-        extraBody.push(addClassStaticMember(className, 'tagName', t.stringLiteral(tagName)));
+        extraBody.push(addClassStaticMember(className, KEY_TAG, t.stringLiteral(tagName)));
 
         if (publicProps.length) {
-            extraBody.push(addClassStaticMember(className, 'publicProps', t.objectExpression(publicProps)));
+            extraBody.push(addClassStaticMember(className, KEY_PROPS, t.objectExpression(publicProps)));
         }
 
         if (publicMethods.length) {
-            extraBody.push(addClassStaticMember(className, 'publicMethods', t.valueToNode(publicMethods)));
+            extraBody.push(addClassStaticMember(className, KEY_METHODS, t.valueToNode(publicMethods)));
         }
 
         return extraBody;
     }
 
     return {
-        name: 'raptor-class',
-        pre() {
-            this.compiledClasses = {};
-        },
+        name: 'raptor-class-transform',
         visitor: {
-            Program: {
-                enter (path, state) {
-                    const body = path.node.body;
-                    const exportD = body.find(n => t.isExportDefaultDeclaration(n));
-                    if (!exportD) {
-                        throw path.buildCodeFrameError("This module needs to export a default class");
-                    }
+            Program(path, state) {
+                const body = path.node.body;
+                const defaultExport = body.find(n => t.isExportDefaultDeclaration(n));
+                const declaration = defaultExport && defaultExport.declaration;
+                const isNamedClass = declaration && t.isClassDeclaration(declaration) && declaration.id;
 
-                    const decl = exportD.declaration;
-
-                    if (t.isClassDeclaration(decl) && decl.id) { 
-                        // Override the name if you explicitly export a named class
-                        state.opts.componentName = decl.id.name || state.opts.componentName;
-                    }
-
-                    state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
-                },
-                exit (path, state) {
-                    if(state.opts.componentName && !this.entryClass) {
-                        throw path.buildCodeFrameError("Class name does not match the current bundle entry point");
-                    }
-                    if (this.entryClass && Object.keys(this.compiledClasses) > 1 && this.compiledClasses[state.opts.componentName]) {
-                        throw path.buildCodeFrameError("Ambiguity locating the class entry point");
-                    }
+                // If there is not default class export no transformation will happen
+                if (!isNamedClass) {
+                    path.stop();
+                    return;
                 }
 
-            },
-            ClassDeclaration (path, state) {
-                if (isAnonymousClass(path)) {
+                if (state.opts.className && state.opts.className.toLowerCase() !== declaration.id.name.toLowerCase()) {
                     throw path.buildCodeFrameError("For debugability purposes we don't allow anonymous classes");
                 }
 
+                state.opts.className = declaration.id.name;
+                state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
+            },
+            ClassDeclaration(path, state) {
                 const className = path.get('id.name').node;
-
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
-                this.compiledClasses[className.toLowerCase()] = true;
 
                 if (path.inList) {
                     path.insertAfter(extraBody);
