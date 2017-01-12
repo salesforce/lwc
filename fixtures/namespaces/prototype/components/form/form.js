@@ -1,5 +1,8 @@
-export default class Form {
+import { HTMLElement } from "raptor";
+
+export default class Form extends HTMLElement {
     constructor() {
+        super();
         this.counter = 1;
         this.labelClass = "slds-form-element__label";
         this.record = { test: "#" };

@@ -63,12 +63,12 @@ function getPropsHash(target: Object): HashTable<PropDef> {
         let getter;
         let setter;
         assert.block(() => {
-            assert.invariant(!Object.getOwnPropertyDescriptor(target.prototype, propName), `Invalid ${target.constructor.name}.prototype.${propName} definition, it cannot be defined if it is decorated with @prop`);
+            assert.invariant(!Object.getOwnPropertyDescriptor(target.prototype, propName), `Invalid ${target.constructor.name}.prototype.${propName} definition, it cannot be defined if it is a public property.`);
             getter = () => {
-                assert.fail(`Component <${target.constructor.name}> can not access decorated @prop ${propName} during construction.`);
+                assert.fail(`Component <${target.constructor.name}> can not access to property ${propName} during construction.`);
             };
             setter = () => {
-                assert.fail(`Component <${target.constructor.name}> can not set a new value for decorated @prop ${propName}.`);
+                assert.fail(`Component <${target.constructor.name}> can not set a new value for property ${propName}.`);
             };
             Object.defineProperty(getter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
             Object.defineProperty(setter, internal, { value: true, configurable: false, writtable: false, enumerable: false });

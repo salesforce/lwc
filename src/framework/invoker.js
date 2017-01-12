@@ -16,31 +16,46 @@ function wrapHTMLElement(element: HTMLElement): VNode {
     return vnode;
 }
 
+function createMarker(): VNode {
+    return { text: '' };
+}
+
+export function invokeComponentConstructor(vm: VM): Component {
+    const { Ctor, context } = vm;
+    const ctx = currentContext;
+    establishContext(context);
+    const component = new Ctor();
+    establishContext(ctx);
+    return component;
+}
+
 export function invokeComponentDisconnectedCallback(vm: VM) {
-    const { component } = vm;
+    const { component, context } = vm;
+    assert.isTrue(vm.flags.hasElement, '${vm} is not a custom element. Only custom elements can call disconnectedCallback()');
     if (component.disconnectedCallback) {
         const ctx = currentContext;
-        establishContext(this);
+        establishContext(context);
         component.disconnectedCallback();
         establishContext(ctx);
     }
 }
 
 export function invokeComponentConnectedCallback(vm: VM) {
-    const { component } = vm;
+    const { component, context } = vm;
+    assert.isTrue(vm.flags.hasElement, `${vm} is not a custom element. Only custom elements can call connectedCallback().`);
     if (component.connectedCallback) {
         const ctx = currentContext;
-        establishContext(this);
+        establishContext(context);
         component.connectedCallback();
         establishContext(ctx);
     }
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNode {
-    const { component } = vm;
+    const { component, context } = vm;
     if (component.render) {
         const ctx = currentContext;
-        establishContext(this);
+        establishContext(context);
         isRendering = true;
         vmBeingRendered = vm;
         let elementOrVnode = component.render(api);
@@ -48,13 +63,14 @@ export function invokeComponentRenderMethod(vm: VM): VNode {
         vmBeingRendered = null;
         establishContext(ctx);
         const vnode = elementOrVnode instanceof HTMLElement ? wrapHTMLElement(elementOrVnode) : elementOrVnode;
-        return vnode;
+        return vnode || createMarker();
     }
-    return null;
+    return createMarker();
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
     const { component } = vm;
+    assert.isTrue(vm.flags.hasElement, `${vm} is not a custom element. Only custom elements can call attributeChangedCallback().`);
     if (component.attributeChangedCallback) {
         const ctx = currentContext;
         establishContext(this);

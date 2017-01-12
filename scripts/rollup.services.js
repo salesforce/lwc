@@ -1,25 +1,22 @@
 /*jshint node: true */
 
 /**
- * This file builds the framework and services.
+ * This file builds the services.
  */
 
 'use strict'
 
+const path = require('path');
 const argv = require('yargs').argv;
 const babel = require('rollup-plugin-babel');
-const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const strip = require('rollup-plugin-strip');
 const flow = require('rollup-plugin-flow');
-const nodeResolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup');
+const glob = require("glob");
 
-const fwPlugins = [
-    flow({
-        all: true,
-        exclude: '**/node_modules/**',
-    }),
+const servicePlugins = [
+    flow({ all: true }),
     babel({
         babelrc: false,
         presets: [
@@ -31,16 +28,10 @@ const fwPlugins = [
             ]
         ],
     }),
-    nodeResolve({
-        module: true,
-    }),
-    commonjs({
-        sourceMap: false,
-    }),
 ];
 
 if (argv.production) {
-    fwPlugins.push(
+    servicePlugins.push(
         strip({
             debugger: true,
             functions: [ 'console.*', 'assert.*' ],
@@ -69,20 +60,33 @@ function buildBundles(configs) {
         });
 }
 
-// framework configuration
-const configs = [{
-    folder: 'src/framework',
-    input: {
-        entry: 'src/framework/main.js',
-        plugins: fwPlugins,
-    },
-    output: {
-        dest: 'fake-cdn/raptor.js',
-        format: 'iife',
-        moduleName: 'Raptor',
-        sourceMap: true,
+const configs = [];
+
+// seaching for all services
+glob.sync('src/services/*/*.js').forEach(function (p) {
+    const entry = path.basename(p, '.js');
+    p = path.dirname(p);
+    const pieces = p.split(path.sep);
+    const name = pieces.pop();
+    if (name === entry) {
+        configs.push({
+            folder: p,
+            input: {
+                entry: path.join(p, name + '.js'),
+                plugins: servicePlugins,
+            },
+            output: {
+                dest: 'fake-cdn/' + name + '.js',
+                format: 'amd',
+                moduleId: ['raptor', name].join(':'),
+                sourceMap: true,
+                globals: {
+                    raptor: 'Raptor',
+                },
+            },
+        });
     }
-}];
+});
 
 if (argv.watch) {
     console.log('watching...');

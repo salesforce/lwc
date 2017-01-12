@@ -1,18 +1,21 @@
-<script src="raptor.js"></script>
-<script src="ads.js"></script>
-<script src="components/babelHelpers.js"></script>
-<script src="components/baz.js"></script>
-<div id="container">
-</div>
-<script>
-// trying the loader
-Raptor.loaderImportMethodTemporary('prototype:baz')
-    .then(function (Baz) {
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="raptor.js"></script>
+    <script src="components/babelHelpers.js"></script>
+    <script src="ads.js"></script>
+    <script src="components/baz.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        console.time('createAndRender');
         var container = document.getElementById('container');
-        var element = document.createElement(Baz.tagName);
-        container.appendChild(element);
-        Raptor.upgrade(element, Baz);
+        var element = document.createElement('prototype-baz');
         element.setAttribute('foo', 1);
         element.setAttribute('bar', 2);
-    })
-</script>
+        container.appendChild(element);
+        console.timeEnd('createAndRender');
+    </script>
+</body>
+</html>

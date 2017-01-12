@@ -1,19 +1,21 @@
-<script src="raptor.js"></script>
-<script src="components/babelHelpers.js"></script>
-<script src="components/simpleList.js"></script>
-<div id="container"></div>
-<script>
-
-Raptor.loaderImportMethodTemporary('prototype:simpleList')
-    .then(function (ListComponent) {
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="raptor.js"></script>
+    <script src="components/babelHelpers.js"></script>
+    <script src="components/simpleList.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
         console.time('createAndRender');
         var container = document.getElementById('container');
-        var element = document.createElement(ListComponent.tagName);
+        var element = document.createElement('prototype-simpleList');
         element.setAttribute('label', 're-shuffle');
         element.setAttribute('title', 'super awesome demo');
-        container.appendChild(element);
-        Raptor.upgrade(element, ListComponent);
         element.setAttribute('min', 30);
+        container.appendChild(element);
         console.timeEnd('createAndRender');
-    })
-</script>
+    </script>
+</body>
+</html>

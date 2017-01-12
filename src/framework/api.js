@@ -9,9 +9,11 @@ export { h };
 // based on the structure from vue
 // https://github.com/vuejs/babel-plugin-transform-vue-jsx
 export function v(Ctor: ObjectConstructor, data: Object = {}, children?: Array<any>): Object {
-    data.hook = hook;
-    const vnode = h(Ctor.name, data, children);
+    const { key, props } = data;
+    const vnode = h(Ctor.sel || Ctor.name, { hook, key });
     vnode.Ctor = Ctor;
+    vnode.state = props || {};
+    vnode.body = children;
     return vnode;
 }
 

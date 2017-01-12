@@ -37,17 +37,18 @@ interface RaptorElement extends HTMLElement {}
 
 interface VMFlags {
     hasBodyAttribute: boolean;
-    isReady: boolean;
     isScheduled: boolean;
     isDirty: boolean;
+    hasElement: boolean;
 }
 
 declare class VM extends VNode {
     Ctor: () => void;
     state: HashTable<any>;
-    body: VNode;
+    body: Array<VNode>;
     flags: VMFlags;
     def: ComponentDef;
+    context: HashTable<any>;
     component: Component;
     vnode: VNode;
     listeners: Set<Set<VM>>;

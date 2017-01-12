@@ -3,7 +3,6 @@ import { subscribeToSetHook } from "./watcher.js";
 import {
     isRendering,
     vmBeingRendered,
-    invokeComponentAttributeChangedCallback,
 } from "./invoker.js";
 import { updateComponentPropAndRehydrateWhenNeeded } from "./props.js";
 
@@ -59,16 +58,5 @@ export function removeAttribute(vm: VM, attrName: string) {
     assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
     if (attrConfig) {
         updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, null);
-    }
-}
-
-export function updateAttributeValueFromProp(vm: VM, propName: string, oldValue: any, newValue: any) {
-    const { def: { props, attrs, observedAttrs } } = vm;
-    const attrName = props[propName].attrName;
-    assert.invariant(attrName, `Missing precomputed attribute name for prop ${propName} in ${vm}.`);
-    assert.invariant(attrs[attrName], `Missing attribute configuration for ${attrName} in ${vm}.`);
-    // TODO: when implementing web components, we will need to update vm.elm attribute accordingly
-    if (observedAttrs[attrName]) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
     }
 }
