@@ -87,16 +87,16 @@ module.exports = function (babel) {
                     return;
                 }
 
-                if (state.opts.className && state.opts.className.toLowerCase() !== declaration.id.name.toLowerCase()) {
-                    throw path.buildCodeFrameError("For debugability purposes we don't allow anonymous classes");
-                }
-
                 state.opts.className = declaration.id.name;
                 state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
             },
             ClassDeclaration(path, state) {
                 const className = path.get('id.name').node;
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
+
+                if (state.opts.componentName && state.opts.componentName.toLowerCase() !== className.toLowerCase()) {
+                    throw path.buildCodeFrameError("For a component bundle, the className must match the folder name");
+                }
 
                 if (path.inList) {
                     path.insertAfter(extraBody);

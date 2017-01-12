@@ -1,11 +1,12 @@
+/* eslint-env node */
 const compiler = require('raptor-compiler-core');
 
-module.exports = () => {
+module.exports = (options) => {
     return {
-        transform (code, id) {
-            const pluginOptions = {};
-            const config = { componentPath: id };
-            return compiler.compile(config, pluginOptions);
+        transform (code, fileName) {
+            return compiler.compile(fileName, Object.assign({}, options, {
+                sources: { [fileName]: code }
+            }));
         }
     }
 }

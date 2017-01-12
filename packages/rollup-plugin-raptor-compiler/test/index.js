@@ -12,6 +12,7 @@ function trim(str) {
 const skipTests = [
     '.babelrc',
     '.DS_Store',
+    'bundle'
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');

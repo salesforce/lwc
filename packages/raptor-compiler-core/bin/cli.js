@@ -4,8 +4,7 @@ import * as fs from 'fs';
 import {compile} from '../src/index';
 import path from 'path';
 
-
-const TEST_SRCS = {
+const options = {
     sourceTemplate : `
         <template>
             <section>
@@ -19,14 +18,18 @@ const TEST_SRCS = {
             constructor() {}
         }
     `,
-    sourceCSS: ''
+    sourceCSS: '',
+
+    sources: {
+        'foo.html': `<template><section><p>{test}</p></section></template>`,
+        'foo.js': `export default class Foo { test = 'foo'; constructor() {}}`,
+    },
+    componentBundle: true,
 };
 
-const config = Object.assign(TEST_SRCS, {
-    componentPath: 'ns/foo/foo.js',
-});
+const entry = 'foo.js';
 
-compile(config)
+compile(entry, options)
 .then((res) => {
     console.log(res.code);
 })

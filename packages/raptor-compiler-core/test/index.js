@@ -12,6 +12,7 @@ function trim(str) {
 const skipTests = [
     '.babelrc',
     '.DS_Store',
+    'bundle',
     'empty'
 ];
 
@@ -23,7 +24,7 @@ describe('emit asserts for: ', () => {
 
         it(`output match: ${caseName}`, () => {
             const fixtureCaseDir = path.join(fixturesDir, caseName);
-            return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
+            return runCompile(path.join(fixtureCaseDir, caseName + '.js'), { componentBundle: true })
             .then((result) => {
                 const actual = result.code;
                 //console.log(actual);
@@ -40,6 +41,6 @@ const BASE_CONFIG = {};
 
 function runCompile(filePath, options = {}) {
     const config = Object.assign({}, BASE_CONFIG, options);
-    return compile({ componentPath: filePath }, config);
+    return compile(filePath, config);
 }
 
