@@ -1,8 +1,13 @@
+const pathLib = require('path');
+
 const PUBLIC_METHOD_DECORATOR = 'method';
 const UNKNOWN_NAMESPACE = 'unknown';
 const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
 const KEY_TAG = 'tagName';
+const KEY_RENDER = 'render';
+
+const METHOD_ARGUMENT_NAME = 'p';
 
 module.exports = function (babel) {
     'use strict';
@@ -18,55 +23,100 @@ module.exports = function (babel) {
         );
     }
 
+    function injectRenderer(className, path, state) {
+        const classPath = state.opts.componentName || state.file.opts.filename;
+        const cmpName = pathLib.basename(classPath, '.js');
+        const name = './' + cmpName + '.html';
+      
+        const id = state.file.addImport(name, 'default', 'tmpl');
+        const templateProps = state.file.addImport(name, 'usedIdentifiers', 't');
+
+        path.pushContainer('body', t.classMethod(
+            'method',
+            t.identifier(KEY_RENDER), [t.identifier(METHOD_ARGUMENT_NAME)],
+            t.blockStatement([t.returnStatement(
+                t.callExpression(
+                    t.memberExpression(id, t.identifier('call')), [t.thisExpression(), t.identifier(METHOD_ARGUMENT_NAME)])
+            )])
+        ));
+
+        return addClassStaticMember(className, 'templateUsedProps', templateProps);
+    }
+
     function transformClassBody(className, path, state) {
         const classBody = path.get('body');
         const publicProps = [];
         const publicMethods = [];
         const extraBody = [];
+        const keys = {
+            [KEY_PROPS]: false,
+            [KEY_METHODS]: false,
+            [KEY_TAG]: false,
+        };
 
         for (let prop of classBody) {
-            // Props
+            let key = prop.node.key.name;
+
+            // Properties
             if (prop.isClassProperty()) {
-                // Remove decorators for now
-                if (prop.node.decorators) {
-                    prop.node.decorators = null;
-                }
-                // Throw if we find `this`. (needs refinement)
-                prop.traverse({
-                    ThisExpression() {
-                        throw new Error('Reference to the instance is now allowed in class properties');
+
+                // Non-static props
+                if (!prop.node.static) {
+                    // Throw if we find `this`. (needs refinement)
+                    prop.traverse({
+                        ThisExpression() {
+                            throw new Error('Reference to the instance is now allowed in class properties');
+                        }
+                    });
+
+                    // Tranform to publicProps
+                    let value = prop.node.value || t.nullLiteral();
+                    if (!t.isLiteral(value) && !t.isIdentifier(value)) {
+                        value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
                     }
-                });
+                    publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
+                    prop.remove();
 
-                let value = prop.node.value || t.nullLiteral();
-                if (!t.isLiteral(value) && !t.isIdentifier(value)) {
-                    value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
+                    // Static props
+                } else if (key in keys) {
+                    keys[key] = true;
                 }
 
-                publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
-                prop.remove();
-
-            } else if (prop.isClassMethod({
-                    kind: 'method'
-                }) && prop.node.decorators) {
-                if (prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
-                    publicMethods.push(prop.node.key.name);
+                // Methods
+            } else if (prop.isClassMethod({ kind: 'method' })) {
+                // Push to publich method
+                if (prop.node.decorators && prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
+                    publicMethods.push(key);
                 }
 
+                // If it has a render method later we won't do the transform
+                if (key === KEY_RENDER && !prop.node.static) {
+                    keys[key] = true;
+                }
+            }
+
+            // Remove all decorators
+            if (prop.node) {
                 prop.node.decorators = null;
             }
+
         }
 
-        const tagName = (`${state.opts.componentNamespace}-${className}`).toLowerCase();
+        if (!keys[KEY_TAG]) {
+            const tagName = (`${state.opts.componentNamespace}-${className}`).toLowerCase();
+            extraBody.push(addClassStaticMember(className, KEY_TAG, t.stringLiteral(tagName)));
+        }
 
-        extraBody.push(addClassStaticMember(className, KEY_TAG, t.stringLiteral(tagName)));
-
-        if (publicProps.length) {
+        if (!keys[KEY_PROPS] && publicProps.length) {
             extraBody.push(addClassStaticMember(className, KEY_PROPS, t.objectExpression(publicProps)));
         }
 
-        if (publicMethods.length) {
+        if (!keys[KEY_METHODS] && publicMethods.length) {
             extraBody.push(addClassStaticMember(className, KEY_METHODS, t.valueToNode(publicMethods)));
+        }
+      
+        if (!keys[KEY_RENDER]) {
+            extraBody.push(injectRenderer(className, path, state));
         }
 
         return extraBody;
@@ -92,18 +142,13 @@ module.exports = function (babel) {
             },
             ClassDeclaration(path, state) {
                 const className = path.get('id.name').node;
-                const extraBody = transformClassBody.call(this, className, path.get('body'), state);
 
                 if (state.opts.componentName && state.opts.componentName.toLowerCase() !== className.toLowerCase()) {
                     throw path.buildCodeFrameError("For a component bundle, the className must match the folder name");
                 }
 
-                if (path.inList) {
-                    path.insertAfter(extraBody);
-                } else {
-                    const root = path.findParent((p) => p.isProgram());
-                    root.pushContainer('body', extraBody);
-                }
+                const extraBody = transformClassBody.call(this, className, path.get('body'), state);
+                path.getStatementParent().insertAfter(extraBody);
             }
         }
     };

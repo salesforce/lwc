@@ -47,7 +47,6 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.templateUsedProps = usedIdentifiers;
 ClassAndTemplate.tagName = 'fixtures-classandtemplate';
 ClassAndTemplate.publicProps = {
     min: DefaultMinValue,
@@ -55,5 +54,6 @@ ClassAndTemplate.publicProps = {
     label: null,
     title: null
 };
+ClassAndTemplate.templateUsedProps = usedIdentifiers;
 
 export default ClassAndTemplate;

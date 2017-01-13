@@ -22,7 +22,6 @@
     "babel-plugin-transform-class-properties": "^6.18.0",
     "babel-plugin-transform-raptor-class": "^0.0.44",
     "babel-plugin-transform-raptor-template": "^0.0.44",
-    "babel-plugin-transform-raptor-renderer": "^0.0.44",
     "raptor-html-cleanup-transform": "^0.0.44",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
