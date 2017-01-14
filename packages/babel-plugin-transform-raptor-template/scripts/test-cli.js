@@ -11,7 +11,7 @@ import plugin from '../src/index';
 const testSrc = `
 <template>
     <section>
-        <p d:class="foo-bar"> {yesno}</p>
+        <a bind:onclick="handleClick" bind:onmouseover="handleMouseOver"> {test}</a>
     </section>
 </template>
 

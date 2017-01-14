@@ -4,7 +4,9 @@ import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, rem
 import { isTopLevelProp, parseStyles, toCamelCase } from './utils';
 import { addDependency } from './metadata';
 
+const VM_INSTANCE = CONST.VM_INSTANCE;
 const DIRECTIVES = CONST.DIRECTIVES;
+const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
@@ -12,8 +14,17 @@ export default function ({ types: t, template }) {
 
     // -- Helpers ------------------------------------------
 
-    const exportsDefaultTemplate = template(`export default function ({ ${CONST.RENDER_PRIMITIVE_KEYS} }) { return BODY; }`, { sourceType: 'module' });
-    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier('this'), path.node));
+    const exportsDefaultTemplate = template(`
+        const memoized = Symbol();
+        export default function (${API_PARAM}, ${VM_INSTANCE}) { 
+            const r = o[memoized] || (o[memoized] = {});
+            return BODY; 
+        }
+    `, { sourceType: 'module' });
+    const memoizeTemplate = template('r.id || (r.id = id($api, $vm))');
+    // TODO Use the next function in the memoize (less verbose)
+    const anonymousFnc = template('function (api, ${VM_INSTANCE}) { return FNC }'); 
+    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier(VM_INSTANCE), path.node));
     const isWithinJSXExpression = (path) => path.find(p => p.isJSXExpressionContainer());
 
     const BoundThisVisitor = {
@@ -38,6 +49,7 @@ export default function ({ types: t, template }) {
         }
     };
 
+    
    // -- Plugin ------------------------------------------
     return {
         name: 'raptor-template',
@@ -49,7 +61,6 @@ export default function ({ types: t, template }) {
             Program: {
                 enter(path) {
                     validateTemplateRootFormat(path);
-
                     const expression = path.get('body.0.expression');
                     const children = expression.get('children');
                     const filteredChildren = children.filter((c) => !t.isJSXText(c));
@@ -60,15 +71,15 @@ export default function ({ types: t, template }) {
 
                     // Remove  <template> node
                     expression.replaceWith(t.expressionStatement(filteredChildren[0]));
-
-                    // Add exports declaration
-                    const exportDeclaration = exportsDefaultTemplate({ BODY: expression });
-                    path.node.body.unshift(exportDeclaration);
-
-                    // Delete remaining nodes
-                    expression.remove();
                 },
                 exit (path, state) {
+                    // Add exports declaration
+                    const expression = path.get('body.0.expression');
+                    const exportDeclaration = exportsDefaultTemplate({ BODY: expression });
+
+                    path.pushContainer('body', exportDeclaration);
+                    expression.remove();
+
                     // Generate used identifiers
                     const usedIds = state.file.metadata.usedIdentifiers || {};
                     const usedKeys = Object.keys(usedIds);
@@ -198,8 +209,8 @@ export default function ({ types: t, template }) {
 
     function transformBindingLiteralOnScope(onForScope, literal) {
         if (!isInForScope(onForScope, literal)) {
-            const computed =  needsComputedCheck(literal);
-            return t.memberExpression(t.identifier('this'), computed ? t.stringLiteral(literal) : t.identifier(literal), computed);
+            const computed = needsComputedCheck(literal);
+            return t.memberExpression(t.identifier(VM_INSTANCE), computed ? t.stringLiteral(literal) : t.identifier(literal), computed);
         }
 
         return t.identifier(literal);
@@ -262,7 +273,7 @@ export default function ({ types: t, template }) {
                     const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
                     const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(t.identifier(ITERATOR), [t.memberExpression(t.identifier('this'), t.identifier(forSyntax.for)), func]);
+                    const expr = t.callExpression(t.identifier(ITERATOR), [t.memberExpression(t.identifier(VM_INSTANCE), t.identifier(forSyntax.for)), func]);
 
                     elems.push(expr);
                     hasForLoopDirective = true;
@@ -406,6 +417,21 @@ export default function ({ types: t, template }) {
         return groupAndNormalizeProps(attribs); // Group attributes and generate directives
     }
 
+    function memoizeSubtree(expression, path) {
+        const root = path.find((path) => path.isProgram());
+        const id = path.scope.generateUidIdentifier("m");
+        const m = memoizeTemplate({ id: id });
+
+        const fnc = t.functionExpression(null, [t.identifier(API_PARAM), t.identifier(VM_INSTANCE)], t.blockStatement([t.returnStatement(expression)]));
+        const hoistedMemoization = t.variableDeclaration('const', [
+           t.variableDeclarator(id, fnc)
+        ]);
+        
+        root.pushContainer('body', hoistedMemoization);
+        return m.expression;
+    }
+
+
     function convertAttribute(node, path, state) {
         let valueNode = cleanAttributeValue(node);
         let nameNode = cleanAttributeName(node);
@@ -436,9 +462,8 @@ export default function ({ types: t, template }) {
         * assign:onclick="handleClick => this.handleClick
         */
         if (nameNode._directive === DIRECTIVES.bind && t.isMemberExpression(valueNode)) {
-            valueNode = t.callExpression(
-                t.memberExpression(valueNode, t.identifier('bind')), [t.identifier('this')]
-            );
+            const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(VM_INSTANCE)]);
+            valueNode = memoizeSubtree(bindExpression, path);
         }
 
         // Parse style

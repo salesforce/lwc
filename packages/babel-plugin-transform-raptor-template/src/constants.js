@@ -4,6 +4,8 @@ export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
 
 export const DIRECTIVE_SYMBOL = ':';
+export const VM_INSTANCE = '$vm';
+export const API_PARAM = '$api';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
