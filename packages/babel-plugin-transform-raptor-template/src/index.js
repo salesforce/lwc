@@ -1,31 +1,33 @@
 /* eslint-env node */
 import * as CONST from './constants';
-import { customScope, addScopeForLoop, getVarsScopeForLoop, hasScopeForLoop, removeScopeForLoop } from './for-scope';
-import { isTopLevelProp, parseStyles, toCamelCase } from './utils';
+import customScope from './for-scope';
+import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild } from './utils';
 import { addDependency } from './metadata';
 
-const VM_INSTANCE = CONST.VM_INSTANCE;
 const DIRECTIVES = CONST.DIRECTIVES;
+const CMP_INSTANCE = CONST.CMP_INSTANCE;
 const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
-const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
+const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
-
     // -- Helpers ------------------------------------------
-
+    
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
-        export default function (${API_PARAM}, ${VM_INSTANCE}) { 
-            const r = o[memoized] || (o[memoized] = {});
-            return BODY; 
+        export default function (${API_PARAM}, ${CMP_INSTANCE}) { 
+            const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
+            return STATEMENT; 
         }
     `, { sourceType: 'module' });
-    const memoizeTemplate = template('r.id || (r.id = id($api, $vm))');
-    // TODO Use the next function in the memoize (less verbose)
-    const anonymousFnc = template('function (api, ${VM_INSTANCE}) { return FNC }'); 
-    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier(VM_INSTANCE), path.node));
+
+    const memoizeLookup = template(`m.ID || (m.ID = ID(${API_PARAM}, ${CMP_INSTANCE}))`);
+    const memoizeFunction = template(`const ID = function (${API_PARAM}, ${CMP_INSTANCE}) { return STATEMENT; }`); 
+
+    const applyPrimitive = (primitive) => t.identifier(`${API_PARAM}.${primitive}`);
+    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path) => path.find(p => p.isJSXExpressionContainer());
+    const getMemberFromNodeStringLiteral = (node, i = 0) => node.value.split('.')[i];
 
     const BoundThisVisitor = {
         ThisExpression(path) {
@@ -48,9 +50,8 @@ export default function ({ types: t, template }) {
             }
         }
     };
-
     
-   // -- Plugin ------------------------------------------
+   // -- Plugin Visitor ------------------------------------------
     return {
         name: 'raptor-template',
         inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
@@ -60,22 +61,23 @@ export default function ({ types: t, template }) {
         visitor: {
             Program: {
                 enter(path) {
-                    validateTemplateRootFormat(path);
-                    const expression = path.get('body.0.expression');
-                    const children = expression.get('children');
-                    const filteredChildren = children.filter((c) => !t.isJSXText(c));
+                    validateTemplateRootFormat(path); 
 
-                    if (filteredChildren.length !== 1) {
+                    // Find children of the root <template> node
+                    const rootNode = path.get('body.0.expression'); // <template>
+                    const rootChildren = rootNode.get('children').filter((c) => !t.isJSXText(c));
+
+                    if (rootChildren.length !== 1) {
                         throw path.buildCodeFrameError('A component must have only one root element');
                     }
 
-                    // Remove  <template> node
-                    expression.replaceWith(t.expressionStatement(filteredChildren[0]));
+                    // Replace <template> by its child
+                    rootNode.replaceWith(t.expressionStatement(rootChildren[0]));
                 },
                 exit (path, state) {
                     // Add exports declaration
                     const expression = path.get('body.0.expression');
-                    const exportDeclaration = exportsDefaultTemplate({ BODY: expression });
+                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: expression });
 
                     path.pushContainer('body', exportDeclaration);
                     expression.remove();
@@ -97,28 +99,25 @@ export default function ({ types: t, template }) {
                 enter(path, state) {
                     const openingNode = path.get('openingElement').node;
                     openingNode.attributes = openingNode.attributes ? buildOpeningElementAttributes(openingNode.attributes, path, state) : t.nullLiteral();
+                    
                     const directiveRef = openingNode.attributes._directives;
                     const forExpr = directiveRef && directiveRef[MODIFIERS.for];
 
                     // Add scope while going down
                     if (forExpr) {
                         const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
-                        addScopeForLoop(path, parseForStatement(forValue));
+                        customScope.registerScopePathBindings(path, parseForStatement(forValue).args);
                     }
                 },
                 exit(path, status) {
                     const callExpr = buildElementCall(path.get('openingElement'), status);
 
-                    if (callExpr.arguments.length >= 3) {
-                        // Dependency on babel-plugin-transform-template-jsx generator to prettify it
-                        callExpr._prettyCall = true;
-                    }
-
+                    prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
 
                     // Remove scope while going up
-                    if (hasScopeForLoop(path)) {
-                        removeScopeForLoop(path);
+                    if (customScope.hasScope(path)) {
+                        customScope.removeScopePathBindings(path);
                     }
                 }
             },
@@ -130,12 +129,11 @@ export default function ({ types: t, template }) {
             // Transform container expressions from {foo} => {this.foo}
             Identifier(path, state) {
                 path.stop();
-                if (isWithinJSXExpression(path) && !state.customScope.hasBinding(path.node.name)) {
+                if (isWithinJSXExpression(path) && !customScope.hasBinding(path.node.name)) {
                     addDependency(path.node, state, t);
                     applyThisToIdentifier(path);
                 }
             },
-            
             // Transform container expressions from {foo.x.y} => {this.foo.x.y}
             MemberExpression(path, state) {
                 if (isWithinJSXExpression(path)) {
@@ -146,80 +144,27 @@ export default function ({ types: t, template }) {
         }
     };
 
-    // Parts of this code were levaraged from:
-    // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
-    function cleanJSXElementLiteralChild(args, child) {
-        if (t.isJSXText(child)) {
-            const lines = child.value.split(/\r\n|\n|\r/);
-            let lastNonEmptyLine = 0;
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].match(/[^ \t]/)) {
-                    lastNonEmptyLine = i;
-                }
-            }
-
-            let str = '';
-            for (let _i = 0; _i < lines.length; _i++) {
-                const line = lines[_i];
-                const isFirstLine = _i === 0;
-                const isLastLine = _i === lines.length - 1;
-                const isLastNonEmptyLine = _i === lastNonEmptyLine;
-
-                let trimmedLine = line.replace(/\t/g, ' ');
-
-                if (!isFirstLine) {
-                    trimmedLine = trimmedLine.replace(/^[ ]+/, '');
-                }
-
-                if (!isLastLine) {
-                    trimmedLine = trimmedLine.replace(/[ ]+$/, '');
-                }
-
-                if (trimmedLine) {
-                    if (!isLastNonEmptyLine) {
-                        trimmedLine += ' ';
-                    }
-
-                    str += trimmedLine;
-                }
-            }
-
-            if (str) {
-                args.push(t.stringLiteral(str));
-            }
-        } else {
-            args.push(child);
+    function prettyPrintExpr (callExpr) {
+        // Dependency on babel-plugin-transform-template-jsx generator to prettify it
+        if (callExpr.arguments.length >= 3) {
+            callExpr._prettyCall = true;
         }
-
-        return args;
     }
 
-    function needsComputedCheck(literal) {
-        //TODO: Look in the spec to the valid values
+     function needsComputedCheck(literal) {
+        // TODO: Look in the spec to the valid values
         return literal.indexOf('-') !== -1;
     }
 
-    function isInForScope(onForScope, node) {
-        let literal = t.isMemberExpression(node) ? node.object.name : node;
-        literal = typeof literal === 'string' ? literal.split('.').shift() : '';
-        literal = literal.split(' ').pop();
-
-        return onForScope.includes(literal);
-    }
-
-    function transformBindingLiteralOnScope(onForScope, literal) {
-        if (!isInForScope(onForScope, literal)) {
-            const computed = needsComputedCheck(literal);
-            return t.memberExpression(t.identifier(VM_INSTANCE), computed ? t.stringLiteral(literal) : t.identifier(literal), computed);
-        }
-
-        return t.identifier(literal);
+    function transformBindingLiteral(literal) {
+        const computed = needsComputedCheck(literal);
+        const member = computed ? t.stringLiteral(literal) : t.identifier(literal);
+        return t.memberExpression(t.identifier(CMP_INSTANCE), member, computed);
     }
 
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, state) {
         const children = [];
-        const onForScope = getVarsScopeForLoop(path);
         let hasForLoopDirective = false;
         let elems = [];
 
@@ -228,56 +173,42 @@ export default function ({ types: t, template }) {
 
         for (let i = 0; i < children.length; i++) {
             let child = children[i];
+            let nextChild = children[i + 1]
+            let directives = child._directives;
 
             if (t.isJSXEmptyExpression(child) || child._processed) {
                 continue;
             }
 
             if (t.isJSXExpressionContainer(child)) {
-                child = child.expression; // remove the JSXContainer <wrapper></wrapper>
-                if (!isInForScope(onForScope, child.name)) {
-                    addDependency(child, state, t);
-                }
-
-                // If the expressions are not in scope we need to add the `this` memberExpression:
-                child = t.callExpression(t.identifier('s'), [child]);
+                // remove the JSXContainer <wrapper></wrapper>
+                child = t.callExpression(applyPrimitive(TEXT), [child.expression]);
             }
 
-            if (t.isCallExpression(child) && child._directives) {
-                if (child._directives[MODIFIERS.else]) {
-                    throw new Error('Else statement found before if statement');
-                }
-
-                const directives = child._directives;
-
-                if (directives[MODIFIERS.if]) {
-                    let nextChild = children[i + 1];
-                    const ifExpr = directives[MODIFIERS.if];
-                    const ifValue = t.isMemberExpression(ifExpr) ? ifExpr.property.name : ifExpr.value || ifExpr.name;
-                    const testExpression = transformBindingLiteralOnScope(onForScope, ifValue);
-                    const hasElse = nextChild && nextChild._directives && nextChild._directives[MODIFIERS.else];
-
-                    if (hasElse) {
-                        nextChild._processed = true;
-                    } else {
-                        nextChild = t.callExpression(t.identifier(EMPTY), []);
-                    }
-
-                    elems.push(t.conditionalExpression(testExpression, child, nextChild));
-                    continue;
+            if (t.isCallExpression(child) && directives) {
+                if (directives[MODIFIERS.else]) {
+                    throw path.buildCodeFrameError('Else statement found before if statement');
                 }
 
                 if (directives[MODIFIERS.for]) {
+                    if (directives[MODIFIERS.if]) {
+                        child = applyIfDirectiveToNode(directives[MODIFIERS.if], child, nextChild);
+                    }
+
                     const forExpr = directives[MODIFIERS.for];
                     const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
                     const forSyntax = parseForStatement(forValue);
                     const block = t.blockStatement([t.returnStatement(child)]);
-                    const func = t.arrowFunctionExpression(forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(t.identifier(ITERATOR), [t.memberExpression(t.identifier(VM_INSTANCE), t.identifier(forSyntax.for)), func]);
+                    const func = t.functionExpression(null, forSyntax.args.map((a) => t.identifier(a)), block);
+                    const expr = t.callExpression(applyPrimitive(ITERATOR), [t.memberExpression(t.identifier(CMP_INSTANCE), t.identifier(forSyntax.for)), func]);
 
                     elems.push(expr);
                     hasForLoopDirective = true;
+                    continue;
+                }
 
+                if (directives[MODIFIERS.if]) {
+                    elems.push(applyIfDirectiveToNode(directives[MODIFIERS.if], child, nextChild));
                     continue;
                 }
             }
@@ -286,13 +217,22 @@ export default function ({ types: t, template }) {
         }
 
         elems = t.arrayExpression(elems);
-        return hasForLoopDirective ? t.callExpression(t.identifier(FLATTENING), [elems]): elems;
+        return hasForLoopDirective ? t.callExpression(applyPrimitive(FLATTENING), [elems]): elems;
+    }
+
+    function applyIfDirectiveToNode(directive, node, nextNode) {
+        if (nextNode && nextNode._directives && nextNode._directives[MODIFIERS.else]) {
+            nextNode._processed = true;
+        } else {
+            nextNode = t.callExpression(applyPrimitive(EMPTY), []);
+        }
+        return t.conditionalExpression(directive, node, nextNode);
     }
 
     function parseForStatement(attrValue) {
         const inMatch = attrValue.match(/(.*?)\s+(?:in|of)\s+(.*)/);
         if (!inMatch) {
-            throw new Error('for syntax is not correct');
+            throw new Error('For-loop value syntax is not correct');
         }
 
         const forSyntax = {
@@ -318,7 +258,7 @@ export default function ({ types: t, template }) {
 
     function buildElementCall(path, state) {
         const tag = convertJSXIdentifier(path.node.name, path, state);
-        const exprTag = t.identifier(tag._virtualCmp ? VIRTUAL_ELEMENT : CREATE_ELEMENT);
+        const exprTag = applyPrimitive(tag._virtualCmp ? VIRTUAL_ELEMENT : CREATE_ELEMENT);
         const children = buildChildren(path.parent, path, state);
         const attribs = path.node.attributes;
 
@@ -388,7 +328,7 @@ export default function ({ types: t, template }) {
         props.forEach((prop) => {
             const key = prop.key;
             const directive = key._directive;
-            let name = key.value || key.name; // Identifier | StringLiteral
+            let name = key.value || key.name; // Literal | StringLiteral
 
             if (isTopLevelProp(name)) { // top-level special props
                 newProps.push(prop);
@@ -399,7 +339,6 @@ export default function ({ types: t, template }) {
                 addProperty(CONST.DATASET, prop);
             } else {
                 const topLevelName = key._on ? 'on' : CONST.PROPS;
-
                 prop.key = t.identifier(toCamelCase(name));
                 addProperty(topLevelName, prop);
             }
@@ -420,40 +359,41 @@ export default function ({ types: t, template }) {
     function memoizeSubtree(expression, path) {
         const root = path.find((path) => path.isProgram());
         const id = path.scope.generateUidIdentifier("m");
-        const m = memoizeTemplate({ id: id });
+        const m = memoizeLookup({ ID: id });
 
-        const fnc = t.functionExpression(null, [t.identifier(API_PARAM), t.identifier(VM_INSTANCE)], t.blockStatement([t.returnStatement(expression)]));
-        const hoistedMemoization = t.variableDeclaration('const', [
-           t.variableDeclarator(id, fnc)
-        ]);
+        const hoistedMemoization = memoizeFunction({ ID: id, STATEMENT: expression });
+
+        //t.variableDeclaration('const', [t.variableDeclarator(id, t.functionExpression(null, [t.identifier(API_PARAM), t.identifier(CMP_INSTANCE)], t.blockStatement([t.returnStatement(expression)])))]);
         
         root.pushContainer('body', hoistedMemoization);
         return m.expression;
     }
-
 
     function convertAttribute(node, path, state) {
         let valueNode = cleanAttributeValue(node);
         let nameNode = cleanAttributeName(node);
         let nameKey = t.isIdentifier(nameNode) ? 'name' : 'value'; // Identifier | StringLiteral
         let rawName = nameNode[nameKey];
-
-        if (nameNode._directive) {
-            const onScope = getVarsScopeForLoop(path);
-
-            if (!isInForScope(onScope, valueNode.value)) {
-                addDependency(valueNode.value, state, t);
-            }
-
-            if (t.isStringLiteral(valueNode)) {
-                valueNode = transformBindingLiteralOnScope(onScope, valueNode.value); // foo => this.foo
+        let dir = nameNode._directive;
+        let rootMember;
+        
+        // For directives, bound the string attribute value into a member expression
+        // foo.x => this.foo.x
+        if (dir && t.isStringLiteral(valueNode)) {
+            if (dir === DIRECTIVES.repeat) { 
+                // Special parse for `repeat:for="item of items"`
+                const forStatement = parseForStatement(valueNode.value);
+                rootMember = forStatement.for;
+                // valueNode = transformBindingLiteral(rootMember);
+            } else {
+                rootMember = getMemberFromNodeStringLiteral(valueNode);
+                valueNode = transformBindingLiteral(valueNode.value);
             }
         }
 
-        // @dval: Maybe move this code to cleanAttributeName?
-        if (rawName.indexOf(DIRECTIVES.on) === 0 && CONST.EVENT_KEYS[rawName.substring(2)]) {
-            rawName = rawName.substring(2);
-            nameNode[nameKey] = nameNode._on = rawName;
+        if (dir === 'bind:on') {
+            nameNode._on = rawName;
+            dir = DIRECTIVES.bind;
         }
 
         /*
@@ -461,14 +401,19 @@ export default function ({ types: t, template }) {
         * bind:onclick="handleClick => this.handleClick.bind(this)
         * assign:onclick="handleClick => this.handleClick
         */
-        if (nameNode._directive === DIRECTIVES.bind && t.isMemberExpression(valueNode)) {
-            const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(VM_INSTANCE)]);
+        if (dir === DIRECTIVES.bind && t.isMemberExpression(valueNode)) {
+            const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
             valueNode = memoizeSubtree(bindExpression, path);
+            rootMember = null;
         }
 
         // Parse style
         if (nameNode.name === 'style') {
             valueNode = t.valueToNode(parseStyles(valueNode.value));
+        }
+
+        if (rootMember && !customScope.hasBinding(rootMember)) {
+            addDependency(rootMember, state, t);
         }
 
         return t.objectProperty(nameNode, valueNode);
@@ -477,9 +422,15 @@ export default function ({ types: t, template }) {
     function cleanAttributeName(node) {
         if (t.isJSXNamespacedName(node.name)) {
             const nsNode = node.name;
-            const directive = nsNode.namespace.name; // {directive}:{attr} <- get the directive part
+            let directive = nsNode.namespace.name; // {directive}:{attr} <- get the directive part
             if (directive in DIRECTIVES) {
-                const literal = t.stringLiteral(nsNode.name.name);
+                let attr = nsNode.name.name;
+                if (attr.indexOf(DIRECTIVES.on) === 0 && CONST.EVENT_KEYS[attr.substring(2)]) {
+                    attr = attr.substring(2);
+                    directive = 'bind:on';
+                }
+
+                const literal = t.stringLiteral(attr);
                 literal._directive = directive; 
                 return literal;
             } else {
@@ -499,7 +450,6 @@ export default function ({ types: t, template }) {
         if (t.isStringLiteral(expression) && !t.isJSXExpressionContainer(node.value)) {
             expression.value = expression.value.replace(/\n\s+/g, ' ');
         }
-
         return expression;
     }
 

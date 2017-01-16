@@ -4,7 +4,7 @@ export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
 
 export const DIRECTIVE_SYMBOL = ':';
-export const VM_INSTANCE = '$vm';
+export const CMP_INSTANCE = '$cmp';
 export const API_PARAM = '$api';
 
 export const DIRECTIVES = {
@@ -32,7 +32,7 @@ export const RENDER_PRIMITIVES = {
     EMPTY           : 'e',
     CREATE_ELEMENT  : 'h',
     VIRTUAL_ELEMENT : 'v',
-    STRING          : 's',
+    TEXT            : 's',
 };
 
 export const RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);

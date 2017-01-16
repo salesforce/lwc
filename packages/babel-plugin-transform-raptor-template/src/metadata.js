@@ -6,19 +6,12 @@
 * since this module is only for collecting metadata dependencies
 */
 export function addDependency(node, state, t) {
+    const meta = state.file.metadata;
     let name = t.isMemberExpression(node) ? node.object.name : node.name || node;
-    
     if (typeof name !== 'string') {
         return;
     }
 
-    name = name.split('.').shift();
-
-    const meta = state.file.metadata;
     meta.usedIdentifiers = meta.usedIdentifiers || {};
-    name = name.split(' ').pop();
-
-    if (name !== 'this') {
-        meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
-    }
+    meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
 }

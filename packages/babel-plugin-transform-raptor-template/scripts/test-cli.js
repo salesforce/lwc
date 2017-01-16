@@ -11,12 +11,19 @@ import plugin from '../src/index';
 const testSrc = `
 <template>
     <section>
-        <a bind:onclick="handleClick" bind:onmouseover="handleMouseOver"> {test}</a>
+        <ul>
+            <li repeat:for="item of items" eval:if="item.isHidden">{item.foo}</li> 
+        </ul>
+        <a data-foo="x" href="#" bind:onclick="handleClick"></a>
     </section>
 </template>
 
 `;
+/*
 
+
+
+*/
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
 console.log('>> Source --------------------------------------------------');
