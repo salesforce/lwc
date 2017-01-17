@@ -36,12 +36,10 @@ export default function ({ types: t, template }) {
         Identifier: {
             exit(path, state) {
                 path.stop();
-
                 if (state.customScope.hasBinding(path.node.name)) {
                     state.isThisApplied = true;
                     return;
                 }
-
                 if (!state.isThisApplied) {
                     state.isThisApplied = true;
                     addDependency(path.node, state, t);
@@ -55,13 +53,11 @@ export default function ({ types: t, template }) {
     return {
         name: 'raptor-template',
         inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
-        pre() { 
-            this.customScope = customScope; 
-        },
+        pre() { this.customScope = customScope },
         visitor: {
             Program: {
                 enter(path) {
-                    validateTemplateRootFormat(path); 
+                    validateTemplateRootFormat(path);
 
                     // Find children of the root <template> node
                     const rootNode = path.get('body.0.expression'); // <template>
@@ -76,11 +72,11 @@ export default function ({ types: t, template }) {
                 },
                 exit (path, state) {
                     // Add exports declaration
-                    const expression = path.get('body.0.expression');
-                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: expression });
-
-                    path.pushContainer('body', exportDeclaration);
-                    expression.remove();
+                    const body = path.node.body;
+                    const pos = body.findIndex(c => t.isExpressionStatement(c) && c.expression._jsxElement);
+                    const rootElement = path.get(`body.${pos}.expression`);
+                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: rootElement });
+                    rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
                     const usedIds = state.file.metadata.usedIdentifiers || {};
@@ -97,16 +93,15 @@ export default function ({ types: t, template }) {
             },
             JSXElement: {
                 enter(path, state) {
-                    const openingNode = path.get('openingElement').node;
-                    openingNode.attributes = openingNode.attributes ? buildOpeningElementAttributes(openingNode.attributes, path, state) : t.nullLiteral();
+                    const openElmt = path.get('openingElement').node;
+                    const openElmtAttrs = openElmt.attributes;
+                    const buildAttrs = openElmtAttrs ? buildOpeningElementAttributes(openElmtAttrs, path, state) : t.nullLiteral();
+                    const scoped = buildAttrs._meta && buildAttrs._meta.scoped;
                     
-                    const directiveRef = openingNode.attributes._directives;
-                    const forExpr = directiveRef && directiveRef[MODIFIERS.for];
-
-                    // Add scope while going down
-                    if (forExpr) {
-                        const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
-                        customScope.registerScopePathBindings(path, parseForStatement(forValue).args);
+                    openElmt.attributes = buildAttrs;
+                    
+                    if (scoped) {
+                        customScope.registerScopePathBindings(path, scoped);
                     }
                 },
                 exit(path, status) {
@@ -114,6 +109,7 @@ export default function ({ types: t, template }) {
 
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
+                    path.node._jsxElement = true;
 
                     // Remove scope while going up
                     if (customScope.hasScope(path)) {
@@ -126,19 +122,19 @@ export default function ({ types: t, template }) {
                     throw path.buildCodeFrameError('Expression evaluation is not allowed');
                 }
             },
+            // Transform container expressions from {foo.x.y} => {this.foo.x.y}
+            MemberExpression(path, state) {
+                if (isWithinJSXExpression(path)) {
+                    path.stop();
+                    path.traverse(BoundThisVisitor, state);
+                }
+            },
             // Transform container expressions from {foo} => {this.foo}
             Identifier(path, state) {
                 path.stop();
                 if (isWithinJSXExpression(path) && !customScope.hasBinding(path.node.name)) {
                     addDependency(path.node, state, t);
                     applyThisToIdentifier(path);
-                }
-            },
-            // Transform container expressions from {foo.x.y} => {this.foo.x.y}
-            MemberExpression(path, state) {
-                if (isWithinJSXExpression(path)) {
-                    path.stop();
-                    path.traverse(BoundThisVisitor, state);
                 }
             }
         }
@@ -156,10 +152,29 @@ export default function ({ types: t, template }) {
         return literal.indexOf('-') !== -1;
     }
 
-    function transformBindingLiteral(literal) {
+    function transformBindingLiteral(literal, inScope) {
+        if (inScope) {
+            return t.identifier(literal);
+        }
         const computed = needsComputedCheck(literal);
         const member = computed ? t.stringLiteral(literal) : t.identifier(literal);
         return t.memberExpression(t.identifier(CMP_INSTANCE), member, computed);
+    }
+
+    function applyRepeatDirectiveToNode(directives, node) {
+        const forExpr = directives[MODIFIERS.for];
+        const args = directives.inForScope ? directives.inForScope.map((a) => t.identifier(a)) : [];
+        const func = t.functionExpression(null, args, t.blockStatement([t.returnStatement(node)]));
+        return t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
+    }
+
+    function applyIfDirectiveToNode(directive, node, nextNode) {
+        if (nextNode && nextNode._meta.modifiers[MODIFIERS.else]) {
+            nextNode._processed = true;
+        } else {
+            nextNode = t.callExpression(applyPrimitive(EMPTY), []);
+        }
+        return t.conditionalExpression(directive, node, nextNode);
     }
 
     // Convert JSX AST into regular javascript AST
@@ -174,7 +189,7 @@ export default function ({ types: t, template }) {
         for (let i = 0; i < children.length; i++) {
             let child = children[i];
             let nextChild = children[i + 1]
-            let directives = child._directives;
+            let directives = child._meta;
 
             if (t.isJSXEmptyExpression(child) || child._processed) {
                 continue;
@@ -195,14 +210,7 @@ export default function ({ types: t, template }) {
                         child = applyIfDirectiveToNode(directives[MODIFIERS.if], child, nextChild);
                     }
 
-                    const forExpr = directives[MODIFIERS.for];
-                    const forValue = t.isMemberExpression(forExpr) ? forExpr.property.name : forExpr.value || forExpr.name;
-                    const forSyntax = parseForStatement(forValue);
-                    const block = t.blockStatement([t.returnStatement(child)]);
-                    const func = t.functionExpression(null, forSyntax.args.map((a) => t.identifier(a)), block);
-                    const expr = t.callExpression(applyPrimitive(ITERATOR), [t.memberExpression(t.identifier(CMP_INSTANCE), t.identifier(forSyntax.for)), func]);
-
-                    elems.push(expr);
+                    elems.push(applyRepeatDirectiveToNode(directives, child));
                     hasForLoopDirective = true;
                     continue;
                 }
@@ -220,25 +228,13 @@ export default function ({ types: t, template }) {
         return hasForLoopDirective ? t.callExpression(applyPrimitive(FLATTENING), [elems]): elems;
     }
 
-    function applyIfDirectiveToNode(directive, node, nextNode) {
-        if (nextNode && nextNode._directives && nextNode._directives[MODIFIERS.else]) {
-            nextNode._processed = true;
-        } else {
-            nextNode = t.callExpression(applyPrimitive(EMPTY), []);
-        }
-        return t.conditionalExpression(directive, node, nextNode);
-    }
-
     function parseForStatement(attrValue) {
         const inMatch = attrValue.match(/(.*?)\s+(?:in|of)\s+(.*)/);
         if (!inMatch) {
             throw new Error('For-loop value syntax is not correct');
         }
 
-        const forSyntax = {
-            for: null,
-            args: []
-        };
+        const forSyntax = { for: null, args: [] };
         const alias = inMatch[1].trim();
         const iteratorMatch = alias.match(/\(([^,]*),([^,]*)(?:,([^,]*))?\)/);
         forSyntax.for = inMatch[2].trim();
@@ -265,7 +261,7 @@ export default function ({ types: t, template }) {
         const args = [tag, attribs, children];
 
         const createElementExpression = t.callExpression(exprTag, args);
-        createElementExpression._directives = attribs._directives; // Push directives up
+        createElementExpression._meta = attribs._meta; // Push metadata up
 
         return createElementExpression;
     }
@@ -273,7 +269,7 @@ export default function ({ types: t, template }) {
     function convertJSXIdentifier(node, path, state) {
         // <a.b.c/>
         if (t.isJSXMemberExpression(node)) { 
-            throw Error('We do not suport member expressions for now.');
+            throw path.buildCodeFrameError('Member expressions not supported');
         }
 
         // <a:b/>
@@ -307,150 +303,180 @@ export default function ({ types: t, template }) {
         return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else;
     }
 
-    function groupAndNormalizeProps(props) {
-        const newProps = [];
-        const directives = {};
+    function transformProp(prop, scopedVars, path, state) {
+        const meta = prop._meta;
+        const directive = meta.directive;
+        let valueName = prop.key.value || prop.key.name; // Identifier|Literal
+        let valueNode = prop.value;
+        let inScope = false;
 
-        const addProperty = (topLevelName, value) => {
-            let topLevel = newProps.find(prop => prop.key.name === topLevelName);
+        if (directive) {
+            let rootMember;
+            if (t.isStringLiteral(valueNode)) {
+                rootMember = getMemberFromNodeStringLiteral(valueNode);
+                inScope = scopedVars.indexOf(rootMember) !== -1;
+                valueNode = transformBindingLiteral(valueNode.value, inScope);
 
-            if (!topLevel) {
-                topLevel = t.objectProperty(
-                    t.identifier(topLevelName),
-                    t.objectExpression([])
-                );
-                newProps.push(topLevel);
+                 if (!inScope && directive === DIRECTIVES.set || directive === DIRECTIVES.repeat) {
+                    addDependency(rootMember, state, t);
+                }
             }
 
-            topLevel.value.properties.push(value);
+            if (directive === DIRECTIVES.bind) {
+                const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
+                valueNode = memoizeSubtree(bindExpression, path);
+            }
+
+        } else {
+            if (valueName === 'style') {
+                valueNode = t.valueToNode(parseStyles(prop.value.value));
+            }
+        }
+        
+        if (isDataAttributeName(valueName)) {
+            meta.dataset = true;
+            valueName = t.stringLiteral(fomatDataAttributeName(valueName));
+        } else {
+            valueName = t.identifier(toCamelCase(valueName));
+        }
+
+        prop.key = valueName;
+        prop.value = valueNode;
+        return prop;
+    }
+
+    function transformAndGroup(props, elementMeta, path, state) {
+        const finalProps = [];
+        const propKeys = {};
+
+        function addGroupProp(key, value) {
+            let group = propKeys[key];
+            if (!group) {
+                group = t.objectProperty(t.identifier(key), t.objectExpression([]));
+                finalProps.push(group);
+                propKeys[key] = group;
+            }
+            group.value.properties.push(value);
         }
 
         props.forEach((prop) => {
-            const key = prop.key;
-            const directive = key._directive;
-            let name = key.value || key.name; // Literal | StringLiteral
+            const name = prop.key.value || prop.key.name; // Identifier|Literal
+            const meta = prop._meta;
 
-            if (isTopLevelProp(name)) { // top-level special props
-                newProps.push(prop);
-            } else if (directive && isDirectiveName(name)) {
-                directives[name] = prop.value; 
-            } else if (isDataAttributeName(name)) {
-                prop.key = t.identifier(fomatDataAttributeName(name));
-                addProperty(CONST.DATASET, prop);
-            } else {
-                const topLevelName = key._on ? 'on' : CONST.PROPS;
-                prop.key = t.identifier(toCamelCase(name));
-                addProperty(topLevelName, prop);
+            prop = transformProp(prop, elementMeta.scoped, path, state);
+            let groupName = CONST.PROPS;
+
+            if (isTopLevelProp(name)) {
+                finalProps.push(prop);
+                return;
             }
+
+            if (meta.directive && isDirectiveName(name)) {
+                elementMeta[name] = prop.value;
+                return;
+            }
+
+            if (meta.dataset) {
+                groupName = CONST.DATASET;
+            }
+
+            if (meta.event) {
+                groupName = 'on';
+            }
+
+            addGroupProp(groupName, prop);
         });
 
-        const objExpression = t.objectExpression(newProps);
-        if (Object.keys(directives).length) {
-            objExpression._directives = directives;
-        }
+        const objExpression = t.objectExpression(finalProps);
+        objExpression._meta = elementMeta;
         return objExpression;
     }
 
-    function buildOpeningElementAttributes(attribs, path, state) {
-        attribs = attribs.map((attr) => convertAttribute(attr, path, state));
-        return groupAndNormalizeProps(attribs); // Group attributes and generate directives
+    function groupAttrMetadata(metaGroup, meta) {
+        if (meta.directive) {
+            metaGroup.directives[meta.directive] = meta.directive;
+        }
+        if (meta.modifier) {
+            metaGroup.modifiers[meta.modifier] = meta.modifier;
+        }
+        if (meta.inForScope) {
+            metaGroup.inForScope = meta.inForScope;
+            metaGroup.scoped.push(...meta.inForScope);
+        }
+    }
+
+    function buildOpeningElementAttributes(attributes, path, state) {
+        const metaGroup = { directives: {}, modifiers: {}, scoped: customScope.getAllBindings() };
+        attributes = attributes.map((attr) => {
+            const { meta, node } = normalizeAttribute(attr, path, state);
+            groupAttrMetadata(metaGroup, meta);
+            return node;
+        });
+        return transformAndGroup(attributes, metaGroup, path, state); // Group attributes and generate directives
     }
 
     function memoizeSubtree(expression, path) {
         const root = path.find((path) => path.isProgram());
         const id = path.scope.generateUidIdentifier("m");
         const m = memoizeLookup({ ID: id });
-
         const hoistedMemoization = memoizeFunction({ ID: id, STATEMENT: expression });
-
-        //t.variableDeclaration('const', [t.variableDeclarator(id, t.functionExpression(null, [t.identifier(API_PARAM), t.identifier(CMP_INSTANCE)], t.blockStatement([t.returnStatement(expression)])))]);
-        
-        root.pushContainer('body', hoistedMemoization);
+        root.unshiftContainer('body', hoistedMemoization);
         return m.expression;
     }
 
-    function convertAttribute(node, path, state) {
-        let valueNode = cleanAttributeValue(node);
-        let nameNode = cleanAttributeName(node);
-        let nameKey = t.isIdentifier(nameNode) ? 'name' : 'value'; // Identifier | StringLiteral
-        let rawName = nameNode[nameKey];
-        let dir = nameNode._directive;
-        let rootMember;
-        
-        // For directives, bound the string attribute value into a member expression
-        // foo.x => this.foo.x
-        if (dir && t.isStringLiteral(valueNode)) {
-            if (dir === DIRECTIVES.repeat) { 
-                // Special parse for `repeat:for="item of items"`
-                const forStatement = parseForStatement(valueNode.value);
-                rootMember = forStatement.for;
-                // valueNode = transformBindingLiteral(rootMember);
-            } else {
-                rootMember = getMemberFromNodeStringLiteral(valueNode);
-                valueNode = transformBindingLiteral(valueNode.value);
+    function normalizeAttributeName (node) {
+        const meta = { directive: null, modifier: null, event: null, scoped: null };
+    
+        if (t.isJSXNamespacedName(node)) {
+            const dNode = node.namespace;
+            const mNode = node.name;
+      
+            if (dNode.name in DIRECTIVES) {
+                meta.directive = DIRECTIVES[dNode.name];
             }
-        }
-
-        if (dir === 'bind:on') {
-            nameNode._on = rawName;
-            dir = DIRECTIVES.bind;
-        }
-
-        /*
-        * Apply the following transforms for events: 
-        * bind:onclick="handleClick => this.handleClick.bind(this)
-        * assign:onclick="handleClick => this.handleClick
-        */
-        if (dir === DIRECTIVES.bind && t.isMemberExpression(valueNode)) {
-            const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
-            valueNode = memoizeSubtree(bindExpression, path);
-            rootMember = null;
-        }
-
-        // Parse style
-        if (nameNode.name === 'style') {
-            valueNode = t.valueToNode(parseStyles(valueNode.value));
-        }
-
-        if (rootMember && !customScope.hasBinding(rootMember)) {
-            addDependency(rootMember, state, t);
-        }
-
-        return t.objectProperty(nameNode, valueNode);
-    }
-
-    function cleanAttributeName(node) {
-        if (t.isJSXNamespacedName(node.name)) {
-            const nsNode = node.name;
-            let directive = nsNode.namespace.name; // {directive}:{attr} <- get the directive part
-            if (directive in DIRECTIVES) {
-                let attr = nsNode.name.name;
-                if (attr.indexOf(DIRECTIVES.on) === 0 && CONST.EVENT_KEYS[attr.substring(2)]) {
-                    attr = attr.substring(2);
-                    directive = 'bind:on';
-                }
-
-                const literal = t.stringLiteral(attr);
-                literal._directive = directive; 
-                return literal;
-            } else {
-                 throw new Error('Directive does not exist'); 
+      
+            if (mNode.name in MODIFIERS) {
+                meta.modifier = MODIFIERS[mNode.name];
             }
-        } else if (t.isValidIdentifier(node.name.name)) {
-            node.name.type = 'Identifier';
-            return node.name;
+      
+            if (mNode.name.indexOf(DIRECTIVES.on) === 0) {
+                meta.event = mNode.name.substring(2);
+            }
+
+            node = node.name;
+        }
+    
+        if (t.isValidIdentifier(node.name)) {
+            node.type = 'Identifier';
         } else {
-            return t.stringLiteral(node.name.name);
+            node = t.stringLiteral(node.name);
         }
+    
+        // nodeType: Identifier|StringLiteral
+        return { node, meta };
     }
 
-    function cleanAttributeValue(node) {
-        const value = node.value || t.booleanLiteral(true);
-        const expression = t.isJSXExpressionContainer(value) ? value.expression : value;
-        if (t.isStringLiteral(expression) && !t.isJSXExpressionContainer(node.value)) {
-            expression.value = expression.value.replace(/\n\s+/g, ' ');
+     function normalizeAttributeValue(node, meta, path) {
+         node = node || t.booleanLiteral(true);
+         if (t.isJSXExpressionContainer(node)) {
+             throw path.buildCodeFrameError('Expressions not allowed in component attributes');  
         }
-        return expression;
+        t.assertLiteral(node);
+        if (meta.directive === DIRECTIVES.repeat) {
+            const parsedValue = parseForStatement(node.value);
+            node.value = parsedValue.for;
+            meta.inForScope = parsedValue.args;
+        }
+    
+        return node;
+    }
+
+    function normalizeAttribute(jsxAttr, elementPath, state) {
+        const { node, meta } = normalizeAttributeName(jsxAttr.name, elementPath);
+        const value = normalizeAttributeValue(jsxAttr.value, meta, elementPath);
+        const property = t.objectProperty(node, value);
+        property._meta = meta; // Attach metadata for further inspection upstream
+        return { node : property, meta };
     }
 
     function validateTemplateRootFormat(path) {

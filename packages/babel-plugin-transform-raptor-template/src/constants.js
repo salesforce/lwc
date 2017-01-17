@@ -11,12 +11,12 @@ export const DIRECTIVES = {
     repeat    : 'repeat',
     on        : 'on',
     bind      : 'bind',
-    eval      : 'eval',
-    assign    : 'assign',
+    eval      : 'set',
+    assign    : 'set',
     set       : 'set',
+    d         : 'set',
+    directive : 'set',
     custom    : 'custom',
-    d         : 'd',
-    directive : 'directive',
 };
 
 export const MODIFIERS = {

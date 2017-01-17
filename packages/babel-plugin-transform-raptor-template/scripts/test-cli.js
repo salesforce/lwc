@@ -10,19 +10,25 @@ import plugin from '../src/index';
 
 const testSrc = `
 <template>
-    <section>
-        <ul>
-            <li repeat:for="item of items" eval:if="item.isHidden">{item.foo}</li> 
-        </ul>
-        <a data-foo="x" href="#" bind:onclick="handleClick"></a>
+    <section set:class="foo" data-foo--bar="bar" foo-x="4">
+    <p eval:if="isAlsoTrue"></p>
+    <p eval:else></p>
+    <ns:foo>{message}</ns:foo>
+     <ul>
+        <li repeat:for="item of items" eval:if="item.isHidden">
+            <a bind:onclick="item.handler">{item.foo}</a>
+        </li> 
+    </ul>
     </section>
 </template>
-
 `;
+
 /*
+<a style="font-size:10px" set:class="myClass.x.y" set:x="a.b" set:y="c" bind:onclick="handleClick"> </a>
 
-
-
+ <ul>
+        <li repeat:for="item of items" eval:if="item.isHidden">{item.foo}</li> 
+    </ul>
 */
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
