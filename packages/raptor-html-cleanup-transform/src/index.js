@@ -36,7 +36,6 @@ function createStreamParser(output) {
         const tag = isUnaryTag(tagName) ? `<${tagName}${attrs}/>` : `<${tagName}${attrs}>`;
         output.push(tag);
     });
-
     //sax.on('comment', comment => {/* skip commnents */});
     sax.on('endTag', (tag) => output.push(`</${tag}>`));
     sax.on('text', (text) => output.push(text));
