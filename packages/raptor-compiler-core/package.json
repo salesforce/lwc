@@ -1,6 +1,6 @@
 {
   "name": "raptor-compiler-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The raptor compiler",
   "main": "dist/index.js",
   "author": "",
@@ -20,7 +20,7 @@
     "babel-core": "^6.18.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.18.0",
-    "babel-plugin-transform-raptor-class": "^0.1.0",
+    "babel-plugin-transform-raptor-class": "^0.1.1",
     "babel-plugin-transform-raptor-template": "^0.1.0",
     "raptor-html-cleanup-transform": "^0.1.0",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
