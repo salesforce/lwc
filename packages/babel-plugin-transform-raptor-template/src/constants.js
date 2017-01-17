@@ -32,6 +32,7 @@ export const RENDER_PRIMITIVES = {
     EMPTY           : 'e',
     CREATE_ELEMENT  : 'h',
     VIRTUAL_ELEMENT : 'v',
+    CUSTOM_ELEMENT  : 'c',
     TEXT            : 's',
 };
 

@@ -8,11 +8,10 @@ const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
 const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
-const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
+const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
-    // -- Helpers ------------------------------------------
-    
+    // -- Helpers -----------------------------------------------------
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
         export default function (${API_PARAM}, ${CMP_INSTANCE}) { 
@@ -48,7 +47,7 @@ export default function ({ types: t, template }) {
             }
         }
     };
-    
+
    // -- Plugin Visitor ------------------------------------------
     return {
         name: 'raptor-template',
@@ -97,9 +96,8 @@ export default function ({ types: t, template }) {
                     const openElmtAttrs = openElmt.attributes;
                     const buildAttrs = openElmtAttrs ? buildOpeningElementAttributes(openElmtAttrs, path, state) : t.nullLiteral();
                     const scoped = buildAttrs._meta && buildAttrs._meta.scoped;
-                    
                     openElmt.attributes = buildAttrs;
-                    
+
                     if (scoped) {
                         customScope.registerScopePathBindings(path, scoped);
                     }
@@ -220,10 +218,8 @@ export default function ({ types: t, template }) {
                     continue;
                 }
             }
-
             elems.push(child);
         }
-
         elems = t.arrayExpression(elems);
         return hasForLoopDirective ? t.callExpression(applyPrimitive(FLATTENING), [elems]): elems;
     }
@@ -254,15 +250,17 @@ export default function ({ types: t, template }) {
 
     function buildElementCall(path, state) {
         const tag = convertJSXIdentifier(path.node.name, path, state);
-        const exprTag = applyPrimitive(tag._virtualCmp ? VIRTUAL_ELEMENT : CREATE_ELEMENT);
+        const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
         const children = buildChildren(path.parent, path, state);
         const attribs = path.node.attributes;
-
         const args = [tag, attribs, children];
+
+        if (tag._customElement) {
+            args.unshift(t.stringLiteral(tag._customElement));
+        }
 
         const createElementExpression = t.callExpression(exprTag, args);
         createElementExpression._meta = attribs._meta; // Push metadata up
-
         return createElementExpression;
     }
 
@@ -277,16 +275,23 @@ export default function ({ types: t, template }) {
             const name = node.namespace.name + CONST.DIRECTIVE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
             const id = state.file.addImport(name, 'default', devName);
-            id._virtualCmp = true;
+            id._primitive = VIRTUAL_ELEMENT;
             return id;
         }
 
         // <div> -- Any name for now will work
         if (t.isJSXIdentifier(node)) {
-            return t.stringLiteral(node.name);
+            let name = node.name;
+            if (name.indexOf('-') !== -1) {
+                const devName = toCamelCase(name);
+                const id = state.file.addImport(name, 'default', devName);
+                id._primitive = CUSTOM_ELEMENT;
+                id._customElement = name;
+                return id;
+            }
         }
 
-        return node;
+        return t.stringLiteral(node.name);
     }
 
     function isDataAttributeName(name) {
@@ -332,7 +337,7 @@ export default function ({ types: t, template }) {
                 valueNode = t.valueToNode(parseStyles(prop.value.value));
             }
         }
-        
+
         if (isDataAttributeName(valueName)) {
             meta.dataset = true;
             valueName = t.stringLiteral(fomatDataAttributeName(valueName));
@@ -426,32 +431,32 @@ export default function ({ types: t, template }) {
 
     function normalizeAttributeName (node) {
         const meta = { directive: null, modifier: null, event: null, scoped: null };
-    
+
         if (t.isJSXNamespacedName(node)) {
             const dNode = node.namespace;
             const mNode = node.name;
-      
+
             if (dNode.name in DIRECTIVES) {
                 meta.directive = DIRECTIVES[dNode.name];
             }
-      
+
             if (mNode.name in MODIFIERS) {
                 meta.modifier = MODIFIERS[mNode.name];
             }
-      
+
             if (mNode.name.indexOf(DIRECTIVES.on) === 0) {
                 meta.event = mNode.name.substring(2);
             }
 
             node = node.name;
         }
-    
+
         if (t.isValidIdentifier(node.name)) {
             node.type = 'Identifier';
         } else {
             node = t.stringLiteral(node.name);
         }
-    
+
         // nodeType: Identifier|StringLiteral
         return { node, meta };
     }
@@ -467,7 +472,7 @@ export default function ({ types: t, template }) {
             node.value = parsedValue.for;
             meta.inForScope = parsedValue.args;
         }
-    
+
         return node;
     }
 
