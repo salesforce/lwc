@@ -28,7 +28,7 @@ module.exports = function (babel) {
         const cmpName = pathLib.basename(classPath, '.js');
         const name = './' + cmpName + '.html';
         const id = state.file.addImport(name, 'default', 'tmpl');
-        const templateProps = state.file.addImport(name, 'usedIdentifiers', 't');
+        const templateProps = state.file.addImport(name, 'templateUsedIds', 't');
 
         path.pushContainer('body', t.classMethod(
             'method',

@@ -1,5 +1,5 @@
 import { normalizeEntryPath, normalizeOptions } from './lib/utils';
-import {compileResource, compileComponentBundle} from './lib/compiler';
+import {compileResource, compileBundle} from './lib/compiler';
 
 const BASE_OPTIONS = {
     babelConfig: {
@@ -12,8 +12,8 @@ export function compile(entry, options = {}) {
     entry = normalizeEntryPath(entry);
     options = normalizeOptions(Object.assign({ entry }, BASE_OPTIONS, options));
 
-    if (options.componentBundle) {
-        return compileComponentBundle(entry, options);
+    if (options.bundle) {
+        return compileBundle(entry, options);
     } else {
         return compileResource(entry, options);
     }
