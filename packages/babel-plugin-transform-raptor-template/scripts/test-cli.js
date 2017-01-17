@@ -21,9 +21,15 @@ const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
 console.log('>> Source --------------------------------------------------');
 console.log(src);
-console.log('------------------------------------------------------------');
+console.log('>> End Source ----------------------------------------------');
 
 const result = babel.transform(src, { babelrc:false, plugins: [ plugin ] });
 
-console.log('\n>> Code --------------------------------------------------')
+console.log('\n>> Code --------------------------------------------------');
 console.log('\n', result.code);
+console.log('>> End Code ------------------------------------------------');
+
+
+console.log('\n>> Metadata --------------------------------------------------');
+console.log('\n', result.metadata);
+console.log('>> End Metadata ------------------------------------------------');

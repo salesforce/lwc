@@ -2,7 +2,7 @@
 import * as CONST from './constants';
 import customScope from './for-scope';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild } from './utils';
-import { addDependency } from './metadata';
+import metadata from './metadata';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
@@ -41,7 +41,7 @@ export default function ({ types: t, template }) {
                 }
                 if (!state.isThisApplied) {
                     state.isThisApplied = true;
-                    addDependency(path.node, state, t);
+                    metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
                 }
             }
@@ -52,7 +52,10 @@ export default function ({ types: t, template }) {
     return {
         name: 'raptor-template',
         inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
-        pre() { this.customScope = customScope },
+        pre(file) {
+            this.customScope = customScope;
+            metadata.initialize(file.metadata);
+        },
         visitor: {
             Program: {
                 enter(path) {
@@ -78,14 +81,10 @@ export default function ({ types: t, template }) {
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
-                    const usedIds = state.file.metadata.templateUsedIds || {};
-                    const usedKeys = Object.keys(usedIds);
-
+                    const usedIds =  state.file.metadata.templateUsedIds;
                     path.pushContainer('body',
                         t.exportNamedDeclaration(
-                            t.variableDeclaration('const', [
-                                t.variableDeclarator(t.identifier('templateUsedIds'), t.valueToNode(usedKeys))
-                            ]), []
+                            t.variableDeclaration('const', [t.variableDeclarator(t.identifier('templateUsedIds'), t.valueToNode(usedIds))]), []
                         )
                     );
                 }
@@ -131,7 +130,7 @@ export default function ({ types: t, template }) {
             Identifier(path, state) {
                 path.stop();
                 if (isWithinJSXExpression(path) && !customScope.hasBinding(path.node.name)) {
-                    addDependency(path.node, state, t);
+                    metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
                 }
             }
@@ -275,6 +274,7 @@ export default function ({ types: t, template }) {
             const name = node.namespace.name + CONST.DIRECTIVE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
             const id = state.file.addImport(name, 'default', devName);
+            metadata.addComponentDependency(name);
             id._primitive = VIRTUAL_ELEMENT;
             return id;
         }
@@ -285,6 +285,7 @@ export default function ({ types: t, template }) {
             if (name.indexOf('-') !== -1) {
                 const devName = toCamelCase(name);
                 const id = state.file.addImport(name, 'default', devName);
+                metadata.addComponentDependency(name);
                 id._primitive = CUSTOM_ELEMENT;
                 id._customElement = name;
                 return id;
@@ -323,7 +324,7 @@ export default function ({ types: t, template }) {
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
 
                  if (!inScope && directive === DIRECTIVES.set || directive === DIRECTIVES.repeat) {
-                    addDependency(rootMember, state, t);
+                    metadata.addUsedId(rootMember, state, t);
                 }
             }
 
