@@ -1,21 +1,16 @@
-export default function ({
-    i,
-    f,
-    e,
-    h,
-    v,
-    s
-}) {
-    return h(
+const memoized = Symbol();
+export default function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return $api.h(
         "section",
         {},
-        f([i(this.items, (item, index) => {
-            return h(
+        $api.f([$api.i($cmp.items, function (item, index) {
+            return $api.h(
                 "div",
                 {
-                    "class": "my-list"
+                    class: "my-list"
                 },
-                [h(
+                [$api.h(
                     "p",
                     {},
                     ["items"]
@@ -24,4 +19,4 @@ export default function ({
         })])
     );
 }
-export const usedIdentifiers = ["items"];
+export const templateUsedIds = ["items"];

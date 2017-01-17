@@ -1,23 +1,18 @@
-export default function ({
-  i,
-  f,
-  e,
-  h,
-  v,
-  s
-}) {
-  return h(
+const memoized = Symbol();
+export default function ($api, $cmp) {
+  const m = $cmp[memoized] || ($cmp[memoized] = {});
+  return $api.h(
     "section",
     {},
-    [h(
+    [$api.h(
       "p",
       {
         dataset: {
-          BarBaz: "xyz"
+          "BarBaz": "xyz"
         }
       },
       []
     )]
   );
 }
-export const usedIdentifiers = [];
+export const templateUsedIds = [];

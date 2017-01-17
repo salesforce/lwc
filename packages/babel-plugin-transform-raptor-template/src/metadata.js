@@ -12,6 +12,6 @@ export function addDependency(node, state, t) {
         return;
     }
 
-    meta.usedIdentifiers = meta.usedIdentifiers || {};
-    meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
+    meta.templateUsedIds = meta.templateUsedIds || {};
+    meta.templateUsedIds[name] = meta.templateUsedIds[name] ? meta.templateUsedIds[name] + 1 : 1;
 }

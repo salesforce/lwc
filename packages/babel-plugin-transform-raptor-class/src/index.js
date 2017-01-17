@@ -27,7 +27,6 @@ module.exports = function (babel) {
         const classPath = state.opts.componentName || state.file.opts.filename;
         const cmpName = pathLib.basename(classPath, '.js');
         const name = './' + cmpName + '.html';
-      
         const id = state.file.addImport(name, 'default', 'tmpl');
         const templateProps = state.file.addImport(name, 'usedIdentifiers', 't');
 
@@ -114,7 +113,7 @@ module.exports = function (babel) {
         if (!keys[KEY_METHODS] && publicMethods.length) {
             extraBody.push(addClassStaticMember(className, KEY_METHODS, t.valueToNode(publicMethods)));
         }
-      
+
         if (!keys[KEY_RENDER]) {
             extraBody.push(injectRenderer(className, path, state));
         }

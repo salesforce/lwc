@@ -2,9 +2,9 @@ import { normalizeEntryPath, normalizeOptions } from './lib/utils';
 import {compileResource, compileComponentBundle} from './lib/compiler';
 
 const BASE_OPTIONS = {
-    babelConfig: { 
+    babelConfig: {
         babelrc: false,
-        sourceMaps: true 
+        sourceMaps: true
     }
 };
 

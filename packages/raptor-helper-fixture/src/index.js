@@ -29,7 +29,7 @@ function generateTestCase(dir, name, babelOpts) {
     const { 
         actualFileExtension = 'js'
     } = babelOpts;
-    
+
     const actualPath = path.join(dir, `actual.${actualFileExtension}`);
     const expectedPath = path.join(dir, 'expected.js');
     const errorPath = path.join(dir, 'error.json');
@@ -67,7 +67,7 @@ export function babelFixtureTransform (dir, babelOpts) {
     describe('fixtures', () => {
         fs.readdirSync(dir).map(name => {
             const fixtureDir = path.join(dir, name);
-            
+
             // Keep only directories in the fixture dir
             if (!fs.statSync(fixtureDir).isDirectory()) {
                 return;

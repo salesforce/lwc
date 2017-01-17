@@ -78,13 +78,13 @@ export default function ({ types: t, template }) {
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
-                    const usedIds = state.file.metadata.usedIdentifiers || {};
+                    const usedIds = state.file.metadata.templateUsedIds || {};
                     const usedKeys = Object.keys(usedIds);
 
                     path.pushContainer('body',
                         t.exportNamedDeclaration(
                             t.variableDeclaration('const', [
-                                t.variableDeclarator(t.identifier('usedIdentifiers'), t.valueToNode(usedKeys))
+                                t.variableDeclarator(t.identifier('templateUsedIds'), t.valueToNode(usedKeys))
                             ]), []
                         )
                     );

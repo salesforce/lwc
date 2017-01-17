@@ -14,7 +14,7 @@ export default function (options) {
     };
 
     options = Object.assign({}, options.babelConfig, localBabelConfig);
-        
+ 
     return {
         name : 'remove-annotations',
         injected: false,
@@ -26,7 +26,6 @@ export default function (options) {
                 const result = transform(src, localOptions);
                 return { code: result.code, map: result.map };
             }
-
-        }       
+        }
     };
 }

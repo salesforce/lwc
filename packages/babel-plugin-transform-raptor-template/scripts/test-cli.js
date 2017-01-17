@@ -17,13 +17,6 @@ const testSrc = `
 </template>
 `;
 
-/*
-<a style="font-size:10px" set:class="myClass.x.y" set:x="a.b" set:y="c" bind:onclick="handleClick"> </a>
-
- <ul>
-        <li repeat:for="item of items" eval:if="item.isHidden">{item.foo}</li> 
-    </ul>
-*/
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
 console.log('>> Source --------------------------------------------------');
