@@ -10743,7 +10743,8 @@ function fileParts(filePath) {
     return { name: name, ext: ext };
 }
 
-function getSource(path, sources = {}) {
+function getSource(path, sources) {
+    sources = sources || {};
     const filename = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_path__["basename"])(path);
     const src = sources[filename] || sources[path];
     if (src) {
@@ -107718,7 +107719,8 @@ const BASE_OPTIONS = {
     }
 };
 
-function compile(entry, options = {}) {
+function compile(entry, options) {
+    options = options || {};
     entry = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__lib_utils__["a" /* normalizeEntryPath */])(entry);
     options = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__lib_utils__["b" /* normalizeOptions */])(Object.assign({ entry }, BASE_OPTIONS, options));
 
@@ -107729,7 +107731,7 @@ function compile(entry, options = {}) {
     }
 }
 
-const version = "__VERSION__";
+const version = "0.1.1";
 /* harmony export (immutable) */ __webpack_exports__["version"] = version;
 
 

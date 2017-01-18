@@ -16,7 +16,8 @@ export function fileParts(filePath) {
     return { name: name, ext: ext };
 }
 
-export function getSource(path, sources = {}) {
+export function getSource(path, sources) {
+    sources = sources || {};
     const filename = basename(path);
     const src = sources[filename] || sources[path];
     if (src) {

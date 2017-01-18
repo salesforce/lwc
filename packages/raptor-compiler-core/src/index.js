@@ -8,7 +8,8 @@ const BASE_OPTIONS = {
     }
 };
 
-export function compile(entry, options = {}) {
+export function compile(entry, options) {
+    options = options || {};
     entry = normalizeEntryPath(entry);
     options = normalizeOptions(Object.assign({ entry }, BASE_OPTIONS, options));
 
