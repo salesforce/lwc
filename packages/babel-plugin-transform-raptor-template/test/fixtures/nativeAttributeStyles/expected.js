@@ -1,12 +1,7 @@
-export default function ({
-    i,
-    f,
-    e,
-    h,
-    v,
-    s
-}) {
-    return h(
+const memoized = Symbol();
+export default function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return $api.h(
         "section",
         {
             style: {
@@ -21,4 +16,4 @@ export default function ({
         []
     );
 }
-export const usedIdentifiers = [];
+export const templateUsedIds = [];

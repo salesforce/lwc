@@ -1,3 +1,4 @@
+/* eslint-env node */
 const pathLib = require('path');
 
 const PUBLIC_METHOD_DECORATOR = 'method';
@@ -6,8 +7,6 @@ const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
 const KEY_TAG = 'tagName';
 const KEY_RENDER = 'render';
-
-const METHOD_ARGUMENT_NAME = 'p';
 
 module.exports = function (babel) {
     'use strict';
@@ -27,20 +26,17 @@ module.exports = function (babel) {
         const classPath = state.opts.componentName || state.file.opts.filename;
         const cmpName = pathLib.basename(classPath, '.js');
         const name = './' + cmpName + '.html';
-      
         const id = state.file.addImport(name, 'default', 'tmpl');
-        const templateProps = state.file.addImport(name, 'usedIdentifiers', 't');
+        const templateProps = state.file.addImport(name, 'templateUsedIds', 't');
 
-        path.pushContainer('body', t.classMethod(
+       path.pushContainer('body', t.classMethod(
             'method',
-            t.identifier(KEY_RENDER), [t.identifier(METHOD_ARGUMENT_NAME)],
-            t.blockStatement([t.returnStatement(
-                t.callExpression(
-                    t.memberExpression(id, t.identifier('call')), [t.thisExpression(), t.identifier(METHOD_ARGUMENT_NAME)])
-            )])
+            t.identifier(KEY_RENDER),
+            [],
+            t.blockStatement([t.returnStatement(id)])
         ));
 
-        return addClassStaticMember(className, 'templateUsedProps', templateProps);
+        return addClassStaticMember(className, 'templateUsedIds', templateProps);
     }
 
     function transformClassBody(className, path, state) {
@@ -114,7 +110,7 @@ module.exports = function (babel) {
         if (!keys[KEY_METHODS] && publicMethods.length) {
             extraBody.push(addClassStaticMember(className, KEY_METHODS, t.valueToNode(publicMethods)));
         }
-      
+
         if (!keys[KEY_RENDER]) {
             extraBody.push(injectRenderer(className, path, state));
         }

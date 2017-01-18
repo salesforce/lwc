@@ -14,6 +14,7 @@
     ],
     "rules": {
         "no-console": 0,
+        "no-trailing-spaces": 1,
         "flowtype/define-flow-type": 1,
         "flowtype/require-parameter-type": 1,
         "flowtype/require-return-type": [

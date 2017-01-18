@@ -8,33 +8,30 @@ const baseDir = p.resolve(`${__dirname}/../test/fixtures`);
 
 const BASE_OPTIONS = {
     strict: false,
-    strictMode: false,
-    modules: false,
+    modules: true,
 };
 
-const fixtures = [
-    'template',
-    'forLoop',
-    'nativeAttributeStyles',
-    'all',
-    'usedAttrs',
-    'bind'
+const ignore = [
+    'emptyTemplateError',
+    'expressionEvaluationError',
+    'multiRootError',
+    'mutliHtmlRootError',
+    'rootTagTemplateError'
 ];
 
-fixtures.forEach((fixture) => {
-    let name = fixture;
-    let options = {};
-
-    if (Array.isArray(fixture)) {
-        [name, options] = fixture;
+fs.readdirSync(baseDir).forEach((testName) => {
+    if (ignore.indexOf(testName) !== -1) {
+        return;
     }
 
-    const src = fs.readFileSync(`${baseDir}/${name}/actual.html`);
+    console.log('>> Build expected file for: ', testName);
+    const src = fs.readFileSync(`${baseDir}/${testName}/actual.html`);
+
     const {code} = babel.transform(src, {
         plugins: [
             [plugin, BASE_OPTIONS],
         ],
     });
 
-    fs.writeFileSync(`${baseDir}/${name}/expected.js`, `${code}\n`);
+    fs.writeFileSync(`${baseDir}/${testName}/expected.js`, `${code}\n`);
 });

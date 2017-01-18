@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import { getSource } from './utils';
+import { getSource, mergeMetadata } from './utils';
 import transformClass from './transform-class';
 import transformTemplate from './transform-template';
 import sourceResolver from './rollup-plugin-source-resolver';
@@ -21,7 +21,7 @@ export function compileResource(entry, options) {
     }
 }
 
-export function compileComponentBundle(entry, options) {
+export function compileBundle(entry, options) {
     options = options || {};
     const plugins = [
         sourceResolver(options),
@@ -32,11 +32,11 @@ export function compileComponentBundle(entry, options) {
     return new Promise((resolve, reject) => {
         rollup({ entry, plugins })
         .then((bundle) => {
-            resolve(bundle.generate());
+            const bundleResult = bundle.generate({ format: options.format });
+            bundleResult.metadata = mergeMetadata(options.$metadata);
+            resolve(bundleResult);
         })
-        .catch((err) => {
-            reject(err);
-        });
+        .catch(reject);
     });
 }
 
@@ -44,7 +44,10 @@ function rollupTransform(options) {
     return {
         name: 'rollup-transform',
         transform (src, filename) {
-            return compileResource(filename, Object.assign({ filename }, options));
+            return compileResource(filename, Object.assign({ filename }, options)).then((result) => {
+                options.$metadata[filename] = result.metadata;
+                return result;
+            });
         }
     }
 }

@@ -6,7 +6,8 @@
     "prepublish": "lerna bootstrap && lerna run build",
     "test": "lerna run test",
     "build": "lerna run build",
-    "build:compiler": "webpack",
+    "build:compiler": "webpack --config scripts/webpack.commonjs-module.js",
+    "build:webcompiler": "webpack --config scripts/webpack.web.js",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "preversion": "npm run lint && npm run clean && npm run build"
@@ -19,7 +20,7 @@
     "lerna": "2.0.0-beta.30",
     "mocha": "^3.1.2",
     "rimraf": "^2.5.4",
-    "webpack": "2.2.0-rc.0"
+    "webpack": "^2.2.0"
   },
   "dependencies": {
     "raptor-compiler-core": "^0.0.x"

@@ -5,20 +5,29 @@
 * We need to guarantee all this methods are side-effect free
 * since this module is only for collecting metadata dependencies
 */
-export function addDependency(node, state, t) {
-    let name = t.isMemberExpression(node) ? node.object.name : node.name || node;
-    
-    if (typeof name !== 'string') {
-        return;
+import {types as t} from 'babel-core';
+
+export default { 
+    initialize(meta) {
+        this.usedIds = {};
+        meta.templateUsedIds = meta.templateUsedIds || [];
+        meta.templateDependencies = meta.templateDependencies || [];
+        this.metadata = meta;
+    },
+    addUsedId(node) {
+        let name = t.isMemberExpression(node) ? node.object.name : node.name || node;
+
+        if (typeof name !== 'string') {
+            return;
+        }
+
+        const meta = this.metadata;
+        if (!this.usedIds[name]) {
+            this.usedIds[name] = true;
+            meta.templateUsedIds.push(name);
+        }
+    },
+    addComponentDependency(id) {
+       this.metadata.templateDependencies.push(id);
     }
-
-    name = name.split('.').shift();
-
-    const meta = state.file.metadata;
-    meta.usedIdentifiers = meta.usedIdentifiers || {};
-    name = name.split(' ').pop();
-
-    if (name !== 'this') {
-        meta.usedIdentifiers[name] = meta.usedIdentifiers[name] ? meta.usedIdentifiers[name] + 1 : 1;
-    }
-}
+};

@@ -4,17 +4,19 @@ export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
 
 export const DIRECTIVE_SYMBOL = ':';
+export const CMP_INSTANCE = '$cmp';
+export const API_PARAM = '$api';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
     on        : 'on',
     bind      : 'bind',
-    eval      : 'eval',
-    assign    : 'assign',
+    eval      : 'set',
+    assign    : 'set',
     set       : 'set',
+    d         : 'set',
+    directive : 'set',
     custom    : 'custom',
-    d         : 'd',
-    directive : 'directive',
 };
 
 export const MODIFIERS = {
@@ -30,7 +32,8 @@ export const RENDER_PRIMITIVES = {
     EMPTY           : 'e',
     CREATE_ELEMENT  : 'h',
     VIRTUAL_ELEMENT : 'v',
-    STRING          : 's',
+    CUSTOM_ELEMENT  : 'c',
+    TEXT            : 's',
 };
 
 export const RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);

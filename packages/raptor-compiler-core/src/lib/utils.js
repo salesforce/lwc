@@ -45,8 +45,10 @@ export function normalizeOptions(options) {
     const qName = getQualifiedName(entry);
 
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
+    options.$metadata = {};
+    options.bundle = options.bundle !== undefined ? options.bundle : true;
 
-    if (options.componentBundle) {
+    if (options.bundle) {
         options.sources = options.sources || {};
         const entryParts = fileParts(entry);
 
@@ -65,4 +67,18 @@ export function normalizeOptions(options) {
     }
 
     return options;
+}
+
+export function mergeMetadata (metadata) {
+    const templateUsedIds = [];
+    const templateDependencies = [];
+    for (let i in metadata) {
+        templateUsedIds.push(...metadata[i].templateUsedIds || []);
+        templateDependencies.push(...metadata[i].templateDependencies || []);
+    }
+
+    return {
+        bundleDependencies: templateDependencies,
+        templateUsedIds
+    };
 }

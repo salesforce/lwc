@@ -19,6 +19,6 @@ export default function (code, options) {
     localBabelConfig = Object.assign({}, options.babelConfig, localBabelConfig);
     const transformed = transform(code, localBabelConfig);
 
-    return Promise.resolve({ code: transformed.code, map: transformed.map });
+    return Promise.resolve({ code: transformed.code, map: transformed.map, metadata: transformed.metadata });
 
 }

@@ -1,6 +1,7 @@
 import StyleParser from './style-parser';
 import { TOP_LEVEL_PROPS } from './constants';
 import toCamelCase from 'to-camel-case';
+import {types as t} from 'babel-core';
 
 const  parserCss = new StyleParser();
 
@@ -63,3 +64,50 @@ export function isCompatTag(tagName) {
 
 export { toCamelCase };
 
+// Parts of this code were levaraged from:
+// t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
+export function cleanJSXElementLiteralChild(args, child) {
+        if (t.isJSXText(child)) {
+            const lines = child.value.split(/\r\n|\n|\r/);
+            let lastNonEmptyLine = 0;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].match(/[^ \t]/)) {
+                    lastNonEmptyLine = i;
+                }
+            }
+
+            let str = '';
+            for (let _i = 0; _i < lines.length; _i++) {
+                const line = lines[_i];
+                const isFirstLine = _i === 0;
+                const isLastLine = _i === lines.length - 1;
+                const isLastNonEmptyLine = _i === lastNonEmptyLine;
+
+                let trimmedLine = line.replace(/\t/g, ' ');
+
+                if (!isFirstLine) {
+                    trimmedLine = trimmedLine.replace(/^[ ]+/, '');
+                }
+
+                if (!isLastLine) {
+                    trimmedLine = trimmedLine.replace(/[ ]+$/, '');
+                }
+
+                if (trimmedLine) {
+                    if (!isLastNonEmptyLine) {
+                        trimmedLine += ' ';
+                    }
+
+                    str += trimmedLine;
+                }
+            }
+
+            if (str) {
+                args.push(t.stringLiteral(str));
+            }
+        } else {
+            args.push(child);
+        }
+
+        return args;
+    }

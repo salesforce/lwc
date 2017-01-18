@@ -16,6 +16,10 @@ export default function (src, options) {
 
     return templateCleanupPlugin.transform(src).then((result) => {
         const transformed = transform(result, localBabelConfig);
-        return { code: transformed.code, map: transformed.map };
+        return { 
+            code: transformed.code,
+            map: transformed.map,
+            metadata: transformed.metadata
+        };
     });
 }

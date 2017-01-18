@@ -1,24 +1,24 @@
 import _ns$foo from "ns:foo";
-export default function ({
-    i,
-    f,
-    e,
-    h,
-    v,
-    s
-}) {
-    return h(
+
+const _m = function ($api, $cmp) {
+    return $cmp.p.foo.bind($cmp);
+};
+
+const memoized = Symbol();
+export default function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return $api.h(
         "section",
         {},
-        [v(
+        [$api.v(
             _ns$foo,
             {
                 props: {
-                    d: this.p.foo.bind(this)
+                    d: m._m || (m._m = _m($api, $cmp))
                 }
             },
             []
         )]
     );
 }
-export const usedIdentifiers = ["p"];
+export const templateUsedIds = [];

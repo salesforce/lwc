@@ -10,20 +10,26 @@ import plugin from '../src/index';
 
 const testSrc = `
 <template>
-    <section>
-        <p d:class="foo-bar"> {yesno}</p>
+    <section set:class="foo" data-foo--bar="bar" foo-x="4">
+        <ns:foo>{message}</ns:foo>
+        <ns-foo>{message}</ns-foo>
     </section>
 </template>
-
 `;
 
 const src = testSrc.replace(/<!--([\s\S]*?)-->/g);
 
 console.log('>> Source --------------------------------------------------');
 console.log(src);
-console.log('------------------------------------------------------------');
+console.log('>> End Source ----------------------------------------------');
 
 const result = babel.transform(src, { babelrc:false, plugins: [ plugin ] });
 
-console.log('\n>> Code --------------------------------------------------')
+console.log('\n>> Code --------------------------------------------------');
 console.log('\n', result.code);
+console.log('>> End Code ------------------------------------------------');
+
+
+console.log('\n>> Metadata --------------------------------------------------');
+console.log('\n', result.metadata);
+console.log('>> End Metadata ------------------------------------------------');
