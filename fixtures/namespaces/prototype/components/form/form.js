@@ -21,6 +21,6 @@ export default class Form extends HTMLElement {
 
     inputChangeHandler (e) {
         this.counter++;
-        this.inputMessage = e.target.value;
+        this.inputMessage = e.detail.value;
     }
 }
