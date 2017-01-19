@@ -24,13 +24,6 @@ declare interface RaptorElement {
     
 }
 
-declare interface VMFlags {
-    hasBodyAttribute: boolean,
-    isScheduled: boolean,
-    isDirty: boolean,
-    hasElement: boolean
-}
-
 declare interface RenderAPI {
     v(Ctor: ObjectConstructor, data: Object, children?: Array<any>): VM,
     h(tagNAme: string, data: Object, children?: Array<any>, text?: string): VNode,
@@ -44,7 +37,7 @@ declare interface Namespace {
 
 declare class Component  {
     constructor(): this;
-    render(api: RenderAPI): HTMLElement | VNode;
+    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component) => VNode;
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
@@ -58,12 +51,14 @@ declare class Component  {
 declare class VM extends VNode {
     Ctor: () => void;
     state: HashTable<any>;
-    body: Array<VNode>;
-    flags: VMFlags;
+    isScheduled: boolean;
+    isDirty: boolean;
+    hasElement: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;
-    vnode: VNode;
+    shadowRoot: VNode;
+    prevNode: VNode;
     listeners: Set<Set<VM>>;
     toString: () => string;
 }

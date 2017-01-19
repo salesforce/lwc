@@ -7,6 +7,7 @@ import assert from "./assert.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
+export let vmBeingCreated: VM|null = null;
 
 function wrapHTMLElement(element: HTMLElement): VNode {
     assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
@@ -21,17 +22,18 @@ function createMarker(): VNode {
 }
 
 export function invokeComponentConstructor(vm: VM): Component {
-    const { Ctor, context } = vm;
+    const { Ctor, cache: { context } } = vm;
     const ctx = currentContext;
     establishContext(context);
+    vmBeingCreated = vm;
     const component = new Ctor();
+    vmBeingCreated = null;
     establishContext(ctx);
     return component;
 }
 
 export function invokeComponentDisconnectedCallback(vm: VM) {
-    const { component, context } = vm;
-    assert.isTrue(vm.flags.hasElement, '${vm} is not a custom element. Only custom elements can call disconnectedCallback()');
+    const { cache: { component, context } } = vm;
     if (component.disconnectedCallback) {
         const ctx = currentContext;
         establishContext(context);
@@ -41,8 +43,7 @@ export function invokeComponentDisconnectedCallback(vm: VM) {
 }
 
 export function invokeComponentConnectedCallback(vm: VM) {
-    const { component, context } = vm;
-    assert.isTrue(vm.flags.hasElement, `${vm} is not a custom element. Only custom elements can call connectedCallback().`);
+    const { cache: { component, context } } = vm;
     if (component.connectedCallback) {
         const ctx = currentContext;
         establishContext(context);
@@ -52,28 +53,33 @@ export function invokeComponentConnectedCallback(vm: VM) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNode {
-    const { component, context } = vm;
+    const { cache: { component, context } } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(context);
         isRendering = true;
         vmBeingRendered = vm;
-        let elementOrVnode = component.render(api);
+        let elementOrVnodeOrFactory = component.render();
+        // when the render method `return html;`, the factory has to be invoked
+        // TODO: add identity to the html functions
+        if (typeof elementOrVnodeOrFactory === 'function') {
+            // TODO: for raptor elements, the tagName on the html should be preserved
+            elementOrVnodeOrFactory = elementOrVnodeOrFactory.call(undefined, api, component);
+        }
         isRendering = false;
         vmBeingRendered = null;
         establishContext(ctx);
-        const vnode = elementOrVnode instanceof HTMLElement ? wrapHTMLElement(elementOrVnode) : elementOrVnode;
+        const vnode = elementOrVnodeOrFactory instanceof HTMLElement ? wrapHTMLElement(elementOrVnodeOrFactory) : elementOrVnodeOrFactory;
         return vnode || createMarker();
     }
     return createMarker();
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { component } = vm;
-    assert.isTrue(vm.flags.hasElement, `${vm} is not a custom element. Only custom elements can call attributeChangedCallback().`);
+    const { cache: { component, context } } = vm;
     if (component.attributeChangedCallback) {
         const ctx = currentContext;
-        establishContext(this);
+        establishContext(context);
         component.attributeChangedCallback(attrName, oldValue, newValue);
         establishContext(ctx);
     }

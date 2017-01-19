@@ -5,8 +5,8 @@ import {
     vmBeingRendered,
 } from "./invoker.js";
 import {
-    markVMAsDirty,
-} from "./reactivity.js";
+    markComponentAsDirty,
+} from "./component.js";
 
 const WatcherFlag = Symbol('watcher');
 const TargetToPropsMap = new WeakMap();
@@ -18,9 +18,10 @@ export function notifyListeners(target: Object, propName: string) {
         if (set) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
-                const { flags } = vm;
-                if (!flags.isDirty) {
-                    markVMAsDirty(vm);
+                console.log(`Marking ${vm} as dirty: "this.${propName}" set to a new value.`);
+                if (!vm.cache.isDirty) {
+                    markComponentAsDirty(vm);
+                    console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
                 }
             });
@@ -100,7 +101,7 @@ export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
         if (!set.has(vm)) {
             set.add(vm);
             // we keep track of the sets that vm is listening from to be able to do some clean up later on
-            vm.listeners.add(set);
+            vm.cache.listeners.add(set);
         }
     }
 }

@@ -1,6 +1,6 @@
 declare class Component {
     constructor();
-    render(api: RenderAPI): HTMLElement | VNode;
+    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component) => VNode;
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
@@ -35,22 +35,17 @@ interface ComponentDef {
 
 interface RaptorElement extends HTMLElement {}
 
-interface VMFlags {
-    hasBodyAttribute: boolean;
-    isScheduled: boolean;
-    isDirty: boolean;
-    hasElement: boolean;
-}
-
 declare class VM extends VNode {
     Ctor: () => void;
     state: HashTable<any>;
-    body: Array<VNode>;
-    flags: VMFlags;
+    isScheduled: boolean;
+    isDirty: boolean;
+    hasElement: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;
-    vnode: VNode;
+    shadowRoot: VNode;
+    prevNode: VNode;
     listeners: Set<Set<VM>>;
     toString: () => string;
 }

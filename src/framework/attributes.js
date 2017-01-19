@@ -4,7 +4,6 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker.js";
-import { updateComponentPropAndRehydrateWhenNeeded } from "./props.js";
 
 const ObjectAttributeToProxyMap = new WeakMap();
 const ProxySet = new WeakSet();
@@ -38,25 +37,4 @@ export function getAttributeProxy(value: Object): any {
     ObjectAttributeToProxyMap.set(value, proxy);
     ProxySet.add(proxy);
     return proxy;   
-}
-
-export function setAttribute(vm: VM, attrName: string, newValue: any) {
-    const { def: { attrs } } = vm;
-    attrName = attrName.toLocaleLowerCase();
-    const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
-    if (attrConfig) {
-        // TODO: apply some basic casting mechanism for newValue if the type is a primite type
-        updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, newValue);
-    }
-}
-
-export function removeAttribute(vm: VM, attrName: string) {
-    const { def: { attrs } } = vm;
-    attrName = attrName.toLocaleLowerCase();
-    const attrConfig = attrs[attrName];
-    assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
-    if (attrConfig) {
-        updateComponentPropAndRehydrateWhenNeeded(vm, attrConfig.propName, null);
-    }
 }

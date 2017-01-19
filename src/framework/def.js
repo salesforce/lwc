@@ -27,14 +27,12 @@ export function getComponentDef(Ctor: Object): ComponentDef {
     const attrs = getAttrsHash(props);
     const methods = getMethodsHash(Ctor);
     const observedAttrs = getObservedAttrsHash(Ctor, attrs);
-    const observedProps = getObservedPropsHash(Ctor);
     const def = {
         name,
         props,
         attrs,
         methods,
         observedAttrs,
-        observedProps,
     };
     assert.block(() => {
         Object.freeze(def);
@@ -42,7 +40,6 @@ export function getComponentDef(Ctor: Object): ComponentDef {
         Object.freeze(attrs);
         Object.freeze(methods);
         Object.freeze(observedAttrs);
-        Object.freeze(observedProps);
     });
     CtorToDefMap.set(Ctor, def);
     return def;
@@ -107,14 +104,6 @@ function getMethodsHash(target: Object): HashTable<number> {
             });
         });
         return methodsHash;
-    }, {});
-}
-
-function getObservedPropsHash(target: Object): Object {
-    // TODO: rename to templateBoundIdentifiers
-    return (target.templateUsedProps || []).reduce((observedProps: HashTable, attrName: string): HashTable => {
-        observedProps[attrName] = 1;
-        return observedProps;
     }, {});
 }
 
