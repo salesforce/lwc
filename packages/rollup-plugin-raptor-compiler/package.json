@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^3.9.1",
+    "eslint": "^3.13.1",
     "mocha": "^3.1.2",
     "power-assert": "^1.4.1",
     "babel-core": "^6.18.0",

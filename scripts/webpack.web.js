@@ -1,6 +1,7 @@
+/* eslint-env node */
 const webpack = require('webpack');
 module.exports = {
-  entry: './packages/raptor-compiler-core/src/index.js',
+  entry: './packages/raptor-compiler-core/dist/index.js',
   output: {
     path: './dist/web/',
     filename: 'compiler.js',
