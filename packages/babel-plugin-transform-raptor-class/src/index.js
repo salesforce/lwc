@@ -49,7 +49,7 @@ module.exports = function (babel) {
             [KEY_METHODS]: false,
             [KEY_TAG]: false,
         };
-      
+
         for (let prop of classBody) {
             let key = prop.node.key.name;
 
@@ -148,7 +148,6 @@ module.exports = function (babel) {
                 }
 
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
-                console.log(path.getStatementParent());
                 path.getStatementParent().insertAfter(extraBody);
             }
         }

@@ -15,6 +15,7 @@ const options = {
     sourceClass: `
         export default class Foo {
             test = 'foo';
+            static tagName = 1;
             constructor() {}
         }
     `,
