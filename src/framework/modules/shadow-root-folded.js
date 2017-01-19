@@ -31,14 +31,10 @@ function update(oldVnode: VNode, vnode: VNode) {
     // invalidating any succesive patching from this point on...
     oldVnode.data = vnode.data;
     // invaliding children diffing from this point on...
-    const { children = [] } = shadowRoot;
-    const { children: oldChildren = [] } = oldVnode;
-    for (let i = 0; i < children.length; i += 1) {
-        oldChildren[i] = children[i];
-    }
-    while (children.length < oldChildren.length) {
-        oldChildren.pop();
-    }
+    assert.isTrue(Array.isArray(oldVnode.children), 'The old vm should always have a children collection.');
+    oldVnode.children.splice(0, -1);
+    assert.isTrue(Array.isArray(vnode.children), 'The new vm should always have a children collection.');
+    vnode.children.splice(0, -1);
 }
 
 export default {
