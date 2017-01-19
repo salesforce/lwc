@@ -446,10 +446,11 @@ export default function ({ types: t, template }) {
             }
 
             if (mNode.name.indexOf(DIRECTIVES.on) === 0) {
-                meta.event = mNode.name.substring(2);
+                const rawEventName = mNode.name.substring(2);
+                mNode.name = meta.event = rawEventName;
             }
 
-            node = node.name;
+            node = mNode;
         }
 
         if (t.isValidIdentifier(node.name)) {

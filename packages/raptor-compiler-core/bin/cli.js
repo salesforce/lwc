@@ -8,7 +8,7 @@ const options = {
     sourceTemplate : `
         <template>
             <section>
-                <a:b>{test}</a:b>
+                <a:b><a bind:onclick="handleClick">{test}</a></a:b>
             </section>
         </template>
     `, 
