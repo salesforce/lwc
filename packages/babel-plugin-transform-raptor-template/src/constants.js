@@ -4,12 +4,14 @@ export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
 
 export const DIRECTIVE_SYMBOL = ':';
+export const MODULE_SYMBOL = ':';
 export const CMP_INSTANCE = '$cmp';
 export const API_PARAM = '$api';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
     on        : 'on',
+    is        : 'is',
     bind      : 'bind',
     eval      : 'set',
     assign    : 'set',

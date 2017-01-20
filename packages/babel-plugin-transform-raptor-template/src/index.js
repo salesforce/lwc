@@ -94,8 +94,10 @@ export default function ({ types: t, template }) {
                     const openElmt = path.get('openingElement').node;
                     const openElmtAttrs = openElmt.attributes;
                     const buildAttrs = openElmtAttrs ? buildOpeningElementAttributes(openElmtAttrs, path, state) : t.nullLiteral();
-                    const scoped = buildAttrs._meta && buildAttrs._meta.scoped;
+                    const meta = buildAttrs._meta;
+                    const scoped = meta && meta.scoped;
                     openElmt.attributes = buildAttrs;
+                    openElmt._meta = meta;
 
                     if (scoped) {
                         customScope.registerScopePathBindings(path, scoped);
@@ -248,7 +250,8 @@ export default function ({ types: t, template }) {
     }
 
     function buildElementCall(path, state) {
-        const tag = convertJSXIdentifier(path.node.name, path, state);
+        const meta = path.node._meta;
+        const tag = convertJSXIdentifier(path.node.name, meta, path, state);
         const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
         const children = buildChildren(path.parent, path, state);
         const attribs = path.node.attributes;
@@ -263,7 +266,8 @@ export default function ({ types: t, template }) {
         return createElementExpression;
     }
 
-    function convertJSXIdentifier(node, path, state) {
+    function convertJSXIdentifier(node, meta, path, state) {
+        const hasIsDirective = DIRECTIVES.is in meta.directives;
         // <a.b.c/>
         if (t.isJSXMemberExpression(node)) { 
             throw path.buildCodeFrameError('Member expressions not supported');
@@ -271,7 +275,7 @@ export default function ({ types: t, template }) {
 
         // <a:b/>
         if (t.isJSXNamespacedName(node)) {
-            const name = node.namespace.name + CONST.DIRECTIVE_SYMBOL + node.name.name;
+            const name = node.namespace.name + CONST.MODULE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
             const id = state.file.addImport(name, 'default', devName);
             metadata.addComponentDependency(name);
@@ -280,16 +284,15 @@ export default function ({ types: t, template }) {
         }
 
         // <div> -- Any name for now will work
-        if (t.isJSXIdentifier(node)) {
-            let name = node.name;
-            if (name.indexOf('-') !== -1) {
-                const devName = toCamelCase(name);
-                const id = state.file.addImport(name, 'default', devName);
-                metadata.addComponentDependency(name);
-                id._primitive = CUSTOM_ELEMENT;
-                id._customElement = name;
-                return id;
-            }
+        if (t.isJSXIdentifier(node) && (hasIsDirective || node.name.indexOf('-') !== -1)) {
+            const originalName = node.name;
+            const name = DIRECTIVES.is in meta.directives ? meta.rootElement : originalName;
+            const devName = toCamelCase(name);
+            const id = state.file.addImport(name.replace('-', CONST.MODULE_SYMBOL), 'default', devName);
+            metadata.addComponentDependency(name);
+            id._primitive = CUSTOM_ELEMENT;
+            id._customElement = originalName;
+            return id;
         }
 
         return t.stringLiteral(node.name);
@@ -306,7 +309,7 @@ export default function ({ types: t, template }) {
     }
 
     function isDirectiveName(name) {
-        return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else;
+        return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else || name === DIRECTIVES.is;
     }
 
     function transformProp(prop, scopedVars, path, state) {
@@ -405,6 +408,10 @@ export default function ({ types: t, template }) {
         if (meta.modifier) {
             metaGroup.modifiers[meta.modifier] = meta.modifier;
         }
+        if (meta.rootElement) {
+            metaGroup.rootElement = meta.rootElement;
+        }
+
         if (meta.inForScope) {
             metaGroup.inForScope = meta.inForScope;
             metaGroup.scoped.push(...meta.inForScope);
@@ -453,6 +460,10 @@ export default function ({ types: t, template }) {
             node = mNode;
         }
 
+        if (node.name === DIRECTIVES.is) {
+            meta.directive = DIRECTIVES.is;
+        }
+
         if (t.isValidIdentifier(node.name)) {
             node.type = 'Identifier';
         } else {
@@ -469,6 +480,11 @@ export default function ({ types: t, template }) {
              throw path.buildCodeFrameError('Expressions not allowed in component attributes');  
         }
         t.assertLiteral(node);
+
+        if (meta.directive === DIRECTIVES.is) {
+            meta.rootElement = node.value;
+        }
+
         if (meta.directive === DIRECTIVES.repeat) {
             const parsedValue = parseForStatement(node.value);
             node.value = parsedValue.for;
