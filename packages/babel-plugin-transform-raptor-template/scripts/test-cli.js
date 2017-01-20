@@ -11,8 +11,11 @@ import plugin from '../src/index';
 const testSrc = `
 <template>
     <section set:class="foo" data-foo--bar="bar" foo-x="4">
-        <ns:foo>{message}</ns:foo>
-        <ns-foo>{message}</ns-foo>
+        <table>
+            <tbody>
+                <tr is="force-foo"> <force-bar><custom:vi></custom:vi></force-bar> </tr>
+            </tbody>
+        </table>
     </section>
 </template>
 `;
