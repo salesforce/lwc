@@ -2,3 +2,4 @@
 packages/**/dist
 node_modules
 *.log
+**/yarn.lock
