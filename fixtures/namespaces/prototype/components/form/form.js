@@ -15,12 +15,12 @@ export default class Form extends HTMLElement {
 
     handleClick () {
         this.record.test = this.record.test + '#';
-        this.counter++; 
+        this.counter++;
         this.inputMessage += 'YAY!';
     }
 
     inputChangeHandler (e) {
         this.counter++;
-        this.inputMessage = e.detail.value;
+        this.inputMessage = e.currentTarget.value;
     }
 }

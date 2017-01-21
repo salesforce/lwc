@@ -1,18 +1,18 @@
 import { HTMLElement } from "raptor";
+import html from "./inputEmail.html";
 
 export default class input extends HTMLElement {
     constructor() {
         super();
+        this.addEventListener('input', this.handleInput.bind(this));
     }
 
     placeholder = 'default';
     value;
 
-    onChangeHandler (originalEvent: Event) {
+    handleInput (originalEvent: Event) {
         const event = document.createEvent('CustomEvent');
-        event.initCustomEvent('change', true, true, {
-            value: originalEvent.currentTarget.value,
-        });
+        event.initCustomEvent('change', true, true, null);
         // const event = new CustomEvent('change', {
         //     bubbles: true,
         //     cancelable: true,
@@ -21,5 +21,9 @@ export default class input extends HTMLElement {
         //     },
         // });
         this.dispatchEvent(event);
+    }
+
+    render() {
+        return html;
     }
 }
