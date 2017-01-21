@@ -21,7 +21,7 @@ declare interface ComponentDef {
 }
 
 declare interface RaptorElement {
-    
+
 }
 
 declare interface RenderAPI {
@@ -32,7 +32,7 @@ declare interface RenderAPI {
 }
 
 declare interface Namespace {
-    
+
 }
 
 declare class Component  {
@@ -48,18 +48,20 @@ declare class Component  {
     observedAttributes: Array<string>
 }
 
-declare class VM extends VNode {
-    Ctor: () => void;
+declare class Cache {
     state: HashTable<any>;
     isScheduled: boolean;
     isDirty: boolean;
-    hasElement: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;
-    shadowRoot: VNode;
-    prevNode: VNode;
+    fragment: Array<VNode>;
     listeners: Set<Set<VM>>;
+}
+
+declare class VM extends VNode {
+    Ctor: () => void;
+    cache: Cache;
     toString: () => string;
 }
 

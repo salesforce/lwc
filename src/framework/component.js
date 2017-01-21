@@ -69,10 +69,14 @@ function clearListeners(vm: VM) {
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
     const { cache } = vm;
-    const { state, def: { props: config, observedAttrs } } = cache;
+    const { state, def: { props, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    assert.isTrue(config.hasOwnProperty(propName), `Invalid property name ${propName} of ${vm}.`);
-    if (newValue === null) {
+    const config = props[propName];
+    if (!config) {
+        // TODO: ignore any native html property
+        console.warn(`Updating unknown property ${propName} of ${vm}. This property will be a pass-thru to the DOM element.`);
+    }
+    if (newValue === undefined && config) {
         // default prop value computed when needed
         const initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
@@ -80,9 +84,11 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     let oldValue = state[propName];
     if (oldValue !== newValue) {
         state[propName] = newValue;
-        const attrName = config[propName].attrName;
-        if (observedAttrs[attrName]) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        if (config) {
+            const attrName = config.attrName;
+            if (observedAttrs[attrName]) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+            }
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to a new value.`);
         if (!cache.isDirty) {
@@ -94,17 +100,25 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
 export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
     const { cache } = vm;
-    const { state, def: { props: config, observedAttrs } } = cache;
+    const { state, def: { props, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    assert.isTrue(config.hasOwnProperty(propName), `Invalid property name ${propName} of ${vm}.`);
-    const initializer = config[propName].initializer;
-    const newValue = typeof initializer === 'function' ? initializer() : initializer;
+    const config = props[propName];
     let oldValue = state[propName];
+    let newValue = undefined;
+    if (!config) {
+        // TODO: ignore any native html property
+        console.warn(`Resetting unknown property ${propName} of ${vm}. This property will be a pass-thru to the DOM element.`);
+    } else {
+        const initializer = config[propName].initializer;
+        newValue = typeof initializer === 'function' ? initializer() : initializer;
+    }
     if (oldValue !== newValue) {
         state[propName] = newValue;
-        const attrName = config[propName].attrName;
-        if (observedAttrs[attrName]) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        if (config) {
+            const attrName = config.attrName;
+            if (observedAttrs[attrName]) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+            }
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to its default value.`);
         if (!cache.isDirty) {
@@ -135,8 +149,8 @@ export function createComponent(vm: VM) {
         context: {},
         state: {},
         component: null,
+        fragment: undefined,
         shadowRoot: null,
-        prevNode: null,
         listeners: new Set(),
     };
     const proto = {
@@ -146,19 +160,21 @@ export function createComponent(vm: VM) {
         },
     };
     Object.setPrototypeOf(vm, proto);
-    cache.component = invokeComponentConstructor(vm);;
+    cache.component = invokeComponentConstructor(vm);
     watchComponentProperties(vm);
     initComponentProps(vm);
 }
 
-export function renderComponent(vm: VM): vnode {
+export function renderComponent(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.cache.isDirty, `Component ${vm} is not dirty.`);
+    const { cache } = vm;
+    assert.invariant(cache.isDirty, `Component ${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
     clearListeners(vm);
-    const vnode = invokeComponentRenderMethod(vm);
-    vm.cache.isDirty = false;
-    return vnode;
+    const vnodes = invokeComponentRenderMethod(vm);
+    cache.isDirty = false;
+    cache.fragment = vnodes;
+    assert.invariant(Array.isArray(vnodes), 'Render should always return an array of vnodes instead of ${children}');
 }
 
 export function destroyComponent(vm: VM) {

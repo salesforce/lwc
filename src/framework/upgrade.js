@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { patch } from "./patcher.js";
+import { patch } from "./hook.js";
 import {
     resetComponentProp,
     updateComponentProp,
@@ -9,6 +9,7 @@ import { c } from "./api.js";
 import { loaderImportMethod } from "./loader.js";
 
 const Ep = Element.prototype;
+const CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
@@ -17,7 +18,6 @@ function linkAttributes(element: HTMLElement, vm: VM) {
     element.setAttribute = (attrName: string, value: any) => {
         Ep.setAttribute.call(element, attrName, value);
         const attrConfig = attrs[attrName.toLocaleLowerCase()];
-        assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
         if (attrConfig) {
             updateComponentProp(vm, attrConfig.propName, value);
         }
@@ -25,23 +25,10 @@ function linkAttributes(element: HTMLElement, vm: VM) {
     element.removeAttribute = (attrName: string) => {
         Ep.removeAttribute.call(element, attrName);
         const attrConfig = attrs[attrName.toLocaleLowerCase()];
-        assert.isTrue(attrConfig, `${vm} does not have an attribute called ${attrName}.`);
         if (attrConfig) {
             resetComponentProp(vm, attrConfig.propName);
         }
     };
-    assert.block(() => {
-        // this is to warn in dev mode when they try to do an invalid mutation on an element.
-        const observer = new MutationObserver((mutations: Array<MutationRecord>) => {
-            mutations.forEach((mutation: MutationRecord) => {
-                console.error(`Arbitrary mutations in a child element of the Raptor Element <${element.tagName}> can have unpredictable results. Instead, you can use setAttribute() and removeAttribute() on the Raptor Element to mutate its state.`);
-            });
-        });
-        const config: MutationObserverInit = {
-            childList: true,
-        };
-        observer.observe(element, config);
-    });
 }
 
 function linkProperties(element: HTMLElement, vm: VM) {
@@ -64,7 +51,7 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let propName in props) {
         descriptors[propName] = {
             get: (): any => component[propName],
-            set: (newValue: any): void => updateComponentProp(vm, propName, newValue), 
+            set: (newValue: any): void => updateComponentProp(vm, propName, newValue),
             configurable: false,
             enumerable: true,
         };
@@ -72,31 +59,52 @@ function linkProperties(element: HTMLElement, vm: VM) {
     Object.defineProperties(element, descriptors);
 }
 
-function createVM(element: HTMLElement, Ctor: any, props: HashTable<any>): VM {
+function createVM(element: HTMLElement, Ctor: any, data: HashTable<any>): VM {
     const tagName = element.tagName.toLowerCase();
-    let vm = c(tagName, Ctor, { props });
+    let vm = c(tagName, Ctor, data);
     assert.block(() => {
         console.warn(`Raptor Component ${vm} is normally used for <${Ctor.tagName}> elements instead of <${tagName}>.`);
     });
     return patch(element, vm);
 }
 
+function getInitialProps(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+    const { props: config } = getComponentDef(Ctor);
+    const props = {};
+    for (let propName in config) {
+        if (propName in element) {
+            props[propName] = element[propName];
+        }
+    }
+    if (element.hasAttributes()) {
+        // looking for custom attributes that are not reflectives by default
+        const attrs = element.attributes;
+        for (let i = attrs.length - 1; i >= 0; i--) {
+            const propName = attrs[i].name.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+            if (!(propName in props) && propName in config) {
+                props[propName] = attrs[i].value;
+            }
+        }
+    }
+    return props;
+}
+
+function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+    // TODO: implement algo to resolve slots
+    return undefined;
+}
+
 /**
  * This algo mimics 2.5 of web component specification somehow:
  * https://www.w3.org/TR/custom-elements/#upgrades
  */
-function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor, domAttrs: HashTable<any>): Component {
+function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor): Component {
     if (!Ctor) {
         throw new TypeError(`Invalid Raptor Component Definition: ${Ctor}.`);
     }
-    const { attrs } = getComponentDef(Ctor);
-    const props = {};
-    for (let attrName in attrs) {
-        if (attrName in domAttrs) {
-            props[attrs[attrName].propName] = domAttrs[attrName];
-        }
-    }
-    const vm = createVM(element, Ctor, props);
+    const props = getInitialProps(element, Ctor);
+    const slots = getInitialSlots(element, Ctor);
+    const vm = createVM(element, Ctor, { props, slots });
     linkAttributes(element, vm);
     // TODO: for vm with element we might not need to do any of these.
     linkProperties(element, vm);
@@ -106,22 +114,9 @@ function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor, domAttrs:
 function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor> | ObjectConstructor): Promise<HTMLElement> {
     return new Promise((resolve: (element: HTMLElement) => void, reject: (e: Error) => void) => {
         assert.isTrue(element instanceof HTMLElement, `upgrade() first argument should be a DOM Element instead of ${element}.`);
-        const domAttrs = {};
         const p = Promise.resolve(CtorOrPromise);
-        // temporarily replacing mutators on the element itself to catch any mutation
-        // while waiting for the Ctor to be ready to upgrade the element. This guarantees
-        // that any attribute mutation after upgrade() is called is consistent, even when
-        // the element hasn't been fully upgraded.
-        element.setAttribute = (attrName: string, value: any) => {
-            domAttrs[attrName] = value;
-            Ep.setAttribute.call(element, attrName, value);
-        };
-        element.removeAttribute = (attrName: string) => {
-            domAttrs[attrName] = null;
-            Ep.removeAttribute.call(element, attrName);
-        };
         p.then((Ctor: ObjectConstructor) => {
-            upgradeElement(element, Ctor, domAttrs);
+            upgradeElement(element, Ctor);
             resolve(element);
         }, reject);
     });

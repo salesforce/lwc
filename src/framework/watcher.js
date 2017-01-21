@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { scheduleRehydration } from "./patcher.js";
+import { scheduleRehydration } from "./hook.js";
 import {
     isRendering,
     vmBeingRendered,
@@ -13,7 +13,7 @@ const TargetToPropsMap = new WeakMap();
 
 export function notifyListeners(target: Object, propName: string) {
     if (TargetToPropsMap.has(target)) {
-        const PropNameToListenersMap = TargetToPropsMap.get(target); 
+        const PropNameToListenersMap = TargetToPropsMap.get(target);
         const set = PropNameToListenersMap.get(propName);
         if (set) {
             set.forEach((vm: VM) => {

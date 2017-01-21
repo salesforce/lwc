@@ -2,7 +2,7 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
-import * as api from "./api.js"; 
+import * as api from "./api.js";
 import assert from "./assert.js";
 
 export let isRendering: boolean = false;
@@ -17,8 +17,20 @@ function wrapHTMLElement(element: HTMLElement): VNode {
     return vnode;
 }
 
-function createMarker(): VNode {
-    return { text: '' };
+function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Array<VNode> {
+    if (!elementOrVnodeOrArrayOfVnodes) {
+        return [];
+    }
+    // never mutate the original array
+    const vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
+    for (let i = 0; i < vnodes.length; i += 1) {
+        const elm = vnodes[i];
+        if (elm instanceof HTMLElement) {
+            vnodes[i] = wrapHTMLElement(elm);
+        }
+        assert.isTrue(vnodes[i] && vnodes[i].sel, `Invalid vnode element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
+    }
+    return vnodes;
 }
 
 export function invokeComponentConstructor(vm: VM): Component {
@@ -52,27 +64,26 @@ export function invokeComponentConnectedCallback(vm: VM) {
     }
 }
 
-export function invokeComponentRenderMethod(vm: VM): VNode {
+export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     const { cache: { component, context } } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(context);
         isRendering = true;
         vmBeingRendered = vm;
-        let elementOrVnodeOrFactory = component.render();
+        let result = component.render();
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
-        if (typeof elementOrVnodeOrFactory === 'function') {
-            // TODO: for raptor elements, the tagName on the html should be preserved
-            elementOrVnodeOrFactory = elementOrVnodeOrFactory.call(undefined, api, component);
+        if (typeof result === 'function') {
+            result = result.call(undefined, api, component);
         }
         isRendering = false;
         vmBeingRendered = null;
         establishContext(ctx);
-        const vnode = elementOrVnodeOrFactory instanceof HTMLElement ? wrapHTMLElement(elementOrVnodeOrFactory) : elementOrVnodeOrFactory;
-        return vnode || createMarker();
+        // the render method can return many different things, here we attempt to normalize it.
+        return normalizeRenderResult(vm, result);
     }
-    return createMarker();
+    return [];
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {

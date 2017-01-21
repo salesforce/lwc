@@ -2,7 +2,7 @@ import {
     updateComponentSlots,
 } from "../component.js";
 
-function update(oldvnode: VNode, vnode: VNode) {
+function update(oldvnode: VNode, vnode: VM) {
     if (!vnode.cache) {
         return;
     }

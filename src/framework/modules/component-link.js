@@ -1,13 +1,16 @@
 import { createComponent } from "../component.js";
 import { linkComponentToVM } from "../html-element.js";
+import { rehydrate } from "../hook.js";
 import assert from "../assert.js";
 
-function create(oldVnode: VNode, vnode: VNode) {
+function link(oldVnode: VM, vnode: VM) {
     const { Ctor } = vnode;
     if (!Ctor) {
         return;
     }
+    // TODO: extension point for locker to add or remove identity to each DOM element.
     assert.vm(vnode);
+    assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
     if (!vnode.cache) {
         if (oldVnode.Ctor === Ctor && oldVnode.cache) {
             Object.setPrototypeOf(vnode, Object.getPrototypeOf(oldVnode));
@@ -21,6 +24,6 @@ function create(oldVnode: VNode, vnode: VNode) {
 }
 
 export default {
-    create,
-    update: create,
+    create: link,
+    update: link,
 };

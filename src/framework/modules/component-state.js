@@ -2,35 +2,17 @@ import {
     resetComponentProp,
     updateComponentProp,
 } from "../component.js";
-import assert from "../assert.js";
 
-function update(oldVnode: VNode, vnode: VNode) {
+function syncState(oldVnode: vnode, vnode: VM) {
     const { cache } = vnode;
     if (!cache) {
         return;
     }
 
-    let { data: { props: oldProps, attrs: oldAttrs } } = oldVnode;
-    let { data: { props, attrs }, cache: { def: { attrs: attrsConfig } } } = vnode;
-    let key: string, cur: any, old: any;
-
-    // allow attrs from compiler to be transfored as component's props when needed.
-    if (oldAttrs !== attrs && (oldAttrs || attrs)) {
-        oldAttrs = oldAttrs || {};
-        attrs = attrs || {};
-        for (key in attrs) {
-            cur = attrs[key];
-            old = oldAttrs[key];
-            if (attrsConfig[key] && old !== cur) {
-                if (cur) {
-                    updateComponentProp(vnode, attrsConfig[key].propName, cur);
-                } else {
-                    resetComponentProp(vnode, attrsConfig[key].propName);
-                }
-                assert.isFalse(props && attrsConfig[key].propName in props, 'Compiler Error: An attribute and the reflective property cannot be both set in the same payload.');
-            }
-        }
-    }
+    let { data: { props: oldProps } } = oldVnode;
+    let { data: { props } } = vnode;
+    const { state } = cache;
+    let key: string, cur: any;
 
     if (oldProps !== props && (oldProps || props)) {
         oldProps = oldProps || {};
@@ -45,8 +27,8 @@ function update(oldVnode: VNode, vnode: VNode) {
         // new props should be setted in component's props
         for (key in props) {
             cur = props[key];
-            old = oldProps[key];
-            if (old !== cur) {
+            if ((key in oldProps && oldProps[key] !== cur) ||
+                !(key in state) || state[key] !== cur) {
                 updateComponentProp(vnode, key, cur);
             }
         }
@@ -55,6 +37,6 @@ function update(oldVnode: VNode, vnode: VNode) {
 }
 
 export default {
-    create: update,
-    update,
+    create: syncState,
+    update: syncState,
 };

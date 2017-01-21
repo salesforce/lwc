@@ -5,26 +5,12 @@ import h from "snabbdom/h";
 // [c]ustom element node
 export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}, bcDefaultSlot: Array<vnode>): Object {
     assert.isFalse("attrs" in data, `Compiler Issue: Custom elements should not have property "attrs" in data.`);
-    const { props, attrs, key, on, dataset, class: klass } = data;
+    const { props, key, on, dataset, class: klass } = data;
     // assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
     // TODO: once the parser is updated, uncomment the previous line and remove this fork in favor of just data.slotset
-    const slotset = data.slotset || (bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot }); 
-    const vnode = h(sel, { hook, props, attrs, key, on, slotset, dataset, "class": klass }, []);
+    const slotset = data.slotset || (bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot });
+    const vnode = h(sel, { hook, props, key, on, slotset, dataset, "class": klass }, []);
     vnode.Ctor = Ctor;
-    vnode.hasElement = true;
-    return vnode;
-}
-
-// [v]irtual node
-export function v(Ctor: ObjectConstructor, data: Object = {}, bcDefaultSlot: Array<vnode>): Object {
-    assert.isFalse("attrs" in data, `Compiler Issue: Raptor elements should not have property "attrs" in data.`);
-    const { props, attrs, key, on, dataset, class: klass } = data;
-    // assert.isTrue(arguments.length < 3, `Compiler Issue: Custom elements expect up to 2 arguments, received ${arguments.length} instead.`);
-    // TODO: once the parser is updated, uncomment the previous line and remove this fork in favor of just data.slotset
-    const slotset = data.slotset || (bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot }); 
-    const vnode = h(Ctor.sel || Ctor.name, { hook, props, attrs, key, on, slotset, dataset, "class": klass }, []);
-    vnode.Ctor = Ctor;
-    vnode.hasElement = false;
     return vnode;
 }
 

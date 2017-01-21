@@ -1,24 +1,37 @@
 import assert from "../assert.js";
-import {
-    renderComponent,
-} from "../component.js";
+import { rehydrate } from "../hook.js";
+import { renderComponent } from "../component.js";
 
-function update(oldVnode: VNode, vnode: VNode) {
-    const { cache, hasElement } = vnode;
-    if (!cache || !hasElement) {
+function rerender(oldVnode: VNode, vnode: VM) {
+    const { cache } = vnode;
+    if (!cache) {
         return;
     }
-
-    let { shadowRoot } = cache;
-    if (cache.isDirty) {
-        shadowRoot = renderComponent(vnode);
-        cache.shadowRoot = shadowRoot;
+    const { children } = vnode;
+    // if diffing against an empty element, it means vnode was created and
+    // has never been rendered. an immidiate rehydration is
+    // needed otherwise the children are not going to be populated.
+    if (oldVnode.sel === '') {
+        assert.invariant(cache.isDirty, `${vnode} should be dirty after creation`);
+        assert.invariant(cache.fragment === undefined, `${vnode} should not have a fragment after creation`);
+        rehydrate(vnode);
+        // avoiding the rest of this diffing entirely because it happens already in rehydrate
+        const { children: oldCh } = oldVnode;
+        oldCh.splice(0, oldCh.length).push.apply(oldCh, cache.fragment);
+        oldVnode.data = vnode.data;
+        // TODO: this is a fork of the fiber since the create hook is called during a
+        // patching process. How can we optimize this to reuse the same queue?
+        // and idea is to do this part in the next turn (a la fiber)
+    } else if (cache.isDirty) {
+        assert.invariant(oldVnode.children !== children, `If component is dirty, the children collections must be different. In theory this should never happen.`);
+        renderComponent(vnode);
     }
-    assert.invariant(shadowRoot, 'Render should always return a vnode instead of ${shadowRoot}');
-    vnode.children[0] = shadowRoot;
+    // replacing the vnodes in the children array without replacing the array itself
+    // because the engine has a hard reference to the original array object.
+    children.splice(0, children.length).push.apply(children, cache.fragment);
 }
 
 export default {
-    create: update,
-    update,
+    create: rerender,
+    update: rerender,
 };

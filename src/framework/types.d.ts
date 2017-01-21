@@ -35,18 +35,20 @@ interface ComponentDef {
 
 interface RaptorElement extends HTMLElement {}
 
-declare class VM extends VNode {
-    Ctor: () => void;
+declare class Cache {
     state: HashTable<any>;
     isScheduled: boolean;
     isDirty: boolean;
-    hasElement: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;
-    shadowRoot: VNode;
-    prevNode: VNode;
+    fragment: Array<VNode>;
     listeners: Set<Set<VM>>;
+}
+
+declare class VM extends VNode {
+    Ctor: () => void;
+    cache: Cache;
     toString: () => string;
 }
 
@@ -54,7 +56,7 @@ declare class VNode {
     sel: string;
     key?: number|string;
     data: Object;
-    children?: Array<string|VNode>;  
+    children?: Array<string|VNode>;
     text: string;
     elm?: EventTarget;
     listener: (event: Event) => void;
