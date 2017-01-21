@@ -14,14 +14,14 @@ export default function ({ types: t, template }) {
     // -- Helpers -----------------------------------------------------
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
-        export default function (${API_PARAM}, ${CMP_INSTANCE}) { 
+        export default function (${API_PARAM}, ${CMP_INSTANCE}) {
             const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
-            return STATEMENT; 
+            return STATEMENT;
         }
     `, { sourceType: 'module' });
 
     const memoizeLookup = template(`m.ID || (m.ID = ID(${API_PARAM}, ${CMP_INSTANCE}))`);
-    const memoizeFunction = template(`const ID = function (${API_PARAM}, ${CMP_INSTANCE}) { return STATEMENT; }`); 
+    const memoizeFunction = template(`const ID = function (${API_PARAM}, ${CMP_INSTANCE}) { return STATEMENT; }`);
 
     const applyPrimitive = (primitive) => t.identifier(`${API_PARAM}.${primitive}`);
     const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
@@ -60,24 +60,14 @@ export default function ({ types: t, template }) {
             Program: {
                 enter(path) {
                     validateTemplateRootFormat(path);
-
-                    // Find children of the root <template> node
-                    const rootNode = path.get('body.0.expression'); // <template>
-                    const rootChildren = rootNode.get('children').filter((c) => !t.isJSXText(c));
-
-                    if (rootChildren.length !== 1) {
-                        throw path.buildCodeFrameError('A component must have only one root element');
-                    }
-
-                    // Replace <template> by its child
-                    rootNode.replaceWith(t.expressionStatement(rootChildren[0]));
                 },
                 exit (path, state) {
                     // Add exports declaration
                     const body = path.node.body;
                     const pos = body.findIndex(c => t.isExpressionStatement(c) && c.expression._jsxElement);
                     const rootElement = path.get(`body.${pos}.expression`);
-                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: rootElement });
+                    const children = rootElement.node.arguments.pop();
+                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: children });
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
@@ -269,7 +259,7 @@ export default function ({ types: t, template }) {
     function convertJSXIdentifier(node, meta, path, state) {
         const hasIsDirective = DIRECTIVES.is in meta.directives;
         // <a.b.c/>
-        if (t.isJSXMemberExpression(node)) { 
+        if (t.isJSXMemberExpression(node)) {
             throw path.buildCodeFrameError('Member expressions not supported');
         }
 
@@ -477,7 +467,7 @@ export default function ({ types: t, template }) {
      function normalizeAttributeValue(node, meta, path) {
          node = node || t.booleanLiteral(true);
          if (t.isJSXExpressionContainer(node)) {
-             throw path.buildCodeFrameError('Expressions not allowed in component attributes');  
+             throw path.buildCodeFrameError('Expressions not allowed in component attributes');
         }
         t.assertLiteral(node);
 
