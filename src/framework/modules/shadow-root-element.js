@@ -22,6 +22,7 @@ function rerender(oldVnode: VNode, vnode: VM) {
         // TODO: this is a fork of the fiber since the create hook is called during a
         // patching process. How can we optimize this to reuse the same queue?
         // and idea is to do this part in the next turn (a la fiber)
+        // PR https://github.com/snabbdom/snabbdom/pull/234 might help.
     } else if (cache.isDirty) {
         assert.invariant(oldVnode.children !== children, `If component is dirty, the children collections must be different. In theory this should never happen.`);
         renderComponent(vnode);
