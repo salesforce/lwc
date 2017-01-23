@@ -12,7 +12,7 @@ function updatePropsFromState(oldVnode: vnode, vnode: VM) {
     let key: string, cur: any, old: any, v: any;
 
     for (key in oldProps) {
-        if (!(key in state)) {
+        if (!state[key]) {
             delete elm[key];
         }
     }
@@ -23,10 +23,9 @@ function updatePropsFromState(oldVnode: vnode, vnode: VM) {
             // for component derivated props, the prop should reflect the value
             // accessible from within the component instance. for arbitrary
             // passed using the side-channels, use the original value from state
+            // TODO: maybe we can just expose the raw value everytime for perf reasons
             v = config[key] ? component[key] : state[key];
-            if (elm[key] != v) {
-                elm[key] = v;
-            }
+            elm[key] = v;
         }
     }
 }

@@ -2,6 +2,10 @@ import { createComponent } from "../component.js";
 import { linkComponentToVM } from "../html-element.js";
 import { rehydrate } from "../hook.js";
 import assert from "../assert.js";
+import {
+    setPrototypeOf,
+    getPrototypeOf,
+} from "../language.js";
 
 function link(oldVnode: VM, vnode: VM) {
     const { Ctor } = vnode;
@@ -13,7 +17,7 @@ function link(oldVnode: VM, vnode: VM) {
     assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
     if (!vnode.cache) {
         if (oldVnode.Ctor === Ctor && oldVnode.cache) {
-            Object.setPrototypeOf(vnode, Object.getPrototypeOf(oldVnode));
+            setPrototypeOf(vnode, getPrototypeOf(oldVnode));
         } else {
             createComponent(vnode);
             console.log(`Component for ${vnode} was created.`);

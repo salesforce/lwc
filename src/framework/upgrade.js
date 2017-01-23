@@ -7,6 +7,7 @@ import {
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
 import { loaderImportMethod } from "./loader.js";
+import { defineProperties } from "./language.js";
 
 const Ep = Element.prototype;
 const CAMEL_REGEX = /-([a-z])/g;
@@ -56,15 +57,12 @@ function linkProperties(element: HTMLElement, vm: VM) {
             enumerable: true,
         };
     }
-    Object.defineProperties(element, descriptors);
+    defineProperties(element, descriptors);
 }
 
 function createVM(element: HTMLElement, Ctor: any, data: HashTable<any>): VM {
     const tagName = element.tagName.toLowerCase();
     let vm = c(tagName, Ctor, data);
-    assert.block(() => {
-        console.warn(`Raptor Component ${vm} is normally used for <${Ctor.tagName}> elements instead of <${tagName}>.`);
-    });
     return patch(element, vm);
 }
 

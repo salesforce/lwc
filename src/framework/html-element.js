@@ -1,5 +1,8 @@
 import assert from "./assert.js";
 import { vmBeingCreated } from "./invoker.js";
+import {
+    defineProperty,
+} from "./language.js";
 
 const ComponentToVMMap = new WeakMap();
 
@@ -82,7 +85,7 @@ HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
 }, RaptorHTMLElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
-    Object.defineProperty(proto, propName, {
+    defineProperty(proto, propName, {
         get: function (): any {
             const element = ComponentToVMMap.get(this);
             assert.isTrue(element instanceof HTMLElement, 'Invalid association between Raptor component ${this} and element ${element} when accessing member property @{propName}.');
@@ -97,8 +100,10 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
 export { RaptorHTMLElement as HTMLElement };
 
 export function linkComponentToVM(component: Component, vm: VM) {
-    assert.isTrue(component instanceof RaptorHTMLElement, 'Only components extending HTMLElement can be linked to their corresponding element.');
     assert.vm(vm);
-    assert.isTrue(vm.elm instanceof HTMLElement, 'Only DOM elements can be linked to their corresponding raptor component.');
-    ComponentToVMMap.set(component, vm);
+    // for now, only components extending HTMLElement have to be linked to their corresponding element.
+    if (component instanceof RaptorHTMLElement) {
+        assert.isTrue(vm.elm instanceof HTMLElement, 'Only DOM elements can be linked to their corresponding raptor component.');
+        ComponentToVMMap.set(component, vm);
+    }
 }

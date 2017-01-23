@@ -17,11 +17,11 @@ function update(oldVnode: VNode, vnode: VNode) {
     oldProps = oldProps || {};
     props = props || {};
 
-    let key: string, cur: any, old: any, v: any;
+    let key: string, cur: any, old: any;
     const { elm } = vnode;
 
     for (key in oldProps) {
-        if (key in props) {
+        if (!props[key]) {
             delete elm[key];
         }
     }
@@ -30,7 +30,7 @@ function update(oldVnode: VNode, vnode: VNode) {
         old = oldProps[key];
 
         if (old !== cur) {
-            if (key !== 'value' || elm[key] !== cur) {
+            if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
                 // only touching the dom if the prop really changes.
                 elm[key] = cur;
             }

@@ -41,7 +41,6 @@ declare class Component  {
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
-    tagName: string;
     publicProps: any;
     publicMethods: Array<string>;
     templateUsedProps: Array<string>;

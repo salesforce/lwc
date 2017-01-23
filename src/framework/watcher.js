@@ -7,6 +7,11 @@ import {
 import {
     markComponentAsDirty,
 } from "./component.js";
+import {
+    defineProperty,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+} from "./language.js";
 
 const WatcherFlag = Symbol('watcher');
 const TargetToPropsMap = new WeakMap();
@@ -30,7 +35,7 @@ export function notifyListeners(target: Object, propName: string) {
 }
 
 function getWatchPropertyDescriptor(target: Object, propName: string, originalGetter: Function, originalSetter: Function): PropertyDescriptor {
-    let { enumerable, value: oldValue } = Object.getOwnPropertyDescriptor(target, propName);
+    let { enumerable, value: oldValue } = getOwnPropertyDescriptor(target, propName);
     let isFirstTimeGetterIsCalled = true;
     const getter = function reactiveGetter(): any {
         const value = originalGetter ? originalGetter.call(this) : undefined;
@@ -38,7 +43,11 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
             subscribeToSetHook(vmBeingRendered, target, propName);
             if (oldValue !== value || isFirstTimeGetterIsCalled) {
                 if (value !== null && typeof value === 'object') {
-                    Object.getOwnPropertyNames(value).forEach((propName: string): any => watchProperty(value, propName));
+                    const names = getOwnPropertyNames(value);
+                    const len = names.length;
+                    for (let i = 0; i < len; i += 1) {
+                        watchProperty(value, names[i]);
+                    }
                 }
             }
         }
@@ -65,7 +74,7 @@ function getWatchPropertyDescriptor(target: Object, propName: string, originalGe
 
 export function watchProperty(target: Object, propName: string): boolean {
     // TODO: maybe this should only work if target is a plain object
-    let { get, set, value, configurable } = Object.getOwnPropertyDescriptor(target, propName) || {};
+    let { get, set, value, configurable } = getOwnPropertyDescriptor(target, propName) || {};
     if (get && WatcherFlag in get) {
         return true;
     }
@@ -79,7 +88,7 @@ export function watchProperty(target: Object, propName: string): boolean {
             };
         }
         let descriptor = getWatchPropertyDescriptor(target, propName, get, set);
-        Object.defineProperty(target, propName, descriptor);
+        defineProperty(target, propName, descriptor);
         return true;
     }
     return false;
@@ -88,11 +97,13 @@ export function watchProperty(target: Object, propName: string): boolean {
 export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
     assert.vm(vm);
     if (watchProperty(target, propName)) {
+        let PropNameToListenersMap;
         if (!TargetToPropsMap.has(target)) {
-            TargetToPropsMap.set(target, new Map());
+            PropNameToListenersMap = new Map();
+            TargetToPropsMap.set(target, PropNameToListenersMap);
+        } else {
+            PropNameToListenersMap = TargetToPropsMap.get(target);
         }
-        const PropNameToListenersMap = TargetToPropsMap.get(target);
-
         let set = PropNameToListenersMap.get(propName);
         if (!set) {
             set = new Set();

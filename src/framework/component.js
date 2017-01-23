@@ -13,18 +13,25 @@ import {
     getAttributeProxy,
 } from "./attributes.js";
 import { internal } from "./def.js";
+import {
+    defineProperty,
+    setPrototypeOf,
+    getPrototypeOf,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+} from "./language.js";
 
 function initComponentProps(vm: VM) {
     assert.vm(vm);
     const { cache } = vm;
     const { component, state, def: { props: config, observedAttrs } } = cache;
-    const target = Object.getPrototypeOf(component);
+    const target = getPrototypeOf(component);
     for (let propName in config) {
         assert.block(() => {
-            const { get, set } = Object.getOwnPropertyDescriptor(component, propName) || Object.getOwnPropertyDescriptor(target, propName);
+            const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
             assert.invariant(get[internal] && set[internal], `component ${vm} has tampered with property ${propName} during construction.`);
         });
-        Object.defineProperty(component, propName, {
+        defineProperty(component, propName, {
             get: (): any => {
                 const value = state[propName];
                 return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
@@ -54,7 +61,7 @@ function initComponentProps(vm: VM) {
 function watchComponentProperties(vm: VM) {
     assert.vm(vm);
     const { cache: { component } } = vm;
-    Object.getOwnPropertyNames(component).forEach((propName: string) => {
+    getOwnPropertyNames(component).forEach((propName: string) => {
         watchProperty(component, propName);
     });
 }
@@ -159,7 +166,7 @@ export function createComponent(vm: VM) {
             return `<${sel}>`;
         },
     };
-    Object.setPrototypeOf(vm, proto);
+    setPrototypeOf(vm, proto);
     cache.component = invokeComponentConstructor(vm);
     watchComponentProperties(vm);
     initComponentProps(vm);

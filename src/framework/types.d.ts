@@ -4,7 +4,6 @@ declare class Component {
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
-    static tagName: string;
     static publicProps: any;
     static publicMethods: Array<string>;
     static templateUsedProps: Array<string>;

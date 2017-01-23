@@ -36,5 +36,5 @@ export function getAttributeProxy(value: Object): any {
     const proxy = new Proxy(value, attributeProxyHandler);
     ObjectAttributeToProxyMap.set(value, proxy);
     ProxySet.add(proxy);
-    return proxy;   
+    return proxy;
 }
