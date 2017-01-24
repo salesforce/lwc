@@ -1,21 +1,21 @@
 import assert from "./assert.js";
+import { hook } from "./hook.js";
 import h from "snabbdom/h";
-import * as hook from "./hook.js";
+
+// [c]ustom element node
+export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}, bcDefaultSlot: Array<vnode>): Object {
+    assert.isFalse("attrs" in data, `Compiler Issue: Custom elements should not have property "attrs" in data.`);
+    const { props, key, on, dataset, class: klass } = data;
+    // assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
+    // TODO: once the parser is updated, uncomment the previous line and remove this fork in favor of just data.slotset
+    const slotset = data.slotset || (bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot });
+    const vnode = h(sel, { hook, props, key, on, slotset, dataset, "class": klass }, []);
+    vnode.Ctor = Ctor;
+    return vnode;
+}
 
 // [h]tml node
 export { h };
-
-// [v]irtual node
-// based on the structure from vue
-// https://github.com/vuejs/babel-plugin-transform-vue-jsx
-export function v(Ctor: ObjectConstructor, data: Object = {}, children?: Array<any>): Object {
-    const { key, props } = data;
-    const vnode = h(Ctor.sel || Ctor.name, { hook, key });
-    vnode.Ctor = Ctor;
-    vnode.state = props || {};
-    vnode.body = children;
-    return vnode;
-}
 
 // [i]terable node
 export function i(items: array<any>, factory: Function): Array<VNode> {

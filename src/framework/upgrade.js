@@ -1,48 +1,40 @@
 import assert from "./assert.js";
-import { patch } from "./patcher.js";
-import { setAttribute, removeAttribute } from "./attributes.js";
+import { patch } from "./hook.js";
+import {
+    resetComponentProp,
+    updateComponentProp,
+} from "./component.js";
 import { getComponentDef } from "./def.js";
-import { createComponent } from "./vm.js";
-import { v } from "./api.js";
+import { c } from "./api.js";
 import { loaderImportMethod } from "./loader.js";
+import { defineProperties } from "./language.js";
 
-const fakeElement = document.createElement('raptor'); // fake element to patch and resolve vm.elm
 const Ep = Element.prototype;
+const CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { Ctor } = vm;
-    let { attrs } = getComponentDef(Ctor);
+    const { cache: { def: { attrs } } } = vm;
     // replacing mutators on the element itself to catch any mutation
     element.setAttribute = (attrName: string, value: any) => {
         Ep.setAttribute.call(element, attrName, value);
-        if (attrs.hasOwnProperty(attrName)) {
-            setAttribute(vm, attrName, value);
+        const attrConfig = attrs[attrName.toLocaleLowerCase()];
+        if (attrConfig) {
+            updateComponentProp(vm, attrConfig.propName, value);
         }
     };
     element.removeAttribute = (attrName: string) => {
         Ep.removeAttribute.call(element, attrName);
-        if (attrs.hasOwnProperty(attrName)) {
-            removeAttribute(vm, attrName);
+        const attrConfig = attrs[attrName.toLocaleLowerCase()];
+        if (attrConfig) {
+            resetComponentProp(vm, attrConfig.propName);
         }
     };
-    assert.block(() => {
-        // this is to warn in dev mode when they try to do an invalid mutation on an element.
-        const observer = new MutationObserver((mutations: Array<MutationRecord>) => {
-            mutations.forEach((mutation: MutationRecord) => {
-                console.error(`Arbitrary mutations in a child element of the Raptor Element <${element.tagName}> can have unpredictable results. Instead, you can use setAttribute() and removeAttribute() on the Raptor Element to mutate its state.`);
-            });
-        });
-        const config: MutationObserverInit = {
-            childList: true,
-        };
-        observer.observe(element, config);
-    });
 }
 
 function linkProperties(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { Ctor, component } = vm;
+    const { Ctor, cache: { component } } = vm;
     let { props, methods } = getComponentDef(Ctor);
     const descriptors: PropertyDescriptorMap = {};
     // linking public methods
@@ -60,85 +52,69 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let propName in props) {
         descriptors[propName] = {
             get: (): any => component[propName],
+            set: (newValue: any): void => updateComponentProp(vm, propName, newValue),
             configurable: false,
             enumerable: true,
         };
-        assert.block(() => {
-            descriptors[propName].set = () => {
-                const { attrName } = props[propName];
-                throw new Error(`Invalid mutation of Raptor Element via property setter: <${element.tagName}>.${propName}. Instead use setAttribute("${attrName}", ...) or removeAttribute("${attrName}").`);
-            };
-        });
     }
-    Object.defineProperties(element, descriptors);
+    defineProperties(element, descriptors);
 }
 
-function createVM(element: HTMLElement, Ctor: any, props: HashTable<any>): VM {
+function createVM(element: HTMLElement, Ctor: any, data: HashTable<any>): VM {
     const tagName = element.tagName.toLowerCase();
-    let vm = v(Ctor, { props });
-    createComponent(vm);
-    if (vm.sel !== element.tagName) {
-        // forcing the vm.sel to match the source element tagName otherwise it may be replaced when patching it.
-        vm.sel = tagName;
-        assert.block(() => {
-            console.warn(`Raptor Component ${vm} is normally used for <${Ctor.tagName}> elements instead of <${tagName}>.`);
-        });
+    let vm = c(tagName, Ctor, data);
+    return patch(element, vm);
+}
+
+function getInitialProps(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+    const { props: config } = getComponentDef(Ctor);
+    const props = {};
+    for (let propName in config) {
+        if (propName in element) {
+            props[propName] = element[propName];
+        }
     }
-    if (vm.flags.hasElement) {
-        vm = patch(element, vm);
-    } else {
-        /**
-         * Snabdom does not have a way to process the vnode to produce an element, instead we need to
-         * patch the vnode against some fake html element, then we can inspect the element. More here:
-         * https://github.com/snabbdom/snabbdom/issues/156
-         */
-        vm = patch(fakeElement.cloneNode(), vm);
-        element.appendChild(vm.elm);
+    if (element.hasAttributes()) {
+        // looking for custom attributes that are not reflectives by default
+        const attrs = element.attributes;
+        for (let i = attrs.length - 1; i >= 0; i--) {
+            const propName = attrs[i].name.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+            if (!(propName in props) && propName in config) {
+                props[propName] = attrs[i].value;
+            }
+        }
     }
-    return vm;
+    return props;
+}
+
+function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+    // TODO: implement algo to resolve slots
+    return undefined;
 }
 
 /**
  * This algo mimics 2.5 of web component specification somehow:
  * https://www.w3.org/TR/custom-elements/#upgrades
  */
-function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor, domAttrs: HashTable<any>): Component {
+function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor): Component {
     if (!Ctor) {
         throw new TypeError(`Invalid Raptor Component Definition: ${Ctor}.`);
     }
-    const { attrs } = getComponentDef(Ctor);
-    const props = {};
-    for (let attrName in attrs) {
-        if (attrName in domAttrs) {
-            props[attrs[attrName].propName] = domAttrs[attrName];
-        }
-    }
-    const vm = createVM(element, Ctor, props);
+    const props = getInitialProps(element, Ctor);
+    const slots = getInitialSlots(element, Ctor);
+    const vm = createVM(element, Ctor, { props, slots });
     linkAttributes(element, vm);
     // TODO: for vm with element we might not need to do any of these.
     linkProperties(element, vm);
-    return vm.component;
+    return vm.cache.component;
 }
 
 function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor> | ObjectConstructor): Promise<HTMLElement> {
     return new Promise((resolve: (element: HTMLElement) => void, reject: (e: Error) => void) => {
         assert.isTrue(element instanceof HTMLElement, `upgrade() first argument should be a DOM Element instead of ${element}.`);
-        const domAttrs = {};
         const p = Promise.resolve(CtorOrPromise);
-        // temporarily replacing mutators on the element itself to catch any mutation
-        // while waiting for the Ctor to be ready to upgrade the element. This guarantees
-        // that any attribute mutation after upgrade() is called is consistent, even when
-        // the element hasn't been fully upgraded.
-        element.setAttribute = (attrName: string, value: any) => {
-            domAttrs[attrName] = value;
-            Ep.setAttribute.call(element, attrName, value);
-        };
-        element.removeAttribute = (attrName: string) => {
-            domAttrs[attrName] = null;
-            Ep.removeAttribute.call(element, attrName);
-        };
         p.then((Ctor: ObjectConstructor) => {
-            upgradeElement(element, Ctor, domAttrs);
+            upgradeElement(element, Ctor);
             resolve(element);
         }, reject);
     });

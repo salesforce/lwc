@@ -1,75 +1,97 @@
-import {
-    createComponent,
-    updateComponent,
-    destroyComponent,
-    initFromAnotherVM,
-} from "./vm.js";
-import {
-    batchUpdateComponentProps,
-} from "./props.js";
+import className from "./modules/klass.js";
+import componentLink from "./modules/component-link.js";
+import componentState from "./modules/component-state.js";
+import componentProps from "./modules/component-props.js";
+import slotset from "./modules/slotset.js";
+import shadowRootElement from "./modules/shadow-root-element.js";
+import props from "./modules/props.js";
+
+import { init } from "snabbdom";
+import attrs from "snabbdom/modules/attributes";
+import style from "snabbdom/modules/style";
+import dataset from "snabbdom/modules/dataset";
+import on from "snabbdom/modules/eventlisteners";
+
+import assert from "./assert.js";
 import {
     invokeComponentConnectedCallback,
     invokeComponentDisconnectedCallback,
 } from "./invoker.js";
+import {
+    renderComponent,
+    destroyComponent,
+} from "./component.js";
 
-import assert from "./assert.js";
+export const patch = init([
+    componentLink,
+    // these are all raptor specific plugins.
+    componentState,
+    slotset,
+    shadowRootElement,
+    componentProps,
+    // at this point, raptor is done, and regular plugins
+    // should be used to rehydrate the dom element.
+    props,
+    attrs,
+    style,
+    dataset,
+    className,
+    on,
+]);
 
-export function init(vm: VM) {
+export function rehydrate(vm: VM) {
     assert.vm(vm);
-    console.log(`<${vm.Ctor.name}> is being initialized.`);
-    createComponent(vm);
+    const { cache } = vm;
+    assert.isTrue(vm.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
+    if (cache.isDirty) {
+        const { sel, key, elm, data, children } = vm;
+        assert.invariant(Array.isArray(children), 'Rendered vm ${vm}.children should always have an array of vnodes instead of ${children}');
+        // when patch() is invoked from within the component life-cycle due to
+        // a dirty state, we create a new disposable VNode to kick in the diff, but the
+        // state is the same, only the children collection should not be ===.
+        const vnode = {
+            sel,
+            key,
+            elm,
+            data: {},
+            children,
+        };
+        // rendering the component to compute the new fragment collection
+        // while resetting the vm.children collection to allow diffing.
+        renderComponent(vm);
+        vm.children = [];
+        patch(vnode, vm);
+    }
+    cache.isScheduled = false;
 }
 
-export function prepatch(oldvm: VM, vm: VM) {
+export function scheduleRehydration(vm: VM) {
     assert.vm(vm);
-    console.log(`<${vm.Ctor.name}> is being prepatched.`);
-    if (oldvm !== vm) {
-        const { Ctor: oldCtor } = oldvm;
-        const { Ctor, state, body } = vm;
-        if (oldCtor === Ctor) {
-            assert.vm(oldvm);
-            initFromAnotherVM(vm, oldvm);
-        } else if (vm.elm && !oldvm.data.hook) {
-            // there is an edge case where we are attempting to patch an existing rendered vm
-            // against its previous Dom structure, in which case the oldvm will be synthetic
-            // created by the engine without the children collection, if that's the case, we
-            // should make sure that we are diffing against a fully loaded oldvm.
-            oldvm.children = vm.children;
-            oldvm.text = vm.text;
+    const { cache } = vm;
+    if (!cache.isScheduled) {
+        cache.isScheduled = true;
+        Promise.resolve(vm).then(rehydrate).catch((error: Error) => {
+            assert.fail(`Error attempting to rehydrate component ${vm}: ${error.message}`);
+        });
+    }
+}
+
+export const hook = {
+    insert(vm: VM) {
+        assert.vm(vm);
+        if (vm.cache.component.connectedCallback) {
+            invokeComponentConnectedCallback(vm);
         }
-        batchUpdateComponentProps(vm, state, body);
-        // there is an edge case here that maybe isDirty is not really
-        // a consequence of calling `batchUpdateComponentProps()`, but something
-        // that is pending to be done in the next tick. as a result, the update
-        // will be carry on during the same tick, which is not a problem at all.
-        if (vm.flags.isDirty) {
-            console.log(`${oldvm} is being rehydrated.`);
-            updateComponent(vm);
-        } else if (oldCtor === Ctor) {
-            console.log(`${oldvm} is being skipped.`);
-            // hard-wire to prevent engine diffing down the rabbit hole when
-            // the state is the exact same as before.
-            oldvm.children = vm.children;
-            oldvm.data = vm.data;
+        console.log(`vnode "${vm}" was inserted.`);
+    },
+    destroy(vm: VM) {
+        assert.vm(vm);
+        if (vm.cache.component.disconnectedCallback) {
+            invokeComponentDisconnectedCallback(vm);
         }
-    }
-}
-
-export function insert(vm: VM) {
-    assert.vm(vm);
-    console.log(`${vm} is being inserted.`);
-    if (vm.flags.hasElement && vm.component.connectedCallback) {
-        invokeComponentConnectedCallback(vm);
-    }
-}
-
-export function destroy(vm: VM) {
-    assert.vm(vm);
-    console.log(`${vm} is being destroyed.`);
-    if (vm.flags.hasElement && vm.component.disconnectedCallback) {
-        invokeComponentDisconnectedCallback(vm);
-    }
-    if (vm.listeners.size > 0) {
-        destroyComponent(vm);
-    }
+        if (vm.cache.listeners.size > 0) {
+            destroyComponent(vm);
+        }
+        console.log(`vnode "${vm}" was destroyed.`);
+    },
 }

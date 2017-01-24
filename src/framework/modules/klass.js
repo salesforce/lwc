@@ -3,11 +3,13 @@ function updateClass (oldVnode: VNode, vnode: VNode) {
     const oldClass = oldVnode.data.class;
     const klass = vnode.data.class;
 
-  if (!oldClass && !klass) return;
+    if (!oldClass && !klass) {
+        return;
+    }
 
-  if (klass !== oldClass) {
-      elm.className = klass;
-  }
+    if (klass !== oldClass) {
+        elm.className = klass;
+    }
 }
 
 export default {
