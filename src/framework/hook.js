@@ -24,12 +24,12 @@ import {
 
 export const patch = init([
     componentLink,
-    // these are all raptor specific plugins.
+    // these are all engine specific plugins.
     componentState,
     slotset,
     shadowRootElement,
     componentProps,
-    // at this point, raptor is done, and regular plugins
+    // at this point, engine is done, and regular plugins
     // should be used to rehydrate the dom element.
     props,
     attrs,

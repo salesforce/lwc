@@ -32,7 +32,7 @@ interface ComponentDef {
     observedAttrs: HashTable<number>;
 }
 
-interface RaptorElement extends HTMLElement {}
+interface PlainHTMLElement extends HTMLElement {}
 
 declare class Cache {
     state: HashTable<any>;
@@ -62,10 +62,12 @@ declare class VNode {
 }
 
 interface RenderAPI {
-    v(Ctor: ObjectConstructor, data: Object, children?: Array<any>): VM;
-    h(tagNAme: string, data: Object, children?: Array<any>, text?: string): VNode;
-    i(items: Array<any>, factory: () => VNode | VM): Array<VNode|VM>;
-    m(index: number, obj: any): any;
+    c(tagName: string, Ctor: ObjectConstructor, data: Object): VM;
+    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode;
+    i(items: Array<any>, factory: () => VNode | VM): Array<VNode | VM>;
+    s(value: any = ''): string;
+    e(): string;
+    f(items: Array<any>): Array<any>;
 }
 
 interface Namespace {}

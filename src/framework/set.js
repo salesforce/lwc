@@ -4,7 +4,7 @@ import { notifyListeners } from "./watcher.js";
 
 // special hook for forcing to render() the component:
 //
-//      import { set } from "raptor";
+//      import { set } from "...";
 //      set(this.foo, "bar", 1); // sets this.foo.bar = 1; and resolves side effects of this assignment
 //
 export function set(obj: any, propName: string, newValue: any) {

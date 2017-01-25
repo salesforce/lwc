@@ -98,7 +98,7 @@ function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTab
  */
 function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor): Component {
     if (!Ctor) {
-        throw new TypeError(`Invalid Raptor Component Definition: ${Ctor}.`);
+        throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
     }
     const props = getInitialProps(element, Ctor);
     const slots = getInitialSlots(element, Ctor);
@@ -128,7 +128,7 @@ export function createElement(tagName: string): HTMLElement {
     if (!tagName || tagName in definedElements || tagName.indexOf('-') === -1 || !(element instanceof HTMLElement)) {
         return element;
     }
-    // it must be a raptor element, lets derivate the namespace from tagName,
+    // it must be a component, lets derivate the namespace from tagName,
     // where only the first `-` should be replaced
     const moduleName = element.tagName.toLowerCase().replace('-', ':');
     // TODO: maybe a local hash of resolved modules to speed things up.

@@ -1,7 +1,9 @@
+import * as Main from "./main.js";
+
 const registry = {
     raptor: {
         get ns(): Promise<any> {
-            return Promise.resolve(window.Raptor);
+            return Promise.resolve(Main);
         }
     }
 };
@@ -54,7 +56,7 @@ function amdDefineMethod(name: string, deps: any, definition?: any) {
     };
 }
 
-export {loaderImportMethod};
-
-// exposing the registry hook to add new bundles
-window.define = amdDefineMethod;
+export {
+    loaderImportMethod,
+    amdDefineMethod,
+};

@@ -50,7 +50,7 @@ function initComponentProps(vm: VM) {
     for (let propName in config) {
         const {  attrName } = config[propName];
         const defaultValue = state[propName];
-        // default value is a raptor abstraction, and therefore should be treated as a regular
+        // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
         if (defaultValue !== undefined && observedAttrs[attrName]) {
             invokeComponentAttributeChangedCallback(vm, attrName, undefined, defaultValue);

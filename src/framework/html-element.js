@@ -19,7 +19,7 @@ const CAMEL_REGEX = /-([a-z])/g;
 
 class RaptorHTMLElement {
     constructor() {
-        assert.vm(vmBeingCreated, 'Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.');
+        assert.vm(vmBeingCreated, `Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.`);
         linkComponentToVM(this, vmBeingCreated);
     }
     dispatchEvent(event: Event): boolean {
@@ -27,10 +27,10 @@ class RaptorHTMLElement {
         assert.vm(vm);
         const { elm } = vm;
         // custom elements will rely on the DOM dispatchEvent mechanism
-        assert.isTrue(elm instanceof HTMLElement, 'Invalid association between Raptor component ${this} and element ${element} when calling method ${methodName}.');
+        assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm}.`);
         return elm.dispatchEvent(event);
     }
-    getAttribute(attrName: string): string {
+    getAttribute(attrName: string): string | void {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
         const { cache: { state, def: { props } } } = vm;
@@ -78,7 +78,7 @@ HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
         const { elm } = vm;
-        assert.isTrue(elm instanceof HTMLElement, `Invalid association between Raptor component ${this} and element ${elm} when calling method ${methodName}.`);
+        assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm} when calling method ${methodName}.`);
         return elm[methodName](...args);
     };
     return proto;
@@ -88,7 +88,7 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
     defineProperty(proto, propName, {
         get: function (): any {
             const element = ComponentToVMMap.get(this);
-            assert.isTrue(element instanceof HTMLElement, 'Invalid association between Raptor component ${this} and element ${element} when accessing member property @{propName}.');
+            assert.isTrue(element instanceof HTMLElement, `Invalid association between component ${this} and element ${element} when accessing member property @{propName}.`);
             return element[propName];
         },
         enumerable: true,
@@ -103,7 +103,7 @@ export function linkComponentToVM(component: Component, vm: VM) {
     assert.vm(vm);
     // for now, only components extending HTMLElement have to be linked to their corresponding element.
     if (component instanceof RaptorHTMLElement) {
-        assert.isTrue(vm.elm instanceof HTMLElement, 'Only DOM elements can be linked to their corresponding raptor component.');
+        assert.isTrue(vm.elm instanceof HTMLElement, `Only DOM elements can be linked to their corresponding component.`);
         ComponentToVMMap.set(component, vm);
     }
 }
