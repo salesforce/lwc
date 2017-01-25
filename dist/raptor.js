@@ -20,7 +20,7 @@
 var registry = {
     raptor: {
         get ns() {
-            return Promise.resolve(Raptor);
+            return Promise.resolve(Main);
         }
     }
 };
@@ -746,7 +746,7 @@ function initComponentProps(vm) {
         var attrName = config[_propName].attrName;
 
         var defaultValue = state[_propName];
-        // default value is a raptor abstraction, and therefore should be treated as a regular
+        // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
         if (defaultValue !== undefined && observedAttrs[attrName]) {
             invokeComponentAttributeChangedCallback(vm, attrName, undefined, defaultValue);
@@ -922,7 +922,7 @@ var RaptorHTMLElement = function () {
     function RaptorHTMLElement() {
         _classCallCheck(this, RaptorHTMLElement);
 
-        assert.vm(vmBeingCreated, 'Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.');
+        assert.vm(vmBeingCreated, "Invalid creation patch for " + this + " who extends HTMLElement. It expects a vm, instead received " + vmBeingCreated + ".");
         linkComponentToVM(this, vmBeingCreated);
     }
 
@@ -934,7 +934,7 @@ var RaptorHTMLElement = function () {
             var elm = vm.elm;
             // custom elements will rely on the DOM dispatchEvent mechanism
 
-            assert.isTrue(elm instanceof HTMLElement, 'Invalid association between Raptor component ${this} and element ${element} when calling method ${methodName}.');
+            assert.isTrue(elm instanceof HTMLElement, "Invalid association between component " + this + " and element " + elm + ".");
             return elm.dispatchEvent(event);
         }
     }, {
@@ -1012,7 +1012,7 @@ HTMLElementMethodsTheGoodParts.reduce(function (proto, methodName) {
         assert.vm(vm);
         var elm = vm.elm;
 
-        assert.isTrue(elm instanceof HTMLElement, "Invalid association between Raptor component " + this + " and element " + elm + " when calling method " + methodName + ".");
+        assert.isTrue(elm instanceof HTMLElement, "Invalid association between component " + this + " and element " + elm + " when calling method " + methodName + ".");
         return elm[methodName].apply(elm, arguments);
     };
     return proto;
@@ -1022,7 +1022,7 @@ HTMLElementPropsTheGoodParts.reduce(function (proto, propName) {
     defineProperty(proto, propName, {
         get: function get() {
             var element = ComponentToVMMap.get(this);
-            assert.isTrue(element instanceof HTMLElement, 'Invalid association between Raptor component ${this} and element ${element} when accessing member property @{propName}.');
+            assert.isTrue(element instanceof HTMLElement, "Invalid association between component " + this + " and element " + element + " when accessing member property @{propName}.");
             return element[propName];
         },
         enumerable: true,
@@ -1035,7 +1035,7 @@ function linkComponentToVM(component, vm) {
     assert.vm(vm);
     // for now, only components extending HTMLElement have to be linked to their corresponding element.
     if (component instanceof RaptorHTMLElement) {
-        assert.isTrue(vm.elm instanceof HTMLElement, 'Only DOM elements can be linked to their corresponding raptor component.');
+        assert.isTrue(vm.elm instanceof HTMLElement, "Only DOM elements can be linked to their corresponding component.");
         ComponentToVMMap.set(component, vm);
     }
 }
@@ -1911,9 +1911,9 @@ module.exports = {
 var on = interopDefault(eventlisteners);
 
 var patch = init([componentLink,
-// these are all raptor specific plugins.
+// these are all engine specific plugins.
 componentState, slotset, shadowRootElement, componentProps,
-// at this point, raptor is done, and regular plugins
+// at this point, engine is done, and regular plugins
 // should be used to rehydrate the dom element.
 props, attrs, style$1, dataset$1, className, on]);
 
@@ -2096,7 +2096,7 @@ function getInitialSlots(element, Ctor) {
  */
 function upgradeElement(element, Ctor) {
     if (!Ctor) {
-        throw new TypeError("Invalid Raptor Component Definition: " + Ctor + ".");
+        throw new TypeError("Invalid Component Definition: " + Ctor + ".");
     }
     var props = getInitialProps(element, Ctor);
     var slots = getInitialSlots(element, Ctor);
@@ -2126,7 +2126,7 @@ function createElement(tagName) {
     if (!tagName || tagName in definedElements || tagName.indexOf('-') === -1 || !(element instanceof HTMLElement)) {
         return element;
     }
-    // it must be a raptor element, lets derivate the namespace from tagName,
+    // it must be a component, lets derivate the namespace from tagName,
     // where only the first `-` should be replaced
     var moduleName = element.tagName.toLowerCase().replace('-', ':');
     // TODO: maybe a local hash of resolved modules to speed things up.
@@ -2158,7 +2158,7 @@ try {
 
 // special hook for forcing to render() the component:
 //
-//      import { set } from "raptor";
+//      import { set } from "...";
 //      set(this.foo, "bar", 1); // sets this.foo.bar = 1; and resolves side effects of this assignment
 //
 function set(obj, propName, newValue) {
@@ -2173,7 +2173,7 @@ function set(obj, propName, newValue) {
 
 
 
-var Raptor = Object.freeze({
+var Main = Object.freeze({
 	loaderImportMethodTemporary: loaderImportMethod,
 	defineTemporary: amdDefineMethod,
 	createElement: createElement,
