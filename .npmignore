@@ -1,0 +1,10 @@
+coverage/
+examples/
+scripts/
+src/
+fixtures/
+fake-*/
+docs/
+discussions/
+rollup.config.*
+.*

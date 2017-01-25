@@ -5,3 +5,4 @@ node_modules
 fake-cdn/**/*.js
 fake-cdn/**/*.map
 coverage
+lib/
