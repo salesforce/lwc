@@ -26,10 +26,10 @@ foo/foo.js
 import html from "./foo.html"
 
 export default function (props) {
-    const { name, url } = props;
+    const { name = 'your name', url = '#' } = props;
     return html({
-        name: name || 'your name',
-        tagline: 'your tagline',
+        name,
+        tagline: 'you can click on the link above',
         url,
     });
 }
