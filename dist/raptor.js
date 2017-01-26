@@ -902,15 +902,15 @@ var HTMLElementMethodsTheGoodParts = ["querySelector", "querySelectorAll", "addE
 
 var CAMEL_REGEX$1 = /-([a-z])/g;
 
-var RaptorHTMLElement = function () {
-    function RaptorHTMLElement() {
-        _classCallCheck(this, RaptorHTMLElement);
+var PlainHTMLElement = function () {
+    function PlainHTMLElement() {
+        _classCallCheck(this, PlainHTMLElement);
 
         assert.vm(vmBeingCreated, "Invalid creation patch for " + this + " who extends HTMLElement. It expects a vm, instead received " + vmBeingCreated + ".");
         linkComponentToVM(this, vmBeingCreated);
     }
 
-    _createClass(RaptorHTMLElement, [{
+    _createClass(PlainHTMLElement, [{
         key: "dispatchEvent",
         value: function dispatchEvent(event) {
             var vm = ComponentToVMMap.get(this);
@@ -962,8 +962,8 @@ var RaptorHTMLElement = function () {
             state[propName] = '' + value;
         }
     }, {
-        key: "removeAttr",
-        value: function removeAttr(attrName) {
+        key: "removeAttribute",
+        value: function removeAttribute(attrName) {
             var vm = ComponentToVMMap.get(this);
             assert.vm(vm);
             var _vm$cache3 = vm.cache,
@@ -983,7 +983,7 @@ var RaptorHTMLElement = function () {
         }
     }]);
 
-    return RaptorHTMLElement;
+    return PlainHTMLElement;
 }();
 
 // One time operation to expose the good parts of the web component API,
@@ -1000,7 +1000,7 @@ HTMLElementMethodsTheGoodParts.reduce(function (proto, methodName) {
         return elm[methodName].apply(elm, arguments);
     };
     return proto;
-}, RaptorHTMLElement.prototype);
+}, PlainHTMLElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce(function (proto, propName) {
     defineProperty(proto, propName, {
@@ -1013,12 +1013,12 @@ HTMLElementPropsTheGoodParts.reduce(function (proto, propName) {
         configurable: false
     });
     return proto;
-}, RaptorHTMLElement.prototype);
+}, PlainHTMLElement.prototype);
 
 function linkComponentToVM(component, vm) {
     assert.vm(vm);
     // for now, only components extending HTMLElement have to be linked to their corresponding element.
-    if (component instanceof RaptorHTMLElement) {
+    if (component instanceof PlainHTMLElement) {
         assert.isTrue(vm.elm instanceof HTMLElement, "Only DOM elements can be linked to their corresponding component.");
         ComponentToVMMap.set(component, vm);
     }
@@ -2163,7 +2163,7 @@ var Main = Object.freeze({
 	createElement: createElement,
 	set: set,
 	getComponentDef: getComponentDef,
-	HTMLElement: RaptorHTMLElement
+	HTMLElement: PlainHTMLElement
 });
 
 exports.loaderImportMethodTemporary = loaderImportMethod;
@@ -2171,7 +2171,7 @@ exports.defineTemporary = amdDefineMethod;
 exports.createElement = createElement;
 exports.set = set;
 exports.getComponentDef = getComponentDef;
-exports.HTMLElement = RaptorHTMLElement;
+exports.HTMLElement = PlainHTMLElement;
 
 // forcing the global define() function to be declared bound to raptor.
 window.define = Raptor.defineTemporary;
