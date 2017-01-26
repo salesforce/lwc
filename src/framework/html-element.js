@@ -17,7 +17,7 @@ const HTMLElementMethodsTheGoodParts = [
 
 const CAMEL_REGEX = /-([a-z])/g;
 
-class RaptorHTMLElement {
+class PlainHTMLElement {
     constructor() {
         assert.vm(vmBeingCreated, `Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.`);
         linkComponentToVM(this, vmBeingCreated);
@@ -56,7 +56,7 @@ class RaptorHTMLElement {
         }
         state[propName] = '' + value;
     }
-    removeAttr(attrName: string) {
+    removeAttribute(attrName: string) {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
         const { cache: { state, def: { props } } } = vm;
@@ -82,7 +82,7 @@ HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
         return elm[methodName](...args);
     };
     return proto;
-}, RaptorHTMLElement.prototype);
+}, PlainHTMLElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
     defineProperty(proto, propName, {
@@ -95,14 +95,14 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
         configurable: false,
     });
     return proto;
-}, RaptorHTMLElement.prototype);
+}, PlainHTMLElement.prototype);
 
-export { RaptorHTMLElement as HTMLElement };
+export { PlainHTMLElement as HTMLElement };
 
 export function linkComponentToVM(component: Component, vm: VM) {
     assert.vm(vm);
     // for now, only components extending HTMLElement have to be linked to their corresponding element.
-    if (component instanceof RaptorHTMLElement) {
+    if (component instanceof PlainHTMLElement) {
         assert.isTrue(vm.elm instanceof HTMLElement, `Only DOM elements can be linked to their corresponding component.`);
         ComponentToVMMap.set(component, vm);
     }
