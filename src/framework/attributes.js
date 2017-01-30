@@ -22,13 +22,20 @@ function getter(target: Object, name: string): any {
     return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
 }
 
-function setter(target: Object, name: string, newValue: any) {
+function setter(target: Object, name: string, newValue: any): boolean {
     assert.invariant(false, `Property ${name} of ${target.toString()} cannot be set to ${newValue} because it is a public property controlled by the owner element.`);
+    return true; // intentionally returning true to avoid runtime errors in prod.
+}
+
+function deleteProperty(target: Object, name: string): boolean {
+    assert.invariant(false, `Property ${name} of ${target.toString()} cannot be deleted because it is a public property controlled by the owner element.`);
+    return true; // intentionally returning true to avoid runtime errors in prod.
 }
 
 const attributeProxyHandler = {
     get: (target: Object, name: string): any => getter(target, name),
-    set: (target: Object, name: string, newValue: any): any => setter(target, name, newValue),
+    set: (target: Object, name: string, newValue: any): boolean => setter(target, name, newValue),
+    deleteProperty: (target: Object, name: string): boolean => deleteProperty(target, name),
 };
 
 function getAttributeProxy(value: Object): any {
@@ -58,7 +65,7 @@ export function hookComponentReflectiveProperty(vm: VM, propName: string) {
     });
     defineProperty(component, propName, {
         get: (): any => getter(state, propName),
-        set: (newValue: any): any => setter(state, propName, newValue),
+        set: (newValue: any): boolean => setter(state, propName, newValue),
         configurable: true,
         enumerable: true,
     });

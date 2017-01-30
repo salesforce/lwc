@@ -23,19 +23,26 @@ function getter(target: Object, name: string): any {
     return value;
 }
 
-function setter(target: Object, name: string, value: any) {
+function setter(target: Object, name: string, value: any): boolean {
     const oldValue = target[name];
     value = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
     if (oldValue !== value) {
-        // TODO: evaluate if creating the proxy on set is better for perf.
         target[name] = value;
         notifyListeners(target, name);
     }
+    return true;
+}
+
+function deleteProperty(target: Object, name: string): boolean {
+    delete target[name];
+    notifyListeners(target, name);
+    return true;
 }
 
 const propertyProxyHandler = {
     get: (target: Object, name: string): any => getter(target, name),
-    set: (target: Object, name: string, newValue: any): any => setter(target, name, newValue),
+    set: (target: Object, name: string, newValue: any): boolean => setter(target, name, newValue),
+    deleteProperty: (target: Object, name: string): boolean => deleteProperty(target, name),
 };
 
 function getPropertyProxy(value: Object): any {
@@ -71,7 +78,7 @@ export function hookComponentProperty(vm: VM, propName: string) {
         privates[propName] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
         defineProperty(component, propName, {
             get: (): any => getter(privates, propName),
-            set: (newValue: any): any => setter(privates, propName, newValue),
+            set: (newValue: any): boolean => setter(privates, propName, newValue),
             configurable,
             enumerable,
             writtable,
