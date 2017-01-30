@@ -9,7 +9,7 @@ foo/foo.html
 foo/foo.js
 ```
 
-### Template
+### Template (foo.html)
 
 ```html
 <template>
@@ -18,7 +18,7 @@ foo/foo.js
 </template>
 ```
 
-### Declaration
+### Declaration (foo.js)
 
 ```js
 import html from "./foo.html"
@@ -52,8 +52,8 @@ import html from "./foo.html"
 import { HTMLElement } from "raptor";
 
 export default class Foo extends HTMLElement {
-    name: 'your name',
-    url: '#',
+    name = 'your name';
+    url = '#';
 
     constructor() {
         super();

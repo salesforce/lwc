@@ -1,4 +1,4 @@
-## CSS definition for a React Component
+## CSS definition for a Component
 
 ### Template Declaration
 

@@ -7,8 +7,8 @@ Functional components are a considerable lean implementation of a Raptor Compone
 File structure:
 
 ```bash
-foo/foo.html
-foo/foo.js
+modules/ns/foo/foo.html
+modules/ns/foo/foo.js
 ```
 
 ### Template

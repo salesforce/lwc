@@ -1,4 +1,4 @@
-# Template definition for a React Component
+# Template definition for a Component
 
 Templates for Raptor Components are regular `<template>` tags with
 
@@ -121,6 +121,22 @@ __Important Notes:__
 ];
 ```
 
+### Other Possible Options
+
+To avoid the confusion about the scope of the iterable, a `<template>` tag can help to define that boundary, adding the restriction that `repeat:for` can only be used in a `<template>` tag.
+
+```html
+<template>
+    <ul>
+        <template repeat:for="item of items" repeat:key="item.id">
+            <li>
+                {item.firstname} {item.lastname}
+            </li>
+        </template>
+    </ul>
+</template>
+```
+
 ## Event Bindings
 
 Binding an event to a Raptor Element is very similar to set an attribute. The `bind:` directive can be used to add an event listener bound to an event handler function. e.g:
@@ -138,7 +154,7 @@ __Important Notes:__
 Important things to keep in mind when using the `bind:` directive:
 
  * when the `this.handleClick` is invoked, the `this` value inside the `handleClick` function will be preserved since Raptor does the correct binding to guarantee that.
- * `bind:` directive can be used with any attribute, even if it is not an event handler, e.g.: `<foo-bar bind:xyzCallback="doSomething">`.
+ * `bind:` directive can be used with any attribute, even if it is not an event handler, e.g.: `<foo-bar bind:xyz-callback="doSomething">`.
 
 ## Aliasing using `is` attribute
 
