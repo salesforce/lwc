@@ -17,7 +17,10 @@ function link(oldVnode: VM, vnode: VM) {
     assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
     if (!vnode.cache) {
         if (oldVnode.Ctor === Ctor && oldVnode.cache) {
-            setPrototypeOf(vnode, getPrototypeOf(oldVnode));
+            assert.block(() => {
+                setPrototypeOf(vnode, getPrototypeOf(oldVnode));
+            });
+            vnode.cache = oldVnode.cache;
         } else {
             createComponent(vnode);
             console.log(`Component for ${vnode} was created.`);
