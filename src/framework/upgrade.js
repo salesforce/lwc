@@ -123,8 +123,8 @@ function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor>
 const definedElements = {};
 const createElementOriginal = document.createElement;
 
-export function createElement(tagName: string): HTMLElement {
-    const element = createElementOriginal.call(this, ...arguments);
+export function createElement(tagName: string, options: any): HTMLElement {
+    const element = createElementOriginal.call(document, tagName, options);
     if (!tagName || tagName in definedElements || tagName.indexOf('-') === -1 || !(element instanceof HTMLElement)) {
         return element;
     }
