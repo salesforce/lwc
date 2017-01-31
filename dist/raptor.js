@@ -413,122 +413,6 @@ var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 var getOwnPropertyNames = Object.getOwnPropertyNames;
 var defineProperties = Object.defineProperties;
 
-var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var WatcherFlag = Symbol('watcher');
-var TargetToPropsMap = new WeakMap();
-
-function notifyListeners(target, propName) {
-    if (TargetToPropsMap.has(target)) {
-        var PropNameToListenersMap = TargetToPropsMap.get(target);
-        var set = PropNameToListenersMap.get(propName);
-        if (set) {
-            set.forEach(function (vm) {
-                assert.vm(vm);
-                console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
-                if (!vm.cache.isDirty) {
-                    markComponentAsDirty(vm);
-                    console.log("Scheduling " + vm + " for rehydration.");
-                    scheduleRehydration(vm);
-                }
-            });
-        }
-    }
-}
-
-function getWatchPropertyDescriptor(target, propName, originalGetter, originalSetter) {
-    var _getOwnPropertyDescri = getOwnPropertyDescriptor(target, propName),
-        enumerable = _getOwnPropertyDescri.enumerable,
-        oldValue = _getOwnPropertyDescri.value;
-
-    var isFirstTimeGetterIsCalled = true;
-    var getter = function reactiveGetter() {
-        var value = originalGetter ? originalGetter.call(this) : undefined;
-        if (isRendering) {
-            subscribeToSetHook(vmBeingRendered, target, propName);
-            if (oldValue !== value || isFirstTimeGetterIsCalled) {
-                if (value !== null && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object') {
-                    var names = getOwnPropertyNames(value);
-                    var len = names.length;
-                    for (var i = 0; i < len; i += 1) {
-                        watchProperty(value, names[i]);
-                    }
-                }
-            }
-        }
-        isFirstTimeGetterIsCalled = false;
-        oldValue = value;
-        return value;
-    };
-    var setter = function reactiveSetter(newValue) {
-        assert.invariant(!isRendering, "Invalid attempting to mutate property " + propName + " of " + target.toString() + " during an ongoing rendering process for " + vmBeingRendered + ".");
-        if (originalSetter && newValue !== oldValue) {
-            originalSetter.call(this, newValue);
-            notifyListeners(target, propName);
-        }
-    };
-    getter[WatcherFlag] = 1;
-    setter[WatcherFlag] = 1;
-    return {
-        get: getter,
-        set: setter,
-        configurable: true,
-        enumerable: enumerable
-    };
-}
-
-function watchProperty(target, propName) {
-    // TODO: maybe this should only work if target is a plain object
-    var _ref = getOwnPropertyDescriptor(target, propName) || {},
-        get = _ref.get,
-        set = _ref.set,
-        value = _ref.value,
-        configurable = _ref.configurable;
-
-    if (get && WatcherFlag in get) {
-        return true;
-    }
-    if (configurable) {
-        if (!get && !set) {
-            get = function get() {
-                return value;
-            };
-            set = function set(newValue) {
-                if (value !== newValue) {
-                    value = newValue;
-                }
-            };
-        }
-        var descriptor = getWatchPropertyDescriptor(target, propName, get, set);
-        defineProperty(target, propName, descriptor);
-        return true;
-    }
-    return false;
-}
-
-function subscribeToSetHook(vm, target, propName) {
-    assert.vm(vm);
-    if (watchProperty(target, propName)) {
-        var PropNameToListenersMap = void 0;
-        if (!TargetToPropsMap.has(target)) {
-            PropNameToListenersMap = new Map();
-            TargetToPropsMap.set(target, PropNameToListenersMap);
-        } else {
-            PropNameToListenersMap = TargetToPropsMap.get(target);
-        }
-        var set = PropNameToListenersMap.get(propName);
-        if (!set) {
-            set = new Set();
-            PropNameToListenersMap.set(propName, set);
-        }
-        if (!set.has(vm)) {
-            set.add(vm);
-            // we keep track of the sets that vm is listening from to be able to do some clean up later on
-            vm.cache.listeners.add(set);
-        }
-    }
-}
-
 /**
  * This module is responsible for producing the ComponentDef object that is always
  * accessible via `vm.def`. This is lazily created during the creation of the first
@@ -648,21 +532,174 @@ function getObservedAttrsHash(target, attrs) {
     }, {});
 }
 
-var _typeof$3 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var TargetToPropsMap = new WeakMap();
+
+function notifyListeners(target, propName) {
+    if (TargetToPropsMap.has(target)) {
+        var PropNameToListenersMap = TargetToPropsMap.get(target);
+        var set = PropNameToListenersMap.get(propName);
+        if (set) {
+            set.forEach(function (vm) {
+                assert.vm(vm);
+                console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
+                if (!vm.cache.isDirty) {
+                    markComponentAsDirty(vm);
+                    console.log("Scheduling " + vm + " for rehydration.");
+                    scheduleRehydration(vm);
+                }
+            });
+        }
+    }
+}
+
+function subscribeToSetHook(vm, target, propName) {
+    assert.vm(vm);
+    var PropNameToListenersMap = void 0;
+    if (!TargetToPropsMap.has(target)) {
+        PropNameToListenersMap = new Map();
+        TargetToPropsMap.set(target, PropNameToListenersMap);
+    } else {
+        PropNameToListenersMap = TargetToPropsMap.get(target);
+    }
+    var set = PropNameToListenersMap.get(propName);
+    if (!set) {
+        set = new Set();
+        PropNameToListenersMap.set(propName, set);
+    }
+    if (!set.has(vm)) {
+        set.add(vm);
+        // we keep track of the sets that vm is listening from to be able to do some clean up later on
+        vm.cache.listeners.add(set);
+    }
+}
+
+var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var ObjectPropertyToProxyMap = new WeakMap();
+var ProxySet = new WeakSet();
+
+function getter(target, name) {
+    var value = target[name];
+    if (isRendering) {
+        subscribeToSetHook(vmBeingRendered, target, name);
+    }
+    return value;
+}
+
+function setter(target, name, value) {
+    var oldValue = target[name];
+    value = value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
+    if (oldValue !== value) {
+        target[name] = value;
+        notifyListeners(target, name);
+    }
+    return true;
+}
+
+function _deleteProperty(target, name) {
+    delete target[name];
+    notifyListeners(target, name);
+    return true;
+}
+
+var propertyProxyHandler = {
+    get: function get(target, name) {
+        return getter(target, name);
+    },
+    set: function set(target, name, newValue) {
+        return setter(target, name, newValue);
+    },
+    deleteProperty: function deleteProperty(target, name) {
+        return _deleteProperty(target, name);
+    }
+};
+
+function getPropertyProxy(value) {
+    if (value === null) {
+        return null;
+    }
+    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$1(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
+    if (ProxySet.has(value)) {
+        return value;
+    }
+
+    if (ObjectPropertyToProxyMap.has(value)) {
+        return ObjectPropertyToProxyMap.get(value);
+    }
+    var proxy = new Proxy(value, propertyProxyHandler);
+    ObjectPropertyToProxyMap.set(value, proxy);
+    ProxySet.add(proxy);
+    return proxy;
+}
+
+function hookComponentProperty(vm, propName) {
+    assert.vm(vm);
+    var _vm$cache = vm.cache,
+        component = _vm$cache.component,
+        privates = _vm$cache.privates;
+
+    var descriptor = getOwnPropertyDescriptor(component, propName);
+    var get = descriptor.get,
+        set = descriptor.set,
+        configurable = descriptor.configurable;
+
+    assert.block(function () {
+        if (get || set || !configurable) {
+            console.warn("component " + vm + " has a defined property " + propName + " that cannot be watched for changes.");
+        }
+    });
+    if (configurable && !get && !set) {
+        var value = descriptor.value,
+            enumerable = descriptor.enumerable,
+            writtable = descriptor.writtable;
+
+        privates[propName] = value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
+        defineProperty(component, propName, {
+            get: function get() {
+                return getter(privates, propName);
+            },
+            set: function set(newValue) {
+                return setter(privates, propName, newValue);
+            },
+            configurable: configurable,
+            enumerable: enumerable,
+            writtable: writtable
+        });
+    }
+}
+
+var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var ObjectAttributeToProxyMap = new WeakMap();
-var ProxySet = new WeakSet();
+var ProxySet$1 = new WeakSet();
+
+function getter$1(target, name) {
+    var value = target[name];
+    if (isRendering) {
+        subscribeToSetHook(vmBeingRendered, target, name);
+    }
+    return value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getAttributeProxy(value) : value;
+}
+
+function setter$1(target, name, newValue) {
+    assert.invariant(false, "Property " + name + " of " + target.toString() + " cannot be set to " + newValue + " because it is a public property controlled by the owner element.");
+    return true; // intentionally returning true to avoid runtime errors in prod.
+}
+
+function _deleteProperty$1(target, name) {
+    assert.invariant(false, "Property " + name + " of " + target.toString() + " cannot be deleted because it is a public property controlled by the owner element.");
+    return true; // intentionally returning true to avoid runtime errors in prod.
+}
 
 var attributeProxyHandler = {
     get: function get(target, name) {
-        var value = target[name];
-        if (isRendering) {
-            subscribeToSetHook(vmBeingRendered, target, name);
-        }
-        return value && (typeof value === "undefined" ? "undefined" : _typeof$3(value)) === 'object' ? getAttributeProxy(value) : value;
+        return getter$1(target, name);
     },
-    set: function set(target, name, value) {
-        assert.invariant(false, "Property " + name + " of " + target.toString() + " cannot be set to " + value + " because it belongs to a decorated @attribute.");
+    set: function set(target, name, newValue) {
+        return setter$1(target, name, newValue);
+    },
+    deleteProperty: function deleteProperty(target, name) {
+        return _deleteProperty$1(target, name);
     }
 };
 
@@ -670,8 +707,8 @@ function getAttributeProxy(value) {
     if (value === null) {
         return null;
     }
-    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$3(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
-    if (ProxySet.has(value)) {
+    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$2(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
+    if (ProxySet$1.has(value)) {
         return value;
     }
 
@@ -680,11 +717,41 @@ function getAttributeProxy(value) {
     }
     var proxy = new Proxy(value, attributeProxyHandler);
     ObjectAttributeToProxyMap.set(value, proxy);
-    ProxySet.add(proxy);
+    ProxySet$1.add(proxy);
     return proxy;
 }
 
-var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+function hookComponentReflectiveProperty(vm, propName) {
+    var _vm$cache = vm.cache,
+        component = _vm$cache.component,
+        state = _vm$cache.state,
+        config = _vm$cache.def.props;
+
+    assert.block(function () {
+        var target = getPrototypeOf(component);
+
+        var _ref = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName),
+            get = _ref.get,
+            set = _ref.set;
+
+        assert.invariant(get[internal] && set[internal], "component " + vm + " has tampered with property " + propName + " during construction.");
+    });
+    defineProperty(component, propName, {
+        get: function get() {
+            return getter$1(state, propName);
+        },
+        set: function set(newValue) {
+            return setter$1(state, propName, newValue);
+        },
+        configurable: true,
+        enumerable: true
+    });
+    // this guarantees that the default value is always in place before anything else.
+    var initializer = config[propName].initializer;
+
+    var defaultValue = typeof initializer === 'function' ? initializer() : initializer;
+    state[propName] = defaultValue;
+}
 
 function initComponentProps(vm) {
     assert.vm(vm);
@@ -694,38 +761,20 @@ function initComponentProps(vm) {
         _cache$def = cache.def,
         config = _cache$def.props,
         observedAttrs = _cache$def.observedAttrs;
-
-    var target = getPrototypeOf(component);
-
-    var _loop = function _loop(propName) {
-        assert.block(function () {
-            var _ref = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName),
-                get = _ref.get,
-                set = _ref.set;
-
-            assert.invariant(get[internal] && set[internal], "component " + vm + " has tampered with property " + propName + " during construction.");
-        });
-        defineProperty(component, propName, {
-            get: function get() {
-                var value = state[propName];
-                return value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getAttributeProxy(value) : value;
-            },
-            set: function set() {
-                assert.fail("Component " + vm + " can not set a new value for property " + propName + ".");
-            },
-            configurable: true,
-            enumerable: true
-        });
-        // this guarantees that the default value is always in place before anything else.
-        var initializer = config[propName].initializer;
-
-        var defaultValue = typeof initializer === 'function' ? initializer() : initializer;
-        state[propName] = defaultValue;
-    };
+    // reflective properties
 
     for (var propName in config) {
-        _loop(propName);
+        hookComponentReflectiveProperty(vm, propName);
     }
+    // non-reflective properties
+    getOwnPropertyNames(component).forEach(function (propName) {
+        if (propName in config) {
+            return;
+        }
+        hookComponentProperty(vm, propName);
+    });
+
+    // notifying observable attributes if they are initialized with default or custom value
     for (var _propName in config) {
         var attrName = config[_propName].attrName;
 
@@ -736,15 +785,6 @@ function initComponentProps(vm) {
             invokeComponentAttributeChangedCallback(vm, attrName, undefined, defaultValue);
         }
     }
-}
-
-function watchComponentProperties(vm) {
-    assert.vm(vm);
-    var component = vm.cache.component;
-
-    getOwnPropertyNames(component).forEach(function (propName) {
-        watchProperty(component, propName);
-    });
 }
 
 function clearListeners(vm) {
@@ -849,20 +889,23 @@ function createComponent(vm) {
         def: def,
         context: {},
         state: {},
+        privates: {},
+        reflectives: {},
         component: null,
         fragment: undefined,
         shadowRoot: null,
         listeners: new Set()
     };
-    var proto = {
-        cache: cache,
-        toString: function toString() {
-            return "<" + sel + ">";
-        }
-    };
-    setPrototypeOf(vm, proto);
+    assert.block(function () {
+        var proto = {
+            toString: function toString() {
+                return "<" + sel + ">";
+            }
+        };
+        setPrototypeOf(vm, proto);
+    });
+    vm.cache = cache;
     cache.component = invokeComponentConstructor(vm);
-    watchComponentProperties(vm);
     initComponentProps(vm);
 }
 
@@ -1035,7 +1078,10 @@ function link(oldVnode, vnode) {
     assert.invariant(vnode.elm, vnode + ".elm should be ready.");
     if (!vnode.cache) {
         if (oldVnode.Ctor === Ctor && oldVnode.cache) {
-            setPrototypeOf(vnode, getPrototypeOf(oldVnode));
+            assert.block(function () {
+                setPrototypeOf(vnode, getPrototypeOf(oldVnode));
+            });
+            vnode.cache = oldVnode.cache;
         } else {
             createComponent(vnode);
             console.log("Component for " + vnode + " was created.");
