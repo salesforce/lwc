@@ -36,6 +36,7 @@ interface PlainHTMLElement extends HTMLElement {}
 
 declare class Cache {
     state: HashTable<any>;
+    privates: HashTable<any>;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;

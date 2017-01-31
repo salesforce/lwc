@@ -3,21 +3,15 @@ import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
 } from "./invoker.js";
-import { watchProperty } from "./watcher.js";
 import { getComponentDef } from "./def.js";
 import {
     isRendering,
     invokeComponentAttributeChangedCallback,
 } from "./invoker.js";
+import { hookComponentProperty } from "./properties.js";
+import { hookComponentReflectiveProperty } from "./attributes.js";
 import {
-    getAttributeProxy,
-} from "./attributes.js";
-import { internal } from "./def.js";
-import {
-    defineProperty,
     setPrototypeOf,
-    getPrototypeOf,
-    getOwnPropertyDescriptor,
     getOwnPropertyNames,
 } from "./language.js";
 
@@ -25,28 +19,19 @@ function initComponentProps(vm: VM) {
     assert.vm(vm);
     const { cache } = vm;
     const { component, state, def: { props: config, observedAttrs } } = cache;
-    const target = getPrototypeOf(component);
+    // reflective properties
     for (let propName in config) {
-        assert.block(() => {
-            const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
-            assert.invariant(get[internal] && set[internal], `component ${vm} has tampered with property ${propName} during construction.`);
-        });
-        defineProperty(component, propName, {
-            get: (): any => {
-                const value = state[propName];
-                return (value && typeof value === 'object') ? getAttributeProxy(value) : value;
-            },
-            set: () => {
-                assert.fail(`Component ${vm} can not set a new value for property ${propName}.`);
-            },
-            configurable: true,
-            enumerable: true,
-        });
-        // this guarantees that the default value is always in place before anything else.
-        const { initializer } = config[propName];
-        const defaultValue = typeof initializer === 'function' ? initializer(): initializer;
-        state[propName] = defaultValue;
+        hookComponentReflectiveProperty(vm, propName);
     }
+    // non-reflective properties
+    getOwnPropertyNames(component).forEach((propName: string) => {
+        if (propName in config) {
+            return;
+        }
+        hookComponentProperty(vm, propName);
+    });
+
+    // notifying observable attributes if they are initialized with default or custom value
     for (let propName in config) {
         const {  attrName } = config[propName];
         const defaultValue = state[propName];
@@ -56,14 +41,6 @@ function initComponentProps(vm: VM) {
             invokeComponentAttributeChangedCallback(vm, attrName, undefined, defaultValue);
         }
     }
-}
-
-function watchComponentProperties(vm: VM) {
-    assert.vm(vm);
-    const { cache: { component } } = vm;
-    getOwnPropertyNames(component).forEach((propName: string) => {
-        watchProperty(component, propName);
-    });
 }
 
 function clearListeners(vm: VM) {
@@ -155,20 +132,23 @@ export function createComponent(vm: VM) {
         def,
         context: {},
         state: {},
+        privates: {},
+        reflectives: {},
         component: null,
         fragment: undefined,
         shadowRoot: null,
         listeners: new Set(),
     };
-    const proto = {
-        cache,
-        toString: (): string => {
-            return `<${sel}>`;
-        },
-    };
-    setPrototypeOf(vm, proto);
+    assert.block(() => {
+        const proto = {
+            toString: (): string => {
+                return `<${sel}>`;
+            },
+        };
+        setPrototypeOf(vm, proto);
+    });
+    vm.cache = cache;
     cache.component = invokeComponentConstructor(vm);
-    watchComponentProperties(vm);
     initComponentProps(vm);
 }
 
