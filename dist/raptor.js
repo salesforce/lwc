@@ -2151,8 +2151,8 @@ function upgrade(element, CtorOrPromise) {
 var definedElements = {};
 var createElementOriginal = document.createElement;
 
-function createElement(tagName) {
-    var element = createElementOriginal.call.apply(createElementOriginal, [this].concat(Array.prototype.slice.call(arguments)));
+function createElement(tagName, options) {
+    var element = createElementOriginal.call(document, tagName, options);
     if (!tagName || tagName in definedElements || tagName.indexOf('-') === -1 || !(element instanceof HTMLElement)) {
         return element;
     }
@@ -2224,5 +2224,5 @@ window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.1.0 */
+/** version: 0.1.1 */
 //# sourceMappingURL=raptor.js.map
