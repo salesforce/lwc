@@ -18,9 +18,7 @@ module.exports = {
         { dest: 'lib/raptor.es.js', format: 'es' },
     ],
     banner: copyright,
-    external: [
-        'snabbdom',
-    ],
+    external: [],
     plugins: [
         flow({
             all: true,
