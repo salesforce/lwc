@@ -121,27 +121,48 @@ function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor>
 }
 
 const definedElements = {};
-const createElementOriginal = document.createElement;
 
-export function createElement(tagName: string, options: any): HTMLElement {
-    const element = createElementOriginal.call(document, tagName, options);
-    if (!tagName || tagName in definedElements || tagName.indexOf('-') === -1 || !(element instanceof HTMLElement)) {
+/**
+ * This method is almost identical to document.createElement
+ * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
+ * with the slightly difference that in the options, you can pass the `is`
+ * property set to a Constructor instead of just a string value. E.g.:
+ *
+ * const el = createElement('x-foo', { is: FooCtor });
+ *
+ * If the value of `is` attribute is a string and there is a registered WC,
+ * then we fallback to the normal Web-Components workflow.
+ * If the value of `is` attribute is a string and there is not a registered WC,
+ * or the value of `is` attribute is not set at all, then we attempt to resolve
+ * it from the registry.
+ */
+export function createElement(tagName: string, options?: any): HTMLElement {
+    let CtorPromise;
+    const is = options && options.is && options.is;
+    if (is) {
+        if (typeof is === 'function') {
+            CtorPromise = Promise.resolve(is);
+            options = undefined;
+        } else if (typeof is === 'string' && !(is in definedElements)) {
+            // it must be a component, lets derivate the namespace from `is`,
+            // where only the first `-` should be replaced
+            CtorPromise = loaderImportMethod(is.toLowerCase().replace('-', ':'));
+            options = undefined;
+        }
+    } else if (!(tagName in definedElements)) {
+        // it must be a component, lets derivate the namespace from tagName,
+        // where only the first `-` should be replaced
+        CtorPromise = loaderImportMethod(tagName.toLowerCase().replace('-', ':'));
+    }
+    const element = document.createElement(tagName, options);
+    if (!CtorPromise || !(element instanceof HTMLElement)) {
         return element;
     }
-    // it must be a component, lets derivate the namespace from tagName,
-    // where only the first `-` should be replaced
-    const moduleName = element.tagName.toLowerCase().replace('-', ':');
     // TODO: maybe a local hash of resolved modules to speed things up.
-    upgrade(element, loaderImportMethod(moduleName)).catch((e: Error) => {
+    upgrade(element, CtorPromise).catch((e: Error) => {
         console.error(`Error trying to upgrade element <${element.tagName.toLowerCase()}>. ${e}`);
     });
     return element;
-}
-
-try {
-    document.createElement = createElement;
-} catch (e) {
-    console.warn(`document.createElement cannot be redefined. ${e}`);
 }
 
 try {
