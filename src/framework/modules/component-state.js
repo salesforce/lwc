@@ -3,7 +3,7 @@ import {
     updateComponentProp,
 } from "../component.js";
 
-function syncState(oldVnode: vnode, vnode: VM) {
+function syncProps(oldVnode: vnode, vnode: VM) {
     const { cache } = vnode;
     if (!cache) {
         return;
@@ -11,24 +11,22 @@ function syncState(oldVnode: vnode, vnode: VM) {
 
     let { data: { props: oldProps } } = oldVnode;
     let { data: { props } } = vnode;
-    const { state } = cache;
     let key: string, cur: any;
 
     if (oldProps !== props && (oldProps || props)) {
         oldProps = oldProps || {};
         props = props || {};
-        // removed props should be resetted in component's props
+        // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in props)) {
                 resetComponentProp(vnode, key);
             }
         }
 
-        // new props should be setted in component's props
+        // new or different props should be set in component's props
         for (key in props) {
             cur = props[key];
-            if ((key in oldProps && oldProps[key] !== cur) ||
-                !(key in state) || state[key] !== cur) {
+            if (!(key in oldProps) || oldProps[key] != cur) {
                 updateComponentProp(vnode, key, cur);
             }
         }
@@ -37,6 +35,6 @@ function syncState(oldVnode: vnode, vnode: VM) {
 }
 
 export default {
-    create: syncState,
-    update: syncState,
+    create: syncProps,
+    update: syncProps,
 };

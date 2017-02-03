@@ -57,20 +57,20 @@ function getAttributeProxy(value: Object): any {
 }
 
 export function hookComponentReflectiveProperty(vm: VM, propName: string) {
-    const { cache: { component, state, def: { props: config } } } = vm;
+    const { data: { _props }, cache: { component, def: { props: publicPropsConfig } } } = vm;
     assert.block(() => {
         const target = getPrototypeOf(component);
         const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
         assert.invariant(get[internal] && set[internal], `component ${vm} has tampered with property ${propName} during construction.`);
     });
     defineProperty(component, propName, {
-        get: (): any => getter(state, propName),
-        set: (newValue: any): boolean => setter(state, propName, newValue),
+        get: (): any => getter(_props, propName),
+        set: (newValue: any): boolean => setter(_props, propName, newValue),
         configurable: true,
         enumerable: true,
     });
     // this guarantees that the default value is always in place before anything else.
-    const { initializer } = config[propName];
+    const { initializer } = publicPropsConfig[propName];
     const defaultValue = typeof initializer === 'function' ? initializer(): initializer;
-    state[propName] = defaultValue;
+    _props[propName] = defaultValue;
 }

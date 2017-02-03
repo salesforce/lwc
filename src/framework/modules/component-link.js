@@ -1,6 +1,5 @@
 import { createComponent } from "../component.js";
 import { linkComponentToVM } from "../html-element.js";
-import { rehydrate } from "../hook.js";
 import assert from "../assert.js";
 import {
     setPrototypeOf,
@@ -21,6 +20,8 @@ function link(oldVnode: VM, vnode: VM) {
                 setPrototypeOf(vnode, getPrototypeOf(oldVnode));
             });
             vnode.cache = oldVnode.cache;
+            vnode.data._props = oldVnode.data._props;
+            vnode.data._on = oldVnode.data._on;
         } else {
             createComponent(vnode);
             console.log(`Component for ${vnode} was created.`);
