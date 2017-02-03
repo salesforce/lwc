@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="raptor.js"></script>
+    <script src="components/babelHelpers.js"></script>
+    <script src="components/helloworld.js"></script>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        console.time('createAndRender');
+        var container = document.getElementById('container');
+        var element = Raptor.createElement('prototype-helloworld');
+        container.appendChild(element);
+        console.timeEnd('createAndRender');
+    </script>
+</body>
+</html>
