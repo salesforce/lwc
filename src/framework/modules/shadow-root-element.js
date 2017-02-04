@@ -18,7 +18,6 @@ function rerender(oldVnode: VNode, vnode: VM) {
         // avoiding the rest of this diffing entirely because it happens already in rehydrate
         const { children: oldCh } = oldVnode;
         oldCh.splice(0, oldCh.length).push.apply(oldCh, cache.fragment);
-        oldVnode.data = vnode.data;
         // TODO: this is a fork of the fiber since the create hook is called during a
         // patching process. How can we optimize this to reuse the same queue?
         // and idea is to do this part in the next turn (a la fiber)

@@ -15,5 +15,6 @@
 src/framework/types.flow.js
 
 [options]
+unsafe.enable_getters_and_setters=true
 esproposal.class_instance_fields=enable
 all=true

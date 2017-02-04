@@ -48,12 +48,12 @@ export function rehydrate(vm: VM) {
         assert.invariant(Array.isArray(children), 'Rendered vm ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new disposable VNode to kick in the diff, but the
-        // state is the same, only the children collection should not be ===.
+        // data is the same, only the children collection should not be ===.
         const vnode = {
             sel,
             key,
             elm,
-            data: {},
+            data,
             children,
         };
         // rendering the component to compute the new fragment collection

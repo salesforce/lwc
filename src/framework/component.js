@@ -17,24 +17,24 @@ import {
 
 function initComponentProps(vm: VM) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { component, state, def: { props: config, observedAttrs } } = cache;
+    const { cache, data: { _props } } = vm;
+    const { component, def: { props: publicPropsConfig, observedAttrs } } = cache;
     // reflective properties
-    for (let propName in config) {
+    for (let propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
     }
     // non-reflective properties
     getOwnPropertyNames(component).forEach((propName: string) => {
-        if (propName in config) {
+        if (propName in publicPropsConfig) {
             return;
         }
         hookComponentProperty(vm, propName);
     });
 
     // notifying observable attributes if they are initialized with default or custom value
-    for (let propName in config) {
-        const {  attrName } = config[propName];
-        const defaultValue = state[propName];
+    for (let propName in publicPropsConfig) {
+        const {  attrName } = publicPropsConfig[propName];
+        const defaultValue = _props[propName];
         // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
         if (defaultValue !== undefined && observedAttrs[attrName]) {
@@ -52,10 +52,10 @@ function clearListeners(vm: VM) {
 
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { state, def: { props, observedAttrs } } = cache;
+    const { cache, data: { _props } } = vm;
+    const { def: { props: publicPropsConfig, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config = props[propName];
+    const config = publicPropsConfig[propName];
     if (!config) {
         // TODO: ignore any native html property
         console.warn(`Updating unknown property ${propName} of ${vm}. This property will be a pass-thru to the DOM element.`);
@@ -65,9 +65,9 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
         const initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
-    let oldValue = state[propName];
+    let oldValue = _props[propName];
     if (oldValue !== newValue) {
-        state[propName] = newValue;
+        _props[propName] = newValue;
         if (config) {
             const attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -83,11 +83,11 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
 
 export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { state, def: { props, observedAttrs } } = cache;
+    const { cache, data: { _props } } = vm;
+    const { def: { props: publicPropsConfig, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config = props[propName];
-    let oldValue = state[propName];
+    const config = publicPropsConfig[propName];
+    let oldValue = _props[propName];
     let newValue = undefined;
     if (!config) {
         // TODO: ignore any native html property
@@ -97,7 +97,7 @@ export function resetComponentProp(vm: VM, propName: string) {
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
     if (oldValue !== newValue) {
-        state[propName] = newValue;
+        _props[propName] = newValue;
         if (config) {
             const attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -131,9 +131,7 @@ export function createComponent(vm: VM) {
         isDirty: true,
         def,
         context: {},
-        state: {},
         privates: {},
-        reflectives: {},
         component: null,
         fragment: undefined,
         shadowRoot: null,
@@ -148,6 +146,8 @@ export function createComponent(vm: VM) {
         setPrototypeOf(vm, proto);
     });
     vm.cache = cache;
+    vm.data._props = {};
+    vm.data._on = {};
     cache.component = invokeComponentConstructor(vm);
     initComponentProps(vm);
 }

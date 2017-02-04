@@ -33,41 +33,41 @@ class PlainHTMLElement {
     getAttribute(attrName: string): string | void {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
-        const { cache: { state, def: { props } } } = vm;
+        const { data: { _props }, cache: { def: { props: publicPropsConfig } } } = vm;
         const propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-        if (props[propName]) {
+        if (publicPropsConfig[propName]) {
             assert.block(() => {
                 throw new Error(`Attribute "${attrName}" of ${vm} is automatically reflected from public property ${propName}. Use <code>this.${propName}</code> instead of <code>this.getAttribute("${attrName}")</code>.`);
             });
             return;
         }
-        return state[propName];
+        return _props[propName];
     }
     setAttribute(attrName: string, value: any) {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
-        const { cache: { state, def: { props } } } = vm;
+        const { data: { _props }, cache: { def: { props: publicPropsConfig } } } = vm;
         const propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-        if (props[propName]) {
+        if (publicPropsConfig[propName]) {
             assert.block(() => {
                 throw new Error(`Attribute "${attrName}" of ${vm} is automatically reflected from public property ${propName}. You cannot modify it.`);
             });
             return;
         }
-        state[propName] = '' + value;
+        _props[propName] = '' + value;
     }
     removeAttribute(attrName: string) {
         const vm = ComponentToVMMap.get(this);
         assert.vm(vm);
-        const { cache: { state, def: { props } } } = vm;
+        const { data: { _props }, cache: { def: { props: publicPropsConfig } } } = vm;
         const propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-        if (props[propName]) {
+        if (publicPropsConfig[propName]) {
             assert.block(() => {
                 throw new Error(`Attribute "${attrName}" of ${vm} is automatically reflected from public property ${propName}. You cannot remove it.`);
             });
             return;
         }
-        state[propName] = undefined;
+        _props[propName] = undefined;
     }
 }
 

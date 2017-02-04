@@ -1,5 +1,8 @@
 import assert from "./assert.js";
-import { patch } from "./hook.js";
+import {
+    patch,
+    scheduleRehydration,
+} from "./hook.js";
 import {
     resetComponentProp,
     updateComponentProp,
@@ -14,13 +17,18 @@ const CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { cache: { def: { attrs } } } = vm;
+    const { cache } = vm;
+    const { def: { attrs } } = cache;
     // replacing mutators on the element itself to catch any mutation
     element.setAttribute = (attrName: string, value: any) => {
         Ep.setAttribute.call(element, attrName, value);
         const attrConfig = attrs[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             updateComponentProp(vm, attrConfig.propName, value);
+            if (cache.isDirty) {
+                console.log(`Scheduling ${vm} for rehydration.`);
+                scheduleRehydration(vm);
+            }
         }
     };
     element.removeAttribute = (attrName: string) => {
@@ -28,13 +36,18 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const attrConfig = attrs[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             resetComponentProp(vm, attrConfig.propName);
+            if (cache.isDirty) {
+                console.log(`Scheduling ${vm} for rehydration.`);
+                scheduleRehydration(vm);
+            }
         }
     };
 }
 
 function linkProperties(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { Ctor, cache: { component } } = vm;
+    const { Ctor, cache } = vm;
+    const { component } = cache;
     let { props, methods } = getComponentDef(Ctor);
     const descriptors: PropertyDescriptorMap = {};
     // linking public methods
@@ -52,7 +65,13 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let propName in props) {
         descriptors[propName] = {
             get: (): any => component[propName],
-            set: (newValue: any): void => updateComponentProp(vm, propName, newValue),
+            set: (newValue: any): void => {
+                updateComponentProp(vm, propName, newValue);
+                if (cache.isDirty) {
+                    console.log(`Scheduling ${vm} for rehydration.`);
+                    scheduleRehydration(vm);
+                }
+            },
             configurable: false,
             enumerable: true,
         };
