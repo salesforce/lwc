@@ -3,7 +3,7 @@ import fs from 'fs';
 
 export { basename };
 
-export const ltng_format = 'lightning';
+export const ltng_format = 'aura';
 
 export function normalizeEntryPath(path) {
     path = normalize(path.replace(/\/$/, ''));

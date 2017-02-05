@@ -21,7 +21,7 @@ const options = {
     `,
     sourceCSS: '',
 
-    format: 'amd',
+    format: 'aura',
 };
 
 const entry = '/ns/foo/foo.js';
