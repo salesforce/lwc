@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import { getSource, mergeMetadata } from './utils';
+import { getSource, mergeMetadata, ltng_format, transformAmdToLtng} from './utils';
 import transformClass from './transform-class';
 import transformTemplate from './transform-template';
 import sourceResolver from './rollup-plugin-source-resolver';
@@ -32,8 +32,18 @@ export function compileBundle(entry, options) {
     return new Promise((resolve, reject) => {
         rollup({ entry, plugins })
         .then((bundle) => {
-            const bundleResult = bundle.generate({ format: options.format });
+            const normalizedModuleName = [options.componentNamespace, options.componentName].join(':');
+            const isLtng = options.format && options.format === ltng_format;
+            const bundleResult = bundle.generate({
+                interop: false,
+                format: options.format && isLtng ? 'amd': options.format,
+                moduleId: normalizedModuleName,
+            });
             bundleResult.metadata = mergeMetadata(options.$metadata);
+            if (isLtng) {
+                bundleResult.code = transformAmdToLtng(bundleResult.code);
+            }
+
             resolve(bundleResult);
         })
         .catch(reject);

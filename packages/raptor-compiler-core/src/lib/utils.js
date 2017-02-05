@@ -3,6 +3,8 @@ import fs from 'fs';
 
 export { basename };
 
+export const ltng_format = 'lightning';
+
 export function normalizeEntryPath(path) {
     path = normalize(path.replace(/\/$/, ''));
     return extname(path) ? path : join(path, path.split(sep).pop() + '.js' );
@@ -28,6 +30,10 @@ export function getSource(path, sources) {
 
 export function getQualifiedName(path) {
     const dirParts = dirname(path).split('/');
+    if (dirParts.length < 3) { // We have just a <filename></filename>
+        return { componentName : basename(path, '.js'), componentNamespace: 'unknown' };
+    }
+
     const pathBasedName = dirParts.pop();
     let pathBasedNS = dirParts.pop();
 
@@ -35,9 +41,9 @@ export function getQualifiedName(path) {
         pathBasedNS = dirParts.pop();
     }
 
-    return { 
-        componentName : pathBasedName.toLowerCase(), 
-        componentNamespace : pathBasedNS && pathBasedNS.toLowerCase() 
+    return {
+        componentName : pathBasedName.toLowerCase(),
+        componentNamespace : pathBasedNS && pathBasedNS.toLowerCase()
     };
 }
 
@@ -46,6 +52,7 @@ export function normalizeOptions(options) {
     const qName = getQualifiedName(entry);
 
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
+    options.componentName = options.componentName || qName.componentName;
     options.$metadata = {};
     options.bundle = options.bundle !== undefined ? options.bundle : true;
 
@@ -82,4 +89,8 @@ export function mergeMetadata (metadata) {
         bundleDependencies: templateDependencies,
         templateUsedIds
     };
+}
+
+export function transformAmdToLtng (code) {
+    return code.replace('define', '$A.componentService.addModule');
 }

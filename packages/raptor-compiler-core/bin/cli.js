@@ -11,7 +11,7 @@ const options = {
                 <a:b><a bind:onclick="handleClick">{test}</a></a:b>
             </section>
         </template>
-    `, 
+    `,
     sourceClass: `
         export default class Foo {
             test = 'foo';
@@ -21,14 +21,10 @@ const options = {
     `,
     sourceCSS: '',
 
-    sources: {
-        'foo.html': `<template><section><p>{test}</p></section></template>`,
-        'foo.js': `export default class Foo { test = 'foo'; constructor() {}}`,
-    },
-    format: 'amd'
+    format: 'amd',
 };
 
-const entry = 'foo.js';
+const entry = '/ns/foo/foo.js';
 
 compile(entry, options)
 .then((result) => {

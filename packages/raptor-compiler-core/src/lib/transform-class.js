@@ -6,7 +6,7 @@ export default function (code, options) {
     options = options || {};
 
     const filename = options.filename;
-    const componentName = options.componentBundle && basename(filename, '.js');
+    const componentName = options.componentBundle && options.componentName;
 
     let localBabelConfig = {
         babelrc: false,

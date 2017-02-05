@@ -12,7 +12,6 @@ export function compile(entry, options) {
     options = options || {};
     entry = normalizeEntryPath(entry);
     options = normalizeOptions(Object.assign({ entry }, BASE_OPTIONS, options));
-
     if (options.bundle) {
         return compileBundle(entry, options);
     } else {
