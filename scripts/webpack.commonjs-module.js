@@ -1,12 +1,24 @@
 /* eslint-env node */
 
 const webpack = require('webpack');
+const StringReplacePlugin = require("string-replace-webpack-plugin");
+const pkg = require('../packages/raptor-compiler-core/package.json');
 
 module.exports = function (env) {
     const nodeEnv = env && env.prod ? 'production' : 'development';
     const isProd = nodeEnv === 'production';
-    const loaders = [];
+    const loaders = [{
+        test: /index.js$/,
+        loader: StringReplacePlugin.replace({
+            replacements: [{
+                pattern: /__VERSION__/ig,
+                replacement: () => pkg.version
+            }]
+        })
+    }];
+
     const plugins = [
+        new StringReplacePlugin(),
         new webpack.LoaderOptionsPlugin({
             minimize: true,
             debug: false
@@ -19,16 +31,16 @@ module.exports = function (env) {
         plugins.push(new webpack.optimize.UglifyJsPlugin({
             minimize: true,
             compress: {
-            warnings: true,
+                warnings: true
             }
         }));
 
         loaders.push({
-        test: /\.js$/,
-        loader: 'babel-loader',
-        query: {
-            presets: ['es2015']
-        }
+            test: /\.js$/,
+            loader: 'babel-loader',
+            query: {
+                presets: ['es2015']
+            }
         })
         filename = 'compiler.min.js';
     }
