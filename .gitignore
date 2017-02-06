@@ -3,3 +3,5 @@ packages/**/dist
 node_modules
 *.log
 **/yarn.lock
+playground/*.js
+playground/*.html

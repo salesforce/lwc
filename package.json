@@ -11,7 +11,8 @@
     "build:webcompiler": "lerna run build && webpack --config scripts/webpack.web.js",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
-    "preversion": "npm run lint && npm run clean && npm run build"
+    "preversion": "npm run lint && npm run clean && npm run build",
+    "template-cli" : "./packages/babel-plugin-transform-raptor-template/scripts/cli.js"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
