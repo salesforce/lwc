@@ -1,7 +1,7 @@
 /* eslint-env node */
 import * as CONST from './constants';
 import customScope from './for-scope';
-import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild } from './utils';
+import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild, isSvgNsAttribute } from './utils';
 import metadata from './metadata';
 
 const DIRECTIVES = CONST.DIRECTIVES;
@@ -292,6 +292,10 @@ export default function ({ types: t, template }) {
         return name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX);
     }
 
+    function isNSAttributeName(name) {
+        return name.indexOf(':') !== -1;
+    }
+
     // https://html.spec.whatwg.org/multipage/dom.html#dom-dataset
     function fomatDataAttributeName(originalName) {
         let name = originalName.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
@@ -305,6 +309,7 @@ export default function ({ types: t, template }) {
     function transformProp(prop, scopedVars, path, state) {
         const meta = prop._meta;
         const directive = meta.directive;
+        const isLiteral = t.isLiteral(prop.key);
         let valueName = prop.key.value || prop.key.name; // Identifier|Literal
         let valueNode = prop.value;
         let inScope = false;
@@ -335,6 +340,9 @@ export default function ({ types: t, template }) {
         if (isDataAttributeName(valueName)) {
             meta.dataset = true;
             valueName = t.stringLiteral(fomatDataAttributeName(valueName));
+        } else if (isNSAttributeName(valueName)) {
+            meta.svg = true;
+            valueName = t.stringLiteral(valueName);
         } else {
             valueName = t.identifier(toCamelCase(valueName));
         }
@@ -427,12 +435,26 @@ export default function ({ types: t, template }) {
         return m.expression;
     }
 
+    function normalizeAttribute(jsxAttr, elementPath, state) {
+        const { node, meta } = normalizeAttributeName(jsxAttr.name, elementPath);
+        const value = normalizeAttributeValue(jsxAttr.value, meta, elementPath);
+        const property = t.objectProperty(node, value);
+        property._meta = meta; // Attach metadata for further inspection upstream
+        return { node : property, meta };
+    }
+
     function normalizeAttributeName (node) {
         const meta = { directive: null, modifier: null, event: null, scoped: null };
 
         if (t.isJSXNamespacedName(node)) {
             const dNode = node.namespace;
             const mNode = node.name;
+
+            // Transform nampespaced svg attrs correctly
+            if (isSvgNsAttribute(dNode.name)) {
+                mNode.name = `${dNode.name}:${mNode.name}`;
+                dNode.name = null;
+            }
 
             if (dNode.name in DIRECTIVES) {
                 meta.directive = DIRECTIVES[dNode.name];
@@ -482,14 +504,6 @@ export default function ({ types: t, template }) {
         }
 
         return node;
-    }
-
-    function normalizeAttribute(jsxAttr, elementPath, state) {
-        const { node, meta } = normalizeAttributeName(jsxAttr.name, elementPath);
-        const value = normalizeAttributeValue(jsxAttr.value, meta, elementPath);
-        const property = t.objectProperty(node, value);
-        property._meta = meta; // Attach metadata for further inspection upstream
-        return { node : property, meta };
     }
 
     function validateTemplateRootFormat(path) {

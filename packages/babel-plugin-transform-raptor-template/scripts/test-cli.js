@@ -10,13 +10,12 @@ import plugin from '../src/index';
 
 const testSrc = `
 <template>
-    <section set:class="foo" data-foo--bar="bar" foo-x="4">
-        <table>
-            <tbody>
-                <tr is="force-foo"> <force-bar><custom:vi></custom:vi></force-bar> </tr>
-            </tbody>
-        </table>
-    </section>
+    <span class="slds-icon_container slds-icon-standard-account" title="description of icon when needed">
+        <svg class="slds-icon" aria-hidden="true">
+            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+        </svg>
+        <span class="slds-assistive-text">Description of icon</span>
+    </span>
 </template>
 `;
 

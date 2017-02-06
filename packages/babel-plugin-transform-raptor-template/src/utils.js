@@ -42,7 +42,7 @@ if (!Array.prototype.includes) {
   };
 }
 
-export function makeMap (str) {
+export function makeMap(str) {
     const map = Object.create(null);
     const list = str.split(',');
 
@@ -63,6 +63,14 @@ export function isCompatTag(tagName) {
 }
 
 export { toCamelCase };
+
+export const isSVG = makeMap(
+  'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,' +
+  'font-face,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
+  'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view'
+);
+
+export const isSvgNsAttribute = makeMap('xml,xlink');
 
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
