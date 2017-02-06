@@ -30,7 +30,7 @@ export function getSource(path, sources) {
 
 export function getQualifiedName(path) {
     const dirParts = dirname(path).split('/');
-    if (dirParts.length < 3) { // We have just a <filename></filename>
+    if (dirParts.length < 2) { // We have just a <filename></filename>
         return { componentName : basename(path, '.js'), componentNamespace: 'unknown' };
     }
 

@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import {compile} from '../src/index';
 import path from 'path';
 
+
 const options = {
     sourceTemplate : `
         <template>
@@ -23,8 +24,7 @@ const options = {
 
     format: 'aura',
 };
-
-const entry = '/ns/foo/foo.js';
+const entry = 'ns/foo/foo.js';
 
 compile(entry, options)
 .then((result) => {

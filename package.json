@@ -7,8 +7,8 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "build:compiler": "webpack --config scripts/webpack.commonjs-module.js",
-    "build:compilermin": "webpack --config scripts/webpack.commonjs-module.js --env.prod=true",
-    "build:webcompiler": "webpack --config scripts/webpack.web.js",
+    "build:compilermin": "lerna run build && webpack --config scripts/webpack.commonjs-module.js --env.prod=true",
+    "build:webcompiler": "lerna run build && webpack --config scripts/webpack.web.js",
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "preversion": "npm run lint && npm run clean && npm run build"
