@@ -10,6 +10,8 @@
     "build:lib": "rollup -c rollup.config.lib.js",
     "build:dist:dev": "cross-env NODE_ENV=development rollup -c rollup.config.dist.js",
     "build:dist:prod": "cross-env NODE_ENV=production rollup -c rollup.config.dist.js",
+    "build:interop:dev": "cross-env NODE_ENV=development rollup -c rollup.config.interop.js",
+    "build:interop:prod": "cross-env NODE_ENV=production rollup -c rollup.config.interop.js",
     "build:dist": "npm run build:dist:dev && npm run build:dist:prod",
     "start": "npm run build:runtime && forever --uid raptor fake-server/server.js & rollup -w -c rollup.config.lib.js & rollup -w -c rollup.config.dist.js & node scripts/rollup.services.js --watch & node scripts/rollup.components.js --watch && forever stop raptor",
     "stop": "forever stopall",
