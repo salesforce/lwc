@@ -5,3 +5,4 @@ node_modules
 **/yarn.lock
 playground/*.js
 playground/*.html
+playground/**/*

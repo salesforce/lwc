@@ -12,7 +12,8 @@
     "clean": "lerna run clean",
     "lint": "lerna run lint",
     "preversion": "npm run lint && npm run clean && npm run build",
-    "template-cli" : "./packages/babel-plugin-transform-raptor-template/scripts/cli.js"
+    "template-cli" : "./packages/babel-plugin-transform-raptor-template/scripts/cli.js",
+    "compiler-cli" : "./packages/raptor-compiler-core/scripts/cli.js"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",

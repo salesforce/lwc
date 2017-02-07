@@ -1,11 +1,14 @@
 #!/usr/bin/env babel-node
-import * as fs from 'fs';
+/* eslint-env node */
+
 import {compile} from '../src/index';
 import path from 'path';
 
-const entry = path.resolve(__dirname + '/../test/fixtures/bundle/app.js');
+const filePath = process.argv[2] || '';
+const entry = path.resolve(filePath.substring(2));
+const options = {};
 
-compile(entry, { componentNamespace: 'test', componentBundle: true })
+compile(entry, options)
 .then((result) => {
     console.log('\n>> Code --------------------------------------------------');
     console.log('\n', result.code);
