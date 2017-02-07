@@ -1,19 +1,14 @@
 #!/usr/bin/env babel-node
-/*
- * THIS IS A TEMPORAL TEST CLI
- * DON'T COMMIT CHANGES ON THIS FILE TO GIT! 
-*/
-
+/* eslint-env node */
 import * as babel from 'babel-core';
 import plugin from '../src/index';
 import fs from 'fs';
 import path from 'path';
 
 let file;
-
-    const filePath = process.argv[2] || '';
-    const absPath = path.resolve(filePath.substring(2));
-    console.log('Reading:', absPath);
+const filePath = process.argv[2] || '';
+const absPath = path.resolve(filePath.substring(2));
+console.log('Reading:', absPath, '\n\n');
     try {
         file = fs.readFileSync(absPath).toString();
     } catch (e) {
