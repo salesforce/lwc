@@ -17,19 +17,25 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 git clone git@git.soma.salesforce.com:raptor/raptor.git
 ```
 
-### 2) Install Dependencies
+### 2) Setup npm to use Nexus repositories
+
+Nexus provides a public caching proxy and a private repository which hosts several dependent raptor modules. Follow the instructions at [https://sfdc.co/npm-nexus](https://sfdc.co/npm-nexus) to setup access to the Nexus npm registry.
+
+### 3) Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 3) Start the server
+If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: unable to get local issuer certificate*, or a registry communication issue then re-verify that step 2 was successful.
+
+### 4) Start the server
 
 ```bash
 npm start
 ```
 
-### 4) View examples
+### 5) View examples
 
 Load the examples in a browser: [http://localhost:8181/](http://localhost:8181/)
 
