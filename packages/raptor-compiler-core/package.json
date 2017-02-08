@@ -33,5 +33,8 @@
     "test": "mocha --compilers js:babel-register",
     "preversion": "npm run lint && npm run clean && npm run build",
     "prepublish": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }
