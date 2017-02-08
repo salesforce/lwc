@@ -1,40 +1,35 @@
 import _a$b from 'a:b';
 
-var _tmpl = function ({
-    i,
-    f,
-    e,
-    h,
-    v,
-    s
-}) {
-    return h(
+const memoized = Symbol();
+var _tmpl = function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return [$api.h(
         "section",
         {
-            "class": "bar"
+            class: "bar"
         },
-        [h(
+        [$api.h(
             "ul",
             {
-                "class": this["my-list"]
+                class: $cmp["my-list"]
             },
-            f([v(
+            $api.f([$api.v(
                 _a$b,
                 {},
                 ["first"]
-            ), i(this.items, item => {
-                return h(
+            ), $api.i($cmp.items, function (item) {
+                return $api.h(
                     "li",
                     {
-                        "class": "item"
+                        class: "item"
                     },
-                    [s(item)]
+                    [$api.s(item)]
                 );
-            }), s(this.last)])
+            }), $api.s($cmp.last)])
         )]
-    );
+    )];
 };
-const usedIdentifiers = ["my-list", "items", "last"];
+const templateUsedIds = ["my-list", "items", "last"];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
@@ -62,8 +57,8 @@ class ClassAndTemplate {
         console.log('clicked');
     }
 
-    render(p) {
-        return _tmpl.call(this, p);
+    render() {
+        return _tmpl;
     }
 
 }
@@ -77,6 +72,6 @@ ClassAndTemplate.publicProps = {
     }
 };
 ClassAndTemplate.publicMethods = ['publicMethod'];
-ClassAndTemplate.templateUsedProps = usedIdentifiers;
+ClassAndTemplate.templateUsedIds = templateUsedIds;
 
 export default ClassAndTemplate;

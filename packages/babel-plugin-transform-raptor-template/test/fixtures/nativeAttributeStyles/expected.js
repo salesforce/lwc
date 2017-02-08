@@ -1,7 +1,7 @@
 const memoized = Symbol();
 export default function ($api, $cmp) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
-    return $api.h(
+    return [$api.h(
         "section",
         {
             style: {
@@ -14,6 +14,6 @@ export default function ($api, $cmp) {
             }
         },
         []
-    );
+    )];
 }
 export const templateUsedIds = [];

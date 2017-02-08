@@ -1,7 +1,7 @@
 const memoized = Symbol();
 export default function ($api, $cmp) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
-    return $api.h(
+    return [$api.h(
         "section",
         {},
         $api.f([$api.i($cmp.items, function (item, index) {
@@ -17,6 +17,6 @@ export default function ($api, $cmp) {
                 )]
             );
         })])
-    );
+    )];
 }
 export const templateUsedIds = ["items"];

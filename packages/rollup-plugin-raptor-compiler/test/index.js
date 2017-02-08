@@ -26,7 +26,7 @@ describe('emit asserts for: ', () => {
             return doRollup(path.join(fixtureCaseDir, caseName + '.js'))
             .then((bundle) => {
                 const actual = bundle.generate({}).code;
-                console.log(actual);
+                //console.log(actual);
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
                 assert.equal(trim(actual), trim(expected));
             })

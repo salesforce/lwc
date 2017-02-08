@@ -1,20 +1,15 @@
-var _tmpl = function ({
-    i,
-    f,
-    e,
-    h,
-    v,
-    s
-}) {
-    return h(
+const memoized = Symbol();
+var _tmpl = function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return [$api.h(
         "section",
         {
-            "class": "foo"
+            class: "foo"
         },
         ["Test"]
-    );
+    )];
 };
-const usedIdentifiers = [];
+const templateUsedIds = [];
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 50;
@@ -42,8 +37,8 @@ class ClassAndTemplate {
         console.log('clicked');
     }
 
-    render(p) {
-        return _tmpl.call(this, p);
+    render() {
+        return _tmpl;
     }
 
 }
@@ -54,6 +49,6 @@ ClassAndTemplate.publicProps = {
     label: null,
     title: null
 };
-ClassAndTemplate.templateUsedProps = usedIdentifiers;
+ClassAndTemplate.templateUsedIds = templateUsedIds;
 
 export default ClassAndTemplate;

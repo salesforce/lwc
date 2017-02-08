@@ -21,14 +21,13 @@ const fixturesDir = path.join(__dirname, 'fixtures');
 describe('emit asserts for: ', () => {
     fs.readdirSync(fixturesDir).map((caseName) => {
         if (skipTests.indexOf(caseName) >= 0) return;
-
         it(`output match: ${caseName}`, () => {
             const fixtureCaseDir = path.join(fixturesDir, caseName);
-            return runCompile(path.join(fixtureCaseDir, caseName + '.js'), { componentBundle: true })
+            return runCompile(path.join(fixtureCaseDir, caseName + '.js'))
             .then((result) => {
                 const actual = result.code;
                 //console.log(actual);
-                const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));  
+                const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
                 assert.equal(trim(actual), trim(expected));
             })
             .catch((error) => {
