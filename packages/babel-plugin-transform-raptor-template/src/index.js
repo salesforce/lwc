@@ -11,7 +11,7 @@ const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
 export default function ({ types: t, template }) {
-    // -- Helpers -----------------------------------------------------
+    // -- Helpers ------------------------------------------------------
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
         export default function (${API_PARAM}, ${CMP_INSTANCE}) {

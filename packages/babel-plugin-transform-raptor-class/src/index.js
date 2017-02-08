@@ -75,8 +75,8 @@ module.exports = function (babel) {
 
                     // Static props
                 } else {
-	                if (key in keys) {
-	                    keys[key] = true;
+                    if (key in keys) {
+                        keys[key] = true;
                     }
                     extraBody.push(addClassStaticMember(className, key, prop.node.value));
                     prop.remove();
