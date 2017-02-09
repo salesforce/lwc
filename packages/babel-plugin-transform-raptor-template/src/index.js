@@ -1,6 +1,6 @@
 /* eslint-env node */
 import * as CONST from './constants';
-import customScope from './for-scope';
+import CustomScope from './for-scope';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild, isSvgNsAttribute } from './utils';
 import metadata from './metadata';
 
@@ -53,7 +53,7 @@ export default function ({ types: t, template }) {
         name: 'raptor-template',
         inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
         pre(file) {
-            this.customScope = customScope;
+            this.customScope = new CustomScope();
             metadata.initialize(file.metadata);
         },
         visitor: {
@@ -90,7 +90,7 @@ export default function ({ types: t, template }) {
                     openElmt._meta = meta;
 
                     if (scoped) {
-                        customScope.registerScopePathBindings(path, scoped);
+                        this.customScope.registerScopePathBindings(path, scoped);
                     }
                 },
                 exit(path, status) {
@@ -101,8 +101,8 @@ export default function ({ types: t, template }) {
                     path.node._jsxElement = true;
 
                     // Remove scope while going up
-                    if (customScope.hasScope(path)) {
-                        customScope.removeScopePathBindings(path);
+                    if (this.customScope.hasScope(path)) {
+                        this.customScope.removeScopePathBindings(path);
                     }
                 }
             },
@@ -121,7 +121,7 @@ export default function ({ types: t, template }) {
             // Transform container expressions from {foo} => {this.foo}
             Identifier(path, state) {
                 path.stop();
-                if (isWithinJSXExpression(path) && !customScope.hasBinding(path.node.name)) {
+                if (isWithinJSXExpression(path) && !this.customScope.hasBinding(path.node.name)) {
                     metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
                 }
@@ -309,7 +309,6 @@ export default function ({ types: t, template }) {
     function transformProp(prop, scopedVars, path, state) {
         const meta = prop._meta;
         const directive = meta.directive;
-        const isLiteral = t.isLiteral(prop.key);
         let valueName = prop.key.value || prop.key.name; // Identifier|Literal
         let valueNode = prop.value;
         let inScope = false;
@@ -417,7 +416,7 @@ export default function ({ types: t, template }) {
     }
 
     function buildOpeningElementAttributes(attributes, path, state) {
-        const metaGroup = { directives: {}, modifiers: {}, scoped: customScope.getAllBindings() };
+        const metaGroup = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
         attributes = attributes.map((attr) => {
             const { meta, node } = normalizeAttribute(attr, path, state);
             groupAttrMetadata(metaGroup, meta);
