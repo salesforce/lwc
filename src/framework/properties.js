@@ -44,7 +44,7 @@ const propertyProxyHandler = {
     deleteProperty: (target: Object, name: string): boolean => deleteProperty(target, name),
 };
 
-function getPropertyProxy(value: Object): any {
+export function getPropertyProxy(value: Object): any {
     if (value === null) {
         return null;
     }
@@ -62,7 +62,7 @@ function getPropertyProxy(value: Object): any {
     return proxy;
 }
 
-export function hookComponentProperty(vm: VM, propName: string) {
+export function hookComponentLocalProperty(vm: VM, propName: string) {
     assert.vm(vm);
     const { cache: { component, privates } } = vm;
     const descriptor = getOwnPropertyDescriptor(component, propName);
