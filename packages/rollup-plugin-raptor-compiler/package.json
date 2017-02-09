@@ -17,5 +17,8 @@
   "scripts": {
     "test": "mocha",
     "lint": "eslint src/"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }

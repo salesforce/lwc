@@ -18,5 +18,8 @@
   "scripts": {
     "build": "babel src/ --out-dir dist/",
     "prepublish": "npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }
