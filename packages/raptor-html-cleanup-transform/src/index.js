@@ -2,6 +2,7 @@
 'use strict';
 
 const parse5 = require('parse5');
+const jsDiff = require('diff');
 const Readable = require('stream').Readable;
 const constants = require('./constants');
 const isUnaryTag = constants.isUnaryTag;
@@ -54,10 +55,36 @@ class HTMLReadable extends Readable {
     }
 }
 
+// TODO: This is a temporal hack until we find a better and more reliable way to validate HTML
+function validateHTML(original, parsed) {
+    if (original !== parsed) {
+        const strDiff = jsDiff.diffChars(original, parsed);
+        let errors = {};
+        let lines = 1;
+
+        strDiff.forEach(function(part) {
+            const added = part.added;
+            const removed = part.removed;
+            const newLines = part.value.match(/\n/g);
+
+            if (!added) {
+                lines += newLines ? newLines.length : 0;
+            }
+
+            if (removed) {
+                errors[lines] = true;
+            }
+        });
+
+        throw new Error(`\nError validating HTML:\n ${original}\nNot valid HTML (invalid self-closing tags?)\nErrors found in lines: ${Object.keys(errors).join(', ')}`);
+    }
+}
+
 module.exports = {
     transform (src) {
         // We do a first pass so we get the "correct" beahviour when dealing with broken self-closing/missing tags.
         const parsed = parse5.serialize(parse5.parseFragment(src.toString()));
+        validateHTML(src, parsed);
 
         // Now we do our own transformations to make it "JSX" compliant
         return new Promise(function (resolve) {
