@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { hook } from "./hook.js";
+import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
 
 // [c]ustom element node

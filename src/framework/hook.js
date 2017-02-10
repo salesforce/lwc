@@ -1,8 +1,8 @@
 import className from "./modules/klass.js";
-import componentLink from "./modules/component-link.js";
+import componentInit from "./modules/component-init.js";
 import componentState from "./modules/component-state.js";
 import componentProps from "./modules/component-props.js";
-import slotset from "./modules/slotset.js";
+import componentSlotset from "./modules/component-slotset.js";
 import shadowRootElement from "./modules/shadow-root-element.js";
 import props from "./modules/props.js";
 
@@ -23,14 +23,11 @@ import {
 } from "./component.js";
 
 export const patch = init([
-    componentLink,
-    // these are all engine specific plugins.
+    componentInit,
     componentState,
-    slotset,
+    componentSlotset,
     shadowRootElement,
     componentProps,
-    // at this point, engine is done, and regular plugins
-    // should be used to rehydrate the dom element.
     props,
     attrs,
     style,
@@ -76,7 +73,7 @@ export function scheduleRehydration(vm: VM) {
     }
 }
 
-export const hook = {
+export const lifeCycleHooks = {
     insert(vm: VM) {
         assert.vm(vm);
         if (vm.cache.component.connectedCallback) {

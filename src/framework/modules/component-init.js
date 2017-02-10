@@ -6,7 +6,7 @@ import {
     getPrototypeOf,
 } from "../language.js";
 
-function link(oldVnode: VM, vnode: VM) {
+function initializeComponent(oldVnode: VNode, vnode: VM) {
     const { Ctor } = vnode;
     if (!Ctor) {
         return;
@@ -32,6 +32,6 @@ function link(oldVnode: VM, vnode: VM) {
 }
 
 export default {
-    create: link,
-    update: link,
+    create: initializeComponent,
+    update: initializeComponent,
 };

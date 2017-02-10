@@ -8,7 +8,7 @@ function updateClass (oldVnode: VNode, vnode: VNode) {
     }
 
     if (klass !== oldClass) {
-        elm.className = klass;
+        elm.className = klass || '';
     }
 }
 
