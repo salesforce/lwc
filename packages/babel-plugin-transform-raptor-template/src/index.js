@@ -39,7 +39,8 @@ export default function ({ types: t, template }) {
                     state.isThisApplied = true;
                     return;
                 }
-                if (!state.isThisApplied) {
+
+                if (path.parentPath.node.computed || !state.isThisApplied) {
                     state.isThisApplied = true;
                     metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
@@ -47,6 +48,29 @@ export default function ({ types: t, template }) {
             }
         }
     };
+
+    function validatePrimitiveValues(path) {
+        path.traverse({ enter(path) {
+            if (!path.isJSX() && !path.isIdentifier() && !path.isMemberExpression() && !path.isLiteral()) {
+                throw path.buildCodeFrameError(`Node type ${path.node.type} is not allowed inside expression`);
+            }
+        }});
+    }
+
+    function validateTemplateRootFormat(path) {
+        const rootChildrens = path.get('body');
+
+        if (!rootChildrens.length) {
+            throw path.buildCodeFrameError('Missing root template tag');
+        } else if (rootChildrens.length > 1) {
+            throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
+        }
+
+        const templateTagName = path.get('body.0.expression.openingElement.name');
+        if (templateTagName.node.name !== 'template') {
+            throw path.buildCodeFrameError('Root tag should be a template');
+        }
+    }
 
    // -- Plugin Visitor ------------------------------------------
     return {
@@ -89,6 +113,7 @@ export default function ({ types: t, template }) {
                     openElmt.attributes = buildAttrs;
                     openElmt._meta = meta;
 
+                    // Push scope while going down
                     if (scoped) {
                         this.customScope.registerScopePathBindings(path, scoped);
                     }
@@ -158,7 +183,7 @@ export default function ({ types: t, template }) {
     }
 
     function applyIfDirectiveToNode(directive, node, nextNode) {
-        if (nextNode && nextNode._meta.modifiers[MODIFIERS.else]) {
+        if (nextNode && nextNode._meta && nextNode._meta.modifiers[MODIFIERS.else]) {
             nextNode._processed = true;
         } else {
             nextNode = t.callExpression(applyPrimitive(EMPTY), []);
@@ -416,9 +441,10 @@ export default function ({ types: t, template }) {
     }
 
     function buildOpeningElementAttributes(attributes, path, state) {
+        const attrPath = path.get('openingElement.attributes');
         const metaGroup = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
-        attributes = attributes.map((attr) => {
-            const { meta, node } = normalizeAttribute(attr, path, state);
+        attributes = attributes.map((attr, index) => {
+            const { meta, node } = normalizeAttribute(attr, attrPath[index], state);
             groupAttrMetadata(metaGroup, meta);
             return node;
         });
@@ -434,9 +460,10 @@ export default function ({ types: t, template }) {
         return m.expression;
     }
 
-    function normalizeAttribute(jsxAttr, elementPath, state) {
-        const { node, meta } = normalizeAttributeName(jsxAttr.name, elementPath);
-        const value = normalizeAttributeValue(jsxAttr.value, meta, elementPath);
+    function normalizeAttribute(jsxAttr, attrPath, state) {
+        validatePrimitiveValues(attrPath, state);
+        const { node, meta } = normalizeAttributeName(jsxAttr.name, attrPath);
+        const value = normalizeAttributeValue(jsxAttr.value, meta, attrPath.get('value'), state);
         const property = t.objectProperty(node, value);
         property._meta = meta; // Attach metadata for further inspection upstream
         return { node : property, meta };
@@ -471,6 +498,13 @@ export default function ({ types: t, template }) {
             node = mNode;
         }
 
+        // Autowire bind for properties prefixed with on
+        if (node.name.indexOf(DIRECTIVES.on) === 0) {
+            const rawEventName = node.name.substring(2);
+            node.name = meta.event = rawEventName;
+            meta.directive = DIRECTIVES.bind;
+        }
+
         if (node.name === DIRECTIVES.is) {
             meta.directive = DIRECTIVES.is;
         }
@@ -485,12 +519,16 @@ export default function ({ types: t, template }) {
         return { node, meta };
     }
 
-     function normalizeAttributeValue(node, meta, path) {
+     function normalizeAttributeValue(node, meta, attrPath, state) {
          node = node || t.booleanLiteral(true);
          if (t.isJSXExpressionContainer(node)) {
-             throw path.buildCodeFrameError('Expressions not allowed in component attributes');
-        }
-        t.assertLiteral(node);
+             validatePrimitiveValues(attrPath);
+             attrPath.traverse(BoundThisVisitor, state);
+             node = node.expression;
+             meta.expressionContainer = true;
+         } else {
+            t.assertLiteral(node);
+         }
 
         if (meta.directive === DIRECTIVES.is) {
             meta.rootElement = node.value;
@@ -503,20 +541,5 @@ export default function ({ types: t, template }) {
         }
 
         return node;
-    }
-
-    function validateTemplateRootFormat(path) {
-        const rootChildrens = path.get('body');
-
-        if (!rootChildrens.length) {
-            throw path.buildCodeFrameError('Missing root template tag');
-        } else if (rootChildrens.length > 1) {
-            throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
-        }
-
-        const templateTagName = path.get('body.0.expression.openingElement.name');
-        if (templateTagName.node.name !== 'template') {
-            throw path.buildCodeFrameError('Root tag should be a template');
-        }
     }
 }
