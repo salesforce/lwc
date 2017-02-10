@@ -107,6 +107,47 @@ var className = {
     update: updateClass
 };
 
+var TargetToPropsMap = new WeakMap();
+
+function notifyListeners(target, propName) {
+    if (TargetToPropsMap.has(target)) {
+        var PropNameToListenersMap = TargetToPropsMap.get(target);
+        var set = PropNameToListenersMap.get(propName);
+        if (set) {
+            set.forEach(function (vm) {
+                assert.vm(vm);
+                console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
+                if (!vm.cache.isDirty) {
+                    markComponentAsDirty(vm);
+                    console.log("Scheduling " + vm + " for rehydration.");
+                    scheduleRehydration(vm);
+                }
+            });
+        }
+    }
+}
+
+function subscribeToSetHook(vm, target, propName) {
+    assert.vm(vm);
+    var PropNameToListenersMap = void 0;
+    if (!TargetToPropsMap.has(target)) {
+        PropNameToListenersMap = new Map();
+        TargetToPropsMap.set(target, PropNameToListenersMap);
+    } else {
+        PropNameToListenersMap = TargetToPropsMap.get(target);
+    }
+    var set = PropNameToListenersMap.get(propName);
+    if (!set) {
+        set = new Set();
+        PropNameToListenersMap.set(propName, set);
+    }
+    if (!set.has(vm)) {
+        set.add(vm);
+        // we keep track of the sets that vm is listening from to be able to do some clean up later on
+        vm.cache.listeners.add(set);
+    }
+}
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var topLevelContextSymbol = Symbol('Top Level Context');
@@ -532,48 +573,7 @@ function getObservedAttrsHash(target, attrs) {
     }, {});
 }
 
-var TargetToPropsMap = new WeakMap();
-
-function notifyListeners(target, propName) {
-    if (TargetToPropsMap.has(target)) {
-        var PropNameToListenersMap = TargetToPropsMap.get(target);
-        var set = PropNameToListenersMap.get(propName);
-        if (set) {
-            set.forEach(function (vm) {
-                assert.vm(vm);
-                console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
-                if (!vm.cache.isDirty) {
-                    markComponentAsDirty(vm);
-                    console.log("Scheduling " + vm + " for rehydration.");
-                    scheduleRehydration(vm);
-                }
-            });
-        }
-    }
-}
-
-function subscribeToSetHook(vm, target, propName) {
-    assert.vm(vm);
-    var PropNameToListenersMap = void 0;
-    if (!TargetToPropsMap.has(target)) {
-        PropNameToListenersMap = new Map();
-        TargetToPropsMap.set(target, PropNameToListenersMap);
-    } else {
-        PropNameToListenersMap = TargetToPropsMap.get(target);
-    }
-    var set = PropNameToListenersMap.get(propName);
-    if (!set) {
-        set = new Set();
-        PropNameToListenersMap.set(propName, set);
-    }
-    if (!set.has(vm)) {
-        set.add(vm);
-        // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.cache.listeners.add(set);
-    }
-}
-
-var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var ObjectPropertyToProxyMap = new WeakMap();
 var ProxySet = new WeakSet();
@@ -583,12 +583,11 @@ function getter(target, name) {
     if (isRendering) {
         subscribeToSetHook(vmBeingRendered, target, name);
     }
-    return value;
+    return value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getPropertyProxy(value) : value;
 }
 
 function setter(target, name, value) {
     var oldValue = target[name];
-    value = value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
     if (oldValue !== value) {
         target[name] = value;
         notifyListeners(target, name);
@@ -618,7 +617,7 @@ function getPropertyProxy(value) {
     if (value === null) {
         return null;
     }
-    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$1(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
+    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$2(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
     if (ProxySet.has(value)) {
         return value;
     }
@@ -632,7 +631,7 @@ function getPropertyProxy(value) {
     return proxy;
 }
 
-function hookComponentProperty(vm, propName) {
+function hookComponentLocalProperty(vm, propName) {
     assert.vm(vm);
     var _vm$cache = vm.cache,
         component = _vm$cache.component,
@@ -653,7 +652,7 @@ function hookComponentProperty(vm, propName) {
             enumerable = descriptor.enumerable,
             writtable = descriptor.writtable;
 
-        privates[propName] = value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
+        privates[propName] = value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getPropertyProxy(value) : value;
         defineProperty(component, propName, {
             get: function get() {
                 return getter(privates, propName);
@@ -668,64 +667,13 @@ function hookComponentProperty(vm, propName) {
     }
 }
 
-var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var ObjectAttributeToProxyMap = new WeakMap();
-var ProxySet$1 = new WeakSet();
-
-function getter$1(target, name) {
-    var value = target[name];
-    if (isRendering) {
-        subscribeToSetHook(vmBeingRendered, target, name);
-    }
-    return value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getAttributeProxy(value) : value;
-}
-
-function setter$1(target, name, newValue) {
-    assert.invariant(false, "Property " + name + " of " + target.toString() + " cannot be set to " + newValue + " because it is a public property controlled by the owner element.");
-    return true; // intentionally returning true to avoid runtime errors in prod.
-}
-
-function _deleteProperty$1(target, name) {
-    assert.invariant(false, "Property " + name + " of " + target.toString() + " cannot be deleted because it is a public property controlled by the owner element.");
-    return true; // intentionally returning true to avoid runtime errors in prod.
-}
-
-var attributeProxyHandler = {
-    get: function get(target, name) {
-        return getter$1(target, name);
-    },
-    set: function set(target, name, newValue) {
-        return setter$1(target, name, newValue);
-    },
-    deleteProperty: function deleteProperty(target, name) {
-        return _deleteProperty$1(target, name);
-    }
-};
-
-function getAttributeProxy(value) {
-    if (value === null) {
-        return null;
-    }
-    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$2(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
-    if (ProxySet$1.has(value)) {
-        return value;
-    }
-
-    if (ObjectAttributeToProxyMap.has(value)) {
-        return ObjectAttributeToProxyMap.get(value);
-    }
-    var proxy = new Proxy(value, attributeProxyHandler);
-    ObjectAttributeToProxyMap.set(value, proxy);
-    ProxySet$1.add(proxy);
-    return proxy;
-}
+var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 function hookComponentReflectiveProperty(vm, propName) {
-    var _vm$cache = vm.cache,
+    var _props = vm.data._props,
+        _vm$cache = vm.cache,
         component = _vm$cache.component,
-        state = _vm$cache.state,
-        config = _vm$cache.def.props;
+        publicPropsConfig = _vm$cache.def.props;
 
     assert.block(function () {
         var target = getPrototypeOf(component);
@@ -738,47 +686,51 @@ function hookComponentReflectiveProperty(vm, propName) {
     });
     defineProperty(component, propName, {
         get: function get() {
-            return getter$1(state, propName);
+            var value = _props[propName];
+            if (isRendering) {
+                subscribeToSetHook(vmBeingRendered, _props, propName);
+            }
+            return value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
         },
         set: function set(newValue) {
-            return setter$1(state, propName, newValue);
+            assert.invariant(false, "Property " + propName + " of " + vm + " cannot be set to " + newValue + " because it is a public property controlled by the owner element.");
         },
         configurable: true,
         enumerable: true
     });
     // this guarantees that the default value is always in place before anything else.
-    var initializer = config[propName].initializer;
+    var initializer = publicPropsConfig[propName].initializer;
 
     var defaultValue = typeof initializer === 'function' ? initializer() : initializer;
-    state[propName] = defaultValue;
+    _props[propName] = defaultValue;
 }
 
 function initComponentProps(vm) {
     assert.vm(vm);
-    var cache = vm.cache;
+    var cache = vm.cache,
+        _props = vm.data._props;
     var component = cache.component,
-        state = cache.state,
         _cache$def = cache.def,
-        config = _cache$def.props,
+        publicPropsConfig = _cache$def.props,
         observedAttrs = _cache$def.observedAttrs;
     // reflective properties
 
-    for (var propName in config) {
+    for (var propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
     }
     // non-reflective properties
     getOwnPropertyNames(component).forEach(function (propName) {
-        if (propName in config) {
+        if (propName in publicPropsConfig) {
             return;
         }
-        hookComponentProperty(vm, propName);
+        hookComponentLocalProperty(vm, propName);
     });
 
     // notifying observable attributes if they are initialized with default or custom value
-    for (var _propName in config) {
-        var attrName = config[_propName].attrName;
+    for (var _propName in publicPropsConfig) {
+        var attrName = publicPropsConfig[_propName].attrName;
 
-        var defaultValue = state[_propName];
+        var defaultValue = _props[_propName];
         // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
         if (defaultValue !== undefined && observedAttrs[attrName]) {
@@ -799,14 +751,14 @@ function clearListeners(vm) {
 
 function updateComponentProp(vm, propName, newValue) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var state = cache.state,
-        _cache$def2 = cache.def,
-        props = _cache$def2.props,
+    var cache = vm.cache,
+        _props = vm.data._props;
+    var _cache$def2 = cache.def,
+        publicPropsConfig = _cache$def2.props,
         observedAttrs = _cache$def2.observedAttrs;
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
-    var config = props[propName];
+    var config = publicPropsConfig[propName];
     if (!config) {
         // TODO: ignore any native html property
         console.warn("Updating unknown property " + propName + " of " + vm + ". This property will be a pass-thru to the DOM element.");
@@ -816,9 +768,9 @@ function updateComponentProp(vm, propName, newValue) {
         var initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
-    var oldValue = state[propName];
+    var oldValue = _props[propName];
     if (oldValue !== newValue) {
-        state[propName] = newValue;
+        _props[propName] = newValue;
         if (config) {
             var attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -834,15 +786,15 @@ function updateComponentProp(vm, propName, newValue) {
 
 function resetComponentProp(vm, propName) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var state = cache.state,
-        _cache$def3 = cache.def,
-        props = _cache$def3.props,
+    var cache = vm.cache,
+        _props = vm.data._props;
+    var _cache$def3 = cache.def,
+        publicPropsConfig = _cache$def3.props,
         observedAttrs = _cache$def3.observedAttrs;
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
-    var config = props[propName];
-    var oldValue = state[propName];
+    var config = publicPropsConfig[propName];
+    var oldValue = _props[propName];
     var newValue = undefined;
     if (!config) {
         // TODO: ignore any native html property
@@ -852,7 +804,7 @@ function resetComponentProp(vm, propName) {
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
     if (oldValue !== newValue) {
-        state[propName] = newValue;
+        _props[propName] = newValue;
         if (config) {
             var attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -888,9 +840,7 @@ function createComponent(vm) {
         isDirty: true,
         def: def,
         context: {},
-        state: {},
         privates: {},
-        reflectives: {},
         component: null,
         fragment: undefined,
         shadowRoot: null,
@@ -905,6 +855,8 @@ function createComponent(vm) {
         setPrototypeOf(vm, proto);
     });
     vm.cache = cache;
+    vm.data._props = {};
+    vm.data._on = {};
     cache.component = invokeComponentConstructor(vm);
     initComponentProps(vm);
 }
@@ -969,60 +921,57 @@ var PlainHTMLElement = function () {
         value: function getAttribute(attrName) {
             var vm = ComponentToVMMap.get(this);
             assert.vm(vm);
-            var _vm$cache = vm.cache,
-                state = _vm$cache.state,
-                props = _vm$cache.def.props;
+            var _props = vm.data._props,
+                publicPropsConfig = vm.cache.def.props;
 
             var propName = attrName.replace(CAMEL_REGEX$1, function (g) {
                 return g[1].toUpperCase();
             });
-            if (props[propName]) {
+            if (publicPropsConfig[propName]) {
                 assert.block(function () {
                     throw new Error("Attribute \"" + attrName + "\" of " + vm + " is automatically reflected from public property " + propName + ". Use <code>this." + propName + "</code> instead of <code>this.getAttribute(\"" + attrName + "\")</code>.");
                 });
                 return;
             }
-            return state[propName];
+            return _props[propName];
         }
     }, {
         key: "setAttribute",
         value: function setAttribute(attrName, value) {
             var vm = ComponentToVMMap.get(this);
             assert.vm(vm);
-            var _vm$cache2 = vm.cache,
-                state = _vm$cache2.state,
-                props = _vm$cache2.def.props;
+            var _props = vm.data._props,
+                publicPropsConfig = vm.cache.def.props;
 
             var propName = attrName.replace(CAMEL_REGEX$1, function (g) {
                 return g[1].toUpperCase();
             });
-            if (props[propName]) {
+            if (publicPropsConfig[propName]) {
                 assert.block(function () {
                     throw new Error("Attribute \"" + attrName + "\" of " + vm + " is automatically reflected from public property " + propName + ". You cannot modify it.");
                 });
                 return;
             }
-            state[propName] = '' + value;
+            _props[propName] = '' + value;
         }
     }, {
         key: "removeAttribute",
         value: function removeAttribute(attrName) {
             var vm = ComponentToVMMap.get(this);
             assert.vm(vm);
-            var _vm$cache3 = vm.cache,
-                state = _vm$cache3.state,
-                props = _vm$cache3.def.props;
+            var _props = vm.data._props,
+                publicPropsConfig = vm.cache.def.props;
 
             var propName = attrName.replace(CAMEL_REGEX$1, function (g) {
                 return g[1].toUpperCase();
             });
-            if (props[propName]) {
+            if (publicPropsConfig[propName]) {
                 assert.block(function () {
                     throw new Error("Attribute \"" + attrName + "\" of " + vm + " is automatically reflected from public property " + propName + ". You cannot remove it.");
                 });
                 return;
             }
-            state[propName] = undefined;
+            _props[propName] = undefined;
         }
     }]);
 
@@ -1082,6 +1031,8 @@ function link(oldVnode, vnode) {
                 setPrototypeOf(vnode, getPrototypeOf(oldVnode));
             });
             vnode.cache = oldVnode.cache;
+            vnode.data._props = oldVnode.data._props;
+            vnode.data._on = oldVnode.data._on;
         } else {
             createComponent(vnode);
             console.log("Component for " + vnode + " was created.");
@@ -1096,7 +1047,7 @@ var componentLink = {
     update: link
 };
 
-function syncState(oldVnode, vnode) {
+function syncProps(oldVnode, vnode) {
     var cache = vnode.cache;
 
     if (!cache) {
@@ -1105,7 +1056,6 @@ function syncState(oldVnode, vnode) {
 
     var oldProps = oldVnode.data.props;
     var props = vnode.data.props;
-    var state = cache.state;
 
     var key = void 0,
         cur = void 0;
@@ -1113,17 +1063,17 @@ function syncState(oldVnode, vnode) {
     if (oldProps !== props && (oldProps || props)) {
         oldProps = oldProps || {};
         props = props || {};
-        // removed props should be resetted in component's props
+        // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in props)) {
                 resetComponentProp(vnode, key);
             }
         }
 
-        // new props should be setted in component's props
+        // new or different props should be set in component's props
         for (key in props) {
             cur = props[key];
-            if (key in oldProps && oldProps[key] !== cur || !(key in state) || state[key] !== cur) {
+            if (!(key in oldProps) || oldProps[key] != cur) {
                 updateComponentProp(vnode, key, cur);
             }
         }
@@ -1131,11 +1081,11 @@ function syncState(oldVnode, vnode) {
 }
 
 var componentState = {
-    create: syncState,
-    update: syncState
+    create: syncProps,
+    update: syncProps
 };
 
-function updatePropsFromState(oldVnode, vnode) {
+function updateProps(oldVnode, vnode) {
     var cache = vnode.cache;
 
     if (!cache) {
@@ -1144,39 +1094,38 @@ function updatePropsFromState(oldVnode, vnode) {
 
     var oldProps = oldVnode.data.props || {};
     // at this point, props are irrelevant because component-state.js have consolidated
-    // them into state, and what matters is the `state` vs `oldProps`
-    var elm = vnode.elm;
-    var state = cache.state,
-        component = cache.component,
-        config = cache.def.props;
+    // them into _props, and what matters is the `_props` vs `oldProps`
+    var _props = vnode.data._props,
+        elm = vnode.elm;
+    var component = cache.component,
+        publicPropsConfig = cache.def.props;
 
     var key = void 0,
         cur = void 0,
-        old = void 0,
-        v = void 0;
+        old = void 0;
 
     for (key in oldProps) {
-        if (!state[key]) {
+        if (!_props[key]) {
             delete elm[key];
         }
     }
-    for (key in state) {
-        cur = state[key];
+    for (key in _props) {
+        cur = _props[key];
         old = oldProps[key];
         if (old !== cur) {
-            // for component derivated props, the prop should reflect the value
-            // accessible from within the component instance. for arbitrary
-            // passed using the side-channels, use the original value from state
+            // for component derivated props (reflective props), the DOM should reflect the value
+            // accessible from within the component instance. for props that were arbitrary
+            // passed using the side-channels (setAttribute, className, etc.), use the original
+            // value from _props.
             // TODO: maybe we can just expose the raw value everytime for perf reasons
-            v = config[key] ? component[key] : state[key];
-            elm[key] = v;
+            elm[key] = publicPropsConfig[key] ? component[key] : _props[key];
         }
     }
 }
 
 var componentProps = {
-    create: updatePropsFromState,
-    update: updatePropsFromState
+    create: updateProps,
+    update: updateProps
 };
 
 function update(oldvnode, vnode) {
@@ -1219,7 +1168,6 @@ function rerender(oldVnode, vnode) {
         var oldCh = oldVnode.children;
 
         oldCh.splice(0, oldCh.length).push.apply(oldCh, cache.fragment);
-        oldVnode.data = vnode.data;
         // TODO: this is a fork of the fiber since the create hook is called during a
         // patching process. How can we optimize this to reuse the same queue?
         // and idea is to do this part in the next turn (a la fiber)
@@ -1962,12 +1910,12 @@ function rehydrate(vm) {
         assert.invariant(Array.isArray(children), 'Rendered vm ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new disposable VNode to kick in the diff, but the
-        // state is the same, only the children collection should not be ===.
+        // data is the same, only the children collection should not be ===.
         var vnode = {
             sel: sel,
             key: key,
             elm: elm,
-            data: {},
+            data: data,
             children: children
         };
         // rendering the component to compute the new fragment collection
@@ -2018,7 +1966,8 @@ var CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element, vm) {
     assert.vm(vm);
-    var attrs = vm.cache.def.attrs;
+    var cache = vm.cache;
+    var attrs = cache.def.attrs;
     // replacing mutators on the element itself to catch any mutation
 
     element.setAttribute = function (attrName, value) {
@@ -2026,6 +1975,10 @@ function linkAttributes(element, vm) {
         var attrConfig = attrs[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             updateComponentProp(vm, attrConfig.propName, value);
+            if (cache.isDirty) {
+                console.log("Scheduling " + vm + " for rehydration.");
+                scheduleRehydration(vm);
+            }
         }
     };
     element.removeAttribute = function (attrName) {
@@ -2033,6 +1986,10 @@ function linkAttributes(element, vm) {
         var attrConfig = attrs[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             resetComponentProp(vm, attrConfig.propName);
+            if (cache.isDirty) {
+                console.log("Scheduling " + vm + " for rehydration.");
+                scheduleRehydration(vm);
+            }
         }
     };
 }
@@ -2040,7 +1997,8 @@ function linkAttributes(element, vm) {
 function linkProperties(element, vm) {
     assert.vm(vm);
     var Ctor = vm.Ctor,
-        component = vm.cache.component;
+        cache = vm.cache;
+    var component = cache.component;
 
     var _getComponentDef = getComponentDef(Ctor),
         props = _getComponentDef.props,
@@ -2071,7 +2029,11 @@ function linkProperties(element, vm) {
                 return component[propName];
             },
             set: function set(newValue) {
-                return updateComponentProp(vm, propName, newValue);
+                updateComponentProp(vm, propName, newValue);
+                if (cache.isDirty) {
+                    console.log("Scheduling " + vm + " for rehydration.");
+                    scheduleRehydration(vm);
+                }
             },
             configurable: false,
             enumerable: true
