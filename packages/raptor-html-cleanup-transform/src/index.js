@@ -76,14 +76,17 @@ function validateHTML(original, parsed) {
             }
         });
 
-        throw new Error(`\nError validating HTML:\n ${original}\nNot valid HTML (invalid self-closing tags?)\nErrors found in lines: ${Object.keys(errors).join(', ')}`);
+        const errLines = Object.keys(errors).join(', ');
+        const errMsg = errLines.length ? `Errors found in lines: ${errLines}` : '';
+        throw new Error(`\nError validating HTML:\n ${original}\nNot valid HTML (invalid self-closing tags?)\n${errMsg}`);
     }
 }
 
 module.exports = {
-    transform (src) {
+    transform (buffer) {
+        const src = buffer.toString();
         // We do a first pass so we get the "correct" beahviour when dealing with broken self-closing/missing tags.
-        const parsed = parse5.serialize(parse5.parseFragment(src.toString()));
+        const parsed = parse5.serialize(parse5.parseFragment(src));
         validateHTML(src, parsed);
 
         // Now we do our own transformations to make it "JSX" compliant
