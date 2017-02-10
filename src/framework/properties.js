@@ -20,12 +20,11 @@ function getter(target: Object, name: string): any {
     if (isRendering) {
         subscribeToSetHook(vmBeingRendered, target, name);
     }
-    return value;
+    return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
 }
 
 function setter(target: Object, name: string, value: any): boolean {
     const oldValue = target[name];
-    value = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
     if (oldValue !== value) {
         target[name] = value;
         notifyListeners(target, name);
@@ -45,7 +44,7 @@ const propertyProxyHandler = {
     deleteProperty: (target: Object, name: string): boolean => deleteProperty(target, name),
 };
 
-function getPropertyProxy(value: Object): any {
+export function getPropertyProxy(value: Object): any {
     if (value === null) {
         return null;
     }
@@ -63,7 +62,7 @@ function getPropertyProxy(value: Object): any {
     return proxy;
 }
 
-export function hookComponentProperty(vm: VM, propName: string) {
+export function hookComponentLocalProperty(vm: VM, propName: string) {
     assert.vm(vm);
     const { cache: { component, privates } } = vm;
     const descriptor = getOwnPropertyDescriptor(component, propName);

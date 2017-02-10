@@ -1,19 +1,56 @@
 import assert from "./assert.js";
+import { subscribeToSetHook } from "./watcher.js";
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
 } from "./invoker.js";
-import { getComponentDef } from "./def.js";
+import {
+    getComponentDef,
+    internal,
+} from "./def.js";
 import {
     isRendering,
+    vmBeingRendered,
     invokeComponentAttributeChangedCallback,
 } from "./invoker.js";
-import { hookComponentProperty } from "./properties.js";
-import { hookComponentReflectiveProperty } from "./attributes.js";
 import {
-    setPrototypeOf,
+    hookComponentLocalProperty,
+    getPropertyProxy,
+} from "./properties.js";
+import {
+    defineProperty,
+    getPrototypeOf,
+    getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    setPrototypeOf,
 } from "./language.js";
+
+function hookComponentReflectiveProperty(vm: VM, propName: string) {
+    const { data: { _props }, cache: { component, def: { props: publicPropsConfig } } } = vm;
+    assert.block(() => {
+        const target = getPrototypeOf(component);
+        const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
+        assert.invariant(get[internal] && set[internal], `component ${vm} has tampered with property ${propName} during construction.`);
+    });
+    defineProperty(component, propName, {
+        get: (): any => {
+            const value = _props[propName];
+            if (isRendering) {
+                subscribeToSetHook(vmBeingRendered, _props, propName);
+            }
+            return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
+        },
+        set: (newValue: any) => {
+            assert.invariant(false, `Property ${propName} of ${vm} cannot be set to ${newValue} because it is a public property controlled by the owner element.`);
+        },
+        configurable: true,
+        enumerable: true,
+    });
+    // this guarantees that the default value is always in place before anything else.
+    const { initializer } = publicPropsConfig[propName];
+    const defaultValue = typeof initializer === 'function' ? initializer(): initializer;
+    _props[propName] = defaultValue;
+}
 
 function initComponentProps(vm: VM) {
     assert.vm(vm);
@@ -28,7 +65,7 @@ function initComponentProps(vm: VM) {
         if (propName in publicPropsConfig) {
             return;
         }
-        hookComponentProperty(vm, propName);
+        hookComponentLocalProperty(vm, propName);
     });
 
     // notifying observable attributes if they are initialized with default or custom value
