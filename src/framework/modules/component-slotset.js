@@ -3,6 +3,9 @@ import {
 } from "../component.js";
 
 function update(oldvnode: VNode, vnode: VM) {
+    if (!vnode.cache) {
+        return;
+    }
     const { data: { slotset: oldSlotset } } = oldvnode;
     const { data: { slotset } } = vnode;
     if (!oldSlotset && !slotset) {
