@@ -13,6 +13,7 @@ export const DIRECTIVES = {
     on        : 'on',
     is        : 'is',
     bind      : 'bind',
+    branch    : 'set',
     eval      : 'set',
     assign    : 'set',
     set       : 'set',
