@@ -90,8 +90,8 @@ export default function ({ types: t, template }) {
                     const body = path.node.body;
                     const pos = body.findIndex(c => t.isExpressionStatement(c) && c.expression._jsxElement);
                     const rootElement = path.get(`body.${pos}.expression`);
-                    const children = rootElement.node.arguments.pop();
-                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: children });
+                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: rootElement });
+
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
@@ -155,10 +155,7 @@ export default function ({ types: t, template }) {
     };
 
     function prettyPrintExpr (callExpr) {
-        // Dependency on babel-plugin-transform-template-jsx generator to prettify it
-        if (callExpr.arguments.length >= 3) {
-            callExpr._prettyCall = true;
-        }
+        callExpr._prettyCall = true;
     }
 
      function needsComputedCheck(literal) {
@@ -192,7 +189,7 @@ export default function ({ types: t, template }) {
     }
 
     // Convert JSX AST into regular javascript AST
-    function buildChildren(node, path, state) {
+    function buildChildren(node, path, /*state*/) {
         const children = [];
         let hasForLoopDirective = false;
         let elems = [];
@@ -214,7 +211,7 @@ export default function ({ types: t, template }) {
                 child = t.callExpression(applyPrimitive(TEXT), [child.expression]);
             }
 
-            if (t.isCallExpression(child) && directives) {
+            if (directives && (t.isCallExpression(child) || t.isArrayExpression(child))) {
                 if (directives[MODIFIERS.else]) {
                     throw path.buildCodeFrameError('Else statement found before if statement');
                 }
@@ -267,8 +264,13 @@ export default function ({ types: t, template }) {
     function buildElementCall(path, state) {
         const meta = path.node._meta;
         const tag = convertJSXIdentifier(path.node.name, meta, path, state);
-        const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
         const children = buildChildren(path.parent, path, state);
+
+        if (tag.value === 'template') {
+            children._meta = meta;
+            return children;
+        }
+        const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
         const attribs = path.node.attributes;
         const args = [tag, attribs, children];
 
@@ -277,7 +279,7 @@ export default function ({ types: t, template }) {
         }
 
         const createElementExpression = t.callExpression(exprTag, args);
-        createElementExpression._meta = attribs._meta; // Push metadata up
+        createElementExpression._meta = meta; // Push metadata up
         return createElementExpression;
     }
 
