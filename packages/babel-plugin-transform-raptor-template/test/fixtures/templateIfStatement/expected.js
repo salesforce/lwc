@@ -1,0 +1,10 @@
+const memoized = Symbol();
+export default function ($api, $cmp) {
+    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    return [$api.h(
+        "section",
+        {},
+        [$cmp.isTrue ? [$api.s($cmp.foo), $api.s($cmp.bar)] : $api.e()]
+    )];
+}
+export const templateUsedIds = ["isTrue", "foo", "bar"];
