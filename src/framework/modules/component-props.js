@@ -1,3 +1,5 @@
+import assert from "../assert.js";
+
 function updateProps(oldVnode: vnode, vnode: VM) {
     const { cache } = vnode;
     if (!cache) {
@@ -25,6 +27,11 @@ function updateProps(oldVnode: vnode, vnode: VM) {
             // passed using the side-channels (setAttribute, className, etc.), use the original
             // value from _props.
             // TODO: maybe we can just expose the raw value everytime for perf reasons
+            assert.block(() => {
+                if (elm[key] === publicPropsConfig[key] ? component[key] : _props[key]) {
+                    console.warn(`unneccessary update of element ${elm}, property ${key} for ${vnode}.`);
+                }
+            });
             elm[key] = publicPropsConfig[key] ? component[key] : _props[key];
         }
     }

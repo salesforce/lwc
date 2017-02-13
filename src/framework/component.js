@@ -24,6 +24,7 @@ import {
     getOwnPropertyNames,
     setPrototypeOf,
 } from "./language.js";
+import { scheduleRehydration } from "./hook.js";
 
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
     const { data: { _props }, cache: { component, def: { props: publicPropsConfig } } } = vm;

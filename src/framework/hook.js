@@ -3,7 +3,8 @@ import componentInit from "./modules/component-init.js";
 import componentState from "./modules/component-state.js";
 import componentProps from "./modules/component-props.js";
 import componentSlotset from "./modules/component-slotset.js";
-import shadowRootElement from "./modules/shadow-root-element.js";
+import componentClassList from "./modules/component-klass.js";
+import componentChildren from "./modules/component-children.js";
 import props from "./modules/props.js";
 
 import { init } from "snabbdom";
@@ -25,8 +26,9 @@ import {
 export const patch = init([
     componentInit,
     componentState,
+    componentClassList,
     componentSlotset,
-    shadowRootElement,
+    componentChildren,
     componentProps,
     props,
     attrs,

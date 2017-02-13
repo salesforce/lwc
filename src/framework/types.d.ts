@@ -32,7 +32,9 @@ interface ComponentDef {
     observedAttrs: HashTable<number>;
 }
 
-interface PlainHTMLElement extends HTMLElement {}
+interface PlainHTMLElement extends HTMLElement {
+    classList: Array<string>;
+}
 
 declare class Cache {
     privates: HashTable<any>;

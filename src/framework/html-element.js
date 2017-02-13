@@ -1,5 +1,6 @@
 import assert from "./assert.js";
 import { vmBeingCreated } from "./invoker.js";
+import { ClassList } from "./class-list.js";
 import {
     defineProperty,
 } from "./language.js";
@@ -21,6 +22,14 @@ class PlainHTMLElement {
     constructor() {
         assert.vm(vmBeingCreated, `Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.`);
         linkComponentToVM(this, vmBeingCreated);
+        Object.defineProperties(this, {
+            classList: {
+                value:  new ClassList(vmBeingCreated),
+                writable: false,
+                configurable: false,
+                enumerable: true,
+            },
+        });
     }
     dispatchEvent(event: Event): boolean {
         const vm = ComponentToVMMap.get(this);

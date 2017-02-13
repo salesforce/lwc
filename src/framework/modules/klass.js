@@ -1,13 +1,20 @@
+import assert from "../assert.js";
+
 function updateClass (oldVnode: VNode, vnode: VNode) {
+    const { cache } = vnode;
+    if (cache) {
+        return;
+    }
     const elm = vnode.elm;
     const oldClass = oldVnode.data.class;
     const klass = vnode.data.class;
 
-    if (!oldClass && !klass) {
-        return;
-    }
-
     if (klass !== oldClass) {
+        assert.block(() => {
+            if (elm.className === (klass || '')) {
+                console.warn(`unneccessary update of element ${elm}, property className for ${vnode}.`);
+            }
+        });
         elm.className = klass || '';
     }
 }

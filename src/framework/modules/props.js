@@ -1,3 +1,5 @@
+import assert from "../assert.js";
+
 function update(oldVnode: VNode, vnode: VNode) {
     const { cache } = vnode;
     if (cache) {
@@ -32,6 +34,11 @@ function update(oldVnode: VNode, vnode: VNode) {
         if (old !== cur) {
             if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
                 // only touching the dom if the prop really changes.
+                assert.block(() => {
+                    if (elm[key] === cur) {
+                        console.warn(`unneccessary update of element ${elm}, property ${key} for ${vnode}.`);
+                    }
+                });
                 elm[key] = cur;
             }
         }
