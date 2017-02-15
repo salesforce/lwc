@@ -2299,5 +2299,5 @@ exports.getComponentDef = getComponentDef;
 exports.HTMLElement = PlainHTMLElement;
 
 }((this.Engine = this.Engine || {})));
-/** version: 0.1.3 */
+/** version: 0.1.4 */
 //# sourceMappingURL=interop.js.map

@@ -10,7 +10,7 @@ export default class input extends HTMLElement {
     placeholder = 'default';
     value;
 
-    handleInput (originalEvent: Event) {
+    handleInput (originalEvent) {
         const event = document.createEvent('CustomEvent');
         event.initCustomEvent('change', true, true, null);
         // const event = new CustomEvent('change', {
