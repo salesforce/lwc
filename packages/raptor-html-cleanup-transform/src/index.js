@@ -19,12 +19,17 @@ function normalizeAttrName(name) {
 }
 
 function generateHTMLAttr(attr) {
-    return `${attr.name}="${attr.value}"`;
+    var value = attr.unquoted ? attr.value : `"${attr.value}"`;
+    return `${attr.name}=${value}`;
+}
+
+function isExpression(str) {
+    return str[0] === '{' && str[str.length - 1] === '}';
 }
 
 function parseAttrs(attrs) {
     const normalizedAttrs = attrs.map((attr) => {
-        return { name: normalizeAttrName(attr.name), value : attr.value }
+        return { name: normalizeAttrName(attr.name), value : attr.value, unquoted: isExpression(attr.value) }
     });
     return normalizedAttrs.map(generateHTMLAttr);
 }
@@ -59,7 +64,6 @@ module.exports = {
         const src = buffer.toString();
         // We do a first pass so we get the "correct" beahviour when dealing with broken self-closing/missing tags.
         const parsed = parse5.serialize(parse5.parseFragment(src));
-
         // Now we do our own transformations to make it "JSX" compliant
         return new Promise(function (resolve) {
             const output = [];
