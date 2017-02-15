@@ -1,36 +1,46 @@
-function updateProps(oldVnode: vnode, vnode: VM) {
+import assert from "../assert.js";
+import {
+    resetComponentProp,
+    updateComponentProp,
+} from "../component.js";
+
+function syncProps(oldVnode: vnode, vnode: VM) {
     const { cache } = vnode;
     if (!cache) {
         return;
     }
 
-    const oldProps = oldVnode.data.props || {};
-    // at this point, props are irrelevant because component-state.js have consolidated
-    // them into _props, and what matters is the `_props` vs `oldProps`
-    const { data: { _props }, elm } = vnode;
-    const { component, def: { props: publicPropsConfig } } = cache;
-    let key: string, cur: any, old: any;
+    let { data: { _props: oldProps } } = oldVnode;
+    let { data: { _props: newProps } } = vnode;
+    let key: string, cur: any;
 
-    for (key in oldProps) {
-        if (!_props[key]) {
-            delete elm[key];
+    // infuse key-value pairs from _props into the component
+    if (oldProps !== newProps && (oldProps || newProps)) {
+        oldProps = oldProps || {};
+        newProps = newProps || {};
+        // removed props should be reset in component's props
+        for (key in oldProps) {
+            if (!(key in newProps)) {
+                resetComponentProp(vnode, key);
+            }
+        }
+
+        // new or different props should be set in component's props
+        for (key in newProps) {
+            cur = newProps[key];
+            if (!(key in oldProps) || oldProps[key] != cur) {
+                updateComponentProp(vnode, key, cur);
+            }
         }
     }
-    for (key in _props) {
-        cur = _props[key];
-        old = oldProps[key];
-        if (old !== cur) {
-            // for component derivated props (reflective props), the DOM should reflect the value
-            // accessible from within the component instance. for props that were arbitrary
-            // passed using the side-channels (setAttribute, className, etc.), use the original
-            // value from _props.
-            // TODO: maybe we can just expose the raw value everytime for perf reasons
-            elm[key] = publicPropsConfig[key] ? component[key] : _props[key];
-        }
-    }
+
+    // reflection of component props into data.props for the regular diffing algo
+    let { data: { props } } = vnode;
+    assert.invariant(Object.getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
+    Object.assign(props, cache.cmpProps);
 }
 
 export default {
-    create: updateProps,
-    update: updateProps,
+    create: syncProps,
+    update: syncProps,
 };

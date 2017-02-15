@@ -20,7 +20,9 @@ declare interface ComponentDef {
     observedAttrs: HashTable<number>
 }
 
-declare class PlainHTMLElement extends HTMLElement {}
+declare class PlainHTMLElement extends HTMLElement {
+    classList: classList: Array<string>
+}
 
 declare interface RenderAPI {
     c(tagName: string, Ctor: ObjectConstructor, data: Object): VM,
