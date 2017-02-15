@@ -2,6 +2,7 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
+import { setLinkedVNode } from "./component.js";
 import * as api from "./api.js";
 import assert from "./assert.js";
 
@@ -39,6 +40,10 @@ export function invokeComponentConstructor(vm: VM): Component {
     establishContext(context);
     vmBeingCreated = vm;
     const component = new Ctor();
+    // note to self: invocations during construction to get the vm associated
+    // to the component works fine as well because we can use `vmBeingCreated`
+    // in getLinkedVNode() as a fallback patch for resolution.
+    setLinkedVNode(component, vm);
     vmBeingCreated = null;
     establishContext(ctx);
     return component;

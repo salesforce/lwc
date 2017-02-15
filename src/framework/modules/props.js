@@ -1,11 +1,6 @@
 import assert from "../assert.js";
 
 function update(oldVnode: VNode, vnode: VNode) {
-    const { cache } = vnode;
-    if (cache) {
-        return;
-    }
-
     let oldProps = oldVnode.data.props;
     let props = vnode.data.props;
 

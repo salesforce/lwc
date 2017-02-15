@@ -1,6 +1,5 @@
 import className from "./modules/klass.js";
 import componentInit from "./modules/component-init.js";
-import componentState from "./modules/component-state.js";
 import componentProps from "./modules/component-props.js";
 import componentSlotset from "./modules/component-slotset.js";
 import componentClassList from "./modules/component-klass.js";
@@ -19,17 +18,19 @@ import {
     invokeComponentDisconnectedCallback,
 } from "./invoker.js";
 import {
-    renderComponent,
     destroyComponent,
+    getLinkedVNode,
 } from "./component.js";
+import { c } from "./api.js";
+
+export const globalRenderedCallbacks: Array<() => void> = [];
 
 export const patch = init([
     componentInit,
-    componentState,
     componentClassList,
     componentSlotset,
-    componentChildren,
     componentProps,
+    componentChildren,
     props,
     attrs,
     style,
@@ -43,23 +44,22 @@ export function rehydrate(vm: VM) {
     const { cache } = vm;
     assert.isTrue(vm.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
     if (cache.isDirty) {
-        const { sel, key, elm, data, children } = vm;
+        const oldVnode = getLinkedVNode(cache.component);
+        const { sel, Ctor, data: { key, slotset, dataset, _props, _on, _class }, children } = oldVnode;
         assert.invariant(Array.isArray(children), 'Rendered vm ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
-        // a dirty state, we create a new disposable VNode to kick in the diff, but the
-        // data is the same, only the children collection should not be ===.
-        const vnode = {
-            sel,
+        // a dirty state, we create a new VNode with the exact same data was used
+        // to patch this vm the last time, mimic what happen when the
+        // owner re-renders.
+        const vnode = c(sel, Ctor, {
             key,
-            elm,
-            data,
-            children,
-        };
-        // rendering the component to compute the new fragment collection
-        // while resetting the vm.children collection to allow diffing.
-        renderComponent(vm);
-        vm.children = [];
-        patch(vnode, vm);
+            slotset,
+            dataset,
+            props: _props,
+            on: _on,
+            class: _class,
+        });
+        patch(oldVnode, vnode);
     }
     cache.isScheduled = false;
 }
@@ -82,6 +82,18 @@ export const lifeCycleHooks = {
             invokeComponentConnectedCallback(vm);
         }
         console.log(`vnode "${vm}" was inserted.`);
+    },
+    post() {
+        // This hook allows us to resolve a promise after the current patching
+        // process has concluded and all elements are in the DOM.
+        // TODO: we don't have that user-land API just yet, but eventually we will
+        // have it to support something like `element.focus()`;
+        const len = globalRenderedCallbacks.length;
+        for (let i = 0; i < len; i += 1) {
+            const callback = globalRenderedCallbacks.shift();
+            // TODO: do we need to set and restore context around this callback?
+            callback();
+        }
     },
     destroy(vm: VM) {
         assert.vm(vm);

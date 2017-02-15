@@ -120,8 +120,8 @@ function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor): Componen
         throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
     }
     const props = getInitialProps(element, Ctor);
-    const slots = getInitialSlots(element, Ctor);
-    const vm = createVM(element, Ctor, { props, slots });
+    const slotset = getInitialSlots(element, Ctor);
+    const vm = createVM(element, Ctor, { _props: props, slotset });
     linkAttributes(element, vm);
     // TODO: for vm with element we might not need to do any of these.
     linkProperties(element, vm);

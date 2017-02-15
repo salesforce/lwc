@@ -4,11 +4,11 @@ function syncClassNames(oldVnode: vnode, vnode: VM) {
         return;
     }
 
-    let { data: { class: oldClass } } = oldVnode;
-    let { data: { class: klass } } = vnode;
+    let { data: { _class: oldClass } } = oldVnode;
+    let { data: { _class: klass } } = vnode;
     const { component: { classList } } = cache;
 
-    // propagating changes from "data->class" into component's classList
+    // propagating changes from "data->_class" into component's classList
     if (klass !== oldClass) {
         oldClass = (oldClass || '').split(' ');
         klass = (klass || '').split(' ');

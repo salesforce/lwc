@@ -1,10 +1,6 @@
 import assert from "../assert.js";
 
 function updateClass (oldVnode: VNode, vnode: VNode) {
-    const { cache } = vnode;
-    if (cache) {
-        return;
-    }
     const elm = vnode.elm;
     const oldClass = oldVnode.data.class;
     const klass = vnode.data.class;

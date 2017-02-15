@@ -11,6 +11,7 @@ import {
 import {
     isRendering,
     vmBeingRendered,
+    vmBeingCreated,
     invokeComponentAttributeChangedCallback,
 } from "./invoker.js";
 import {
@@ -24,10 +25,9 @@ import {
     getOwnPropertyNames,
     setPrototypeOf,
 } from "./language.js";
-import { scheduleRehydration } from "./hook.js";
 
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
-    const { data: { _props }, cache: { component, def: { props: publicPropsConfig } } } = vm;
+    const { cache: { component, cmpProps, def: { props: publicPropsConfig } } } = vm;
     assert.block(() => {
         const target = getPrototypeOf(component);
         const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
@@ -35,9 +35,9 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     });
     defineProperty(component, propName, {
         get: (): any => {
-            const value = _props[propName];
+            const value = cmpProps[propName];
             if (isRendering) {
-                subscribeToSetHook(vmBeingRendered, _props, propName);
+                subscribeToSetHook(vmBeingRendered, cmpProps, propName);
             }
             return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
         },
@@ -50,13 +50,13 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     // this guarantees that the default value is always in place before anything else.
     const { initializer } = publicPropsConfig[propName];
     const defaultValue = typeof initializer === 'function' ? initializer(): initializer;
-    _props[propName] = defaultValue;
+    cmpProps[propName] = defaultValue;
 }
 
 function initComponentProps(vm: VM) {
     assert.vm(vm);
-    const { cache, data: { _props } } = vm;
-    const { component, def: { props: publicPropsConfig, observedAttrs } } = cache;
+    const { cache } = vm;
+    const { component, cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
     // reflective properties
     for (let propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
@@ -72,7 +72,7 @@ function initComponentProps(vm: VM) {
     // notifying observable attributes if they are initialized with default or custom value
     for (let propName in publicPropsConfig) {
         const {  attrName } = publicPropsConfig[propName];
-        const defaultValue = _props[propName];
+        const defaultValue = cmpProps[propName];
         // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
         if (defaultValue !== undefined && observedAttrs[attrName]) {
@@ -90,8 +90,8 @@ function clearListeners(vm: VM) {
 
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
-    const { cache, data: { _props } } = vm;
-    const { def: { props: publicPropsConfig, observedAttrs } } = cache;
+    const { cache } = vm;
+    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config = publicPropsConfig[propName];
     if (!config) {
@@ -103,9 +103,9 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
         const initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
-    let oldValue = _props[propName];
+    let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
-        _props[propName] = newValue;
+        cmpProps[propName] = newValue;
         if (config) {
             const attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -121,11 +121,11 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
 
 export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
-    const { cache, data: { _props } } = vm;
-    const { def: { props: publicPropsConfig, observedAttrs } } = cache;
+    const { cache } = vm;
+    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config = publicPropsConfig[propName];
-    let oldValue = _props[propName];
+    let oldValue = cmpProps[propName];
     let newValue = undefined;
     if (!config) {
         // TODO: ignore any native html property
@@ -135,7 +135,7 @@ export function resetComponentProp(vm: VM, propName: string) {
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
     if (oldValue !== newValue) {
-        _props[propName] = newValue;
+        cmpProps[propName] = newValue;
         if (config) {
             const attrName = config.attrName;
             if (observedAttrs[attrName]) {
@@ -170,6 +170,7 @@ export function createComponent(vm: VM) {
         def,
         context: {},
         privates: {},
+        cmpProps: {},
         component: null,
         fragment: undefined,
         shadowRoot: null,
@@ -184,8 +185,6 @@ export function createComponent(vm: VM) {
         setPrototypeOf(vm, proto);
     });
     vm.cache = cache;
-    vm.data._props = {};
-    vm.data._on = {};
     cache.component = invokeComponentConstructor(vm);
     initComponentProps(vm);
 }
@@ -212,4 +211,23 @@ export function markComponentAsDirty(vm: VM) {
     assert.isFalse(vm.cache.isDirty, `markComponentAsDirty(${vm}) should not be called when the componet is already dirty.`);
     assert.isFalse(isRendering, `markComponentAsDirty(${vm}) cannot be called during rendering.`);
     vm.cache.isDirty = true;
+}
+
+const ComponentToVMMap = new WeakMap();
+
+export function setLinkedVNode(component: Component, vm: VM) {
+    assert.vm(vm);
+    assert.isTrue(vm.elm instanceof HTMLElement, `Only DOM elements can be linked to their corresponding component.`);
+    ComponentToVMMap.set(component, vm);
+}
+
+export function getLinkedVNode(component: Component): VM {
+    assert.isTrue(component);
+    // note to self: we fallback to `vmBeingCreated` in case users
+    // invoke something during the constructor execution, in which
+    // case this mapping hasn't been stable yet, but we know that's
+    // the only case.
+    const vm = ComponentToVMMap.get(component) || vmBeingCreated;
+    assert.invariant(vm, `There have to be a VM associated to component ${component}.`);
+    return vm;
 }
