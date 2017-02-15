@@ -1,20 +1,17 @@
 #!/usr/bin/env babel-node
-/* eslint-env node, mocha */
-const fs = require('fs');
+/* eslint-env node */
+
+
 const path = require('path');
 const rollup = require('rollup');
 const rollupCompile = require('../src/index');
 
-function doRollup(filePath, options) {
-    return rollup.rollup({
-        entry: filePath,
-        plugins: [ rollupCompile(options) ]
-    });
-}
+const entryFile = path.resolve(__dirname + '/../test/fixtures/simpleApp/src/main.js');
 
-const entryFile = path.resolve(__dirname + '/../test/fixtures/bundle/app.js');
-
-doRollup(entryFile, { componentNamespace: 'test' })
+rollup.rollup({
+    entry: entryFile,
+    plugins: [ rollupCompile({})]
+})
 .then((bundle) => {
     const actual = bundle.generate({}).code;
     console.log(actual);

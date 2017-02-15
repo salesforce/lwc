@@ -1,7 +1,7 @@
 import _a$b from 'a:b';
 
 const memoized = Symbol();
-var _tmpl = function ($api, $cmp) {
+var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
         "section",
@@ -62,7 +62,7 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = 'fixtures-classandtemplate';
+ClassAndTemplate.tagName = 'x-classandtemplate';
 ClassAndTemplate.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,

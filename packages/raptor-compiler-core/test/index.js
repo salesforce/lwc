@@ -30,9 +30,6 @@ describe('emit asserts for: ', () => {
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
                 assert.equal(trim(actual), trim(expected));
             })
-            .catch((error) => {
-                assert.fail(error);
-            });
         });
     });
 });
