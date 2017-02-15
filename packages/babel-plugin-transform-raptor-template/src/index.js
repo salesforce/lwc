@@ -40,7 +40,6 @@ export default function ({ types: t, template }) {
                     state.isThisApplied = true;
                     return;
                 }
-
                 if (path.parentPath.node.computed || !state.isThisApplied) {
                     state.isThisApplied = true;
                     metadata.addUsedId(path.node, state, t);
@@ -141,7 +140,7 @@ export default function ({ types: t, template }) {
             MemberExpression(path, state) {
                 if (isWithinJSXExpression(path)) {
                     path.stop();
-                    path.traverse(BoundThisVisitor, state);
+                    path.traverse(BoundThisVisitor, { customScope : state.customScope });
                 }
             },
             // Transform container expressions from {foo} => {this.foo}
@@ -582,7 +581,7 @@ export default function ({ types: t, template }) {
 
          if (t.isJSXExpressionContainer(node)) {
              validatePrimitiveValues(attrPath);
-             attrPath.traverse(BoundThisVisitor, state);
+             attrPath.traverse(BoundThisVisitor, { customScope : state.customScope });
              node = node.expression;
              meta.expressionContainer = true;
          } else {
