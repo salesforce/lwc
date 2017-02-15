@@ -6,6 +6,7 @@ import metadata from './metadata';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
+const SLOT_SET = CONST.SLOT_SET;
 const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
@@ -14,7 +15,7 @@ export default function ({ types: t, template }) {
     // -- Helpers ------------------------------------------------------
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
-        export default function (${API_PARAM}, ${CMP_INSTANCE}) {
+        export default function (${API_PARAM}, ${CMP_INSTANCE}, ${SLOT_SET}) {
             const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
             return STATEMENT;
         }
@@ -67,7 +68,7 @@ export default function ({ types: t, template }) {
         }
 
         const templateTagName = path.get('body.0.expression.openingElement.name');
-        if (templateTagName.node.name !== 'template') {
+        if (templateTagName.node.name !== CONST.TEMPLATE_TAG) {
             throw path.buildCodeFrameError('Root tag should be a template');
         }
     }
@@ -119,7 +120,7 @@ export default function ({ types: t, template }) {
                     }
                 },
                 exit(path, status) {
-                    const callExpr = buildElementCall(path.get('openingElement'), status);
+                    const callExpr = buildElementCall(path, status);
 
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
@@ -261,21 +262,53 @@ export default function ({ types: t, template }) {
         return forSyntax;
     }
 
-    function buildElementCall(path, state) {
-        const meta = path.node._meta;
-        const tag = convertJSXIdentifier(path.node.name, meta, path, state);
-        const children = buildChildren(path.parent, path, state);
+    function groupSlots(attrs, children) {
+        let slotGroups = {};
+        children.elements.forEach(c => {
+            const slotName = c._meta.slot || CONST.DEFAULT_SLOT_NAME;
+            if (!slotGroups[slotName]) {
+                slotGroups[slotName] = [];
+            }
+            slotGroups[slotName].push(c);
+        });
 
-        if (tag.value === 'template') {
+        slotGroups = Object.keys(slotGroups).map(groupKey => {
+            return t.objectProperty(t.identifier(groupKey), t.arrayExpression(slotGroups[groupKey]));
+        });
+
+        attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroups)))
+    }
+
+    function buildElementCall(path, state) {
+        const openingElmtPath = path.get('openingElement');
+        const meta = openingElmtPath.node._meta;
+        const tag = convertJSXIdentifier(openingElmtPath.node.name, meta, openingElmtPath, state);
+        const tagName = tag.value;
+        const children = buildChildren(path.node, path, state);
+        const attribs = openingElmtPath.node.attributes;
+
+        // For templates, we dont need the element call
+        if (tagName === CONST.TEMPLATE_TAG) {
             children._meta = meta;
             return children;
         }
+
+        // Slots transform
+        if (tagName === CONST.SLOT_TAG) {
+            const slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
+            const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
+            const slot = t.logicalExpression('||', slotSet, children);
+            slot._meta = meta;
+            return slot
+        }
+
         const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
-        const attribs = path.node.attributes;
         const args = [tag, attribs, children];
 
         if (tag._customElement) {
+            groupSlots(attribs, children); // changes attribs as side-effect
             args.unshift(t.stringLiteral(tag._customElement));
+            args.pop(); //remove children
         }
 
         const createElementExpression = t.callExpression(exprTag, args);
@@ -404,6 +437,10 @@ export default function ({ types: t, template }) {
                 return;
             }
 
+            if (meta.isSlot) {
+                return;
+            }
+
             if (meta.directive && isDirectiveName(name)) {
                 elementMeta[name] = prop.value;
                 return;
@@ -425,15 +462,27 @@ export default function ({ types: t, template }) {
         return objExpression;
     }
 
+    // TODO: Clean this with a simpler merge
     function groupAttrMetadata(metaGroup, meta) {
         if (meta.directive) {
             metaGroup.directives[meta.directive] = meta.directive;
         }
+
         if (meta.modifier) {
             metaGroup.modifiers[meta.modifier] = meta.modifier;
         }
+
         if (meta.rootElement) {
             metaGroup.rootElement = meta.rootElement;
+        }
+
+        if (meta.isSlot) {
+            metaGroup.hasSlot = meta.isSlot;
+            metaGroup.slot = meta.slot;
+        }
+
+        if (meta.maybeSlotNameDef) {
+            metaGroup.maybeSlotNameDef = meta.maybeSlotNameDef;
         }
 
         if (meta.inForScope) {
@@ -471,7 +520,7 @@ export default function ({ types: t, template }) {
         return { node : property, meta };
     }
 
-    function normalizeAttributeName (node) {
+    function normalizeAttributeName(node) {
         const meta = { directive: null, modifier: null, event: null, scoped: null };
 
         if (t.isJSXNamespacedName(node)) {
@@ -505,10 +554,17 @@ export default function ({ types: t, template }) {
             const rawEventName = node.name.substring(2);
             node.name = meta.event = rawEventName;
             meta.directive = DIRECTIVES.bind;
-        }
 
-        if (node.name === DIRECTIVES.is) {
+        // Special is directive
+        } else if (node.name === DIRECTIVES.is) {
             meta.directive = DIRECTIVES.is;
+
+        // Potential slot name
+        } else if (node.name === 'name') {
+            meta.hasNameAttribute = true;
+
+        } else if (node.name === 'slot') {
+            meta.isSlot = true;
         }
 
         if (t.isValidIdentifier(node.name)) {
@@ -523,6 +579,7 @@ export default function ({ types: t, template }) {
 
      function normalizeAttributeValue(node, meta, attrPath, state) {
          node = node || t.booleanLiteral(true);
+
          if (t.isJSXExpressionContainer(node)) {
              validatePrimitiveValues(attrPath);
              attrPath.traverse(BoundThisVisitor, state);
@@ -534,6 +591,15 @@ export default function ({ types: t, template }) {
 
         if (meta.directive === DIRECTIVES.is) {
             meta.rootElement = node.value;
+        }
+
+        if (meta.hasNameAttribute) {
+            // Save the value name so in the slots is easy to transform going up
+            meta.maybeSlotNameDef = node.value;
+        }
+
+        if (meta.isSlot && !t.isBooleanLiteral(node)) {
+            meta.slot = node.value;
         }
 
         if (meta.directive === DIRECTIVES.repeat) {
