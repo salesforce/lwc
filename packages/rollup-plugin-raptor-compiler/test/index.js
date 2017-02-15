@@ -12,7 +12,8 @@ function trim(str) {
 const skipTests = [
     '.babelrc',
     '.DS_Store',
-    'bundle'
+    'bundle',
+    'simpleApp',
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -30,9 +31,6 @@ describe('emit asserts for: ', () => {
                 const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'));
                 assert.equal(trim(actual), trim(expected));
             })
-            .catch((error) => {
-                assert.fail(error);
-            });
         });
     });
 });

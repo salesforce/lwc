@@ -4,6 +4,7 @@ import fs from 'fs';
 export { basename };
 
 export const ltng_format = 'aura';
+export const DEFAULT_NS = 'x';
 
 export function normalizeEntryPath(path) {
     path = normalize(path.replace(/\/$/, ''));
@@ -28,33 +29,37 @@ export function getSource(path, sources) {
     return fs.readFileSync(path, 'utf8').toString();
 }
 
-export function getQualifiedName(path) {
-    const dirParts = dirname(path).split('/');
-    if (dirParts.length < 2) { // We have just a <filename></filename>
-        return { componentName : basename(path, '.js'), componentNamespace: 'unknown' };
-    }
+/*
+* Names and namespace mapping:
+* 'foo.js' => ns: default, name: foo
+* '.../foo/foo.js' => ns: default, name: foo
+* '.../myns/foo/foo.js' => ns: myns, name: foo
+* '.../myns/components/foo/foo.js' => ns: myns, name: foo
+*/
+export function getQualifiedName(path, mapNamespaceFromPath) {
+    const parts = path.split('/');
+    const name = basename(parts.pop(), '.js');
+    let ns = DEFAULT_NS;
+    let tmpNs = parts.pop();
 
-    const pathBasedName = dirParts.pop();
-    let pathBasedNS = dirParts.pop();
-
-    if (pathBasedNS === 'components') {
-        pathBasedNS = dirParts.pop();
+    if (parts.length > 2 && mapNamespaceFromPath && tmpNs === ns) {
+        tmpNs = parts.pop();
+        ns = tmpNs === 'components' ? parts.pop() : tmpNs;
     }
 
     return {
-        componentName : pathBasedName.toLowerCase(),
-        componentNamespace : pathBasedNS && pathBasedNS.toLowerCase()
+        componentName : name.toLowerCase(),
+        componentNamespace : ns && ns.toLowerCase()
     };
 }
 
 export function normalizeOptions(options) {
     const entry = options.entry;
-    const qName = getQualifiedName(entry);
-
+    const qName = getQualifiedName(entry, options.mapNamespaceFromPath);
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
     options.componentName = options.componentName || qName.componentName;
-    options.$metadata = {};
     options.bundle = options.bundle !== undefined ? options.bundle : true;
+    options.$metadata = {};
 
     if (options.bundle) {
         options.sources = options.sources || {};
