@@ -7,6 +7,10 @@ export const DIRECTIVE_SYMBOL = ':';
 export const MODULE_SYMBOL = ':';
 export const CMP_INSTANCE = '$cmp';
 export const API_PARAM = '$api';
+export const SLOT_SET = '$slotset';
+export const TEMPLATE_TAG = 'template';
+export const SLOT_TAG = 'slot';
+export const DEFAULT_SLOT_NAME = '$default$';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
@@ -47,7 +51,6 @@ export const TOP_LEVEL_PROPS = [
     'style',
     'key',
     'ref',
-    'slot'
 ];
 
 export const EVENT_KEYS = {
