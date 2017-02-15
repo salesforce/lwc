@@ -14198,7 +14198,7 @@ module.exports = isFunction;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.ltng_format = exports.basename = undefined;
+exports.DEFAULT_NS = exports.ltng_format = exports.basename = undefined;
 exports.normalizeEntryPath = normalizeEntryPath;
 exports.fileParts = fileParts;
 exports.getSource = getSource;
@@ -14219,6 +14219,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 exports.basename = _path.basename;
 var ltng_format = exports.ltng_format = 'aura';
+var DEFAULT_NS = exports.DEFAULT_NS = 'x';
 
 function normalizeEntryPath(path) {
     path = (0, _path.normalize)(path.replace(/\/$/, ''));
@@ -14243,34 +14244,37 @@ function getSource(path, sources) {
     return _fs2.default.readFileSync(path, 'utf8').toString();
 }
 
-function getQualifiedName(path) {
-    var dirParts = (0, _path.dirname)(path).split('/');
-    if (dirParts.length < 2) {
-        // We have just a <filename></filename>
-        return { componentName: (0, _path.basename)(path, '.js'), componentNamespace: 'unknown' };
-    }
+/*
+* Names and namespace mapping:
+* 'foo.js' => ns: default, name: foo
+* '.../foo/foo.js' => ns: default, name: foo
+* '.../myns/foo/foo.js' => ns: myns, name: foo
+* '.../myns/components/foo/foo.js' => ns: myns, name: foo
+*/
+function getQualifiedName(path, mapNamespaceFromPath) {
+    var parts = path.split('/');
+    var name = (0, _path.basename)(parts.pop(), '.js');
+    var ns = DEFAULT_NS;
+    var tmpNs = parts.pop();
 
-    var pathBasedName = dirParts.pop();
-    var pathBasedNS = dirParts.pop();
-
-    if (pathBasedNS === 'components') {
-        pathBasedNS = dirParts.pop();
+    if (parts.length > 2 && mapNamespaceFromPath && tmpNs === ns) {
+        tmpNs = parts.pop();
+        ns = tmpNs === 'components' ? parts.pop() : tmpNs;
     }
 
     return {
-        componentName: pathBasedName.toLowerCase(),
-        componentNamespace: pathBasedNS && pathBasedNS.toLowerCase()
+        componentName: name.toLowerCase(),
+        componentNamespace: ns && ns.toLowerCase()
     };
 }
 
 function normalizeOptions(options) {
     var entry = options.entry;
-    var qName = getQualifiedName(entry);
-
+    var qName = getQualifiedName(entry, options.mapNamespaceFromPath);
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
     options.componentName = options.componentName || qName.componentName;
-    options.$metadata = {};
     options.bundle = options.bundle !== undefined ? options.bundle : true;
+    options.$metadata = {};
 
     if (options.bundle) {
         options.sources = options.sources || {};
@@ -43567,6 +43571,10 @@ var DIRECTIVE_SYMBOL = exports.DIRECTIVE_SYMBOL = ':';
 var MODULE_SYMBOL = exports.MODULE_SYMBOL = ':';
 var CMP_INSTANCE = exports.CMP_INSTANCE = '$cmp';
 var API_PARAM = exports.API_PARAM = '$api';
+var SLOT_SET = exports.SLOT_SET = '$slotset';
+var TEMPLATE_TAG = exports.TEMPLATE_TAG = 'template';
+var SLOT_TAG = exports.SLOT_TAG = 'slot';
+var DEFAULT_SLOT_NAME = exports.DEFAULT_SLOT_NAME = '$default$';
 
 var DIRECTIVES = exports.DIRECTIVES = {
     repeat: 'repeat',
@@ -43603,7 +43611,7 @@ var RENDER_PRIMITIVE_KEYS = exports.RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_P
     return RENDER_PRIMITIVES[k];
 });
 
-var TOP_LEVEL_PROPS = exports.TOP_LEVEL_PROPS = ['class', 'staticClass', 'style', 'key', 'ref', 'slot'];
+var TOP_LEVEL_PROPS = exports.TOP_LEVEL_PROPS = ['class', 'staticClass', 'style', 'key', 'ref'];
 
 var EVENT_KEYS = exports.EVENT_KEYS = {
     blur: 1,
@@ -52319,7 +52327,7 @@ exports.default = function (_ref) {
         template = _ref.template;
 
     // -- Helpers ------------------------------------------------------
-    var exportsDefaultTemplate = template('\n        const memoized = Symbol();\n        export default function (' + API_PARAM + ', ' + CMP_INSTANCE + ') {\n            const m = ' + CMP_INSTANCE + '[memoized] || (' + CMP_INSTANCE + '[memoized] = {});\n            return STATEMENT;\n        }\n    ', { sourceType: 'module' });
+    var exportsDefaultTemplate = template('\n        const memoized = Symbol();\n        export default function (' + API_PARAM + ', ' + CMP_INSTANCE + ', ' + SLOT_SET + ') {\n            const m = ' + CMP_INSTANCE + '[memoized] || (' + CMP_INSTANCE + '[memoized] = {});\n            return STATEMENT;\n        }\n    ', { sourceType: 'module' });
 
     var memoizeLookup = template('m.ID || (m.ID = ID(' + API_PARAM + ', ' + CMP_INSTANCE + '))');
     var memoizeFunction = template('const ID = function (' + API_PARAM + ', ' + CMP_INSTANCE + ') { return STATEMENT; }');
@@ -52382,7 +52390,7 @@ exports.default = function (_ref) {
         }
 
         var templateTagName = path.get('body.0.expression.openingElement.name');
-        if (templateTagName.node.name !== 'template') {
+        if (templateTagName.node.name !== CONST.TEMPLATE_TAG) {
             throw path.buildCodeFrameError('Root tag should be a template');
         }
     }
@@ -52433,7 +52441,7 @@ exports.default = function (_ref) {
                     }
                 },
                 exit: function exit(path, status) {
-                    var callExpr = buildElementCall(path.get('openingElement'), status);
+                    var callExpr = buildElementCall(path, status);
 
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
@@ -52579,21 +52587,53 @@ exports.default = function (_ref) {
         return forSyntax;
     }
 
-    function buildElementCall(path, state) {
-        var meta = path.node._meta;
-        var tag = convertJSXIdentifier(path.node.name, meta, path, state);
-        var children = buildChildren(path.parent, path, state);
+    function groupSlots(attrs, children) {
+        var slotGroups = {};
+        children.elements.forEach(function (c) {
+            var slotName = c._meta.slot || CONST.DEFAULT_SLOT_NAME;
+            if (!slotGroups[slotName]) {
+                slotGroups[slotName] = [];
+            }
+            slotGroups[slotName].push(c);
+        });
 
-        if (tag.value === 'template') {
+        slotGroups = Object.keys(slotGroups).map(function (groupKey) {
+            return t.objectProperty(t.identifier(groupKey), t.arrayExpression(slotGroups[groupKey]));
+        });
+
+        attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroups)));
+    }
+
+    function buildElementCall(path, state) {
+        var openingElmtPath = path.get('openingElement');
+        var meta = openingElmtPath.node._meta;
+        var tag = convertJSXIdentifier(openingElmtPath.node.name, meta, openingElmtPath, state);
+        var tagName = tag.value;
+        var children = buildChildren(path.node, path, state);
+        var attribs = openingElmtPath.node.attributes;
+
+        // For templates, we dont need the element call
+        if (tagName === CONST.TEMPLATE_TAG) {
             children._meta = meta;
             return children;
         }
+
+        // Slots transform
+        if (tagName === CONST.SLOT_TAG) {
+            var slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
+            var slotSet = t.identifier(SLOT_SET + '.' + slotName);
+            var slot = t.logicalExpression('||', slotSet, children);
+            slot._meta = meta;
+            return slot;
+        }
+
         var exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
-        var attribs = path.node.attributes;
         var args = [tag, attribs, children];
 
         if (tag._customElement) {
+            groupSlots(attribs, children); // changes attribs as side-effect
             args.unshift(t.stringLiteral(tag._customElement));
+            args.pop(); //remove children
         }
 
         var createElementExpression = t.callExpression(exprTag, args);
@@ -52723,6 +52763,10 @@ exports.default = function (_ref) {
                 return;
             }
 
+            if (meta.isSlot) {
+                return;
+            }
+
             if (meta.directive && isDirectiveName(name)) {
                 elementMeta[name] = prop.value;
                 return;
@@ -52744,15 +52788,27 @@ exports.default = function (_ref) {
         return objExpression;
     }
 
+    // TODO: Clean this with a simpler merge
     function groupAttrMetadata(metaGroup, meta) {
         if (meta.directive) {
             metaGroup.directives[meta.directive] = meta.directive;
         }
+
         if (meta.modifier) {
             metaGroup.modifiers[meta.modifier] = meta.modifier;
         }
+
         if (meta.rootElement) {
             metaGroup.rootElement = meta.rootElement;
+        }
+
+        if (meta.isSlot) {
+            metaGroup.hasSlot = meta.isSlot;
+            metaGroup.slot = meta.slot;
+        }
+
+        if (meta.maybeSlotNameDef) {
+            metaGroup.maybeSlotNameDef = meta.maybeSlotNameDef;
         }
 
         if (meta.inForScope) {
@@ -52835,10 +52891,16 @@ exports.default = function (_ref) {
             var _rawEventName = node.name.substring(2);
             node.name = meta.event = _rawEventName;
             meta.directive = DIRECTIVES.bind;
-        }
 
-        if (node.name === DIRECTIVES.is) {
+            // Special is directive
+        } else if (node.name === DIRECTIVES.is) {
             meta.directive = DIRECTIVES.is;
+
+            // Potential slot name
+        } else if (node.name === 'name') {
+            meta.hasNameAttribute = true;
+        } else if (node.name === 'slot') {
+            meta.isSlot = true;
         }
 
         if (t.isValidIdentifier(node.name)) {
@@ -52853,6 +52915,7 @@ exports.default = function (_ref) {
 
     function normalizeAttributeValue(node, meta, attrPath, state) {
         node = node || t.booleanLiteral(true);
+
         if (t.isJSXExpressionContainer(node)) {
             validatePrimitiveValues(attrPath);
             attrPath.traverse(BoundThisVisitor, state);
@@ -52864,6 +52927,15 @@ exports.default = function (_ref) {
 
         if (meta.directive === DIRECTIVES.is) {
             meta.rootElement = node.value;
+        }
+
+        if (meta.hasNameAttribute) {
+            // Save the value name so in the slots is easy to transform going up
+            meta.maybeSlotNameDef = node.value;
+        }
+
+        if (meta.isSlot && !t.isBooleanLiteral(node)) {
+            meta.slot = node.value;
         }
 
         if (meta.directive === DIRECTIVES.repeat) {
@@ -52899,6 +52971,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var DIRECTIVES = CONST.DIRECTIVES;
 var CMP_INSTANCE = CONST.CMP_INSTANCE;
+var SLOT_SET = CONST.SLOT_SET;
 var API_PARAM = CONST.API_PARAM;
 var MODIFIERS = CONST.MODIFIERS;
 var _CONST$RENDER_PRIMITI = CONST.RENDER_PRIMITIVES,
@@ -114837,7 +114910,7 @@ function compile(entry, options) {
     }
 }
 
-var version = exports.version = "0.2.0";
+var version = exports.version = "0.2.1";
 
 /***/ })
 /******/ ]);
