@@ -1,8 +1,6 @@
 import assert from "./assert.js";
-import {
-    patch,
-    scheduleRehydration,
-} from "./hook.js";
+import { patch } from "./patch.js";
+import { scheduleRehydration } from "./vm.js";
 import {
     resetComponentProp,
     updateComponentProp,
@@ -13,19 +11,17 @@ import { loaderImportMethod } from "./loader.js";
 import { defineProperties } from "./language.js";
 
 const Ep = Element.prototype;
-const CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { def: { attrs } } = cache;
+    const { def: { attrs: attrsConfig } } = vm;
     // replacing mutators on the element itself to catch any mutation
     element.setAttribute = (attrName: string, value: any) => {
         Ep.setAttribute.call(element, attrName, value);
-        const attrConfig = attrs[attrName.toLocaleLowerCase()];
+        const attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             updateComponentProp(vm, attrConfig.propName, value);
-            if (cache.isDirty) {
+            if (vm.isDirty) {
                 console.log(`Scheduling ${vm} for rehydration.`);
                 scheduleRehydration(vm);
             }
@@ -33,10 +29,10 @@ function linkAttributes(element: HTMLElement, vm: VM) {
     };
     element.removeAttribute = (attrName: string) => {
         Ep.removeAttribute.call(element, attrName);
-        const attrConfig = attrs[attrName.toLocaleLowerCase()];
+        const attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             resetComponentProp(vm, attrConfig.propName);
-            if (cache.isDirty) {
+            if (vm.isDirty) {
                 console.log(`Scheduling ${vm} for rehydration.`);
                 scheduleRehydration(vm);
             }
@@ -46,9 +42,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
 
 function linkProperties(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { Ctor, cache } = vm;
-    const { component } = cache;
-    let { props, methods } = getComponentDef(Ctor);
+    const { component, def: { props: propsConfig, methods } } = vm;
     const descriptors: PropertyDescriptorMap = {};
     // linking public methods
     for (let methodName in methods) {
@@ -62,12 +56,12 @@ function linkProperties(element: HTMLElement, vm: VM) {
         };
     }
     // linking reflective properties
-    for (let propName in props) {
+    for (let propName in propsConfig) {
         descriptors[propName] = {
             get: (): any => component[propName],
             set: (newValue: any): void => {
                 updateComponentProp(vm, propName, newValue);
-                if (cache.isDirty) {
+                if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
                 }
@@ -79,28 +73,12 @@ function linkProperties(element: HTMLElement, vm: VM) {
     defineProperties(element, descriptors);
 }
 
-function createVM(element: HTMLElement, Ctor: any, data: HashTable<any>): VM {
-    const tagName = element.tagName.toLowerCase();
-    let vm = c(tagName, Ctor, data);
-    return patch(element, vm);
-}
-
 function getInitialProps(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
     const { props: config } = getComponentDef(Ctor);
     const props = {};
     for (let propName in config) {
         if (propName in element) {
             props[propName] = element[propName];
-        }
-    }
-    if (element.hasAttributes()) {
-        // looking for custom attributes that are not reflectives by default
-        const attrs = element.attributes;
-        for (let i = attrs.length - 1; i >= 0; i--) {
-            const propName = attrs[i].name.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-            if (!(propName in props) && propName in config) {
-                props[propName] = attrs[i].value;
-            }
         }
     }
     return props;
@@ -115,17 +93,21 @@ function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTab
  * This algo mimics 2.5 of web component specification somehow:
  * https://www.w3.org/TR/custom-elements/#upgrades
  */
-function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor): Component {
+function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor) {
     if (!Ctor) {
         throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
     }
     const props = getInitialProps(element, Ctor);
     const slotset = getInitialSlots(element, Ctor);
-    const vm = createVM(element, Ctor, { _props: props, slotset });
+    const tagName = element.tagName.toLowerCase();
+    const vnode = c(tagName, Ctor, { props, slotset, class: element.className || undefined });
+    // TODO: eventually after updating snabbdom we can use toVNode(element)
+    // as the first argument to reconstruct the vnode that represents the
+    // current state.
+    const { vm } = patch(element, vnode);
     linkAttributes(element, vm);
-    // TODO: for vm with element we might not need to do any of these.
+    // TODO: for vnode with element we might not need to do any of these.
     linkProperties(element, vm);
-    return vm.cache.component;
 }
 
 function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor> | ObjectConstructor): Promise<HTMLElement> {

@@ -3,12 +3,10 @@ import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
 
 // [c]ustom element node
-export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}, bcDefaultSlot: Array<vnode>): Object {
+export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}): Object {
     assert.isFalse("attrs" in data, `Compiler Issue: Custom elements should not have property "attrs" in data.`);
-    const { key, props: _props, on, dataset, class: _class } = data;
-    // assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    // TODO: once the parser is updated, uncomment the previous line and remove this fork in favor of just data.slotset
-    const slotset = data.slotset || (bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot });
+    const { key, dataset, slotset, props: _props, on, class: _class } = data;
+    assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
     const vnode = h(sel, { hook, key, slotset, dataset, on, props: {}, _props, _class }, []);
     vnode.Ctor = Ctor;
     return vnode;
@@ -67,7 +65,7 @@ export function f(items: Array<any>): Array<any>  {
         }
     }
     assert.block(() => {
-        flattened.forEach((vnodeOrString: string | vnode) => {
+        flattened.forEach((vnodeOrString: string | VNode) => {
             if (typeof vnodeOrString === 'string') {
                 return;
             }

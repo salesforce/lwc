@@ -1,10 +1,14 @@
+import assert from "./assert.js";
 import {
     resetComponentProp,
     updateComponentProp,
 } from "./component.js";
-import { scheduleRehydration } from "./hook.js";
+import {
+    scheduleRehydration,
+    getLinkedVNode,
+} from "./vm.js";
 
-const INTERNAL_SLOT_VM = Symbol();
+const INTERNAL_VM = Symbol();
 const INTERNAL_LIST = Symbol();
 
 // This needs some more work. ClassList is a weird DOM api because it
@@ -12,8 +16,10 @@ const INTERNAL_LIST = Symbol();
 // the simplest one.
 // https://www.w3.org/TR/dom/#domtokenlist
 export class ClassList {
-    constructor(vm: VM) {
-        this[INTERNAL_SLOT_VM] = vm;
+    constructor(component: Component) {
+        const { vm } = getLinkedVNode(component);
+        assert.vm(vm);
+        this[INTERNAL_VM] = vm;
         this[INTERNAL_LIST] = [];
     }
     add(...classNames: Array<String>) {
@@ -23,9 +29,9 @@ export class ClassList {
             const pos = list.indexOf(className);
             if (pos === -1) {
                 list.push(className);
-                let vm = this[INTERNAL_SLOT_VM];
+                let vm = this[INTERNAL_VM];
                 updateComponentProp(vm, 'className', list.join(' '));
-                if (vm.cache.isDirty) {
+                if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
                 }
@@ -39,13 +45,13 @@ export class ClassList {
             const pos = list.indexOf(className);
             if (pos >= 0) {
                 list.splice(pos, 1);
-                let vm = this[INTERNAL_SLOT_VM];
+                let vm = this[INTERNAL_VM];
                 if (list.length) {
                     updateComponentProp(vm, 'className', list.join(' '));
                 } else {
                     resetComponentProp(vm, 'className');
                 }
-                if (vm.cache.isDirty) {
+                if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
                 }

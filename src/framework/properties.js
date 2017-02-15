@@ -64,7 +64,7 @@ export function getPropertyProxy(value: Object): any {
 
 export function hookComponentLocalProperty(vm: VM, propName: string) {
     assert.vm(vm);
-    const { cache: { component, privates } } = vm;
+    const { component, privates } = vm;
     const descriptor = getOwnPropertyDescriptor(component, propName);
     const { get, set, configurable } = descriptor;
     assert.block(() => {

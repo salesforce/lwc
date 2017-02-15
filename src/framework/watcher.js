@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { scheduleRehydration } from "./hook.js";
+import { scheduleRehydration } from "./vm.js";
 import { markComponentAsDirty } from "./component.js";
 
 const TargetToPropsMap = new WeakMap();
@@ -12,7 +12,7 @@ export function notifyListeners(target: Object, propName: string) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
                 console.log(`Marking ${vm} as dirty: "this.${propName}" set to a new value.`);
-                if (!vm.cache.isDirty) {
+                if (!vm.isDirty) {
                     markComponentAsDirty(vm);
                     console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
@@ -39,6 +39,6 @@ export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
     if (!set.has(vm)) {
         set.add(vm);
         // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.cache.listeners.add(set);
+        vm.listeners.add(set);
     }
 }

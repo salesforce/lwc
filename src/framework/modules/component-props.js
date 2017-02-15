@@ -4,9 +4,9 @@ import {
     updateComponentProp,
 } from "../component.js";
 
-function syncProps(oldVnode: vnode, vnode: VM) {
-    const { cache } = vnode;
-    if (!cache) {
+function syncProps(oldVnode: vnode, vnode: VNode) {
+    const { vm } = vnode;
+    if (!vm) {
         return;
     }
 
@@ -21,7 +21,7 @@ function syncProps(oldVnode: vnode, vnode: VM) {
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
-                resetComponentProp(vnode, key);
+                resetComponentProp(vm, key);
             }
         }
 
@@ -29,7 +29,7 @@ function syncProps(oldVnode: vnode, vnode: VM) {
         for (key in newProps) {
             cur = newProps[key];
             if (!(key in oldProps) || oldProps[key] != cur) {
-                updateComponentProp(vnode, key, cur);
+                updateComponentProp(vm, key, cur);
             }
         }
     }
@@ -37,7 +37,7 @@ function syncProps(oldVnode: vnode, vnode: VM) {
     // reflection of component props into data.props for the regular diffing algo
     let { data: { props } } = vnode;
     assert.invariant(Object.getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
-    Object.assign(props, cache.cmpProps);
+    Object.assign(props, vm.cmpProps);
 }
 
 export default {

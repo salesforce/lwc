@@ -1,14 +1,20 @@
-function syncClassNames(oldVnode: vnode, vnode: VM) {
-    const { cache } = vnode;
-    if (!cache) {
+function syncClassNames(oldVnode: vnode, vnode: VNode) {
+    const { vm } = vnode;
+    if (!vm) {
         return;
     }
 
     let { data: { _class: oldClass } } = oldVnode;
     let { data: { _class: klass } } = vnode;
-    const { component: { classList } } = cache;
+    let { component: { classList } } = vm;
 
-    // propagating changes from "data->_class" into component's classList
+    // if component's classList is not defined (it is only defined for
+    // components extending HTMLElement), we need to fallback
+    if (!classList) {
+        classList = vnode.elm.classList;
+    }
+
+    // propagating changes from "data->_class" into classList
     if (klass !== oldClass) {
         oldClass = (oldClass || '').split(' ');
         klass = (klass || '').split(' ');
