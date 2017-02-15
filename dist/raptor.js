@@ -2303,5 +2303,5 @@ window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.1.3 */
+/** version: 0.1.4 */
 //# sourceMappingURL=raptor.js.map
