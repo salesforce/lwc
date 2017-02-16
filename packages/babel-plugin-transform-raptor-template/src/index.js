@@ -435,7 +435,7 @@ export default function ({ types: t, template }: any): any {
         var cs = new CustomScope();
         cs.registerScopePathBindings(path, elementMeta.scoped);
 
-        props.forEach((prop: any, index: number) => {
+        props.forEach((prop: any) => {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
             const meta = prop._meta;
 
