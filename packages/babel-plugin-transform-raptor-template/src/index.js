@@ -265,7 +265,7 @@ export default function ({ types: t, template }: any): any {
     function groupSlots(attrs, children) {
         let slotGroups = {};
         children.elements.forEach(c => {
-            const slotName = c._meta.slot || CONST.DEFAULT_SLOT_NAME;
+            const slotName = c._meta && c._meta.slot || CONST.DEFAULT_SLOT_NAME;
             if (!slotGroups[slotName]) {
                 slotGroups[slotName] = [];
             }
@@ -577,7 +577,7 @@ export default function ({ types: t, template }: any): any {
         return { node, meta };
     }
 
-     function normalizeAttributeValue(node, meta, attrPath, state) {
+     function normalizeAttributeValue(node: any, meta: any, attrPath: any, state: any) {
          node = node || t.booleanLiteral(true);
 
          if (t.isJSXExpressionContainer(node)) {
