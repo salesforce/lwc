@@ -21,7 +21,6 @@ export default class {
     }
 
     removeScopePathBindings() {
-        console.log('remove');
         // Maybe add a guard for the right path?
         this.scoped.pop(); 
     }
@@ -29,4 +28,4 @@ export default class {
     getAllBindings() {
         return this.scoped.reduce((l, f) => { l.push(...f.bindings); return l; }, []);
     }
-};
+}
