@@ -6,3 +6,4 @@ node_modules
 playground/*.js
 playground/*.html
 playground/**/*
+.vscode
