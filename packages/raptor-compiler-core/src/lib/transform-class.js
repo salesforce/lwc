@@ -1,8 +1,7 @@
 import babelDecoratorProps from 'babel-plugin-transform-raptor-class';
-import { basename } from 'path';
 import { transform } from 'babel-core';
 
-export default function (code, options) {
+export default function (code: string, options: any) {
     options = options || {};
 
     const filename = options.filename;

@@ -1,4 +1,4 @@
-import { extname, normalize, join, sep, basename, dirname } from 'path';
+import { extname, normalize, join, sep, basename } from 'path';
 import fs from 'fs';
 
 export { basename };
@@ -6,12 +6,12 @@ export { basename };
 export const ltng_format = 'aura';
 export const DEFAULT_NS = 'x';
 
-export function normalizeEntryPath(path) {
+export function normalizeEntryPath(path: string) {
     path = normalize(path.replace(/\/$/, ''));
     return extname(path) ? path : join(path, path.split(sep).pop() + '.js' );
 }
 
-export function fileParts(filePath) {
+export function fileParts(filePath: string) {
     const filename = basename(filePath);
     const rawExt = extname(filename);
     const ext = rawExt.substring(1);
@@ -19,7 +19,7 @@ export function fileParts(filePath) {
     return { name: name, ext: ext };
 }
 
-export function getSource(path, sources) {
+export function getSource(path: string, sources: any) {
     sources = sources || {};
     const filename = basename(path);
     const src = sources[filename] || sources[path];
@@ -36,7 +36,7 @@ export function getSource(path, sources) {
 * '.../myns/foo/foo.js' => ns: myns, name: foo
 * '.../myns/components/foo/foo.js' => ns: myns, name: foo
 */
-export function getQualifiedName(path, mapNamespaceFromPath) {
+export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     const parts = path.split('/');
     const name = basename(parts.pop(), '.js');
     let ns = DEFAULT_NS;
@@ -53,7 +53,7 @@ export function getQualifiedName(path, mapNamespaceFromPath) {
     };
 }
 
-export function normalizeOptions(options) {
+export function normalizeOptions(options: any) {
     const entry = options.entry;
     const qName = getQualifiedName(entry, options.mapNamespaceFromPath);
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
@@ -82,7 +82,7 @@ export function normalizeOptions(options) {
     return options;
 }
 
-export function mergeMetadata (metadata) {
+export function mergeMetadata (metadata: any) {
     const templateUsedIds = [];
     const templateDependencies = [];
     for (let i in metadata) {
@@ -96,6 +96,6 @@ export function mergeMetadata (metadata) {
     };
 }
 
-export function transformAmdToLtng (code) {
+export function transformAmdToLtng (code: string) {
     return code.replace('define', '$A.componentService.addModule');
 }

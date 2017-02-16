@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports.makeMap = function (str, expectsLowerCase) {
   var map = Object.create(null);
   var list = str.split(',');

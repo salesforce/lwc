@@ -2,7 +2,7 @@ import { extname } from 'path';
 import annotationsPlugin from 'babel-plugin-transform-flow-strip-types';
 import { transform } from 'babel-core';
 
-export default function (options) {
+export default function (options: any): any {
     options = options || {};
     options.babelConfig = options.babelConfig || {};
 
@@ -14,12 +14,12 @@ export default function (options) {
     };
 
     options = Object.assign({}, options.babelConfig, localBabelConfig);
- 
+
     return {
         name : 'remove-annotations',
         injected: false,
 
-        transform (src, id) {
+        transform (src: string, id: string) {
             //console.log('[]remove-annotation', '\t>> ' , id);
             if (extname(id) === '.js') {
                 const localOptions = Object.assign(options, { filename: id });

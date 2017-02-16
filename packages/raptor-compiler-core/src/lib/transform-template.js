@@ -2,7 +2,7 @@ import templateParserPlugin from 'babel-plugin-transform-raptor-template';
 import templateCleanupPlugin from 'raptor-html-cleanup-transform';
 import { transform } from 'babel-core';
 
-export default function (src, options) {
+export default function (src: string, options: any): any {
     options = options || {};
 
     let localBabelConfig = {
@@ -16,7 +16,7 @@ export default function (src, options) {
 
     return templateCleanupPlugin.transform(src).then((result) => {
         const transformed = transform(result, localBabelConfig);
-        return { 
+        return {
             code: transformed.code,
             map: transformed.map,
             metadata: transformed.metadata

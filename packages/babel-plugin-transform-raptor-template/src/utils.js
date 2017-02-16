@@ -5,12 +5,12 @@ import {types as t} from 'babel-core';
 
 const  parserCss = new StyleParser();
 
-/* 
+/*
 * Polyfill includes
 * TODO: Remove when we support node > 6.x
 */
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function(searchElement /*, fromIndex*/) {
+  Array.prototype.includes = function(searchElement: string /*, fromIndex*/) {
     'use strict';
     if (this == null) {
       throw new TypeError('Array.prototype.includes called on null or undefined');
@@ -42,7 +42,7 @@ if (!Array.prototype.includes) {
   };
 }
 
-export function makeMap(str) {
+export function makeMap(str: string): string => string {
     const map = Object.create(null);
     const list = str.split(',');
 
@@ -54,11 +54,11 @@ export function makeMap(str) {
 
 export const isTopLevelProp = makeMap(TOP_LEVEL_PROPS.join(','));
 
-export function parseStyles(styles) {
+export function parseStyles(styles: string) {
     return parserCss.parse(styles);
 }
 
-export function isCompatTag(tagName) {
+export function isCompatTag(tagName: string) {
     return !!tagName && /^[a-z]|\-/.test(tagName);
 }
 
@@ -74,7 +74,7 @@ export const isSvgNsAttribute = makeMap('xml,xlink');
 
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
-export function cleanJSXElementLiteralChild(args, child) {
+export function cleanJSXElementLiteralChild(args: Array<BabelNodeJSXText>, child: BabelNodeJSXText): Array<any> {
         if (t.isJSXText(child)) {
             const lines = child.value.split(/\r\n|\n|\r/);
             let lastNonEmptyLine = 0;
