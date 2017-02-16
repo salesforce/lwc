@@ -41,6 +41,7 @@ export default function ({ types: t, template }: any): any {
                     state.isThisApplied = true;
                     return;
                 }
+
                 if (path.parentPath.node.computed || !state.isThisApplied) {
                     state.isThisApplied = true;
                     metadata.addUsedId(path.node, state, t);
@@ -177,7 +178,8 @@ export default function ({ types: t, template }: any): any {
         const forExpr = directives[MODIFIERS.for];
         const args = directives.inForScope ? directives.inForScope.map((a) => t.identifier(a)) : [];
         const func = t.functionExpression(null, args, t.blockStatement([t.returnStatement(node)]));
-        return t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
+        const iterator = t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
+        return directives.isTemplate ? applyFlatteningToNode(iterator) : iterator;
     }
 
     function applyIfDirectiveToNode(directive, node, nextNode) {
@@ -187,6 +189,10 @@ export default function ({ types: t, template }: any): any {
             nextNode = t.callExpression(applyPrimitive(EMPTY), []);
         }
         return t.conditionalExpression(directive, node, nextNode);
+    }
+
+    function applyFlatteningToNode(elems) {
+        return t.callExpression(applyPrimitive(FLATTENING), [elems]);
     }
 
     // Convert JSX AST into regular javascript AST
@@ -235,7 +241,7 @@ export default function ({ types: t, template }: any): any {
             elems.push(child);
         }
         elems = t.arrayExpression(elems);
-        return hasForLoopDirective ? t.callExpression(applyPrimitive(FLATTENING), [elems]): elems;
+        return hasForLoopDirective ? applyFlatteningToNode(elems): elems;
     }
 
     function parseForStatement(attrValue) {
@@ -289,6 +295,7 @@ export default function ({ types: t, template }: any): any {
 
         // For templates, we dont need the element call
         if (tagName === CONST.TEMPLATE_TAG) {
+            meta.isTemplate = true;
             children._meta = meta;
             return children;
         }
@@ -380,7 +387,7 @@ export default function ({ types: t, template }: any): any {
                 inScope = scopedVars.indexOf(rootMember) !== -1;
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
 
-                 if (!inScope && directive === DIRECTIVES.set || directive === DIRECTIVES.repeat) {
+                if (!inScope && directive === DIRECTIVES.set || directive === DIRECTIVES.repeat) {
                     metadata.addUsedId(rootMember, state, t);
                 }
             }
@@ -411,11 +418,11 @@ export default function ({ types: t, template }: any): any {
         return prop;
     }
 
-    function transformAndGroup(props, elementMeta, path, state) {
+    function transformAndGroup(props: any, elementMeta: any, path: any, state: any): any {
         const finalProps = [];
         const propKeys = {};
 
-        function addGroupProp(key, value) {
+        function addGroupProp(key: string, value: any) {
             let group = propKeys[key];
             if (!group) {
                 group = t.objectProperty(t.identifier(key), t.objectExpression([]));
@@ -425,7 +432,10 @@ export default function ({ types: t, template }: any): any {
             group.value.properties.push(value);
         }
 
-        props.forEach((prop) => {
+        var cs = new CustomScope();
+        cs.registerScopePathBindings(path, elementMeta.scoped);
+
+        props.forEach((prop: any, index: number) => {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
             const meta = prop._meta;
 
@@ -499,6 +509,8 @@ export default function ({ types: t, template }: any): any {
             groupAttrMetadata(metaGroup, meta);
             return node;
         });
+
+        path.get('openingElement').node.attributes = attributes;
         return transformAndGroup(attributes, metaGroup, path, state); // Group attributes and generate directives
     }
 
@@ -582,7 +594,7 @@ export default function ({ types: t, template }: any): any {
 
          if (t.isJSXExpressionContainer(node)) {
              validatePrimitiveValues(attrPath);
-             attrPath.traverse(BoundThisVisitor, { customScope : state.customScope });
+              attrPath.traverse(BoundThisVisitor, { customScope : state.customScope });
              node = node.expression;
              meta.expressionContainer = true;
          } else {

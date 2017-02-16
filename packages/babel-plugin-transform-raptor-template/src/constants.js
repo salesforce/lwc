@@ -49,7 +49,6 @@ export const TOP_LEVEL_PROPS = [
     'class',
     'staticClass',
     'style',
-    'key',
     'ref',
 ];
 
