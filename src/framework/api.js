@@ -21,7 +21,6 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
     const list = new Array(len);
     for (let i = 0; i < len; i += 1) {
         const vnode = factory(items[i]);
-        assert.vnode(vnode, 'Invariant Violation: Iteration should always produce a vnode.');
         list[i] = vnode;
     }
     return list;
