@@ -1,16 +1,14 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/.*
-
+.*/__tests__/.*
+<PROJECT_ROOT>/scripts/.*
+<PROJECT_ROOT>/fixtures/.*
 [include]
-./src/**/*.js
-./test/**/*.js
 
 [libs]
 lib/types.js
 
 [options]
+unsafe.enable_getters_and_setters=true
 esproposal.class_instance_fields=enable
-
-
-
-
+all=true
