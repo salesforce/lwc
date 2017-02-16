@@ -8,7 +8,7 @@ const KEY_METHODS = 'publicMethods';
 const KEY_TAG = 'tagName';
 const KEY_RENDER = 'render';
 
-module.exports = function (babel) {
+module.exports = function(babel) {
     'use strict';
     const t = babel.types;
 

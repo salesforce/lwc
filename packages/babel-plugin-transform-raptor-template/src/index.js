@@ -11,7 +11,8 @@ const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
-export default function ({ types: t, template }) {
+export default function ({ types: t, template }: any): any {
+
     // -- Helpers ------------------------------------------------------
     const exportsDefaultTemplate = template(`
         const memoized = Symbol();
@@ -24,10 +25,10 @@ export default function ({ types: t, template }) {
     const memoizeLookup = template(`m.ID || (m.ID = ID(${API_PARAM}, ${CMP_INSTANCE}))`);
     const memoizeFunction = template(`const ID = function (${API_PARAM}, ${CMP_INSTANCE}) { return STATEMENT; }`);
 
-    const applyPrimitive = (primitive) => t.identifier(`${API_PARAM}.${primitive}`);
-    const applyThisToIdentifier = (path) => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
-    const isWithinJSXExpression = (path) => path.find(p => p.isJSXExpressionContainer());
-    const getMemberFromNodeStringLiteral = (node, i = 0) => node.value.split('.')[i];
+    const applyPrimitive = (primitive: string) => t.identifier(`${API_PARAM}.${primitive}`);
+    const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
+    const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
+    const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
 
     const BoundThisVisitor = {
         ThisExpression(path) {
@@ -519,7 +520,7 @@ export default function ({ types: t, template }) {
         return { node : property, meta };
     }
 
-    function normalizeAttributeName(node) {
+    function normalizeAttributeName(node: BabelNodeJSXNamespacedName) {
         const meta = { directive: null, modifier: null, event: null, scoped: null };
 
         if (t.isJSXNamespacedName(node)) {

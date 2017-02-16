@@ -8,10 +8,10 @@ const BASE_OPTIONS = {
     }
 };
 
-export function compile(entry, options) {
+export function compile(entry: string, options: any): Promise<any> {
     options = options || {};
     entry = normalizeEntryPath(entry);
-    options = normalizeOptions(Object.assign({ entry }, BASE_OPTIONS, options));
+    options = normalizeOptions(Object.assign({}, { entry }, BASE_OPTIONS, options));
     if (options.bundle) {
         return compileBundle(entry, options);
     } else {

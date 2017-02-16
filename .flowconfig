@@ -1,17 +1,25 @@
 [ignore]
+.*/scripts/.*
+.*/node_modules/.*
+.*/dist/.*
+.*/test/.*
 <PROJECT_ROOT>/dist/.*
 <PROJECT_ROOT>/playground/.*
 <PROJECT_ROOT>/scripts/.*
 <PROJECT_ROOT>/node_modules/.*
-.*/node_modules/.*
+
+<PROJECT_ROOT>/packages/babel-plugin-transform-raptor-class/.*
+<PROJECT_ROOT>/packages/raptor-helper-fixture/.*
+<PROJECT_ROOT>/packages/raptor-html-cleanup-transform/.*
+<PROJECT_ROOT>/packages/rollup-plugin-raptor-compiler/.*
 
 [include]
 
 [libs]
 lib/types.js
+lib/babel.js
 
 [options]
 all=true
-esproposal.decorators=enable
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 suppress_comment= \\(.\\|\n\\)*\\$FlowIssue

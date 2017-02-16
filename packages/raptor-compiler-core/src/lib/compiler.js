@@ -6,7 +6,7 @@ import sourceResolver from './rollup-plugin-source-resolver';
 import rollupRemoveAnnotations from './rollup-plugin-remove-annotations';
 import { rollup } from 'rollup';
 
-export function compileResource(entry, options) {
+export function compileResource(entry: string, options: any): Promise<any> {
     const ext = extname(entry);
     const src = getSource(entry, options.sources);
 
@@ -21,7 +21,7 @@ export function compileResource(entry, options) {
     }
 }
 
-export function compileBundle(entry, options) {
+export function compileBundle(entry: string, options: any): Promise<any> {
     options = options || {};
     const plugins = [
         sourceResolver(options),
@@ -29,9 +29,9 @@ export function compileBundle(entry, options) {
         rollupRemoveAnnotations()
     ];
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: (bundleResult: any) => void, reject: (element: HTMLElement) => void) => {
         rollup({ entry, plugins })
-        .then((bundle) => {
+        .then((bundle: any) => {
             const normalizedModuleName = [options.componentNamespace, options.componentName].join(':');
             const isLtng = options.format && options.format === ltng_format;
             const bundleResult = bundle.generate({
@@ -50,11 +50,11 @@ export function compileBundle(entry, options) {
     });
 }
 
-function rollupTransform(options) {
+function rollupTransform(options: any): any {
     return {
         name: 'rollup-transform',
-        transform (src, filename) {
-            return compileResource(filename, Object.assign({ filename }, options)).then((result) => {
+        transform (src: string, filename: string) {
+            return compileResource(filename, Object.assign({}, { filename }, options)).then((result: any) => {
                 options.$metadata[filename] = result.metadata;
                 return result;
             });
