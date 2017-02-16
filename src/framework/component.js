@@ -33,7 +33,7 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     defineProperty(component, propName, {
         get: (): any => {
             const value = cmpProps[propName];
-            if (isRendering) {
+            if (isRendering && vmBeingRendered) {
                 subscribeToSetHook(vmBeingRendered, cmpProps, propName);
             }
             return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
@@ -50,7 +50,7 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     cmpProps[propName] = defaultValue;
 }
 
-export function createComponent(vm: VM, Ctor: ObjectConstructor) {
+export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
     vm.component = invokeComponentConstructor(vm, Ctor);
 }
@@ -85,7 +85,7 @@ export function initComponent(vm: VM) {
 export function clearListeners(vm: VM) {
     assert.vm(vm);
     const { listeners } = vm;
-    listeners.forEach((propSet: Set<VNode>): boolean => propSet.delete(vm));
+    listeners.forEach((propSet: Set<VM>): boolean => propSet.delete(vm));
     listeners.clear();
 }
 
@@ -153,8 +153,11 @@ export function updateComponentSlots(vm: VM, slotset: HashTable<Array<VNode>>) {
     // TODO: in the future, we can optimize this more, and only
     // set as dirty if the component really need slots, and if the slots has changed.
     console.log(`Marking ${vm} as dirty: [slotset] value changed.`);
-    if (!vm.isDirty) {
-        markComponentAsDirty(vm);
+    if (slotset !== vm.cmpSlots) {
+        vm.cmpSlots = slotset || {};
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
     }
 }
 

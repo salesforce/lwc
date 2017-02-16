@@ -22,7 +22,7 @@ const CAPS_REGEX = /[A-Z]/g;
 // so we know if they are attempting to access or modify them during construction time.
 export const internal = Symbol();
 
-export function getComponentDef(Ctor: Object): ComponentDef {
+export function getComponentDef(Ctor: Class<Component>): ComponentDef {
     if (CtorToDefMap.has(Ctor)) {
         return CtorToDefMap.get(Ctor);
     }
@@ -88,7 +88,7 @@ function getPropsHash(target: Object): HashTable<PropDef> {
 }
 
 function getAttrsHash(props: HashTable<PropDef>): HashTable<AttrDef> {
-    return keys(props).reduce((attrsHash: HashTable, propName: string): HashTable => {
+    return keys(props).reduce((attrsHash: HashTable<AttrDef>, propName: string): HashTable => {
         attrsHash[props[propName].attrName] = {
             propName: propName,
         };

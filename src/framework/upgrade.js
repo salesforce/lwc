@@ -73,7 +73,7 @@ function linkProperties(element: HTMLElement, vm: VM) {
     defineProperties(element, descriptors);
 }
 
-function getInitialProps(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+function getInitialProps(element: HTMLElement, Ctor: Class<Component>): HashTable<any> {
     const { props: config } = getComponentDef(Ctor);
     const props = {};
     for (let propName in config) {
@@ -84,7 +84,7 @@ function getInitialProps(element: HTMLElement, Ctor: ObjectConstructor): HashTab
     return props;
 }
 
-function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTable<any> {
+function getInitialSlots(element: HTMLElement, Ctor: Class<Component>): HashTable<any> {
     // TODO: implement algo to resolve slots
     return undefined;
 }
@@ -93,7 +93,7 @@ function getInitialSlots(element: HTMLElement, Ctor: ObjectConstructor): HashTab
  * This algo mimics 2.5 of web component specification somehow:
  * https://www.w3.org/TR/custom-elements/#upgrades
  */
-function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor) {
+function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
     if (!Ctor) {
         throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
     }
@@ -110,11 +110,11 @@ function upgradeElement(element: HTMLElement, Ctor: ObjectConstructor) {
     linkProperties(element, vm);
 }
 
-function upgrade(element: HTMLElement, CtorOrPromise: Promise<ObjectConstructor> | ObjectConstructor): Promise<HTMLElement> {
+function upgrade(element: HTMLElement, CtorOrPromise: Promise<Class<Component>> | Class<Component>): Promise<HTMLElement> {
     return new Promise((resolve: (element: HTMLElement) => void, reject: (e: Error) => void) => {
         assert.isTrue(element instanceof HTMLElement, `upgrade() first argument should be a DOM Element instead of ${element}.`);
         const p = Promise.resolve(CtorOrPromise);
-        p.then((Ctor: ObjectConstructor) => {
+        p.then((Ctor: Class<Component>) => {
             upgradeElement(element, Ctor);
             resolve(element);
         }, reject);

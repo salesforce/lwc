@@ -3,7 +3,7 @@ import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
 
 // [c]ustom element node
-export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}): Object {
+export function c(sel: string, Ctor: Class<Component>, data: Object = {}): Object {
     assert.isFalse("attrs" in data, `Compiler Issue: Custom elements should not have property "attrs" in data.`);
     const { key, dataset, slotset, props: _props, on, class: _class } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
@@ -16,7 +16,7 @@ export function c(sel: string, Ctor: ObjectConstructor, data: Object = {}): Obje
 export { h };
 
 // [i]terable node
-export function i(items: array<any>, factory: Function): Array<VNode> {
+export function i(items: Array<any>, factory: Function): Array<VNode> {
     const len = Array.isArray(items) ? items.length : 0;
     const list = new Array(len);
     for (let i = 0; i < len; i += 1) {

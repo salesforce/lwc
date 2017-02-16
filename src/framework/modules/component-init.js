@@ -3,7 +3,7 @@ import assert from "../assert.js";
 
 // this hook will set up the component instance associated to the new vnode,
 // and link the new vnode with the corresponding component
-function initializeComponent(oldVnode: VNode, vnode: VNode) {
+function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
     const { Ctor } = vnode;
     if (!Ctor) {
         return;

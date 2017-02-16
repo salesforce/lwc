@@ -32,7 +32,7 @@ function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Arra
     return vnodes;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: ObjectConstructor): Component {
+export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Component {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -62,7 +62,7 @@ export function invokeComponentConnectedCallback(vm: VM) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
-    const { component, context } = vm;
+    const { component, context, cmpSlots } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(context);
@@ -74,7 +74,7 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
         if (typeof result === 'function') {
-            result = result.call(undefined, api, component);
+            result = result.call(undefined, api, component, cmpSlots);
         }
         isRendering = isRenderingInception;
         vmBeingRendered = vmBeingRenderedInception;

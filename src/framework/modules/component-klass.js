@@ -1,4 +1,4 @@
-function syncClassNames(oldVnode: vnode, vnode: VNode) {
+function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
     if (!vm) {
         return;

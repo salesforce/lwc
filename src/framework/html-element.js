@@ -14,11 +14,12 @@ const HTMLElementMethodsTheGoodParts = [
     "addEventListener",
 ];
 
-class PlainHTMLElement {
+class ComponentElement {
     constructor() {
+        const classList = new ClassList(this);
         Object.defineProperties(this, {
             classList: {
-                value:  new ClassList(this),
+                value: classList,
                 writable: false,
                 configurable: false,
                 enumerable: true,
@@ -47,7 +48,7 @@ HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
         return elm[methodName](...args);
     };
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
     defineProperty(proto, propName, {
@@ -60,6 +61,6 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
         configurable: false,
     });
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
-export { PlainHTMLElement as HTMLElement };
+export { ComponentElement as HTMLElement };

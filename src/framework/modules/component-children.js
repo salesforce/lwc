@@ -2,7 +2,7 @@ import assert from "../assert.js";
 import { rehydrate } from "../vm.js";
 import { renderComponent } from "../component.js";
 
-function rerender(oldVnode: VNode, vnode: VNode) {
+function rerender(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
     if (!vm) {
         return;

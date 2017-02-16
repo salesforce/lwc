@@ -14,13 +14,14 @@ export function createVM(vnode: ComponentVNode) {
     const { Ctor, sel } = vnode;
     console.log(`<${Ctor.name}> is being initialized.`);
     const def = getComponentDef(Ctor);
-    const vm = {
+    const vm: VM = {
         isScheduled: false,
         isDirty: true,
         def,
         context: {},
         privates: {},
         cmpProps: {},
+        cmpSlots: {},
         component: undefined,
         fragment: undefined,
         listeners: new Set(),

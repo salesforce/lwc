@@ -17,7 +17,7 @@ const ProxySet = new WeakSet();
 
 function getter(target: Object, name: string): any {
     const value = target[name];
-    if (isRendering) {
+    if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, name);
     }
     return (value && typeof value === 'object') ? getPropertyProxy(value) : value;

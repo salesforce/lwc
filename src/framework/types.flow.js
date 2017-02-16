@@ -1,4 +1,4 @@
-declare class Component  {
+declare class Component {
     constructor(): this;
     render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
     connectedCallback(): void;
@@ -33,7 +33,7 @@ declare interface ComponentDef {
     observedAttrs: HashTable<number>
 }
 
-declare class PlainHTMLElement extends HTMLElement {
+declare class ComponentElement extends Component {
     classList: DOMTokenList,
     dataset: HashTable<any>
 }
@@ -41,6 +41,7 @@ declare class PlainHTMLElement extends HTMLElement {
 declare class VM {
     privates: HashTable<any>;
     cmpProps: HashTable<any>;
+    cmpSlots: HashTable<Array<VNode>>;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;
@@ -51,7 +52,7 @@ declare class VM {
 }
 
 declare class ComponentVNode extends VNode {
-    Ctor: () => void;
+    Ctor: Class<Component>;
     vm: VM;
     toString: () => string;
 }
@@ -66,7 +67,7 @@ declare class VNode  {
 }
 
 declare interface RenderAPI {
-    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode,
+    c(tagName: string, Ctor: Class<Component>, data: Object): VNode,
     h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode,
     i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>,
     s(value: any): string,

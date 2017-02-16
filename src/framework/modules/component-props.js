@@ -4,7 +4,7 @@ import {
     updateComponentProp,
 } from "../component.js";
 
-function syncProps(oldVnode: vnode, vnode: VNode) {
+function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
     if (!vm) {
         return;
