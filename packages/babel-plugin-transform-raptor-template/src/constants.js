@@ -49,6 +49,7 @@ export const TOP_LEVEL_PROPS = [
     'class',
     'style',
     'ref',
+    'key',
 ];
 
 export const EVENT_KEYS = {
