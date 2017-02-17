@@ -34,29 +34,29 @@ Additionally, a more complex lookup like `{x.y.z}` will resolve to `this.x.y.x`.
 
 ## Attributes
 
-When declaring a tag in the template, an attribute in the tag can be set to a property from the component instance. To do so, the `set:` directive can be used:
+When declaring a tag in the template, an attribute in the tag can be set to a property from the component instance. To do so, you can use the curled brackets notation without quotes:
 
 ```html
 <template>
-    <a set:href="url">{name}</a>
+    <a href={url}>{name}</a>
     <p>{tagline}</p>
 </template>
 ```
 
-As a result, the attribute `href` will be set to `this.url` for the `<a>` element. This is equivalent to `{propertyName}` in the sense that mutations on `this.url` will cause a rehydration to happen on the DOM fragment without user intervention. Any attribute can use the `set:` directive.
+As a result, the attribute `href` will be set to `this.url` for the `<a>` element. This is equivalent to `{propertyName}` in the sense that mutations on `this.url` will cause a rehydration to happen on the DOM fragment without user intervention. Any attribute can use the curled-brackets notation.
 
-Additionally, a more complex lookup like `set:href="x.y.z"` will set the `href` attribute to the value of `this.x.y.x`.
+Additionally, a more complex lookup like `href={x.y.z}` will set the `href` attribute to the value of `this.x.y.x`.
 
 _Note: In the example above, `this.url` could be a computed value via a getter definition in the Component Definition._
 
 ## Conditions
 
-If you need to remove or add pieces of the fragment conditionally, you can use the `set:` directive with the special attribute name `if` to conditionally render a pieces of the template, e.g.:
+If you need to remove or add pieces of the fragment conditionally, you can use the `if:` directive to conditionally render a pieces of the template, e.g.:
 
 ```html
 <template>
     <a href="#">{name}</a>
-    <p set:if="tagline">{tagline}</p>
+    <p branch:if={tagline}>{tagline}</p>
 </template>
 ```
 
@@ -69,26 +69,44 @@ At the moment, there is no `else` equivalent declarative form, or a way to indic
 ```html
 <template>
     <a href="#">{name}</a>
-    <p set:if="tagline">{tagline}</p>
-    <p set:if="invalidTagline">fallback tagline</p>
+    <p branch:if={tagline}>{tagline}</p>
+    <p branch:if={invalidTagline}>fallback tagline</p>
 </template>
 ```
 
 In this example, you have to add a new getter in your component declaration to return `true` or `false` when accessing `this.invalidTagline`.
+
+### Conditions in fragments
+
+If you have a group of elements that should be displayed conditionally, you can use the `<template>` tag to group them under a single condition, e.g.:
+
+```html
+<template>
+    <a href="#">{name}</a>
+    <template branch:if={name}>
+        <p>Age: {age}</p>
+        <p>Genre: {genre}</p>
+    </template>
+</template>
+```
+
+As a result, the `<template>` will be removed from the DOM in favor of its content when `{this.tagline}` is not falsy.
 
 ## Iterations
 
 ```html
 <template>
     <ul>
-        <li repeat:for="item of items">
-            {item.firstname} {item.lastname}
-        </li>
+        <template for:each="item of items">
+            <li>
+                {item.firstname} {item.lastname}
+            </li>
+        </template>
     </ul>
 </template>
 ```
 
-The example above will iterate over `this.items`, and create one `<li>` element for each element in that collection by providing a new bound element accessible via `item` that is only scoped for the new fragment. In other words, this will be transpiled into something similar to the following imperative functional code:
+The example above will iterate over `this.items`, and create one `<li>` element for each element in that collection by providing a new bound element accessible via `item` that is only scoped for the new fragment. In other words, think of this as something similar to the following imperative functional code:
 
 ```js
 return this.items.map((item) => {
@@ -100,9 +118,11 @@ return this.items.map((item) => {
 
 __Important Notes:__
 
-* The tag with the `repeat:for` directive can use the iterator value. In the example above, `item` can be used there just like it is used inside the children, e.g.: `<li repeat:for="item of items" set:title="item.firstname">`.
+* The `for:each` directive should only be used in `<template>` tags.
 
-* The index of the iterator is available via `index`, e.g.: `<li repeat:for="item of items">{index} {item.firstname}</li>`
+* The tag with the `for:each` directive cannot use the iterator value, that's only available in the scoped content of the `<template>`.
+
+* The index of the iterator is available via `index`, e.g.: `<li>{index} {item.firstname}</li>`
 
 * Every value item in the iterable should contain a `key` member value with a unique identifier for the item in the collection. If this `key` is not provided, the diffing algoritsm will be more expensive. A possible value for the `this.items` collection value for the example above could be:
 
@@ -121,29 +141,51 @@ __Important Notes:__
 ];
 ```
 
-### Other Possible Options
+### Advanced Options
 
-To avoid the confusion about the scope of the iterable, a `<template>` tag can help to define that boundary, adding the restriction that `repeat:for` can only be used in a `<template>` tag.
+#### Custom Indexes
+
+As mentioned above, the index of the iteration will be availabe by default via `{index}` inde the `<template>` tag, but if that conflicts with an outer reference, you can specify the name of the variable where the value of the index will be set by using the `repeat:index` directive, e.g.:
 
 ```html
 <template>
     <ul>
-        <template repeat:for="item of items" repeat:key="item.id">
+        <template for:each="item of items" repeat:index="i">
             <li>
-                {item.firstname} {item.lastname}
+                {i} - {item.firstname} {item.lastname}
             </li>
         </template>
     </ul>
 </template>
 ```
 
-## Event Bindings
+In the example above, `{i}` indicates the position of the element `item` of `items`.
 
-Binding an event to a Raptor Element is very similar to set an attribute. The `bind:` directive can be used to add an event listener bound to an event handler function. e.g:
+#### Custom Keys
+
+By default, `item.key` will be used to exact the unique key of the element, which is needed for the diffing algo, but if your data structure does not match this pattern, you can specify how to resolve the key by using `repeat:key` directive, e.g.:
 
 ```html
 <template>
-    <a href="#foo" bind:onclick="handleClick">click here</a>>
+    <ul>
+        <template for:each="item of items" repeat:key="id">
+            <li>
+                {i} - {item.firstname} {item.lastname}
+            </li>
+        </template>
+    </ul>
+</template>
+```
+
+In the example above, the value of `item.id` will be used as the key for each element of `items`.
+
+## Event Bindings
+
+Binding an event to a Raptor Element is very similar to set an attribute. When a curled brackets notation appear on an attribute prefixed with `on`, an event listener will be added to the element to trigger the corresponding handler method. e.g:
+
+```html
+<template>
+    <a href="#foo" onclick={handleClick}>click here</a>>
 </template>
 ```
 
@@ -151,10 +193,9 @@ In the example above, the `onclick` event of the `<a>` tag will invoke a functio
 
 __Important Notes:__
 
-Important things to keep in mind when using the `bind:` directive:
+Important things to keep in mind when using this heuristic:
 
  * when the `this.handleClick` is invoked, the `this` value inside the `handleClick` function will be preserved since Raptor does the correct binding to guarantee that.
- * `bind:` directive can be used with any attribute, even if it is not an event handler, e.g.: `<foo-bar bind:xyz-callback="doSomething">`.
 
 ## Aliasing using `is` attribute
 
@@ -164,7 +205,7 @@ There are cases in HTML where a custom element cannot be used. An example of thi
 <template>
     <table>
         <tbody>
-            <foo-bar set:x="computedValue" y="some text">
+            <foo-bar x={computedValue} y="some text">
             </foo-bar>
         </tbody>
     </table>
@@ -177,7 +218,7 @@ If you want to provide an abstraction of the `tr`, delegating it to a Raptor Com
 <template>
     <table>
         <tbody>
-            <tr is="foo-bar" set:x="computedValue" y="some text">
+            <tr is="foo-bar" x={computedValue} y="some text">
             </tr>
         </tbody>
     </table>

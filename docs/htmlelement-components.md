@@ -13,7 +13,7 @@ foo/foo.js
 
 ```html
 <template>
-    <a set:href="url">{name}</a>
+    <a href={url}>{name}</a>
     <p>{tagline}</p>
 </template>
 ```

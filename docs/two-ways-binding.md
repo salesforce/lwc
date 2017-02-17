@@ -6,7 +6,7 @@ In some edge cases, an attribute must be set to a value, but also allow the rece
 
 ```html
 <template>
-    <foo-bar model:price="value" />
+    <foo-bar model:price={value} />
 </template>
 ```
 
