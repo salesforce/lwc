@@ -53,7 +53,7 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
 
 function getPropsHash(target: Object): HashTable<PropDef> {
     const props: HashTable = target.publicProps || {};
-    return keys(props).reduce((propsHash: HashTable, propName: string) => {
+    return keys(props).reduce((propsHash: HashTable<PropDef>, propName: string): HashTable<PropDef> => {
         // expanding the property definition
         propsHash[propName] = {
             initializer: props[propName],

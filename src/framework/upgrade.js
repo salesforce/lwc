@@ -59,7 +59,7 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let propName in propsConfig) {
         descriptors[propName] = {
             get: (): any => component[propName],
-            set: (newValue: any): void => {
+            set: (newValue: any) => {
                 updateComponentProp(vm, propName, newValue);
                 if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
@@ -85,6 +85,10 @@ function getInitialProps(element: HTMLElement, Ctor: Class<Component>): HashTabl
 }
 
 function getInitialSlots(element: HTMLElement, Ctor: Class<Component>): HashTable<any> {
+    const { slotNames } = getComponentDef(Ctor);
+    if (!slotNames) {
+        return;
+    }
     // TODO: implement algo to resolve slots
     return undefined;
 }

@@ -2,7 +2,7 @@ import { getComponentDef, set } from "raptor";
 
 const CAMEL_REGEX = /-([a-z])/g;
 
-export default function ADS(Ctor: ObjectConstructor, annotations: Object): ObjectConstructor {
+export default function ADS(Ctor: Class<Component>, annotations: Object): Class<Component> {
 
     const { props } = getComponentDef(Ctor);
     const { mapping } = annotations;
@@ -87,9 +87,11 @@ ADS.QL = function QL(): Object {
     };
 }
 
-function create(annotations): DataStorage {
+function create(annotations: any): DataStorage {
     const listeners = [];
-
+    if (!annotations) {
+        return;
+    }
     return {
         connect(callback: (publicProps: Object) => void): DataHandler {
             let x = 1;

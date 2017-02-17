@@ -4,7 +4,6 @@ import {
     initComponent,
     createComponent,
 } from "./component.js";
-import { setPrototypeOf } from "./language.js";
 import { c } from "./api.js";
 import { patch } from "./patch.js";
 
