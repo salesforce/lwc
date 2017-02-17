@@ -81,7 +81,7 @@ var assert = {
         assert.isTrue(_vnode && "sel" in _vnode && "data" in _vnode && "children" in _vnode && "text" in _vnode && "elm" in _vnode && "key" in _vnode, _vnode + " is not a vnode.");
     },
     vm: function vm(_vm) {
-        assert.isTrue(_vm && "Ctor" in _vm && "data" in _vm && "children" in _vm && "text" in _vm && "elm" in _vm && "key" in _vm, _vm + " is not a vm.");
+        assert.isTrue(_vm && "component" in _vm, _vm + " is not a vm.");
     },
     fail: function fail(msg) {
         throw new Error(msg);
@@ -108,6 +108,135 @@ var className = {
     update: updateClass
 };
 
+var keys = Object.keys;
+var freeze = Object.freeze;
+var defineProperty = Object.defineProperty;
+var getPrototypeOf = Object.getPrototypeOf;
+var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+var getOwnPropertyNames = Object.getOwnPropertyNames;
+var defineProperties = Object.defineProperties;
+
+/**
+ * This module is responsible for producing the ComponentDef object that is always
+ * accessible via `vm.def`. This is lazily created during the creation of the first
+ * instance of a component class, and shared across all instances.
+ *
+ * This structure can be used to synthetically create proxies, and understand the
+ * shape of a component. It is also used internally to apply extra optimizations.
+ */
+
+var CtorToDefMap = new WeakMap();
+var CAPS_REGEX = /[A-Z]/g;
+
+// this symbol is a dev-mode artifact to sign the getter/setter per public property
+// so we know if they are attempting to access or modify them during construction time.
+var internal = Symbol();
+
+function getComponentDef(Ctor) {
+    if (CtorToDefMap.has(Ctor)) {
+        return CtorToDefMap.get(Ctor);
+    }
+    assert.isTrue(Ctor.constructor, "Missing " + Ctor.name + ".constructor, " + Ctor.name + " should have a constructor property.");
+    var name = Ctor.name;
+    assert.isTrue(name, Ctor + " should have a name property.");
+    var props = getPropsHash(Ctor);
+    var attrs = getAttrsHash(props);
+    var methods = getMethodsHash(Ctor);
+    var observedAttrs = getObservedAttrsHash(Ctor, attrs);
+    var def = {
+        name: name,
+        props: props,
+        attrs: attrs,
+        methods: methods,
+        observedAttrs: observedAttrs
+    };
+    assert.block(function () {
+        freeze(def);
+        freeze(props);
+        freeze(attrs);
+        freeze(methods);
+        freeze(observedAttrs);
+    });
+    CtorToDefMap.set(Ctor, def);
+    return def;
+}
+
+function getPropsHash(target) {
+    var props = target.publicProps || {};
+    return keys(props).reduce(function (propsHash, propName) {
+        // expanding the property definition
+        propsHash[propName] = {
+            initializer: props[propName],
+            attrName: propName.replace(CAPS_REGEX, function (match) {
+                return '-' + match.toLowerCase();
+            })
+        };
+        assert.block(function () {
+            freeze(propsHash[propName]);
+        });
+        // initializing getters and setters for each props on the target protype
+        var getter = void 0;
+        var setter = void 0;
+        assert.block(function () {
+            assert.invariant(!getOwnPropertyDescriptor(target.prototype, propName), "Invalid " + target.name + ".prototype." + propName + " definition, it cannot be defined if it is a public property.");
+            getter = function getter() {
+                assert.fail("Component <" + target.name + "> can not access to property " + propName + " during construction.");
+            };
+            setter = function setter() {
+                assert.fail("Component <" + target.name + "> can not set a new value for property " + propName + ".");
+            };
+            defineProperty(getter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
+            defineProperty(setter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
+        });
+        // setting up the descriptor for the public prop
+        defineProperty(target.prototype, propName, {
+            get: getter,
+            set: setter,
+            enumerable: true,
+            configurable: true
+        });
+        return propsHash;
+    }, {});
+}
+
+function getAttrsHash(props) {
+    return keys(props).reduce(function (attrsHash, propName) {
+        attrsHash[props[propName].attrName] = {
+            propName: propName
+        };
+        return attrsHash;
+    }, {});
+}
+
+function getMethodsHash(target) {
+    return (target.publicMethods || []).reduce(function (methodsHash, methodName) {
+        methodsHash[methodName] = 1;
+        assert.block(function () {
+            assert.isTrue(typeof target.prototype[methodName] === 'function', "<" + target.name + ">." + methodName + " have to be a function.");
+            freeze(target.prototype[methodName]);
+            // setting up the descriptor for the public method
+            defineProperty(target.prototype, methodName, {
+                configurable: false,
+                enumerable: false,
+                writable: false
+            });
+        });
+        return methodsHash;
+    }, {});
+}
+
+function getObservedAttrsHash(target, attrs) {
+    return (target.observedAttributes || []).reduce(function (observedAttributes, attrName) {
+        observedAttributes[attrName] = 1;
+        assert.block(function () {
+            if (!attrs[attrName]) {
+                console.warn("The corresponding public property for attribute " + attrName + " of " + target + ".observedAttributes is not declared in " + target.name + ".");
+            }
+        });
+        return observedAttributes;
+    }, {});
+}
+
 var TargetToPropsMap = new WeakMap();
 
 function notifyListeners(target, propName) {
@@ -118,7 +247,7 @@ function notifyListeners(target, propName) {
             set.forEach(function (vm) {
                 assert.vm(vm);
                 console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
-                if (!vm.cache.isDirty) {
+                if (!vm.isDirty) {
                     markComponentAsDirty(vm);
                     console.log("Scheduling " + vm + " for rehydration.");
                     scheduleRehydration(vm);
@@ -145,7 +274,7 @@ function subscribeToSetHook(vm, target, propName) {
     if (!set.has(vm)) {
         set.add(vm);
         // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.cache.listeners.add(set);
+        vm.listeners.add(set);
     }
 }
 
@@ -158,6 +287,32 @@ var currentContext = _defineProperty({}, topLevelContextSymbol, true);
 function establishContext(ctx) {
     currentContext = ctx;
 }
+
+var lifeCycleHooks = {
+    insert: function insert(vnode) {
+        assert.vnode(vnode);
+        var vm = vnode.vm;
+
+        assert.vm(vm);
+        if (vm.component.connectedCallback) {
+            invokeComponentConnectedCallback(vm);
+        }
+        console.log("\"" + vm + "\" was inserted.");
+    },
+    destroy: function destroy(vnode) {
+        assert.vnode(vnode);
+        var vm = vnode.vm;
+
+        assert.vm(vm);
+        if (vm.component.disconnectedCallback) {
+            invokeComponentDisconnectedCallback(vm);
+        }
+        if (vm.listeners.size > 0) {
+            clearListeners(vm);
+        }
+        console.log("\"" + vm + "\" was destroyed.");
+    }
+};
 
 function interopDefault(ex) {
 	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
@@ -253,19 +408,17 @@ var h$1 = interopDefault(h);
 // [c]ustom element node
 function c(sel, Ctor) {
     var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var bcDefaultSlot = arguments[3];
 
     assert.isFalse("attrs" in data, "Compiler Issue: Custom elements should not have property \"attrs\" in data.");
     var key = data.key,
+        dataset = data.dataset,
+        slotset = data.slotset,
         _props = data.props,
         on = data.on,
-        dataset = data.dataset,
         _class = data.class;
-    // assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    // TODO: once the parser is updated, uncomment the previous line and remove this fork in favor of just data.slotset
 
-    var slotset = data.slotset || bcDefaultSlot && bcDefaultSlot.length && { $default$: bcDefaultSlot };
-    var vnode = h$1(sel, { hook: hook, key: key, slotset: slotset, dataset: dataset, on: on, props: {}, _props: _props, _class: _class }, []);
+    assert.isTrue(arguments.length < 4, "Compiler Issue: Custom elements expect up to 3 arguments, received " + arguments.length + " instead.");
+    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, dataset: dataset, on: on, props: {}, _props: _props, _class: _class }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }
@@ -276,7 +429,6 @@ function i(items, factory) {
     var list = new Array(len);
     for (var _i = 0; _i < len; _i += 1) {
         var vnode = factory(items[_i]);
-        assert.vnode(vnode, 'Invariant Violation: Iteration should always produce a vnode.');
         list[_i] = vnode;
     }
     return list;
@@ -343,7 +495,6 @@ var api = Object.freeze({
 
 var isRendering = false;
 var vmBeingRendered = null;
-var vmBeingCreated = null;
 
 function wrapHTMLElement(element) {
     assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
@@ -364,32 +515,24 @@ function normalizeRenderResult(vm, elementOrVnodeOrArrayOfVnodes) {
         if (elm instanceof HTMLElement) {
             vnodes[i] = wrapHTMLElement(elm);
         }
-        assert.isTrue(vnodes[i] && vnodes[i].sel, "Invalid vnode element " + vnodes[i] + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
+        assert.isTrue(vnodes[i] && vnodes[i].sel, "Invalid element " + vnodes[i] + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
     }
     return vnodes;
 }
 
-function invokeComponentConstructor(vm) {
-    var Ctor = vm.Ctor,
-        context = vm.cache.context;
+function invokeComponentConstructor(vm, Ctor) {
+    var context = vm.context;
 
     var ctx = currentContext;
     establishContext(context);
-    vmBeingCreated = vm;
     var component = new Ctor();
-    // note to self: invocations during construction to get the vm associated
-    // to the component works fine as well because we can use `vmBeingCreated`
-    // in getLinkedVNode() as a fallback patch for resolution.
-    setLinkedVNode(component, vm);
-    vmBeingCreated = null;
     establishContext(ctx);
     return component;
 }
 
 function invokeComponentDisconnectedCallback(vm) {
-    var _vm$cache = vm.cache,
-        component = _vm$cache.component,
-        context = _vm$cache.context;
+    var component = vm.component,
+        context = vm.context;
 
     if (component.disconnectedCallback) {
         var ctx = currentContext;
@@ -400,9 +543,8 @@ function invokeComponentDisconnectedCallback(vm) {
 }
 
 function invokeComponentConnectedCallback(vm) {
-    var _vm$cache2 = vm.cache,
-        component = _vm$cache2.component,
-        context = _vm$cache2.context;
+    var component = vm.component,
+        context = vm.context;
 
     if (component.connectedCallback) {
         var ctx = currentContext;
@@ -412,24 +554,38 @@ function invokeComponentConnectedCallback(vm) {
     }
 }
 
+function invokeComponentRenderedCallback(vm) {
+    var component = vm.component,
+        context = vm.context;
+
+    if (component.renderedCallback) {
+        var ctx = currentContext;
+        establishContext(context);
+        component.renderedCallback();
+        establishContext(ctx);
+    }
+}
+
 function invokeComponentRenderMethod(vm) {
-    var _vm$cache3 = vm.cache,
-        component = _vm$cache3.component,
-        context = _vm$cache3.context;
+    var component = vm.component,
+        context = vm.context,
+        cmpSlots = vm.cmpSlots;
 
     if (component.render) {
         var ctx = currentContext;
         establishContext(context);
+        var isRenderingInception = isRendering;
+        var vmBeingRenderedInception = vmBeingRendered;
         isRendering = true;
         vmBeingRendered = vm;
         var result = component.render();
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
         if (typeof result === 'function') {
-            result = result.call(undefined, api, component);
+            result = result.call(undefined, api, component, cmpSlots);
         }
-        isRendering = false;
-        vmBeingRendered = null;
+        isRendering = isRenderingInception;
+        vmBeingRendered = vmBeingRenderedInception;
         establishContext(ctx);
         // the render method can return many different things, here we attempt to normalize it.
         return normalizeRenderResult(vm, result);
@@ -438,9 +594,8 @@ function invokeComponentRenderMethod(vm) {
 }
 
 function invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue) {
-    var _vm$cache4 = vm.cache,
-        component = _vm$cache4.component,
-        context = _vm$cache4.context;
+    var component = vm.component,
+        context = vm.context;
 
     if (component.attributeChangedCallback) {
         var ctx = currentContext;
@@ -450,134 +605,6 @@ function invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValu
     }
 }
 
-var keys = Object.keys;
-var freeze = Object.freeze;
-var defineProperty = Object.defineProperty;
-var getPrototypeOf = Object.getPrototypeOf;
-var setPrototypeOf = Object.setPrototypeOf;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-var getOwnPropertyNames = Object.getOwnPropertyNames;
-var defineProperties = Object.defineProperties;
-
-/**
- * This module is responsible for producing the ComponentDef object that is always
- * accessible via `vm.def`. This is lazily created during the creation of the first
- * instance of a component class, and shared across all instances.
- *
- * This structure can be used to synthetically create proxies, and understand the
- * shape of a component. It is also used internally to apply extra optimizations.
- */
-
-var CtorToDefMap = new WeakMap();
-var CAPS_REGEX = /[A-Z]/g;
-
-// this symbol is a dev-mode artifact to sign the getter/setter per public property
-// so we know if they are attempting to access or modify them during construction time.
-var internal = Symbol();
-
-function getComponentDef(Ctor) {
-    if (CtorToDefMap.has(Ctor)) {
-        return CtorToDefMap.get(Ctor);
-    }
-    assert.isTrue(Ctor.constructor, "Missing " + Ctor.name + ".constructor, " + Ctor.name + " should have a constructor property.");
-    var name = Ctor.constructor && Ctor.constructor.name;
-    assert.isTrue(name, "Missing " + Ctor.name + ".constructor.name, " + Ctor.name + ".constructor should have a name property.");
-    var props = getPropsHash(Ctor);
-    var attrs = getAttrsHash(props);
-    var methods = getMethodsHash(Ctor);
-    var observedAttrs = getObservedAttrsHash(Ctor, attrs);
-    var def = {
-        name: name,
-        props: props,
-        attrs: attrs,
-        methods: methods,
-        observedAttrs: observedAttrs
-    };
-    assert.block(function () {
-        freeze(def);
-        freeze(props);
-        freeze(attrs);
-        freeze(methods);
-        freeze(observedAttrs);
-    });
-    CtorToDefMap.set(Ctor, def);
-    return def;
-}
-
-function getPropsHash(target) {
-    var props = target.publicProps || {};
-    return keys(props).reduce(function (propsHash, propName) {
-        // expanding the property definition
-        propsHash[propName] = {
-            initializer: props[propName],
-            attrName: propName.replace(CAPS_REGEX, function (match) {
-                return '-' + match.toLowerCase();
-            })
-        };
-        assert.block(function () {
-            freeze(propsHash[propName]);
-        });
-        // initializing getters and setters for each props on the target protype
-        var getter = void 0;
-        var setter = void 0;
-        assert.block(function () {
-            assert.invariant(!getOwnPropertyDescriptor(target.prototype, propName), "Invalid " + target.constructor.name + ".prototype." + propName + " definition, it cannot be defined if it is a public property.");
-            getter = function getter() {
-                assert.fail("Component <" + target.constructor.name + "> can not access to property " + propName + " during construction.");
-            };
-            setter = function setter() {
-                assert.fail("Component <" + target.constructor.name + "> can not set a new value for property " + propName + ".");
-            };
-            defineProperty(getter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
-            defineProperty(setter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
-        });
-        // setting up the descriptor for the public prop
-        defineProperty(target.prototype, propName, {
-            get: getter,
-            set: setter,
-            enumerable: true,
-            configurable: true
-        });
-        return propsHash;
-    }, {});
-}
-
-function getAttrsHash(props) {
-    return keys(props).reduce(function (attrsHash, propName) {
-        attrsHash[props[propName].attrName] = {
-            propName: propName
-        };
-        return attrsHash;
-    }, {});
-}
-
-function getMethodsHash(target) {
-    return (target.publicMethods || []).reduce(function (methodsHash, methodName) {
-        methodsHash[methodName] = 1;
-        assert.block(function () {
-            assert.isTrue(typeof target.prototype[methodName] === 'function', "<" + target.constructor.name + ">." + methodName + " have to be a function.");
-            freeze(target.prototype[methodName]);
-            // setting up the descriptor for the public method
-            defineProperty(target.prototype, methodName, {
-                configurable: false,
-                enumerable: false,
-                writable: false
-            });
-        });
-        return methodsHash;
-    }, {});
-}
-
-function getObservedAttrsHash(target, attrs) {
-    return (target.observedAttributes || []).reduce(function (observedAttributes, attrName) {
-        observedAttributes[attrName] = 1;
-        assert.block(function () {
-            assert.isTrue(attrs[attrName], "Invalid attribute " + attrName + " in " + target + ".observedAttributes.");
-        });
-        return observedAttributes;
-    }, {});
-}
-
 var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var ObjectPropertyToProxyMap = new WeakMap();
@@ -585,7 +612,7 @@ var ProxySet = new WeakSet();
 
 function getter(target, name) {
     var value = target[name];
-    if (isRendering) {
+    if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, name);
     }
     return value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getPropertyProxy(value) : value;
@@ -638,9 +665,8 @@ function getPropertyProxy(value) {
 
 function hookComponentLocalProperty(vm, propName) {
     assert.vm(vm);
-    var _vm$cache = vm.cache,
-        component = _vm$cache.component,
-        privates = _vm$cache.privates;
+    var component = vm.component,
+        privates = vm.privates;
 
     var descriptor = getOwnPropertyDescriptor(component, propName);
     var get = descriptor.get,
@@ -674,11 +700,12 @@ function hookComponentLocalProperty(vm, propName) {
 
 var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var renderedDuringCurrentCycleSet = new Set();
+
 function hookComponentReflectiveProperty(vm, propName) {
-    var _vm$cache = vm.cache,
-        component = _vm$cache.component,
-        cmpProps = _vm$cache.cmpProps,
-        publicPropsConfig = _vm$cache.def.props;
+    var component = vm.component,
+        cmpProps = vm.cmpProps,
+        publicPropsConfig = vm.def.props;
 
     assert.block(function () {
         var target = getPrototypeOf(component);
@@ -692,7 +719,7 @@ function hookComponentReflectiveProperty(vm, propName) {
     defineProperty(component, propName, {
         get: function get() {
             var value = cmpProps[propName];
-            if (isRendering) {
+            if (isRendering && vmBeingRendered) {
                 subscribeToSetHook(vmBeingRendered, cmpProps, propName);
             }
             return value && (typeof value === "undefined" ? "undefined" : _typeof$1(value)) === 'object' ? getPropertyProxy(value) : value;
@@ -710,14 +737,18 @@ function hookComponentReflectiveProperty(vm, propName) {
     cmpProps[propName] = defaultValue;
 }
 
-function initComponentProps(vm) {
+function createComponent(vm, Ctor) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var component = cache.component,
-        cmpProps = cache.cmpProps,
-        _cache$def = cache.def,
-        publicPropsConfig = _cache$def.props,
-        observedAttrs = _cache$def.observedAttrs;
+    vm.component = invokeComponentConstructor(vm, Ctor);
+}
+
+function initComponent(vm) {
+    assert.vm(vm);
+    var component = vm.component,
+        cmpProps = vm.cmpProps,
+        _vm$def = vm.def,
+        publicPropsConfig = _vm$def.props,
+        observedAttrs = _vm$def.observedAttrs;
     // reflective properties
 
     for (var propName in publicPropsConfig) {
@@ -746,7 +777,7 @@ function initComponentProps(vm) {
 
 function clearListeners(vm) {
     assert.vm(vm);
-    var listeners = vm.cache.listeners;
+    var listeners = vm.listeners;
 
     listeners.forEach(function (propSet) {
         return propSet.delete(vm);
@@ -756,11 +787,10 @@ function clearListeners(vm) {
 
 function updateComponentProp(vm, propName, newValue) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var cmpProps = cache.cmpProps,
-        _cache$def2 = cache.def,
-        publicPropsConfig = _cache$def2.props,
-        observedAttrs = _cache$def2.observedAttrs;
+    var cmpProps = vm.cmpProps,
+        _vm$def2 = vm.def,
+        publicPropsConfig = _vm$def2.props,
+        observedAttrs = _vm$def2.observedAttrs;
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
     var config = publicPropsConfig[propName];
@@ -783,7 +813,7 @@ function updateComponentProp(vm, propName, newValue) {
             }
         }
         console.log("Marking " + vm + " as dirty: property \"" + propName + "\" set to a new value.");
-        if (!cache.isDirty) {
+        if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
     }
@@ -791,11 +821,10 @@ function updateComponentProp(vm, propName, newValue) {
 
 function resetComponentProp(vm, propName) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var cmpProps = cache.cmpProps,
-        _cache$def3 = cache.def,
-        publicPropsConfig = _cache$def3.props,
-        observedAttrs = _cache$def3.observedAttrs;
+    var cmpProps = vm.cmpProps,
+        _vm$def3 = vm.def,
+        publicPropsConfig = _vm$def3.props,
+        observedAttrs = _vm$def3.observedAttrs;
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
     var config = publicPropsConfig[propName];
@@ -817,136 +846,203 @@ function resetComponentProp(vm, propName) {
             }
         }
         console.log("Marking " + vm + " as dirty: property \"" + propName + "\" set to its default value.");
-        if (!cache.isDirty) {
+        if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
     }
 }
 
-function updateComponentSlots(vm, newSlots) {
+function updateComponentSlots(vm, slotset) {
+    assert.vm(vm);
     // TODO: in the future, we can optimize this more, and only
     // set as dirty if the component really need slots, and if the slots has changed.
     console.log("Marking " + vm + " as dirty: [slotset] value changed.");
-    if (!vm.cache.isDirty) {
-        markComponentAsDirty(vm);
+    if (slotset !== vm.cmpSlots) {
+        vm.cmpSlots = slotset || {};
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
     }
 }
 
-function createComponent(vm) {
+function renderComponent(vm) {
     assert.vm(vm);
-    assert.invariant(vm.elm instanceof HTMLElement, 'Component creation requires a DOM element to be associated to it.');
-    var Ctor = vm.Ctor,
-        sel = vm.sel;
+    assert.invariant(vm.isDirty, "Component " + vm + " is not dirty.");
+    console.log(vm + " is being updated.");
+    clearListeners(vm);
+    var vnodes = invokeComponentRenderMethod(vm);
+    vm.isDirty = false;
+    vm.fragment = vnodes;
+    assert.invariant(Array.isArray(vnodes), vm + ".render() should always return an array of vnodes instead of " + vnodes);
+    // preparing for the after rendering
+    renderedDuringCurrentCycleSet.add(vm);
+}
+
+function markComponentAsDirty(vm) {
+    assert.vm(vm);
+    assert.isFalse(vm.isDirty, "markComponentAsDirty() for " + vm + " should not be called when the componet is already dirty.");
+    assert.isFalse(isRendering, "markComponentAsDirty() for " + vm + " cannot be called during rendering.");
+    vm.isDirty = true;
+}
+
+function markAllComponentAsRendered() {
+    /**
+     * In this method we invoke the renderedCallback() on any component
+     * that was rendered during this last patching cycle.
+    */
+    var pending = Array.from(renderedDuringCurrentCycleSet);
+    var len = pending.length;
+    renderedDuringCurrentCycleSet.clear();
+    for (var i = 0; i < len; i += 1) {
+        var vm = pending.shift();
+        invokeComponentRenderedCallback(vm);
+    }
+}
+
+function createVM(vnode) {
+    assert.vnode(vnode);
+    assert.invariant(vnode.elm instanceof HTMLElement, "VM creation requires a DOM element to be associated to vnode " + vnode + ".");
+    var Ctor = vnode.Ctor,
+        sel = vnode.sel;
 
     console.log("<" + Ctor.name + "> is being initialized.");
     var def = getComponentDef(Ctor);
-    var cache = {
+    var vm = {
         isScheduled: false,
         isDirty: true,
         def: def,
         context: {},
         privates: {},
         cmpProps: {},
-        component: null,
+        cmpSlots: {},
+        component: undefined,
         fragment: undefined,
-        shadowRoot: null,
         listeners: new Set()
     };
     assert.block(function () {
-        var proto = {
-            toString: function toString() {
-                return "<" + sel + ">";
-            }
+        vm.toString = function () {
+            return "<" + sel + ">";
         };
-        setPrototypeOf(vm, proto);
     });
-    vm.cache = cache;
-    cache.component = invokeComponentConstructor(vm);
-    initComponentProps(vm);
+    vnode.vm = vm;
+    var vnodeBeingConstructedInception = vnodeBeingConstructed;
+    vnodeBeingConstructed = vnode;
+    createComponent(vm, Ctor);
+    vnodeBeingConstructed = vnodeBeingConstructedInception;
+    // note to self: invocations during construction to get the vnode associated
+    // to the component works fine as well because we can use `vmBeingCreated`
+    // in getLinkedVNode() as a fallback patch for resolution.
+    setLinkedVNode(vm.component, vnode);
+    // note to self: initComponent() is needed as a separate step because observable
+    // attributes might invoke user-land code that can do certain things that can
+    // require the linking to be in place from the previous line.
+    initComponent(vm);
 }
 
-function renderComponent(vm) {
-    assert.vm(vm);
-    var cache = vm.cache;
+var ComponentToVNodeMap = new WeakMap();
 
-    assert.invariant(cache.isDirty, "Component " + vm + " is not dirty.");
-    console.log(vm + " is being updated.");
-    clearListeners(vm);
-    var vnodes = invokeComponentRenderMethod(vm);
-    cache.isDirty = false;
-    cache.fragment = vnodes;
-    assert.invariant(Array.isArray(vnodes), 'Render should always return an array of vnodes instead of ${children}');
-}
+var vnodeBeingConstructed = null;
 
-function destroyComponent(vm) {
-    assert.vm(vm);
-    clearListeners(vm);
-}
-
-function markComponentAsDirty(vm) {
-    assert.vm(vm);
-    assert.isFalse(vm.cache.isDirty, "markComponentAsDirty(" + vm + ") should not be called when the componet is already dirty.");
-    assert.isFalse(isRendering, "markComponentAsDirty(" + vm + ") cannot be called during rendering.");
-    vm.cache.isDirty = true;
-}
-
-var ComponentToVMMap = new WeakMap();
-
-function setLinkedVNode(component, vm) {
-    assert.vm(vm);
-    assert.isTrue(vm.elm instanceof HTMLElement, "Only DOM elements can be linked to their corresponding component.");
-    ComponentToVMMap.set(component, vm);
+function setLinkedVNode(component, vnode) {
+    assert.vnode(vnode);
+    assert.isTrue(vnode.elm instanceof HTMLElement, "Only DOM elements can be linked to their corresponding component.");
+    ComponentToVNodeMap.set(component, vnode);
 }
 
 function getLinkedVNode(component) {
-    assert.isTrue(component);
+    assert.isTrue(component, "invalid component " + component);
     // note to self: we fallback to `vmBeingCreated` in case users
     // invoke something during the constructor execution, in which
     // case this mapping hasn't been stable yet, but we know that's
     // the only case.
-    var vm = ComponentToVMMap.get(component) || vmBeingCreated;
-    assert.invariant(vm, "There have to be a VM associated to component " + component + ".");
-    return vm;
+    var vnode = ComponentToVNodeMap.get(component) || vnodeBeingConstructed;
+    assert.vnode(vnode);
+    return vnode;
+}
+
+function rehydrate(vm) {
+    assert.vm(vm);
+    if (vm.isDirty) {
+        var oldVnode = getLinkedVNode(vm.component);
+        assert.isTrue(oldVnode.elm instanceof HTMLElement, "rehydration can only happen after " + vm + " was patched the first time.");
+        var sel = oldVnode.sel,
+            Ctor = oldVnode.Ctor,
+            _oldVnode$data = oldVnode.data,
+            key = _oldVnode$data.key,
+            slotset = _oldVnode$data.slotset,
+            dataset = _oldVnode$data.dataset,
+            _props = _oldVnode$data._props,
+            _on = _oldVnode$data._on,
+            _class = _oldVnode$data._class,
+            children = oldVnode.children;
+
+        assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
+        // when patch() is invoked from within the component life-cycle due to
+        // a dirty state, we create a new VNode with the exact same data was used
+        // to patch this vnode the last time, mimic what happen when the
+        // owner re-renders.
+        var vnode = c(sel, Ctor, {
+            key: key,
+            slotset: slotset,
+            dataset: dataset,
+            props: _props,
+            on: _on,
+            class: _class
+        });
+        patch(oldVnode, vnode);
+    }
+    vm.isScheduled = false;
+}
+
+function scheduleRehydration(vm) {
+    assert.vm(vm);
+    if (!vm.isScheduled) {
+        vm.isScheduled = true;
+        Promise.resolve(vm).then(rehydrate).catch(function (error) {
+            assert.fail("Error attempting to rehydrate component " + vm + ": " + error.message);
+        });
+    }
 }
 
 // this hook will set up the component instance associated to the new vnode,
 // and link the new vnode with the corresponding component
 function initializeComponent(oldVnode, vnode) {
-    var Ctor = vnode.Ctor,
-        cache = vnode.cache;
+    var Ctor = vnode.Ctor;
 
-    if (!Ctor || cache) {
+    if (!Ctor) {
         return;
     }
-    assert.vm(vnode);
     /**
      * The reason why we do the initialization here instead of prepatch or any other hook
      * is because the creation of the component does require the element to be available.
      */
     assert.invariant(vnode.elm, vnode + ".elm should be ready.");
-    if (oldVnode.Ctor === Ctor && oldVnode.cache) {
-        assert.block(function () {
-            setPrototypeOf(vnode, getPrototypeOf(oldVnode));
-        });
-        vnode.cache = oldVnode.cache;
+    var vm = oldVnode.vm;
+
+    if (vm && oldVnode.Ctor === Ctor) {
+        vnode.vm = vm;
+        setLinkedVNode(vm.component, vnode);
     } else {
-        createComponent(vnode);
-        console.log("Component for " + vnode + " was created.");
+        createVM(vnode);
+        console.log("Component for " + vnode.vm + " was created.");
     }
-    assert.invariant(vnode.cache.component, "vm " + vnode + " should have a component and element associated to it.");
-    // TODO: extension point for locker to add or remove identity to each DOM element.
-    setLinkedVNode(vnode.cache.component, vnode);
+    assert.invariant(vnode.vm.component, "vm " + vnode.vm + " should have a component and element associated to it.");
+}
+
+function postPatchHook() {
+    markAllComponentAsRendered();
 }
 
 var componentInit = {
     create: initializeComponent,
-    update: initializeComponent
+    update: initializeComponent,
+    post: postPatchHook
 };
 
 function syncProps(oldVnode, vnode) {
-    var cache = vnode.cache;
+    var vm = vnode.vm;
 
-    if (!cache) {
+    if (!vm) {
         return;
     }
 
@@ -963,7 +1059,7 @@ function syncProps(oldVnode, vnode) {
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
-                resetComponentProp(vnode, key);
+                resetComponentProp(vm, key);
             }
         }
 
@@ -971,7 +1067,7 @@ function syncProps(oldVnode, vnode) {
         for (key in newProps) {
             cur = newProps[key];
             if (!(key in oldProps) || oldProps[key] != cur) {
-                updateComponentProp(vnode, key, cur);
+                updateComponentProp(vm, key, cur);
             }
         }
     }
@@ -980,7 +1076,7 @@ function syncProps(oldVnode, vnode) {
     var props = vnode.data.props;
 
     assert.invariant(Object.getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
-    Object.assign(props, cache.cmpProps);
+    Object.assign(props, vm.cmpProps);
 }
 
 var componentProps = {
@@ -989,7 +1085,9 @@ var componentProps = {
 };
 
 function update(oldvnode, vnode) {
-    if (!vnode.cache) {
+    var vm = vnode.vm;
+
+    if (!vm) {
         return;
     }
     var oldSlotset = oldvnode.data.slotset;
@@ -1001,7 +1099,7 @@ function update(oldvnode, vnode) {
     if (oldSlotset === slotset) {
         return;
     }
-    updateComponentSlots(vnode, slotset);
+    updateComponentSlots(vm, slotset);
 }
 
 var componentSlotset = {
@@ -1010,18 +1108,24 @@ var componentSlotset = {
 };
 
 function syncClassNames(oldVnode, vnode) {
-    var cache = vnode.cache;
+    var vm = vnode.vm;
 
-    if (!cache) {
+    if (!vm) {
         return;
     }
 
     var oldClass = oldVnode.data._class;
     var klass = vnode.data._class;
-    var classList = cache.component.classList;
+    var classList = vm.component.classList;
 
-    // propagating changes from "data->_class" into component's classList
+    // if component's classList is not defined (it is only defined for
+    // components extending HTMLElement), we need to fallback
 
+    if (!classList) {
+        classList = vnode.elm.classList;
+    }
+
+    // propagating changes from "data->_class" into classList
     if (klass !== oldClass) {
         oldClass = (oldClass || '').split(' ');
         klass = (klass || '').split(' ');
@@ -1047,9 +1151,9 @@ var componentClassList = {
 };
 
 function rerender(oldVnode, vnode) {
-    var cache = vnode.cache;
+    var vm = vnode.vm;
 
-    if (!cache) {
+    if (!vm) {
         return;
     }
     var children = vnode.children;
@@ -1058,24 +1162,24 @@ function rerender(oldVnode, vnode) {
     // needed otherwise the children are not going to be populated.
 
     if (oldVnode.sel === '') {
-        assert.invariant(cache.isDirty, vnode + " should be dirty after creation");
-        assert.invariant(cache.fragment === undefined, vnode + " should not have a fragment after creation");
-        rehydrate(vnode);
+        assert.invariant(vm.isDirty, vnode + " should be dirty after creation");
+        assert.invariant(vm.fragment === undefined, vnode + " should not have a fragment after creation");
+        rehydrate(vm);
         // avoiding the rest of this diffing entirely because it happens already in rehydrate
         var oldCh = oldVnode.children;
 
-        oldCh.splice(0, oldCh.length).push.apply(oldCh, cache.fragment);
+        oldCh.splice(0, oldCh.length).push.apply(oldCh, vm.fragment);
         // TODO: this is a fork of the fiber since the create hook is called during a
         // patching process. How can we optimize this to reuse the same queue?
         // and idea is to do this part in the next turn (a la fiber)
         // PR https://github.com/snabbdom/snabbdom/pull/234 might help.
-    } else if (cache.isDirty) {
+    } else if (vm.isDirty) {
         assert.invariant(oldVnode.children !== children, "If component is dirty, the children collections must be different. In theory this should never happen.");
-        renderComponent(vnode);
+        renderComponent(vm);
     }
     // replacing the vnodes in the children array without replacing the array itself
     // because the engine has a hard reference to the original array object.
-    children.splice(0, children.length).push.apply(children, cache.fragment);
+    children.splice(0, children.length).push.apply(children, vm.fragment);
 }
 
 var componentChildren = {
@@ -1083,6 +1187,7 @@ var componentChildren = {
     update: rerender
 };
 
+// TODO: eventually use the one shipped by snabbdom directly
 function update$1(oldVnode, vnode) {
     var oldProps = oldVnode.data.props;
     var props = vnode.data.props;
@@ -1784,107 +1889,23 @@ module.exports = {
 
 var on = interopDefault(eventlisteners);
 
-var globalRenderedCallbacks = [];
-
 var patch = init([componentInit, componentClassList, componentSlotset, componentProps, componentChildren, props, attrs, style$1, dataset$1, className, on]);
-
-function rehydrate(vm) {
-    assert.vm(vm);
-    var cache = vm.cache;
-
-    assert.isTrue(vm.elm instanceof HTMLElement, "rehydration can only happen after " + vm + " was patched the first time.");
-    if (cache.isDirty) {
-        var oldVnode = getLinkedVNode(cache.component);
-        var sel = oldVnode.sel,
-            Ctor = oldVnode.Ctor,
-            _oldVnode$data = oldVnode.data,
-            key = _oldVnode$data.key,
-            slotset = _oldVnode$data.slotset,
-            _dataset = _oldVnode$data.dataset,
-            _props = _oldVnode$data._props,
-            _on = _oldVnode$data._on,
-            _class = _oldVnode$data._class,
-            children = oldVnode.children;
-
-        assert.invariant(Array.isArray(children), 'Rendered vm ${vm}.children should always have an array of vnodes instead of ${children}');
-        // when patch() is invoked from within the component life-cycle due to
-        // a dirty state, we create a new VNode with the exact same data was used
-        // to patch this vm the last time, mimic what happen when the
-        // owner re-renders.
-        var vnode = c(sel, Ctor, {
-            key: key,
-            slotset: slotset,
-            dataset: _dataset,
-            props: _props,
-            on: _on,
-            class: _class
-        });
-        patch(oldVnode, vnode);
-    }
-    cache.isScheduled = false;
-}
-
-function scheduleRehydration(vm) {
-    assert.vm(vm);
-    var cache = vm.cache;
-
-    if (!cache.isScheduled) {
-        cache.isScheduled = true;
-        Promise.resolve(vm).then(rehydrate).catch(function (error) {
-            assert.fail("Error attempting to rehydrate component " + vm + ": " + error.message);
-        });
-    }
-}
-
-var hook = {
-    insert: function insert(vm) {
-        assert.vm(vm);
-        if (vm.cache.component.connectedCallback) {
-            invokeComponentConnectedCallback(vm);
-        }
-        console.log("vnode \"" + vm + "\" was inserted.");
-    },
-    post: function post() {
-        // This hook allows us to resolve a promise after the current patching
-        // process has concluded and all elements are in the DOM.
-        // TODO: we don't have that user-land API just yet, but eventually we will
-        // have it to support something like `element.focus()`;
-        var len = globalRenderedCallbacks.length;
-        for (var i = 0; i < len; i += 1) {
-            var callback = globalRenderedCallbacks.shift();
-            // TODO: do we need to set and restore context around this callback?
-            callback();
-        }
-    },
-    destroy: function destroy(vm) {
-        assert.vm(vm);
-        if (vm.cache.component.disconnectedCallback) {
-            invokeComponentDisconnectedCallback(vm);
-        }
-        if (vm.cache.listeners.size > 0) {
-            destroyComponent(vm);
-        }
-        console.log("vnode \"" + vm + "\" was destroyed.");
-    }
-};
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var Ep = Element.prototype;
-var CAMEL_REGEX = /-([a-z])/g;
 
 function linkAttributes(element, vm) {
     assert.vm(vm);
-    var cache = vm.cache;
-    var attrs = cache.def.attrs;
+    var attrsConfig = vm.def.attrs;
     // replacing mutators on the element itself to catch any mutation
 
     element.setAttribute = function (attrName, value) {
         Ep.setAttribute.call(element, attrName, value);
-        var attrConfig = attrs[attrName.toLocaleLowerCase()];
+        var attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             updateComponentProp(vm, attrConfig.propName, value);
-            if (cache.isDirty) {
+            if (vm.isDirty) {
                 console.log("Scheduling " + vm + " for rehydration.");
                 scheduleRehydration(vm);
             }
@@ -1892,10 +1913,10 @@ function linkAttributes(element, vm) {
     };
     element.removeAttribute = function (attrName) {
         Ep.removeAttribute.call(element, attrName);
-        var attrConfig = attrs[attrName.toLocaleLowerCase()];
+        var attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
         if (attrConfig) {
             resetComponentProp(vm, attrConfig.propName);
-            if (cache.isDirty) {
+            if (vm.isDirty) {
                 console.log("Scheduling " + vm + " for rehydration.");
                 scheduleRehydration(vm);
             }
@@ -1905,13 +1926,10 @@ function linkAttributes(element, vm) {
 
 function linkProperties(element, vm) {
     assert.vm(vm);
-    var Ctor = vm.Ctor,
-        cache = vm.cache;
-    var component = cache.component;
-
-    var _getComponentDef = getComponentDef(Ctor),
-        props = _getComponentDef.props,
-        methods = _getComponentDef.methods;
+    var component = vm.component,
+        _vm$def = vm.def,
+        propsConfig = _vm$def.props,
+        methods = _vm$def.methods;
 
     var descriptors = {};
     // linking public methods
@@ -1939,7 +1957,7 @@ function linkProperties(element, vm) {
             },
             set: function set(newValue) {
                 updateComponentProp(vm, propName, newValue);
-                if (cache.isDirty) {
+                if (vm.isDirty) {
                     console.log("Scheduling " + vm + " for rehydration.");
                     scheduleRehydration(vm);
                 }
@@ -1949,38 +1967,20 @@ function linkProperties(element, vm) {
         };
     };
 
-    for (var propName in props) {
+    for (var propName in propsConfig) {
         _loop2(propName);
     }
     defineProperties(element, descriptors);
 }
 
-function createVM(element, Ctor, data) {
-    var tagName = element.tagName.toLowerCase();
-    var vm = c(tagName, Ctor, data);
-    return patch(element, vm);
-}
-
 function getInitialProps(element, Ctor) {
-    var _getComponentDef2 = getComponentDef(Ctor),
-        config = _getComponentDef2.props;
+    var _getComponentDef = getComponentDef(Ctor),
+        config = _getComponentDef.props;
 
     var props = {};
     for (var propName in config) {
         if (propName in element) {
             props[propName] = element[propName];
-        }
-    }
-    if (element.hasAttributes()) {
-        // looking for custom attributes that are not reflectives by default
-        var attrs = element.attributes;
-        for (var i = attrs.length - 1; i >= 0; i--) {
-            var _propName = attrs[i].name.replace(CAMEL_REGEX, function (g) {
-                return g[1].toUpperCase();
-            });
-            if (!(_propName in props) && _propName in config) {
-                props[_propName] = attrs[i].value;
-            }
         }
     }
     return props;
@@ -2001,11 +2001,18 @@ function upgradeElement(element, Ctor) {
     }
     var props = getInitialProps(element, Ctor);
     var slotset = getInitialSlots(element, Ctor);
-    var vm = createVM(element, Ctor, { _props: props, slotset: slotset });
+    var tagName = element.tagName.toLowerCase();
+    var vnode = c(tagName, Ctor, { props: props, slotset: slotset, class: element.className || undefined });
+    // TODO: eventually after updating snabbdom we can use toVNode(element)
+    // as the first argument to reconstruct the vnode that represents the
+    // current state.
+
+    var _patch = patch(element, vnode),
+        vm = _patch.vm;
+
     linkAttributes(element, vm);
-    // TODO: for vm with element we might not need to do any of these.
+    // TODO: for vnode with element we might not need to do any of these.
     linkProperties(element, vm);
-    return vm.cache.component;
 }
 
 function upgrade(element, CtorOrPromise) {
@@ -2097,7 +2104,7 @@ var _createClass$1 = function () { function defineProperties(target, props) { fo
 
 function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var INTERNAL_SLOT_VM = Symbol();
+var INTERNAL_VM = Symbol();
 var INTERNAL_LIST = Symbol();
 
 // This needs some more work. ClassList is a weird DOM api because it
@@ -2105,10 +2112,14 @@ var INTERNAL_LIST = Symbol();
 // the simplest one.
 // https://www.w3.org/TR/dom/#domtokenlist
 var ClassList = function () {
-    function ClassList(vm) {
+    function ClassList(component) {
         _classCallCheck$1(this, ClassList);
 
-        this[INTERNAL_SLOT_VM] = vm;
+        var _getLinkedVNode = getLinkedVNode(component),
+            vm = _getLinkedVNode.vm;
+
+        assert.vm(vm);
+        this[INTERNAL_VM] = vm;
         this[INTERNAL_LIST] = [];
     }
 
@@ -2128,9 +2139,9 @@ var ClassList = function () {
                 var pos = list.indexOf(className);
                 if (pos === -1) {
                     list.push(className);
-                    var vm = _this[INTERNAL_SLOT_VM];
+                    var vm = _this[INTERNAL_VM];
                     updateComponentProp(vm, 'className', list.join(' '));
-                    if (vm.cache.isDirty) {
+                    if (vm.isDirty) {
                         console.log("Scheduling " + vm + " for rehydration.");
                         scheduleRehydration(vm);
                     }
@@ -2153,13 +2164,13 @@ var ClassList = function () {
                 var pos = list.indexOf(className);
                 if (pos >= 0) {
                     list.splice(pos, 1);
-                    var vm = _this2[INTERNAL_SLOT_VM];
+                    var vm = _this2[INTERNAL_VM];
                     if (list.length) {
                         updateComponentProp(vm, 'className', list.join(' '));
                     } else {
                         resetComponentProp(vm, 'className');
                     }
-                    if (vm.cache.isDirty) {
+                    if (vm.isDirty) {
                         console.log("Scheduling " + vm + " for rehydration.");
                         scheduleRehydration(vm);
                     }
@@ -2220,14 +2231,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var HTMLElementPropsTheGoodParts = ["tagName"];
 var HTMLElementMethodsTheGoodParts = ["querySelector", "querySelectorAll", "addEventListener"];
 
-var PlainHTMLElement = function () {
-    function PlainHTMLElement() {
-        _classCallCheck(this, PlainHTMLElement);
+var ComponentElement = function () {
+    function ComponentElement() {
+        _classCallCheck(this, ComponentElement);
 
-        assert.vm(vmBeingCreated, "Invalid creation patch for " + this + " who extends HTMLElement. It expects a vm, instead received " + vmBeingCreated + ".");
+        var classList = new ClassList(this);
         Object.defineProperties(this, {
             classList: {
-                value: new ClassList(vmBeingCreated),
+                value: classList,
                 writable: false,
                 configurable: false,
                 enumerable: true
@@ -2235,12 +2246,12 @@ var PlainHTMLElement = function () {
         });
     }
 
-    _createClass(PlainHTMLElement, [{
+    _createClass(ComponentElement, [{
         key: "dispatchEvent",
         value: function dispatchEvent(event) {
-            var vm = getLinkedVNode(this);
-            assert.vm(vm);
-            var elm = vm.elm;
+            var vnode = getLinkedVNode(this);
+            assert.vnode(vnode);
+            var elm = vnode.elm;
             // custom elements will rely on the DOM dispatchEvent mechanism
 
             assert.isTrue(elm instanceof HTMLElement, "Invalid association between component " + this + " and element " + elm + ".");
@@ -2248,7 +2259,7 @@ var PlainHTMLElement = function () {
         }
     }]);
 
-    return PlainHTMLElement;
+    return ComponentElement;
 }();
 
 // One time operation to expose the good parts of the web component API,
@@ -2257,15 +2268,15 @@ var PlainHTMLElement = function () {
 
 HTMLElementMethodsTheGoodParts.reduce(function (proto, methodName) {
     proto[methodName] = function () {
-        var vm = getLinkedVNode(this);
-        assert.vm(vm);
-        var elm = vm.elm;
+        var vnode = getLinkedVNode(this);
+        assert.vnode(vnode);
+        var elm = vnode.elm;
 
         assert.isTrue(elm instanceof HTMLElement, "Invalid association between component " + this + " and element " + elm + " when calling method " + methodName + ".");
         return elm[methodName].apply(elm, arguments);
     };
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce(function (proto, propName) {
     defineProperty(proto, propName, {
@@ -2278,7 +2289,7 @@ HTMLElementPropsTheGoodParts.reduce(function (proto, propName) {
         configurable: false
     });
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
 
 
@@ -2288,7 +2299,7 @@ var Main = Object.freeze({
 	createElement: createElement,
 	set: set,
 	getComponentDef: getComponentDef,
-	HTMLElement: PlainHTMLElement
+	HTMLElement: ComponentElement
 });
 
 exports.loaderImportMethodTemporary = loaderImportMethod;
@@ -2296,12 +2307,12 @@ exports.defineTemporary = amdDefineMethod;
 exports.createElement = createElement;
 exports.set = set;
 exports.getComponentDef = getComponentDef;
-exports.HTMLElement = PlainHTMLElement;
+exports.HTMLElement = ComponentElement;
 
 // forcing the global define() function to be declared bound to raptor.
 window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.1.4 */
+/** version: 0.1.5 */
 //# sourceMappingURL=raptor.js.map
