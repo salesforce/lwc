@@ -61,6 +61,16 @@ export function invokeComponentConnectedCallback(vm: VM) {
     }
 }
 
+export function invokeComponentRenderedCallback(vm: VM) {
+    const { component, context } = vm;
+    if (component.renderedCallback) {
+        const ctx = currentContext;
+        establishContext(context);
+        component.renderedCallback();
+        establishContext(ctx);
+    }
+}
+
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     const { component, context, cmpSlots } = vm;
     if (component.render) {

@@ -11,17 +11,21 @@ import {
     isRendering,
     vmBeingRendered,
     invokeComponentAttributeChangedCallback,
+    invokeComponentRenderedCallback,
 } from "./invoker.js";
 import {
     hookComponentLocalProperty,
     getPropertyProxy,
 } from "./properties.js";
+
 import {
     defineProperty,
     getPrototypeOf,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
 } from "./language.js";
+
+const renderedDuringCurrentCycleSet = new Set();
 
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
     const { component, cmpProps, def: { props: publicPropsConfig } } = vm;
@@ -170,6 +174,8 @@ export function renderComponent(vm: VM) {
     vm.isDirty = false;
     vm.fragment = vnodes;
     assert.invariant(Array.isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    // preparing for the after rendering
+    renderedDuringCurrentCycleSet.add(vm);
 }
 
 export function markComponentAsDirty(vm: VM) {
@@ -177,4 +183,18 @@ export function markComponentAsDirty(vm: VM) {
     assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
     assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering.`);
     vm.isDirty = true;
+}
+
+export function markAllComponentAsRendered() {
+    /**
+     * In this method we invoke the renderedCallback() on any component
+     * that was rendered during this last patching cycle.
+    */
+    const pending = Array.from(renderedDuringCurrentCycleSet);
+    const len = pending.length;
+    renderedDuringCurrentCycleSet.clear();
+    for (let i = 0; i < len; i += 1) {
+        const vm = pending.shift();
+        invokeComponentRenderedCallback(vm);
+    }
 }

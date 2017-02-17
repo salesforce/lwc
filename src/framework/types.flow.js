@@ -49,6 +49,7 @@ declare class VM {
     component: Component;
     fragment: Array<VNode>;
     listeners: Set<Set<VM>>;
+    toString(): string;
 }
 
 declare class ComponentVNode extends VNode {
