@@ -1,17 +1,17 @@
 <template>
     <section>
         <div style="padding:10px" class="slds-form--horizontal">
-
             <div class="slds-form-element">
                 <label class="slds-form-element__label" for="inputSample2">
-                    <span>Email (events: {foo}): </span>
+                    <span>Email: </span>
                 </label>
                 <div class="slds-form-element__control" style="padding: 10px">
-                    <input is="prototype-inputEmail" set:value="inputMessage" placeholder="Test" bind:onchange="inputChangeHandler"/>
+                    <input is="prototype-inputEmail" value={inputMessage} placeholder="Test" onchange={inputChangeHandler} />
                 </div>
             </div>
         </div>
-        <button bind:onclick="handleClick">Test</button>
+        <button onclick={handleClick}>Test</button>
         <p>Value: {inputMessage}</p>
+        <p># of events triggered: {foo}</p>
     </section>
 </template>
