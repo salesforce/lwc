@@ -1,8 +1,9 @@
 declare class Component {
     constructor();
-    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component) => VNode;
+    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
     connectedCallback(): void;
     disconnectedCallback(): void;
+    renderedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
     static publicProps: any;
     static publicMethods: Array<string>;
@@ -33,11 +34,13 @@ interface ComponentDef {
 }
 
 interface PlainHTMLElement extends HTMLElement {
-    classList: Array<string>;
+    classList: DOMTokenList;
+    dataset: HashTable<any>;
 }
 
-declare class Cache {
+declare class VM {
     privates: HashTable<any>;
+    cmpProps: HashTable<any>;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;
@@ -47,9 +50,9 @@ declare class Cache {
     listeners: Set<Set<VM>>;
 }
 
-declare class VM extends VNode {
+declare class ComponentVNode extends VNode {
     Ctor: () => void;
-    cache: Cache;
+    vm: VM;
     toString: () => string;
 }
 
@@ -60,16 +63,13 @@ declare class VNode {
     children?: Array<string|VNode>;
     text: string;
     elm?: EventTarget;
-    listener: (event: Event) => void;
 }
 
 interface RenderAPI {
-    c(tagName: string, Ctor: ObjectConstructor, data: Object): VM;
+    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode;
     h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode;
-    i(items: Array<any>, factory: () => VNode | VM): Array<VNode | VM>;
+    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>;
     s(value: any = ''): string;
     e(): string;
     f(items: Array<any>): Array<any>;
 }
-
-interface Namespace {}

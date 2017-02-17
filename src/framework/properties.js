@@ -17,7 +17,7 @@ const ProxySet = new WeakSet();
 
 function getter(target: Object, name: string): any {
     const value = target[name];
-    if (isRendering) {
+    if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, name);
     }
     return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
@@ -64,7 +64,7 @@ export function getPropertyProxy(value: Object): any {
 
 export function hookComponentLocalProperty(vm: VM, propName: string) {
     assert.vm(vm);
-    const { cache: { component, privates } } = vm;
+    const { component, privates } = vm;
     const descriptor = getOwnPropertyDescriptor(component, propName);
     const { get, set, configurable } = descriptor;
     assert.block(() => {

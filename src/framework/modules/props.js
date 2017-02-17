@@ -1,5 +1,6 @@
 import assert from "../assert.js";
 
+// TODO: eventually use the one shipped by snabbdom directly
 function update(oldVnode: VNode, vnode: VNode) {
     let oldProps = oldVnode.data.props;
     let props = vnode.data.props;

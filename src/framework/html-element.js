@@ -1,6 +1,5 @@
 import assert from "./assert.js";
-import { getLinkedVNode } from "./component.js";
-import { vmBeingCreated } from "./invoker.js";
+import { getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
 import {
     defineProperty,
@@ -15,12 +14,12 @@ const HTMLElementMethodsTheGoodParts = [
     "addEventListener",
 ];
 
-class PlainHTMLElement {
+class ComponentElement {
     constructor() {
-        assert.vm(vmBeingCreated, `Invalid creation patch for ${this} who extends HTMLElement. It expects a vm, instead received ${vmBeingCreated}.`);
+        const classList = new ClassList(this);
         Object.defineProperties(this, {
             classList: {
-                value:  new ClassList(vmBeingCreated),
+                value: classList,
                 writable: false,
                 configurable: false,
                 enumerable: true,
@@ -29,9 +28,9 @@ class PlainHTMLElement {
         });
     }
     dispatchEvent(event: Event): boolean {
-        const vm = getLinkedVNode(this);
-        assert.vm(vm);
-        const { elm } = vm;
+        const vnode = getLinkedVNode(this);
+        assert.vnode(vnode);
+        const { elm } = vnode;
         // custom elements will rely on the DOM dispatchEvent mechanism
         assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm}.`);
         return elm.dispatchEvent(event);
@@ -42,14 +41,14 @@ class PlainHTMLElement {
 // in terms of methods and properties:
 HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
     proto[methodName] = function (...args: Array<any>): any {
-        const vm = getLinkedVNode(this);
-        assert.vm(vm);
-        const { elm } = vm;
+        const vnode = getLinkedVNode(this);
+        assert.vnode(vnode);
+        const { elm } = vnode;
         assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm} when calling method ${methodName}.`);
         return elm[methodName](...args);
     };
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
 HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
     defineProperty(proto, propName, {
@@ -62,6 +61,6 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
         configurable: false,
     });
     return proto;
-}, PlainHTMLElement.prototype);
+}, ComponentElement.prototype);
 
-export { PlainHTMLElement as HTMLElement };
+export { ComponentElement as HTMLElement };

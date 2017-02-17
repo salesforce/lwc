@@ -22,13 +22,13 @@ const CAPS_REGEX = /[A-Z]/g;
 // so we know if they are attempting to access or modify them during construction time.
 export const internal = Symbol();
 
-export function getComponentDef(Ctor: Object): ComponentDef {
+export function getComponentDef(Ctor: Class<Component>): ComponentDef {
     if (CtorToDefMap.has(Ctor)) {
         return CtorToDefMap.get(Ctor);
     }
     assert.isTrue(Ctor.constructor, `Missing ${Ctor.name}.constructor, ${Ctor.name} should have a constructor property.`);
-    const name: string = Ctor.constructor && Ctor.constructor.name;
-    assert.isTrue(name, `Missing ${Ctor.name}.constructor.name, ${Ctor.name}.constructor should have a name property.`);
+    const name: string = Ctor.name;
+    assert.isTrue(name, `${Ctor} should have a name property.`);
     const props = getPropsHash(Ctor);
     const attrs = getAttrsHash(props);
     const methods = getMethodsHash(Ctor);
@@ -66,12 +66,12 @@ function getPropsHash(target: Object): HashTable<PropDef> {
         let getter;
         let setter;
         assert.block(() => {
-            assert.invariant(!getOwnPropertyDescriptor(target.prototype, propName), `Invalid ${target.constructor.name}.prototype.${propName} definition, it cannot be defined if it is a public property.`);
+            assert.invariant(!getOwnPropertyDescriptor(target.prototype, propName), `Invalid ${target.name}.prototype.${propName} definition, it cannot be defined if it is a public property.`);
             getter = () => {
-                assert.fail(`Component <${target.constructor.name}> can not access to property ${propName} during construction.`);
+                assert.fail(`Component <${target.name}> can not access to property ${propName} during construction.`);
             };
             setter = () => {
-                assert.fail(`Component <${target.constructor.name}> can not set a new value for property ${propName}.`);
+                assert.fail(`Component <${target.name}> can not set a new value for property ${propName}.`);
             };
             defineProperty(getter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
             defineProperty(setter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
@@ -88,7 +88,7 @@ function getPropsHash(target: Object): HashTable<PropDef> {
 }
 
 function getAttrsHash(props: HashTable<PropDef>): HashTable<AttrDef> {
-    return keys(props).reduce((attrsHash: HashTable, propName: string): HashTable => {
+    return keys(props).reduce((attrsHash: HashTable<AttrDef>, propName: string): HashTable => {
         attrsHash[props[propName].attrName] = {
             propName: propName,
         };
@@ -100,7 +100,7 @@ function getMethodsHash(target: Object): HashTable<number> {
     return (target.publicMethods || []).reduce((methodsHash: HashTable, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
         assert.block(() => {
-            assert.isTrue(typeof target.prototype[methodName] === 'function', `<${target.constructor.name}>.${methodName} have to be a function.`);
+            assert.isTrue(typeof target.prototype[methodName] === 'function', `<${target.name}>.${methodName} have to be a function.`);
             freeze(target.prototype[methodName]);
             // setting up the descriptor for the public method
             defineProperty(target.prototype, methodName, {
@@ -117,7 +117,9 @@ function getObservedAttrsHash(target: Object, attrs: HashTable<AttrDef>): HashTa
     return (target.observedAttributes || []).reduce((observedAttributes: HashTable, attrName: string): HashTable => {
         observedAttributes[attrName] = 1;
         assert.block(() => {
-            assert.isTrue(attrs[attrName], `Invalid attribute ${attrName} in ${target}.observedAttributes.`);
+            if (!attrs[attrName]) {
+                console.warn(`The corresponding public property for attribute ${attrName} of ${target}.observedAttributes is not declared in ${target.name}.`);
+            }
         });
         return observedAttributes;
     }, {});

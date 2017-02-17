@@ -2,8 +2,9 @@ import {
     updateComponentSlots,
 } from "../component.js";
 
-function update(oldvnode: VNode, vnode: VM) {
-    if (!vnode.cache) {
+function update(oldvnode: VNode, vnode: ComponentVNode) {
+    const { vm } = vnode;
+    if (!vm) {
         return;
     }
     const { data: { slotset: oldSlotset } } = oldvnode;
@@ -14,7 +15,7 @@ function update(oldvnode: VNode, vnode: VM) {
     if (oldSlotset === slotset) {
         return;
     }
-    updateComponentSlots(vnode, slotset);
+    updateComponentSlots(vm, slotset);
 }
 
 export default {

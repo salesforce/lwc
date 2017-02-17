@@ -2,13 +2,11 @@ import {
     currentContext,
     establishContext,
 } from "./context.js";
-import { setLinkedVNode } from "./component.js";
 import * as api from "./api.js";
 import assert from "./assert.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
-export let vmBeingCreated: VM|null = null;
 
 function wrapHTMLElement(element: HTMLElement): VNode {
     assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
@@ -29,28 +27,22 @@ function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Arra
         if (elm instanceof HTMLElement) {
             vnodes[i] = wrapHTMLElement(elm);
         }
-        assert.isTrue(vnodes[i] && vnodes[i].sel, `Invalid vnode element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
+        assert.isTrue(vnodes[i] && vnodes[i].sel, `Invalid element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
     }
     return vnodes;
 }
 
-export function invokeComponentConstructor(vm: VM): Component {
-    const { Ctor, cache: { context } } = vm;
+export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Component {
+    const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    vmBeingCreated = vm;
     const component = new Ctor();
-    // note to self: invocations during construction to get the vm associated
-    // to the component works fine as well because we can use `vmBeingCreated`
-    // in getLinkedVNode() as a fallback patch for resolution.
-    setLinkedVNode(component, vm);
-    vmBeingCreated = null;
     establishContext(ctx);
     return component;
 }
 
 export function invokeComponentDisconnectedCallback(vm: VM) {
-    const { cache: { component, context } } = vm;
+    const { component, context } = vm;
     if (component.disconnectedCallback) {
         const ctx = currentContext;
         establishContext(context);
@@ -60,7 +52,7 @@ export function invokeComponentDisconnectedCallback(vm: VM) {
 }
 
 export function invokeComponentConnectedCallback(vm: VM) {
-    const { cache: { component, context } } = vm;
+    const { component, context } = vm;
     if (component.connectedCallback) {
         const ctx = currentContext;
         establishContext(context);
@@ -69,21 +61,33 @@ export function invokeComponentConnectedCallback(vm: VM) {
     }
 }
 
+export function invokeComponentRenderedCallback(vm: VM) {
+    const { component, context } = vm;
+    if (component.renderedCallback) {
+        const ctx = currentContext;
+        establishContext(context);
+        component.renderedCallback();
+        establishContext(ctx);
+    }
+}
+
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
-    const { cache: { component, context } } = vm;
+    const { component, context, cmpSlots } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(context);
+        const isRenderingInception = isRendering;
+        const vmBeingRenderedInception = vmBeingRendered;
         isRendering = true;
         vmBeingRendered = vm;
         let result = component.render();
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
         if (typeof result === 'function') {
-            result = result.call(undefined, api, component);
+            result = result.call(undefined, api, component, cmpSlots);
         }
-        isRendering = false;
-        vmBeingRendered = null;
+        isRendering = isRenderingInception;
+        vmBeingRendered = vmBeingRenderedInception;
         establishContext(ctx);
         // the render method can return many different things, here we attempt to normalize it.
         return normalizeRenderResult(vm, result);
@@ -92,7 +96,7 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { cache: { component, context } } = vm;
+    const { component, context } = vm;
     if (component.attributeChangedCallback) {
         const ctx = currentContext;
         establishContext(context);

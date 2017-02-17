@@ -5,29 +5,30 @@ import {
     invokeComponentRenderMethod,
 } from "./invoker.js";
 import {
-    getComponentDef,
     internal,
 } from "./def.js";
 import {
     isRendering,
     vmBeingRendered,
-    vmBeingCreated,
     invokeComponentAttributeChangedCallback,
+    invokeComponentRenderedCallback,
 } from "./invoker.js";
 import {
     hookComponentLocalProperty,
     getPropertyProxy,
 } from "./properties.js";
+
 import {
     defineProperty,
     getPrototypeOf,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
-    setPrototypeOf,
 } from "./language.js";
 
+const renderedDuringCurrentCycleSet = new Set();
+
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
-    const { cache: { component, cmpProps, def: { props: publicPropsConfig } } } = vm;
+    const { component, cmpProps, def: { props: publicPropsConfig } } = vm;
     assert.block(() => {
         const target = getPrototypeOf(component);
         const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
@@ -36,7 +37,7 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     defineProperty(component, propName, {
         get: (): any => {
             const value = cmpProps[propName];
-            if (isRendering) {
+            if (isRendering && vmBeingRendered) {
                 subscribeToSetHook(vmBeingRendered, cmpProps, propName);
             }
             return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
@@ -53,10 +54,14 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     cmpProps[propName] = defaultValue;
 }
 
-function initComponentProps(vm: VM) {
+export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { component, cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
+    vm.component = invokeComponentConstructor(vm, Ctor);
+}
+
+export function initComponent(vm: VM) {
+    assert.vm(vm);
+    const { component, cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     // reflective properties
     for (let propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
@@ -81,17 +86,16 @@ function initComponentProps(vm: VM) {
     }
 }
 
-function clearListeners(vm: VM) {
+export function clearListeners(vm: VM) {
     assert.vm(vm);
-    const { cache: { listeners } } = vm;
+    const { listeners } = vm;
     listeners.forEach((propSet: Set<VM>): boolean => propSet.delete(vm));
     listeners.clear();
 }
 
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
+    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config = publicPropsConfig[propName];
     if (!config) {
@@ -113,7 +117,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
             }
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to a new value.`);
-        if (!cache.isDirty) {
+        if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
     }
@@ -121,8 +125,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
 
 export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
-    const { cache } = vm;
-    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = cache;
+    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config = publicPropsConfig[propName];
     let oldValue = cmpProps[propName];
@@ -143,91 +146,55 @@ export function resetComponentProp(vm: VM, propName: string) {
             }
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to its default value.`);
-        if (!cache.isDirty) {
+        if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
     }
 }
 
-export function updateComponentSlots(vm: VM, newSlots: Array<vnode>) {
+export function updateComponentSlots(vm: VM, slotset: HashTable<Array<VNode>>) {
+    assert.vm(vm);
     // TODO: in the future, we can optimize this more, and only
     // set as dirty if the component really need slots, and if the slots has changed.
     console.log(`Marking ${vm} as dirty: [slotset] value changed.`);
-    if (!vm.cache.isDirty) {
-        markComponentAsDirty(vm);
+    if (slotset !== vm.cmpSlots) {
+        vm.cmpSlots = slotset || {};
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
     }
-}
-
-export function createComponent(vm: VM) {
-    assert.vm(vm);
-    assert.invariant(vm.elm instanceof HTMLElement, 'Component creation requires a DOM element to be associated to it.');
-    const { Ctor, sel } = vm;
-    console.log(`<${Ctor.name}> is being initialized.`);
-    const def = getComponentDef(Ctor);
-    const cache = {
-        isScheduled: false,
-        isDirty: true,
-        def,
-        context: {},
-        privates: {},
-        cmpProps: {},
-        component: null,
-        fragment: undefined,
-        shadowRoot: null,
-        listeners: new Set(),
-    };
-    assert.block(() => {
-        const proto = {
-            toString: (): string => {
-                return `<${sel}>`;
-            },
-        };
-        setPrototypeOf(vm, proto);
-    });
-    vm.cache = cache;
-    cache.component = invokeComponentConstructor(vm);
-    initComponentProps(vm);
 }
 
 export function renderComponent(vm: VM) {
     assert.vm(vm);
-    const { cache } = vm;
-    assert.invariant(cache.isDirty, `Component ${vm} is not dirty.`);
+    assert.invariant(vm.isDirty, `Component ${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
     clearListeners(vm);
     const vnodes = invokeComponentRenderMethod(vm);
-    cache.isDirty = false;
-    cache.fragment = vnodes;
-    assert.invariant(Array.isArray(vnodes), 'Render should always return an array of vnodes instead of ${children}');
-}
-
-export function destroyComponent(vm: VM) {
-    assert.vm(vm);
-    clearListeners(vm);
+    vm.isDirty = false;
+    vm.fragment = vnodes;
+    assert.invariant(Array.isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    // preparing for the after rendering
+    renderedDuringCurrentCycleSet.add(vm);
 }
 
 export function markComponentAsDirty(vm: VM) {
     assert.vm(vm);
-    assert.isFalse(vm.cache.isDirty, `markComponentAsDirty(${vm}) should not be called when the componet is already dirty.`);
-    assert.isFalse(isRendering, `markComponentAsDirty(${vm}) cannot be called during rendering.`);
-    vm.cache.isDirty = true;
+    assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
+    assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering.`);
+    vm.isDirty = true;
 }
 
-const ComponentToVMMap = new WeakMap();
-
-export function setLinkedVNode(component: Component, vm: VM) {
-    assert.vm(vm);
-    assert.isTrue(vm.elm instanceof HTMLElement, `Only DOM elements can be linked to their corresponding component.`);
-    ComponentToVMMap.set(component, vm);
-}
-
-export function getLinkedVNode(component: Component): VM {
-    assert.isTrue(component);
-    // note to self: we fallback to `vmBeingCreated` in case users
-    // invoke something during the constructor execution, in which
-    // case this mapping hasn't been stable yet, but we know that's
-    // the only case.
-    const vm = ComponentToVMMap.get(component) || vmBeingCreated;
-    assert.invariant(vm, `There have to be a VM associated to component ${component}.`);
-    return vm;
+export function markAllComponentAsRendered() {
+    /**
+     * In this method we invoke the renderedCallback() on any component
+     * that was rendered during this last patching cycle.
+    */
+    const pending = Array.from(renderedDuringCurrentCycleSet);
+    const len = pending.length;
+    renderedDuringCurrentCycleSet.clear();
+    for (let i = 0; i < len; i += 1) {
+        const vm = pending.shift();
+        invokeComponentRenderedCallback(vm);
+    }
 }

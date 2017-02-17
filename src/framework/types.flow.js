@@ -1,3 +1,16 @@
+declare class Component {
+    constructor(): this;
+    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
+    connectedCallback(): void;
+    disconnectedCallback(): void;
+    renderedCallback(): void;
+    attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
+    publicProps: any;
+    publicMethods: Array<string>;
+    templateUsedProps: Array<string>;
+    observedAttributes: Array<string>
+}
+
 declare interface HashTable<T> {
     [key: string]: T
 }
@@ -20,37 +33,15 @@ declare interface ComponentDef {
     observedAttrs: HashTable<number>
 }
 
-declare class PlainHTMLElement extends HTMLElement {
-    classList: classList: Array<string>
+declare class ComponentElement extends Component {
+    classList: DOMTokenList,
+    dataset: HashTable<any>
 }
 
-declare interface RenderAPI {
-    c(tagName: string, Ctor: ObjectConstructor, data: Object): VM,
-    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode,
-    i(items: Array<any>, factory: () => VNode | VM): Array<VNode | VM>,
-    s(value: any = ''): string,
-    e(): string,
-    f(items: Array<any>): Array<any>,
-}
-
-declare interface Namespace {
-
-}
-
-declare class Component  {
-    constructor(): this;
-    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component) => VNode;
-    connectedCallback(): void;
-    disconnectedCallback(): void;
-    attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
-    publicProps: any;
-    publicMethods: Array<string>;
-    templateUsedProps: Array<string>;
-    observedAttributes: Array<string>
-}
-
-declare class Cache {
+declare class VM {
     privates: HashTable<any>;
+    cmpProps: HashTable<any>;
+    cmpSlots: HashTable<Array<VNode>>;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;
@@ -58,11 +49,12 @@ declare class Cache {
     component: Component;
     fragment: Array<VNode>;
     listeners: Set<Set<VM>>;
+    toString(): string;
 }
 
-declare class VM extends VNode {
-    Ctor: () => void;
-    cache: Cache;
+declare class ComponentVNode extends VNode {
+    Ctor: Class<Component>;
+    vm: VM;
     toString: () => string;
 }
 
@@ -73,4 +65,13 @@ declare class VNode  {
     children: Array<string | VNode>;
     text: string;
     elm: EventTarget
+}
+
+declare interface RenderAPI {
+    c(tagName: string, Ctor: Class<Component>, data: Object): VNode,
+    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode,
+    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>,
+    s(value: any): string,
+    e(): string,
+    f(items: Array<any>): Array<any>,
 }
