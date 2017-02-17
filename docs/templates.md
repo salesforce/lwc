@@ -161,23 +161,25 @@ As mentioned above, the index of the iteration will be availabe by default via `
 
 In the example above, `{i}` indicates the position of the element `item` of `items`.
 
-#### Custom Keys
+#### Keys
 
-By default, `item.key` will be used to exact the unique key of the element, which is needed for the diffing algo, but if your data structure does not match this pattern, you can specify how to resolve the key by using `repeat:key` directive, e.g.:
+A `key` attribute is required in any custom element used inside an iterator. The reason for this requirement is that custom elements might or might not have internal state, and in order for the diffing algo to preserve the state, it must know whether or not two similar custom elements can share the same state (same underlaying component instance).
+
+Unfortunately, this is something that the developer will have to define, e.g.:
 
 ```html
 <template>
     <ul>
         <template for:each="item of items" repeat:key="id">
-            <li>
-                {i} - {item.firstname} {item.lastname}
-            </li>
+            <foo-bar key={item.id}>
+                {item.firstname} {item.lastname}
+            </foo-bar>
         </template>
     </ul>
 </template>
 ```
 
-In the example above, the value of `item.id` will be used as the key for each element of `items`.
+In the example above, the value of `item.id` will be used as the key for each `<foo-bar>` element. A missing `key` will result in a static error during compilation. Keep in mind that those keys are only needed on custom elements, regular HTML Elements will not require the key, but using it is always a recommendation, since it improve the overall performance of the diffing algo. In runtime, if the key is set to undefined or null, or we encounter multiple elements with the same key in the same iteration, a warning message will be issued.
 
 ## Event Bindings
 
