@@ -47,7 +47,6 @@ export const RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => REN
 
 export const TOP_LEVEL_PROPS = [
     'class',
-    'staticClass',
     'style',
     'ref',
 ];

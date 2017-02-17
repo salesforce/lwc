@@ -1,8 +1,6 @@
 import StyleParser from './style-parser';
 import { TOP_LEVEL_PROPS } from './constants';
 import toCamelCase from 'to-camel-case';
-import {types as t} from 'babel-core';
-
 const  parserCss = new StyleParser();
 
 /*
