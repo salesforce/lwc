@@ -1008,8 +1008,8 @@ function rehydrate(vm) {
             key = _oldVnode$data.key,
             slotset = _oldVnode$data.slotset,
             dataset = _oldVnode$data.dataset,
+            on = _oldVnode$data.on,
             _props = _oldVnode$data._props,
-            _on = _oldVnode$data._on,
             _class = _oldVnode$data._class,
             children = oldVnode.children;
 
@@ -1022,8 +1022,8 @@ function rehydrate(vm) {
             key: key,
             slotset: slotset,
             dataset: dataset,
+            on: on,
             props: _props,
-            on: _on,
             class: _class
         });
         patch(oldVnode, vnode);
@@ -2353,5 +2353,5 @@ exports.getComponentDef = getComponentDef;
 exports.HTMLElement = ComponentElement;
 
 }((this.Engine = this.Engine || {})));
-/** version: 0.1.6 */
+/** version: 0.1.7 */
 //# sourceMappingURL=interop.js.map
