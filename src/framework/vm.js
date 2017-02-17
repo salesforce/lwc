@@ -71,7 +71,7 @@ export function rehydrate(vm: vm) {
     if (vm.isDirty) {
         const oldVnode = getLinkedVNode(vm.component);
         assert.isTrue(oldVnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        const { sel, Ctor, data: { key, slotset, dataset, _props, _on, _class }, children } = oldVnode;
+        const { sel, Ctor, data: { key, slotset, dataset, on, _props, _class }, children } = oldVnode;
         assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new VNode with the exact same data was used
@@ -81,8 +81,8 @@ export function rehydrate(vm: vm) {
             key,
             slotset,
             dataset,
+            on,
             props: _props,
-            on: _on,
             class: _class,
         });
         patch(oldVnode, vnode);
