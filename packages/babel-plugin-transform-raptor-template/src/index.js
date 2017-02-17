@@ -1,7 +1,7 @@
 /* eslint-env node */
 import * as CONST from './constants';
 import CustomScope from './custom-scope';
-import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild, isSvgNsAttribute } from './utils';
+import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement, isSvgNsAttribute } from './utils';
 import metadata from './metadata';
 
 const DIRECTIVES = CONST.DIRECTIVES;
@@ -152,6 +152,14 @@ export default function ({ types: t, template }: any): any {
                     metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
                 }
+            },
+            JSXText(path) {
+                const cleanedText = cleanJSXElement(path.node);
+                if (cleanedText) {
+                    path.replaceWith(t.stringLiteral(cleanedText));
+                } else {
+                    path.remove();
+                }
             }
         }
     };
@@ -197,12 +205,9 @@ export default function ({ types: t, template }: any): any {
 
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, /*state*/) {
-        const children = [];
+        const children = node.children;
         let hasForLoopDirective = false;
         let elems = [];
-
-        // Filter children that are just whitespaces, tabs, etc
-        node.children.reduce(cleanJSXElementLiteralChild, children);
 
         for (let i = 0; i < children.length; i++) {
             let child = children[i];

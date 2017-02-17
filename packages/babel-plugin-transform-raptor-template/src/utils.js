@@ -75,7 +75,7 @@ export const isSvgNsAttribute = makeMap('xml,xlink');
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
 
-function cleanJSXElement(node: BabelNodeJSXText): any {
+export function cleanJSXElement(node: BabelNodeJSXText): any {
     const lines = node.value.split(/\r\n|\n|\r/);
     let lastNonEmptyLine = 0;
     for (let i = 0; i < lines.length; i++) {
@@ -111,17 +111,4 @@ function cleanJSXElement(node: BabelNodeJSXText): any {
     }
 
     return str;
-}
-
-export function cleanJSXElementLiteralChild(args: Array<any>, child: BabelNodeJSXText): Array<any> {
-    if (t.isJSXText(child)) {
-        child = cleanJSXElement(child);
-        if (child) {
-            args.push(t.stringLiteral(child));
-        }
-    } else {
-        args.push(child);
-    }
-
-    return args;
 }
