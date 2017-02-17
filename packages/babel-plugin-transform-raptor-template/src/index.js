@@ -1,6 +1,6 @@
 /* eslint-env node */
 import * as CONST from './constants';
-import CustomScope from './for-scope';
+import CustomScope from './custom-scope';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElementLiteralChild, isSvgNsAttribute } from './utils';
 import metadata from './metadata';
 

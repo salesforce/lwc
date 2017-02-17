@@ -74,48 +74,54 @@ export const isSvgNsAttribute = makeMap('xml,xlink');
 
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
-export function cleanJSXElementLiteralChild(args: Array<BabelNodeJSXText>, child: BabelNodeJSXText): Array<any> {
-        if (t.isJSXText(child)) {
-            const lines = child.value.split(/\r\n|\n|\r/);
-            let lastNonEmptyLine = 0;
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].match(/[^ \t]/)) {
-                    lastNonEmptyLine = i;
-                }
-            }
 
-            let str = '';
-            for (let _i = 0; _i < lines.length; _i++) {
-                const line = lines[_i];
-                const isFirstLine = _i === 0;
-                const isLastLine = _i === lines.length - 1;
-                const isLastNonEmptyLine = _i === lastNonEmptyLine;
+function cleanJSXElement(node: BabelNodeJSXText): any {
+    const lines = node.value.split(/\r\n|\n|\r/);
+    let lastNonEmptyLine = 0;
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].match(/[^ \t]/)) {
+            lastNonEmptyLine = i;
+        }
+    }
 
-                let trimmedLine = line.replace(/\t/g, ' ');
+    let str = '';
+    for (let _i = 0; _i < lines.length; _i++) {
+        const line = lines[_i];
+        const isFirstLine = _i === 0;
+        const isLastLine = _i === lines.length - 1;
+        const isLastNonEmptyLine = _i === lastNonEmptyLine;
 
-                if (!isFirstLine) {
-                    trimmedLine = trimmedLine.replace(/^[ ]+/, '');
-                }
+        let trimmedLine = line.replace(/\t/g, ' ');
 
-                if (!isLastLine) {
-                    trimmedLine = trimmedLine.replace(/[ ]+$/, '');
-                }
-
-                if (trimmedLine) {
-                    if (!isLastNonEmptyLine) {
-                        trimmedLine += ' ';
-                    }
-
-                    str += trimmedLine;
-                }
-            }
-
-            if (str) {
-                args.push(t.stringLiteral(str));
-            }
-        } else {
-            args.push(child);
+        if (!isFirstLine) {
+            trimmedLine = trimmedLine.replace(/^[ ]+/, '');
         }
 
-        return args;
+        if (!isLastLine) {
+            trimmedLine = trimmedLine.replace(/[ ]+$/, '');
+        }
+
+        if (trimmedLine) {
+            if (!isLastNonEmptyLine) {
+                trimmedLine += ' ';
+            }
+
+            str += trimmedLine;
+        }
     }
+
+    return str;
+}
+
+export function cleanJSXElementLiteralChild(args: Array<any>, child: BabelNodeJSXText): Array<any> {
+    if (t.isJSXText(child)) {
+        child = cleanJSXElement(child);
+        if (child) {
+            args.push(t.stringLiteral(child));
+        }
+    } else {
+        args.push(child);
+    }
+
+    return args;
+}
