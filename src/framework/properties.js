@@ -15,33 +15,33 @@ import {
 const ObjectPropertyToProxyMap = new WeakMap();
 const ProxySet = new WeakSet();
 
-function getter(target: Object, name: string): any {
-    const value = target[name];
+function getter(target: Object, key: string | Symbol): any {
+    const value = target[key];
     if (isRendering && vmBeingRendered) {
-        subscribeToSetHook(vmBeingRendered, target, name);
+        subscribeToSetHook(vmBeingRendered, target, key);
     }
     return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
 }
 
-function setter(target: Object, name: string, value: any): boolean {
-    const oldValue = target[name];
+function setter(target: Object, key: string | Symbol, value: any): boolean {
+    const oldValue = target[key];
     if (oldValue !== value) {
-        target[name] = value;
-        notifyListeners(target, name);
+        target[key] = value;
+        notifyListeners(target, key);
     }
     return true;
 }
 
-function deleteProperty(target: Object, name: string): boolean {
-    delete target[name];
-    notifyListeners(target, name);
+function deleteProperty(target: Object, key: string | Symbol): boolean {
+    delete target[key];
+    notifyListeners(target, key);
     return true;
 }
 
 const propertyProxyHandler = {
-    get: (target: Object, name: string): any => getter(target, name),
-    set: (target: Object, name: string, newValue: any): boolean => setter(target, name, newValue),
-    deleteProperty: (target: Object, name: string): boolean => deleteProperty(target, name),
+    get: (target: Object, key: string | Symbol): any => getter(target, key),
+    set: (target: Object, key: string | Symbol, newValue: any): boolean => setter(target, key, newValue),
+    deleteProperty: (target: Object, key: string | Symbol): boolean => deleteProperty(target, key),
 };
 
 export function getPropertyProxy(value: Object): any {
@@ -62,22 +62,26 @@ export function getPropertyProxy(value: Object): any {
     return proxy;
 }
 
-export function hookComponentLocalProperty(vm: VM, propName: string) {
+export function hookComponentLocalProperty(vm: VM, key: string | Symbol) {
     assert.vm(vm);
     const { component, privates } = vm;
-    const descriptor = getOwnPropertyDescriptor(component, propName);
+    const descriptor = getOwnPropertyDescriptor(component, key);
     const { get, set, configurable } = descriptor;
     assert.block(() => {
         if (get || set || !configurable) {
-            console.warn(`component ${vm} has a defined property ${propName} that cannot be watched for changes.`);
+            // TODO: classList and dataset are only really ignored when extending HTMLElement,
+            // we should take that into consideration on this condition at some point.
+            if (key !== 'classList' && key !== 'dataset') {
+                console.warn(`component ${vm} has a property key ${key} that cannot be watched for changes.`);
+            }
         }
     });
     if (configurable && !get && !set) {
         let { value, enumerable, writtable } = descriptor;
-        privates[propName] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
-        defineProperty(component, propName, {
-            get: (): any => getter(privates, propName),
-            set: (newValue: any): boolean => setter(privates, propName, newValue),
+        privates[key] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
+        defineProperty(component, key, {
+            get: (): any => getter(privates, key),
+            set: (newValue: any): boolean => setter(privates, key, newValue),
             configurable,
             enumerable,
             writtable,

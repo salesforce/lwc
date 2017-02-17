@@ -20,8 +20,16 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
     const len = Array.isArray(items) ? items.length : 0;
     const list = new Array(len);
     for (let i = 0; i < len; i += 1) {
-        const vnode = factory(items[i]);
+        const vnode = factory(items[i], i);
         list[i] = vnode;
+        assert.block(() => {
+            const vnodes = Array.isArray(vnode) ? vnode : [vnode];
+            vnodes.forEach((vnode: VNode | any) => {
+                if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && !vnode.key) {
+                    console.warn(`Invalid key attribute for element <${vnode.sel}> in iteration of ${items} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of ${vnode.Ctor.name}.`);
+                }
+            });
+        });
     }
     return list;
 }

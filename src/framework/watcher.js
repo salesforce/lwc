@@ -4,14 +4,14 @@ import { markComponentAsDirty } from "./component.js";
 
 const TargetToPropsMap = new WeakMap();
 
-export function notifyListeners(target: Object, propName: string) {
+export function notifyListeners(target: Object, key: string | Symbol) {
     if (TargetToPropsMap.has(target)) {
         const PropNameToListenersMap = TargetToPropsMap.get(target);
-        const set = PropNameToListenersMap.get(propName);
+        const set = PropNameToListenersMap.get(key);
         if (set) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
-                console.log(`Marking ${vm} as dirty: "this.${propName}" set to a new value.`);
+                console.log(`Marking ${vm} as dirty: "this.${key}" set to a new value.`);
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
                     console.log(`Scheduling ${vm} for rehydration.`);
@@ -22,7 +22,7 @@ export function notifyListeners(target: Object, propName: string) {
     }
 }
 
-export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
+export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol) {
     assert.vm(vm);
     let PropNameToListenersMap;
     if (!TargetToPropsMap.has(target)) {
@@ -31,10 +31,10 @@ export function subscribeToSetHook(vm: VM, target: Object, propName: string) {
     } else {
         PropNameToListenersMap = TargetToPropsMap.get(target);
     }
-    let set = PropNameToListenersMap.get(propName);
+    let set = PropNameToListenersMap.get(key);
     if (!set) {
         set = new Set();
-        PropNameToListenersMap.set(propName, set);
+        PropNameToListenersMap.set(key, set);
     }
     if (!set.has(vm)) {
         set.add(vm);

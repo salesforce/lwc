@@ -6,6 +6,7 @@ const setPrototypeOf = Object.setPrototypeOf;
 const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 const getOwnPropertyNames = Object.getOwnPropertyNames;
 const defineProperties = Object.defineProperties;
+const getOwnPropertySymbols = Object.getOwnPropertySymbols;
 
 export {
     keys,
@@ -15,5 +16,6 @@ export {
     setPrototypeOf,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    getOwnPropertySymbols,
     defineProperties,
 }

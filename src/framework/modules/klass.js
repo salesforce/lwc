@@ -5,10 +5,14 @@ function updateClass (oldVnode: VNode, vnode: VNode) {
     const oldClass = oldVnode.data.class;
     const klass = vnode.data.class;
 
+    if (!klass && !oldClass) {
+        return;
+    }
+
     if (klass !== oldClass) {
         assert.block(() => {
             if (elm.className === (klass || '')) {
-                console.warn(`unneccessary update of element ${elm}, property className for ${vnode}.`);
+                console.warn(`unneccessary update of element <${vnode.sel}>, property "className" for ${vnode.vm || vnode.sel}.`);
             }
         });
         elm.className = klass || '';

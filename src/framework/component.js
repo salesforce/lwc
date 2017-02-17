@@ -23,7 +23,9 @@ import {
     getPrototypeOf,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    getOwnPropertySymbols,
 } from "./language.js";
+import { ValidPropertyHTMLAttributeMap } from "./dom.js";
 
 const renderedDuringCurrentCycleSet = new Set();
 
@@ -73,6 +75,10 @@ export function initComponent(vm: VM) {
         }
         hookComponentLocalProperty(vm, propName);
     });
+    // non-reflective symbols
+    getOwnPropertySymbols(component).forEach((symbol: Symbol) => {
+        hookComponentLocalProperty(vm, symbol);
+    });
 
     // notifying observable attributes if they are initialized with default or custom value
     for (let propName in publicPropsConfig) {
@@ -98,10 +104,12 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config = publicPropsConfig[propName];
-    if (!config) {
-        // TODO: ignore any native html property
-        console.warn(`Updating unknown property ${propName} of ${vm}. This property will be a pass-thru to the DOM element.`);
-    }
+    assert.block(() => {
+        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
+            // TODO: ignore any native html property
+            console.warn(`Updating unknown property "${propName}" of ${vm}. This property will be a pass-thru to the DOM element.`);
+        }
+    });
     if (newValue === undefined && config) {
         // default prop value computed when needed
         const initializer = config[propName].initializer;
@@ -130,10 +138,13 @@ export function resetComponentProp(vm: VM, propName: string) {
     const config = publicPropsConfig[propName];
     let oldValue = cmpProps[propName];
     let newValue = undefined;
-    if (!config) {
-        // TODO: ignore any native html property
-        console.warn(`Resetting unknown property ${propName} of ${vm}. This property will be a pass-thru to the DOM element.`);
-    } else {
+    assert.block(() => {
+        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
+            // TODO: ignore any native html property
+            console.warn(`Resetting unknown property "${propName}" of ${vm}. This property will be a pass-thru to the DOM element.`);
+        }
+    });
+    if (config) {
         const initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
