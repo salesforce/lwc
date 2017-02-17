@@ -93,10 +93,14 @@ function updateClass(oldVnode, vnode) {
     var oldClass = oldVnode.data.class;
     var klass = vnode.data.class;
 
+    if (!klass && !oldClass) {
+        return;
+    }
+
     if (klass !== oldClass) {
         assert.block(function () {
             if (elm.className === (klass || '')) {
-                console.warn('unneccessary update of element ' + elm + ', property className for ' + vnode + '.');
+                console.warn('unneccessary update of element <' + vnode.sel + '>, property "className" for ' + (vnode.vm || vnode.sel) + '.');
             }
         });
         elm.className = klass || '';
@@ -115,6 +119,7 @@ var getPrototypeOf = Object.getPrototypeOf;
 var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 var getOwnPropertyNames = Object.getOwnPropertyNames;
 var defineProperties = Object.defineProperties;
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
 
 /**
  * This module is responsible for producing the ComponentDef object that is always
@@ -239,14 +244,14 @@ function getObservedAttrsHash(target, attrs) {
 
 var TargetToPropsMap = new WeakMap();
 
-function notifyListeners(target, propName) {
+function notifyListeners(target, key) {
     if (TargetToPropsMap.has(target)) {
         var PropNameToListenersMap = TargetToPropsMap.get(target);
-        var set = PropNameToListenersMap.get(propName);
+        var set = PropNameToListenersMap.get(key);
         if (set) {
             set.forEach(function (vm) {
                 assert.vm(vm);
-                console.log("Marking " + vm + " as dirty: \"this." + propName + "\" set to a new value.");
+                console.log("Marking " + vm + " as dirty: \"this." + key + "\" set to a new value.");
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
                     console.log("Scheduling " + vm + " for rehydration.");
@@ -257,7 +262,7 @@ function notifyListeners(target, propName) {
     }
 }
 
-function subscribeToSetHook(vm, target, propName) {
+function subscribeToSetHook(vm, target, key) {
     assert.vm(vm);
     var PropNameToListenersMap = void 0;
     if (!TargetToPropsMap.has(target)) {
@@ -266,10 +271,10 @@ function subscribeToSetHook(vm, target, propName) {
     } else {
         PropNameToListenersMap = TargetToPropsMap.get(target);
     }
-    var set = PropNameToListenersMap.get(propName);
+    var set = PropNameToListenersMap.get(key);
     if (!set) {
         set = new Set();
-        PropNameToListenersMap.set(propName, set);
+        PropNameToListenersMap.set(key, set);
     }
     if (!set.has(vm)) {
         set.add(vm);
@@ -405,6 +410,8 @@ module.exports = function h(sel, b, c) {
 
 var h$1 = interopDefault(h);
 
+var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 // [c]ustom element node
 function c(sel, Ctor) {
     var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -427,9 +434,22 @@ function c(sel, Ctor) {
 function i(items, factory) {
     var len = Array.isArray(items) ? items.length : 0;
     var list = new Array(len);
-    for (var _i = 0; _i < len; _i += 1) {
-        var vnode = factory(items[_i]);
+
+    var _loop = function _loop(_i) {
+        var vnode = factory(items[_i], _i);
         list[_i] = vnode;
+        assert.block(function () {
+            var vnodes = Array.isArray(vnode) ? vnode : [vnode];
+            vnodes.forEach(function (vnode) {
+                if (vnode && (typeof vnode === "undefined" ? "undefined" : _typeof$2(vnode)) === 'object' && vnode.sel && vnode.Ctor && !vnode.key) {
+                    console.warn("Invalid key attribute for element <" + vnode.sel + "> in iteration of " + items + " for index " + _i + " of " + len + ". Solution: You can set a \"key\" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of " + vnode.Ctor.name + ".");
+                }
+            });
+        });
+    };
+
+    for (var _i = 0; _i < len; _i += 1) {
+        _loop(_i);
     }
     return list;
 }
@@ -605,43 +625,43 @@ function invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValu
     }
 }
 
-var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+var _typeof$3 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var ObjectPropertyToProxyMap = new WeakMap();
 var ProxySet = new WeakSet();
 
-function getter(target, name) {
-    var value = target[name];
+function getter(target, key) {
+    var value = target[key];
     if (isRendering && vmBeingRendered) {
-        subscribeToSetHook(vmBeingRendered, target, name);
+        subscribeToSetHook(vmBeingRendered, target, key);
     }
-    return value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getPropertyProxy(value) : value;
+    return value && (typeof value === "undefined" ? "undefined" : _typeof$3(value)) === 'object' ? getPropertyProxy(value) : value;
 }
 
-function setter(target, name, value) {
-    var oldValue = target[name];
+function setter(target, key, value) {
+    var oldValue = target[key];
     if (oldValue !== value) {
-        target[name] = value;
-        notifyListeners(target, name);
+        target[key] = value;
+        notifyListeners(target, key);
     }
     return true;
 }
 
-function _deleteProperty(target, name) {
-    delete target[name];
-    notifyListeners(target, name);
+function _deleteProperty(target, key) {
+    delete target[key];
+    notifyListeners(target, key);
     return true;
 }
 
 var propertyProxyHandler = {
-    get: function get(target, name) {
-        return getter(target, name);
+    get: function get(target, key) {
+        return getter(target, key);
     },
-    set: function set(target, name, newValue) {
-        return setter(target, name, newValue);
+    set: function set(target, key, newValue) {
+        return setter(target, key, newValue);
     },
-    deleteProperty: function deleteProperty(target, name) {
-        return _deleteProperty(target, name);
+    deleteProperty: function deleteProperty(target, key) {
+        return _deleteProperty(target, key);
     }
 };
 
@@ -649,7 +669,7 @@ function getPropertyProxy(value) {
     if (value === null) {
         return null;
     }
-    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$2(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
+    assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$3(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
     if (ProxySet.has(value)) {
         return value;
     }
@@ -663,19 +683,23 @@ function getPropertyProxy(value) {
     return proxy;
 }
 
-function hookComponentLocalProperty(vm, propName) {
+function hookComponentLocalProperty(vm, key) {
     assert.vm(vm);
     var component = vm.component,
         privates = vm.privates;
 
-    var descriptor = getOwnPropertyDescriptor(component, propName);
+    var descriptor = getOwnPropertyDescriptor(component, key);
     var get = descriptor.get,
         set = descriptor.set,
         configurable = descriptor.configurable;
 
     assert.block(function () {
         if (get || set || !configurable) {
-            console.warn("component " + vm + " has a defined property " + propName + " that cannot be watched for changes.");
+            // TODO: classList and dataset are only really ignored when extending HTMLElement,
+            // we should take that into consideration on this condition at some point.
+            if (key !== 'classList' && key !== 'dataset') {
+                console.warn("component " + vm + " has a property key " + key + " that cannot be watched for changes.");
+            }
         }
     });
     if (configurable && !get && !set) {
@@ -683,13 +707,13 @@ function hookComponentLocalProperty(vm, propName) {
             enumerable = descriptor.enumerable,
             writtable = descriptor.writtable;
 
-        privates[propName] = value && (typeof value === "undefined" ? "undefined" : _typeof$2(value)) === 'object' ? getPropertyProxy(value) : value;
-        defineProperty(component, propName, {
+        privates[key] = value && (typeof value === "undefined" ? "undefined" : _typeof$3(value)) === 'object' ? getPropertyProxy(value) : value;
+        defineProperty(component, key, {
             get: function get() {
-                return getter(privates, propName);
+                return getter(privates, key);
             },
             set: function set(newValue) {
-                return setter(privates, propName, newValue);
+                return setter(privates, key, newValue);
             },
             configurable: configurable,
             enumerable: enumerable,
@@ -697,6 +721,10 @@ function hookComponentLocalProperty(vm, propName) {
         });
     }
 }
+
+var ValidPropertyHTMLAttributeMap = {
+    className: 'class'
+};
 
 var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -761,6 +789,10 @@ function initComponent(vm) {
         }
         hookComponentLocalProperty(vm, propName);
     });
+    // non-reflective symbols
+    getOwnPropertySymbols(component).forEach(function (symbol) {
+        hookComponentLocalProperty(vm, symbol);
+    });
 
     // notifying observable attributes if they are initialized with default or custom value
     for (var _propName in publicPropsConfig) {
@@ -794,10 +826,12 @@ function updateComponentProp(vm, propName, newValue) {
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
     var config = publicPropsConfig[propName];
-    if (!config) {
-        // TODO: ignore any native html property
-        console.warn("Updating unknown property " + propName + " of " + vm + ". This property will be a pass-thru to the DOM element.");
-    }
+    assert.block(function () {
+        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
+            // TODO: ignore any native html property
+            console.warn("Updating unknown property \"" + propName + "\" of " + vm + ". This property will be a pass-thru to the DOM element.");
+        }
+    });
     if (newValue === undefined && config) {
         // default prop value computed when needed
         var initializer = config[propName].initializer;
@@ -830,10 +864,13 @@ function resetComponentProp(vm, propName) {
     var config = publicPropsConfig[propName];
     var oldValue = cmpProps[propName];
     var newValue = undefined;
-    if (!config) {
-        // TODO: ignore any native html property
-        console.warn("Resetting unknown property " + propName + " of " + vm + ". This property will be a pass-thru to the DOM element.");
-    } else {
+    assert.block(function () {
+        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
+            // TODO: ignore any native html property
+            console.warn("Resetting unknown property \"" + propName + "\" of " + vm + ". This property will be a pass-thru to the DOM element.");
+        }
+    });
+    if (config) {
         var initializer = config[propName].initializer;
         newValue = typeof initializer === 'function' ? initializer() : initializer;
     }
@@ -1221,8 +1258,8 @@ function update$1(oldVnode, vnode) {
             if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
                 // only touching the dom if the prop really changes.
                 assert.block(function () {
-                    if (elm[key] === cur) {
-                        console.warn("unneccessary update of element " + elm + ", property " + key + " for " + vnode + ".");
+                    if (elm[key] === cur && old !== undefined) {
+                        console.warn("unneccessary update of element <" + vnode.sel + ">, property \"" + key + "\" for " + (vnode.vm || vnode.sel) + ".");
                     }
                 });
                 elm[key] = cur;
@@ -1987,6 +2024,12 @@ function getInitialProps(element, Ctor) {
 }
 
 function getInitialSlots(element, Ctor) {
+    var _getComponentDef2 = getComponentDef(Ctor),
+        slotNames = _getComponentDef2.slotNames;
+
+    if (!slotNames) {
+        return;
+    }
     // TODO: implement algo to resolve slots
     return undefined;
 }
@@ -2314,5 +2357,5 @@ window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.1.5 */
+/** version: 0.1.6 */
 //# sourceMappingURL=raptor.js.map
