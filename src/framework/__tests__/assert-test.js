@@ -44,4 +44,14 @@ describe('assert.js', function () {
             );
         });
     });
+
+    describe('#vm()', function () {
+        it('should throw Error for undefined', function () {
+            assert.throws(
+                () => {
+                    target.vnode();
+                }
+            );
+        });
+    });
 });

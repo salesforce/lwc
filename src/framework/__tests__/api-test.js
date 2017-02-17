@@ -28,7 +28,7 @@ describe('api.js', () => {
         });
     });
 
-    describe('#v()', () => {
+    describe('#c()', () => {
         // TBD
     });
 
