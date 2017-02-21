@@ -39,6 +39,7 @@ export function compileBundle(entry: string, options: any): Promise<any> {
                 format: options.format && isLtng ? 'amd': options.format,
                 moduleId: normalizedModuleName,
             });
+
             bundleResult.metadata = mergeMetadata(options.$metadata);
             if (isLtng) {
                 bundleResult.code = transformAmdToLtng(bundleResult.code);

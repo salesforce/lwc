@@ -40,10 +40,14 @@ export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     const parts = path.split('/');
     const name = basename(parts.pop(), '.js');
     let ns = DEFAULT_NS;
+    let tmpName = parts.pop();
     let tmpNs = parts.pop();
 
-    if (parts.length > 2 && mapNamespaceFromPath && tmpNs === ns) {
-        tmpNs = parts.pop();
+    if (mapNamespaceFromPath && name !== tmpName) {
+        throw new Error('When using mapNamespaceFromPath the folder name must match the component .js name');
+    }
+    // If mapping folder structure override namespace
+    if (tmpNs && mapNamespaceFromPath) {
         ns = tmpNs === 'components' ? parts.pop() : tmpNs;
     }
 
