@@ -1,2 +1,6 @@
-// This is just a placeholder package for now
-console.log('Nothing here!');
+console.log(`
+*********************************************
+*       This is a multi-package repo.       *
+*  All modules are located under /packages  *
+*********************************************
+`);
