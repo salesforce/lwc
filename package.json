@@ -3,7 +3,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "localpublish": "lerna publish --skip-npm --skip-git --exact --yes && npm run build:all",
+    "localpublish": "npm build && lerna publish --skip-npm --skip-git --exact --yes && npm run build:all",
     "prepublish": "lerna bootstrap && lerna run build",
     "preversion": "npm run lint && npm run clean && npm run build",
     "test": "lerna run test",
