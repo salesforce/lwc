@@ -3,6 +3,7 @@ import * as CONST from './constants';
 import CustomScope from './custom-scope';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement, isSvgNsAttribute } from './utils';
 import metadata from './metadata';
+import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
@@ -11,20 +12,8 @@ const API_PARAM = CONST.API_PARAM;
 const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
-export default function ({ types: t, template }: any): any {
-
+export default function({ types: t }: BabelTypes): any {
     // -- Helpers ------------------------------------------------------
-    const exportsDefaultTemplate = template(`
-        const memoized = Symbol();
-        export default function (${API_PARAM}, ${CMP_INSTANCE}, ${SLOT_SET}) {
-            const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
-            return STATEMENT;
-        }
-    `, { sourceType: 'module' });
-
-    const memoizeLookup = template(`m.ID || (m.ID = ID(${API_PARAM}, ${CMP_INSTANCE}))`);
-    const memoizeFunction = template(`const ID = function (${API_PARAM}, ${CMP_INSTANCE}) { return STATEMENT; }`);
-
     const applyPrimitive = (primitive: string) => t.identifier(`${API_PARAM}.${primitive}`);
     const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
@@ -36,25 +25,38 @@ export default function ({ types: t, template }: any): any {
         },
         Identifier: {
             exit(path, state) {
-                path.stop();
-                if (state.customScope.hasBinding(path.node.name)) {
-                    state.isThisApplied = true;
-                    return;
-                }
+                if (!path.node._ignore) {
+                    path.stop();
+                    if (state.customScope.hasBinding(path.node.name)) {
+                        state.isThisApplied = true;
+                        return;
+                    }
 
-                if (path.parentPath.node.computed || !state.isThisApplied) {
-                    state.isThisApplied = true;
-                    metadata.addUsedId(path.node, state, t);
-                    applyThisToIdentifier(path);
+                    if (path.parentPath.node.computed || !state.isThisApplied) {
+                        state.isThisApplied = true;
+                        metadata.addUsedId(path.node, state, t);
+                        applyThisToIdentifier(path);
+                    }
                 }
             }
+        }
+    };
+
+    const NormalizeAttributeVisitor = {
+        JSXAttribute(path) {
+            validatePrimitiveValues(path);
+            const { node, meta } = normalizeAttributeName(path.node.name, path.get('name'));
+            const value = normalizeAttributeValue(path.node.value, meta, path.get('value'));
+            const nodeProperty = t.objectProperty(node, value);
+            nodeProperty._meta = meta; // Attach metadata for further inspection
+            path.replaceWith(nodeProperty);
         }
     };
 
     function validatePrimitiveValues(path) {
         path.traverse({ enter(path) {
             if (!path.isJSX() && !path.isIdentifier() && !path.isMemberExpression() && !path.isLiteral()) {
-                throw path.buildCodeFrameError(`Node type ${path.node.type} is not allowed inside expression`);
+                throw path.buildCodeFrameError(`Node type ${path.node.type} is not allowed inside an attribute value`);
             }
         }});
     }
@@ -87,13 +89,12 @@ export default function ({ types: t, template }: any): any {
                 enter(path) {
                     validateTemplateRootFormat(path);
                 },
-                exit (path, state) {
+                exit(path, state) {
                     // Add exports declaration
                     const body = path.node.body;
                     const pos = body.findIndex(c => t.isExpressionStatement(c) && c.expression._jsxElement);
                     const rootElement = path.get(`body.${pos}.expression`);
-                    const exportDeclaration = exportsDefaultTemplate({ STATEMENT: rootElement });
-
+                    const exportDeclaration = moduleExports({ STATEMENT: rootElement.node });
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
@@ -106,28 +107,27 @@ export default function ({ types: t, template }: any): any {
                 }
             },
             JSXElement: {
-                enter(path, state) {
-                    const openElmt = path.get('openingElement').node;
-                    const openElmtAttrs = openElmt.attributes;
-                    const buildAttrs = openElmtAttrs ? buildOpeningElementAttributes(openElmtAttrs, path, state) : t.nullLiteral();
-                    const meta = buildAttrs._meta;
-                    const scoped = meta && meta.scoped;
-                    openElmt.attributes = buildAttrs;
-                    openElmt._meta = meta;
-
-                    // Push scope while going down
-                    if (scoped) {
-                        this.customScope.registerScopePathBindings(path, scoped);
-                    }
-                },
                 exit(path, status) {
                     const callExpr = buildElementCall(path, status);
-
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
                     path.node._jsxElement = true;
+                }
+            },
+            JSXOpeningElement: {
+                enter(path, state) {
+                    const meta = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
+                    path.traverse(NormalizeAttributeVisitor);
+                    path.node.attributes.reduce((m, attr) => groupAttrMetadata(m, attr._meta), meta);
 
-                    // Remove scope while going up
+                    if (meta.scoped.length) {
+                        this.customScope.registerScopePathBindings(path, meta.scoped);
+                    }
+
+                    path.node.attributes = transformAndGroup(path.node.attributes, meta, path.get('attributes'), state);
+                    path.node._meta = meta;
+                },
+                exit(path) {
                     if (this.customScope.hasScope(path)) {
                         this.customScope.removeScopePathBindings(path);
                     }
@@ -165,7 +165,9 @@ export default function ({ types: t, template }: any): any {
     };
 
     function prettyPrintExpr (callExpr) {
-        callExpr._prettyCall = true;
+        if (!t.isArrayExpression(callExpr)) {
+            callExpr._prettyCall = true;
+        }
     }
 
      function needsComputedCheck(literal) {
@@ -385,6 +387,12 @@ export default function ({ types: t, template }: any): any {
         let valueNode = prop.value;
         let inScope = false;
 
+        if (meta.expressionContainer) {
+            prop.key._ignore = true;
+            path.traverse(BoundThisVisitor, { customScope : state.customScope });
+            valueNode = path.node.value;
+        }
+
         if (directive) {
             let rootMember;
             if (t.isStringLiteral(valueNode)) {
@@ -437,14 +445,11 @@ export default function ({ types: t, template }: any): any {
             group.value.properties.push(value);
         }
 
-        var cs = new CustomScope();
-        cs.registerScopePathBindings(path, elementMeta.scoped);
-
-        props.forEach((prop: any) => {
+        props.forEach((prop: any, index: number) => {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
             const meta = prop._meta;
 
-            prop = transformProp(prop, elementMeta.scoped, path, state);
+            prop = transformProp(prop, elementMeta.scoped, path[index], state);
             let groupName = CONST.PROPS;
 
             if (isTopLevelProp(name)) {
@@ -504,19 +509,7 @@ export default function ({ types: t, template }: any): any {
             metaGroup.inForScope = meta.inForScope;
             metaGroup.scoped.push(...meta.inForScope);
         }
-    }
-
-    function buildOpeningElementAttributes(attributes, path, state) {
-        const attrPath = path.get('openingElement.attributes');
-        const metaGroup = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
-        attributes = attributes.map((attr, index) => {
-            const { meta, node } = normalizeAttribute(attr, attrPath[index], state);
-            groupAttrMetadata(metaGroup, meta);
-            return node;
-        });
-
-        path.get('openingElement').node.attributes = attributes;
-        return transformAndGroup(attributes, metaGroup, path, state); // Group attributes and generate directives
+        return metaGroup;
     }
 
     function memoizeSubtree(expression, path) {
@@ -528,26 +521,17 @@ export default function ({ types: t, template }: any): any {
         return m.expression;
     }
 
-    function normalizeAttribute(jsxAttr, attrPath, state) {
-        validatePrimitiveValues(attrPath, state);
-        const { node, meta } = normalizeAttributeName(jsxAttr.name, attrPath);
-        const value = normalizeAttributeValue(jsxAttr.value, meta, attrPath.get('value'), state);
-        const property = t.objectProperty(node, value);
-        property._meta = meta; // Attach metadata for further inspection upstream
-        return { node : property, meta };
-    }
-
-    function normalizeAttributeName(node: BabelNodeJSXNamespacedName) {
-        const meta = { directive: null, modifier: null, event: null, scoped: null };
+    function normalizeAttributeName(node: BabelNodeJSXIdentifier | BabelNodeJSXNamespacedName): { meta: MetaConfig, node: BabelNodeStringLiteral | BabelNodeIdentifier }  {
+        const meta: MetaConfig = { directive: null, modifier: null, event: null, scoped: null, isExpression: false };
 
         if (t.isJSXNamespacedName(node)) {
-            const dNode = node.namespace;
-            const mNode = node.name;
+            const dNode: BabelNodeJSXIdentifier = node.namespace;
+            const mNode: BabelNodeJSXIdentifier = node.name;
 
             // Transform nampespaced svg attrs correctly
             if (isSvgNsAttribute(dNode.name)) {
                 mNode.name = `${dNode.name}:${mNode.name}`;
-                dNode.name = null;
+                dNode.name = '';
             }
 
             if (dNode.name in DIRECTIVES) {
@@ -580,26 +564,26 @@ export default function ({ types: t, template }: any): any {
         } else if (node.name === 'name') {
             meta.hasNameAttribute = true;
 
+        // Slot
         } else if (node.name === 'slot') {
             meta.isSlot = true;
         }
 
+        // Replace node with an identifier
         if (t.isValidIdentifier(node.name)) {
             node.type = 'Identifier';
         } else {
             node = t.stringLiteral(node.name);
         }
 
-        // nodeType: Identifier|StringLiteral
+        // Return nodeType: Identifier|StringLiteral
         return { node, meta };
     }
 
-     function normalizeAttributeValue(node: any, meta: any, attrPath: any, state: any) {
+    function normalizeAttributeValue(node: any, meta: any): BabelNode {
          node = node || t.booleanLiteral(true);
 
          if (t.isJSXExpressionContainer(node)) {
-             validatePrimitiveValues(attrPath);
-              attrPath.traverse(BoundThisVisitor, { customScope : state.customScope });
              node = node.expression;
              meta.expressionContainer = true;
          } else {
