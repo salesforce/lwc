@@ -15,7 +15,11 @@ function updateClass (oldVnode: VNode, vnode: VNode) {
                 console.warn(`unneccessary update of element <${vnode.sel}>, property "className" for ${vnode.vm || vnode.sel}.`);
             }
         });
-        elm.className = klass || '';
+        if (vnode.sel === 'svg') {
+            elm.setAttribute('class', klass || '');
+        } else {
+            elm.className = klass || '';
+        }
     }
 }
 

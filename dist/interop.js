@@ -103,7 +103,11 @@ function updateClass(oldVnode, vnode) {
                 console.warn('unneccessary update of element <' + vnode.sel + '>, property "className" for ' + (vnode.vm || vnode.sel) + '.');
             }
         });
-        elm.className = klass || '';
+        if (vnode.sel === 'svg') {
+            elm.setAttribute('class', klass || '');
+        } else {
+            elm.className = klass || '';
+        }
     }
 }
 
@@ -2116,11 +2120,13 @@ function createElement(tagName, options) {
 
 try {
     if ((typeof customElements === "undefined" ? "undefined" : _typeof(customElements)) !== undefined && customElements.define) {
-        var defineOriginal = customElements.define;
-        customElements.define = function (tagName) {
-            defineOriginal.call.apply(defineOriginal, [this].concat(Array.prototype.slice.call(arguments)));
-            definedElements[tagName] = undefined;
-        };
+        (function () {
+            var defineOriginal = customElements.define;
+            customElements.define = function (tagName) {
+                defineOriginal.call.apply(defineOriginal, [this].concat(Array.prototype.slice.call(arguments)));
+                definedElements[tagName] = undefined;
+            };
+        })();
     }
 } catch (e) {
     console.warn("customElements.define cannot be redefined. " + e);
