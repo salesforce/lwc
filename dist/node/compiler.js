@@ -107935,7 +107935,7 @@ function compile(entry, options) {
     }
 }
 
-var version = exports.version = "0.2.6";
+var version = exports.version = "0.2.7";
 
 /***/ })
 /******/ ]);
