@@ -61,6 +61,49 @@ describe('emit asserts for namespacedFolder: ', () => {
     });
 });
 
+describe('emit asserts for embedded sources: ', () => {
+    it('Compile using sources', () => {
+        const html = fs.readFileSync(path.join(fixturesDir, 'classAndTemplate/classAndTemplate.html')).toString();
+        const js = fs.readFileSync(path.join(fixturesDir, 'classAndTemplate/classAndTemplate.js')).toString();
+        const entry = '/customNs/classAndTemplate/classAndTemplate.js';
+
+        const opts = {
+            sourceTemplate: html,
+            sourceClass: js,
+            mapNamespaceFromPath: true
+        };
+
+        return runCompile(entry, opts)
+        .then((result) => {
+            const actual = result.code;
+            //console.log(actual);
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced.js'));
+            assert.equal(trim(actual), trim(expected));
+        })
+    });
+
+    it('Compile using sources and format', () => {
+        const html = fs.readFileSync(path.join(fixturesDir, 'classAndTemplate/classAndTemplate.html')).toString();
+        const js = fs.readFileSync(path.join(fixturesDir, 'classAndTemplate/classAndTemplate.js')).toString();
+        const entry = 'myns/classAndTemplate/classAndTemplate.js';
+
+        const opts = {
+            sourceTemplate: html,
+            sourceClass: js,
+            mapNamespaceFromPath: true,
+            format: 'aura',
+        };
+
+        return runCompile(entry, opts)
+        .then((result) => {
+            const actual = result.code;
+            //console.log(actual);
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced-format.js'));
+            assert.equal(trim(actual), trim(expected));
+        })
+    });
+});
+
 function runCompile(filePath, options = {}) {
     const config = Object.assign({}, BASE_CONFIG, options);
     return compile(filePath, config);
