@@ -21,7 +21,7 @@
     "htmlparser-cli": "./packages/raptor-html-cleanup-transform/scripts/cli.js"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
+    "babel-cli": "^6.23.0",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.22.0",
@@ -33,7 +33,7 @@
     "rimraf": "^2.5.4",
     "string-replace-webpack-plugin": "0.0.5",
     "webpack": "^2.2.0",
-    "webpack-closure-compiler": "^2.1.3"
+    "webpack-closure-compiler": "^2.1.4"
   },
   "engines": {
     "node": ">=6"
