@@ -7,7 +7,7 @@ This repo is multi-package, which means it holds several internal sub npm packag
 
 Due to a bug in Nexus and most enterprise npm solutions -- can't remove dist-tags -- use this flow to publish packages.
 
-1. Update version of all changed packages: `lerna publish --skip-npm --skip-git`
+1. Update version of all changed packages: `npm run localpublish`
 2. Review changes: `git status && git diff`
 3. Commit changes to git: `git commit`
 4. Get your changes into git master (eg pull request)
