@@ -1,7 +1,7 @@
 /* eslint-env node */
 import * as CONST from './constants';
 import CustomScope from './custom-scope';
-import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement, isSvgNsAttribute } from './utils';
+import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement, isSvgNsAttribute, isSVG } from './utils';
 import metadata from './metadata';
 import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
 
@@ -119,6 +119,8 @@ export default function({ types: t }: BabelTypes): any {
                     const meta = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
                     path.traverse(NormalizeAttributeVisitor);
                     path.node.attributes.reduce((m, attr) => groupAttrMetadata(m, attr._meta), meta);
+
+                    path.node.name = convertJSXIdentifier(path.node.name, meta, path, state);
 
                     if (meta.scoped.length) {
                         this.customScope.registerScopePathBindings(path, meta.scoped);
@@ -295,7 +297,7 @@ export default function({ types: t }: BabelTypes): any {
     function buildElementCall(path, state) {
         const openingElmtPath = path.get('openingElement');
         const meta = openingElmtPath.node._meta;
-        const tag = convertJSXIdentifier(openingElmtPath.node.name, meta, openingElmtPath, state);
+        const tag = openingElmtPath.node.name;
         const tagName = tag.value;
         const children = buildChildren(path.node, path, state);
         const attribs = openingElmtPath.node.attributes;
@@ -337,7 +339,8 @@ export default function({ types: t }: BabelTypes): any {
             throw path.buildCodeFrameError('Member expressions not supported');
         }
 
-        // <a:b/>
+        // TODO: Deprecate this
+        //<a:b/>
         if (t.isJSXNamespacedName(node)) {
             const name = node.namespace.name + CONST.MODULE_SYMBOL + node.name.name;
             const devName = node.namespace.name + '$' + node.name.name;
@@ -357,6 +360,10 @@ export default function({ types: t }: BabelTypes): any {
             id._primitive = CUSTOM_ELEMENT;
             id._customElement = originalName;
             return id;
+        }
+
+        if (isSVG(node.name)) {
+            meta.isSvgTag = true;
         }
 
         return t.stringLiteral(node.name);
@@ -455,6 +462,10 @@ export default function({ types: t }: BabelTypes): any {
             if (isTopLevelProp(name)) {
                 finalProps.push(prop);
                 return;
+            }
+
+            if (elementMeta.isSvgTag) {
+                groupName = 'attrs';
             }
 
             if (meta.isSlot) {

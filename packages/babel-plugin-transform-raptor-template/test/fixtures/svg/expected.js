@@ -4,16 +4,16 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "svg",
         {
-            props: {
-                ariaHidden: "true",
-                class: "slds-button__icon"
-            }
+            attrs: {
+                ariaHidden: "true"
+            },
+            class: "slds-button__icon"
         },
         [$api.h(
             "use",
             {
-                props: {
-                    "xlink:href": "/s/assets/icons/utility-sprite/svg/symbols.svg#chevrondown"
+                attrs: {
+                    "xlink:href": "/x"
                 }
             },
             []
