@@ -29,8 +29,12 @@ function isExpression(str) {
 
 function parseAttrs(attrs) {
     const normalizedAttrs = attrs.map((attr) => {
-        return { name: normalizeAttrName(attr.name), value : attr.value, unquoted: isExpression(attr.value) }
-    });
+        return {
+            name: attr.prefix ? `${attr.prefix}:${attr.name}` : normalizeAttrName(attr.name),
+            value : attr.value,
+            unquoted: isExpression(attr.value) }
+        }
+    );
     return normalizedAttrs.map(generateHTMLAttr);
 }
 
