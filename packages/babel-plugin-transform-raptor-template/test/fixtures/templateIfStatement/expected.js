@@ -4,7 +4,7 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        [$cmp.isTrue ? [$api.s($cmp.foo), $api.s($cmp.bar)] : $api.e()]
+        $api.f([$cmp.isTrue ? [$api.s($cmp.foo), $api.s($cmp.bar)] : $api.e()])
     )];
 }
 export const templateUsedIds = ["isTrue", "foo", "bar"];
