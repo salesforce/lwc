@@ -49,7 +49,7 @@ module.exports = function (env) {
         target: 'node',
         entry: './packages/raptor-compiler-core/dist/index.js',
         output: {
-            path: './dist/node',
+            path: './dist/compiler/node',
             filename: filename,
             libraryTarget: "commonjs-module"
         },

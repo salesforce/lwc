@@ -46,7 +46,7 @@ module.exports = function (env) {
     return {
         entry: './packages/raptor-compiler-core/dist/index.js',
         output: {
-            path: './dist/web/',
+            path: './dist/compiler/web/',
             filename: filename,
             libraryTarget: 'this',
             library: 'compiler'

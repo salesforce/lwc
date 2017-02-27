@@ -2120,13 +2120,11 @@ function createElement(tagName, options) {
 
 try {
     if ((typeof customElements === "undefined" ? "undefined" : _typeof(customElements)) !== undefined && customElements.define) {
-        (function () {
-            var defineOriginal = customElements.define;
-            customElements.define = function (tagName) {
-                defineOriginal.call.apply(defineOriginal, [this].concat(Array.prototype.slice.call(arguments)));
-                definedElements[tagName] = undefined;
-            };
-        })();
+        var defineOriginal = customElements.define;
+        customElements.define = function (tagName) {
+            defineOriginal.call.apply(defineOriginal, [this].concat(Array.prototype.slice.call(arguments)));
+            definedElements[tagName] = undefined;
+        };
     }
 } catch (e) {
     console.warn("customElements.define cannot be redefined. " + e);
@@ -2357,5 +2355,5 @@ exports.getComponentDef = getComponentDef;
 exports.HTMLElement = ComponentElement;
 
 }((this.Engine = this.Engine || {})));
-/** version: 0.1.8 */
+/** version: 0.3.0 */
 //# sourceMappingURL=interop.js.map
