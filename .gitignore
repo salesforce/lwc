@@ -6,4 +6,9 @@ fake-cdn/**/*.js
 fake-cdn/**/*.map
 coverage
 .vscode
+*.log
 lib/
+playground/*.js
+playground/*.html
+playground/**/*
+packages/**/dist

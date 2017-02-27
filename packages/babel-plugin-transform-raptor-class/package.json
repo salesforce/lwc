@@ -1,0 +1,21 @@
+{
+  "name": "babel-plugin-transform-raptor-class",
+  "description": "Babel plugin to transform a raptor class",
+  "version": "0.2.9",
+  "main": "src/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "mocha": "^3.2.0",
+    "power-assert": "^1.4.2",
+    "babel-core": "^6.23.1",
+    "raptor-helper-fixture": "0.2.9"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint src/"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  }
+}
