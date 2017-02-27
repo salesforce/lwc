@@ -194,7 +194,8 @@ export default function({ types: t }: BabelTypes): any {
         return directives.isTemplate ? applyFlatteningToNode(iterator) : iterator;
     }
 
-    function applyIfDirectiveToNode(directive, node, nextNode) {
+    function applyIfDirectiveToNode(directives, node, nextNode) {
+        const directive = directives[MODIFIERS.if];
         if (nextNode && nextNode._meta && nextNode._meta.modifiers[MODIFIERS.else]) {
             nextNode._processed = true;
         } else {
@@ -210,7 +211,7 @@ export default function({ types: t }: BabelTypes): any {
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, /*state*/) {
         const children = node.children;
-        let hasForLoopDirective = false;
+        let needsFlattening = false;
         let elems = [];
 
         for (let i = 0; i < children.length; i++) {
@@ -234,23 +235,26 @@ export default function({ types: t }: BabelTypes): any {
 
                 if (directives[MODIFIERS.for]) {
                     if (directives[MODIFIERS.if]) {
-                        child = applyIfDirectiveToNode(directives[MODIFIERS.if], child, nextChild);
+                        child = applyIfDirectiveToNode(directives, child, nextChild);
                     }
 
                     elems.push(applyRepeatDirectiveToNode(directives, child));
-                    hasForLoopDirective = true;
+                    needsFlattening = true;
                     continue;
                 }
 
                 if (directives[MODIFIERS.if]) {
-                    elems.push(applyIfDirectiveToNode(directives[MODIFIERS.if], child, nextChild));
+                    elems.push(applyIfDirectiveToNode(directives, child, nextChild));
+                    if (directives.isTemplate) {
+                        needsFlattening = true;
+                    }
                     continue;
                 }
             }
             elems.push(child);
         }
         elems = t.arrayExpression(elems);
-        return hasForLoopDirective ? applyFlatteningToNode(elems): elems;
+        return needsFlattening ? applyFlatteningToNode(elems): elems;
     }
 
     function parseForStatement(attrValue) {
