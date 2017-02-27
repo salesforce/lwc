@@ -1,0 +1,23 @@
+{
+  "name": "raptor-html-cleanup-transform",
+  "description": "Raptor pre HTML cleanup",
+  "version": "0.3.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "mocha": "^3.2.0",
+    "power-assert": "^1.4.2",
+    "babel-core": "^6.23.1"
+  },
+  "scripts": {
+    "test": "mocha",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "parse5": "^3.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  }
+}
