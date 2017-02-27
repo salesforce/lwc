@@ -1,6 +1,7 @@
 coverage/
 examples/
 scripts/
+packages/
 src/
 fixtures/
 fake-*/

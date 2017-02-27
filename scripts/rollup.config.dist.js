@@ -11,18 +11,25 @@ const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
 const flow = require('rollup-plugin-flow');
 const strip = require('rollup-plugin-strip');
-const { copyright } = require('./scripts/utils.js');
+const { copyright } = require('./utils.js');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const version = require('./package.json').version;
+const version = require('../package.json').version;
+const raptorDefine = (
+`
+// forcing the global define() function to be declared bound to raptor.
+window.define = Raptor.defineTemporary;
+`
+);
 
 module.exports = {
     entry: p.resolve('src/framework/main.js'),
-    dest: p.resolve(`dist/interop.${isProduction ? 'min.js' : 'js'}`),
+    dest: p.resolve(`dist/raptor.${isProduction ? 'min.js' : 'js'}`),
     format: 'iife',
-    moduleName: 'Engine',
+    moduleName: 'Raptor',
     banner: copyright,
     footer: `/** version: ${version} */`,
+    outro: raptorDefine,
     sourceMap: true,
     globals: {},
     plugins: [

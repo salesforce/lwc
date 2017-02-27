@@ -9,7 +9,7 @@ const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const flow = require('rollup-plugin-flow');
 const nodeResolve = require('rollup-plugin-node-resolve');
-const { copyright } = require('./scripts/utils.js');
+const { copyright } = require('./utils.js');
 
 module.exports = {
     entry: p.resolve('src/framework/main.js'),
