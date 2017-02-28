@@ -4,14 +4,14 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {
-            props: {
+            attrs: {
                 a: $cmp.foo.c
             }
         },
         [$api.h(
             "p",
             {
-                props: {
+                attrs: {
                     b: $cmp.bar.c
                 }
             },

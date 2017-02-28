@@ -361,6 +361,7 @@ export default function({ types: t }: BabelTypes): any {
             const devName = toCamelCase(name);
             const id = state.file.addImport(name.replace('-', CONST.MODULE_SYMBOL), 'default', devName);
             metadata.addComponentDependency(name);
+            meta.isCustomElementTag = true;
             id._primitive = CUSTOM_ELEMENT;
             id._customElement = originalName;
             return id;
@@ -391,9 +392,10 @@ export default function({ types: t }: BabelTypes): any {
         return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else || name === DIRECTIVES.is;
     }
 
-    function transformProp(prop, scopedVars, path, state) {
+    function transformProp(prop, path, elementMeta, state) {
         const meta = prop._meta;
         const directive = meta.directive;
+        const scopedVars = elementMeta.scoped;
         let valueName = prop.key.value || prop.key.name; // Identifier|Literal
         let valueNode = prop.value;
         let inScope = false;
@@ -433,8 +435,10 @@ export default function({ types: t }: BabelTypes): any {
         } else if (isNSAttributeName(valueName)) {
             meta.svg = true;
             valueName = t.stringLiteral(valueName);
-        } else {
+        } else if (elementMeta.isCustomElementTag) {
             valueName = t.identifier(toCamelCase(valueName));
+        } else {
+            valueName = isTopLevelProp(valueName) || !needsComputedCheck(valueName) ? t.identifier(valueName) : t.stringLiteral(valueName);
         }
 
         prop.key = valueName;
@@ -460,16 +464,16 @@ export default function({ types: t }: BabelTypes): any {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
             const meta = prop._meta;
 
-            prop = transformProp(prop, elementMeta.scoped, path[index], state);
-            let groupName = CONST.PROPS;
+            prop = transformProp(prop, path[index], elementMeta, state);
+            let groupName = CONST.ATTRS;
 
             if (isTopLevelProp(name)) {
                 finalProps.push(prop);
                 return;
             }
 
-            if (elementMeta.isSvgTag) {
-                groupName = 'attrs';
+            if (elementMeta.isCustomElementTag) {
+                groupName = CONST.PROPS;
             }
 
             if (meta.isSlot) {

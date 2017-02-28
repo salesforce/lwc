@@ -13,7 +13,7 @@ export default function ($api, $cmp, $slotset) {
         [$api.v(
             _ns$foo,
             {
-                props: {
+                attrs: {
                     d: m._m || (m._m = _m($api, $cmp))
                 }
             },
