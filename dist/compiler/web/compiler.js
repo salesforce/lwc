@@ -33169,6 +33169,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var PROPS = exports.PROPS = 'props';
+var ATTRS = exports.ATTRS = 'attrs';
 
 var DATASET = exports.DATASET = 'dataset';
 var DATA_ATTRIBUTE_PREFIX = exports.DATA_ATTRIBUTE_PREFIX = 'data-';
@@ -53049,6 +53050,7 @@ exports.default = function (_ref) {
             var _devName = (0, _utils.toCamelCase)(_name);
             var _id = state.file.addImport(_name.replace('-', CONST.MODULE_SYMBOL), 'default', _devName);
             _metadata2.default.addComponentDependency(_name);
+            meta.isCustomElementTag = true;
             _id._primitive = CUSTOM_ELEMENT;
             _id._customElement = originalName;
             return _id;
@@ -53081,9 +53083,10 @@ exports.default = function (_ref) {
         return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else || name === DIRECTIVES.is;
     }
 
-    function transformProp(prop, scopedVars, path, state) {
+    function transformProp(prop, path, elementMeta, state) {
         var meta = prop._meta;
         var directive = meta.directive;
+        var scopedVars = elementMeta.scoped;
         var valueName = prop.key.value || prop.key.name; // Identifier|Literal
         var valueNode = prop.value;
         var inScope = false;
@@ -53122,8 +53125,10 @@ exports.default = function (_ref) {
         } else if (isNSAttributeName(valueName)) {
             meta.svg = true;
             valueName = t.stringLiteral(valueName);
-        } else {
+        } else if (elementMeta.isCustomElementTag) {
             valueName = t.identifier((0, _utils.toCamelCase)(valueName));
+        } else {
+            valueName = (0, _utils.isTopLevelProp)(valueName) || !needsComputedCheck(valueName) ? t.identifier(valueName) : t.stringLiteral(valueName);
         }
 
         prop.key = valueName;
@@ -53149,16 +53154,16 @@ exports.default = function (_ref) {
             var name = prop.key.value || prop.key.name; // Identifier|Literal
             var meta = prop._meta;
 
-            prop = transformProp(prop, elementMeta.scoped, path[index], state);
-            var groupName = CONST.PROPS;
+            prop = transformProp(prop, path[index], elementMeta, state);
+            var groupName = CONST.ATTRS;
 
             if ((0, _utils.isTopLevelProp)(name)) {
                 finalProps.push(prop);
                 return;
             }
 
-            if (elementMeta.isSvgTag) {
-                groupName = 'attrs';
+            if (elementMeta.isCustomElementTag) {
+                groupName = CONST.PROPS;
             }
 
             if (meta.isSlot) {
@@ -115587,7 +115592,7 @@ function compile(entry, options) {
     }
 }
 
-var version = exports.version = "0.3.1";
+var version = exports.version = "0.3.2";
 
 /***/ })
 /******/ ]);
