@@ -1,21 +1,41 @@
 import {
-    updateComponentSlots,
+    addComponentSlot,
+    removeComponentSlot,
 } from "../component.js";
 
-function update(oldvnode: VNode, vnode: ComponentVNode) {
+function update(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
     if (!vm) {
         return;
     }
-    const { data: { slotset: oldSlotset } } = oldvnode;
-    const { data: { slotset } } = vnode;
-    if (!oldSlotset && !slotset) {
-        return;
+
+    let { data: { slotset: oldSlots } } = oldVnode;
+    let { data: { slotset: newSlots } } = vnode;
+    let key: string, cur: any;
+
+    // infuse key-value pairs from slotset into the component
+    if (oldSlots !== newSlots && (oldSlots || newSlots)) {
+        oldSlots = oldSlots || {};
+        newSlots = newSlots || {};
+        // removed slots should be removed from component's slotset
+        for (key in oldSlots) {
+            if (!(key in newSlots)) {
+                removeComponentSlot(vm, key);
+            }
+        }
+
+        // new or different slots should be set in component's slotset
+        for (key in newSlots) {
+            cur = newSlots[key];
+            if (!(key in oldSlots) || oldSlots[key] != cur) {
+                if (cur && cur.length) {
+                    addComponentSlot(vm, key, cur);
+                } else {
+                    removeComponentSlot(vm, key);
+                }
+            }
+        }
     }
-    if (oldSlotset === slotset) {
-        return;
-    }
-    updateComponentSlots(vm, slotset);
 }
 
 export default {
