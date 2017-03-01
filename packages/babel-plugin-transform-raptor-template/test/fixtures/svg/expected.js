@@ -5,7 +5,7 @@ export default function ($api, $cmp, $slotset) {
         "svg",
         {
             attrs: {
-                ariaHidden: "true"
+                "aria-hidden": "true"
             },
             class: "slds-button__icon"
         },

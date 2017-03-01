@@ -8,11 +8,12 @@ export default function ($api, $cmp, $slotset) {
             "p",
             {
                 attrs: {
-                    foo: $cmp.bar.foo
+                    title: "x",
+                    "aria-hidden": "foo"
                 }
             },
-            []
+            ["X"]
         )]
     )];
 }
-export const templateUsedIds = ["bar"];
+export const templateUsedIds = [];

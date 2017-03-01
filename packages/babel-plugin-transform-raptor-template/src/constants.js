@@ -1,4 +1,5 @@
 export const PROPS = 'props';
+export const ATTRS  = 'attrs';
 
 export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
