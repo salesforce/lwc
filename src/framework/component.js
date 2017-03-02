@@ -51,9 +51,8 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
         enumerable: true,
     });
     // this guarantees that the default value is always in place before anything else.
-    const { initializer } = publicPropsConfig[propName];
-    const defaultValue = typeof initializer === 'function' ? initializer(): initializer;
-    cmpProps[propName] = defaultValue;
+    const config: PropDef = publicPropsConfig[propName];
+    cmpProps[propName] = getDefaultValueFromConfig(config);
 }
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
@@ -99,11 +98,16 @@ export function clearListeners(vm: VM) {
     listeners.clear();
 }
 
+function getDefaultValueFromConfig({ initializer }: PropDef): any {
+    // default prop value computed when needed
+    return typeof initializer === 'function' ? initializer() : initializer;
+}
+
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config = publicPropsConfig[propName];
+    const config: PropDef = publicPropsConfig[propName];
     assert.block(() => {
         if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
             // TODO: ignore any native html property
@@ -111,9 +115,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
         }
     });
     if (newValue === undefined && config) {
-        // default prop value computed when needed
-        const initializer = config[propName].initializer;
-        newValue = typeof initializer === 'function' ? initializer() : initializer;
+        newValue = getDefaultValueFromConfig(config);
     }
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
@@ -135,7 +137,7 @@ export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config = publicPropsConfig[propName];
+    const config: PropDef = publicPropsConfig[propName];
     let oldValue = cmpProps[propName];
     let newValue = undefined;
     assert.block(() => {
@@ -145,8 +147,7 @@ export function resetComponentProp(vm: VM, propName: string) {
         }
     });
     if (config) {
-        const initializer = config[propName].initializer;
-        newValue = typeof initializer === 'function' ? initializer() : initializer;
+        newValue = getDefaultValueFromConfig(config);
     }
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
