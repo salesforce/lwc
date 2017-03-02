@@ -46,7 +46,13 @@ const propertyProxyHandler = {
 
 export function getPropertyProxy(value: Object): any {
     if (value === null) {
-        return null;
+        return value;
+    }
+    if (value instanceof Node) {
+        assert.block(() => {
+            console.warn(`Storing references to DOM Nodes in general is discoraged. Instead, use querySelector and querySelectorAll to find the elements when needed. TODO: provide a link to the full explanation.`);
+        });
+        return value;
     }
     assert.isTrue(typeof value === "object", "perf-optimization: avoid calling this method for non-object value.");
     if (ProxySet.has(value)) {
