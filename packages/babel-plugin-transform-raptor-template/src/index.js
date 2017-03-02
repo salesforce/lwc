@@ -18,6 +18,7 @@ export default function({ types: t }: BabelTypes): any {
     const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
+    const isSlotElement = (elem: any) => elem._meta && elem._meta.isSlotTag;
 
     const BoundThisVisitor = {
         ThisExpression(path) {
@@ -208,6 +209,30 @@ export default function({ types: t }: BabelTypes): any {
         return t.callExpression(applyPrimitive(FLATTENING), [elems]);
     }
 
+    function groupElementsWithSlots(elements) {
+        // Groups elements nodes arround the slots elements.
+        const groupedElements = elements.reduce((grouped, child) => {
+            if (isSlotElement(child)) {
+                grouped.push(child);
+            } else {
+                let currentGroup = grouped[grouped.length - 1];
+                if (!Array.isArray(currentGroup)) {
+                    currentGroup = [];
+                    grouped.push(currentGroup);
+                }
+
+                grouped[grouped.length - 1].push(child);
+            }
+
+            return grouped;
+        }, [])
+
+        // Convert elements nodes array to array expressions
+        return groupedElements.map(group => (
+            Array.isArray(group) ? t.arrayExpression(group) : group
+        ));
+    }
+
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, /*state*/) {
         const children = node.children;
@@ -254,29 +279,10 @@ export default function({ types: t }: BabelTypes): any {
             elems.push(child);
         }
 
-        const isSlot = elem => elem._meta && elem._meta.isSlotTag;
-        const hasSlots = elementList => elementList.find(isSlot);
-
-        if (hasSlots(elems)) {
-            elems = elems.reduce((grouped, child) => {
-                if (isSlot(child)) {
-                    grouped.push(child);
-                } else {
-                    let currentGroup = grouped[grouped.length - 1];
-                    if (!Array.isArray(currentGroup)) {
-                        currentGroup = [];
-                        grouped.push(currentGroup);
-                    }
-
-                    grouped[grouped.length - 1].push(child);
-                }
-
-                return grouped;
-            }, []).map(group => (
-                Array.isArray(group) ? t.arrayExpression(group) : group
-            ));
-
-            elems = [applyFlatteningToNode(t.arrayExpression(elems))];
+        // Issue #89 - Group and flatten element nodes if the list contains slots elements.
+        if (elems.find(isSlotElement)) {
+            needsFlattening = true;
+            elems = groupElementsWithSlots(elems);
         }
 
         elems = t.arrayExpression(elems);

@@ -4,7 +4,7 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        [$api.f([[$api.h(
+        $api.f([[$api.h(
             "p",
             {},
             ["Before header"]
@@ -24,7 +24,7 @@ export default function ($api, $cmp, $slotset) {
             "p",
             {},
             ["Default footer"]
-        )]])]
+        )]])
     )];
 }
 export const templateUsedIds = [];
