@@ -323,7 +323,8 @@ export default function({ types: t }: BabelTypes): any {
             const slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
             const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
             const slot = t.logicalExpression('||', slotSet, children);
-            slot._meta.isSlotTag = true;
+            meta.isSlotTag = true;
+            slot._meta = meta;
             return slot
         }
 
