@@ -84,6 +84,15 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
         if (typeof result === 'function') {
+            assert.block(() => {
+                // TODO: validate that the slots provided via cmpSlots are allowed, this
+                // will require the compiler to provide the list of allowed slots via metadata.
+                // TODO: validate that the template properties provided via metadata are
+                // defined properties of this component.
+            });
+            // TODO: cmpSlots should be a proxy to it so we can monitor what slot names are
+            // accessed during the rendering method, so we can optimize the dirty checks for
+            // changes in slots.
             result = result.call(undefined, api, component, cmpSlots);
         }
         isRendering = isRenderingInception;

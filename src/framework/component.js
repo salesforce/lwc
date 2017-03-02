@@ -163,13 +163,33 @@ export function resetComponentProp(vm: VM, propName: string) {
     }
 }
 
-export function updateComponentSlots(vm: VM, slotset: HashTable<Array<VNode>>) {
+export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
     assert.vm(vm);
-    // TODO: in the future, we can optimize this more, and only
-    // set as dirty if the component really need slots, and if the slots has changed.
-    console.log(`Marking ${vm} as dirty: [slotset] value changed.`);
-    if (slotset !== vm.cmpSlots) {
-        vm.cmpSlots = slotset || {};
+    const { cmpSlots } = vm;
+    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    assert.isTrue(Array.isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${newValue} for slot ${slotName} in ${vm}.`)
+    let oldValue = cmpSlots[slotName];
+    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
+    // one of those is changed, the vm should be marked as dirty.
+    if (oldValue !== newValue) {
+        cmpSlots[slotName] = newValue;
+        console.log(`Marking ${vm} as dirty: a new value for slot "${slotName}" was added.`);
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
+    }
+}
+
+export function removeComponentSlot(vm: VM, slotName: string) {
+    assert.vm(vm);
+    const { cmpSlots } = vm;
+    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    let oldValue = cmpSlots[slotName];
+    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
+    // one of those is changed, the vm should be marked as dirty.
+    if (oldValue) {
+        cmpSlots[slotName] = undefined; // delete will de-opt the cmpSlots, better to set it to undefined
+        console.log(`Marking ${vm} as dirty: the value of slot "${slotName}" was removed.`);
         if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
