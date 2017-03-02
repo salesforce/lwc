@@ -253,6 +253,30 @@ export default function({ types: t }: BabelTypes): any {
             }
             elems.push(child);
         }
+
+        const isSlot = elem => elem._meta && elem._meta.isSlotTag;
+        const hasSlots = elementList => elementList.find(isSlot);
+
+        if (hasSlots(elems)) {
+            elems = elems.reduce((grouped, child) => {
+                if (isSlot(child)) {
+                    grouped.push(child);
+                } else {
+                    let currentGroup = grouped[grouped.length - 1];
+                    if (!Array.isArray(currentGroup)) {
+                        currentGroup = [];
+                        grouped.push(currentGroup);
+                    }
+
+                    grouped[grouped.length - 1].push(child);
+                }
+
+                return grouped;
+            }, []);
+
+            elems = [applyFlatteningToNode(t.arrayExpression(elems))];
+        }
+
         elems = t.arrayExpression(elems);
         return needsFlattening ? applyFlatteningToNode(elems): elems;
     }
@@ -318,7 +342,10 @@ export default function({ types: t }: BabelTypes): any {
             const slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
             const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
             const slot = t.logicalExpression('||', slotSet, children);
-            slot._meta = meta;
+            slot._meta = Object.assign({}, meta, {
+                isSlotTag: true,
+            });
+
             return slot
         }
 
