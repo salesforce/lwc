@@ -1,12 +1,14 @@
 <template>
     <section>
-        <p>Before</p>
-        <slot></slot>
+        <p>Before header</p>
+        <slot name="header">Default header</slot>
         <p>In</p>
         <p>between</p>
-        <slot name="test">
-            <p>Test slot content</p>
+        <slot>
+            <p>Default body</p>
         </slot>
-        <p>After</p>
+        <slot name="footer">
+            <p>Default footer</p>
+        </slot>
     </section>
 </template>

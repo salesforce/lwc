@@ -4,11 +4,27 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        [$slotset.test || [$api.h(
+        [$api.f([[$api.h(
             "p",
             {},
-            ["Test slot content"]
-        )]]
+            ["Before header"]
+        )], $slotset.header || ["Default header"], [$api.h(
+            "p",
+            {},
+            ["In"]
+        ), $api.h(
+            "p",
+            {},
+            ["between"]
+        )], $slotset.$default$ || [$api.h(
+            "p",
+            {},
+            ["Default body"]
+        )], $slotset.footer || [$api.h(
+            "p",
+            {},
+            ["Default footer"]
+        )]])]
     )];
 }
 export const templateUsedIds = [];

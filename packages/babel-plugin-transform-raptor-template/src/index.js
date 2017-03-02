@@ -272,7 +272,9 @@ export default function({ types: t }: BabelTypes): any {
                 }
 
                 return grouped;
-            }, []);
+            }, []).map(group => (
+                Array.isArray(group) ? t.arrayExpression(group) : group
+            ));
 
             elems = [applyFlatteningToNode(t.arrayExpression(elems))];
         }
