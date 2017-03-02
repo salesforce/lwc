@@ -4,11 +4,11 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        $api.f([[$api.h(
+        $api.f([$api.h(
             "p",
             {},
             ["Before header"]
-        )], $slotset.header || ["Default header"], [$api.h(
+        ), $slotset.header || ["Default header"], $api.h(
             "p",
             {},
             ["In"]
@@ -16,7 +16,7 @@ export default function ($api, $cmp, $slotset) {
             "p",
             {},
             ["between"]
-        )], $slotset.$default$ || [$api.h(
+        ), $slotset.$default$ || [$api.h(
             "p",
             {},
             ["Default body"]
