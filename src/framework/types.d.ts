@@ -43,6 +43,7 @@ declare class VM {
     cmpProps: HashTable<any>;
     isScheduled: boolean;
     isDirty: boolean;
+    wasInserted: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;
