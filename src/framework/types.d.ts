@@ -1,6 +1,6 @@
 declare class Component {
     constructor();
-    render(): HTMLElement | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
+    render(): Node | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
     connectedCallback(): void;
     disconnectedCallback(): void;
     renderedCallback(): void;

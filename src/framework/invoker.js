@@ -8,7 +8,11 @@ import assert from "./assert.js";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-function wrapHTMLElement(element: HTMLElement): VNode {
+function wrapDOMNode(element: Node): VNode {
+    // TODO: generalize this to support all kind of Nodes
+    // TODO: instead of creating the h() directly, use toVNode() or something else from snabbdom
+    // TODO: the element could be derivated from another raptor component, in which case we should
+    // use the corresponding vnode instead
     assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
     const tagName = element.tagName.toLowerCase();
     const vnode = api.h(tagName, {});
@@ -24,8 +28,8 @@ function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Arra
     const vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
     for (let i = 0; i < vnodes.length; i += 1) {
         const elm = vnodes[i];
-        if (elm instanceof HTMLElement) {
-            vnodes[i] = wrapHTMLElement(elm);
+        if (elm instanceof Node) {
+            vnodes[i] = wrapDOMNode(elm);
         }
         assert.isTrue(vnodes[i] && vnodes[i].sel, `Invalid element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
     }
