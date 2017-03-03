@@ -56,6 +56,16 @@ function hookComponentReflectiveProperty(vm: VM, propName: string) {
     cmpProps[propName] = defaultValue;
 }
 
+function hookComponentPublicMethod(vm: VM, methodName: string) {
+    const { component, cmpProps } = vm;
+    defineProperty(cmpProps, methodName, {
+        value: (...args: any): any => component[methodName](...args),
+        configurable: false,
+        writable: false,
+        enumerable: true,
+    });
+}
+
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
     vm.component = invokeComponentConstructor(vm, Ctor);
@@ -63,10 +73,14 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
 
 export function initComponent(vm: VM) {
     assert.vm(vm);
-    const { component, cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
+    const { component, cmpProps, def: { props: publicPropsConfig, methods: publicMethodsConfig, observedAttrs } } = vm;
     // reflective properties
     for (let propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
+    }
+    // expose public methods as props on the HTMLElement
+    for (let methodName in publicMethodsConfig) {
+        hookComponentPublicMethod(vm, methodName);
     }
     // non-reflective properties
     getOwnPropertyNames(component).forEach((propName: string) => {
