@@ -228,6 +228,10 @@ export default function({ types: t }: BabelTypes): any {
                 child = t.callExpression(applyPrimitive(TEXT), [child.expression]);
             }
 
+            if (directives && directives.isSlotTag) {
+                needsFlattening = true;
+            }
+
             if (directives && (t.isCallExpression(child) || t.isArrayExpression(child))) {
                 if (directives[MODIFIERS.else]) {
                     throw path.buildCodeFrameError('Else statement found before if statement');
@@ -253,6 +257,7 @@ export default function({ types: t }: BabelTypes): any {
             }
             elems.push(child);
         }
+
         elems = t.arrayExpression(elems);
         return needsFlattening ? applyFlatteningToNode(elems): elems;
     }
@@ -318,6 +323,7 @@ export default function({ types: t }: BabelTypes): any {
             const slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
             const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
             const slot = t.logicalExpression('||', slotSet, children);
+            meta.isSlotTag = true;
             slot._meta = meta;
             return slot
         }
