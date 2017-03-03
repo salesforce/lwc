@@ -16,7 +16,6 @@ function rerender(oldVnode: VNode, vnode: ComponentVNode) {
     // replacing the vnodes in the children array without replacing the array itself
     // because the engine has a hard reference to the original array object.
     children.splice(0, children.length).push.apply(children, vm.fragment);
-    console.log(vnode.sel, vnode.elm, children);
 }
 
 export default {
