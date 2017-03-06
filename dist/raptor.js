@@ -520,7 +520,11 @@ var api = Object.freeze({
 var isRendering = false;
 var vmBeingRendered = null;
 
-function wrapHTMLElement(element) {
+function wrapDOMNode(element) {
+    // TODO: generalize this to support all kind of Nodes
+    // TODO: instead of creating the h() directly, use toVNode() or something else from snabbdom
+    // TODO: the element could be derivated from another raptor component, in which case we should
+    // use the corresponding vnode instead
     assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
     var tagName = element.tagName.toLowerCase();
     var vnode = h$1(tagName, {});
@@ -536,8 +540,8 @@ function normalizeRenderResult(vm, elementOrVnodeOrArrayOfVnodes) {
     var vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
     for (var i = 0; i < vnodes.length; i += 1) {
         var elm = vnodes[i];
-        if (elm instanceof HTMLElement) {
-            vnodes[i] = wrapHTMLElement(elm);
+        if (elm instanceof Node) {
+            vnodes[i] = wrapDOMNode(elm);
         }
         assert.isTrue(vnodes[i] && vnodes[i].sel, "Invalid element " + vnodes[i] + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
     }
@@ -606,6 +610,15 @@ function invokeComponentRenderMethod(vm) {
         // when the render method `return html;`, the factory has to be invoked
         // TODO: add identity to the html functions
         if (typeof result === 'function') {
+            assert.block(function () {
+                // TODO: validate that the slots provided via cmpSlots are allowed, this
+                // will require the compiler to provide the list of allowed slots via metadata.
+                // TODO: validate that the template properties provided via metadata are
+                // defined properties of this component.
+            });
+            // TODO: cmpSlots should be a proxy to it so we can monitor what slot names are
+            // accessed during the rendering method, so we can optimize the dirty checks for
+            // changes in slots.
             result = result.call(undefined, api, component, cmpSlots);
         }
         isRendering = isRenderingInception;
@@ -671,7 +684,13 @@ var propertyProxyHandler = {
 
 function getPropertyProxy(value) {
     if (value === null) {
-        return null;
+        return value;
+    }
+    if (value instanceof Node) {
+        assert.block(function () {
+            console.warn("Storing references to DOM Nodes in general is discoraged. Instead, use querySelector and querySelectorAll to find the elements when needed. TODO: provide a link to the full explanation.");
+        });
+        return value;
     }
     assert.isTrue((typeof value === "undefined" ? "undefined" : _typeof$3(value)) === "object", "perf-optimization: avoid calling this method for non-object value.");
     if (ProxySet.has(value)) {
@@ -763,10 +782,22 @@ function hookComponentReflectiveProperty(vm, propName) {
         enumerable: true
     });
     // this guarantees that the default value is always in place before anything else.
-    var initializer = publicPropsConfig[propName].initializer;
+    var config = publicPropsConfig[propName];
+    cmpProps[propName] = getDefaultValueFromConfig(config);
+}
 
-    var defaultValue = typeof initializer === 'function' ? initializer() : initializer;
-    cmpProps[propName] = defaultValue;
+function hookComponentPublicMethod(vm, methodName) {
+    var component = vm.component,
+        cmpProps = vm.cmpProps;
+
+    defineProperty(cmpProps, methodName, {
+        value: function value() {
+            return component[methodName].apply(component, arguments);
+        },
+        configurable: false,
+        writable: false,
+        enumerable: true
+    });
 }
 
 function createComponent(vm, Ctor) {
@@ -780,11 +811,16 @@ function initComponent(vm) {
         cmpProps = vm.cmpProps,
         _vm$def = vm.def,
         publicPropsConfig = _vm$def.props,
+        publicMethodsConfig = _vm$def.methods,
         observedAttrs = _vm$def.observedAttrs;
     // reflective properties
 
     for (var propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
+    }
+    // expose public methods as props on the HTMLElement
+    for (var methodName in publicMethodsConfig) {
+        hookComponentPublicMethod(vm, methodName);
     }
     // non-reflective properties
     getOwnPropertyNames(component).forEach(function (propName) {
@@ -821,6 +857,13 @@ function clearListeners(vm) {
     listeners.clear();
 }
 
+function getDefaultValueFromConfig(_ref2) {
+    var initializer = _ref2.initializer;
+
+    // default prop value computed when needed
+    return typeof initializer === 'function' ? initializer() : initializer;
+}
+
 function updateComponentProp(vm, propName, newValue) {
     assert.vm(vm);
     var cmpProps = vm.cmpProps,
@@ -837,9 +880,7 @@ function updateComponentProp(vm, propName, newValue) {
         }
     });
     if (newValue === undefined && config) {
-        // default prop value computed when needed
-        var initializer = config[propName].initializer;
-        newValue = typeof initializer === 'function' ? initializer() : initializer;
+        newValue = getDefaultValueFromConfig(config);
     }
     var oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
@@ -875,8 +916,7 @@ function resetComponentProp(vm, propName) {
         }
     });
     if (config) {
-        var initializer = config[propName].initializer;
-        newValue = typeof initializer === 'function' ? initializer() : initializer;
+        newValue = getDefaultValueFromConfig(config);
     }
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
@@ -893,13 +933,35 @@ function resetComponentProp(vm, propName) {
     }
 }
 
-function updateComponentSlots(vm, slotset) {
+function addComponentSlot(vm, slotName, newValue) {
     assert.vm(vm);
-    // TODO: in the future, we can optimize this more, and only
-    // set as dirty if the component really need slots, and if the slots has changed.
-    console.log("Marking " + vm + " as dirty: [slotset] value changed.");
-    if (slotset !== vm.cmpSlots) {
-        vm.cmpSlots = slotset || {};
+    var cmpSlots = vm.cmpSlots;
+
+    assert.invariant(!isRendering, vm + ".render() method has side effects on the state of slot " + slotName + " in " + vm);
+    assert.isTrue(Array.isArray(newValue) && newValue.length > 0, "Slots can only be set to a non-empty array, instead received " + newValue + " for slot " + slotName + " in " + vm + ".");
+    var oldValue = cmpSlots[slotName];
+    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
+    // one of those is changed, the vm should be marked as dirty.
+    if (oldValue !== newValue) {
+        cmpSlots[slotName] = newValue;
+        console.log("Marking " + vm + " as dirty: a new value for slot \"" + slotName + "\" was added.");
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
+    }
+}
+
+function removeComponentSlot(vm, slotName) {
+    assert.vm(vm);
+    var cmpSlots = vm.cmpSlots;
+
+    assert.invariant(!isRendering, vm + ".render() method has side effects on the state of slot " + slotName + " in " + vm);
+    var oldValue = cmpSlots[slotName];
+    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
+    // one of those is changed, the vm should be marked as dirty.
+    if (oldValue) {
+        cmpSlots[slotName] = undefined; // delete will de-opt the cmpSlots, better to set it to undefined
+        console.log("Marking " + vm + " as dirty: the value of slot \"" + slotName + "\" was removed.");
         if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
@@ -1125,22 +1187,42 @@ var componentProps = {
     update: syncProps
 };
 
-function update(oldvnode, vnode) {
+function update(oldVnode, vnode) {
     var vm = vnode.vm;
 
     if (!vm) {
         return;
     }
-    var oldSlotset = oldvnode.data.slotset;
-    var slotset = vnode.data.slotset;
 
-    if (!oldSlotset && !slotset) {
-        return;
+    var oldSlots = oldVnode.data.slotset;
+    var newSlots = vnode.data.slotset;
+
+    var key = void 0,
+        cur = void 0;
+
+    // infuse key-value pairs from slotset into the component
+    if (oldSlots !== newSlots && (oldSlots || newSlots)) {
+        oldSlots = oldSlots || {};
+        newSlots = newSlots || {};
+        // removed slots should be removed from component's slotset
+        for (key in oldSlots) {
+            if (!(key in newSlots)) {
+                removeComponentSlot(vm, key);
+            }
+        }
+
+        // new or different slots should be set in component's slotset
+        for (key in newSlots) {
+            cur = newSlots[key];
+            if (!(key in oldSlots) || oldSlots[key] != cur) {
+                if (cur && cur.length) {
+                    addComponentSlot(vm, key, cur);
+                } else {
+                    removeComponentSlot(vm, key);
+                }
+            }
+        }
     }
-    if (oldSlotset === slotset) {
-        return;
-    }
-    updateComponentSlots(vm, slotset);
 }
 
 var componentSlotset = {
@@ -2359,5 +2441,5 @@ window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.3.0 */
+/** version: 0.3.1 */
 //# sourceMappingURL=raptor.js.map
