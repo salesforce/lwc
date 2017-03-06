@@ -105,6 +105,7 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
     const slotset = getInitialSlots(element, Ctor);
     const tagName = element.tagName.toLowerCase();
     const vnode = c(tagName, Ctor, { props, slotset, class: element.className || undefined });
+    vnode.isRoot = true;
     // TODO: eventually after updating snabbdom we can use toVNode(element)
     // as the first argument to reconstruct the vnode that represents the
     // current state.

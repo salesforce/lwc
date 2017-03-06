@@ -44,6 +44,7 @@ declare class VM {
     cmpSlots: HashTable<Array<VNode>>;
     isScheduled: boolean;
     isDirty: boolean;
+    wasInserted: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component: Component;

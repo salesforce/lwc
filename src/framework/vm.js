@@ -16,13 +16,14 @@ export function createVM(vnode: ComponentVNode) {
     const vm: VM = {
         isScheduled: false,
         isDirty: true,
+        wasInserted: !!vnode.isRoot,
         def,
         context: {},
         privates: {},
         cmpProps: {},
         cmpSlots: {},
         component: undefined,
-        fragment: undefined,
+        fragment: [],
         listeners: new Set(),
     };
     assert.block(() => {
