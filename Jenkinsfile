@@ -2,9 +2,7 @@
 // aka do not change this.
 node("raptor_node") {
     // CloudBees Nexus mirror
-    // TODO - nexus.ci is having staleness issues so until it's resolved use main nexus repo
-    // def NEXUS = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
-    def NEXUS = "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/"
+    def NEXUS = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
 
     try {
         // CloudBees reports each stage separately providing us with visibility into
