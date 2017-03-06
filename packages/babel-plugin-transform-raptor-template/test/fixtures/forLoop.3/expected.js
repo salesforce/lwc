@@ -3,7 +3,7 @@ export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
         "ul",
-        {},
+        null,
         $api.f([$api.i($cmp.items, function (item, index) {
             return $api.h(
                 "li",
