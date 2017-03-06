@@ -28,10 +28,16 @@ function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Arra
     const vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
     for (let i = 0; i < vnodes.length; i += 1) {
         const elm = vnodes[i];
-        if (elm instanceof Node) {
+        // TODO: we can improve this detection mechanism
+        if (elm && (elm.sel || elm.text)) {
+            // this is usually the default behavior, we wire this up for that reason.
+            assert.vnode(elm, `Invalid element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
+        } else if (elm instanceof Node) {
             vnodes[i] = wrapDOMNode(elm);
+        } else {
+            // supporting text nodes
+            vnodes[i] = { text: (elm === null || elm === undefined) ? '' : elm + '' };
         }
-        assert.isTrue(vnodes[i] && vnodes[i].sel, `Invalid element ${vnodes[i]} returned in ${i + 1} position when calling ${vm}.render().`);
     }
     return vnodes;
 }
