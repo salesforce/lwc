@@ -9,7 +9,7 @@ export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
         "section",
-        null,
+        {},
         [$api.v(
             _ns$foo,
             {

@@ -5,7 +5,7 @@ export default function ($api, $cmp, $slotset) {
     return [$api.c(
         "x-cmp",
         _xCmp,
-        null
+        {}
     )];
 }
 export const templateUsedIds = [];

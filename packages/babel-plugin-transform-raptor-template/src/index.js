@@ -341,9 +341,10 @@ export default function({ types: t }: BabelTypes): any {
 
 
         // Return null when no attributes
-        if (!attribs.properties || !attribs.properties.length) {
-            attribs.type = 'NullLiteral';
-        }
+        // TODO: Fix engine to support either null or undefined here
+        // if (!attribs.properties || !attribs.properties.length) {
+            //attribs.type = 'NullLiteral';
+        // }
 
         const createElementExpression = t.callExpression(exprTag, args);
         createElementExpression._meta = meta; // Push metadata up
