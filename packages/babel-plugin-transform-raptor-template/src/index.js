@@ -332,9 +332,17 @@ export default function({ types: t }: BabelTypes): any {
         const args = [tag, attribs, children];
 
         if (tag._customElement) {
-            groupSlots(attribs, children); // changes attribs as side-effect
+            if (children.elements.length) {
+                groupSlots(attribs, children); // changes attribs as side-effect
+            }
             args.unshift(t.stringLiteral(tag._customElement));
             args.pop(); //remove children
+        }
+
+
+        // Return null when no attributes
+        if (!attribs.properties || !attribs.properties.length) {
+            attribs.type = 'NullLiteral';
         }
 
         const createElementExpression = t.callExpression(exprTag, args);
