@@ -4,7 +4,7 @@ import {
     initComponent,
     createComponent,
 } from "./component.js";
-import { c } from "./api.js";
+import { h } from "./api.js";
 import { patch } from "./patch.js";
 
 export function createVM(vnode: ComponentVNode) {
@@ -70,22 +70,25 @@ export function getLinkedVNode(component: Component): ComponentVNode {
 export function rehydrate(vm: vm) {
     assert.vm(vm);
     if (vm.isDirty) {
-        const oldVnode = getLinkedVNode(vm.component);
-        assert.isTrue(oldVnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        const { sel, Ctor, data: { key, slotset, dataset, on, _props, _class }, children } = oldVnode;
+        const vnode = getLinkedVNode(vm.component);
+        assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
+        const { sel, Ctor, data: { hook, key, slotset, dataset, on, _props, _class }, children } = vnode;
         assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
-        // a dirty state, we create a new VNode with the exact same data was used
+        // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
         // to patch this vnode the last time, mimic what happen when the
-        // owner re-renders.
-        const vnode = c(sel, Ctor, {
-            key,
-            slotset,
-            dataset,
-            on,
-            props: _props,
-            class: _class,
-        });
+        // owner re-renders, but we do so by keeping the vnode originally used by parent
+        // as the source of true, in case the parent tries to rehydrate against that one.
+        // TODO: we can optimize this proces by using proto-chain, or Object.assign() without
+        // having to call h() directly.
+        const oldVnode = h(sel, vnode.data, vnode.children);
+        oldVnode.Ctor = Ctor;
+        oldVnode.elm = vnode.elm;
+        oldVnode.vm = vnode.vm;
+        // This list here must be in synch with api.c()
+        // TODO: abstract this so we don't have to keep code in sync.
+        vnode.data = { hook, key, slotset, dataset, on, props: {}, _props, _class };
+        vnode.children = [];
         patch(oldVnode, vnode);
     }
     vm.isScheduled = false;
