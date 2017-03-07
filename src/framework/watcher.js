@@ -11,10 +11,10 @@ export function notifyListeners(target: Object, key: string | Symbol) {
         if (set) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
-                console.log(`Marking ${vm} as dirty: "this.${key}" set to a new value.`);
+                console.log(`Marking ${vm} as dirty: "${key}" set to a new value.`);
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
-                    console.log(`Scheduling ${vm} for rehydration.`);
+                    console.log(`Scheduling ${vm} for rehydration due to property "${key}" value mutation.`);
                     scheduleRehydration(vm);
                 }
             });

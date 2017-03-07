@@ -22,6 +22,7 @@ export function createVM(vnode: ComponentVNode) {
         privates: {},
         cmpProps: {},
         cmpSlots: {},
+        cmpEvents: {},
         component: undefined,
         fragment: [],
         listeners: new Set(),
@@ -72,7 +73,7 @@ export function rehydrate(vm: vm) {
     if (vm.isDirty) {
         const vnode = getLinkedVNode(vm.component);
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        const { sel, Ctor, data: { hook, key, slotset, dataset, on, _props, _class }, children } = vnode;
+        const { sel, Ctor, data: { hook, key, slotset, dataset, _props, _on, _class }, children } = vnode;
         assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
@@ -87,7 +88,7 @@ export function rehydrate(vm: vm) {
         oldVnode.vm = vnode.vm;
         // This list here must be in synch with api.c()
         // TODO: abstract this so we don't have to keep code in sync.
-        vnode.data = { hook, key, slotset, dataset, on, props: {}, _props, _class };
+        vnode.data = { hook, key, slotset, dataset, props: {}, on: {}, _props, _on, _class };
         vnode.children = [];
         patch(oldVnode, vnode);
     }

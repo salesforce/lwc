@@ -178,6 +178,44 @@ export function resetComponentProp(vm: VM, propName: string) {
     }
 }
 
+export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
+    assert.vm(vm);
+    const { cmpEvents } = vm;
+    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+    if (!cmpEvents[eventName]) {
+        cmpEvents[eventName] = [];
+    }
+    assert.block(() => {
+        if (cmpEvents[eventName] && cmpEvents[eventName].indexOf(newHandler) !== -1) {
+            console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
+        }
+    });
+    // TODO: we might need to hook into this listener for Locker Service
+    cmpEvents[eventName].push(newHandler);
+    console.log(`Marking ${vm} as dirty: event handler for "${eventName}" has been added.`);
+    if (!vm.isDirty) {
+        markComponentAsDirty(vm);
+    }
+}
+
+export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
+    assert.vm(vm);
+    const { cmpEvents } = vm;
+    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
+    const listeners = cmpEvents[eventName];
+    const pos = listeners && listeners.indexOf(oldHandler);
+    if (listeners && pos > -1) {
+        cmpEvents[eventName].splice(pos, 1);
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
+        return;
+    }
+    assert.block(() => {
+        console.warn(`Event listener ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the listeners that you have added already for ${vm}.`);
+    });
+}
+
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
     assert.vm(vm);
     const { cmpSlots } = vm;
