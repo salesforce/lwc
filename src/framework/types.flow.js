@@ -42,6 +42,7 @@ declare class VM {
     privates: Object;
     cmpProps: HashTable<any>;
     cmpSlots: HashTable<Array<VNode>>;
+    cmpEvents: HashTable<Array<EventListener>>;
     isScheduled: boolean;
     isDirty: boolean;
     wasInserted: boolean;

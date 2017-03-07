@@ -32,7 +32,7 @@ export class ClassList {
                 let vm = this[INTERNAL_VM];
                 updateComponentProp(vm, 'className', list.join(' '));
                 if (vm.isDirty) {
-                    console.log(`Scheduling ${vm} for rehydration.`);
+                    console.log(`Scheduling ${vm} for rehydration due to changes in the classList collection.`);
                     scheduleRehydration(vm);
                 }
             }
@@ -52,7 +52,7 @@ export class ClassList {
                     resetComponentProp(vm, 'className');
                 }
                 if (vm.isDirty) {
-                    console.log(`Scheduling ${vm} for rehydration.`);
+                    console.log(`Scheduling ${vm} for rehydration due to changes in the classList collection.`);
                     scheduleRehydration(vm);
                 }
             }

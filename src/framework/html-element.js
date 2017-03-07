@@ -1,6 +1,7 @@
 import assert from "./assert.js";
-import { getLinkedVNode } from "./vm.js";
+import { scheduleRehydration, getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
+import { addComponentEventListener, removeComponentEventListener } from "./component.js";
 import {
     defineProperty,
 } from "./language.js";
@@ -11,7 +12,6 @@ const HTMLElementPropsTheGoodParts = [
 const HTMLElementMethodsTheGoodParts = [
     "querySelector",
     "querySelectorAll",
-    "addEventListener",
 ];
 
 class ComponentElement {
@@ -35,6 +35,41 @@ class ComponentElement {
         assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm}.`);
         return elm.dispatchEvent(event);
     }
+
+    addEventListener(type: string, listener: EventListener) {
+        const vnode = getLinkedVNode(this);
+        assert.vnode(vnode);
+        const { vm } = vnode;
+        assert.vm(vm);
+        assert.block(() => {
+            if (arguments.length > 2) {
+                console.error(`this.addEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+            }
+        });
+        addComponentEventListener(vm, type, listener);
+        if (vm.isDirty) {
+            console.log(`Scheduling ${vm} for rehydration due to the addition of an event listener for ${type}.`);
+            scheduleRehydration(vm);
+        }
+    }
+
+    removeEventListener(type: string, listener: EventListener) {
+        const vnode = getLinkedVNode(this);
+        assert.vnode(vnode);
+        const { vm } = vnode;
+        assert.vm(vm);
+        assert.block(() => {
+            if (arguments.length > 2) {
+                console.error(`this.removeEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
+            }
+        });
+        removeComponentEventListener(vm, type, listener);
+        if (vm.isDirty) {
+            console.log(`Scheduling ${vm} for rehydration due to the removal of an event listener for ${type}.`);
+            scheduleRehydration(vm);
+        }
+    }
+
 }
 
 // One time operation to expose the good parts of the web component API,

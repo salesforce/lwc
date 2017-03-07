@@ -41,6 +41,8 @@ interface PlainHTMLElement extends HTMLElement {
 declare class VM {
     privates: HashTable<any>;
     cmpProps: HashTable<any>;
+    cmpSlots: HashTable<Array<VNode>>;
+    cmpEvents: HashTable<Array<EventListener>>;
     isScheduled: boolean;
     isDirty: boolean;
     wasInserted: boolean;
