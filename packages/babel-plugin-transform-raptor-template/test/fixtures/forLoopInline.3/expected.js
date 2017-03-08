@@ -2,21 +2,17 @@ const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
-        "section",
+        "ul",
         {},
-        $api.f([$api.i($cmp.items, function (item, index) {
+        $api.i($cmp.items, function (item, index) {
             return $api.h(
-                "div",
+                "li",
                 {
-                    class: "my-list"
+                    class: item.x
                 },
-                [$api.h(
-                    "p",
-                    {},
-                    ["items"]
-                )]
+                [$api.s(item)]
             );
-        })])
+        })
     )];
 }
 export const templateUsedIds = ["items"];

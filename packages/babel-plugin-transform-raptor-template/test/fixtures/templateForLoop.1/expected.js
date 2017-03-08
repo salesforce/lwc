@@ -4,7 +4,7 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        $api.f([$api.f($api.i($cmp.items, function (item, index) {
+        $api.f($api.i($cmp.items, function (item, index) {
             return [$api.h(
                 "p",
                 {},
@@ -22,7 +22,7 @@ export default function ($api, $cmp, $slotset) {
                 {},
                 ["4", $api.s($cmp.other.foo)]
             )];
-        }))])
+        }))
     )];
 }
 export const templateUsedIds = ["items", "other"];

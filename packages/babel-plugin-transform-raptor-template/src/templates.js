@@ -4,6 +4,7 @@ import { template } from 'babel-core';
  export const moduleExports = template(`
 const memoized = Symbol();
 export default function (${API_PARAM}, ${CMP_INSTANCE}, ${SLOT_SET}) {
+    HOISTED_IDS
     const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
     return STATEMENT;
 }`, { sourceType: 'module' });

@@ -1,0 +1,8 @@
+<template>
+    <template eval:if={isTrue}>
+        Outer
+        <template repeat:for="item of items">
+            <p>Inner</p>
+        </template>
+    </template>
+</template>

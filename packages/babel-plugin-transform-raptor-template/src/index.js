@@ -53,6 +53,13 @@ export default function({ types: t }: BabelTypes): any {
         }
     };
 
+    function validateElementMetadata(meta, path) {
+        if (meta.isSlotTag && Object.keys(meta.directives).length) {
+            const usedDirectives = Object.keys(meta.directives).join(',');
+            throw path.buildCodeFrameError(`You can\'t use directive "${usedDirectives}" in a slot tag`);
+        }
+    }
+
     function validatePrimitiveValues(path) {
         path.traverse({ enter(path) {
             if (!path.isJSX() && !path.isIdentifier() && !path.isMemberExpression() && !path.isLiteral()) {
@@ -88,13 +95,19 @@ export default function({ types: t }: BabelTypes): any {
             Program: {
                 enter(path) {
                     validateTemplateRootFormat(path);
+                    // Create an artificial scope for bindings and varDeclarations
+                    this.customScope.registerScopePathBindings(path);
                 },
                 exit(path, state) {
-                    // Add exports declaration
-                    const body = path.node.body;
-                    const pos = body.findIndex(c => t.isExpressionStatement(c) && c.expression._jsxElement);
-                    const rootElement = path.get(`body.${pos}.expression`);
-                    const exportDeclaration = moduleExports({ STATEMENT: rootElement.node });
+                    // Collect the remaining var declarations to hoist them within the export function later
+                    const vars = this.customScope.getAllVarDeclarations();
+                    const varDeclarations = vars && vars.length ? createVarDeclaration(vars): null;
+
+
+                    const bodyPath = path.get('body');
+                    const rootElement = bodyPath.find(child => (child.isExpressionStatement() && child.node.expression._jsxElement));
+
+                    const exportDeclaration = moduleExports({ STATEMENT: rootElement.node, HOISTED_IDS: varDeclarations });
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
@@ -112,27 +125,30 @@ export default function({ types: t }: BabelTypes): any {
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
                     path.node._jsxElement = true;
+
+                    if (path.node._meta.directives[DIRECTIVES.repeat]) {
+                        path.node._meta.varDeclarations = this.customScope.getAllVarDeclarations();
+                        this.customScope.removeScopePathBindings(path);
+                    }
                 }
+
             },
             JSXOpeningElement: {
                 enter(path, state) {
                     const meta = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
                     path.traverse(NormalizeAttributeVisitor);
                     path.node.attributes.reduce((m, attr) => groupAttrMetadata(m, attr._meta), meta);
-
                     path.node.name = convertJSXIdentifier(path.node.name, meta, path, state);
 
-                    if (meta.scoped.length) {
+                    validateElementMetadata(meta, path);
+
+                    const createsScope = !!meta.directives[DIRECTIVES.repeat];
+                    if (createsScope) {
                         this.customScope.registerScopePathBindings(path, meta.scoped);
                     }
 
                     path.node.attributes = transformAndGroup(path.node.attributes, meta, path.get('attributes'), state);
                     path.node._meta = meta;
-                },
-                exit(path) {
-                    if (this.customScope.hasScope(path)) {
-                        this.customScope.removeScopePathBindings(path);
-                    }
                 }
             },
             JSXExpressionContainer(path) {
@@ -186,12 +202,26 @@ export default function({ types: t }: BabelTypes): any {
         return t.memberExpression(t.identifier(CMP_INSTANCE), member, computed);
     }
 
+    function createVarDeclaration(varDeclarations) {
+        return t.variableDeclaration('const', varDeclarations.map(d => t.variableDeclarator(d.id, d.init)));
+    }
+
     function applyRepeatDirectiveToNode(directives, node) {
         const forExpr = directives[MODIFIERS.for];
         const args = directives.inForScope ? directives.inForScope.map((a) => t.identifier(a)) : [];
-        const func = t.functionExpression(null, args, t.blockStatement([t.returnStatement(node)]));
+        const blockNodes = directives.varDeclarations.length ? [createVarDeclaration(directives.varDeclarations)] : [];
+        let needsFlattening = directives.isTemplate;
+
+        if (t.isArrayExpression(node) && node.elements.length === 1) {
+            node = node.elements[0];
+            needsFlattening = false;
+        }
+
+        blockNodes.push(t.returnStatement(node));
+
+        const func = t.functionExpression(null, args, t.blockStatement(blockNodes));
         const iterator = t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
-        return directives.isTemplate ? applyFlatteningToNode(iterator) : iterator;
+        return needsFlattening ? applyFlatteningToNode(iterator) : iterator;
     }
 
     function applyIfDirectiveToNode(directives, node, nextNode) {
@@ -209,9 +239,10 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     // Convert JSX AST into regular javascript AST
-    function buildChildren(node, path, /*state*/) {
+    function buildChildren(node, path, state) {
         const children = node.children;
         let needsFlattening = false;
+        let hasIteration = false;
         let elems = [];
 
         for (let i = 0; i < children.length; i++) {
@@ -242,15 +273,28 @@ export default function({ types: t }: BabelTypes): any {
                         child = applyIfDirectiveToNode(directives, child, nextChild);
                     }
 
-                    elems.push(applyRepeatDirectiveToNode(directives, child));
-                    needsFlattening = true;
+                    const forTransform = applyRepeatDirectiveToNode(directives, child, state);
+                    hasIteration = true;
+                    elems.push(forTransform);
+
                     continue;
                 }
 
                 if (directives[MODIFIERS.if]) {
-                    elems.push(applyIfDirectiveToNode(directives, child, nextChild));
                     if (directives.isTemplate) {
-                        needsFlattening = true;
+                        const dir = directives[MODIFIERS.if];
+                        const init = t.logicalExpression('||', dir, t.identifier('undefined'));
+                        const id = path.scope.generateUidIdentifier('expr');
+                        state.customScope.pushVarDeclaration({ id, init, kind: 'const' });
+
+                        if (t.isArrayExpression(child)) {
+                            child.elements.forEach(c => elems.push(t.logicalExpression('&&', id, c)));
+                        } else {
+                            elems.push(t.logicalExpression('&&', id, child));
+                        }
+
+                    } else {
+                        elems.push(applyIfDirectiveToNode(directives, child, nextChild));
                     }
                     continue;
                 }
@@ -258,8 +302,13 @@ export default function({ types: t }: BabelTypes): any {
             elems.push(child);
         }
 
-        elems = t.arrayExpression(elems);
-        return needsFlattening ? applyFlatteningToNode(elems): elems;
+        if (!needsFlattening && (elems.length === 1 && hasIteration)) {
+            return elems[0];
+        } else {
+            const multipleChilds = elems.length > 1;
+            elems = t.arrayExpression(elems);
+            return needsFlattening || (hasIteration && multipleChilds) ? applyFlatteningToNode(elems): elems;
+        }
     }
 
     function parseForStatement(attrValue) {
@@ -286,28 +335,40 @@ export default function({ types: t }: BabelTypes): any {
         return forSyntax;
     }
 
-    function groupSlots(attrs, children) {
+
+    function groupSlots(attrs, wrappedChildren) {
         let slotGroups = {};
-        children.elements.forEach(c => {
+        function addSlotElement(c) {
             const slotName = c._meta && c._meta.slot || CONST.DEFAULT_SLOT_NAME;
             if (!slotGroups[slotName]) {
                 slotGroups[slotName] = [];
             }
-            slotGroups[slotName].push(c);
-        });
 
-        slotGroups = Object.keys(slotGroups).map(groupKey => {
+            slotGroups[slotName].push(c);
+        }
+
+        const isCallExpression = t.isCallExpression(wrappedChildren); // For flattening `api.f([...])`
+
+        if (isCallExpression) {
+            addSlotElement(wrappedChildren, true);
+        } else {
+            wrappedChildren.elements.forEach(c => addSlotElement(c));
+        }
+
+        const slotGroupsList = Object.keys(slotGroups).map(groupKey => {
             return t.objectProperty(t.identifier(groupKey), t.arrayExpression(slotGroups[groupKey]));
         });
 
-        attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroups)))
+        if (slotGroupsList.length) {
+            attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroupsList)))
+        }
     }
 
     function buildElementCall(path, state) {
         const openingElmtPath = path.get('openingElement');
         const meta = openingElmtPath.node._meta;
         const tag = openingElmtPath.node.name;
-        const tagName = tag.value;
+        const tagName = tag.value; // (This will be null for customElements since is an Identifier constructor)
         const children = buildChildren(path.node, path, state);
         const attribs = openingElmtPath.node.attributes;
 
@@ -319,22 +380,19 @@ export default function({ types: t }: BabelTypes): any {
         }
 
         // Slots transform
-        if (tagName === CONST.SLOT_TAG) {
+        if (meta.isSlotTag) {
             const slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
             const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
             const slot = t.logicalExpression('||', slotSet, children);
-            meta.isSlotTag = true;
             slot._meta = meta;
-            return slot
+            return slot;
         }
 
         const exprTag = applyPrimitive(tag._primitive || CREATE_ELEMENT);
         const args = [tag, attribs, children];
 
         if (tag._customElement) {
-            if (children.elements.length) {
-                groupSlots(attribs, children); // changes attribs as side-effect
-            }
+            groupSlots(attribs, children); // changes attribs as side-effect
             args.unshift(t.stringLiteral(tag._customElement));
             args.pop(); //remove children
         }
@@ -385,6 +443,8 @@ export default function({ types: t }: BabelTypes): any {
         if (isSVG(node.name)) {
             meta.isSvgTag = true;
         }
+
+        meta.isSlotTag = node.name === CONST.SLOT_TAG;
 
         return t.stringLiteral(node.name);
     }
@@ -551,6 +611,7 @@ export default function({ types: t }: BabelTypes): any {
         const id = path.scope.generateUidIdentifier("m");
         const m = memoizeLookup({ ID: id });
         const hoistedMemoization = memoizeFunction({ ID: id, STATEMENT: expression });
+        hoistedMemoization._memoize = true;
         root.unshiftContainer('body', hoistedMemoization);
         return m.expression;
     }
