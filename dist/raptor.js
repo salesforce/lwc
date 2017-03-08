@@ -255,10 +255,10 @@ function notifyListeners(target, key) {
         if (set) {
             set.forEach(function (vm) {
                 assert.vm(vm);
-                console.log("Marking " + vm + " as dirty: \"this." + key + "\" set to a new value.");
+                console.log("Marking " + vm + " as dirty: \"" + key + "\" set to a new value.");
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
-                    console.log("Scheduling " + vm + " for rehydration.");
+                    console.log("Scheduling " + vm + " for rehydration due to property \"" + key + "\" value mutation.");
                     scheduleRehydration(vm);
                 }
             });
@@ -300,9 +300,21 @@ function establishContext(ctx) {
 var lifeCycleHooks = {
     insert: function insert(vnode) {
         assert.vnode(vnode);
-        var vm = vnode.vm;
+        var vm = vnode.vm,
+            children = vnode.children;
 
         assert.vm(vm);
+        assert.isFalse(vm.wasInserted, vm + " is already inserted.");
+        vm.wasInserted = true;
+        if (vm.isDirty) {
+            // this code path guarantess that when patching the custom element for the first time,
+            // the body is computed only after the element is in the DOM, otherwise the hooks
+            // for any children's vnode are not going to be useful.
+            rehydrate(vm);
+            // replacing the vnode's children collection so successive patching routines
+            // will diff against the full tree, not a only partial one.
+            children.splice(0, children.length).push.apply(children, vm.fragment);
+        }
         if (vm.component.connectedCallback) {
             invokeComponentConnectedCallback(vm);
         }
@@ -313,6 +325,8 @@ var lifeCycleHooks = {
         var vm = vnode.vm;
 
         assert.vm(vm);
+        assert.isTrue(vm.wasInserted, vm + " is not inserted.");
+        vm.wasInserted = false;
         if (vm.component.disconnectedCallback) {
             invokeComponentDisconnectedCallback(vm);
         }
@@ -425,11 +439,11 @@ function c(sel, Ctor) {
         dataset = data.dataset,
         slotset = data.slotset,
         _props = data.props,
-        on = data.on,
+        _on = data.on,
         _class = data.class;
 
     assert.isTrue(arguments.length < 4, "Compiler Issue: Custom elements expect up to 3 arguments, received " + arguments.length + " instead.");
-    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, dataset: dataset, on: on, props: {}, _props: _props, _class: _class }, []);
+    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, dataset: dataset, on: {}, props: {}, _props: _props, _on: _on, _class: _class }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }
@@ -540,10 +554,16 @@ function normalizeRenderResult(vm, elementOrVnodeOrArrayOfVnodes) {
     var vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
     for (var i = 0; i < vnodes.length; i += 1) {
         var elm = vnodes[i];
-        if (elm instanceof Node) {
+        // TODO: we can improve this detection mechanism
+        if (elm && (elm.sel || elm.text)) {
+            // this is usually the default behavior, we wire this up for that reason.
+            assert.vnode(elm, "Invalid element " + vnodes[i] + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
+        } else if (elm instanceof Node) {
             vnodes[i] = wrapDOMNode(elm);
+        } else {
+            // supporting text nodes
+            vnodes[i] = { text: elm === null || elm === undefined ? '' : elm + '' };
         }
-        assert.isTrue(vnodes[i] && vnodes[i].sel, "Invalid element " + vnodes[i] + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
     }
     return vnodes;
 }
@@ -933,6 +953,46 @@ function resetComponentProp(vm, propName) {
     }
 }
 
+function addComponentEventListener(vm, eventName, newHandler) {
+    assert.vm(vm);
+    var cmpEvents = vm.cmpEvents;
+
+    assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + " by adding a new event listener for \"" + eventName + "\".");
+    if (!cmpEvents[eventName]) {
+        cmpEvents[eventName] = [];
+    }
+    assert.block(function () {
+        if (cmpEvents[eventName] && cmpEvents[eventName].indexOf(newHandler) !== -1) {
+            console.warn("Adding the same event listener " + newHandler + " for the event \"" + eventName + "\" will result on calling the same handler multiple times for " + vm + ". In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component " + vm + ".");
+        }
+    });
+    // TODO: we might need to hook into this listener for Locker Service
+    cmpEvents[eventName].push(newHandler);
+    console.log("Marking " + vm + " as dirty: event handler for \"" + eventName + "\" has been added.");
+    if (!vm.isDirty) {
+        markComponentAsDirty(vm);
+    }
+}
+
+function removeComponentEventListener(vm, eventName, oldHandler) {
+    assert.vm(vm);
+    var cmpEvents = vm.cmpEvents;
+
+    assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + " by removing an event listener for \"" + eventName + "\".");
+    var listeners = cmpEvents[eventName];
+    var pos = listeners && listeners.indexOf(oldHandler);
+    if (listeners && pos > -1) {
+        cmpEvents[eventName].splice(pos, 1);
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
+        return;
+    }
+    assert.block(function () {
+        console.warn("Event listener " + oldHandler + " not found for event \"" + eventName + "\", this is an unneccessary operation. Only attempt to remove the listeners that you have added already for " + vm + ".");
+    });
+}
+
 function addComponentSlot(vm, slotName, newValue) {
     assert.vm(vm);
     var cmpSlots = vm.cmpSlots;
@@ -1013,13 +1073,15 @@ function createVM(vnode) {
     var vm = {
         isScheduled: false,
         isDirty: true,
+        wasInserted: !!vnode.isRoot,
         def: def,
         context: {},
         privates: {},
         cmpProps: {},
         cmpSlots: {},
+        cmpEvents: {},
         component: undefined,
-        fragment: undefined,
+        fragment: [],
         listeners: new Set()
     };
     assert.block(function () {
@@ -1066,32 +1128,36 @@ function getLinkedVNode(component) {
 function rehydrate(vm) {
     assert.vm(vm);
     if (vm.isDirty) {
-        var oldVnode = getLinkedVNode(vm.component);
-        assert.isTrue(oldVnode.elm instanceof HTMLElement, "rehydration can only happen after " + vm + " was patched the first time.");
-        var sel = oldVnode.sel,
-            Ctor = oldVnode.Ctor,
-            _oldVnode$data = oldVnode.data,
-            key = _oldVnode$data.key,
-            slotset = _oldVnode$data.slotset,
-            dataset = _oldVnode$data.dataset,
-            on = _oldVnode$data.on,
-            _props = _oldVnode$data._props,
-            _class = _oldVnode$data._class,
-            children = oldVnode.children;
+        var vnode = getLinkedVNode(vm.component);
+        assert.isTrue(vnode.elm instanceof HTMLElement, "rehydration can only happen after " + vm + " was patched the first time.");
+        var sel = vnode.sel,
+            Ctor = vnode.Ctor,
+            _vnode$data = vnode.data,
+            hook = _vnode$data.hook,
+            key = _vnode$data.key,
+            slotset = _vnode$data.slotset,
+            dataset = _vnode$data.dataset,
+            _props = _vnode$data._props,
+            _on = _vnode$data._on,
+            _class = _vnode$data._class,
+            children = vnode.children;
 
         assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
-        // a dirty state, we create a new VNode with the exact same data was used
+        // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
         // to patch this vnode the last time, mimic what happen when the
-        // owner re-renders.
-        var vnode = c(sel, Ctor, {
-            key: key,
-            slotset: slotset,
-            dataset: dataset,
-            on: on,
-            props: _props,
-            class: _class
-        });
+        // owner re-renders, but we do so by keeping the vnode originally used by parent
+        // as the source of true, in case the parent tries to rehydrate against that one.
+        // TODO: we can optimize this proces by using proto-chain, or Object.assign() without
+        // having to call h() directly.
+        var oldVnode = h$1(sel, vnode.data, vnode.children);
+        oldVnode.Ctor = Ctor;
+        oldVnode.elm = vnode.elm;
+        oldVnode.vm = vnode.vm;
+        // This list here must be in synch with api.c()
+        // TODO: abstract this so we don't have to keep code in sync.
+        vnode.data = { hook: hook, key: key, slotset: slotset, dataset: dataset, props: {}, on: {}, _props: _props, _on: _on, _class: _class };
+        vnode.children = [];
         patch(oldVnode, vnode);
     }
     vm.isScheduled = false;
@@ -1273,6 +1339,56 @@ var componentClassList = {
     update: syncClassNames
 };
 
+function syncEvents(oldVnode, vnode) {
+    var vm = vnode.vm;
+
+    if (!vm) {
+        return;
+    }
+
+    var oldOn = oldVnode.data._on;
+    var newOn = vnode.data._on;
+
+    var key = void 0,
+        cur = void 0,
+        old = void 0;
+
+    // infuse key-value pairs from _on into the component
+    if (oldOn !== newOn && (oldOn || newOn)) {
+        oldOn = oldOn || {};
+        newOn = newOn || {};
+        // removed event listeners should be reset in component's events
+        for (key in oldOn) {
+            if (!(key in newOn)) {
+                removeComponentEventListener(vm, key, oldOn[key]);
+            }
+        }
+
+        // new or different event listeners should be set in component's events
+        for (key in newOn) {
+            cur = newOn[key];
+            old = oldOn[key];
+            if (key in oldOn && old != cur) {
+                removeComponentEventListener(vm, key, oldOn[key]);
+            }
+            if (oldOn[key] != cur) {
+                addComponentEventListener(vm, key, cur);
+            }
+        }
+    }
+
+    // reflection of component event listeners into data.on for the regular diffing algo
+    var on = vnode.data.on;
+
+    assert.invariant(Object.getOwnPropertyNames(on).length === 0, 'vnode.data.on should be an empty object.');
+    Object.assign(on, vm.cmpEvents);
+}
+
+var componentEvents = {
+    create: syncEvents,
+    update: syncEvents
+};
+
 function rerender(oldVnode, vnode) {
     var vm = vnode.vm;
 
@@ -1280,23 +1396,10 @@ function rerender(oldVnode, vnode) {
         return;
     }
     var children = vnode.children;
-    // if diffing against an empty element, it means vnode was created and
-    // has never been rendered. an immidiate rehydration is
-    // needed otherwise the children are not going to be populated.
+    // if diffing is against an inserted VM, it means the element is already
+    // in the DOM and we can compute its body.
 
-    if (oldVnode.sel === '') {
-        assert.invariant(vm.isDirty, vnode + " should be dirty after creation");
-        assert.invariant(vm.fragment === undefined, vnode + " should not have a fragment after creation");
-        rehydrate(vm);
-        // avoiding the rest of this diffing entirely because it happens already in rehydrate
-        var oldCh = oldVnode.children;
-
-        oldCh.splice(0, oldCh.length).push.apply(oldCh, vm.fragment);
-        // TODO: this is a fork of the fiber since the create hook is called during a
-        // patching process. How can we optimize this to reuse the same queue?
-        // and idea is to do this part in the next turn (a la fiber)
-        // PR https://github.com/snabbdom/snabbdom/pull/234 might help.
-    } else if (vm.isDirty) {
+    if (vm.wasInserted && vm.isDirty) {
         assert.invariant(oldVnode.children !== children, "If component is dirty, the children collections must be different. In theory this should never happen.");
         renderComponent(vm);
     }
@@ -2012,7 +2115,7 @@ module.exports = {
 
 var on = interopDefault(eventlisteners);
 
-var patch = init([componentInit, componentClassList, componentSlotset, componentProps, componentChildren, props, attrs, style$1, dataset$1, className, on]);
+var patch = init([componentInit, componentClassList, componentSlotset, componentProps, componentEvents, componentChildren, props, attrs, style$1, dataset$1, className, on]);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -2132,6 +2235,7 @@ function upgradeElement(element, Ctor) {
     var slotset = getInitialSlots(element, Ctor);
     var tagName = element.tagName.toLowerCase();
     var vnode = c(tagName, Ctor, { props: props, slotset: slotset, class: element.className || undefined });
+    vnode.isRoot = true;
     // TODO: eventually after updating snabbdom we can use toVNode(element)
     // as the first argument to reconstruct the vnode that represents the
     // current state.
@@ -2269,7 +2373,7 @@ var ClassList = function () {
                     var vm = _this[INTERNAL_VM];
                     updateComponentProp(vm, 'className', list.join(' '));
                     if (vm.isDirty) {
-                        console.log("Scheduling " + vm + " for rehydration.");
+                        console.log("Scheduling " + vm + " for rehydration due to changes in the classList collection.");
                         scheduleRehydration(vm);
                     }
                 }
@@ -2298,7 +2402,7 @@ var ClassList = function () {
                         resetComponentProp(vm, 'className');
                     }
                     if (vm.isDirty) {
-                        console.log("Scheduling " + vm + " for rehydration.");
+                        console.log("Scheduling " + vm + " for rehydration due to changes in the classList collection.");
                         scheduleRehydration(vm);
                     }
                 }
@@ -2356,7 +2460,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var HTMLElementPropsTheGoodParts = ["tagName"];
-var HTMLElementMethodsTheGoodParts = ["querySelector", "querySelectorAll", "addEventListener"];
+var HTMLElementMethodsTheGoodParts = ["querySelector", "querySelectorAll"];
 
 var ComponentElement = function () {
     function ComponentElement() {
@@ -2383,6 +2487,48 @@ var ComponentElement = function () {
 
             assert.isTrue(elm instanceof HTMLElement, "Invalid association between component " + this + " and element " + elm + ".");
             return elm.dispatchEvent(event);
+        }
+    }, {
+        key: "addEventListener",
+        value: function addEventListener(type, listener) {
+            var _arguments = arguments;
+
+            var vnode = getLinkedVNode(this);
+            assert.vnode(vnode);
+            var vm = vnode.vm;
+
+            assert.vm(vm);
+            assert.block(function () {
+                if (_arguments.length > 2) {
+                    console.error("this.addEventListener() on component " + vm + " does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.");
+                }
+            });
+            addComponentEventListener(vm, type, listener);
+            if (vm.isDirty) {
+                console.log("Scheduling " + vm + " for rehydration due to the addition of an event listener for " + type + ".");
+                scheduleRehydration(vm);
+            }
+        }
+    }, {
+        key: "removeEventListener",
+        value: function removeEventListener(type, listener) {
+            var _arguments2 = arguments;
+
+            var vnode = getLinkedVNode(this);
+            assert.vnode(vnode);
+            var vm = vnode.vm;
+
+            assert.vm(vm);
+            assert.block(function () {
+                if (_arguments2.length > 2) {
+                    console.error("this.removeEventListener() on component " + vm + " does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.");
+                }
+            });
+            removeComponentEventListener(vm, type, listener);
+            if (vm.isDirty) {
+                console.log("Scheduling " + vm + " for rehydration due to the removal of an event listener for " + type + ".");
+                scheduleRehydration(vm);
+            }
         }
     }]);
 

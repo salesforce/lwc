@@ -47318,6 +47318,13 @@ exports.default = function (_ref) {
         }
     };
 
+    function validateElementMetadata(meta, path) {
+        if (meta.isSlotTag && Object.keys(meta.directives).length) {
+            var usedDirectives = Object.keys(meta.directives).join(',');
+            throw path.buildCodeFrameError('You can\'t use directive "' + usedDirectives + '" in a slot tag');
+        }
+    }
+
     function validatePrimitiveValues(path) {
         path.traverse({
             enter: function enter(path) {
@@ -47356,15 +47363,20 @@ exports.default = function (_ref) {
             Program: {
                 enter: function enter(path) {
                     validateTemplateRootFormat(path);
+                    // Create an artificial scope for bindings and varDeclarations
+                    this.customScope.registerScopePathBindings(path);
                 },
                 exit: function exit(path, state) {
-                    // Add exports declaration
-                    var body = path.node.body;
-                    var pos = body.findIndex(function (c) {
-                        return t.isExpressionStatement(c) && c.expression._jsxElement;
+                    // Collect the remaining var declarations to hoist them within the export function later
+                    var vars = this.customScope.getAllVarDeclarations();
+                    var varDeclarations = vars && vars.length ? createVarDeclaration(vars) : null;
+
+                    var bodyPath = path.get('body');
+                    var rootElement = bodyPath.find(function (child) {
+                        return child.isExpressionStatement() && child.node.expression._jsxElement;
                     });
-                    var rootElement = path.get('body.' + pos + '.expression');
-                    var exportDeclaration = (0, _templates.moduleExports)({ STATEMENT: rootElement.node });
+
+                    var exportDeclaration = (0, _templates.moduleExports)({ STATEMENT: rootElement.node, HOISTED_IDS: varDeclarations });
                     rootElement.replaceWithMultiple(exportDeclaration);
 
                     // Generate used identifiers
@@ -47378,6 +47390,11 @@ exports.default = function (_ref) {
                     prettyPrintExpr(callExpr);
                     path.replaceWith(t.inherits(callExpr, path.node));
                     path.node._jsxElement = true;
+
+                    if (path.node._meta.directives[DIRECTIVES.repeat]) {
+                        path.node._meta.varDeclarations = this.customScope.getAllVarDeclarations();
+                        this.customScope.removeScopePathBindings(path);
+                    }
                 }
             },
             JSXOpeningElement: {
@@ -47387,20 +47404,17 @@ exports.default = function (_ref) {
                     path.node.attributes.reduce(function (m, attr) {
                         return groupAttrMetadata(m, attr._meta);
                     }, meta);
-
                     path.node.name = convertJSXIdentifier(path.node.name, meta, path, state);
 
-                    if (meta.scoped.length) {
+                    validateElementMetadata(meta, path);
+
+                    var createsScope = !!meta.directives[DIRECTIVES.repeat];
+                    if (createsScope) {
                         this.customScope.registerScopePathBindings(path, meta.scoped);
                     }
 
                     path.node.attributes = transformAndGroup(path.node.attributes, meta, path.get('attributes'), state);
                     path.node._meta = meta;
-                },
-                exit: function exit(path) {
-                    if (this.customScope.hasScope(path)) {
-                        this.customScope.removeScopePathBindings(path);
-                    }
                 }
             },
             JSXExpressionContainer: function JSXExpressionContainer(path) {
@@ -47456,14 +47470,30 @@ exports.default = function (_ref) {
         return t.memberExpression(t.identifier(CMP_INSTANCE), member, computed);
     }
 
+    function createVarDeclaration(varDeclarations) {
+        return t.variableDeclaration('const', varDeclarations.map(function (d) {
+            return t.variableDeclarator(d.id, d.init);
+        }));
+    }
+
     function applyRepeatDirectiveToNode(directives, node) {
         var forExpr = directives[MODIFIERS.for];
         var args = directives.inForScope ? directives.inForScope.map(function (a) {
             return t.identifier(a);
         }) : [];
-        var func = t.functionExpression(null, args, t.blockStatement([t.returnStatement(node)]));
+        var blockNodes = directives.varDeclarations.length ? [createVarDeclaration(directives.varDeclarations)] : [];
+        var needsFlattening = directives.isTemplate;
+
+        if (t.isArrayExpression(node) && node.elements.length === 1) {
+            node = node.elements[0];
+            needsFlattening = false;
+        }
+
+        blockNodes.push(t.returnStatement(node));
+
+        var func = t.functionExpression(null, args, t.blockStatement(blockNodes));
         var iterator = t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
-        return directives.isTemplate ? applyFlatteningToNode(iterator) : iterator;
+        return needsFlattening ? applyFlatteningToNode(iterator) : iterator;
     }
 
     function applyIfDirectiveToNode(directives, node, nextNode) {
@@ -47481,9 +47511,10 @@ exports.default = function (_ref) {
     }
 
     // Convert JSX AST into regular javascript AST
-    function buildChildren(node, path) /*state*/{
+    function buildChildren(node, path, state) {
         var children = node.children;
         var needsFlattening = false;
+        var hasIteration = false;
         var elems = [];
 
         for (var i = 0; i < children.length; i++) {
@@ -47514,15 +47545,31 @@ exports.default = function (_ref) {
                         child = applyIfDirectiveToNode(directives, child, nextChild);
                     }
 
-                    elems.push(applyRepeatDirectiveToNode(directives, child));
-                    needsFlattening = true;
+                    var forTransform = applyRepeatDirectiveToNode(directives, child, state);
+                    hasIteration = true;
+                    elems.push(forTransform);
+
                     continue;
                 }
 
                 if (directives[MODIFIERS.if]) {
-                    elems.push(applyIfDirectiveToNode(directives, child, nextChild));
                     if (directives.isTemplate) {
-                        needsFlattening = true;
+                        (function () {
+                            var dir = directives[MODIFIERS.if];
+                            var init = t.logicalExpression('||', dir, t.identifier('undefined'));
+                            var id = path.scope.generateUidIdentifier('expr');
+                            state.customScope.pushVarDeclaration({ id: id, init: init, kind: 'const' });
+
+                            if (t.isArrayExpression(child)) {
+                                child.elements.forEach(function (c) {
+                                    return elems.push(t.logicalExpression('&&', id, c));
+                                });
+                            } else {
+                                elems.push(t.logicalExpression('&&', id, child));
+                            }
+                        })();
+                    } else {
+                        elems.push(applyIfDirectiveToNode(directives, child, nextChild));
                     }
                     continue;
                 }
@@ -47530,8 +47577,13 @@ exports.default = function (_ref) {
             elems.push(child);
         }
 
-        elems = t.arrayExpression(elems);
-        return needsFlattening ? applyFlatteningToNode(elems) : elems;
+        if (!needsFlattening && elems.length === 1 && hasIteration) {
+            return elems[0];
+        } else {
+            var multipleChilds = elems.length > 1;
+            elems = t.arrayExpression(elems);
+            return needsFlattening || hasIteration && multipleChilds ? applyFlatteningToNode(elems) : elems;
+        }
     }
 
     function parseForStatement(attrValue) {
@@ -47558,28 +47610,41 @@ exports.default = function (_ref) {
         return forSyntax;
     }
 
-    function groupSlots(attrs, children) {
+    function groupSlots(attrs, wrappedChildren) {
         var slotGroups = {};
-        children.elements.forEach(function (c) {
+        function addSlotElement(c) {
             var slotName = c._meta && c._meta.slot || CONST.DEFAULT_SLOT_NAME;
             if (!slotGroups[slotName]) {
                 slotGroups[slotName] = [];
             }
-            slotGroups[slotName].push(c);
-        });
 
-        slotGroups = Object.keys(slotGroups).map(function (groupKey) {
+            slotGroups[slotName].push(c);
+        }
+
+        var isCallExpression = t.isCallExpression(wrappedChildren); // For flattening `api.f([...])`
+
+        if (isCallExpression) {
+            addSlotElement(wrappedChildren, true);
+        } else {
+            wrappedChildren.elements.forEach(function (c) {
+                return addSlotElement(c);
+            });
+        }
+
+        var slotGroupsList = Object.keys(slotGroups).map(function (groupKey) {
             return t.objectProperty(t.identifier(groupKey), t.arrayExpression(slotGroups[groupKey]));
         });
 
-        attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroups)));
+        if (slotGroupsList.length) {
+            attrs.properties.push(t.objectProperty(t.identifier('slotset'), t.objectExpression(slotGroupsList)));
+        }
     }
 
     function buildElementCall(path, state) {
         var openingElmtPath = path.get('openingElement');
         var meta = openingElmtPath.node._meta;
         var tag = openingElmtPath.node.name;
-        var tagName = tag.value;
+        var tagName = tag.value; // (This will be null for customElements since is an Identifier constructor)
         var children = buildChildren(path.node, path, state);
         var attribs = openingElmtPath.node.attributes;
 
@@ -47591,11 +47656,10 @@ exports.default = function (_ref) {
         }
 
         // Slots transform
-        if (tagName === CONST.SLOT_TAG) {
+        if (meta.isSlotTag) {
             var slotName = meta.maybeSlotNameDef || CONST.DEFAULT_SLOT_NAME;
             var slotSet = t.identifier(SLOT_SET + '.' + slotName);
             var slot = t.logicalExpression('||', slotSet, children);
-            meta.isSlotTag = true;
             slot._meta = meta;
             return slot;
         }
@@ -47604,9 +47668,7 @@ exports.default = function (_ref) {
         var args = [tag, attribs, children];
 
         if (tag._customElement) {
-            if (children.elements.length) {
-                groupSlots(attribs, children); // changes attribs as side-effect
-            }
+            groupSlots(attribs, children); // changes attribs as side-effect
             args.unshift(t.stringLiteral(tag._customElement));
             args.pop(); //remove children
         }
@@ -47656,6 +47718,8 @@ exports.default = function (_ref) {
         if ((0, _utils.isSVG)(node.name)) {
             meta.isSvgTag = true;
         }
+
+        meta.isSlotTag = node.name === CONST.SLOT_TAG;
 
         return t.stringLiteral(node.name);
     }
@@ -47827,6 +47891,7 @@ exports.default = function (_ref) {
         var id = path.scope.generateUidIdentifier("m");
         var m = (0, _templates.memoizeLookup)({ ID: id });
         var hoistedMemoization = (0, _templates.memoizeFunction)({ ID: id, STATEMENT: expression });
+        hoistedMemoization._memoize = true;
         root.unshiftContainer('body', hoistedMemoization);
         return m.expression;
     }
@@ -51965,8 +52030,28 @@ var _class = function () {
         }
     }, {
         key: "registerScopePathBindings",
-        value: function registerScopePathBindings(path, bindings) {
-            this.scoped.push({ scope: path.node, bindings: bindings });
+        value: function registerScopePathBindings(path, bindings, varDeclarations) {
+            varDeclarations = varDeclarations || [];
+            bindings = bindings || [];
+            this.scoped.push({ scope: path.node, bindings: bindings, varDeclarations: varDeclarations });
+        }
+    }, {
+        key: "getAllVarDeclarations",
+        value: function getAllVarDeclarations() {
+            var peak = this.scoped[this.scoped.length - 1];
+            return peak.varDeclarations;
+        }
+    }, {
+        key: "pushVarDeclaration",
+        value: function pushVarDeclaration(varDeclaration) {
+            var peak = this.scoped[this.scoped.length - 1];
+            peak.varDeclarations.push(varDeclaration);
+        }
+    }, {
+        key: "pushBindings",
+        value: function pushBindings(bindings) {
+            var peak = this.scoped[this.scoped.length - 1];
+            peak.bindings.push.apply(peak.bindings, bindings);
         }
     }, {
         key: "hasScope",
@@ -51976,9 +52061,13 @@ var _class = function () {
         }
     }, {
         key: "removeScopePathBindings",
-        value: function removeScopePathBindings() {
+        value: function removeScopePathBindings() /*path*/{
             // Maybe add a guard for the right path?
             this.scoped.pop();
+            //const node = this.scoped.pop();
+            // node.varDeclarations.forEach((v) => {
+            //     path.scope.push(v);
+            // });
         }
     }, {
         key: "getAllBindings",
@@ -52335,7 +52424,7 @@ var _constants = __webpack_require__(165);
 
 var _babelCore = __webpack_require__(269);
 
-var moduleExports = exports.moduleExports = (0, _babelCore.template)('\nconst memoized = Symbol();\nexport default function (' + _constants.API_PARAM + ', ' + _constants.CMP_INSTANCE + ', ' + _constants.SLOT_SET + ') {\n    const m = ' + _constants.CMP_INSTANCE + '[memoized] || (' + _constants.CMP_INSTANCE + '[memoized] = {});\n    return STATEMENT;\n}', { sourceType: 'module' });
+var moduleExports = exports.moduleExports = (0, _babelCore.template)('\nconst memoized = Symbol();\nexport default function (' + _constants.API_PARAM + ', ' + _constants.CMP_INSTANCE + ', ' + _constants.SLOT_SET + ') {\n    HOISTED_IDS\n    const m = ' + _constants.CMP_INSTANCE + '[memoized] || (' + _constants.CMP_INSTANCE + '[memoized] = {});\n    return STATEMENT;\n}', { sourceType: 'module' });
 
 var memoizeLookup = exports.memoizeLookup = (0, _babelCore.template)('m.ID || (m.ID = ID(' + _constants.API_PARAM + ', ' + _constants.CMP_INSTANCE + '))');
 var memoizeFunction = exports.memoizeFunction = (0, _babelCore.template)('const ID = function (' + _constants.API_PARAM + ', ' + _constants.CMP_INSTANCE + ') { return STATEMENT; }');
@@ -109566,7 +109655,7 @@ function compile(entry, options) {
     }
 }
 
-var version = exports.version = "0.3.4";
+var version = exports.version = "0.3.5";
 
 /***/ })
 /******/ ]);
