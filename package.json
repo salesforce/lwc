@@ -8,10 +8,8 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "start": "lerna exec npm start --scope raptor-engine",
-
     "clean:dist": "rimraf dist/",
     "clean:packages": "lerna run clean",
-
     "preversion": "npm run build",
     "prepublish": "lerna bootstrap && npm run build"
   },
@@ -19,15 +17,19 @@
     "type": "git",
     "url": "https://git.soma.salesforce.com/raptor/raptor.git"
   },
+  "bin": {
+    "raptor-template": "bin/raptor-template-cli.js"
+  },
   "devDependencies": {
-    "lerna": "2.0.0-beta.38",
     "babel-cli": "^6.23.0",
     "babel-eslint": "^7.1.1",
+    "babel-preset-env": "^1.2.1",
     "cross-env": "^3.1.4",
     "eslint": "^3.0.1",
     "eslint-plugin-flowtype": "^2.7.1",
-    "mocha": "^3.2.0",
     "flow-bin": "^0.39.0",
+    "lerna": "2.0.0-beta.38",
+    "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
     "typedef-converter": "^0.1.4",

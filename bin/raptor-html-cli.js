@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 /* eslint-env node */
-const parser = require('../src/index');
+const parser = require('../packages/raptor-html-cleanup-transform/src/index.js');
 const fs = require('fs');
 const path = require('path');
 
 let file;
 const filePath = process.argv[2] || '';
-const absPath = path.resolve(filePath.substring(2));
+const absPath = path.resolve(filePath);
 console.log('Reading:', absPath, '\n\n');
 
     try {
         file = fs.readFileSync(absPath).toString();
     } catch (e) {
         console.log('ERROR reading file');
-        console.log('Usage: template-cli -- --file/path/here.js');
+        console.log('Usage: html-cli file/path/here.js');
     }
 
     if (file) {

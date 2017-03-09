@@ -1,11 +1,11 @@
 #!/usr/bin/env babel-node
 /* eslint-env node */
 
-import {compile} from '../src/index';
+import { compile } from '../packages/raptor-compiler-core/src/index.js';
 import path from 'path';
 
 const filePath = process.argv[2] || '';
-const entry = path.resolve(filePath.substring(2));
+const entry = path.resolve(filePath);
 const options = {format: 'aura'};
 
 compile(entry, options)
