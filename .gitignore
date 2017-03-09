@@ -2,8 +2,8 @@
 -local-*
 .DS_Store
 node_modules
-fake-cdn/**/*.js
-fake-cdn/**/*.map
+packages/raptor-engine/fake-cdn/**/*.js
+packages/raptor-engine/fake-cdn/**/*.map
 coverage
 .vscode
 *.log

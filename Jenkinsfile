@@ -27,7 +27,7 @@ node("raptor_node") {
 
         stage("Static Analysis") {
             // TODO - when flow errors are fixed change this to "npm run lint"
-            sh "npm run eslint"
+            sh "npm run lint"
         }
 
         stage("Test") {

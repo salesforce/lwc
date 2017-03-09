@@ -1,0 +1,99 @@
+{
+  "name": "raptor-engine",
+  "version": "0.4.0",
+  "description": "Raptor Engine",
+  "main": "./lib/raptor.js",
+  "module": "./lib/raptor.es.js",
+  "jsnext:main": "./lib/raptor.es.js",
+  "scripts": {
+    "clean": "rimraf dist/ fake-cdn/ && git checkout fake-cdn",
+    "lint": "npm run eslint",
+    "test": "jest --coverage --verbose",
+    "build": "npm run build:lib",
+    "start": "npm run build:runtime && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.dist.js & node scripts/rollup.services.js --watch & node scripts/rollup.components.js --watch && forever stop raptor",
+    "stop": "forever stopall",
+
+    "build:lib": "rollup -c scripts/rollup.config.lib.js",
+    "build:dist:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.dist.js",
+    "build:dist:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.dist.js",
+    "build:interop:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.interop.js",
+    "build:interop:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.interop.js",
+    "build:dist": "npm run build:dist:dev && npm run build:dist:prod && npm run build:interop:dev && npm run build:interop:prod",
+    "build:runtime": "babel-external-helpers > fake-cdn/components/babelHelpers.js",
+    "build:components": "node scripts/rollup.components.js",
+    "build:services": "node scripts/rollup.services.js",
+    "build:all": "npm run build:runtime && npm run build:components --production && npm run build:services --production && npm run build:dist && npm run build:lib",
+
+    "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
+    "flow": "flow --show-all-errors",
+    "eslint": "eslint src/",
+    "flowlint": "flow",
+    "preversion": "npm run clean && npm run build",
+    "prepublish": "npm run clean && npm run build"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "17.0.2",
+    "babel-plugin-transform-class-properties": "^6.11.5",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-es2015-rollup": "^1.1.1",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-loader": "^6.2.10",
+    "cross-env": "^3.1.4",
+    "eslint": "^3.0.1",
+    "eslint-plugin-flowtype": "^2.7.1",
+    "expect": "^1.20.2",
+    "express": "^4.14.0",
+    "flow-bin": "^0.39.0",
+    "forever": "^0.15.2",
+    "glob": "^7.1.0",
+    "jest-cli": "17.0.2",
+    "mocha": "^3.2.0",
+    "power-assert": "^1.4.2",
+    "rimraf": "^2.5.4",
+    "rollup": "^0.34.3",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^3.3.1",
+    "rollup-plugin-flow": "^v1.1.0",
+    "rollup-plugin-inject": "^1.4.1",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-raptor-compiler": "0.4.0",
+    "rollup-plugin-replace": "^1.1.1",
+    "rollup-plugin-strip": "^1.1.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0",
+    "serve-static": "^1.11.1",
+    "sinon": "^1.17.6",
+    "snabbdom": "^0.5.4",
+    "typedef-converter": "^0.1.4",
+    "typescript-eslint-parser": "eslint/typescript-eslint-parser",
+    "string-replace-webpack-plugin": "0.0.5",
+    "watch": "^1.0.0",
+    "yargs": "^6.0.0"
+  },
+  "jest": {
+    "testRegex": "/__tests__/",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageReporters": [
+      "lcov",
+      "text",
+      "text-summary",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 5,
+        "functions": 10,
+        "lines": 10,
+        "statements": 10
+      }
+    }
+  }
+}
