@@ -75,9 +75,9 @@ export function hookComponentLocalProperty(vm: VM, key: string | Symbol) {
     const { get, set, configurable } = descriptor;
     assert.block(() => {
         if (get || set || !configurable) {
-            // TODO: classList and dataset are only really ignored when extending HTMLElement,
+            // TODO: classList is only really ignored when extending HTMLElement,
             // we should take that into consideration on this condition at some point.
-            if (key !== 'classList' && key !== 'dataset') {
+            if (key !== 'classList') {
                 console.warn(`component ${vm} has a property key ${key} that cannot be watched for changes.`);
             }
         }

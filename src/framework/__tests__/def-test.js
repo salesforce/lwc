@@ -9,7 +9,6 @@ describe('def.js', () => {
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
                 props: {},
-                attrs: {},
                 methods: {},
                 observedAttrs: {},
             });
@@ -22,7 +21,6 @@ describe('def.js', () => {
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
                 props: {},
-                attrs: {},
                 methods: {},
                 observedAttrs: {
                     foo: 1,
@@ -40,7 +38,6 @@ describe('def.js', () => {
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
                 props: {},
-                attrs: {},
                 methods: {
                     foo: 1,
                     bar: 1,
@@ -61,19 +58,9 @@ describe('def.js', () => {
                 props: {
                     foo: {
                         initializer: 1,
-                        attrName: 'foo',
                     },
                     xBar: {
                         initializer: 2,
-                        attrName: 'x-bar',
-                    },
-                },
-                attrs: {
-                    foo: {
-                        propName: 'foo',
-                    },
-                    "x-bar": {
-                        propName: 'xBar',
                     },
                 },
                 methods: {},

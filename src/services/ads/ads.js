@@ -46,10 +46,9 @@ export default function ADS(Ctor: Class<Component>, annotations: Object): Class<
 
     /**
      * The ADS factory can analyze the provided class, and shape the new
-     * class based on it, including tagName, props, attrs, methods, etc.
+     * class based on it, including tagName, props, methods, etc.
      */
     const templateUsedProps = ['data'];
-    // TODO: add maybe `dataset` identifier if pass-thru dataset is needed
     if (props.body) {
         templateUsedProps.push('body');
     }

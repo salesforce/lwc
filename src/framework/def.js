@@ -16,7 +16,6 @@ import {
 } from "./language.js";
 
 const CtorToDefMap = new WeakMap();
-const CAPS_REGEX = /[A-Z]/g;
 
 // this symbol is a dev-mode artifact to sign the getter/setter per public property
 // so we know if they are attempting to access or modify them during construction time.
@@ -30,20 +29,17 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
     const name: string = Ctor.name;
     assert.isTrue(name, `${Ctor} should have a name property.`);
     const props = getPropsHash(Ctor);
-    const attrs = getAttrsHash(props);
     const methods = getMethodsHash(Ctor);
-    const observedAttrs = getObservedAttrsHash(Ctor, attrs);
+    const observedAttrs = getObservedAttrsHash(Ctor);
     const def = {
         name,
         props,
-        attrs,
         methods,
         observedAttrs,
     };
     assert.block(() => {
         freeze(def);
         freeze(props);
-        freeze(attrs);
         freeze(methods);
         freeze(observedAttrs);
     });
@@ -57,7 +53,6 @@ function getPropsHash(target: Object): HashTable<PropDef> {
         // expanding the property definition
         propsHash[propName] = {
             initializer: props[propName],
-            attrName: propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase()),
         };
         assert.block(() => {
             freeze(propsHash[propName]);
@@ -87,15 +82,6 @@ function getPropsHash(target: Object): HashTable<PropDef> {
     }, {});
 }
 
-function getAttrsHash(props: HashTable<PropDef>): HashTable<AttrDef> {
-    return keys(props).reduce((attrsHash: HashTable<AttrDef>, propName: string): HashTable => {
-        attrsHash[props[propName].attrName] = {
-            propName: propName,
-        };
-        return attrsHash;
-    }, {});
-}
-
 function getMethodsHash(target: Object): HashTable<number> {
     return (target.publicMethods || []).reduce((methodsHash: HashTable, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
@@ -113,14 +99,9 @@ function getMethodsHash(target: Object): HashTable<number> {
     }, {});
 }
 
-function getObservedAttrsHash(target: Object, attrs: HashTable<AttrDef>): HashTable<number> {
+function getObservedAttrsHash(target: Object): HashTable<number> {
     return (target.observedAttributes || []).reduce((observedAttributes: HashTable, attrName: string): HashTable => {
         observedAttributes[attrName] = 1;
-        assert.block(() => {
-            if (!attrs[attrName]) {
-                console.warn(`The corresponding public property for attribute ${attrName} of ${target}.observedAttributes is not declared in ${target.name}.`);
-            }
-        });
         return observedAttributes;
     }, {});
 }

@@ -4,10 +4,9 @@ import h from "snabbdom/h";
 
 // [c]ustom element node
 export function c(sel: string, Ctor: Class<Component>, data: Object = {}): Object {
-    assert.isFalse("attrs" in data, `Compiler Issue: Custom elements should not have property "attrs" in data.`);
-    const { key, dataset, slotset, props: _props, on: _on, class: _class } = data;
+    const { key, slotset, attrs, props: _props, on: _on } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    const vnode = h(sel, { hook, key, slotset, dataset, on: {}, props: {}, _props, _on, _class }, []);
+    const vnode = h(sel, { hook, key, slotset, attrs, on: {}, props: {}, _props, _on }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }

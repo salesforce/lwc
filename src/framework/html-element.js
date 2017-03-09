@@ -24,7 +24,6 @@ class ComponentElement {
                 configurable: false,
                 enumerable: true,
             },
-            // TODO: add dataset
         });
     }
     dispatchEvent(event: Event): boolean {

@@ -1,6 +1,7 @@
 import assert from "./assert.js";
 import { patch } from "./patch.js";
 import { scheduleRehydration } from "./vm.js";
+import { invokeComponentAttributeChangedCallback } from "./invoker.js";
 import {
     resetComponentProp,
     updateComponentProp,
@@ -10,33 +11,57 @@ import { c } from "./api.js";
 import { loaderImportMethod } from "./loader.js";
 import { defineProperties } from "./language.js";
 
-const Ep = Element.prototype;
+const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
+const CAMEL_REGEX = /-([a-z])/g;
+const attrNameToPropNameMap = {};
+
+function getPropNameFromAttrName(attrName: string): string {
+    let propName = attrNameToPropNameMap[attrName];
+    if (!propName) {
+        propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+        attrNameToPropNameMap[attrName] = propName;
+    }
+    return propName;
+}
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
-    const { def: { attrs: attrsConfig } } = vm;
+    const { def: { props: propsConfig, observedAttrs } } = vm;
     // replacing mutators on the element itself to catch any mutation
-    element.setAttribute = (attrName: string, value: any) => {
-        Ep.setAttribute.call(element, attrName, value);
-        const attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
-        if (attrConfig) {
-            updateComponentProp(vm, attrConfig.propName, value);
+    element.setAttribute = (attrName: string, newValue: any) => {
+        attrName = attrName.toLocaleLowerCase();
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            updateComponentProp(vm, propName, newValue);
             if (vm.isDirty) {
                 console.log(`Scheduling ${vm} for rehydration.`);
                 scheduleRehydration(vm);
             }
+        } else if (observedAttrs[attrName]) {
+            const oldValue = getAttribute.call(element, attrName);
+            newValue = newValue + ''; // by spec, attribute values must be string values.
+            if (newValue !== oldValue) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+            }
         }
+        setAttribute.call(element, attrName, newValue);
     };
     element.removeAttribute = (attrName: string) => {
-        Ep.removeAttribute.call(element, attrName);
-        const attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
-        if (attrConfig) {
-            resetComponentProp(vm, attrConfig.propName);
+        attrName = attrName.toLocaleLowerCase();
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            resetComponentProp(vm, propName);
             if (vm.isDirty) {
                 console.log(`Scheduling ${vm} for rehydration.`);
                 scheduleRehydration(vm);
             }
+        } else if (observedAttrs[attrName]) {
+            const oldValue = getAttribute.call(element, attrName);
+            if (oldValue !== null) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
+            }
         }
+        removeAttribute.call(element, attrName);
     };
 }
 

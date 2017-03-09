@@ -17,17 +17,11 @@ interface HashTable<T> {
 
 interface PropDef {
     initializer?: Function | number | string;
-    attrName: string;
-}
-
-interface AttrDef {
-    propName: string;
 }
 
 interface ComponentDef {
     name: string;
     props: HashTable<PropDef>;
-    attrs: HashTable<AttrDef>;
     methods: HashTable<number>;
     observedProps: HashTable<number>;
     observedAttrs: HashTable<number>;
@@ -35,7 +29,6 @@ interface ComponentDef {
 
 interface PlainHTMLElement extends HTMLElement {
     classList: DOMTokenList;
-    dataset: HashTable<any>;
 }
 
 declare class VM {

@@ -16,26 +16,19 @@ declare interface HashTable<T> {
 }
 
 declare interface PropDef {
-    initializer?: Function | number | string,
-    attrName: string
-}
-
-declare interface AttrDef {
-    propName: string
+    initializer?: Function | number | string
 }
 
 declare interface ComponentDef {
     name: string,
     props: HashTable<PropDef>,
-    attrs: HashTable<AttrDef>,
     methods: HashTable<number>,
     observedProps: HashTable<number>,
     observedAttrs: HashTable<number>
 }
 
 declare class ComponentElement extends Component {
-    classList: DOMTokenList,
-    dataset: HashTable<any>
+    classList: DOMTokenList
 }
 
 declare class VM {

@@ -11,10 +11,10 @@ function update(oldVnode: VNode, vnode: ComponentVNode) {
 
     let { data: { slotset: oldSlots } } = oldVnode;
     let { data: { slotset: newSlots } } = vnode;
-    let key: string, cur: any;
 
     // infuse key-value pairs from slotset into the component
     if (oldSlots !== newSlots && (oldSlots || newSlots)) {
+        let key: string, cur: any;
         oldSlots = oldSlots || {};
         newSlots = newSlots || {};
         // removed slots should be removed from component's slotset

@@ -17,7 +17,6 @@ import {
     hookComponentLocalProperty,
     getPropertyProxy,
 } from "./properties.js";
-
 import {
     defineProperty,
     getPrototypeOf,
@@ -25,9 +24,33 @@ import {
     getOwnPropertyNames,
     getOwnPropertySymbols,
 } from "./language.js";
-import { ValidPropertyHTMLAttributeMap } from "./dom.js";
+import {
+    HTMLPropertyNamesWithLowercasedReflectiveAttributes,
+} from "./dom.js";
 
 const renderedDuringCurrentCycleSet = new Set();
+const CAPS_REGEX = /[A-Z]/g;
+
+/**
+ * This dictionary contains the mapping between property names
+ * and the corresponding attribute name. This helps to trigger observable attributes.
+ */
+const propNameToAttributeNameMap = {
+    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`
+    className: 'class',
+    htmlFor: 'for',
+};
+// Few more exceptions where the attribute name matches the property in lowercase.
+HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach((propName: string): void => propNameToAttributeNameMap[propName] = propName.toLowerCase());
+
+function getAttrNameFromPropName(propName: string): string {
+    let attrName = propNameToAttributeNameMap[propName];
+    if (!attrName) {
+        attrName = propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
+        propNameToAttributeNameMap[propName] = attrName;
+    }
+    return attrName;
+}
 
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
     const { component, cmpProps, def: { props: publicPropsConfig } } = vm;
@@ -95,7 +118,7 @@ export function initComponent(vm: VM) {
 
     // notifying observable attributes if they are initialized with default or custom value
     for (let propName in publicPropsConfig) {
-        const {  attrName } = publicPropsConfig[propName];
+        const attrName = getAttrNameFromPropName(propName);
         const defaultValue = cmpProps[propName];
         // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
@@ -122,23 +145,15 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config: PropDef = publicPropsConfig[propName];
-    assert.block(() => {
-        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
-            // TODO: ignore any native html property
-            console.warn(`Updating unknown property "${propName}" of ${vm}. This property will be a pass-thru to the DOM element.`);
-        }
-    });
     if (newValue === undefined && config) {
         newValue = getDefaultValueFromConfig(config);
     }
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
-        if (config) {
-            const attrName = config.attrName;
-            if (observedAttrs[attrName]) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-            }
+        const attrName = getAttrNameFromPropName(propName);
+        if (observedAttrs[attrName]) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to a new value.`);
         if (!vm.isDirty) {
@@ -154,22 +169,14 @@ export function resetComponentProp(vm: VM, propName: string) {
     const config: PropDef = publicPropsConfig[propName];
     let oldValue = cmpProps[propName];
     let newValue = undefined;
-    assert.block(() => {
-        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
-            // TODO: ignore any native html property
-            console.warn(`Resetting unknown property "${propName}" of ${vm}. This property will be a pass-thru to the DOM element.`);
-        }
-    });
     if (config) {
         newValue = getDefaultValueFromConfig(config);
     }
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
-        if (config) {
-            const attrName = config.attrName;
-            if (observedAttrs[attrName]) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-            }
+        const attrName = getAttrNameFromPropName(propName);
+        if (observedAttrs[attrName]) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to its default value.`);
         if (!vm.isDirty) {

@@ -12,16 +12,24 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
 
     let { data: { _props: oldProps } } = oldVnode;
     let { data: { _props: newProps } } = vnode;
-    let key: string, cur: any;
 
     // infuse key-value pairs from _props into the component
     if (oldProps !== newProps && (oldProps || newProps)) {
+        let key: string, cur: any, len: number, i: any;
+        let { component: { classList } } = vm;
         oldProps = oldProps || {};
         newProps = newProps || {};
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
-                resetComponentProp(vm, key);
+                if (classList && key === 'className') {
+                    cur = (oldProps[key] || '').split(' ');
+                    for (i = 0, len = cur.length; i < len; i += 1) {
+                        classList.remove(cur[i]);
+                    }
+                } else {
+                    resetComponentProp(vm, key);
+                }
             }
         }
 
@@ -29,7 +37,14 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         for (key in newProps) {
             cur = newProps[key];
             if (!(key in oldProps) || oldProps[key] != cur) {
-                updateComponentProp(vm, key, cur);
+                if (classList && key === 'className') {
+                    cur = (cur || '').split(' ');
+                    for (i = 0, len = cur.length; i < len; i += 1) {
+                        classList.add(cur[i]);
+                    }
+                } else {
+                    updateComponentProp(vm, key, cur);
+                }
             }
         }
     }
