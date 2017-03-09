@@ -88,34 +88,6 @@ var assert = {
     }
 };
 
-function updateClass(oldVnode, vnode) {
-    var elm = vnode.elm;
-    var oldClass = oldVnode.data.class;
-    var klass = vnode.data.class;
-
-    if (!klass && !oldClass) {
-        return;
-    }
-
-    if (klass !== oldClass) {
-        assert.block(function () {
-            if (elm.className === (klass || '')) {
-                console.warn('unneccessary update of element <' + vnode.sel + '>, property "className" for ' + (vnode.vm || vnode.sel) + '.');
-            }
-        });
-        if (vnode.sel === 'svg') {
-            elm.setAttribute('class', klass || '');
-        } else {
-            elm.className = klass || '';
-        }
-    }
-}
-
-var className = {
-    create: updateClass,
-    update: updateClass
-};
-
 var keys = Object.keys;
 var freeze = Object.freeze;
 var defineProperty = Object.defineProperty;
@@ -135,7 +107,6 @@ var getOwnPropertySymbols = Object.getOwnPropertySymbols;
  */
 
 var CtorToDefMap = new WeakMap();
-var CAPS_REGEX = /[A-Z]/g;
 
 // this symbol is a dev-mode artifact to sign the getter/setter per public property
 // so we know if they are attempting to access or modify them during construction time.
@@ -149,20 +120,17 @@ function getComponentDef(Ctor) {
     var name = Ctor.name;
     assert.isTrue(name, Ctor + " should have a name property.");
     var props = getPropsHash(Ctor);
-    var attrs = getAttrsHash(props);
     var methods = getMethodsHash(Ctor);
-    var observedAttrs = getObservedAttrsHash(Ctor, attrs);
+    var observedAttrs = getObservedAttrsHash(Ctor);
     var def = {
         name: name,
         props: props,
-        attrs: attrs,
         methods: methods,
         observedAttrs: observedAttrs
     };
     assert.block(function () {
         freeze(def);
         freeze(props);
-        freeze(attrs);
         freeze(methods);
         freeze(observedAttrs);
     });
@@ -175,10 +143,7 @@ function getPropsHash(target) {
     return keys(props).reduce(function (propsHash, propName) {
         // expanding the property definition
         propsHash[propName] = {
-            initializer: props[propName],
-            attrName: propName.replace(CAPS_REGEX, function (match) {
-                return '-' + match.toLowerCase();
-            })
+            initializer: props[propName]
         };
         assert.block(function () {
             freeze(propsHash[propName]);
@@ -208,15 +173,6 @@ function getPropsHash(target) {
     }, {});
 }
 
-function getAttrsHash(props) {
-    return keys(props).reduce(function (attrsHash, propName) {
-        attrsHash[props[propName].attrName] = {
-            propName: propName
-        };
-        return attrsHash;
-    }, {});
-}
-
 function getMethodsHash(target) {
     return (target.publicMethods || []).reduce(function (methodsHash, methodName) {
         methodsHash[methodName] = 1;
@@ -234,14 +190,9 @@ function getMethodsHash(target) {
     }, {});
 }
 
-function getObservedAttrsHash(target, attrs) {
+function getObservedAttrsHash(target) {
     return (target.observedAttributes || []).reduce(function (observedAttributes, attrName) {
         observedAttributes[attrName] = 1;
-        assert.block(function () {
-            if (!attrs[attrName]) {
-                console.warn("The corresponding public property for attribute " + attrName + " of " + target + ".observedAttributes is not declared in " + target.name + ".");
-            }
-        });
         return observedAttributes;
     }, {});
 }
@@ -433,17 +384,14 @@ var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symb
 // [c]ustom element node
 function c(sel, Ctor) {
     var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    assert.isFalse("attrs" in data, "Compiler Issue: Custom elements should not have property \"attrs\" in data.");
     var key = data.key,
-        dataset = data.dataset,
         slotset = data.slotset,
+        attrs = data.attrs,
         _props = data.props,
-        _on = data.on,
-        _class = data.class;
+        _on = data.on;
 
     assert.isTrue(arguments.length < 4, "Compiler Issue: Custom elements expect up to 3 arguments, received " + arguments.length + " instead.");
-    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, dataset: dataset, on: {}, props: {}, _props: _props, _on: _on, _class: _class }, []);
+    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, attrs: attrs, on: {}, props: {}, _props: _props, _on: _on }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }
@@ -738,9 +686,9 @@ function hookComponentLocalProperty(vm, key) {
 
     assert.block(function () {
         if (get || set || !configurable) {
-            // TODO: classList and dataset are only really ignored when extending HTMLElement,
+            // TODO: classList is only really ignored when extending HTMLElement,
             // we should take that into consideration on this condition at some point.
-            if (key !== 'classList' && key !== 'dataset') {
+            if (key !== 'classList') {
                 console.warn("component " + vm + " has a property key " + key + " that cannot be watched for changes.");
             }
         }
@@ -765,13 +713,41 @@ function hookComponentLocalProperty(vm, key) {
     }
 }
 
-var ValidPropertyHTMLAttributeMap = {
-    className: 'class'
-};
+// Few more execptions that are using the attribute name to match the property in lowercase.
+// this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
+// and https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
+// Note: this list most be in sync with the compiler as well.
+var HTMLPropertyNamesWithLowercasedReflectiveAttributes = ['accessKey', 'readOnly', 'tabIndex', 'bgColor', 'colSpan', 'rowSpan', 'contentEditable', 'dateTime', 'formAction', 'isMap', 'maxLength', 'useMap'];
 
 var _typeof$1 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var renderedDuringCurrentCycleSet = new Set();
+var CAPS_REGEX = /[A-Z]/g;
+
+/**
+ * This dictionary contains the mapping between property names
+ * and the corresponding attribute name. This helps to trigger observable attributes.
+ */
+var propNameToAttributeNameMap = {
+    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`
+    className: 'class',
+    htmlFor: 'for'
+};
+// Few more exceptions where the attribute name matches the property in lowercase.
+HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach(function (propName) {
+    return propNameToAttributeNameMap[propName] = propName.toLowerCase();
+});
+
+function getAttrNameFromPropName(propName) {
+    var attrName = propNameToAttributeNameMap[propName];
+    if (!attrName) {
+        attrName = propName.replace(CAPS_REGEX, function (match) {
+            return '-' + match.toLowerCase();
+        });
+        propNameToAttributeNameMap[propName] = attrName;
+    }
+    return attrName;
+}
 
 function hookComponentReflectiveProperty(vm, propName) {
     var component = vm.component,
@@ -856,8 +832,7 @@ function initComponent(vm) {
 
     // notifying observable attributes if they are initialized with default or custom value
     for (var _propName in publicPropsConfig) {
-        var attrName = publicPropsConfig[_propName].attrName;
-
+        var attrName = getAttrNameFromPropName(_propName);
         var defaultValue = cmpProps[_propName];
         // default value is an engine abstraction, and therefore should be treated as a regular
         // attribute mutation process, and therefore notified.
@@ -893,23 +868,15 @@ function updateComponentProp(vm, propName, newValue) {
 
     assert.invariant(!isRendering, vm + ".render() method has side effects on the state of " + vm + "." + propName);
     var config = publicPropsConfig[propName];
-    assert.block(function () {
-        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
-            // TODO: ignore any native html property
-            console.warn("Updating unknown property \"" + propName + "\" of " + vm + ". This property will be a pass-thru to the DOM element.");
-        }
-    });
     if (newValue === undefined && config) {
         newValue = getDefaultValueFromConfig(config);
     }
     var oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
-        if (config) {
-            var attrName = config.attrName;
-            if (observedAttrs[attrName]) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-            }
+        var attrName = getAttrNameFromPropName(propName);
+        if (observedAttrs[attrName]) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log("Marking " + vm + " as dirty: property \"" + propName + "\" set to a new value.");
         if (!vm.isDirty) {
@@ -929,22 +896,14 @@ function resetComponentProp(vm, propName) {
     var config = publicPropsConfig[propName];
     var oldValue = cmpProps[propName];
     var newValue = undefined;
-    assert.block(function () {
-        if (!config && !ValidPropertyHTMLAttributeMap[propName]) {
-            // TODO: ignore any native html property
-            console.warn("Resetting unknown property \"" + propName + "\" of " + vm + ". This property will be a pass-thru to the DOM element.");
-        }
-    });
     if (config) {
         newValue = getDefaultValueFromConfig(config);
     }
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
-        if (config) {
-            var attrName = config.attrName;
-            if (observedAttrs[attrName]) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-            }
+        var attrName = getAttrNameFromPropName(propName);
+        if (observedAttrs[attrName]) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log("Marking " + vm + " as dirty: property \"" + propName + "\" set to its default value.");
         if (!vm.isDirty) {
@@ -1136,10 +1095,9 @@ function rehydrate(vm) {
             hook = _vnode$data.hook,
             key = _vnode$data.key,
             slotset = _vnode$data.slotset,
-            dataset = _vnode$data.dataset,
+            attrs = _vnode$data.attrs,
             _props = _vnode$data._props,
             _on = _vnode$data._on,
-            _class = _vnode$data._class,
             children = vnode.children;
 
         assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
@@ -1156,7 +1114,7 @@ function rehydrate(vm) {
         oldVnode.vm = vnode.vm;
         // This list here must be in synch with api.c()
         // TODO: abstract this so we don't have to keep code in sync.
-        vnode.data = { hook: hook, key: key, slotset: slotset, dataset: dataset, props: {}, on: {}, _props: _props, _on: _on, _class: _class };
+        vnode.data = { hook: hook, key: key, slotset: slotset, attrs: attrs, props: {}, on: {}, _props: _props, _on: _on };
         vnode.children = [];
         patch(oldVnode, vnode);
     }
@@ -1218,17 +1176,28 @@ function syncProps(oldVnode, vnode) {
     var oldProps = oldVnode.data._props;
     var newProps = vnode.data._props;
 
-    var key = void 0,
-        cur = void 0;
-
     // infuse key-value pairs from _props into the component
+
     if (oldProps !== newProps && (oldProps || newProps)) {
+        var key = void 0,
+            cur = void 0,
+            len = void 0,
+            i = void 0;
+        var classList = vm.component.classList;
+
         oldProps = oldProps || {};
         newProps = newProps || {};
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
-                resetComponentProp(vm, key);
+                if (classList && key === 'className') {
+                    cur = (oldProps[key] || '').split(' ');
+                    for (i = 0, len = cur.length; i < len; i += 1) {
+                        classList.remove(cur[i]);
+                    }
+                } else {
+                    resetComponentProp(vm, key);
+                }
             }
         }
 
@@ -1236,7 +1205,14 @@ function syncProps(oldVnode, vnode) {
         for (key in newProps) {
             cur = newProps[key];
             if (!(key in oldProps) || oldProps[key] != cur) {
-                updateComponentProp(vm, key, cur);
+                if (classList && key === 'className') {
+                    cur = (cur || '').split(' ');
+                    for (i = 0, len = cur.length; i < len; i += 1) {
+                        classList.add(cur[i]);
+                    }
+                } else {
+                    updateComponentProp(vm, key, cur);
+                }
             }
         }
     }
@@ -1253,6 +1229,48 @@ var componentProps = {
     update: syncProps
 };
 
+function observeAttributes(oldVnode, vnode) {
+    var vm = vnode.vm;
+
+    if (!vm) {
+        return;
+    }
+
+    var oldAttrs = oldVnode.data.attrs;
+    var newAttrs = vnode.data.attrs;
+
+    // infuse key-value pairs from _props into the component
+
+    if (oldAttrs !== newAttrs && (oldAttrs || newAttrs)) {
+        var observedAttrs = vm.def.observedAttrs;
+
+
+        var key = void 0,
+            cur = void 0;
+        oldAttrs = oldAttrs || {};
+        newAttrs = newAttrs || {};
+        // removed props should be reset in component's props
+        for (key in oldAttrs) {
+            if (!(key in newAttrs)) {
+                invokeComponentAttributeChangedCallback(vm, key, observedAttrs[key], null);
+            }
+        }
+
+        // new or different props should be set in component's props
+        for (key in newAttrs) {
+            cur = newAttrs[key];
+            if (!(key in oldAttrs) || oldAttrs[key] != cur) {
+                invokeComponentAttributeChangedCallback(vm, key, oldAttrs[key], cur);
+            }
+        }
+    }
+}
+
+var componentAttrs = {
+    create: observeAttributes,
+    update: observeAttributes
+};
+
 function update(oldVnode, vnode) {
     var vm = vnode.vm;
 
@@ -1263,11 +1281,11 @@ function update(oldVnode, vnode) {
     var oldSlots = oldVnode.data.slotset;
     var newSlots = vnode.data.slotset;
 
-    var key = void 0,
-        cur = void 0;
-
     // infuse key-value pairs from slotset into the component
+
     if (oldSlots !== newSlots && (oldSlots || newSlots)) {
+        var key = void 0,
+            cur = void 0;
         oldSlots = oldSlots || {};
         newSlots = newSlots || {};
         // removed slots should be removed from component's slotset
@@ -1294,49 +1312,6 @@ function update(oldVnode, vnode) {
 var componentSlotset = {
     create: update,
     update: update
-};
-
-function syncClassNames(oldVnode, vnode) {
-    var vm = vnode.vm;
-
-    if (!vm) {
-        return;
-    }
-
-    var oldClass = oldVnode.data._class;
-    var klass = vnode.data._class;
-    var classList = vm.component.classList;
-
-    // if component's classList is not defined (it is only defined for
-    // components extending HTMLElement), we need to fallback
-
-    if (!classList) {
-        classList = vnode.elm.classList;
-    }
-
-    // propagating changes from "data->_class" into classList
-    if (klass !== oldClass) {
-        oldClass = (oldClass || '').split(' ');
-        klass = (klass || '').split(' ');
-
-        for (var i = 0; i < oldClass.length; i += 1) {
-            var className = oldClass[i];
-            if (classList.contains(className)) {
-                classList.remove(className);
-            }
-        }
-        for (var _i = 0; _i < klass.length; _i += 1) {
-            var _className = klass[_i];
-            if (!classList.contains(_className)) {
-                classList.add(_className);
-            }
-        }
-    }
-}
-
-var componentClassList = {
-    create: syncClassNames,
-    update: syncClassNames
 };
 
 function syncEvents(oldVnode, vnode) {
@@ -1979,34 +1954,6 @@ module.exports = { create: updateStyle, update: updateStyle, destroy: applyDestr
 
 var style$1 = interopDefault(style);
 
-var dataset = createCommonjsModule(function (module) {
-function updateDataset(oldVnode, vnode) {
-  var elm = vnode.elm,
-      oldDataset = oldVnode.data.dataset,
-      dataset = vnode.data.dataset,
-      key;
-
-  if (!oldDataset && !dataset) return;
-  oldDataset = oldDataset || {};
-  dataset = dataset || {};
-
-  for (key in oldDataset) {
-    if (!dataset[key]) {
-      delete elm.dataset[key];
-    }
-  }
-  for (key in dataset) {
-    if (oldDataset[key] !== dataset[key]) {
-      elm.dataset[key] = dataset[key];
-    }
-  }
-}
-
-module.exports = { create: updateDataset, update: updateDataset };
-});
-
-var dataset$1 = interopDefault(dataset);
-
 var eventlisteners = createCommonjsModule(function (module) {
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -2115,47 +2062,78 @@ module.exports = {
 
 var on = interopDefault(eventlisteners);
 
-var patch = init([componentInit, componentClassList, componentSlotset, componentProps, componentEvents, componentChildren, props, attrs, style$1, dataset$1, className, on]);
+var patch = init([componentInit, componentSlotset, componentProps, componentAttrs, componentEvents, componentChildren, props, attrs, style$1, on]);
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var Ep = Element.prototype;
+var _Element$prototype = Element.prototype;
+var getAttribute = _Element$prototype.getAttribute;
+var setAttribute = _Element$prototype.setAttribute;
+var removeAttribute = _Element$prototype.removeAttribute;
+var CAMEL_REGEX = /-([a-z])/g;
+var attrNameToPropNameMap = {};
+
+function getPropNameFromAttrName(attrName) {
+    var propName = attrNameToPropNameMap[attrName];
+    if (!propName) {
+        propName = attrName.replace(CAMEL_REGEX, function (g) {
+            return g[1].toUpperCase();
+        });
+        attrNameToPropNameMap[attrName] = propName;
+    }
+    return propName;
+}
 
 function linkAttributes(element, vm) {
     assert.vm(vm);
-    var attrsConfig = vm.def.attrs;
+    var _vm$def = vm.def,
+        propsConfig = _vm$def.props,
+        observedAttrs = _vm$def.observedAttrs;
     // replacing mutators on the element itself to catch any mutation
 
-    element.setAttribute = function (attrName, value) {
-        Ep.setAttribute.call(element, attrName, value);
-        var attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
-        if (attrConfig) {
-            updateComponentProp(vm, attrConfig.propName, value);
+    element.setAttribute = function (attrName, newValue) {
+        attrName = attrName.toLocaleLowerCase();
+        var propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            updateComponentProp(vm, propName, newValue);
             if (vm.isDirty) {
                 console.log("Scheduling " + vm + " for rehydration.");
                 scheduleRehydration(vm);
             }
+        } else if (observedAttrs[attrName]) {
+            var oldValue = getAttribute.call(element, attrName);
+            newValue = newValue + ''; // by spec, attribute values must be string values.
+            if (newValue !== oldValue) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+            }
         }
+        setAttribute.call(element, attrName, newValue);
     };
     element.removeAttribute = function (attrName) {
-        Ep.removeAttribute.call(element, attrName);
-        var attrConfig = attrsConfig[attrName.toLocaleLowerCase()];
-        if (attrConfig) {
-            resetComponentProp(vm, attrConfig.propName);
+        attrName = attrName.toLocaleLowerCase();
+        var propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            resetComponentProp(vm, propName);
             if (vm.isDirty) {
                 console.log("Scheduling " + vm + " for rehydration.");
                 scheduleRehydration(vm);
             }
+        } else if (observedAttrs[attrName]) {
+            var oldValue = getAttribute.call(element, attrName);
+            if (oldValue !== null) {
+                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
+            }
         }
+        removeAttribute.call(element, attrName);
     };
 }
 
 function linkProperties(element, vm) {
     assert.vm(vm);
     var component = vm.component,
-        _vm$def = vm.def,
-        propsConfig = _vm$def.props,
-        methods = _vm$def.methods;
+        _vm$def2 = vm.def,
+        propsConfig = _vm$def2.props,
+        methods = _vm$def2.methods;
 
     var descriptors = {};
     // linking public methods
@@ -2587,5 +2565,5 @@ window.define = Raptor.defineTemporary;
 
 
 }((this.Raptor = this.Raptor || {})));
-/** version: 0.3.1 */
+/** version: 0.4.0 */
 //# sourceMappingURL=raptor.js.map

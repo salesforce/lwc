@@ -1,6 +1,6 @@
 {
   "name": "raptor",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -25,7 +25,7 @@
     "build:webcompiler": "webpack --config scripts/webpack.web.js",
     "build:webcompilermin": "webpack --config scripts/webpack.web.js --env.prod=true",
     "build:allcompiler": "npm run build:compiler && npm run build:compilermin && npm run build:webcompiler && npm run build:webcompilermin",
-    "build": "npm run clean && npm run build:runtime && npm run build:components --production && npm run build:services --production && npm run build:dist && npm run build:lib && npm run build:packages",
+    "build": "npm run build:runtime && npm run build:components --production && npm run build:services --production && npm run build:dist && npm run build:lib && npm run build:packages",
     "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
     "flow": "flow --show-all-errors",
     "eslint": "lerna run lint && eslint src/",
