@@ -16,7 +16,8 @@ const ignore = [
     'expressionEvaluationError',
     'multiRootError',
     'mutliHtmlRootError',
-    'rootTagTemplateError'
+    'rootTagTemplateError',
+    'slotsErrorDirectives'
 ];
 
 fs.readdirSync(baseDir).forEach((testName) => {

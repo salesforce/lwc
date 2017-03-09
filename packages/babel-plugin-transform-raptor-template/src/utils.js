@@ -3,10 +3,8 @@ import { TOP_LEVEL_PROPS } from './constants';
 import toCamelCase from 'to-camel-case';
 const  parserCss = new StyleParser();
 
-/*
-* Polyfill includes
-* TODO: Remove when we support node > 6.x
-*/
+// Polyfill `includes`
+// TODO: Remove when we support node > 6.x
 if (!Array.prototype.includes) {
   Array.prototype.includes = function(searchElement: string /*, fromIndex*/) {
     'use strict';
@@ -61,14 +59,6 @@ export function isCompatTag(tagName: string) {
 }
 
 export { toCamelCase };
-
-export const isSVG = makeMap(
-  'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,' +
-  'font-face,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
-  'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view'
-);
-
-export const isSvgNsAttribute = makeMap('xml,xlink');
 
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx

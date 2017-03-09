@@ -1,4 +1,4 @@
-import _ns$foo from "ns:foo";
+import _nsFoo from "ns:foo";
 
 const _m = function ($api, $cmp) {
     return $cmp.p.foo.bind($cmp);
@@ -10,14 +10,14 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        [$api.v(
-            _ns$foo,
+        [$api.c(
+            "ns-foo",
+            _nsFoo,
             {
-                attrs: {
+                props: {
                     d: m._m || (m._m = _m($api, $cmp))
                 }
-            },
-            []
+            }
         )]
     )];
 }

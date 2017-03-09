@@ -7,9 +7,9 @@ export default function ($api, $cmp, $slotset) {
     [$api.h(
       "p",
       {
-        dataset: {
-          "foo": "1",
-          "barBaz": "xyz"
+        attrs: {
+          "data-foo": "1",
+          "data-bar-baz": "xyz"
         }
       },
       []

@@ -1,9 +1,10 @@
 /* eslint-env node */
 import * as CONST from './constants';
 import CustomScope from './custom-scope';
-import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement, isSvgNsAttribute, isSVG } from './utils';
 import metadata from './metadata';
 import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
+import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement } from './utils';
+import { isSvgNsAttribute, isSVG, isValidHTMLAttribute, getPropertyNameFromAttrName, isReflective} from './html-attrs';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
@@ -80,6 +81,12 @@ export default function({ types: t }: BabelTypes): any {
         const templateTagName = path.get('body.0.expression.openingElement.name');
         if (templateTagName.node.name !== CONST.TEMPLATE_TAG) {
             throw path.buildCodeFrameError('Root tag should be a template');
+        }
+    }
+
+    function validateHTMLAttribute(tagName: string, attrName: string, path) {
+        if (!isValidHTMLAttribute(tagName, attrName)) {
+            throw path.parentPath.buildCodeFrameError(`HTML Error: The attribute "${attrName}" is not defined the tag "${tagName}"`);
         }
     }
 
@@ -397,7 +404,6 @@ export default function({ types: t }: BabelTypes): any {
             args.pop(); //remove children
         }
 
-
         // Return null when no attributes
         // TODO: Fix engine to support either null or undefined here
         // if (!attribs.properties || !attribs.properties.length) {
@@ -410,7 +416,7 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     function convertJSXIdentifier(node, meta, path, state) {
-        const hasIsDirective = DIRECTIVES.is in meta.directives;
+        const hasIsDirective = meta.hasIsDirective = DIRECTIVES.is in meta.directives;
         // <a.b.c/>
         if (t.isJSXMemberExpression(node)) {
             throw path.buildCodeFrameError('Member expressions not supported');
@@ -427,10 +433,12 @@ export default function({ types: t }: BabelTypes): any {
             return id;
         }
 
+        meta.tagName = node.name;
+
         // <div> -- Any name for now will work
         if (t.isJSXIdentifier(node) && (hasIsDirective || node.name.indexOf('-') !== -1)) {
             const originalName = node.name;
-            const name = DIRECTIVES.is in meta.directives ? meta.rootElement : originalName;
+            const name = hasIsDirective ? meta.rootElement : originalName;
             const devName = toCamelCase(name);
             const id = state.file.addImport(name.replace('-', CONST.MODULE_SYMBOL), 'default', devName);
             metadata.addComponentDependency(name);
@@ -449,18 +457,8 @@ export default function({ types: t }: BabelTypes): any {
         return t.stringLiteral(node.name);
     }
 
-    function isDataAttributeName(name) {
-        return name.startsWith(CONST.DATA_ATTRIBUTE_PREFIX);
-    }
-
     function isNSAttributeName(name) {
         return name.indexOf(':') !== -1;
-    }
-
-    // https://html.spec.whatwg.org/multipage/dom.html#dom-dataset
-    function fomatDataAttributeName(originalName) {
-        let name = originalName.slice(CONST.DATA_ATTRIBUTE_PREFIX.length);
-        return name.replace(/-[a-z]/g, match => match[1].toUpperCase());
     }
 
     function isDirectiveName(name) {
@@ -471,19 +469,25 @@ export default function({ types: t }: BabelTypes): any {
         const meta = prop._meta;
         const directive = meta.directive;
         const scopedVars = elementMeta.scoped;
+        const tagName = elementMeta.tagName;
         let valueName = prop.key.value || prop.key.name; // Identifier|Literal
         let valueNode = prop.value;
         let inScope = false;
 
+        if (!elementMeta.isCustomElementTag && !directive && !elementMeta.isSvgTag) {
+            validateHTMLAttribute(tagName, valueName, path);
+        }
+
+        valueName = getPropertyNameFromAttrName(valueName, tagName);
         if (meta.expressionContainer) {
-            prop.key._ignore = true;
+            prop.key._ignore = true; // This is to prevent infinite loop on the next traversal
             path.traverse(BoundThisVisitor, { customScope : state.customScope });
             valueNode = path.node.value;
         }
 
         if (directive) {
             let rootMember;
-            if (t.isStringLiteral(valueNode)) {
+            if (t.isStringLiteral(valueNode) && !elementMeta.hasIsDirective /* allow `is` attribute */) {
                 rootMember = getMemberFromNodeStringLiteral(valueNode);
                 inScope = scopedVars.indexOf(rootMember) !== -1;
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
@@ -504,14 +508,9 @@ export default function({ types: t }: BabelTypes): any {
             }
         }
 
-        if (isDataAttributeName(valueName)) {
-            meta.dataset = true;
-            valueName = t.stringLiteral(fomatDataAttributeName(valueName));
-        } else if (isNSAttributeName(valueName)) {
+        if (isNSAttributeName(valueName)) {
             meta.svg = true;
             valueName = t.stringLiteral(valueName);
-        } else if (elementMeta.isCustomElementTag) {
-            valueName = t.identifier(toCamelCase(valueName));
         } else {
             valueName = isTopLevelProp(valueName) || !needsComputedCheck(valueName) ? t.identifier(valueName) : t.stringLiteral(valueName);
         }
@@ -538,30 +537,28 @@ export default function({ types: t }: BabelTypes): any {
         props.forEach((prop: any, index: number) => {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
             const meta = prop._meta;
-
-            prop = transformProp(prop, path[index], elementMeta, state);
             let groupName = CONST.ATTRS;
+            prop = transformProp(prop, path[index], elementMeta, state);
 
             if (isTopLevelProp(name)) {
                 finalProps.push(prop);
                 return;
             }
 
-            if (elementMeta.isCustomElementTag) {
-                groupName = CONST.PROPS;
-            }
-
-            if (meta.isSlot) {
+            if (meta.isSlotAttr) {
                 return;
             }
 
             if (meta.directive && isDirectiveName(name)) {
                 elementMeta[name] = prop.value;
-                return;
+                // TODO: Allowing `is` for debugging purposes
+                if (!elementMeta.hasIsDirective) {
+                    return;
+                }
             }
 
-            if (meta.dataset) {
-                groupName = CONST.DATASET;
+            if (isReflective(elementMeta.tagName, name) && (!elementMeta.isSvgTag || name === 'class')) {
+                groupName = CONST.PROPS;
             }
 
             if (meta.event) {
@@ -590,8 +587,8 @@ export default function({ types: t }: BabelTypes): any {
             metaGroup.rootElement = meta.rootElement;
         }
 
-        if (meta.isSlot) {
-            metaGroup.hasSlot = meta.isSlot;
+        if (meta.isSlotAttr) {
+            metaGroup.hasSlot = true;
             metaGroup.slot = meta.slot;
         }
 
@@ -661,7 +658,7 @@ export default function({ types: t }: BabelTypes): any {
 
         // Slot
         } else if (node.name === 'slot') {
-            meta.isSlot = true;
+            meta.isSlotAttr = true;
         }
 
         // Replace node with an identifier
@@ -694,7 +691,7 @@ export default function({ types: t }: BabelTypes): any {
             meta.maybeSlotNameDef = node.value;
         }
 
-        if (meta.isSlot && !t.isBooleanLiteral(node)) {
+        if (meta.isSlotAttr && !t.isBooleanLiteral(node)) {
             meta.slot = node.value;
         }
 

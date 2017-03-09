@@ -6,12 +6,16 @@ var _tmpl = function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {
-            class: "bar"
+            props: {
+                className: "bar"
+            }
         },
         [$api.h(
             "ul",
             {
-                class: $cmp["my-list"]
+                props: {
+                    className: $cmp["my-list"]
+                }
             },
             $api.f([$api.v(
                 _a$b,
@@ -21,7 +25,9 @@ var _tmpl = function ($api, $cmp, $slotset) {
                 return $api.h(
                     "li",
                     {
-                        class: "item"
+                        props: {
+                            className: "item"
+                        }
                     },
                     [$api.s(item)]
                 );

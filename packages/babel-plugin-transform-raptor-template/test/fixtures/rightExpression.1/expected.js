@@ -7,8 +7,8 @@ export default function ($api, $cmp, $slotset) {
         [$api.h(
             "p",
             {
-                attrs: {
-                    foo: $cmp.bar.foo
+                props: {
+                    className: $cmp.bar.foo
                 }
             },
             []

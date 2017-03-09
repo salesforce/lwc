@@ -4,7 +4,9 @@ var _tmpl = function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {
-            class: "foo"
+            props: {
+                className: "foo"
+            }
         },
         ["Test"]
     )];

@@ -7,8 +7,10 @@ export default function ($api, $cmp, $slotset) {
         [$api.h(
             "p",
             {
+                props: {
+                    title: "x"
+                },
                 attrs: {
-                    title: "x",
                     "aria-hidden": "foo"
                 }
             },
