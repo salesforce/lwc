@@ -1,0 +1,23 @@
+<template>
+    <article class="slds-card slds-m-vertical--small slds-m-horizontal--large">
+        <div class="slds-card__header">
+            <header class="slds-has-flexi-truncate">
+                <h2 class="slds-text-heading--small">
+                    <b>{bundle.label}</b> {bundle.url.href} &nbsp;
+                    <span class={statusStyle}>{status}</span>
+                </h2>
+                <ul class="slds-list--horizontal slds-has-dividers--left slds-text-title--caps">
+                    <li class="slds-item"><b>id:</b> {bundle.info.id}</li>
+                    <li class="slds-item"><b>commit:</b> {bundle.info.commit}</li>
+                    <li class="slds-item"><b>branch:</b> {bundle.info.branch}</li>
+                    <li class="slds-item"><b>raptor version:</b> {bundle.info.raptorVersion}</li>
+                    <li class="slds-item"><b>debug:</b> {bundle.info.debug}</li>
+                </ul>
+                <div class="progress-bar" style="display: block; height: 3px; width: 0; background: #0070d2;"></div>
+            </header>
+        </div>
+        <div class="slds-card__body" id="iframe-container">
+        </div>
+        <div class="slds-card__footer"></div>
+    </article>
+</template>

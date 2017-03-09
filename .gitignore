@@ -12,3 +12,4 @@ playground/*.js
 playground/*.html
 playground/**/*
 packages/**/dist
+benchmarking/dist

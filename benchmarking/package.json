@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "npm install && node scripts/build-bundle",
+    "build-runner": "rollup -c scripts/runner.rollup.js && cp runner/index.html dist/ && cp runner/runner.js dist/",
+    "start": "http-server -p 8000 -d false -c-1 dist/"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.1",
+    "minimist": "^1.2.0",
+    "raptor": ".."
+  },
+  "devDependencies": {
+    "express": "^4.15.2",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.41.4",
+    "rollup-plugin-multi-entry": "^2.0.1"
+  }
+}
