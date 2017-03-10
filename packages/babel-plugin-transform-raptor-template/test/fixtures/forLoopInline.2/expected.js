@@ -8,8 +8,8 @@ export default function ($api, $cmp, $slotset) {
             return $api.h(
                 "div",
                 {
-                    props: {
-                        className: "my-list"
+                    classMap: {
+                        "my-list": true
                     }
                 },
                 [$api.h(

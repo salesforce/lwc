@@ -3,40 +3,16 @@ var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
         "section",
-        {
-            props: {
-                className: "foo"
-            }
-        },
+        {},
         ["Test"]
     )];
 };
 const templateUsedIds = [];
 
-const DefaultMinValue = 5;
-const DefaultMaxValue = 50;
-
-function produceNewData(oldData, min, max) {
-    data.push(1);
-}
-
+const Test = 1;
 class ClassAndTemplate {
-
     constructor() {
         this.counter = 0;
-        this.itemClassName = 'item';
-        this.data = [];
-    }
-
-    updated() {
-        this.data = produceNewData(this.data, this.min, this.max);
-    }
-
-    handleClick() {
-        this.counter += 1;
-        const newData = produceNewData(this.data, this.min, this.max);
-        this.data = newData;
-        console.log('clicked');
     }
 
     render() {
@@ -44,12 +20,9 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = 'x-classandtemplate';
+ClassAndTemplate.tagName = "x-classandtemplate";
 ClassAndTemplate.publicProps = {
-    min: DefaultMinValue,
-    max: DefaultMaxValue,
-    label: null,
-    title: null
+    t: Test
 };
 ClassAndTemplate.templateUsedIds = templateUsedIds;
 

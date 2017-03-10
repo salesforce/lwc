@@ -7,8 +7,8 @@ export default function ($api, $cmp, $slotset) {
             attrs: {
                 "aria-hidden": "true"
             },
-            props: {
-                className: "slds-button__icon"
+            classMap: {
+                "slds-button__icon": true
             }
         },
         [$api.h(

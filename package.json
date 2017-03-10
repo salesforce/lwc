@@ -8,6 +8,7 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "start": "lerna exec npm start --scope raptor-engine",
+
     "clean:dist": "rimraf dist/",
     "clean:packages": "lerna run clean",
     "preversion": "npm run build",

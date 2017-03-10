@@ -1,5 +1,5 @@
 <template>
-    <ns-foo d="foo"/>
+    <ns-foo bind:d="p.foo"/>
     <a
         class="test"
         data-foo="datafoo"
@@ -11,7 +11,7 @@
     ></a>
     <ns-bar
         class="r"
-        data-bar="test"
+        data-xx="foo"
         aria-hidden="hidden"
         foo-bar="x"
         foo="bar"
@@ -20,10 +20,11 @@
         bgcolor="blue"
     ></ns-bar>
 
-    <table bgcolor="blue"></table>
-
-    <svg class="test">
+    <svg class="cubano">
         <use xlink:href="xx"></use>
     </svg>
-    <div is="ns-buzz" aria-hidden="hidden" foo="bar"></div>
+    <div is="ns-buzz" bgcolor="x" aria-hidden="hidden" ></div>
+    <table bgcolor="x"></table>
+    <table bgcolor="x" is="ns-table" tabindex="2" bar="test" min="3"></table>
+    <div class={foo} aria-hidden="hidden"></div>
 </template>

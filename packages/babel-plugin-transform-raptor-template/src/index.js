@@ -4,7 +4,7 @@ import CustomScope from './custom-scope';
 import metadata from './metadata';
 import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement } from './utils';
-import { isSvgNsAttribute, isSVG, isValidHTMLAttribute, getPropertyNameFromAttrName, isReflective} from './html-attrs';
+import { isSvgNsAttribute, isSVG, isValidHTMLAttribute, getPropertyNameFromAttrName, isProp } from './html-attrs';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
@@ -474,6 +474,7 @@ export default function({ types: t }: BabelTypes): any {
         let valueNode = prop.value;
         let inScope = false;
 
+        // Check to make sure the attribute name is allowed to the current tag
         if (!elementMeta.isCustomElementTag && !directive && !elementMeta.isSvgTag) {
             validateHTMLAttribute(tagName, valueName, path);
         }
@@ -505,6 +506,12 @@ export default function({ types: t }: BabelTypes): any {
         } else {
             if (valueName === 'style') {
                 valueNode = t.valueToNode(parseStyles(prop.value.value));
+            }
+
+            if (valueName === 'className' && t.isStringLiteral(valueNode)) {
+                const classObj = valueNode.value.trim().split(' ').reduce((r, k) => { r[k] = true; return r; }, {});
+                valueNode = t.valueToNode(classObj);
+                valueName = 'classMap';
             }
         }
 
@@ -557,7 +564,7 @@ export default function({ types: t }: BabelTypes): any {
                 }
             }
 
-            if (isReflective(elementMeta.tagName, name) && (!elementMeta.isSvgTag || name === 'class')) {
+            if (isProp(elementMeta.tagName, name, elementMeta.hasIsDirective) && !elementMeta.isSvgTag) {
                 groupName = CONST.PROPS;
             }
 

@@ -8,9 +8,7 @@ export default function ($api, $cmp, $slotset) {
             return $api.h(
                 "li",
                 {
-                    props: {
-                        className: item.x
-                    }
+                    className: item.x
                 },
                 [$api.s(item)]
             );
