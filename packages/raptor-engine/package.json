@@ -71,7 +71,6 @@
     "sinon": "^1.17.6",
     "snabbdom": "^0.5.4",
     "typedef-converter": "^0.1.4",
-    "typescript-eslint-parser": "eslint/typescript-eslint-parser",
     "string-replace-webpack-plugin": "0.0.5",
     "watch": "^1.0.0",
     "yargs": "^6.0.0"
