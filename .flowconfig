@@ -23,8 +23,7 @@
 [include]
 
 [libs]
-types/babel-plugins.js
-types/common.js
+types/compiler.d.ts
 
 [options]
 unsafe.enable_getters_and_setters=true

@@ -1,10 +1,14 @@
 /* eslint-env node */
+// $FlowFixMe: not sure why this does not work
+import jsxPlugin from 'babel-plugin-syntax-jsx';
+
 import * as CONST from './constants';
 import CustomScope from './custom-scope';
 import metadata from './metadata';
 import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement } from './utils';
-import { isSvgNsAttribute, isSVG, isValidHTMLAttribute, getPropertyNameFromAttrName, isProp } from './html-attrs';
+import { isSvgNsAttribute, isSVG, getPropertyNameFromAttrName, isProp } from './html-attrs';
+import { validateTemplateRootFormat, validateElementMetadata, validatePrimitiveValues, validateHTMLAttribute } from './validators';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
@@ -21,11 +25,11 @@ export default function({ types: t }: BabelTypes): any {
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
 
     const BoundThisVisitor = {
-        ThisExpression(path) {
+        ThisExpression(path: Path) {
             throw path.buildCodeFrameError('You can\'t use `this` within a template');
         },
         Identifier: {
-            exit(path, state) {
+            exit(path: Path, state: any) {
                 if (!path.node._ignore) {
                     path.stop();
                     if (state.customScope.hasBinding(path.node.name)) {
@@ -44,7 +48,7 @@ export default function({ types: t }: BabelTypes): any {
     };
 
     const NormalizeAttributeVisitor = {
-        JSXAttribute(path) {
+        JSXAttribute(path: Path) {
             validatePrimitiveValues(path);
             const { node, meta } = normalizeAttributeName(path.node.name, path.get('name'));
             const value = normalizeAttributeValue(path.node.value, meta, path.get('value'));
@@ -54,46 +58,12 @@ export default function({ types: t }: BabelTypes): any {
         }
     };
 
-    function validateElementMetadata(meta, path) {
-        if (meta.isSlotTag && Object.keys(meta.directives).length) {
-            const usedDirectives = Object.keys(meta.directives).join(',');
-            throw path.buildCodeFrameError(`You can\'t use directive "${usedDirectives}" in a slot tag`);
-        }
-    }
 
-    function validatePrimitiveValues(path) {
-        path.traverse({ enter(path) {
-            if (!path.isJSX() && !path.isIdentifier() && !path.isMemberExpression() && !path.isLiteral()) {
-                throw path.buildCodeFrameError(`Node type ${path.node.type} is not allowed inside an attribute value`);
-            }
-        }});
-    }
-
-    function validateTemplateRootFormat(path) {
-        const rootChildrens = path.get('body');
-
-        if (!rootChildrens.length) {
-            throw path.buildCodeFrameError('Missing root template tag');
-        } else if (rootChildrens.length > 1) {
-            throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
-        }
-
-        const templateTagName = path.get('body.0.expression.openingElement.name');
-        if (templateTagName.node.name !== CONST.TEMPLATE_TAG) {
-            throw path.buildCodeFrameError('Root tag should be a template');
-        }
-    }
-
-    function validateHTMLAttribute(tagName: string, attrName: string, path) {
-        if (!isValidHTMLAttribute(tagName, attrName)) {
-            throw path.parentPath.buildCodeFrameError(`HTML Error: The attribute "${attrName}" is not defined the tag "${tagName}"`);
-        }
-    }
 
    // -- Plugin Visitor ------------------------------------------
     return {
         name: 'raptor-template',
-        inherits: require('babel-plugin-syntax-jsx'), // Enables JSX grammar
+        inherits: jsxPlugin, // Enables JSX grammar
         pre(file) {
             this.customScope = new CustomScope();
             metadata.initialize(file.metadata);
@@ -608,7 +578,7 @@ export default function({ types: t }: BabelTypes): any {
         return metaGroup;
     }
 
-    function memoizeSubtree(expression, path) {
+    function memoizeSubtree(expression: any, path: Path) {
         const root = path.find((path) => path.isProgram());
         const id = path.scope.generateUidIdentifier("m");
         const m = memoizeLookup({ ID: id });
@@ -618,7 +588,7 @@ export default function({ types: t }: BabelTypes): any {
         return m.expression;
     }
 
-    function normalizeAttributeName(node: BabelNodeJSXIdentifier | BabelNodeJSXNamespacedName): { meta: MetaConfig, node: BabelNodeStringLiteral | BabelNodeIdentifier }  {
+    function normalizeAttributeName(node: any): { meta: MetaConfig, node: BabelNodeStringLiteral | BabelNodeIdentifier }  {
         const meta: MetaConfig = { directive: null, modifier: null, event: null, scoped: null, isExpression: false };
 
         if (t.isJSXNamespacedName(node)) {
