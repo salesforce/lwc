@@ -274,7 +274,6 @@ export default function({ types: t }: BabelTypes): any {
                 if (directives[MODIFIERS.else]) {
                     throw path.buildCodeFrameError('Else statement found before if statement');
                 }
-
                 if (directives[MODIFIERS.for]) {
                     if (directives[MODIFIERS.if]) {
                         child = applyIfDirectiveToNode(directives, child, nextChild);
@@ -462,7 +461,7 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     function isDirectiveName(name) {
-        return name === MODIFIERS.if || name === MODIFIERS.for || name === MODIFIERS.else || name === DIRECTIVES.is;
+        return MODIFIERS[name];
     }
 
     function transformProp(prop, path, elementMeta, state) {
@@ -530,7 +529,6 @@ export default function({ types: t }: BabelTypes): any {
     function transformAndGroup(props: any, elementMeta: any, path: any, state: any): any {
         const finalProps = [];
         const propKeys = {};
-
         function addGroupProp(key: string, value: any) {
             let group = propKeys[key];
             if (!group) {
@@ -634,10 +632,12 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             if (dNode.name in DIRECTIVES) {
+                dNode.name = DIRECTIVES[dNode.name];
                 meta.directive = DIRECTIVES[dNode.name];
             }
 
             if (mNode.name in MODIFIERS) {
+                mNode.name = MODIFIERS[mNode.name];
                 meta.modifier = MODIFIERS[mNode.name];
             }
 

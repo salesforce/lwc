@@ -15,6 +15,7 @@ export const DEFAULT_SLOT_NAME = '$default$';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
+    for       : 'repeat',
     on        : 'on',
     is        : 'is',
     bind      : 'bind',
@@ -31,6 +32,7 @@ export const MODIFIERS = {
     if    : 'if',
     else  : 'else',
     for   : 'for',
+    each  : 'for',
     ifnot : 'ifnot',
 };
 
