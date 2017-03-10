@@ -1,7 +1,7 @@
 import _nsFoo from "ns:foo";
 
 const _m = function ($api, $cmp) {
-    return $cmp.p.foo.bind($cmp);
+    return $cmp.handleFoo.bind($cmp);
 };
 
 const memoized = Symbol();
@@ -14,11 +14,11 @@ export default function ($api, $cmp, $slotset) {
             "ns-foo",
             _nsFoo,
             {
-                props: {
-                    d: m._m || (m._m = _m($api, $cmp))
+                on: {
+                    foo: m._m || (m._m = _m($api, $cmp))
                 }
             }
         )]
     )];
 }
-export const templateUsedIds = [];
+export const templateUsedIds = ["handleFoo"];

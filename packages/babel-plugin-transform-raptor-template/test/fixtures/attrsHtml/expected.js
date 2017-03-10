@@ -9,10 +9,10 @@ export default function ($api, $cmp, $slotset) {
             {
                 attrs: {
                     title: "x",
-                    "aria-hidden": "foo"
+                    "aria-hidden": "x"
                 }
             },
-            ["X"]
+            ["x"]
         )]
     )];
 }
