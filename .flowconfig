@@ -17,15 +17,14 @@
 <PROJECT_ROOT>/playground/.*
 <PROJECT_ROOT>/packages/babel-plugin-transform-raptor-class/.*
 <PROJECT_ROOT>/packages/raptor-helper-fixture/.*
-<PROJECT_ROOT>/packages/raptor-engine/.*
 <PROJECT_ROOT>/packages/raptor-html-cleanup-transform/.*
 <PROJECT_ROOT>/packages/rollup-plugin-raptor-compiler/.*
+<PROJECT_ROOT>/lib/.*
 [include]
 
 [libs]
-src/framework/types.flow.js
-lib/types.js
-lib/babel.js
+types/babel-plugins.js
+types/common.js
 
 [options]
 unsafe.enable_getters_and_setters=true

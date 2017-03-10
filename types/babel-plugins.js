@@ -3,6 +3,13 @@
 // Commit 308de41  on Aug 16, 2016
 // It should be updated frequently
 
+type BabelCli {};
+
+type Path = {
+    get: (String) => Path | Array<Path>;
+    buildCodeFrameError: (String) => Object;
+};
+
 declare class BabelNodeComment {
   value: string;
   start: number;
@@ -885,7 +892,7 @@ type BabelTypes = {
     isJSXNamespacedName: (node: BabelNode) => boolean %checks;
 };
 
-declare module "babel-types" {
+declare class "babel-types" {
   declare function arrayExpression(elements?: any): BabelNodeArrayExpression;
   declare function assignmentExpression(operator: string, left: BabelNodeLVal, right: BabelNodeExpression): BabelNodeAssignmentExpression;
   declare function binaryExpression(operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=", left: BabelNodeExpression, right: BabelNodeExpression): BabelNodeBinaryExpression;
