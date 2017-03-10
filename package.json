@@ -32,7 +32,6 @@
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
-    "typedef-converter": "^0.1.4",
-    "typescript-eslint-parser": "eslint/typescript-eslint-parser"
+    "typedef-converter": "^0.1.4"
   }
 }
