@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -12,7 +12,6 @@
     "build": "npm run build:lib",
     "start": "npm run build:runtime && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.dist.js & node scripts/rollup.services.js --watch & node scripts/rollup.components.js --watch && forever stop raptor",
     "stop": "forever stopall",
-
     "build:lib": "rollup -c scripts/rollup.config.lib.js",
     "build:dist:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.dist.js",
     "build:dist:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.dist.js",
@@ -23,7 +22,6 @@
     "build:components": "node scripts/rollup.components.js",
     "build:services": "node scripts/rollup.services.js",
     "build:all": "npm run build:runtime && npm run build:components --production && npm run build:services --production && npm run build:dist && npm run build:lib",
-
     "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
     "flow": "flow --show-all-errors",
     "eslint": "eslint src/",
@@ -62,7 +60,7 @@
     "rollup-plugin-flow": "^v1.1.0",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-raptor-compiler": "0.4.0",
+    "rollup-plugin-raptor-compiler": "0.4.1",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
