@@ -12,7 +12,8 @@
     "clean:dist": "rimraf dist/",
     "clean:packages": "lerna run clean",
     "preversion": "npm run build",
-    "prepublish": "lerna bootstrap && npm run build"
+    "prepublish": "lerna bootstrap && npm run build",
+    "release": "npm run preversion && lerna publish --skip-temp-tag --exact"
   },
   "repository": {
     "type": "git",
