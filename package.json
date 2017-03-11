@@ -7,8 +7,8 @@
     "lint": " lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build",
+    "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
     "start": "lerna exec npm start --scope raptor-engine",
-
     "clean:dist": "rimraf dist/",
     "clean:packages": "lerna run clean",
     "preversion": "npm run build",
@@ -25,7 +25,10 @@
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-eslint": "^7.1.1",
+    "babel-loader": "^6.4.0",
     "babel-preset-env": "^1.2.1",
+    "babel-preset-flow": "^6.23.0",
+    "babili": "0.0.12",
     "cross-env": "^3.1.4",
     "eslint": "^3.0.1",
     "eslint-plugin-flowtype": "^2.7.1",
@@ -34,6 +37,7 @@
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
-    "typedef-converter": "^0.1.4"
+    "typedef-converter": "^0.1.4",
+    "webpack": "^2.2.1"
   }
 }
