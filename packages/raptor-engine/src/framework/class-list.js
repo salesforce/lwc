@@ -1,15 +1,13 @@
 import assert from "./assert.js";
 import {
-    resetComponentProp,
-    updateComponentProp,
-} from "./component.js";
+    getOwnPropertyNames,
+} from "./language.js";
 import {
     scheduleRehydration,
     getLinkedVNode,
 } from "./vm.js";
-
+import { markComponentAsDirty } from "./component.js";
 const INTERNAL_VM = Symbol();
-const INTERNAL_LIST = Symbol();
 
 // This needs some more work. ClassList is a weird DOM api because it
 // is a TokenList, but not an Array. For now, we are just implementing
@@ -20,18 +18,17 @@ export class ClassList {
         const { vm } = getLinkedVNode(component);
         assert.vm(vm);
         this[INTERNAL_VM] = vm;
-        this[INTERNAL_LIST] = [];
     }
     add(...classNames: Array<String>) {
-        const list = this[INTERNAL_LIST]
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
         // Add specified class values. If these classes already exist in attribute of the element, then they are ignored.
         classNames.forEach((className: String) => {
-            const pos = list.indexOf(className);
-            if (pos === -1) {
-                list.push(className);
-                let vm = this[INTERNAL_VM];
-                updateComponentProp(vm, 'className', list.join(' '));
-                if (vm.isDirty) {
+            if (!cmpClasses[className]) {
+                cmpClasses[className] = true;
+                console.log(`Marking ${vm} as dirty: classname "${className}" was added.`);
+                if (!vm.isDirty) {
+                    markComponentAsDirty(vm);
                     console.log(`Scheduling ${vm} for rehydration due to changes in the classList collection.`);
                     scheduleRehydration(vm);
                 }
@@ -39,19 +36,16 @@ export class ClassList {
         });
     }
     remove(...classNames: Array<String>) {
-        const list = this[INTERNAL_LIST]
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
         // Remove specified class values.
         classNames.forEach((className: String) => {
-            const pos = list.indexOf(className);
-            if (pos >= 0) {
-                list.splice(pos, 1);
-                let vm = this[INTERNAL_VM];
-                if (list.length) {
-                    updateComponentProp(vm, 'className', list.join(' '));
-                } else {
-                    resetComponentProp(vm, 'className');
-                }
-                if (vm.isDirty) {
+            if (cmpClasses[className]) {
+                cmpClasses[className] = false;
+                const vm = this[INTERNAL_VM];
+                console.log(`Marking ${vm} as dirty: classname "${className}" was removed.`);
+                if (!vm.isDirty) {
+                    markComponentAsDirty(vm);
                     console.log(`Scheduling ${vm} for rehydration due to changes in the classList collection.`);
                     scheduleRehydration(vm);
                 }
@@ -59,24 +53,26 @@ export class ClassList {
         });
     }
     item(index: Number): string | void {
-        const list = this[INTERNAL_LIST]
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
         // Return class value by index in collection.
-        return list[index] || null;
+        return getOwnPropertyNames(cmpClasses)
+            .filter((className: string): boolean => cmpClasses[className])[index] || null;
     }
     toggle(className: String, force: any): boolean {
-        const list = this[INTERNAL_LIST]
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
         // When only one argument is present: Toggle class value; i.e., if class exists then remove it and return false, if not, then add it and return true.
-        const pos = list.indexOf(className);
         // When a second argument is present: If the second argument evaluates to true, add specified class value, and if it evaluates to false, remove it.
         if (arguments.length > 1) {
-            if (force && pos === -1) {
+            if (force) {
                 this.add(className);
-            } else if (!force && pos >= 0) {
+            } else if (!force) {
                 this.remove(className);
             }
             return !!force;
         }
-        if (pos) {
+        if (cmpClasses[className]) {
             this.remove(className);
             return false;
         }
@@ -84,12 +80,14 @@ export class ClassList {
         return true;
     }
     contains(className: String): boolean {
-        const list = this[INTERNAL_LIST]
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
         // Checks if specified class value exists in class attribute of the element.
-        return list.indexOf(className) >= 0;
+        return !!cmpClasses[className];
     }
     toString(): string {
-        const list = this[INTERNAL_LIST]
-        return list.join(' ');
+        const vm = this[INTERNAL_VM];
+        const { cmpClasses } = vm;
+        return getOwnPropertyNames(cmpClasses).filter((className: string): boolean => cmpClasses[className]).join(' ');
     }
 }

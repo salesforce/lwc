@@ -4,9 +4,9 @@ import h from "snabbdom/h";
 
 // [c]ustom element node
 export function c(sel: string, Ctor: Class<Component>, data: Object = {}): Object {
-    const { key, slotset, attrs, props: _props, on: _on } = data;
+    const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    const vnode = h(sel, { hook, key, slotset, attrs, on: {}, props: {}, _props, _on }, []);
+    const vnode = h(sel, { hook, key, slotset, attrs, className, classMap, on: {}, props: {}, _props, _on }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }
