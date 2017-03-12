@@ -7,27 +7,27 @@
   "jsnext:main": "./lib/raptor.es.js",
   "scripts": {
     "clean": "rimraf dist/ fake-cdn/ && git checkout fake-cdn",
-    "lint": "npm run eslint",
+    "lint": "yarn run eslint",
     "test": "jest --coverage --verbose",
-    "build": "npm run build:lib",
-    "start": "npm run build:runtime && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.dist.js & node scripts/rollup.services.js --watch & node scripts/rollup.components.js --watch && forever stop raptor",
+    "build": "yarn run build:lib",
+    "start": "yarn run build:runtime && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.dist.js & node scripts/rollup.services.js --watch & node scripts/rollup.components.js --watch && forever stop raptor",
     "stop": "forever stopall",
     "build:lib": "rollup -c scripts/rollup.config.lib.js",
     "build:dist:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.dist.js",
     "build:dist:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.dist.js",
     "build:interop:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.interop.js",
     "build:interop:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.interop.js",
-    "build:dist": "npm run build:dist:dev && npm run build:dist:prod && npm run build:interop:dev && npm run build:interop:prod",
+    "build:dist": "yarn run build:dist:dev && yarn run build:dist:prod && yarn run build:interop:dev && yarn run build:interop:prod",
     "build:runtime": "babel-external-helpers > fake-cdn/components/babelHelpers.js",
     "build:components": "node scripts/rollup.components.js",
     "build:services": "node scripts/rollup.services.js",
-    "build:all": "npm run build:runtime && npm run build:components --production && npm run build:services --production && npm run build:dist && npm run build:lib",
+    "build:all": "yarn run build:runtime && yarn run build:components --production && yarn run build:services --production && yarn run build:dist && yarn run build:lib",
+
     "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
     "flow": "flow --show-all-errors",
     "eslint": "eslint src/",
     "flowlint": "flow",
-    "preversion": "npm run clean && npm run build",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "yarn run build"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

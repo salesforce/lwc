@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "babel src/ --out-dir dist/",
-    "prepublish": "npm run build",
+    "prepublish": "yarn run build",
     "lint": "eslint src/"
   },
   "publishConfig": {

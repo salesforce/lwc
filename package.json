@@ -3,17 +3,18 @@
   "private": true,
   "description": "Raptor",
   "scripts": {
-    "clean": "npm run clean:packages",
+    "clean": "yarn run clean:packages",
     "lint": " lerna run lint",
     "test": "lerna run test",
     "build": "lerna run build",
     "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
-    "start": "lerna exec npm start --scope raptor-engine",
+    "start": "lerna exec yarn start --scope raptor-engine",
     "clean:dist": "rimraf dist/",
+    "clean:node_modules": "lerna exec -- rm -rf ./node_modules && rm -rf ./node_modules",
     "clean:packages": "lerna run clean",
-    "preversion": "npm run build",
-    "prepublish": "lerna bootstrap && npm run build",
-    "release": "npm run preversion && lerna publish --skip-temp-tag --exact"
+
+    "prepublish": "lerna bootstrap --concurrency 1 && yarn run build",
+    "release": "yarn run preversion && lerna publish --skip-temp-tag --exact"
   },
   "repository": {
     "type": "git",

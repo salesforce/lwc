@@ -8,6 +8,7 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 
  * Node 6.x
  * NPM 3.x
+ * Yarn >= 0.23.0
 
 ## Installation
 
@@ -17,14 +18,16 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 git clone git@git.soma.salesforce.com:raptor/raptor.git
 ```
 
-### 2) Setup npm to use Nexus repositories
+### 2) Setup npm/yarn to use Nexus repositories
 
 Nexus provides a public caching proxy and a private repository which hosts several dependent raptor modules. Follow the instructions at [https://sfdc.co/npm-nexus](https://sfdc.co/npm-nexus) to setup access to the Nexus npm registry.
 
 ### 3) Install Dependencies
 
+*We use [yarn](https://yarnpkg.com/) because it is significantly faster than npm for our use case. See this command [cheatsheet](https://yarnpkg.com/lang/en/docs/migrating-from-npm/).*
+
 ```bash
-npm install
+yarn install
 ```
 
 If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: unable to get local issuer certificate*, or a registry communication issue then re-verify that step 2 was successful.
@@ -32,7 +35,7 @@ If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: u
 ### 4) Start the server
 
 ```bash
-npm start
+yarn start
 ```
 
 ### 5) View examples
@@ -42,10 +45,10 @@ Load the examples in a browser: [http://localhost:8181/](http://localhost:8181/)
 
 ## Building Raptor
 
-When using `npm start`, raptor will build in dev-mode with a watcher, but if you wish to compile raptor in production mode, you can use the following command:
+When using `yarn start`, raptor will build in dev-mode with a watcher, but if you wish to compile raptor in production mode, you can use the following command:
 
 ```bash
-npm run build
+yarn run build
 ```
 
 ## Editor Configurations
@@ -127,7 +130,7 @@ _note: If no conflicts arise, these commands will ensure that your changes are a
 #### Lint your changes
 
 ```bash
-npm run lint
+yarn run lint
 ```
 
 The above command may display lint issues that are unrelated to your changes.
@@ -140,7 +143,7 @@ the ones related to the files you make changes to!
 #### Run tests
 
 ```sh
-npm test
+yarn test
 ```
 
 More details testing in our [TESTING.md](https://git.soma.salesforce.com/raptor/raptor/tree/master/docs/TESTING.md) guide.

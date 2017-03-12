@@ -29,8 +29,7 @@
     "build:fixtures": "babel-node ./scripts/build-fixtures.js",
     "test": "mocha --compilers js:babel-register",
     "lint": "eslint src/",
-    "preversion": "npm run lint && npm run clean && npm run build",
-    "prepublish": "npm run build"
+    "prepublish": "yarn run build"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

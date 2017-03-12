@@ -18,20 +18,24 @@ node("raptor_node") {
             withCredentials([file(credentialsId: 'team-auraframework_nexus-token', variable: 'NPMRC')]) {
                 sh "cp $NPMRC ~/.npmrc"
             }
+
+            // yarn doesn't support command line override so set some globals
+            sh "yarn config set registry $NEXUS"
         }
 
         stage("Build") {
             // leave verbose on for a few weeks to aid log debugging
-            sh "npm --verbose --registry=$NEXUS  install"
+            // TODO - yarn has a race condition. running it a second time solves the issue and it doesn't redownloaded everything.
+            // it's ugly but it works. see https://github.com/yarnpkg/yarn/issues/820.
+            sh "yarn install --verbose || yarn install --verbose"
         }
 
         stage("Static Analysis") {
-            // TODO - when flow errors are fixed change this to "npm run lint"
-            sh "npm run lint"
+            sh "yarn run lint"
         }
 
         stage("Test") {
-            sh "npm test"
+            sh "yarn test"
         }
     } catch (e) {
         // retrieve last committer email
