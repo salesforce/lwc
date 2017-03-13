@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -22,7 +22,6 @@
     "build:components": "node scripts/rollup.components.js",
     "build:services": "node scripts/rollup.services.js",
     "build:all": "yarn run build:runtime && yarn run build:components --production && yarn run build:services --production && yarn run build:dist && yarn run build:lib",
-
     "typedef": "typedef-converter src/framework/types.d.ts -o src/framework/types.flow.js",
     "flow": "flow --show-all-errors",
     "eslint": "eslint src/",
@@ -60,7 +59,7 @@
     "rollup-plugin-flow": "^v1.1.0",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-raptor-compiler": "0.4.1",
+    "rollup-plugin-raptor-compiler": "0.4.2",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
