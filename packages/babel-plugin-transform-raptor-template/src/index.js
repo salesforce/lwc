@@ -459,7 +459,7 @@ export default function({ types: t }: BabelTypes): any {
 
         if (directive) {
             let rootMember;
-            if (t.isStringLiteral(valueNode) && !elementMeta.hasIsDirective /* allow `is` attribute */) {
+            if (t.isStringLiteral(valueNode) && directive !== DIRECTIVES.is /* allow `is` attribute */) {
                 rootMember = getMemberFromNodeStringLiteral(valueNode);
                 inScope = scopedVars.indexOf(rootMember) !== -1;
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
@@ -528,10 +528,7 @@ export default function({ types: t }: BabelTypes): any {
 
             if (meta.directive && isDirectiveName(name)) {
                 elementMeta[name] = prop.value;
-                // TODO: Allowing `is` for debugging purposes
-                if (!elementMeta.hasIsDirective) {
-                    return;
-                }
+                return;
             }
 
             if (isProp(elementMeta.tagName, name, elementMeta.hasIsDirective) && !elementMeta.isSvgTag) {
