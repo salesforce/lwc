@@ -1,21 +1,27 @@
 {
   "scripts": {
     "clean": "rimraf dist/",
-    "build": "npm install && node scripts/build-bundle",
+    "build": "yarn run link && node scripts/build-bundle",
+    "link": "npm link ../packages/raptor-engine && npm link ../packages/rollup-plugin-raptor-compiler",
     "build-runner": "rollup -c scripts/runner.rollup.js && cp runner/index.html dist/ && cp runner/runner.js dist/",
-    "start": "http-server -p 8000 -d false -c-1 dist/"
-  },
-  "dependencies": {
-    "body-parser": "^1.17.1",
-    "cors": "^2.8.1",
-    "minimist": "^1.2.0",
-    "raptor": ".."
+    "cli": "babel-node ./runner/cli",
+    "start": "cd dist && python -m SimpleHTTPServer 8000"
   },
   "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.2.1",
+    "babel-preset-es2015": "^6.22.0",
+    "body-parser": "^1.17.1",
+    "cli-table": "^0.3.1",
+    "cors": "^2.8.1",
     "express": "^4.15.2",
+    "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
-    "rollup": "^0.41.4",
-    "rollup-plugin-multi-entry": "^2.0.1"
+    "rollup": "^0.41.5",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-multi-entry": "^2.0.1",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-strip": "^1.1.1"
   }
 }

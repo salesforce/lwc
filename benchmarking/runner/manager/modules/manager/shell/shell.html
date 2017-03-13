@@ -15,7 +15,7 @@
             <thead>
                 <tr class="slds-text-title--caps">
                     <th scope="col"></th>
-                    <th repeat:for="bundle of bundles" key={bundle.info.id} scope="col">
+                    <th repeat:for="bundle of bundles" scope="col">
                         {bundle.label}
                     </th>
                 </tr>
@@ -41,7 +41,6 @@
         <h3 class="slds-section-title--divider">Runners</h3>
         <manager-bundle-runner
             repeat:for="bundle of bundles"
-            key={bundle.info.id}
             bundle={bundle}
             config={config}
             on-ready={handleRunnerReady}

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 
 const mkdirp = require('mkdirp');
 const rollup = require('rollup');
@@ -23,8 +23,10 @@ function sanatizeBuffer(buffer) {
 }
 
 function getRaptorVersion() {
-    const moduleList = sanatizeBuffer(execSync('npm list'))
-    const [, raptorVerion] = moduleList.match(/raptor@([\d\.]+)/);
+    const res = spawnSync('npm', ['list']);
+    const output = res.stdout.toString();
+    let [, raptorVerion] = output.match(/raptor-engine@([\d\.]+)/);
+
     return raptorVerion;
 }
 

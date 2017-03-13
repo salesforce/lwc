@@ -1,4 +1,4 @@
-import * as Raptor from 'raptor';
+import * as Raptor from 'raptor-engine';
 import { benchmark } from 'runner';
 
 import SimpleElement from 'benchmark:simple-element';

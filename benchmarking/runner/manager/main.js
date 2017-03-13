@@ -1,4 +1,4 @@
-import * as Raptor from 'raptor';
+import * as Raptor from 'raptor-engine';
 import Shell from 'manager:shell';
 
 window.onload = () => {

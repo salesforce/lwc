@@ -1,4 +1,4 @@
-import { HTMLElement } from "raptor";
+import { HTMLElement } from "raptor-engine";
 
 import html from "./table.html";
 import { Store } from './store';
