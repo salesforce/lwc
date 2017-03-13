@@ -14,7 +14,7 @@
     "clean:packages": "lerna run clean",
 
     "prepublish": "lerna bootstrap --concurrency 1 && yarn run build",
-    "release": "yarn run preversion && lerna publish --skip-temp-tag --exact"
+    "release": "yarn run prepublish && lerna publish --skip-temp-tag --exact"
   },
   "repository": {
     "type": "git",
