@@ -1,0 +1,15 @@
+<template>
+    <table>
+        <tbody>
+            <template repeat:for="row of rows">
+                <tr is="benchmark-table-component-row"
+                    class={row.className}
+                    row={row}
+                    onselect={handleSelect}
+                    onremove={handleRemove}
+                >
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</template>
