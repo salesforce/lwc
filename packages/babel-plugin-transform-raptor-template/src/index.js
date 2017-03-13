@@ -188,18 +188,16 @@ export default function({ types: t }: BabelTypes): any {
         const forExpr = directives[MODIFIERS.for];
         const args = directives.inForScope ? directives.inForScope.map((a) => t.identifier(a)) : [];
         const blockNodes = directives.varDeclarations.length ? [createVarDeclaration(directives.varDeclarations)] : [];
-        let needsFlattening = directives.isTemplate;
 
         if (t.isArrayExpression(node) && node.elements.length === 1) {
             node = node.elements[0];
-            needsFlattening = false;
         }
 
         blockNodes.push(t.returnStatement(node));
 
         const func = t.functionExpression(null, args, t.blockStatement(blockNodes));
         const iterator = t.callExpression(applyPrimitive(ITERATOR), [forExpr, func]);
-        return needsFlattening ? applyFlatteningToNode(iterator) : iterator;
+        return iterator;
     }
 
     function applyIfDirectiveToNode(directives, node, nextNode) {
@@ -221,6 +219,7 @@ export default function({ types: t }: BabelTypes): any {
         const children = node.children;
         let hasIteration = false;
         let hasSlotTag = false;
+        let innerIteration = false;
         let elems = [];
 
         for (let i = 0; i < children.length; i++) {
@@ -251,6 +250,7 @@ export default function({ types: t }: BabelTypes): any {
                     }
 
                     const forTransform = applyRepeatDirectiveToNode(directives, child, state);
+                    forTransform._iteration = true;
                     hasIteration = true;
                     elems.push(forTransform);
 
@@ -268,6 +268,7 @@ export default function({ types: t }: BabelTypes): any {
                             child.elements.forEach(c => elems.push(t.logicalExpression('&&', id, c)));
                         } else {
                             elems.push(t.logicalExpression('&&', id, child));
+                            innerIteration = child._iteration;
                         }
 
                     } else {
@@ -280,12 +281,12 @@ export default function({ types: t }: BabelTypes): any {
         }
 
         const multipleChilds = elems.length > 1;
-        const needsFlattening = (hasIteration || hasSlotTag);
-        if (!multipleChilds && needsFlattening) {
+        const hasArrayInChildren = (hasIteration || hasSlotTag || innerIteration);
+        if (!multipleChilds && hasArrayInChildren) {
             return elems[0];
         } else {
             elems = t.arrayExpression(elems);
-            return needsFlattening ? applyFlatteningToNode(elems): elems;
+            return hasArrayInChildren ? applyFlatteningToNode(elems): elems;
         }
     }
 

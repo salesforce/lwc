@@ -4,7 +4,7 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        $api.f([$api.f($api.i($cmp.items, function (item, index) {
+        $api.f([$api.i($cmp.items, function (item, index) {
             return [$api.h(
                 "p",
                 {},
@@ -14,7 +14,7 @@ export default function ($api, $cmp, $slotset) {
                 {},
                 ["2", $api.s(item)]
             )];
-        })), $api.h(
+        }), $api.h(
             "p",
             {},
             ["3", $api.s($cmp.item)]
