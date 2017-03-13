@@ -4,11 +4,15 @@ export default function ($api, $cmp, $slotset) {
     return [$api.h(
         "section",
         {},
-        $slotset.test || [$api.h(
+        $api.f([$slotset.other || [$api.h(
             "p",
             {},
-            ["Test slot content"]
-        )]
+            ["Default slot other content"]
+        )], $slotset.$default$ || [$api.h(
+            "p",
+            {},
+            ["Default slot content"]
+        )]])
     )];
 }
 export const templateUsedIds = [];

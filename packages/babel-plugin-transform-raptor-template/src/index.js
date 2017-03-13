@@ -219,8 +219,8 @@ export default function({ types: t }: BabelTypes): any {
     // Convert JSX AST into regular javascript AST
     function buildChildren(node, path, state) {
         const children = node.children;
-        let needsFlattening = false;
         let hasIteration = false;
+        let hasSlotTag = false;
         let elems = [];
 
         for (let i = 0; i < children.length; i++) {
@@ -238,7 +238,7 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             if (directives && directives.isSlotTag) {
-                needsFlattening = true;
+                hasSlotTag = true;
             }
 
             if (directives && (t.isCallExpression(child) || t.isArrayExpression(child))) {
@@ -279,12 +279,13 @@ export default function({ types: t }: BabelTypes): any {
             elems.push(child);
         }
 
-        if (!needsFlattening && (elems.length === 1 && hasIteration)) {
+        const multipleChilds = elems.length > 1;
+        const needsFlattening = (hasIteration || hasSlotTag);
+        if (!multipleChilds && needsFlattening) {
             return elems[0];
         } else {
-            const multipleChilds = elems.length > 1;
             elems = t.arrayExpression(elems);
-            return needsFlattening || (hasIteration && multipleChilds) ? applyFlatteningToNode(elems): elems;
+            return needsFlattening ? applyFlatteningToNode(elems): elems;
         }
     }
 
