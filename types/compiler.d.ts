@@ -8,7 +8,8 @@ declare interface MetaConfig {
 }
 
 declare class PluginState {
-    customScope: any
+    customScope: any;
+    file: any;
 }
 
 declare class Path {
@@ -17,7 +18,9 @@ declare class Path {
     find(Function: (path: Path) => boolean) : Path;
     buildCodeFrameError(error: string): Object;
     node: BabelNode;
+    pushContainer(container: string, path: Path): void;
     unshiftContainer(container: string, path: Path): void;
+    isExpressionStatement(): boolean;
     isProgram(): boolean;
     scope: any;
     parentPath: Path;

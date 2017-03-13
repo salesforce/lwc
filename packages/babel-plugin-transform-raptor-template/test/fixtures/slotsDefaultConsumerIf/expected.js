@@ -1,7 +1,7 @@
 import _nsCmp from "ns:cmp";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
-    const _expr = $cmp.isTrue || undefined;
+    const _expr = $cmp.isTrue || $api.e();
 
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(

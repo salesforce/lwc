@@ -75,14 +75,16 @@ export default function({ types: t }: BabelTypes): any {
                     // Create an artificial scope for bindings and varDeclarations
                     this.customScope.registerScopePathBindings(path);
                 },
-                exit(path, state) {
+                exit(path: any, state: PluginState) {
                     // Collect the remaining var declarations to hoist them within the export function later
                     const vars = this.customScope.getAllVarDeclarations();
                     const varDeclarations = vars && vars.length ? createVarDeclaration(vars): null;
 
-
                     const bodyPath = path.get('body');
-                    const rootElement = bodyPath.find(child => (child.isExpressionStatement() && child.node.expression._jsxElement));
+                    const rootElement = bodyPath.find((child: Path): boolean => {
+                        // $FlowFixMe: How to annotate the refinement here?
+                        return child.isExpressionStatement() && child.node.expression._jsxElement;
+                    });
 
                     const exportDeclaration = moduleExports({ STATEMENT: rootElement.node, HOISTED_IDS: varDeclarations });
                     rootElement.replaceWithMultiple(exportDeclaration);
@@ -108,7 +110,6 @@ export default function({ types: t }: BabelTypes): any {
                         this.customScope.removeScopePathBindings(path);
                     }
                 }
-
             },
             JSXOpeningElement: {
                 enter(path, state) {
@@ -259,7 +260,7 @@ export default function({ types: t }: BabelTypes): any {
                 if (directives[MODIFIERS.if]) {
                     if (directives.isTemplate) {
                         const dir = directives[MODIFIERS.if];
-                        const init = t.logicalExpression('||', dir, t.identifier('undefined'));
+                        const init = t.logicalExpression('||', dir, t.callExpression(applyPrimitive(EMPTY), []));
                         const id = path.scope.generateUidIdentifier('expr');
                         state.customScope.pushVarDeclaration({ id, init, kind: 'const' });
 
@@ -588,12 +589,12 @@ export default function({ types: t }: BabelTypes): any {
         return m.expression;
     }
 
-    function normalizeAttributeName(node: any): { meta: MetaConfig, node: BabelNodeStringLiteral | BabelNodeIdentifier }  {
+    function normalizeAttributeName(node: any): { meta: MetaConfig, node: BabelNode }  {
         const meta: MetaConfig = { directive: null, modifier: null, event: null, scoped: null, isExpression: false };
 
         if (t.isJSXNamespacedName(node)) {
-            const dNode: BabelNodeJSXIdentifier = node.namespace;
-            const mNode: BabelNodeJSXIdentifier = node.name;
+            const dNode = node.namespace;
+            const mNode = node.name;
 
             // Transform nampespaced svg attrs correctly
             if (isSvgNsAttribute(dNode.name)) {
@@ -602,6 +603,7 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             if (dNode.name in DIRECTIVES) {
+                // $FlowFixMe: ??
                 dNode.name = DIRECTIVES[dNode.name];
                 meta.directive = DIRECTIVES[dNode.name];
             }

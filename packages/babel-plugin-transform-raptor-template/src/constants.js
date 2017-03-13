@@ -16,24 +16,28 @@ export const DEFAULT_SLOT_NAME = '$default$';
 export const DIRECTIVES = {
     repeat    : 'repeat',
     for       : 'repeat',
+    if        : 'if',
     on        : 'on',
     is        : 'is',
     bind      : 'bind',
-    branch    : 'set',
-    eval      : 'set',
-    assign    : 'set',
     set       : 'set',
-    d         : 'set',
-    directive : 'set',
-    custom    : 'custom',
+    eval      : 'set',
+};
+
+export const REPEAT_MODIFIERS = {
+    for       : 'each',
+    each      : 'each',
+};
+
+export const IF_MODIFIERS = {
+    'is-true': 'isTrue'
 };
 
 export const MODIFIERS = {
-    if    : 'if',
-    else  : 'else',
-    for   : 'for',
-    each  : 'for',
-    ifnot : 'ifnot',
+    if        : 'if',
+    else      : 'else',
+    for       : 'for',
+    each      : 'for',
 };
 
 export const RENDER_PRIMITIVES = {
