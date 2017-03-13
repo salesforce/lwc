@@ -12,7 +12,11 @@ export default function ($api, $cmp, $slotset) {
         },
         $api.f(["Other Child", $api.i($cmp.items, function (item) {
             return "X";
-        })])
+        }), $api.h(
+            "p",
+            {},
+            ["Last child"]
+        )])
     ), $api.h(
         "section",
         {
@@ -41,13 +45,33 @@ export default function ($api, $cmp, $slotset) {
                 s3: true
             }
         },
-        $api.f(["Other child", $api.i($cmp.items, function (item) {
+        $api.f([$api.h(
+            "p",
+            {},
+            ["Last child"]
+        ), $api.i($cmp.items, function (item) {
             return $api.h(
                 "div",
                 {},
                 []
             );
         })])
+    ), $api.h(
+        "section",
+        {
+            classMap: {
+                s4: true
+            }
+        },
+        [$api.h(
+            "p",
+            {},
+            ["Other child1"]
+        ), $api.h(
+            "p",
+            {},
+            ["Other child2"]
+        )]
     )];
 }
 export const templateUsedIds = ["items", "isTrue"];

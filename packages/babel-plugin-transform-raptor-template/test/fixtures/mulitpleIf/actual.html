@@ -1,7 +1,11 @@
-<template> 
-    <section>
-        <p eval:if="isTrue">1</p>
-        <p eval:if="isTrue">2</p>
-        <p eval:if="isTrue">3</p>
-    </section>
+<template>
+    <template eval:if={isTrue}>
+        <p>1</p>
+    </template>
+    <template eval:if={isTrue}>
+        <p>2</p>
+    </template>
+    <template eval:if={isTrue}>
+        <p>3</p>
+    </template>
 </template>
