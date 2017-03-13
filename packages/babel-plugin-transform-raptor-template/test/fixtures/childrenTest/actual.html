@@ -1,0 +1,20 @@
+<template>
+    <section class="s1">
+        Other Child
+        <template for:each="item of items">
+            X
+        </template>
+    </section>
+    <section class="s2">
+        Other Child
+        <template eval:if={isTrue}>
+            <template for:each="item of items">
+                <p>X1</p><p>X2</p>
+            </template>
+        </template>
+    </section>
+    <section class="s3">
+        Other child
+        <div for:each="item of items"></div>
+    </section>
+</template>

@@ -1,7 +1,6 @@
 /* eslint-env node */
 // $FlowFixMe: not sure why this does not work
 import jsxPlugin from 'babel-plugin-syntax-jsx';
-
 import * as CONST from './constants';
 import CustomScope from './custom-scope';
 import metadata from './metadata';
@@ -19,10 +18,14 @@ const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTE
 
 export default function({ types: t }: BabelTypes): any {
     // -- Helpers ------------------------------------------------------
-    const applyPrimitive = (primitive: string) => t.identifier(`${API_PARAM}.${primitive}`);
     const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
+    const applyPrimitive = (primitive: string) => {
+        const id = t.identifier(`${API_PARAM}.${primitive}`);
+        id._primitive = primitive; // Expando used for grouping slots (optimization)
+        return id;
+    };
 
     const BoundThisVisitor = {
         ThisExpression(path: Path) {
@@ -315,27 +318,42 @@ export default function({ types: t }: BabelTypes): any {
     }
 
 
-    function groupSlots(attrs, wrappedChildren) {
+    function groupSlots(attrs: any, wrappedChildren: any) {
         let slotGroups = {};
-        function addSlotElement(c) {
-            const slotName = c._meta && c._meta.slot || CONST.DEFAULT_SLOT_NAME;
+        function addSlotElement(child) {
+            const slotName = child._meta && child._meta.slot || CONST.DEFAULT_SLOT_NAME;
+
             if (!slotGroups[slotName]) {
                 slotGroups[slotName] = [];
             }
 
-            slotGroups[slotName].push(c);
+            slotGroups[slotName].push(child);
+            const isIterationOrFlattening = t.isCallExpression(child) && child._primitive === FLATTENING || child._primitive === ITERATOR;
+            const hasMultipleNodes = isIterationOrFlattening || (t.isLogicalExpression(child) && child.right._iteration);
+            if (hasMultipleNodes) {
+                slotGroups[slotName]._hasArrayNode = true;
+            }
         }
 
-        const isCallExpression = t.isCallExpression(wrappedChildren); // For flattening `api.f([...])`
-
-        if (isCallExpression) {
-            addSlotElement(wrappedChildren, true);
+        if (t.isArrayExpression(wrappedChildren)) {
+            wrappedChildren.elements.forEach(addSlotElement);
         } else {
-            wrappedChildren.elements.forEach(c => addSlotElement(c));
+            addSlotElement(wrappedChildren);
         }
 
-        const slotGroupsList = Object.keys(slotGroups).map(groupKey => {
-            return t.objectProperty(t.identifier(groupKey), t.arrayExpression(slotGroups[groupKey]));
+        const slotGroupsList = Object.keys(slotGroups).map((groupKey: any): any => {
+            let slotGroup = slotGroups[groupKey];
+            const multipleChilds = slotGroup.length > 1;
+            const hasArrayInChildren = slotGroup._hasArrayNode;
+
+            if (!multipleChilds && hasArrayInChildren) {
+                slotGroup = slotGroup[0];
+            } else {
+                slotGroup = t.arrayExpression(slotGroup);
+                slotGroup = hasArrayInChildren ? applyFlatteningToNode(slotGroup) : slotGroup;
+            }
+
+            return t.objectProperty(t.identifier(groupKey), slotGroup);
         });
 
         if (slotGroupsList.length) {

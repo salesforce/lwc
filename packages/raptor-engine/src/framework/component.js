@@ -231,6 +231,11 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
     let oldValue = cmpSlots[slotName];
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
+
+    // TODO: Issue #133
+    if (!Array.isArray(newValue)) {
+        newValue = undefined;
+    }
     if (oldValue !== newValue) {
         cmpSlots[slotName] = newValue;
         console.log(`Marking ${vm} as dirty: a new value for slot "${slotName}" was added.`);
