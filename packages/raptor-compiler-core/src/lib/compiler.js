@@ -36,7 +36,7 @@ export function compileBundle(entry: string, options: any): Promise<any> {
             const isLtng = options.format && options.format === ltng_format;
             const bundleResult = bundle.generate({
                 interop: false,
-                format: options.format && isLtng ? 'amd': options.format,
+                format: (options.format && isLtng ? 'amd': options.format) || 'es',
                 moduleId: normalizedModuleName,
             });
 

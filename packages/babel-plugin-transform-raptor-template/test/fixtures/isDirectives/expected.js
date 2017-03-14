@@ -1,4 +1,4 @@
-import _nsRow from "ns:row";
+import _nsRow from "ns-row";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});

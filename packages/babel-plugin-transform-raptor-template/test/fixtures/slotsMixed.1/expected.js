@@ -1,4 +1,4 @@
-import _xB from "x:b";
+import _xB from "x-b";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const _expr = $cmp.isLoading || $api.e(),

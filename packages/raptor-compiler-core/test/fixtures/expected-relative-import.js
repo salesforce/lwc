@@ -1,3 +1,5 @@
+$A.componentService.addModule('myns:relative_import', function () { 'use strict';
+
 const memoized = Symbol();
 var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
@@ -9,10 +11,11 @@ var _tmpl = function ($api, $cmp, $slotset) {
 };
 const templateUsedIds = [];
 
-const Test = 1;
-class ClassAndTemplate {
+function test() {}
+
+class RelativeImport {
     constructor() {
-        this.counter = 0;
+        this.x = test();
     }
 
     render() {
@@ -20,10 +23,10 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = "customns-class_and_template";
-ClassAndTemplate.publicProps = {
-    t: Test
-};
-ClassAndTemplate.templateUsedIds = templateUsedIds;
+RelativeImport.tagName = 'myns-relative_import';
+RelativeImport.templateUsedIds = templateUsedIds;
 
-export default ClassAndTemplate;
+return RelativeImport;
+
+});
+

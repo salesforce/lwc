@@ -1,9 +1,7 @@
 import { HTMLElement } from "raptor";
 import html from "./foo.html";
 
-export default class foo extends HTMLElement {
-    x;
-
+export default class Foo extends HTMLElement {
     render() {
         return html;
     }

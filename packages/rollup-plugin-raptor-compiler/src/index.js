@@ -1,7 +1,8 @@
 /* eslint-env node */
 const compiler = require('raptor-compiler-core');
 const path = require('path');
-var glob = require("glob");
+const glob = require("glob");
+const DEFAULT_NS = 'x';
 
 function initializePaths(opts) {
     const entry = opts.entry;
@@ -12,22 +13,29 @@ function initializePaths(opts) {
         const rel = path.relative(pathDir, file);
         const parts = rel.split('/');
         const name = path.basename(parts.pop(), '.js');
-        let ns = opts.componentNamespace;
+        const cmpNs = opts.componentNamespace;
+        let ns = cmpNs ? cmpNs : name.indexOf('-') === -1 ? DEFAULT_NS : null;
+        let tmpNs = parts.pop();
 
-        if (opts.mapNamespaceFromPath && parts.length > 2) {
-            const tmpNs = parts.pop();
-            ns = tmpNs === ns ? parts.pop() : tmpNs;
+        if (tmpNs === name) {
+            tmpNs = parts.pop();
+        }
+        // If mapping folder structure override namespace
+        if (opts.mapNamespaceFromPath) {
+            ns = tmpNs === 'components' ? parts.pop() : tmpNs;
         }
 
-        mapping[`${ns}:${name}`] = file;
+        const resolvedName = ns ? `${ns}-${name}` : name;
+        mapping[resolvedName] = file;
+
         return mapping;
     }, {});
 
     opts.componentMapping = componentMapping;
+    //console.log(opts);
 }
 
 function normalizeOptions(opts) {
-    opts.componentNamespace = opts.componentNamespace || 'x';
     opts.mapNamespaceFromPath = !!opts.mapNamespaceFromPath;
     opts.bundle = opts.bundle !== undefined ? opts.bundle : false;
 }
@@ -37,7 +45,6 @@ module.exports = (pluginOpts) => {
     normalizeOptions(pluginOpts);
 
     const opts = Object.assign({}, pluginOpts); // create a local copy
-
     return {
         name: 'rollup-raptor-compiler',
         options(rollupOptions) {

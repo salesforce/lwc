@@ -103,7 +103,11 @@ module.exports = function(babel) {
         }
 
         if (!keys[KEY_TAG]) {
-            const tagName = (`${state.opts.componentNamespace}-${className}`).toLowerCase();
+            const componentName = state.opts.componentName || className;
+            const componentNs = state.opts.componentNamespace;
+            const ns = componentNs ? componentNs : componentName.indexOf('-') === -1 ? UNKNOWN_NAMESPACE : '';
+            const tagName = ns ? (`${ns}-${componentName}`).toLowerCase() : componentName;
+
             extraBody.push(addClassStaticMember(className, KEY_TAG, t.stringLiteral(tagName)));
         }
 
@@ -136,17 +140,11 @@ module.exports = function(babel) {
                     path.stop();
                     return;
                 }
-
                 state.opts.className = declaration.id.name;
-                state.opts.componentNamespace = state.opts.componentNamespace || UNKNOWN_NAMESPACE;
+                state.opts.componentNamespace = state.opts.componentNamespace;
             },
             ClassDeclaration(path, state) {
                 const className = path.get('id.name').node;
-
-                if (state.opts.componentName && state.opts.componentName.toLowerCase() !== className.toLowerCase()) {
-                    throw path.buildCodeFrameError("For a component bundle, the className must match the folder name");
-                }
-
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
                 path.getStatementParent().insertAfter(extraBody);
             }

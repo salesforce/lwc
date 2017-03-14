@@ -2,22 +2,20 @@ const memoized = Symbol();
 var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
-        "p",
+        "section",
         {},
-        ["CMP1"]
+        []
     )];
 };
 const templateUsedIds = [];
 
-class Cmp1 {
-    constructor() {}
-
-    render() {
-        return _tmpl;
-    }
+class FooBar {
+  render() {
+    return _tmpl;
+  }
 
 }
-Cmp1.tagName = "x-cmp1";
-Cmp1.templateUsedIds = templateUsedIds;
+FooBar.tagName = "foo-bar";
+FooBar.templateUsedIds = templateUsedIds;
 
-export default Cmp1;
+export default FooBar;

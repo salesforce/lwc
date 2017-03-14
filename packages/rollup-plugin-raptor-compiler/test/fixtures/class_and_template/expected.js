@@ -20,7 +20,7 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = "x-classandtemplate";
+ClassAndTemplate.tagName = "x-class_and_template";
 ClassAndTemplate.publicProps = {
     t: Test
 };

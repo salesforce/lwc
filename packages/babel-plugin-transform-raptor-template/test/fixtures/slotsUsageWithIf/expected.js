@@ -1,4 +1,4 @@
-import _nsCmp from "ns:cmp";
+import _nsCmp from "ns-cmp";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const _expr = $cmp.isTrue || $api.e();

@@ -430,7 +430,7 @@ export default function({ types: t }: BabelTypes): any {
             const originalName = node.name;
             const name = hasIsDirective ? meta.rootElement : originalName;
             const devName = toCamelCase(name);
-            const id = state.file.addImport(name.replace('-', CONST.MODULE_SYMBOL), 'default', devName);
+            const id = state.file.addImport(name, 'default', devName);
             metadata.addComponentDependency(name);
             meta.isCustomElementTag = true;
             id._primitive = CUSTOM_ELEMENT;

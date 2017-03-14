@@ -1,4 +1,4 @@
-import _nsFoo from "ns:foo";
+import _nsFoo from "ns-foo";
 
 const _m = function ($api, $cmp) {
     return $cmp.myFooCallback.bind($cmp);

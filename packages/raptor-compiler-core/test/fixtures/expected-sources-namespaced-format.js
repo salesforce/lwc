@@ -1,4 +1,4 @@
-$A.componentService.addModule('myns:classandtemplate', function () { 'use strict';
+$A.componentService.addModule('myns:class_and_template', function () { 'use strict';
 
 const memoized = Symbol();
 var _tmpl = function ($api, $cmp, $slotset) {
@@ -22,7 +22,7 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = "myns-classandtemplate";
+ClassAndTemplate.tagName = "myns-class_and_template";
 ClassAndTemplate.publicProps = {
     t: Test
 };

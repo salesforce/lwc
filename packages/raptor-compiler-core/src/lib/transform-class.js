@@ -5,7 +5,7 @@ export default function (code: string, options: any) {
     options = options || {};
 
     const filename = options.filename;
-    const componentName = options.componentBundle && options.componentName;
+    const componentName = options.componentName;
 
     let localBabelConfig = {
         babelrc: false,

@@ -1,4 +1,4 @@
-import _aB from "a:b";
+import _aB from "a-b";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const _expr = $cmp.isTrue || $api.e();

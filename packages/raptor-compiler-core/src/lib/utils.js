@@ -39,12 +39,11 @@ export function getSource(path: string, sources: any) {
 export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     const parts = path.split('/');
     const name = basename(parts.pop(), '.js');
-    let ns = DEFAULT_NS;
-    let tmpName = parts.pop();
+    let ns = name.indexOf('-') === -1 ? DEFAULT_NS : null;
     let tmpNs = parts.pop();
 
-    if (mapNamespaceFromPath && name !== tmpName) {
-        throw new Error('When using mapNamespaceFromPath the folder name must match the component .js name');
+    if (tmpNs === name) {
+        tmpNs = parts.pop();
     }
     // If mapping folder structure override namespace
     if (tmpNs && mapNamespaceFromPath) {
@@ -52,8 +51,8 @@ export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     }
 
     return {
-        componentName : name.toLowerCase(),
-        componentNamespace : ns && ns.toLowerCase()
+        componentName : name,
+        componentNamespace : ns
     };
 }
 
@@ -64,7 +63,6 @@ export function normalizeOptions(options: any) {
     options.componentName = options.componentName || qName.componentName;
     options.bundle = options.bundle !== undefined ? options.bundle : true;
     options.$metadata = {};
-
     if (options.bundle) {
         options.sources = options.sources || {};
         const entryParts = fileParts(entry);

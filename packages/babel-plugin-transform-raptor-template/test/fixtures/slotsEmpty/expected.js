@@ -1,4 +1,4 @@
-import _xCmp from "x:cmp";
+import _xCmp from "x-cmp";
 const memoized = Symbol();
 export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});

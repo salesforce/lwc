@@ -1,7 +1,7 @@
-import _nsTable from "ns:table";
-import _nsBuzz from "ns:buzz";
-import _nsBar from "ns:bar";
-import _nsFoo from "ns:foo";
+import _nsTable from "ns-table";
+import _nsBuzz from "ns-buzz";
+import _nsBar from "ns-bar";
+import _nsFoo from "ns-foo";
 
 const _m = function ($api, $cmp) {
     return $cmp.p.foo.bind($cmp);

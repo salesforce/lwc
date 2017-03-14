@@ -13,7 +13,7 @@ const skipTests = [
     '.babelrc',
     '.DS_Store',
     'bundle',
-    'simpleApp',
+    'simple_app',
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');
@@ -35,11 +35,28 @@ describe('emit asserts for: ', () => {
     });
 });
 
+
+describe('emit asserts for simple_app: ', () => {
+    const fixtureCaseDir = path.join(fixturesDir, 'simple_app/src');
+    it(`output match:`, () => {
+        const entry = path.join(fixtureCaseDir, 'main.js');
+        doRollup(entry)
+        .then(bundle => {
+            const actual = bundle.generate({}).code;
+            //console.log(actual);
+            const expected = fs.readFileSync(path.join(fixturesDir, 'simple_app/expected.js'));
+            assert.equal(trim(actual), trim(expected));
+        })
+    });
+});
+
 function doRollup(filePath, options) {
+    options = options || {};
     return rollup.rollup({
         entry: filePath,
         plugins: [
             rollupCompile(options)
-        ]
+        ],
+        format: 'es'
     });
 }
