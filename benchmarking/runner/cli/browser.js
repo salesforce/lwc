@@ -1,8 +1,8 @@
 /* eslint-env node */
 
-const fs = require('fs');
-const os = require('os');
-const childProcess =  require('child_process');
+import fs from 'fs';
+import os from 'os';
+import childProcess from 'child_process';
 
 /** Know paths to browser */
 const BROWSER_PATHS = {
@@ -19,9 +19,9 @@ const BROWSER_PATHS = {
     }
 };
 
-const AVAILABLE_BROWSER = Object.keys(BROWSER_PATHS).filter(name => (
+export const AVAILABLE_BROWSER = Object.keys(BROWSER_PATHS).filter(name => (
     os.platform() in BROWSER_PATHS[name]
-))
+));
 
 class Browser {
     constructor(execPath, args) {
@@ -31,14 +31,16 @@ class Browser {
         this.process = null;
     }
 
-    start() {
-        if (this.process) {
+    start(url) {
+        if (typeof url !== 'string') {
+            throw new Error('Browser expect a url to start');
+        } else if (this.process) {
             throw new Error('Browser is already running');
         }
 
         this.process = childProcess.spawn(
             this.execPath,
-            this.args
+            [...this.args, url]
         );
 
         this.process.stdout.on('data', data => console.log('[browser]', data.toString()))
@@ -59,7 +61,7 @@ class Browser {
     }
 }
 
-function getBrowser(browser, url) {
+export default function browserFactory(browser) {
     const plaform = os.platform();
 
     if (!BROWSER_PATHS[browser] || !BROWSER_PATHS[browser][plaform]) {
@@ -73,12 +75,6 @@ function getBrowser(browser, url) {
         '--disable-extensions',
         '--disable-translate',
         '--no-first-run',
-        `--user-data-dir=${profilePath}`,
-        url,
+        `--user-data-dir=${profilePath}`
     ]);
 }
-
-module.exports = {
-    AVAILABLE_BROWSER,
-    getBrowser,
-};

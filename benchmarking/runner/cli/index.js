@@ -1,50 +1,16 @@
 /* eslint-env node */
 
-const url = require('url');
-const minimist = require('minimist');
-const { getBrowser } = require('./browser');
-const { getHandler } = require('./callback-handler');
+import minimist from 'minimist';
 
-let timeout = null;
-let browser = null;
-let handler = null;
+import browser from './browser';
+import handler from './callback-handler';
+import reporters from './reporters';
 
-function killAll(err) {
-    clearTimeout(timeout);
-
-    if (browser) {
-        browser.stop();
-    }
-
-    if (handler) {
-        handler.stop();
-    }
-
-    if (err) {
-        console.error(err);
-    }
-
-    process.exit(err ? 1 : 0);
-}
-
-function buildUrl(baseUrl, qs) {
-    const parsed = url.parse(baseUrl);
-
-    for (let key of Object.keys(qs)) {
-        if (qs[key] == null) {
-            delete qs[key];
-        }
-    }
-
-    parsed.query = qs;
-    return url.format(parsed);
-}
+import { formatUrl } from '../shared/url';
 
 const argv = minimist(process.argv.slice(2), {
-    alias: {
-        'b': 'browser'
-    },
     default: {
+        reporter: 'pretty',
         server: 'http://localhost:8000/index.html',
         timeout: 5 * 60 * 1000,
     }
@@ -55,6 +21,9 @@ const {
     server: runnerUrl,
     base: basePath,
     compare: comparePath,
+    reporter: reporterType,
+    'max-duration': maxDuration,
+    'min-sample-count': minSampleCount,
     grep,
 } = argv;
 
@@ -64,27 +33,52 @@ if (!browserName) {
      throw new Error(`Missing base parameter`);
 }
 
-handler = getHandler();
-handler.start(res => {
-    console.log(res);
-    killAll();
-});
+const reporter = reporters(reporterType, argv);
+const handlerInstance = handler();
+const browserInstance = browser(browserName);
 
-const runnerUrlWithParams = buildUrl(runnerUrl, {
+const url = formatUrl(runnerUrl, {
     base: basePath,
     compare: comparePath,
-    callbackUrl: handler.endpoint,
+    callbackUrl: handlerInstance.endpoint,
+    start: true,
+    minSampleCount,
+    maxDuration,
     grep,
 });
 
-browser = getBrowser(browserName, runnerUrlWithParams);
-browser.start();
+browserInstance.start(url);
+handlerInstance.start(res => {
+    try {
+        reporter.run(res);
+    } catch (err) {
+        killAll(err);
+    }
 
-// Timebox the run
-timeout = setTimeout(() => (
+    killAll();
+});
+
+const timeout = setTimeout(() => (
     killAll(new Error(`Error: Reached timeout of: ${argv.timeout}`))
 ), argv.timeout);
 
-// Make sure to kill all if an unexpected error occurs
-process.on('uncaughtException', killAll);
+process.on('uncaughtException', err => killAll(err));
+process.on('unhandledRejection', reason => killAll(reason));
 
+function killAll(err) {
+    clearTimeout(timeout);
+
+    if (browser) {
+        browserInstance.stop();
+    }
+
+    if (handler) {
+        handlerInstance.stop();
+    }
+
+    if (err) {
+        console.error(err);
+    }
+
+    process.exit(err ? 1 : 0);
+}

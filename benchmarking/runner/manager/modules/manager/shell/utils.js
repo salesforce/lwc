@@ -2,7 +2,7 @@ import {
     quantile,
     median,
     medianAbsoluteDeviation
-} from '../../../stats';
+} from '../../../../shared/stats';
 
 const DEFAULT_MIN_SAMPLE = 30;
 const DEFAULT_MAX_DURATION = 5 * 1000;

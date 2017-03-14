@@ -1,8 +1,8 @@
 import { HTMLElement } from 'raptor-engine';
 
 import {
-    compareSamples,
-} from '../../../stats';
+    compare as compareSamples,
+} from '../../../../shared/stats';
 
 import {
     getBundles,

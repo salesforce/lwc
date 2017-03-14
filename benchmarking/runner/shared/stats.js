@@ -24,10 +24,11 @@ export function median(arr) {
     }
 
     const sorted = sort(arr);
-    const middle = Math.ceil(arr.length / 2);
+    const middle = Math.floor(arr.length / 2);
+
     return arr.length % 2 ?
-        sorted[middle] :
-        ((sorted[middle] + sorted[middle + 1]) / 2);
+         sorted[middle] :
+        ((sorted[middle] + sorted[middle - 1]) / 2);
 }
 
 export function medianAbsoluteDeviation(arr) {
@@ -36,7 +37,7 @@ export function medianAbsoluteDeviation(arr) {
 }
 
 // From https://github.com/bestiejs/benchmark.js/blob/master/benchmark.js#L1391
-export function compareSamples(sample1, sample2) {
+export function compare(sample1, sample2) {
     var zStat,
         size1 = sample1.length,
         size2 = sample2.length,
