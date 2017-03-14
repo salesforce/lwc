@@ -13,7 +13,7 @@ function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     // In this
     if (className) {
         assert.invariant(!classMap, `Compiler Error: vnode.data.classMap cannot be present when vnode.data.className is defined for ${vm}.`);
-        classMap = className.split(' ').reduce((r: HashTable<boolean>, v: string): HashTable<boolean> => {
+        classMap = className.split(/\s+/).reduce((r: HashTable<boolean>, v: string): HashTable<boolean> => {
             r[v] = true;
             return r;
         }, {});
