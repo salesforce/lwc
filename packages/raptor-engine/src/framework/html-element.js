@@ -12,6 +12,7 @@ const HTMLElementPropsTheGoodParts = [
 const HTMLElementMethodsTheGoodParts = [
     "querySelector",
     "querySelectorAll",
+    "getBoundingClientRect",
 ];
 
 class ComponentElement {
