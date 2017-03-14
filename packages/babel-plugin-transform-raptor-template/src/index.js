@@ -328,7 +328,7 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             slotGroups[slotName].push(child);
-            const isIterationOrFlattening = t.isCallExpression(child) && child._primitive === FLATTENING || child._primitive === ITERATOR;
+            const isIterationOrFlattening = t.isCallExpression(child) && (child.callee._primitive === FLATTENING || child.callee._primitive === ITERATOR);
             const hasMultipleNodes = isIterationOrFlattening || (t.isLogicalExpression(child) && child.right._iteration);
             if (hasMultipleNodes) {
                 slotGroups[slotName]._hasArrayNode = true;
