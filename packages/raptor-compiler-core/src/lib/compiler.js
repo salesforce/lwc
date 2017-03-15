@@ -2,6 +2,7 @@ import { extname } from 'path';
 import { getSource, mergeMetadata, ltng_format, transformAmdToLtng} from './utils';
 import transformClass from './transform-class';
 import transformTemplate from './transform-template';
+import transformBundle from './transform-bundle';
 import sourceResolver from './rollup-plugin-source-resolver';
 import rollupRemoveAnnotations from './rollup-plugin-remove-annotations';
 import { rollup } from 'rollup';
@@ -45,7 +46,9 @@ export function compileBundle(entry: string, options: any): Promise<any> {
                 bundleResult.code = transformAmdToLtng(bundleResult.code);
             }
 
-            resolve(bundleResult);
+            // TODO: Eventually use the AST tree as input so we don't have to re-parse it
+            // Bugs on compiler to fix that!
+            resolve(transformBundle(bundleResult, options));
         })
         .catch(reject);
     });

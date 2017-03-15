@@ -1,4 +1,5 @@
 import { extname, normalize, join, sep, basename } from 'path';
+import { MODES } from './constants';
 import fs from 'fs';
 
 export { basename };
@@ -62,6 +63,8 @@ export function normalizeOptions(options: any) {
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
     options.componentName = options.componentName || qName.componentName;
     options.bundle = options.bundle !== undefined ? options.bundle : true;
+    options.mode = options.mode || MODES.DEV;
+
     options.$metadata = {};
     if (options.bundle) {
         options.sources = options.sources || {};

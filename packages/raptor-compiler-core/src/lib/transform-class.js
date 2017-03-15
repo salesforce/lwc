@@ -1,4 +1,4 @@
-import babelDecoratorProps from 'babel-plugin-transform-raptor-class';
+import raptorClassTransformPlugin from 'babel-plugin-transform-raptor-class';
 import { transform } from 'babel-core';
 
 export default function (code: string, options: any) {
@@ -10,7 +10,10 @@ export default function (code: string, options: any) {
     let localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
-        plugins: [ [babelDecoratorProps, { componentNamespace: options.componentNamespace, componentName : componentName }]],
+        plugins: [ [raptorClassTransformPlugin, {
+            componentNamespace: options.componentNamespace,
+            componentName : componentName
+        }]],
         parserOpts: { plugins: ['*'] },
         filename
     };

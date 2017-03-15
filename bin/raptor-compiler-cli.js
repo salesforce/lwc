@@ -11,7 +11,7 @@ const options = {format: 'aura'};
 compile(entry, options)
 .then((result) => {
     console.log('\n>> Code --------------------------------------------------');
-    console.log('\n', result.code);
+    console.log('\n', result.code || result);
     console.log('>> End Code ------------------------------------------------');
 
     console.log('\n>> Metadata --------------------------------------------------');

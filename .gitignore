@@ -7,7 +7,8 @@ packages/raptor-engine/fake-cdn/**/*.map
 coverage
 .vscode
 *.log
-lib/
+/lib/
+packages/raptor-engine/lib
 playground/*.js
 playground/*.html
 playground/**/*

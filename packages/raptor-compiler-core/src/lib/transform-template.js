@@ -1,4 +1,4 @@
-import templateParserPlugin from 'babel-plugin-transform-raptor-template';
+import raptorTemplatePlugin from 'babel-plugin-transform-raptor-template';
 import templateCleanupPlugin from 'raptor-html-cleanup-transform';
 import { transform } from 'babel-core';
 
@@ -8,7 +8,7 @@ export default function (src: string, options: any): any {
     let localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
-        plugins: [ templateParserPlugin ],
+        plugins: [ raptorTemplatePlugin ],
         filename: options.filename
     };
 

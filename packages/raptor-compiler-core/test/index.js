@@ -144,7 +144,24 @@ describe('emit asserts for embedded sources: ', () => {
             assert.equal(trim(actual), trim(expected));
         })
     });
+});
 
+
+describe('emit asserts for modes: ', () => {
+    const fixtureCmpDir = path.join(fixturesDir, 'class_and_template');
+    it('Test prod mode', () => {
+        const entry = path.join(fixtureCmpDir, 'class_and_template.js');
+        const opts = {
+            format : 'aura',
+            mode   : 'prod',
+        };
+
+        return runCompile(entry, opts).then((result) => {
+            const actual = result.code;
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'));
+            assert.equal(trim(actual), trim(expected));
+        });
+    });
 });
 
 function runCompile(filePath, options = {}) {

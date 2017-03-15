@@ -1,0 +1,1 @@
+$A.componentService.addModule('x:class_and_template',function(){'use strict';const a=Symbol();var b=function(f,g){g[a]||(g[a]={});return[f.h('section',{},[])]};class e{constructor(){this.counter=0}render(){return b}}return e.tagName='x-class_and_template',e.publicProps={t:1},e.templateUsedIds=[],e});
