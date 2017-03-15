@@ -1,6 +1,6 @@
-import { HTMLElement } from 'raptor-engine';
+import { Element } from 'raptor-engine';
 
-export default class TableComponentRow extends HTMLElement {
+export default class TableComponentRow extends Element {
     row;
 
     handleSelect() {

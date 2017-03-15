@@ -14,13 +14,13 @@ function produceNewData(oldData, min, max) {
     return data;
 }
 
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 
-export default class SimpleList extends HTMLElement {
+export default class SimpleList extends Element {
     min = DefaultMinValue;
     max = DefaultMaxValue;
     label = 'default label';
-    title = 'default title';
+    header = 'default header';
 
     constructor() {
         super();

@@ -3,12 +3,10 @@ import { patch } from "./patch.js";
 import { scheduleRehydration } from "./vm.js";
 import { invokeComponentAttributeChangedCallback } from "./invoker.js";
 import {
-    resetComponentProp,
     updateComponentProp,
 } from "./component.js";
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
-import { loaderImportMethod } from "./loader.js";
 import { defineProperties } from "./language.js";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
@@ -27,41 +25,60 @@ function getPropNameFromAttrName(attrName: string): string {
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
     const { def: { props: propsConfig, observedAttrs } } = vm;
-    // replacing mutators on the element itself to catch any mutation
+    // replacing mutators and accessors on the element itself to catch any mutation
+    element.getAttribute = (attrName: string): string | null => {
+        attrName = attrName.toLocaleLowerCase();
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            assert.block(() => {
+                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.getAttribute("${attrName}")\` you can access the corresponding public property using \`element.${propName};\`. This distintion is important because getAttribute will returned the value casted to string.`);
+            });
+            return;
+        }
+        return getAttribute.call(element, attrName);
+    };
     element.setAttribute = (attrName: string, newValue: any) => {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            updateComponentProp(vm, propName, newValue);
-            if (vm.isDirty) {
-                console.log(`Scheduling ${vm} for rehydration.`);
-                scheduleRehydration(vm);
-            }
-        } else if (observedAttrs[attrName]) {
-            const oldValue = getAttribute.call(element, attrName);
-            newValue = newValue + ''; // by spec, attribute values must be string values.
-            if (newValue !== oldValue) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-            }
+            assert.block(() => {
+                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.setAttribute("${attrName}", someValue)\` you can update the corresponding public property using \`element.${propName} = someValue;\`. This distintion is important because setAttribute will cast the new value to string before setting it into the corresponding property.`);
+            });
+            return;
         }
+        const oldValue = getAttribute.call(element, attrName);
         setAttribute.call(element, attrName, newValue);
+        newValue = getAttribute.call(element, attrName);
+        if (observedAttrs[attrName] && oldValue !== newValue) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        }
     };
     element.removeAttribute = (attrName: string) => {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            resetComponentProp(vm, propName);
-            if (vm.isDirty) {
-                console.log(`Scheduling ${vm} for rehydration.`);
-                scheduleRehydration(vm);
-            }
-        } else if (observedAttrs[attrName]) {
-            const oldValue = getAttribute.call(element, attrName);
-            if (oldValue !== null) {
-                invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
-            }
+            assert.block(() => {
+                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.removeAttribute("${attrName}")\` you can update the corresponding public property using \`element.${propName} = undefined;\`. This distintion is important because removeAttribute will set the corresponding property value to \`null\`.`);
+            });
+            return;
         }
+
+        assert.block(() => {
+            const propName = getPropNameFromAttrName(attrName);
+            if (propsConfig[propName]) {
+                updateComponentProp(vm, propName, newValue);
+                if (vm.isDirty) {
+                    console.log(`Scheduling ${vm} for rehydration.`);
+                    scheduleRehydration(vm);
+                }
+            }
+        });
+        const oldValue = getAttribute.call(element, attrName);
         removeAttribute.call(element, attrName);
+        const newValue = getAttribute.call(element, attrName);
+        if (observedAttrs[attrName] && oldValue !== newValue) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        }
     };
 }
 
@@ -140,19 +157,6 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
     linkProperties(element, vm);
 }
 
-function upgrade(element: HTMLElement, CtorOrPromise: Promise<Class<Component>> | Class<Component>): Promise<HTMLElement> {
-    return new Promise((resolve: (element: HTMLElement) => void, reject: (e: Error) => void) => {
-        assert.isTrue(element instanceof HTMLElement, `upgrade() first argument should be a DOM Element instead of ${element}.`);
-        const p = Promise.resolve(CtorOrPromise);
-        p.then((Ctor: Class<Component>) => {
-            upgradeElement(element, Ctor);
-            resolve(element);
-        }, reject);
-    });
-}
-
-const definedElements = {};
-
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -161,49 +165,17 @@ const definedElements = {};
  *
  * const el = createElement('x-foo', { is: FooCtor });
  *
- * If the value of `is` attribute is a string and there is a registered WC,
+ * If the value of `is` attribute is not a constructor,
  * then we fallback to the normal Web-Components workflow.
- * If the value of `is` attribute is a string and there is not a registered WC,
- * or the value of `is` attribute is not set at all, then we attempt to resolve
- * it from the registry.
  */
-export function createElement(tagName: string, options?: any): HTMLElement {
-    let CtorPromise;
-    const is = options && options.is && options.is;
-    if (is) {
-        if (typeof is === 'function') {
-            CtorPromise = Promise.resolve(is);
-            options = undefined;
-        } else if (typeof is === 'string' && !(is in definedElements)) {
-            // it must be a component, lets derivate the namespace from `is`,
-            // where only the first `-` should be replaced
-            CtorPromise = loaderImportMethod(is.toLowerCase().replace('-', ':'));
-            options = undefined;
-        }
-    } else if (!(tagName in definedElements)) {
-        // it must be a component, lets derivate the namespace from tagName,
-        // where only the first `-` should be replaced
-        CtorPromise = loaderImportMethod(tagName.toLowerCase().replace('-', ':'));
+export function createElement(tagName: string, options: any = {}): HTMLElement {
+    let Ctor = typeof options.is === 'function' ? options.is : null;
+    if (Ctor) {
+        delete options.is;
     }
     const element = document.createElement(tagName, options);
-    if (!CtorPromise || !(element instanceof HTMLElement)) {
-        return element;
+    if (Ctor && element instanceof HTMLElement) {
+        upgradeElement(element, Ctor);
     }
-    // TODO: maybe a local hash of resolved modules to speed things up.
-    upgrade(element, CtorPromise).catch((e: Error) => {
-        console.error(`Error trying to upgrade element <${element.tagName.toLowerCase()}>. ${e}`);
-    });
     return element;
-}
-
-try {
-    if (typeof customElements !== undefined && customElements.define) {
-        const defineOriginal = customElements.define;
-        customElements.define = function (tagName: string) {
-            defineOriginal.call(this, ...arguments);
-            definedElements[tagName] = undefined;
-        }
-    }
-} catch (e) {
-    console.warn(`customElements.define cannot be redefined. ${e}`);
 }

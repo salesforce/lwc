@@ -1,4 +1,4 @@
-## Raptor HTMLElement Component Definition
+## Raptor.Element Component Definition
 
 ## Simple Example
 
@@ -41,17 +41,17 @@ export default class Foo {
 * Regular properties defined in the constructor (e.g.: `tagline`) can also be used in the template.
 * Changes in public properties (via mutations of the owner component), and changes regular properties might rehydrate the component if they were part of the previous rendering process.
 
-## Example of extending HTMLElement
+## Example of extending Raptor.Element
 
-If your component requires to touch the DOM, or fires events, or any other DOM specific functionality supported in Raptor Components, you have to extend `HTMLElement` from `"raptor"` or any other component that extends that, so you can get access to certain functionality provided by it.
+If your component requires to touch the DOM, or fires events, or any other DOM specific functionality supported in Raptor Components, you have to extend `Element` from `"raptor"` or any other component that extends that, so you can get access to certain functionality provided by it.
 
 ### Declaration
 
 ```js
 import html from "./foo.html"
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 
-export default class Foo extends HTMLElement {
+export default class Foo extends Element {
     name = 'your name';
     url = '#';
 
@@ -108,9 +108,9 @@ By default, if the class definition is going to be process by the Raptor Compile
 
 ```js
 import html from "./foo.html"
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 
-export default class Foo extends HTMLElement {
+export default class Foo extends Element {
     constructor() {
         super();
     }

@@ -1,7 +1,7 @@
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 import html from "./inputEmail.html";
 
-export default class input extends HTMLElement {
+export default class input extends Element {
     constructor() {
         super();
         this.addEventListener('input', this.handleInput.bind(this));

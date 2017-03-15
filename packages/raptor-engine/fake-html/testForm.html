@@ -10,11 +10,15 @@
 <body>
     <div id="container"></div>
     <script>
-        console.time('createAndRender');
-        var container = document.getElementById('container');
-        var element = Raptor.createElement('prototype-form');
-        container.appendChild(element);
-        console.timeEnd('createAndRender');
+        Raptor.loaderImportMethodTemporary('prototype:form').then(function (Ctor) {
+            console.time('createAndRender');
+            var container = document.getElementById('container');
+            var element = Raptor.createElement('prototype-form', {
+                is: Ctor
+            });
+            container.appendChild(element);
+            console.timeEnd('createAndRender');
+        });
     </script>
 </body>
 </html>

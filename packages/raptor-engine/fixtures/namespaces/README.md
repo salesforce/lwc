@@ -13,22 +13,7 @@
 
 ```html
 <template>
-    <button set:name="a" bind:onclick="clickHandler">
-        <span>something</span>
-    </button>
-</template>
-```
-
-### Standard Shadow DOM Template + Annotations + Inline Styles
-
-```html
-<template>
-    <style>
-        button {
-            color: red;
-        }
-    </style>
-    <button set:name="a" bind:onclick="clickHandler">
+    <button name={a} onclick={clickHandler}>
         <span>something</span>
     </button>
 </template>
@@ -74,5 +59,5 @@ export default class {
 ```
 
 ```html
-<ns:some foo="3" />
+<ns-some foo="3" />
 ```

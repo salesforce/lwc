@@ -98,4 +98,4 @@ HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
     return proto;
 }, ComponentElement.prototype);
 
-export { ComponentElement as HTMLElement };
+export { ComponentElement as Element };

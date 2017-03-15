@@ -1,4 +1,4 @@
-import { HTMLElement } from 'raptor-engine';
+import { Element } from 'raptor-engine';
 
 import {
     compare as compareSamples,
@@ -20,7 +20,7 @@ const COMPARE_STYLES = {
     worse: 'slds-theme--error',
 }
 
-export default class Shell extends HTMLElement {
+export default class Shell extends Element {
     constructor() {
         super();
 

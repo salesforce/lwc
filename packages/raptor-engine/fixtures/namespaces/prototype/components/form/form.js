@@ -1,6 +1,6 @@
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 
-export default class Form extends HTMLElement {
+export default class Form extends Element {
     constructor() {
         super();
         this.counter = 1;

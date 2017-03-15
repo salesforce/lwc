@@ -1,6 +1,6 @@
-import { HTMLElement } from 'raptor-engine';
+import { Element } from 'raptor-engine';
 
-export default class Options extends HTMLElement {
+export default class Options extends Element {
     config;
     isRunning;
 

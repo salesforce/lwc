@@ -21,9 +21,9 @@ At this point, any component definition and any other library can import `"ns:fo
 
 ```js
 import { x, y } from "ns:foo";
-import { HTMLElement } from "raptor";
+import { Element } from "raptor";
 
-export default class Foo extends HTMLElement {
+export default class Foo extends Element {
     someValue = x;
     constructor() {
         super();

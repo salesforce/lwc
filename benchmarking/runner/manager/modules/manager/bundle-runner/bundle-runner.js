@@ -1,4 +1,4 @@
-import { HTMLElement } from 'raptor-engine';
+import { Element } from 'raptor-engine';
 
 const RUNNER_FILE_URL = '/runner.js';
 
@@ -28,7 +28,7 @@ function injectScriptInIframe(iframe, src) {
     });
 }
 
-export default class BundleRunner extends HTMLElement {
+export default class BundleRunner extends Element {
     bundle;
     config;
 

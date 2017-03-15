@@ -8,14 +8,18 @@
 <body>
     <div id="container"></div>
     <script>
-        console.time('createAndRender');
-        var container = document.getElementById('container');
-        var element = Raptor.createElement('prototype-simpleList');
-        element.setAttribute('label', 're-shuffle');
-        element.setAttribute('title', 'super awesome demo');
-        element.min = 30;
-        container.appendChild(element);
-        console.timeEnd('createAndRender');
+        Raptor.loaderImportMethodTemporary('prototype:simpleList').then(function (Ctor) {
+            console.time('createAndRender');
+            var container = document.getElementById('container');
+            var element = Raptor.createElement('prototype-simpleList', {
+                is: Ctor
+            });
+            element.header = 'super awesome demo';
+            element.label = 're-shuffle';
+            element.min = 30;
+            container.appendChild(element);
+            console.timeEnd('createAndRender');
+        });
     </script>
 </body>
 </html>

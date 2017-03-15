@@ -100,7 +100,7 @@ export function initComponent(vm: VM) {
     for (let propName in publicPropsConfig) {
         hookComponentReflectiveProperty(vm, propName);
     }
-    // expose public methods as props on the HTMLElement
+    // expose public methods as props on the Element
     for (let methodName in publicMethodsConfig) {
         hookComponentPublicMethod(vm, methodName);
     }
