@@ -17,6 +17,7 @@
     "babel-core": "^6.23.1",
     "babel-plugin-transform-raptor-class": "0.4.6",
     "babel-plugin-transform-raptor-template": "0.4.9",
+    "babel-plugin-transform-flow-strip-types":"^6.22.0",
     "babel-preset-babili": "0.0.12",
     "babel-preset-env": "^1.2.1",
     "raptor-html-cleanup-transform": "0.4.2",
