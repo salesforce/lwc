@@ -12,7 +12,6 @@
     "clean:dist": "rimraf dist/",
     "clean:node_modules": "lerna exec -- rm -rf ./node_modules && rm -rf ./node_modules",
     "clean:packages": "lerna run clean",
-
     "prepublish": "lerna bootstrap --concurrency 1 && yarn run build",
     "release": "yarn run prepublish && lerna publish --skip-temp-tag --exact"
   },
@@ -38,6 +37,7 @@
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
+    "string-replace-webpack-plugin": "^0.1.3",
     "typedef-converter": "^0.1.4",
     "webpack": "^2.2.1"
   }

@@ -1,6 +1,6 @@
 /* eslint-env node */
-const path = require('path');
 const webpack = require('webpack');
+const path = require('path');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 const compilerPkg = require('../packages/raptor-compiler-core/package.json');
 
@@ -15,14 +15,16 @@ module.exports = function (/*env*/) {
         },
         node: {
             fs: 'empty',
+            process: true,
             module: 'empty',
             net: 'empty',
         },
         plugins: [
             new webpack.DefinePlugin({
-                'process.hrtime': 'performance.now'
+                'process.hrtime': 'Date.now'
             }),
             new StringReplacePlugin(),
+
         ],
         module: {
             loaders: [{
@@ -38,7 +40,15 @@ module.exports = function (/*env*/) {
                 exclude: /(bower_components)/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['babili', 'flow'],
+                    presets: [
+                        'babili',
+                        'flow',
+                        ['env', {
+                            targets: {
+                                node: 5
+                            }
+                        }]
+                    ],
                     babelrc: false,
                 }
             }]

@@ -1,5 +1,6 @@
 import { transform } from 'babel-core';
 import { MODES } from './constants';
+import babili from 'babel-preset-babili';
 
 const BASE_BABEL_CONFIG = {
     babelrc: false,
@@ -8,10 +9,13 @@ const BASE_BABEL_CONFIG = {
     presets: []
 };
 
-const PROD_BABEL_CONFIG = Object.assign({}, BASE_BABEL_CONFIG, {
-    presets: ['babili']
-});
+// In order to bundle it with webpack we can't just use this form:
+// const PROD_BABEL_CONFIG = Object.assign({}, BASE_BABEL_CONFIG, {
+//     presets: ['babili']
+// });
+const PROD_BABEL_CONFIG = Object.assign({}, BASE_BABEL_CONFIG, babili());
 
+// TODO: Bundle all plugins for compat
 const COMPAT_BABEL_CONFIG = Object.assign({}, BASE_BABEL_CONFIG, {
     presets: [
         'babili',

@@ -49,6 +49,10 @@ align-text@^0.1.1, align-text@^0.1.3:
     longest "^1.0.1"
     repeat-string "^1.5.2"
 
+amdefine@>=0.0.4:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
+
 ansi-escape-sequences@^3.0.0:
   version "3.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-escape-sequences/-/ansi-escape-sequences-3.0.0.tgz#1c18394b6af9b76ff9a63509fa497669fd2ce53e"
@@ -172,6 +176,10 @@ async@^2.1.2:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/async/-/async-2.1.5.tgz#e587c68580994ac67fc56ff86d3ac56bdbe810bc"
   dependencies:
     lodash "^4.14.0"
+
+async@~0.2.10:
+  version "0.2.10"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -1311,6 +1319,18 @@ crypto-browserify@^3.11.0:
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
 
+css-loader@^0.9.1:
+  version "0.9.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/css-loader/-/css-loader-0.9.1.tgz#2e1aa00ce7e30ef2c6a7a4b300a080a7c979e0dc"
+  dependencies:
+    csso "1.3.x"
+    loader-utils "~0.2.2"
+    source-map "~0.1.38"
+
+csso@1.3.x:
+  version "1.3.12"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/csso/-/csso-1.3.12.tgz#fc628694a2d38938aaac4996753218fd311cdb9e"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -1723,6 +1743,12 @@ file-entry-cache@^2.0.0:
   dependencies:
     flat-cache "^1.2.1"
     object-assign "^4.0.1"
+
+file-loader@^0.8.1:
+  version "0.8.5"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/file-loader/-/file-loader-0.8.5.tgz#9275d031fe780f27d47f5f4af02bd43713cc151b"
+  dependencies:
+    loader-utils "~0.2.5"
 
 filename-regex@^2.0.0:
   version "2.0.0"
@@ -2376,7 +2402,7 @@ loader-runner@^2.3.0:
   version "2.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/loader-runner/-/loader-runner-2.3.0.tgz#f482aea82d543e07921700d5a46ef26fdac6b8a2"
 
-loader-utils@^0.2.16:
+loader-utils@^0.2.16, loader-utils@^0.2.5, loader-utils@~0.2.2, loader-utils@~0.2.3, loader-utils@~0.2.5:
   version "0.2.17"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
   dependencies:
@@ -3348,6 +3374,12 @@ source-map@^0.5.0, source-map@^0.5.3, source-map@~0.5.1, source-map@~0.5.3:
   version "0.5.6"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
 
+source-map@~0.1.38:
+  version "0.1.43"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/source-map/-/source-map-0.1.43.tgz#c24bc146ca517c1471f5dacbe2571b2b7f9e3346"
+  dependencies:
+    amdefine ">=0.0.4"
+
 spdx-correct@~1.0.0:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/spdx-correct/-/spdx-correct-1.0.2.tgz#4b3073d933ff51f3912f03ac5519498a4150db40"
@@ -3397,6 +3429,17 @@ stream-http@^2.3.1:
     readable-stream "^2.1.0"
     to-arraybuffer "^1.0.0"
     xtend "^4.0.0"
+
+string-replace-webpack-plugin@^0.1.3:
+  version "0.1.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/string-replace-webpack-plugin/-/string-replace-webpack-plugin-0.1.3.tgz#73c657e759d66cfe80ae1e0cf091aa256d0e715c"
+  dependencies:
+    async "~0.2.10"
+    loader-utils "~0.2.3"
+  optionalDependencies:
+    css-loader "^0.9.1"
+    file-loader "^0.8.1"
+    style-loader "^0.8.3"
 
 string-width@^1.0.1, string-width@^1.0.2:
   version "1.0.2"
@@ -3454,6 +3497,12 @@ strip-indent@^1.0.1:
 strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
+
+style-loader@^0.8.3:
+  version "0.8.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/style-loader/-/style-loader-0.8.3.tgz#f4f92eb7db63768748f15065cd6700f5a1c85357"
+  dependencies:
+    loader-utils "^0.2.5"
 
 supports-color@3.1.2, supports-color@^3.1.0:
   version "3.1.2"
