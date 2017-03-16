@@ -12,6 +12,7 @@
     "clean:dist": "rimraf dist/",
     "clean:node_modules": "lerna exec -- rm -rf ./node_modules && rm -rf ./node_modules",
     "clean:packages": "lerna run clean",
+    "preinstall": "node -e \"if (process.env.npm_execpath.indexOf('yarn')===-1) throw new Error('npm is not supported, instead use \\\"yarn install\\\"')\"",
     "prepublish": "lerna bootstrap --concurrency 1 && yarn run build",
     "release": "yarn run prepublish && lerna publish --skip-temp-tag --exact"
   },
