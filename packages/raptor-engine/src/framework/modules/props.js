@@ -19,8 +19,16 @@ function update(oldVnode: VNode, vnode: VNode) {
     const { elm } = vnode;
 
     for (key in oldProps) {
-        if (!props[key]) {
-            delete elm[key];
+        if (!(key in props)) {
+            if (vnode.isRoot) {
+                // custom elements created programatically prevent you from
+                // deleting the property because it has a set/get to update
+                // the corresponding component, in this case, we just set it
+                // to undefined, which has the same effect.
+                elm[key] = undefined;
+            } else {
+                delete elm[key];
+            }
         }
     }
     for (key in props) {
