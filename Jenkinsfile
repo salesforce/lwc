@@ -14,9 +14,9 @@ node("raptor_node") {
         }
 
         stage("Environment Setup") {
-            // copy credential files into the docker image
+            // Add credentials to exising npmrc file
             withCredentials([file(credentialsId: 'team-auraframework_nexus-token', variable: 'NPMRC')]) {
-                sh "cp $NPMRC ~/.npmrc"
+                sh "cat $NPMRC >> ~/.npmrc"
             }
 
             // yarn doesn't support command line override so set some globals
