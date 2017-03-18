@@ -47,6 +47,8 @@ const url = formatUrl(runnerUrl, {
     grep,
 });
 
+console.log('Benchmark url:', url);
+
 browserInstance.start(url);
 handlerInstance.start(res => {
     try {

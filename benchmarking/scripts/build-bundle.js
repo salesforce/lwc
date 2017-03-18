@@ -13,6 +13,14 @@ const raptorPlugin = require('rollup-plugin-raptor-compiler');
 
 const DEBUG_MODE = !!process.env.DEBUG;
 
+// Pass the current branch name instead of detecting the branch name from git.
+// Usefull when for the CI, because Jenkins checkout a commit instead of a branch.
+const BRANCH_NAME = process.env.BRANCH_NAME;
+
+// Only generate a single bundle folder name after the current commit hash.
+// Used by the CI to generate only a single artefact
+const NO_ALIAS = !!process.env.NO_ALIAS;
+
 const BUNDLES_DIR = path.resolve(__dirname, '../dist');
 const BENCHMARK_DIR = path.resolve(__dirname, '../src');
 const INFO_FILE_NAME = 'info.json';
@@ -34,8 +42,9 @@ function getBundleInfo() {
     const bundleId = String(Date.now());
     const raptorVersion = getRaptorVersion();
     const commitHash = sanatizeBuffer(execSync('git rev-parse --short HEAD'));
-    const commitBranch = sanatizeBuffer(execSync('git rev-parse --abbrev-ref HEAD'))
-        .replace(/[\/\s]/ig, '-');
+    const commitBranch = BRANCH_NAME ?
+        BRANCH_NAME :
+        sanatizeBuffer(execSync('git rev-parse --abbrev-ref HEAD')).replace(/[\/\s]/ig, '-');
 
     return {
         id: bundleId,
@@ -55,8 +64,6 @@ function createSymlink(target, link) {
 }
 
 function createFolderStructure(bundlePath, bundleInfo) {
-    mkdirp.sync(bundlePath);
-
     const alias = [
         path.resolve(BUNDLES_DIR, 'HEAD'),
         path.resolve(BUNDLES_DIR, bundleInfo.commit),
@@ -74,14 +81,25 @@ function createFolderStructure(bundlePath, bundleInfo) {
 }
 
 const bundleInfo = getBundleInfo();
-const bundleName = `bundle_${bundleInfo.id}_${bundleInfo.commit}_${bundleInfo.branch}${DEBUG_MODE ? '_debug' : ''}`;
+
+let bundleName;
+if (NO_ALIAS) {
+    bundleName = bundleInfo.commit;
+} else {
+    bundleName = `${bundleInfo.id}_${bundleInfo.commit}_${bundleInfo.branch}${DEBUG_MODE ? '_debug' : ''}`;
+}
+
 const bundlePath = path.resolve(BUNDLES_DIR, bundleName);
+mkdirp.sync(bundlePath);
 
 // 1. Create folder structure
-const alias = createFolderStructure(bundlePath, bundleInfo);
+let bundleAliases = []
+if (!NO_ALIAS) {
+    bundleAliases = createFolderStructure(bundlePath, bundleInfo);
+}
 
 console.log(`Building bundle: ${bundleName}`);
-console.log(alias.map(p => `    - ${p}`).join('\n'));
+console.log(bundleAliases.map(p => `    - ${p}`).join('\n'));
 
 // 2. Create info file
 fs.writeFileSync(
@@ -130,6 +148,10 @@ rollup.rollup({
         path.resolve(bundlePath, BUNDLE_FILE_NAME),
         result.code
     );
-}).catch(err => (
-    console.error(err)
-));
+});
+
+// Throw an error and exit the process with status code different than 0 if the
+// previous promise rejects
+process.on('unhandledRejection', err => {
+    throw err;
+});

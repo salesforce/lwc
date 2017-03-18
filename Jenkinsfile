@@ -1,9 +1,19 @@
+// Global variables
+NEXUS_PROXY = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
+GIT_SOMA_SSH_CREDENTIAL = "8ee1b190-5d0e-463b-a516-45c7261723ce"
+
+BENCHMARKING_JENKINS_JOB = "raptor-performance-benchmark"
+BENCHMARKING_ARTEFACT_REPO = "git@git.soma.salesforce.com:raptor/benchmark-artefacts.git"
+
+// FIXME: Waiting for git service user
+GIT_USER_EMAIL = "p.dartus@salesforce.com"
+GIT_USER_NAME = "p-dartus"
+
+def helpers
+
 // must specify the CloudBees docker label which maps to the appropriate docker image
 // aka do not change this.
 node("raptor_node") {
-    // CloudBees Nexus mirror
-    def NEXUS = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
-
     try {
         // CloudBees reports each stage separately providing us with visibility into
         // run time and failure at a glance
@@ -11,6 +21,9 @@ node("raptor_node") {
         stage("Git Clone") {
             // checkout according to jenkins project config (eg git clone + git checkout)
             checkout scm
+
+            // Inject helpers
+            helpers = load("scripts/pipeline-helpers.groovy")
         }
 
         stage("Environment Setup") {
@@ -20,14 +33,18 @@ node("raptor_node") {
             }
 
             // yarn doesn't support command line override so set some globals
-            sh "yarn config set registry $NEXUS"
+            sh "yarn config set registry $NEXUS_PROXY"
+
+            // FIXME: Need to add git.soma.salesforce.com as trusted server
+            sh "mkdir ~/.ssh && ssh-keyscan -H git.soma.salesforce.com >> ~/.ssh/known_hosts"
+
+            // Setup git config
+            sh "git config --global user.email $GIT_USER_EMAIL"
+            sh "git config --global user.name $GIT_USER_NAME"
         }
 
         stage("Build") {
-            // leave verbose on for a few weeks to aid log debugging
-            // TODO - yarn has a race condition. running it a second time solves the issue and it doesn't redownloaded everything.
-            // it's ugly but it works. see https://github.com/yarnpkg/yarn/issues/820.
-            sh "yarn install --verbose || yarn install --verbose"
+            helpers.yarnInstall()
         }
 
         stage("Static Analysis") {
@@ -36,6 +53,36 @@ node("raptor_node") {
 
         stage("Test") {
             sh "yarn test"
+        }
+
+        stage("Publish benchmark") {
+            dir("benchmarking") {
+                helpers.yarnInstall()
+
+                // Inject git credentials
+                sshagent([GIT_SOMA_SSH_CREDENTIAL]) {
+                    // Clone the artefact repo as the dist folder
+                    sh "git clone $BENCHMARKING_ARTEFACT_REPO dist"
+
+                    // Build the benchmark artefact for the current commit
+                    sh "NO_ALIAS=true yarn run build"
+
+                    // Commit and push the artefact folder
+                    dir ("dist") {
+                        sh "git add . && git commit -a -m 'Add bundle for commit'"
+                        sh "git push origin master"
+                    }
+                }
+
+                def currentCommit = helpers.getCommitHash("HEAD")
+
+                // CHANGE_URL is set only when the job is triggered by opening a PR
+                // or by pushing on an existing PR
+                if (env.CHANGE_URL) {
+                    def base = helpers.getCommitHash("origin/$env.CHANGE_TARGET")
+                    triggerBenchmark(base, currentCommit, CHANGE_URL)
+                }
+            }
         }
     } catch (e) {
         // retrieve last committer email
@@ -52,4 +99,17 @@ node("raptor_node") {
 
         throw e
     }
+}
+
+// Start async the performance benchmark of 2 commits.
+def triggerBenchmark(String baseHash, String compareHash, String changeURL) {
+    build (
+        job: BENCHMARKING_JENKINS_JOB,
+        parameters: [
+            [$class: 'StringParameterValue', name: 'base', value: baseHash],
+            [$class: 'StringParameterValue', name: 'compare', value: compareHash],
+            [$class: 'StringParameterValue', name: 'changeURL', value: changeURL],
+        ],
+        wait: false
+    )
 }

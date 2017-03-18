@@ -1,12 +1,14 @@
 /* eslint-env node */
 
+import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
 const DEFAULT_HOSTNAME = 'localhost';
-const DEFAULT_PORT = 8001;
+const DEFAULT_PORT = 8000;
 const ENDPOINT = 'callback';
+const DIST_FOLDER = path.join(__dirname, '../../dist');
 
 class CallbackHandler {
     constructor(hostname = DEFAULT_HOSTNAME, port = DEFAULT_PORT) {
@@ -31,6 +33,13 @@ class CallbackHandler {
 
         app.use(cors());
         app.use(bodyParser.json());
+
+        app.use((req, res, next) => {
+            console.log(`[callback-handler] ${req.method} - ${req.originalUrl}`);
+            next();
+        })
+
+        app.use(express.static(DIST_FOLDER));
 
         app.post(`/${ENDPOINT}`, ({body}, res) => {
             res.sendStatus(200);

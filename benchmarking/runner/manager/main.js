@@ -1,5 +1,5 @@
 import * as Raptor from 'raptor-engine';
-import Shell from 'manager:shell';
+import Shell from 'manager-shell';
 
 const SLDS_CDN = 'https://unpkg.com/@salesforce-ux/design-system@2.2.1/assets/styles/salesforce-lightning-design-system.css';
 

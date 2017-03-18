@@ -1,8 +1,8 @@
 import { createElement } from 'raptor-engine';
 import { benchmark } from 'runner';
 
-import Table from 'benchmark:table';
-import TableComponent from 'benchmark:table-component';
+import Table from 'benchmark-table';
+import TableComponent from 'benchmark-table-component';
 
 import { Store } from './table-store';
 import {

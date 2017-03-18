@@ -5,7 +5,7 @@
     "link": "npm link ../packages/raptor-engine && npm link ../packages/rollup-plugin-raptor-compiler",
     "build-runner": "rollup -c scripts/runner.rollup.js && cp runner/index.html dist/ && cp runner/runner.js dist/",
     "cli": "babel-node ./runner/cli",
-    "start": "cd dist && python -m SimpleHTTPServer 8000"
+    "serve": "cd dist && python -m SimpleHTTPServer 8000"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
