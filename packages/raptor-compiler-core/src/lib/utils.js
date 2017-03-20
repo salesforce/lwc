@@ -90,13 +90,15 @@ export function normalizeOptions(options: any) {
 export function mergeMetadata (metadata: any) {
     const templateUsedIds = [];
     const templateDependencies = [];
+    const classDependencies = [];
     for (let i in metadata) {
         templateUsedIds.push(...metadata[i].templateUsedIds || []);
         templateDependencies.push(...metadata[i].templateDependencies || []);
+        classDependencies.push(...metadata[i].classDependencies || []);
     }
 
     return {
-        bundleDependencies: templateDependencies,
+        bundleDependencies: classDependencies.concat(templateDependencies),
         templateUsedIds
     };
 }

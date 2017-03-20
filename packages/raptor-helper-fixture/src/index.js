@@ -12,19 +12,6 @@ function isOnly(dir) {
     return fs.existsSync(path.join(dir, 'only'));
 }
 
-function transform(filePath, options) {
-    const {
-        plugins = [],
-        parserOpts
-    } = options;
-
-    return babel.transformFileSync(filePath, {
-        babelrc: false,
-        plugins,
-        parserOpts
-    }).code;
-}
-
 function generateTestCase(dir, name, babelOpts) {
     const {
         actualFileExtension = 'js'
@@ -36,7 +23,7 @@ function generateTestCase(dir, name, babelOpts) {
 
     (isOnly(dir) ? it.only : it)(name, () => {
         try {
-            const actual = transform(actualPath, babelOpts);
+            const { code: actual} = transform(actualPath, babelOpts);
 
             // Check code output
             const expected = fs.readFileSync(expectedPath);
@@ -61,6 +48,17 @@ function generateTestCase(dir, name, babelOpts) {
             }
         }
     });
+}
+
+export function transform(filePath, options) {
+    const { plugins = [], parserOpts } = options;
+    const { code, map, metadata } = babel.transformFileSync(filePath, {
+        babelrc: false,
+        plugins,
+        parserOpts
+    });
+
+    return { code, map, metadata };
 }
 
 export function babelFixtureTransform (dir, babelOpts) {

@@ -1,9 +1,10 @@
 # Raptor development cli examples
 ```
-npm run template-cli -- --playground/simple.html
 
-npm run compiler-cli -- --playground/ns/test.js
+./bin/raptor-compiler-cli.js playground/test.js
 
-npm run htmlparser-cli -- --playground/ns/test.html
+./bin/raptor-template-cli.js playground/test.html
+
+./bin/raptor-html-cli.js playground/test.html
 
 ```

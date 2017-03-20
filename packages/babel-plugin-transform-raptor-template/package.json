@@ -16,7 +16,7 @@
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.5.4",
-    "raptor-helper-fixture": "0.2.9"
+    "raptor-helper-fixture": "0.4.2"
   },
   "dependencies": {
     "babel-plugin-syntax-jsx": "^6.18.0",

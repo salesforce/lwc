@@ -8,9 +8,61 @@ const KEY_METHODS = 'publicMethods';
 const KEY_TAG = 'tagName';
 const KEY_RENDER = 'render';
 
-module.exports = function(babel) {
+module.exports = function (babel) {
     'use strict';
     const t = babel.types;
+
+    return {
+        name: 'raptor-class-transform',
+        pre(file) {
+            file.metadata.importRefs = Object.create(null);
+            file.metadata.usedRefs = Object.create(null);
+            file.metadata.classDependencies = [];
+        },
+        visitor: {
+            Program: {
+                enter(path, state) {
+                    const body = path.node.body;
+                    const defaultExport = body.find(n => t.isExportDefaultDeclaration(n));
+                    const declaration = defaultExport && defaultExport.declaration;
+                    const isNamedClass = declaration && t.isClassDeclaration(declaration) && declaration.id;
+
+                    // If there is not default class export no transformation will happen
+                    if (!isNamedClass) {
+                        path.stop();
+                        return;
+                    }
+                    state.opts.className = declaration.id.name;
+                    state.opts.componentNamespace = state.opts.componentNamespace;
+                },
+                exit(path, state) {
+                    state.file.metadata.classDependencies = Object.keys(state.file.metadata.usedRefs);
+                }
+            },
+            ClassDeclaration(path, state) {
+                const className = path.get('id.name').node;
+                const extraBody = transformClassBody.call(this, className, path.get('body'), state);
+                path.getStatementParent().insertAfter(extraBody);
+            },
+            ImportDeclaration(path, state) {
+                path.skip(); // Skip traversing children
+                const dep = path.node.source.value;
+                if (dep[0] !== '.') { // Filter relative paths
+                    path.node.specifiers.forEach(s => {
+                        state.file.metadata.importRefs[s.local.name] = dep;
+                    });
+                }
+            },
+            Identifier(path, state) {
+                const name = path.node.name;
+                const ref = state.file.metadata.importRefs[name];
+                if (ref && !path.scope.hasOwnBinding(name)) {
+                    state.file.metadata.usedRefs[ref] = true;
+                }
+
+            }
+        }
+    };
 
     function addClassStaticMember(className, prop, blockStatement) {
         return t.expressionStatement(
@@ -29,10 +81,9 @@ module.exports = function(babel) {
         const id = state.file.addImport(name, 'default', 'tmpl');
         const templateProps = state.file.addImport(name, 'templateUsedIds', 't');
 
-       path.pushContainer('body', t.classMethod(
+        path.pushContainer('body', t.classMethod(
             'method',
-            t.identifier(KEY_RENDER),
-            [],
+            t.identifier(KEY_RENDER), [],
             t.blockStatement([t.returnStatement(id)])
         ));
 
@@ -83,7 +134,9 @@ module.exports = function(babel) {
                 }
 
                 // Methods
-            } else if (prop.isClassMethod({ kind: 'method' })) {
+            } else if (prop.isClassMethod({
+                    kind: 'method'
+                })) {
                 // Push to publich method
                 if (prop.node.decorators && prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
                     publicMethods.push(key);
@@ -125,29 +178,4 @@ module.exports = function(babel) {
 
         return extraBody;
     }
-
-    return {
-        name: 'raptor-class-transform',
-        visitor: {
-            Program(path, state) {
-                const body = path.node.body;
-                const defaultExport = body.find(n => t.isExportDefaultDeclaration(n));
-                const declaration = defaultExport && defaultExport.declaration;
-                const isNamedClass = declaration && t.isClassDeclaration(declaration) && declaration.id;
-
-                // If there is not default class export no transformation will happen
-                if (!isNamedClass) {
-                    path.stop();
-                    return;
-                }
-                state.opts.className = declaration.id.name;
-                state.opts.componentNamespace = state.opts.componentNamespace;
-            },
-            ClassDeclaration(path, state) {
-                const className = path.get('id.name').node;
-                const extraBody = transformClassBody.call(this, className, path.get('body'), state);
-                path.getStatementParent().insertAfter(extraBody);
-            }
-        }
-    };
 }
