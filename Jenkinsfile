@@ -68,9 +68,13 @@ node("raptor_node") {
                     sh "NO_ALIAS=true yarn run build"
 
                     // Commit and push the artefact folder
-                    dir ("dist") {
-                        sh "git add . && git commit -a -m 'Add bundle for commit'"
-                        sh "git push origin master"
+                    // Requires a mutex to avoid multiple multiple commit and push occuring a the same time and resulting to merge conflict
+                    lock('build-benchmark-bundle') {
+                        dir ("dist") {
+                            sh "git pull origin master "
+                            sh "git add . && git commit -a -m 'Add bundle for commit'"
+                            sh "git push origin master"
+                        }
                     }
                 }
 
@@ -79,8 +83,7 @@ node("raptor_node") {
                 // CHANGE_URL is set only when the job is triggered by opening a PR
                 // or by pushing on an existing PR
                 if (env.CHANGE_URL) {
-                    def base = helpers.getCommitHash("origin/$env.CHANGE_TARGET")
-                    triggerBenchmark(base, currentCommit, CHANGE_URL)
+                    triggerBenchmark("origin/$env.CHANGE_TARGET", currentCommit, CHANGE_URL)
                 }
             }
         }
@@ -102,12 +105,12 @@ node("raptor_node") {
 }
 
 // Start async the performance benchmark of 2 commits.
-def triggerBenchmark(String baseHash, String compareHash, String changeURL) {
+def triggerBenchmark(String baseBranch, String compareCommit, String changeURL) {
     build (
         job: BENCHMARKING_JENKINS_JOB,
         parameters: [
-            [$class: 'StringParameterValue', name: 'base', value: baseHash],
-            [$class: 'StringParameterValue', name: 'compare', value: compareHash],
+            [$class: 'StringParameterValue', name: 'baseBranch', value: baseBranch],
+            [$class: 'StringParameterValue', name: 'compareCommit', value: compareCommit],
             [$class: 'StringParameterValue', name: 'changeURL', value: changeURL],
         ],
         wait: false
