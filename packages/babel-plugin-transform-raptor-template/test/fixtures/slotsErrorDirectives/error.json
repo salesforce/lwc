@@ -1,5 +1,5 @@
 {
-  "message": "You can't use directive \"set\" in a slot tag",
+  "message": "You can't use directive \"if\" in a slot tag",
   "line": 3,
   "column": 7
 }

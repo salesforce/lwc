@@ -41,3 +41,25 @@ export function validateHTMLAttribute(tagName: string, attrName: string, path: P
         throw path.parentPath.buildCodeFrameError(`HTML Error: The attribute "${attrName}" is not defined the tag "${tagName}"`);
     }
 }
+
+export function validateDirective(name: string, path: Path) {
+    const directive = CONST.DIRECTIVES[name];
+    if (!directive) {
+        throw path.buildCodeFrameError(`Invalid directive ${name}`);
+    }
+    return directive;
+}
+
+
+export function validateModifier(name: string, directive: string, path: Path) {
+    const modifiers = CONST.MODIFIERS[directive];
+    if (modifiers === '*') {
+        return name;
+    } else {
+        const modifier = modifiers[name];
+        if (!modifier) {
+            throw path.buildCodeFrameError(`Invalid modifier ${name} for directive ${directive}`);
+        }
+        return modifier;
+    }
+}

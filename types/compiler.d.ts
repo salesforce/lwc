@@ -5,6 +5,15 @@ declare interface MetaConfig {
     event?: any;
     scoped?: any;
     isExpression?: boolean;
+    applyIfTransform: boolean;
+    applyRepeatTransform: boolean;
+    expressionContainer?: boolean;
+    hasNameAttribute?: boolean;
+    maybeSlotNameDef?: boolean;
+    slot?: any;
+    isSlotAttr?: boolean;
+    hasSlot?: boolean;
+    inForScope?: Array<any>;
 }
 
 declare class PluginState {
@@ -13,7 +22,7 @@ declare class PluginState {
 }
 
 declare class Path {
-    get(strPath: string): Path | Array<Path>;
+    get(strPath: string): Path;
     stop(): void;
     find(Function: (path: Path) => boolean) : Path;
     buildCodeFrameError(error: string): Object;
@@ -23,6 +32,7 @@ declare class Path {
     isExpressionStatement(): boolean;
     isProgram(): boolean;
     scope: any;
+    replaceWith(path: BabelNode): void;
     parentPath: Path;
 };
 
@@ -52,6 +62,7 @@ declare class BabelNode {
     trailingComments?: Array<BabelNodeComment>;
     start?: number;
     name? :string;
+    value? : string;
     end?: number;
     loc?: BabelNodeSourceLocation;
 }
@@ -901,6 +912,8 @@ type BabelNodeJSX = BabelNodeJSXAttribute | BabelNodeJSXClosingElement | BabelNo
 
 declare class BabelTypes {
     types: {
+  assertLiteral(value:BabelNode): void;
+  isValidIdentifier(value: string): boolean;
   assignmentExpression(operator: string, left: BabelNodeLVal, right: BabelNodeExpression): BabelNodeAssignmentExpression;
   binaryExpression(operator: "+" | "-" | "/" | "%" | "*" | "**" | "&" | "|" | ">>" | ">>>" | "<<" | "^" | "==" | "===" | "!=" | "!==" | "in" | "instanceof" | ">" | "<" | ">=" | "<=", left: BabelNodeExpression, right: BabelNodeExpression): BabelNodeBinaryExpression;
   directive(value: BabelNodeDirectiveLiteral): BabelNodeDirective;

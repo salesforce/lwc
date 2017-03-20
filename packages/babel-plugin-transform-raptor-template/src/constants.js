@@ -15,29 +15,37 @@ export const DEFAULT_SLOT_NAME = '$default$';
 
 export const DIRECTIVES = {
     repeat    : 'repeat',
-    for       : 'repeat',
+    for       : 'for',
     if        : 'if',
     on        : 'on',
     is        : 'is',
     bind      : 'bind',
     set       : 'set',
-    eval      : 'set',
-};
-
-export const REPEAT_MODIFIERS = {
-    for       : 'each',
-    each      : 'each',
+    eval      : 'eval',
 };
 
 export const IF_MODIFIERS = {
-    'is-true': 'isTrue'
+    'true'     : 'isTrue',
+    'is-true'  : 'isTrue',
+    'false'    : 'isFalse',
+    'is-false' : 'isFalse',
+    'is-not'   : 'isFalse',
+};
+
+export const EVAL_MODIFIERS = {
+    if   : 'if',
+    else : 'else',
 };
 
 export const MODIFIERS = {
-    if        : 'if',
-    else      : 'else',
-    for       : 'for',
-    each      : 'for',
+    repeat : { 'for': 'for' },
+    for    : { each: 'each' },
+    on     : '*',
+    is     : '*',
+    bind   : '*',
+    set    : '*',
+    if     : IF_MODIFIERS,
+    eval   : EVAL_MODIFIERS,
 };
 
 export const RENDER_PRIMITIVES = {

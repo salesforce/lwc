@@ -2,18 +2,19 @@
 // $FlowFixMe: not sure why this does not work
 import jsxPlugin from 'babel-plugin-syntax-jsx';
 import * as CONST from './constants';
+import * as validator from './validators';
 import CustomScope from './custom-scope';
 import metadata from './metadata';
 import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement } from './utils';
 import { isSvgNsAttribute, isSVG, getPropertyNameFromAttrName, isProp } from './html-attrs';
-import { validateTemplateRootFormat, validateElementMetadata, validatePrimitiveValues, validateHTMLAttribute } from './validators';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
 const SLOT_SET = CONST.SLOT_SET;
+const IF_MODIFIERS = CONST.IF_MODIFIERS;
+const EVAL_MODIFIERS = CONST.EVAL_MODIFIERS;
 const API_PARAM = CONST.API_PARAM;
-const MODIFIERS = CONST.MODIFIERS;
 const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
 
 export default function({ types: t }: BabelTypes): any {
@@ -52,16 +53,15 @@ export default function({ types: t }: BabelTypes): any {
 
     const NormalizeAttributeVisitor = {
         JSXAttribute(path: Path) {
-            validatePrimitiveValues(path);
-            const { node, meta } = normalizeAttributeName(path.node.name, path.get('name'));
-            const value = normalizeAttributeValue(path.node.value, meta, path.get('value'));
+            validator.validatePrimitiveValues(path);
+            const { node, attrMeta } = normalizeAttributeName(path.node.name, path.get('name'));
+            const value = normalizeAttributeValue(path.node.value, attrMeta, path.get('value'));
+            // $FlowFixMe: Wrong babel union types
             const nodeProperty = t.objectProperty(node, value);
-            nodeProperty._meta = meta; // Attach metadata for further inspection
+            nodeProperty._meta = attrMeta; // Attach metadata for further inspection
             path.replaceWith(nodeProperty);
         }
     };
-
-
 
    // -- Plugin Visitor ------------------------------------------
     return {
@@ -74,7 +74,7 @@ export default function({ types: t }: BabelTypes): any {
         visitor: {
             Program: {
                 enter(path) {
-                    validateTemplateRootFormat(path);
+                    validator.validateTemplateRootFormat(path);
                     // Create an artificial scope for bindings and varDeclarations
                     this.customScope.registerScopePathBindings(path);
                 },
@@ -116,12 +116,12 @@ export default function({ types: t }: BabelTypes): any {
             },
             JSXOpeningElement: {
                 enter(path, state) {
-                    const meta = { directives: {}, modifiers: {}, scoped: state.customScope.getAllBindings() };
+                    const meta = { directives: {}, scoped: state.customScope.getAllBindings() };
                     path.traverse(NormalizeAttributeVisitor);
-                    path.node.attributes.reduce((m, attr) => groupAttrMetadata(m, attr._meta), meta);
+                    path.node.attributes.reduce((m, attr) => mergeAttrMetadata(m, attr._meta), meta);
                     path.node.name = convertJSXIdentifier(path.node.name, meta, path, state);
 
-                    validateElementMetadata(meta, path);
+                    validator.validateElementMetadata(meta, path);
 
                     const createsScope = !!meta.directives[DIRECTIVES.repeat];
                     if (createsScope) {
@@ -187,10 +187,10 @@ export default function({ types: t }: BabelTypes): any {
         return t.variableDeclaration('const', varDeclarations.map(d => t.variableDeclarator(d.id, d.init)));
     }
 
-    function applyRepeatDirectiveToNode(directives, node) {
-        const forExpr = directives[MODIFIERS.for];
-        const args = directives.inForScope ? directives.inForScope.map((a) => t.identifier(a)) : [];
-        const blockNodes = directives.varDeclarations.length ? [createVarDeclaration(directives.varDeclarations)] : [];
+    function applyRepeatDirectiveToNode(meta, node) {
+        const forExpr = meta[DIRECTIVES.repeat];
+        const args = meta.inForScope ? meta.inForScope.map((a) => t.identifier(a)) : [];
+        const blockNodes = meta.varDeclarations.length ? [createVarDeclaration(meta.varDeclarations)] : [];
 
         if (t.isArrayExpression(node) && node.elements.length === 1) {
             node = node.elements[0];
@@ -203,14 +203,22 @@ export default function({ types: t }: BabelTypes): any {
         return iterator;
     }
 
-    function applyIfDirectiveToNode(directives, node, nextNode) {
-        const directive = directives[MODIFIERS.if];
-        if (nextNode && nextNode._meta && nextNode._meta.modifiers[MODIFIERS.else]) {
+    function applyIfDirectiveToNode(meta, node, nextNode) {
+        const modifier = meta.directives[DIRECTIVES.if];
+        const negation = modifier === IF_MODIFIERS.false;
+        let exprNode = meta[DIRECTIVES.if];
+
+        if (negation) {
+            exprNode = t.unaryExpression('!', exprNode);
+        }
+
+        if (nextNode && nextNode._meta && nextNode._meta.applyElseTransform /*TBI*/) {
             nextNode._processed = true;
         } else {
             nextNode = t.callExpression(applyPrimitive(EMPTY), []);
         }
-        return t.conditionalExpression(directive, node, nextNode);
+
+        return t.conditionalExpression(exprNode, node, nextNode);
     }
 
     function applyFlatteningToNode(elems) {
@@ -228,7 +236,7 @@ export default function({ types: t }: BabelTypes): any {
         for (let i = 0; i < children.length; i++) {
             let child = children[i];
             let nextChild = children[i + 1]
-            let directives = child._meta;
+            let meta = child._meta;
 
             if (t.isJSXEmptyExpression(child) || child._processed) {
                 continue;
@@ -239,20 +247,18 @@ export default function({ types: t }: BabelTypes): any {
                 child = t.callExpression(applyPrimitive(TEXT), [child.expression]);
             }
 
-            if (directives && directives.isSlotTag) {
+            if (meta && meta.isSlotTag) {
                 hasSlotTag = true;
             }
 
-            if (directives && (t.isCallExpression(child) || t.isArrayExpression(child))) {
-                if (directives[MODIFIERS.else]) {
-                    throw path.buildCodeFrameError('Else statement found before if statement');
-                }
-                if (directives[MODIFIERS.for]) {
-                    if (directives[MODIFIERS.if]) {
-                        child = applyIfDirectiveToNode(directives, child, nextChild);
+            if (meta && (t.isCallExpression(child) || t.isArrayExpression(child))) {
+
+                if (meta.applyRepeatTransform) {
+                    if (meta.applyIfTransform) {
+                        child = applyIfDirectiveToNode(meta, child, nextChild);
                     }
 
-                    const forTransform = applyRepeatDirectiveToNode(directives, child, state);
+                    const forTransform = applyRepeatDirectiveToNode(meta, child, state);
                     forTransform._iteration = true;
                     hasIteration = true;
                     elems.push(forTransform);
@@ -260,10 +266,17 @@ export default function({ types: t }: BabelTypes): any {
                     continue;
                 }
 
-                if (directives[MODIFIERS.if]) {
-                    if (directives.isTemplate) {
-                        const dir = directives[MODIFIERS.if];
-                        const init = t.logicalExpression('||', dir, t.callExpression(applyPrimitive(EMPTY), []));
+                if (meta.applyIfTransform) {
+                    if (meta.isTemplate) {
+                        const modifier = meta.directives[DIRECTIVES.if];
+                        const negation = modifier === IF_MODIFIERS.false;
+                        let exprNode = meta[DIRECTIVES.if];
+
+                        if (negation) {
+                            exprNode = t.unaryExpression('!', exprNode);
+                        }
+
+                        const init = t.logicalExpression('||', exprNode, t.callExpression(applyPrimitive(EMPTY), []));
                         const id = path.scope.generateUidIdentifier('expr');
                         state.customScope.pushVarDeclaration({ id, init, kind: 'const' });
 
@@ -275,7 +288,7 @@ export default function({ types: t }: BabelTypes): any {
                         }
 
                     } else {
-                        elems.push(applyIfDirectiveToNode(directives, child, nextChild));
+                        elems.push(applyIfDirectiveToNode(meta, child, nextChild));
                     }
                     continue;
                 }
@@ -451,26 +464,26 @@ export default function({ types: t }: BabelTypes): any {
         return name.indexOf(':') !== -1;
     }
 
-    function isDirectiveName(name) {
-        return MODIFIERS[name];
+    function isMetaDirective(name) {
+        return name === DIRECTIVES.if || name === DIRECTIVES.repeat;
     }
 
-    function transformProp(prop, path, elementMeta, state) {
-        const meta = prop._meta;
-        const directive = meta.directive;
-        const scopedVars = elementMeta.scoped;
-        const tagName = elementMeta.tagName;
+    function transformProp(prop, path, meta, state) {
+        const attrMeta = prop._meta;
+        const directive = attrMeta.directive;
+        const scopedVars = meta.scoped;
+        const tagName = meta.tagName;
         let valueName = prop.key.value || prop.key.name; // Identifier|Literal
         let valueNode = prop.value;
         let inScope = false;
 
         // Check to make sure the attribute name is allowed to the current tag
-        if (!elementMeta.isCustomElementTag && !directive && !elementMeta.isSvgTag) {
-            validateHTMLAttribute(tagName, valueName, path);
+        if (!meta.isCustomElementTag && !directive && !meta.isSvgTag) {
+            validator.validateHTMLAttribute(tagName, valueName, path);
         }
 
         valueName = getPropertyNameFromAttrName(valueName, tagName);
-        if (meta.expressionContainer) {
+        if (attrMeta.expressionContainer) {
             prop.key._ignore = true; // This is to prevent infinite loop on the next traversal
             path.traverse(BoundThisVisitor, { customScope : state.customScope });
             valueNode = path.node.value;
@@ -483,7 +496,7 @@ export default function({ types: t }: BabelTypes): any {
                 inScope = scopedVars.indexOf(rootMember) !== -1;
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
 
-                if (!inScope && directive === DIRECTIVES.set || directive === DIRECTIVES.repeat) {
+                if (!inScope && directive === DIRECTIVES.if || directive === DIRECTIVES.repeat) {
                     metadata.addUsedId(rootMember, state, t);
                 }
             }
@@ -506,7 +519,7 @@ export default function({ types: t }: BabelTypes): any {
         }
 
         if (isNSAttributeName(valueName)) {
-            meta.svg = true;
+            attrMeta.svg = true;
             valueName = t.stringLiteral(valueName);
         } else {
             valueName = isTopLevelProp(valueName) || !needsComputedCheck(valueName) ? t.identifier(valueName) : t.stringLiteral(valueName);
@@ -517,7 +530,7 @@ export default function({ types: t }: BabelTypes): any {
         return prop;
     }
 
-    function transformAndGroup(props: any, elementMeta: any, path: any, state: any): any {
+    function transformAndGroup(props: any, meta: any, path: any, state: any): any {
         const finalProps = [];
         const propKeys = {};
         function addGroupProp(key: string, value: any) {
@@ -532,29 +545,29 @@ export default function({ types: t }: BabelTypes): any {
 
         props.forEach((prop: any, index: number) => {
             const name = prop.key.value || prop.key.name; // Identifier|Literal
-            const meta = prop._meta;
+            const attrMeta = prop._meta;
             let groupName = CONST.ATTRS;
-            prop = transformProp(prop, path[index], elementMeta, state);
+            prop = transformProp(prop, path[index], meta, state);
 
             if (isTopLevelProp(name)) {
                 finalProps.push(prop);
                 return;
             }
 
-            if (meta.isSlotAttr) {
+            if (attrMeta.isSlotAttr) {
                 return;
             }
 
-            if (meta.directive && isDirectiveName(name)) {
-                elementMeta[name] = prop.value;
+            if (attrMeta.directive && isMetaDirective(attrMeta.directive)) {
+                meta[attrMeta.directive] = prop.value;
                 return;
             }
 
-            if (isProp(elementMeta.tagName, name, elementMeta.hasIsDirective) && !elementMeta.isSvgTag) {
+            if (isProp(meta.tagName, name, meta.hasIsDirective) && !meta.isSvgTag) {
                 groupName = CONST.PROPS;
             }
 
-            if (meta.event) {
+            if (attrMeta.event) {
                 groupName = 'on';
             }
 
@@ -562,38 +575,28 @@ export default function({ types: t }: BabelTypes): any {
         });
 
         const objExpression = t.objectExpression(finalProps);
-        objExpression._meta = elementMeta;
+        objExpression._meta = meta;
         return objExpression;
     }
 
-    // TODO: Clean this with a simpler merge
-    function groupAttrMetadata(metaGroup, meta) {
-        if (meta.directive) {
-            metaGroup.directives[meta.directive] = meta.directive;
-        }
+    function mergeAttrMetadata(meta, attrMeta: MetaConfig): MetaConfig {
+        var skip = { 'modifier' : 1, 'expressionContainer': 1 };
+        Object.keys(attrMeta).forEach(key => {
+            if (key in skip) { return; }
 
-        if (meta.modifier) {
-            metaGroup.modifiers[meta.modifier] = meta.modifier;
-        }
+            if (key === 'directive') {
+                meta.directives[attrMeta[key]] = attrMeta.modifier || true;
+                return;
+            }
 
-        if (meta.rootElement) {
-            metaGroup.rootElement = meta.rootElement;
-        }
+            if (key === 'inForScope') {
+                meta.scoped.push(...attrMeta.inForScope);
+            }
 
-        if (meta.isSlotAttr) {
-            metaGroup.hasSlot = true;
-            metaGroup.slot = meta.slot;
-        }
+            meta[key] = attrMeta[key];
+        });
 
-        if (meta.maybeSlotNameDef) {
-            metaGroup.maybeSlotNameDef = meta.maybeSlotNameDef;
-        }
-
-        if (meta.inForScope) {
-            metaGroup.inForScope = meta.inForScope;
-            metaGroup.scoped.push(...meta.inForScope);
-        }
-        return metaGroup;
+        return meta;
     }
 
     function memoizeSubtree(expression: any, path: Path) {
@@ -606,55 +609,66 @@ export default function({ types: t }: BabelTypes): any {
         return m.expression;
     }
 
-    function normalizeAttributeName(node: any): { meta: MetaConfig, node: BabelNode }  {
-        const meta: MetaConfig = { directive: null, modifier: null, event: null, scoped: null, isExpression: false };
+    function normalizeDirectives(attrMeta: MetaConfig, directive: string, modifier: string) {
+        if (directive === DIRECTIVES.eval) {
+            directive = DIRECTIVES.if;
+            modifier = modifier === EVAL_MODIFIERS.if ? IF_MODIFIERS.true : IF_MODIFIERS.false;
+        }
 
+        if (directive === DIRECTIVES.for) {
+            directive = DIRECTIVES.repeat;
+            modifier = 'for';
+        }
+
+        if (directive === DIRECTIVES.if) {
+            attrMeta.applyIfTransform = true;
+        }
+
+        if (directive === DIRECTIVES.repeat) {
+            attrMeta.applyRepeatTransform = true;
+        }
+
+        attrMeta.directive = directive;
+        attrMeta.modifier = modifier;
+    }
+
+    function normalizeAttributeName(node: any, path: Path): any {
+        const attrMeta: MetaConfig = {};
+
+        // If namespace, apply directive and modifier
         if (t.isJSXNamespacedName(node)) {
-            const dNode = node.namespace;
-            const mNode = node.name;
+            const nsNode = node.namespace;
+            const nameNode = node.name;
 
             // Transform nampespaced svg attrs correctly
-            if (isSvgNsAttribute(dNode.name)) {
-                mNode.name = `${dNode.name}:${mNode.name}`;
-                dNode.name = '';
+            if (isSvgNsAttribute(nsNode.name)) {
+                nameNode.name = `${nsNode.name}:${nameNode.name}`;
+            } else {
+                const directive = validator.validateDirective(nsNode.name, path);
+                const modifier = validator.validateModifier(nameNode.name, directive, path);
+                normalizeDirectives(attrMeta, directive, modifier);
             }
-
-            if (dNode.name in DIRECTIVES) {
-                // $FlowFixMe: ??
-                dNode.name = DIRECTIVES[dNode.name];
-                meta.directive = DIRECTIVES[dNode.name];
-            }
-
-            if (mNode.name in MODIFIERS) {
-                mNode.name = MODIFIERS[mNode.name];
-                meta.modifier = MODIFIERS[mNode.name];
-            }
-
-            if (mNode.name.indexOf(DIRECTIVES.on) === 0) {
-                const rawEventName = mNode.name.substring(2);
-                mNode.name = meta.event = rawEventName;
-            }
-
-            node = mNode;
+            node = nameNode;
         }
 
         // Autowire bind for properties prefixed with on
         if (node.name.indexOf(DIRECTIVES.on) === 0) {
             const rawEventName = node.name.substring(2);
-            node.name = meta.event = rawEventName;
-            meta.directive = DIRECTIVES.bind;
+            node.name = attrMeta.event = rawEventName;
+            attrMeta.directive = DIRECTIVES.bind;
 
         // Special is directive
         } else if (node.name === DIRECTIVES.is) {
-            meta.directive = DIRECTIVES.is;
+            attrMeta.directive = DIRECTIVES.is;
 
         // Potential slot name
         } else if (node.name === 'name') {
-            meta.hasNameAttribute = true;
+            attrMeta.hasNameAttribute = true;
 
         // Slot
         } else if (node.name === 'slot') {
-            meta.isSlotAttr = true;
+            attrMeta.isSlotAttr = true;
+            attrMeta.hasSlot = true;
         }
 
         // Replace node with an identifier
@@ -665,36 +679,38 @@ export default function({ types: t }: BabelTypes): any {
         }
 
         // Return nodeType: Identifier|StringLiteral
-        return { node, meta };
+        return { node, attrMeta };
     }
 
-    function normalizeAttributeValue(node: any, meta: any): BabelNode {
+    function normalizeAttributeValue(node: any, attrMeta: MetaConfig): BabelNode {
          node = node || t.booleanLiteral(true);
 
          if (t.isJSXExpressionContainer(node)) {
+             // $FlowFixMe: Wrong Literal casting
              node = node.expression;
-             meta.expressionContainer = true;
+             attrMeta.expressionContainer = true;
          } else {
             t.assertLiteral(node);
          }
 
-        if (meta.directive === DIRECTIVES.is) {
-            meta.rootElement = node.value;
+        if (attrMeta.directive === DIRECTIVES.is) {
+            attrMeta.rootElement = node.value;
         }
 
-        if (meta.hasNameAttribute) {
+        if (attrMeta.hasNameAttribute) {
             // Save the value name so in the slots is easy to transform going up
-            meta.maybeSlotNameDef = node.value;
+            attrMeta.maybeSlotNameDef = node.value;
         }
 
-        if (meta.isSlotAttr && !t.isBooleanLiteral(node)) {
-            meta.slot = node.value;
+        if (attrMeta.isSlotAttr && !t.isBooleanLiteral(node)) {
+            attrMeta.slot = node.value;
         }
 
-        if (meta.directive === DIRECTIVES.repeat) {
+        if (attrMeta.directive === DIRECTIVES.repeat) {
             const parsedValue = parseForStatement(node.value);
+            // $FlowFixMe: Wrong Literal casting
             node.value = parsedValue.for;
-            meta.inForScope = parsedValue.args;
+            attrMeta.inForScope = parsedValue.args;
         }
 
         return node;
