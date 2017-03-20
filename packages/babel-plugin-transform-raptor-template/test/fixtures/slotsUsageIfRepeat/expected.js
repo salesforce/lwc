@@ -1,5 +1,5 @@
 import _aB from "a-b";
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 export default function ($api, $cmp, $slotset) {
     const _expr = $cmp.isTrue || $api.e();
 

@@ -1,4 +1,4 @@
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 export default function ($api, $cmp, $slotset) {
     const _expr = $cmp.isTrue || $api.e(),
           _expr2 = $cmp.isTrue || $api.e(),

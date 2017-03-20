@@ -4,7 +4,7 @@ const _m = function ($api, $cmp) {
     return $cmp.handleFoo.bind($cmp);
 };
 
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 export default function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(

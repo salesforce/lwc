@@ -17,7 +17,7 @@ class Foo extends HTMLElement {
 }
 Foo.tagName = "x-foo";
 
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 var html = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(

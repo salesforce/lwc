@@ -1,6 +1,6 @@
 import _a$b from 'a:b';
 
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(

@@ -1,6 +1,6 @@
 $A.componentService.addModule('myns:relative_import', function () { 'use strict';
 
-const memoized = Symbol();
+const memoized = Symbol('memoize');
 var _tmpl = function ($api, $cmp, $slotset) {
     const m = $cmp[memoized] || ($cmp[memoized] = {});
     return [$api.h(
