@@ -1,6 +1,7 @@
 import StyleParser from './style-parser';
 import { TOP_LEVEL_PROPS } from './constants';
-import toCamelCase from 'to-camel-case';
+import toCamelCase from 'camelcase';
+import decamelize from 'decamelize';
 const  parserCss = new StyleParser();
 
 // Polyfill `includes`
@@ -59,7 +60,7 @@ export function isCompatTag(tagName: string) {
 }
 
 export { toCamelCase };
-
+export { decamelize };
 // Parts of this code were levaraged from:
 // t.react.cleanJSXElementLiteralChild() in babel-plugin-transform-template-jsx
 

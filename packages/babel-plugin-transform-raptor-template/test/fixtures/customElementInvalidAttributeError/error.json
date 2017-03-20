@@ -1,0 +1,5 @@
+{
+  "message": "Error validating attribute myProp. Custom element attributes must be all lowercase. Try \"my-prop\" instead",
+  "line": 2,
+  "column": 4
+}

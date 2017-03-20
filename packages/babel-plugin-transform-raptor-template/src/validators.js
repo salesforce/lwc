@@ -1,5 +1,6 @@
 import * as CONST from './constants';
 import { isValidHTMLAttribute } from './html-attrs';
+import { decamelize } from './utils';
 
 export function validateTemplateRootFormat(path: Path) {
     const rootChildrens = path.get('body');
@@ -42,6 +43,13 @@ export function validateHTMLAttribute(tagName: string, attrName: string, path: P
     }
 }
 
+export function validateCustomElementAtribute(tagName: string, attrName: string, path: Path) {
+    if (attrName !== attrName.toLowerCase()) { // TBI: Spec compliant name check
+        const suggested = decamelize(attrName, '-');
+        throw path.parentPath.buildCodeFrameError(`Error validating attribute ${attrName}. Custom element attributes must be all lowercase. Try "${suggested}" instead`);
+    }
+}
+
 export function validateDirective(name: string, path: Path) {
     const directive = CONST.DIRECTIVES[name];
     if (!directive) {
@@ -49,7 +57,6 @@ export function validateDirective(name: string, path: Path) {
     }
     return directive;
 }
-
 
 export function validateModifier(name: string, directive: string, path: Path) {
     const modifiers = CONST.MODIFIERS[directive];

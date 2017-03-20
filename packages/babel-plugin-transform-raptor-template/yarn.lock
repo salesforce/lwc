@@ -168,7 +168,7 @@ babel-code-frame@^6.16.0, babel-code-frame@^6.22.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-babel-core@^6.18.0, babel-core@^6.23.0, babel-core@^6.23.1:
+babel-core@^6.23.0, babel-core@^6.23.1:
   version "6.23.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-core/-/babel-core-6.23.1.tgz#c143cb621bb2f621710c220c5d579d15b8a442df"
   dependencies:
@@ -654,6 +654,10 @@ callsites@^0.2.0:
   version "0.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/callsites/-/callsites-0.2.0.tgz#afab96262910a7f33c19a5775825c69f34e350ca"
 
+camelcase@^4.0.0:
+  version "4.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/camelcase/-/camelcase-4.0.0.tgz#8b0f90d44be5e281b903b9887349b92595ef07f2"
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
@@ -783,6 +787,10 @@ debug@2.2.0, debug@^2.1.1, debug@^2.2.0, debug@~2.2.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
   dependencies:
     ms "0.7.1"
+
+decamelize@^1.2.0:
+  version "1.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
 deep-extend@~0.4.0:
   version "0.4.1"
@@ -935,7 +943,7 @@ eslint-plugin-flowtype@^2.30.0:
   dependencies:
     lodash "^4.15.0"
 
-eslint@^3.13.1, eslint@^3.16.1:
+eslint@^3.16.1:
   version "3.17.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint/-/eslint-3.17.1.tgz#b80ae12d9c406d858406fccda627afce33ea10ea"
   dependencies:
@@ -1651,7 +1659,7 @@ mkdirp@0.5.1, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.1:
   dependencies:
     minimist "0.0.8"
 
-mocha@^3.1.2, mocha@^3.2.0:
+mocha@^3.2.0:
   version "3.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mocha/-/mocha-3.2.0.tgz#7dc4f45e5088075171a68896814e6ae9eb7a85e3"
   dependencies:
@@ -1903,7 +1911,7 @@ power-assert-util-string-width@^1.1.1:
   dependencies:
     eastasianwidth "^0.1.1"
 
-power-assert@^1.4.1, power-assert@^1.4.2:
+power-assert@^1.4.2:
   version "1.4.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/power-assert/-/power-assert-1.4.2.tgz#43319cd0fecd3221f276f1cc49ffa2eaeb9a1815"
   dependencies:
@@ -1947,15 +1955,6 @@ randomatic@^1.1.3:
   dependencies:
     is-number "^2.0.2"
     kind-of "^3.0.2"
-
-raptor-helper-fixture@0.2.9:
-  version "0.2.9"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-helper-fixture/-/raptor-helper-fixture-0.2.9.tgz#1f9ccd0909946688aacc8f3e9e50f4433ff42ec1"
-  dependencies:
-    babel-core "^6.18.0"
-    eslint "^3.13.1"
-    mocha "^3.1.2"
-    power-assert "^1.4.1"
 
 rc@~1.1.6:
   version "1.1.7"
@@ -2330,25 +2329,9 @@ through@^2.3.6:
   version "2.3.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
 
-to-camel-case@^1.0.0:
-  version "1.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-camel-case/-/to-camel-case-1.0.0.tgz#1a56054b2f9d696298ce66a60897322b6f423e46"
-  dependencies:
-    to-space-case "^1.0.0"
-
 to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
-
-to-no-case@^1.0.0:
-  version "1.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-no-case/-/to-no-case-1.0.2.tgz#c722907164ef6b178132c8e69930212d1b4aa16a"
-
-to-space-case@^1.0.0:
-  version "1.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-space-case/-/to-space-case-1.0.0.tgz#b052daafb1b2b29dc770cea0163e5ec0ebc9fc17"
-  dependencies:
-    to-no-case "^1.0.0"
 
 tough-cookie@~2.3.0:
   version "2.3.2"

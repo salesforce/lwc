@@ -478,7 +478,9 @@ export default function({ types: t }: BabelTypes): any {
         let inScope = false;
 
         // Check to make sure the attribute name is allowed to the current tag
-        if (!meta.isCustomElementTag && !directive && !meta.isSvgTag) {
+        if (meta.isCustomElementTag) {
+            validator.validateCustomElementAtribute(tagName,valueName, path);
+        } else if (!meta.isCustomElementTag && !directive && !meta.isSvgTag) {
             validator.validateHTMLAttribute(tagName, valueName, path);
         }
 

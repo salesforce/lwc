@@ -21,7 +21,8 @@
   "dependencies": {
     "babel-plugin-syntax-jsx": "^6.18.0",
     "css-parse": "^2.0.0",
-    "to-camel-case": "^1.0.0"
+    "camelcase": "^4.0.0",
+    "decamelize": "^1.2.0"
   },
   "scripts": {
     "clean": "rimraf dist/",

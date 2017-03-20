@@ -1,5 +1,5 @@
 import ParseCSS from 'css-parse';
-import toCamelCase from 'to-camel-case';
+import { toCamelCase } from './utils';
 
 function clean(string) {
     return string.replace(/\r?\n|\r/g, '');
@@ -112,9 +112,9 @@ export default class ParserCSS {
                         //value = value.replace(/px|\s*/g, '');
                         styles[toCamelCase(property)] = /*parseFloat(value);*/ value; /* uncomment to remove `px` */
                     } else if (arrayContains(property, changeArr)) {
-                        
+
                         let values = value/*.replace(/px/g, '')*/.split(/[\s,]+/);
-                        
+
                         /* uncomment to remove `px` */
                         // values.forEach((value, index, arr) => {
                         //     arr[index] = parseInt(value);
