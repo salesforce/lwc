@@ -3,7 +3,9 @@ import {
     removeComponentEventListener,
     addComponentEventListener,
 } from "../component.js";
-import { assign, getOwnPropertyNames } from "../language.js";
+import { assign, create } from "../language.js";
+
+const EmptyObj = create(null);
 
 function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -17,8 +19,8 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
 
         // infuse key-value pairs from _on into the component
     if (oldOn !== newOn && (oldOn || newOn)) {
-        oldOn = oldOn || {};
-        newOn = newOn || {};
+        oldOn = oldOn || EmptyObj;
+        newOn = newOn || EmptyObj;
         // removed event listeners should be reset in component's events
         for (key in oldOn) {
             if (!(key in newOn)) {
@@ -40,9 +42,10 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     }
 
     // reflection of component event listeners into data.on for the regular diffing algo
-    let { data: { on } } = vnode;
-    assert.invariant(getOwnPropertyNames(on).length === 0, 'vnode.data.on should be an empty object.');
-    assign(on, vm.cmpEvents);
+    if (vm.cmpEvents) {
+        assert.invariant(vnode.data.on === undefined, 'vnode.data.on should be undefined.');
+        vnode.data.on = assign({}, vm.cmpEvents);
+    }
 }
 
 export default {

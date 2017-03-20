@@ -1,12 +1,15 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
-import { isArray } from "./language.js";
+import { isArray, create } from "./language.js";
+
+const EmptyData = create(null);
+
 // [c]ustom element node
-export function c(sel: string, Ctor: Class<Component>, data: Object = {}): Object {
+export function c(sel: string, Ctor: Class<Component>, data: Object = EmptyData): Object {
     const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    const vnode = h(sel, { hook, key, slotset, attrs, className, classMap, on: {}, props: {}, _props, _on }, []);
+    const vnode = h(sel, { hook, key, slotset, attrs, className, classMap, _props, _on }, []);
     vnode.Ctor = Ctor;
     return vnode;
 }
