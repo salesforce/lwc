@@ -28,6 +28,7 @@ types/compiler.d.ts
 [options]
 unsafe.enable_getters_and_setters=true
 esproposal.class_instance_fields=enable
+esproposal.class_static_fields=enable
 suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 suppress_comment= \\(.\\|\n\\)*\\$FlowIssue
 all=true

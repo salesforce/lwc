@@ -23,12 +23,13 @@ import {
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getOwnPropertySymbols,
+    isArray,
 } from "./language.js";
 import {
     HTMLPropertyNamesWithLowercasedReflectiveAttributes,
 } from "./dom.js";
+import { addCallbackToNextTick } from "./utils.js";
 
-const renderedDuringCurrentCycleSet = new Set();
 const CAPS_REGEX = /[A-Z]/g;
 
 /**
@@ -227,13 +228,13 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
     assert.vm(vm);
     const { cmpSlots } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
-    assert.isTrue(Array.isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${newValue} for slot ${slotName} in ${vm}.`)
+    assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${newValue} for slot ${slotName} in ${vm}.`)
     let oldValue = cmpSlots[slotName];
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
 
     // TODO: Issue #133
-    if (!Array.isArray(newValue)) {
+    if (!isArray(newValue)) {
         newValue = undefined;
     }
     if (oldValue !== newValue) {
@@ -269,9 +270,10 @@ export function renderComponent(vm: VM) {
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.fragment = vnodes;
-    assert.invariant(Array.isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
-    // preparing for the after rendering
-    renderedDuringCurrentCycleSet.add(vm);
+    assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    if (vm.component.renderedCallback) {
+        addCallbackToNextTick((): void => invokeComponentRenderedCallback(vm));
+    }
 }
 
 export function markComponentAsDirty(vm: VM) {
@@ -279,18 +281,4 @@ export function markComponentAsDirty(vm: VM) {
     assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
     assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering.`);
     vm.isDirty = true;
-}
-
-export function markAllComponentAsRendered() {
-    /**
-     * In this method we invoke the renderedCallback() on any component
-     * that was rendered during this last patching cycle.
-    */
-    const pending = Array.from(renderedDuringCurrentCycleSet);
-    const len = pending.length;
-    renderedDuringCurrentCycleSet.clear();
-    for (let i = 0; i < len; i += 1) {
-        const vm = pending.shift();
-        invokeComponentRenderedCallback(vm);
-    }
 }

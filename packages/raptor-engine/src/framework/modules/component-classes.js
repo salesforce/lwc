@@ -1,4 +1,5 @@
 import assert from "../assert.js";
+import { assign } from "../language.js";
 
 function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     const { data, vm } = vnode;
@@ -24,7 +25,7 @@ function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     }
     if (classMap || cmpClassMap) {
         // computing the mashup between className (computed), classMap, and cmpClassMap (from component)
-        data.class = Object.assign({}, classMap, cmpClassMap);
+        data.class = assign({}, classMap, cmpClassMap);
     }
 }
 

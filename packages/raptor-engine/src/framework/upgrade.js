@@ -179,3 +179,5 @@ export function createElement(tagName: string, options: any = {}): HTMLElement {
     }
     return element;
 }
+
+// TODO: how can a user dismount a component and kick in the destroy mechanism?

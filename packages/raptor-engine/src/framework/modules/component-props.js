@@ -3,6 +3,7 @@ import {
     resetComponentProp,
     updateComponentProp,
 } from "../component.js";
+import { assign, getOwnPropertyNames } from "../language.js";
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -36,8 +37,8 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
 
     // reflection of component props into data.props for the regular diffing algo
     let { data: { props } } = vnode;
-    assert.invariant(Object.getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
-    Object.assign(props, vm.cmpProps);
+    assert.invariant(getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
+    assign(props, vm.cmpProps);
 }
 
 export default {

@@ -1,5 +1,4 @@
 import { createVM, setLinkedVNode } from "../vm.js";
-import { markAllComponentAsRendered } from "../component.js";
 import assert from "../assert.js";
 
 // this hook will set up the component instance associated to the new vnode,
@@ -25,12 +24,7 @@ function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
     assert.invariant(vnode.vm.component, `vm ${vnode.vm} should have a component and element associated to it.`);
 }
 
-function postPatchHook() {
-    markAllComponentAsRendered();
-}
-
 export default {
     create: initializeComponent,
     update: initializeComponent,
-    post: postPatchHook,
 };

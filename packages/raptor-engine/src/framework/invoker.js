@@ -4,6 +4,7 @@ import {
 } from "./context.js";
 import * as api from "./api.js";
 import assert from "./assert.js";
+import { isArray } from "./language.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -25,7 +26,7 @@ function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Arra
         return [];
     }
     // never mutate the original array
-    const vnodes = Array.isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
+    const vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? elementOrVnodeOrArrayOfVnodes.slice(0) : [elementOrVnodeOrArrayOfVnodes];
     for (let i = 0; i < vnodes.length; i += 1) {
         const elm = vnodes[i];
         // TODO: we can improve this detection mechanism

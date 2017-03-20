@@ -6,6 +6,8 @@ import {
 } from "./component.js";
 import { h } from "./api.js";
 import { patch } from "./patch.js";
+import { isArray } from "./language.js";
+import { addCallbackToNextTick } from "./utils.js";
 
 export function createVM(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -16,7 +18,7 @@ export function createVM(vnode: ComponentVNode) {
     const vm: VM = {
         isScheduled: false,
         isDirty: true,
-        wasInserted: !!vnode.isRoot,
+        wasInserted: false,
         def,
         context: {},
         privates: {},
@@ -75,7 +77,7 @@ export function rehydrate(vm: vm) {
         const vnode = getLinkedVNode(vm.component);
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
         const { sel, Ctor, data: { hook, key, slotset, attrs, className, classMap, _props, _on }, children } = vnode;
-        assert.invariant(Array.isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
+        assert.invariant(isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
         // to patch this vnode the last time, mimic what happen when the
@@ -100,8 +102,6 @@ export function scheduleRehydration(vm: VM) {
     assert.vm(vm);
     if (!vm.isScheduled) {
         vm.isScheduled = true;
-        Promise.resolve(vm).then(rehydrate).catch((error: Error) => {
-            assert.fail(`Error attempting to rehydrate component ${vm}: ${error.message}`);
-        });
+        addCallbackToNextTick((): void => rehydrate(vm));
     }
 }

@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
-
+import { isArray } from "./language.js";
 // [c]ustom element node
 export function c(sel: string, Ctor: Class<Component>, data: Object = {}): Object {
     const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
@@ -16,12 +16,12 @@ export { h };
 
 // [i]terable node
 export function i(items: Array<any>, factory: Function): Array<VNode> {
-    const len = Array.isArray(items) ? items.length : 0;
+    const len = isArray(items) ? items.length : 0;
     const list = [];
     for (let i = 0; i < len; i += 1) {
         const vnode = factory(items[i], i);
-        const isArrayNode = Array.isArray(vnode);
-        if (Array.isArray(vnode)) {
+        const isArrayNode = isArray(vnode);
+        if (isArrayNode) {
             Array.prototype.push.apply(list, vnode);
         } else {
             list.push(vnode);
@@ -65,12 +65,12 @@ export function e(): string  {
  * [f]lattening
  */
 export function f(items: Array<any>): Array<any>  {
-    assert.isTrue(Array.isArray(items), 'flattening api can only work with arrays.')
+    assert.isTrue(isArray(items), 'flattening api can only work with arrays.')
     const len = items.length;
     const flattened = [];
     for (let i = 0; i < len; i += 1) {
         const item = items[i];
-        if (Array.isArray(item)) {
+        if (isArray(item)) {
             flattened.push.apply(flattened, item);
         } else {
             flattened.push(item);

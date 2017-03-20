@@ -4,6 +4,7 @@ import { ClassList } from "./class-list.js";
 import { addComponentEventListener, removeComponentEventListener } from "./component.js";
 import {
     defineProperty,
+    defineProperties,
 } from "./language.js";
 
 const HTMLElementPropsTheGoodParts = [
@@ -18,7 +19,7 @@ const HTMLElementMethodsTheGoodParts = [
 class ComponentElement {
     constructor() {
         const classList = new ClassList(this);
-        Object.defineProperties(this, {
+        defineProperties(this, {
             classList: {
                 value: classList,
                 writable: false,

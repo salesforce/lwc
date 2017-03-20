@@ -3,6 +3,7 @@ import {
     removeComponentEventListener,
     addComponentEventListener,
 } from "../component.js";
+import { assign, getOwnPropertyNames } from "../language.js";
 
 function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -40,8 +41,8 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
 
     // reflection of component event listeners into data.on for the regular diffing algo
     let { data: { on } } = vnode;
-    assert.invariant(Object.getOwnPropertyNames(on).length === 0, 'vnode.data.on should be an empty object.');
-    Object.assign(on, vm.cmpEvents);
+    assert.invariant(getOwnPropertyNames(on).length === 0, 'vnode.data.on should be an empty object.');
+    assign(on, vm.cmpEvents);
 }
 
 export default {
