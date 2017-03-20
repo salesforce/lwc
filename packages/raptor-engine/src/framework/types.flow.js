@@ -36,6 +36,7 @@ declare class VM {
     cmpProps: HashTable<any>;
     cmpSlots: HashTable<Array<VNode>>;
     cmpEvents: HashTable<Array<EventListener>>;
+    cmpClasses: HashTable<Boolean>;
     isScheduled: boolean;
     isDirty: boolean;
     wasInserted: boolean;
@@ -44,6 +45,7 @@ declare class VM {
     component: Component;
     fragment: Array<VNode>;
     listeners: Set<Set<VM>>;
+    classListObj: DOMTokenList,
     toString(): string;
 }
 
