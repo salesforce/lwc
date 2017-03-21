@@ -83,14 +83,14 @@ export function hookComponentLocalProperty(vm: VM, key: string | Symbol) {
         }
     });
     if (configurable && !get && !set) {
-        let { value, enumerable, writtable } = descriptor;
+        let { value, enumerable, writable } = descriptor;
         privates[key] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
         defineProperty(component, key, {
             get: (): any => getter(privates, key),
             set: (newValue: any): boolean => setter(privates, key, newValue),
             configurable,
             enumerable,
-            writtable,
+            writable,
         });
     }
 }
