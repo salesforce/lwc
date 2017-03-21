@@ -3,7 +3,9 @@ import {
     resetComponentProp,
     updateComponentProp,
 } from "../component.js";
-import { assign, getOwnPropertyNames } from "../language.js";
+import { assign, create } from "../language.js";
+
+const EmptyObj = create(null);
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -17,8 +19,8 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     // infuse key-value pairs from _props into the component
     if (oldProps !== newProps && (oldProps || newProps)) {
         let key: string, cur: any;
-        oldProps = oldProps || {};
-        newProps = newProps || {};
+        oldProps = oldProps || EmptyObj;
+        newProps = newProps || EmptyObj;
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
@@ -36,9 +38,9 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     }
 
     // reflection of component props into data.props for the regular diffing algo
-    let { data: { props } } = vnode;
-    assert.invariant(getOwnPropertyNames(props).length === 0, 'vnode.data.props should be an empty object.');
-    assign(props, vm.cmpProps);
+    assert.invariant(vnode.data.props === undefined, 'vnode.data.props should be undefined.');
+    // TODO: opt out if cmpProps is empty (right now it is never empty)
+    vnode.data.props = assign({}, vm.cmpProps);
 }
 
 export default {

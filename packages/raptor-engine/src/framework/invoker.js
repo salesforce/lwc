@@ -4,10 +4,12 @@ import {
 } from "./context.js";
 import * as api from "./api.js";
 import assert from "./assert.js";
-import { isArray } from "./language.js";
+import { isArray, create } from "./language.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
+
+const EmptySlots = create(null);
 
 function wrapDOMNode(element: Node): VNode {
     // TODO: generalize this to support all kind of Nodes
@@ -83,7 +85,7 @@ export function invokeComponentRenderedCallback(vm: VM) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
-    const { component, context, cmpSlots } = vm;
+    const { component, context, cmpSlots = EmptySlots } = vm;
     if (component.render) {
         const ctx = currentContext;
         establishContext(context);

@@ -2,41 +2,25 @@ import assert from "./assert.js";
 import { scheduleRehydration, getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
 import { addComponentEventListener, removeComponentEventListener } from "./component.js";
-import {
-    defineProperty,
-    defineProperties,
-} from "./language.js";
 
-const HTMLElementPropsTheGoodParts = [
-    "tagName",
-];
-const HTMLElementMethodsTheGoodParts = [
-    "querySelector",
-    "querySelectorAll",
-    "getBoundingClientRect",
-];
+function getLinkedElement(cmp): HTMLElement {
+    const vnode = getLinkedVNode(cmp);
+    assert.vnode(vnode);
+    const { elm } = vnode;
+    assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${cmp} and element ${elm}.`);
+    return elm;
+}
 
-class ComponentElement {
-    constructor() {
-        const classList = new ClassList(this);
-        defineProperties(this, {
-            classList: {
-                value: classList,
-                writable: false,
-                configurable: false,
-                enumerable: true,
-            },
-        });
-    }
+function ComponentElement(): ComponentElement {
+    // This should always be empty, and any initialization should be done lazily
+}
+
+ComponentElement.prototype = {
     dispatchEvent(event: Event): boolean {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { elm } = vnode;
+        const elm = getLinkedElement(this);
         // custom elements will rely on the DOM dispatchEvent mechanism
-        assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm}.`);
         return elm.dispatchEvent(event);
-    }
-
+    },
     addEventListener(type: string, listener: EventListener) {
         const vnode = getLinkedVNode(this);
         assert.vnode(vnode);
@@ -52,8 +36,7 @@ class ComponentElement {
             console.log(`Scheduling ${vm} for rehydration due to the addition of an event listener for ${type}.`);
             scheduleRehydration(vm);
         }
-    }
-
+    },
     removeEventListener(type: string, listener: EventListener) {
         const vnode = getLinkedVNode(this);
         assert.vnode(vnode);
@@ -69,34 +52,40 @@ class ComponentElement {
             console.log(`Scheduling ${vm} for rehydration due to the removal of an event listener for ${type}.`);
             scheduleRehydration(vm);
         }
-    }
-
-}
-
-// One time operation to expose the good parts of the web component API,
-// in terms of methods and properties:
-HTMLElementMethodsTheGoodParts.reduce((proto: any, methodName: string): any => {
-    proto[methodName] = function (...args: Array<any>): any {
+    },
+    getBoundingClientRect(): DOMRect {
+        const elm = getLinkedElement(this);
+        return elm.getBoundingClientRect();
+    },
+    querySelector(selectors: string): Element {
+        const elm = getLinkedElement(this);
+        // TODO: locker service might need to do something here
+        // TODO: filter out elements that you don't own
+        return elm.querySelector(selectors);
+    },
+    querySelectorAll(selectors: string): NodeList {
+        const elm = getLinkedElement(this);
+        // TODO: locker service might need to do something here
+        // TODO: filter out elements that you don't own
+        return elm.querySelectorAll(selectors);
+    },
+    get tagName(): string {
+        const element = getLinkedElement(this);
+        return element.tagName;
+    },
+    get classList(): DOMTokenList {
         const vnode = getLinkedVNode(this);
         assert.vnode(vnode);
-        const { elm } = vnode;
-        assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${this} and element ${elm} when calling method ${methodName}.`);
-        return elm[methodName](...args);
-    };
-    return proto;
-}, ComponentElement.prototype);
-
-HTMLElementPropsTheGoodParts.reduce((proto: any, propName: string): any => {
-    defineProperty(proto, propName, {
-        get: function (): any {
-            const element = getLinkedVNode(this);
-            assert.isTrue(element instanceof HTMLElement, `Invalid association between component ${this} and element ${element} when accessing member property @{propName}.`);
-            return element[propName];
-        },
-        enumerable: true,
-        configurable: false,
-    });
-    return proto;
-}, ComponentElement.prototype);
+        const { vm } = vnode;
+        assert.vm(vm);
+        let { classListObj } = vm;
+        // lazy creation of the ClassList Object the first time it is accessed.
+        if (!classListObj) {
+            classListObj = new ClassList(vm);
+            vm.classListObj = classListObj;
+        }
+        return classListObj;
+    }
+}
 
 export { ComponentElement as Element };

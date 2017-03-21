@@ -1,3 +1,4 @@
+const create = Object.create;
 const keys = Object.keys;
 const freeze = Object.freeze;
 const defineProperty = Object.defineProperty;
@@ -11,6 +12,7 @@ const isArray = Array.isArray;
 const assign = Object.assign;
 
 export {
+    create,
     keys,
     freeze,
     defineProperty,

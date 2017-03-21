@@ -24,5 +24,18 @@ describe('Raptor.Element', () => {
             });
         });
 
+        it('should have a valid classList during construction', () => {
+            let containsFoo = false;
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('foo');
+                    containsFoo = this.classList.contains('foo');
+                }
+            }
+            createElement('x-foo', { is: def });
+            assert(containsFoo === true, 'classList does not contain "foo"');
+        });
+
     });
 });

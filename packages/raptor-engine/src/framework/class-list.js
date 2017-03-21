@@ -1,10 +1,10 @@
 import assert from "./assert.js";
 import {
     getOwnPropertyNames,
+    defineProperty,
 } from "./language.js";
 import {
     scheduleRehydration,
-    getLinkedVNode,
 } from "./vm.js";
 import { markComponentAsDirty } from "./component.js";
 const INTERNAL_VM = Symbol();
@@ -13,12 +13,19 @@ const INTERNAL_VM = Symbol();
 // is a TokenList, but not an Array. For now, we are just implementing
 // the simplest one.
 // https://www.w3.org/TR/dom/#domtokenlist
-export class ClassList {
-    constructor(component: Component) {
-        const { vm } = getLinkedVNode(component);
-        assert.vm(vm);
-        this[INTERNAL_VM] = vm;
-    }
+export function ClassList(vm: VM): DOMTokenList {
+    assert.vm(vm);
+    assert.isTrue(vm.cmpClasses === undefined, `${vm} should have undefined cmpClasses.`);
+    vm.cmpClasses = {};
+    defineProperty(this, INTERNAL_VM, {
+        value: vm,
+        writable: false,
+        enumerable: false,
+        configurable: false,
+    });
+}
+
+ClassList.prototype = {
     add(...classNames: Array<String>) {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
@@ -34,7 +41,7 @@ export class ClassList {
                 }
             }
         });
-    }
+    },
     remove(...classNames: Array<String>) {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
@@ -51,14 +58,14 @@ export class ClassList {
                 }
             }
         });
-    }
+    },
     item(index: Number): string | void {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
         // Return class value by index in collection.
         return getOwnPropertyNames(cmpClasses)
             .filter((className: string): boolean => cmpClasses[className])[index] || null;
-    }
+    },
     toggle(className: String, force: any): boolean {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
@@ -78,16 +85,16 @@ export class ClassList {
         }
         this.add(className);
         return true;
-    }
+    },
     contains(className: String): boolean {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
         // Checks if specified class value exists in class attribute of the element.
         return !!cmpClasses[className];
-    }
+    },
     toString(): string {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
         return getOwnPropertyNames(cmpClasses).filter((className: string): boolean => cmpClasses[className]).join(' ');
     }
-}
+};

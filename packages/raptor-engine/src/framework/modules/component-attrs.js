@@ -1,6 +1,7 @@
-import {
-    invokeComponentAttributeChangedCallback,
-} from "../invoker.js";
+import { invokeComponentAttributeChangedCallback } from "../invoker.js";
+import { create } from "../language.js";
+
+const EmptyObj = create(null);
 
 function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -16,8 +17,8 @@ function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
         const { def: { observedAttrs } } = vm;
 
         let key: string, cur: any;
-        oldAttrs = oldAttrs || {};
-        newAttrs = newAttrs || {};
+        oldAttrs = oldAttrs || EmptyObj;
+        newAttrs = newAttrs || EmptyObj;
         // removed props should be reset in component's props
         for (key in oldAttrs) {
             if (!(key in newAttrs)) {

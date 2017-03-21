@@ -7,11 +7,11 @@ import {
 } from "./component.js";
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
-import { defineProperties } from "./language.js";
+import { defineProperties, create } from "./language.js";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
 const CAMEL_REGEX = /-([a-z])/g;
-const attrNameToPropNameMap = {};
+const attrNameToPropNameMap = create(null);
 
 function getPropNameFromAttrName(attrName: string): string {
     let propName = attrNameToPropNameMap[attrName];

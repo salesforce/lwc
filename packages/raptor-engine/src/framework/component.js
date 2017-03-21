@@ -188,8 +188,11 @@ export function resetComponentProp(vm: VM, propName: string) {
 
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
     assert.vm(vm);
-    const { cmpEvents } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+    let { cmpEvents } = vm;
+    if (!cmpEvents) {
+        vm.cmpEvents = cmpEvents = {};
+    }
     if (!cmpEvents[eventName]) {
         cmpEvents[eventName] = [];
     }
@@ -208,16 +211,18 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
 
 export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
     assert.vm(vm);
-    const { cmpEvents } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
-    const listeners = cmpEvents[eventName];
-    const pos = listeners && listeners.indexOf(oldHandler);
-    if (listeners && pos > -1) {
-        cmpEvents[eventName].splice(pos, 1);
-        if (!vm.isDirty) {
-            markComponentAsDirty(vm);
+    const { cmpEvents } = vm;
+    if (cmpEvents) {
+        const listeners = cmpEvents[eventName];
+        const pos = listeners && listeners.indexOf(oldHandler);
+        if (listeners && pos > -1) {
+            cmpEvents[eventName].splice(pos, 1);
+            if (!vm.isDirty) {
+                markComponentAsDirty(vm);
+            }
+            return;
         }
-        return;
     }
     assert.block(() => {
         console.warn(`Event listener ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the listeners that you have added already for ${vm}.`);
@@ -226,10 +231,10 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
 
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
     assert.vm(vm);
-    const { cmpSlots } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
     assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${newValue} for slot ${slotName} in ${vm}.`)
-    let oldValue = cmpSlots[slotName];
+    let { cmpSlots } = vm;
+    let oldValue = cmpSlots && cmpSlots[slotName];
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
 
@@ -238,6 +243,9 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
         newValue = undefined;
     }
     if (oldValue !== newValue) {
+        if (!cmpSlots) {
+            vm.cmpSlots = cmpSlots = {};
+        }
         cmpSlots[slotName] = newValue;
         console.log(`Marking ${vm} as dirty: a new value for slot "${slotName}" was added.`);
         if (!vm.isDirty) {
@@ -248,12 +256,11 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
 
 export function removeComponentSlot(vm: VM, slotName: string) {
     assert.vm(vm);
-    const { cmpSlots } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
-    let oldValue = cmpSlots[slotName];
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
-    if (oldValue) {
+    const { cmpSlots } = vm;
+    if (cmpSlots && cmpSlots[slotName]) {
         cmpSlots[slotName] = undefined; // delete will de-opt the cmpSlots, better to set it to undefined
         console.log(`Marking ${vm} as dirty: the value of slot "${slotName}" was removed.`);
         if (!vm.isDirty) {

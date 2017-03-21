@@ -23,9 +23,10 @@ export function createVM(vnode: ComponentVNode) {
         context: {},
         privates: {},
         cmpProps: {},
-        cmpSlots: {},
-        cmpEvents: {},
-        cmpClasses: {},
+        cmpSlots: undefined,
+        cmpEvents: undefined,
+        cmpClasses: undefined,
+        classListObj: undefined,
         component: undefined,
         fragment: [],
         listeners: new Set(),
@@ -91,7 +92,7 @@ export function rehydrate(vm: vm) {
         oldVnode.vm = vnode.vm;
         // This list here must be in synch with api.c()
         // TODO: abstract this so we don't have to keep code in sync.
-        vnode.data = { hook, key, slotset, attrs, className, classMap, props: {}, on: {}, _props, _on };
+        vnode.data = { hook, key, slotset, attrs, className, classMap, _props, _on };
         vnode.children = [];
         patch(oldVnode, vnode);
     }
