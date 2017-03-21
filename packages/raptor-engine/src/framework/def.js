@@ -68,8 +68,8 @@ function getPropsHash(target: Object): HashTable<PropDef> {
             setter = () => {
                 assert.fail(`Component <${target.name}> can not set a new value for property ${propName}.`);
             };
-            defineProperty(getter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
-            defineProperty(setter, internal, { value: true, configurable: false, writtable: false, enumerable: false });
+            defineProperty(getter, internal, { value: true, configurable: false, writable: false, enumerable: false });
+            defineProperty(setter, internal, { value: true, configurable: false, writable: false, enumerable: false });
         });
         // setting up the descriptor for the public prop
         defineProperty(target.prototype, propName, {
