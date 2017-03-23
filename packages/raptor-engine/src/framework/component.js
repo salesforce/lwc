@@ -25,33 +25,7 @@ import {
     getOwnPropertySymbols,
     isArray,
 } from "./language.js";
-import {
-    HTMLPropertyNamesWithLowercasedReflectiveAttributes,
-} from "./dom.js";
-import { addCallbackToNextTick } from "./utils.js";
-
-const CAPS_REGEX = /[A-Z]/g;
-
-/**
- * This dictionary contains the mapping between property names
- * and the corresponding attribute name. This helps to trigger observable attributes.
- */
-const propNameToAttributeNameMap = {
-    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`
-    className: 'class',
-    htmlFor: 'for',
-};
-// Few more exceptions where the attribute name matches the property in lowercase.
-HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach((propName: string): void => propNameToAttributeNameMap[propName] = propName.toLowerCase());
-
-function getAttrNameFromPropName(propName: string): string {
-    let attrName = propNameToAttributeNameMap[propName];
-    if (!attrName) {
-        attrName = propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
-        propNameToAttributeNameMap[propName] = attrName;
-    }
-    return attrName;
-}
+import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 
 function hookComponentReflectiveProperty(vm: VM, propName: string) {
     const { component, cmpProps, def: { props: publicPropsConfig } } = vm;

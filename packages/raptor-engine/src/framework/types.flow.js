@@ -32,7 +32,8 @@ declare class ComponentElement extends Component {
 }
 
 declare class VM {
-    privates: Object;
+    privates: HashTable<any>;
+    cmpState: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpSlots: HashTable<Array<VNode>>;
     cmpEvents: HashTable<Array<EventListener>>;

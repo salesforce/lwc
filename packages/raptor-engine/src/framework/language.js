@@ -1,20 +1,26 @@
-const create = Object.create;
-const keys = Object.keys;
-const freeze = Object.freeze;
-const defineProperty = Object.defineProperty;
-const getPrototypeOf = Object.getPrototypeOf;
-const setPrototypeOf = Object.setPrototypeOf;
-const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-const getOwnPropertyNames = Object.getOwnPropertyNames;
-const defineProperties = Object.defineProperties;
-const getOwnPropertySymbols = Object.getOwnPropertySymbols;
+const {
+    freeze,
+    seal,
+    keys,
+    create,
+    assign,
+    defineProperty,
+    getPrototypeOf,
+    setPrototypeOf,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    defineProperties,
+    getOwnPropertySymbols,
+} = Object;
 const isArray = Array.isArray;
-const assign = Object.assign;
+const slice = Array.prototype.slice;
 
 export {
-    create,
-    keys,
     freeze,
+    seal,
+    keys,
+    create,
+    assign,
     defineProperty,
     defineProperties,
     getPrototypeOf,
@@ -22,6 +28,6 @@ export {
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getOwnPropertySymbols,
+    slice,
     isArray,
-    assign,
 }

@@ -7,20 +7,10 @@ import {
 } from "./component.js";
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
-import { defineProperties, create } from "./language.js";
+import { defineProperties } from "./language.js";
+import { getPropNameFromAttrName } from "./utils.js";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
-const CAMEL_REGEX = /-([a-z])/g;
-const attrNameToPropNameMap = create(null);
-
-function getPropNameFromAttrName(attrName: string): string {
-    let propName = attrNameToPropNameMap[attrName];
-    if (!propName) {
-        propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-        attrNameToPropNameMap[attrName] = propName;
-    }
-    return propName;
-}
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);

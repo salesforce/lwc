@@ -12,8 +12,8 @@ import { addCallbackToNextTick } from "./utils.js";
 export function createVM(vnode: ComponentVNode) {
     assert.vnode(vnode);
     assert.invariant(vnode.elm instanceof HTMLElement, `VM creation requires a DOM element to be associated to vnode ${vnode}.`);
-    const { Ctor, sel } = vnode;
-    console.log(`<${Ctor.name}> is being initialized.`);
+    const { Ctor } = vnode;
+    console.log(`[object:vm ${Ctor.name}] is being initialized.`);
     const def = getComponentDef(Ctor);
     const vm: VM = {
         isScheduled: false,
@@ -22,6 +22,7 @@ export function createVM(vnode: ComponentVNode) {
         def,
         context: {},
         privates: {},
+        cmpState: {},
         cmpProps: {},
         cmpSlots: undefined,
         cmpEvents: undefined,
@@ -33,7 +34,7 @@ export function createVM(vnode: ComponentVNode) {
     };
     assert.block(() => {
         vm.toString = (): string => {
-            return `<${sel}>`;
+            return `[object:vm ${Ctor.name}]`;
         };
     });
     vnode.vm = vm;
@@ -62,7 +63,7 @@ export function setLinkedVNode(component: Component, vnode: ComponentVNode) {
 }
 
 export function getLinkedVNode(component: Component): ComponentVNode {
-    assert.isTrue(component, `invalid component ${component}`);
+    assert.isTrue(component, `invalid component`);
     // note to self: we fallback to `vmBeingCreated` in case users
     // invoke something during the constructor execution, in which
     // case this mapping hasn't been stable yet, but we know that's

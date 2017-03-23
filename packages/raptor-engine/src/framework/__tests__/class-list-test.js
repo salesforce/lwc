@@ -5,7 +5,7 @@ describe('ClassList', () => {
     describe('#constructor()', () => {
 
         it('should create an empty vm.cmpClasses object', () => {
-            const vmMock: vm = { component: {} };
+            const vmMock: vm = { component: {}, toString: () => '[object:vm Mock]' };
             let cl = new ClassList(vmMock);
             cl.add('foo', 'bar');
             cl.remove('bar');
