@@ -13,9 +13,16 @@ const templateUsedIds = [];
 
 function test() {}
 
+function sibling() {}
+
+function inner() {
+    return sibling();
+}
+
 class RelativeImport {
     constructor() {
         this.x = test();
+        this.y = inner();
     }
 
     render() {
@@ -29,4 +36,3 @@ RelativeImport.templateUsedIds = templateUsedIds;
 return RelativeImport;
 
 });
-

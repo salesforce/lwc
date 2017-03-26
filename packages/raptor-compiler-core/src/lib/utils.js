@@ -1,8 +1,8 @@
-import { extname, normalize, join, sep, basename } from 'path';
+import { extname, normalize, join, sep, basename, dirname } from 'path';
 import { MODES } from './constants';
 import fs from 'fs';
 
-export { basename };
+export { basename, dirname, join, extname };
 
 export const ltng_format = 'aura';
 export const DEFAULT_NS = 'x';
@@ -60,29 +60,14 @@ export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
 export function normalizeOptions(options: any) {
     const entry = options.entry;
     const qName = getQualifiedName(entry, options.mapNamespaceFromPath);
+
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
     options.componentName = options.componentName || qName.componentName;
     options.bundle = options.bundle !== undefined ? options.bundle : true;
     options.mode = options.mode || MODES.DEV;
+    options.sources = options.sources || {};
 
     options.$metadata = {};
-    if (options.bundle) {
-        options.sources = options.sources || {};
-        const entryParts = fileParts(entry);
-
-        if (options.sourceClass) {
-            options.sources[entry] = options.sourceClass;
-            options.sources[entryParts.name + '.js'] = options.sourceClass;
-        }
-
-        if (options.sourceTemplate) {
-            options.sources[entryParts.name + '.html'] = options.sourceTemplate;
-        }
-
-        if (options.sourceCss) {
-            options.sources[entryParts.name + '.css'] = options.sourceCss;
-        }
-    }
 
     return options;
 }

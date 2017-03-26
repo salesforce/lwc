@@ -77,15 +77,16 @@ describe('emit asserts for namespaced_folder: ', () => {
 });
 
 describe('emit asserts for embedded sources: ', () => {
-
     it('Compile using sources', () => {
         const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html')).toString();
         const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js')).toString();
         const entry = '/customNs/class_and_template/class_and_template.js';
 
         const opts = {
-            sourceTemplate: html,
-            sourceClass: js,
+            sources: {
+                '/customNs/class_and_template/class_and_template.js': js,
+                '/customNs/class_and_template/class_and_template.html' : html
+            },
             mapNamespaceFromPath: true
         };
 
@@ -104,8 +105,10 @@ describe('emit asserts for embedded sources: ', () => {
         const entry = 'myns/class_and_template/class_and_template.js';
 
         const opts = {
-            sourceTemplate: html,
-            sourceClass: js,
+            sources: {
+                'myns/class_and_template/class_and_template.js': js,
+                'myns/class_and_template/class_and_template.html': html,
+            },
             mapNamespaceFromPath: true,
             format: 'aura',
         };
@@ -122,7 +125,9 @@ describe('emit asserts for embedded sources: ', () => {
     it('Compile using folder sources and format', () => {
         const html = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.html')).toString();
         const js = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.js')).toString();
-        const relative = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative.js')).toString();
+        const rel = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative.js')).toString();
+        const rel2 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative2.js')).toString();
+        const rel3 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative3.js')).toString();
 
         const entry = 'myns/components/relative_import/relative_import.js';
 
@@ -130,9 +135,11 @@ describe('emit asserts for embedded sources: ', () => {
             mapNamespaceFromPath: true,
             format: 'aura',
             sources: {
-                'relative_import.html': html,
-                'relative_import.js' : js,
-                'relative.js' : relative,
+                'myns/components/relative_import/relative_import.html': html,
+                'myns/components/relative_import/relative_import.js' : js,
+                'myns/components/relative_import/relative.js' : rel,
+                'myns/components/relative_import/other/relative2.js' : rel2,
+                'myns/components/relative_import/other/relative3.js' : rel3
             }
         };
 
@@ -145,7 +152,6 @@ describe('emit asserts for embedded sources: ', () => {
         })
     });
 });
-
 
 describe('emit asserts for modes: ', () => {
     const fixtureCmpDir = path.join(fixturesDir, 'class_and_template');
@@ -162,7 +168,7 @@ describe('emit asserts for modes: ', () => {
             assert.equal(trim(actual), trim(expected));
         });
     });
-});
+ });
 
 function runCompile(filePath, options = {}) {
     const config = Object.assign({}, BASE_CONFIG, options);

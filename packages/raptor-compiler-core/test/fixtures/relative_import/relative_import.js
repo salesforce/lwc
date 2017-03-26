@@ -1,6 +1,8 @@
-import test from './relative.js';
+import rel from './relative';
+import rel2 from './other/relative2.js';
 export default class RelativeImport {
     constructor () {
-        this.x = test();
+        this.x = rel();
+        this.y = rel2();
     }
 }
