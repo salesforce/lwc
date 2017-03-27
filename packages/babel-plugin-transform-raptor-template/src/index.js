@@ -341,8 +341,13 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             slotGroups[slotName].push(child);
+
+            // Figure out when do we need an array or not
+            // slots, flattening, iterations are in itself arrays so no need to wrap them
+            const isSlot = child._meta && child._meta.isSlotTag;
             const isIterationOrFlattening = t.isCallExpression(child) && (child.callee._primitive === FLATTENING || child.callee._primitive === ITERATOR);
-            const hasMultipleNodes = isIterationOrFlattening || (t.isLogicalExpression(child) && child.right._iteration);
+            const hasMultipleNodes = isSlot || isIterationOrFlattening || (t.isLogicalExpression(child) && (child.right._iteration));
+
             if (hasMultipleNodes) {
                 slotGroups[slotName]._hasArrayNode = true;
             }

@@ -17,7 +17,8 @@ const ignore = [
     'multiRootError',
     'mutliHtmlRootError',
     'rootTagTemplateError',
-    'slotsErrorDirectives'
+    'slotsErrorDirectives',
+    'customElementInvalidAttributeError'
 ];
 
 fs.readdirSync(baseDir).forEach((testName) => {
