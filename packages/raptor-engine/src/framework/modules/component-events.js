@@ -16,7 +16,8 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     let { data: { _on: newOn } } = vnode;
     if (isUndefined(vm.cmpEvents)) {
         assert.invariant(vnode.data.on === undefined, 'vnode.data.on should be undefined.');
-        vnode.data.on = newOn;
+        vnode.data.on = newOn; // short-circuite for the case where there is no event from within
+        return;
     }
     let { data: { _on: oldOn } } = oldVnode;
     let key: string, cur: any, old: any;
