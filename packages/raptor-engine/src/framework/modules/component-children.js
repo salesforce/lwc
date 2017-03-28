@@ -1,9 +1,10 @@
 import assert from "../assert.js";
 import { renderComponent } from "../component.js";
+import { isUndefined } from "../language.js";
 
 function rerender(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
-    if (!vm) {
+    if (isUndefined(vm)) {
         return;
     }
     const { children } = vnode;

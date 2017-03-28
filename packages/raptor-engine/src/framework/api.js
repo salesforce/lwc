@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
-import { isArray, create } from "./language.js";
+import { isArray, create, isUndefined } from "./language.js";
 
 const EmptyData = create(null);
 
@@ -33,8 +33,8 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
         assert.block(() => {
             const vnodes = isArrayNode ? vnode : [vnode];
             vnodes.forEach((vnode: VNode | any) => {
-                if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && !vnode.key) {
-                    console.warn(`Invalid "key" attribute for element <${vnode.sel}> in iteration of ${items} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of ${vnode.Ctor.name}.`);
+                if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
+                    assert.logWarning(`Missing "key" attribute for element <${vnode.sel}> in iteration of ${items} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of "${vnode.Ctor.name}".`);
                 }
             });
         });

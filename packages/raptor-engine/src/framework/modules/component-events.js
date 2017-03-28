@@ -3,18 +3,22 @@ import {
     removeComponentEventListener,
     addComponentEventListener,
 } from "../component.js";
-import { assign, create } from "../language.js";
+import { assign, create, isUndefined } from "../language.js";
 
 const EmptyObj = create(null);
 
 function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
-    if (!vm) {
+    if (isUndefined(vm)) {
         return;
     }
 
-    let { data: { _on: oldOn } } = oldVnode;
     let { data: { _on: newOn } } = vnode;
+    if (isUndefined(vm.cmpEvents)) {
+        assert.invariant(vnode.data.on === undefined, 'vnode.data.on should be undefined.');
+        vnode.data.on = newOn;
+    }
+    let { data: { _on: oldOn } } = oldVnode;
     let key: string, cur: any, old: any;
 
         // infuse key-value pairs from _on into the component

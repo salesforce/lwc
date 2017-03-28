@@ -1,25 +1,34 @@
 import * as target from "../def.js";
+import { Element } from "../html-element.js";
 import assert from 'power-assert';
 
 describe('def.js', () => {
     describe('#getComponentDef()', () => {
 
         it('should understand empty constructors', () => {
-            const def = class MyComponent {}
+            const def = class MyComponent extends Element {}
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
+                isStateful: true,
                 props: {},
                 methods: {},
                 observedAttrs: {},
             });
         });
 
+        it('should throw for stateful components not extending Element', () => {
+            const def = class MyComponent {}
+            assert.throws(() => target.getComponentDef(def));
+        });
+
         it('should understand static observedAttributes', () => {
-            const def = class MyComponent {
+            const def = class MyComponent extends Element  {
                 static observedAttributes = ['foo', 'x-bar'];
+                attributeChangedCallback() {}
             }
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
+                isStateful: true,
                 props: {},
                 methods: {},
                 observedAttrs: {
@@ -29,14 +38,28 @@ describe('def.js', () => {
             });
         });
 
+        it('should match WC semantic to ignore observedAttributes if no callback is provided', () => {
+            const def = class MyComponent extends Element  {
+                static observedAttributes = ['foo', 'x-bar'];
+            }
+            assert.deepEqual(target.getComponentDef(def), {
+                name: 'MyComponent',
+                isStateful: true,
+                props: {},
+                methods: {},
+                observedAttrs: {},
+            });
+        });
+
         it('should understand static publicMethods', () => {
-            const def = class MyComponent {
+            const def = class MyComponent extends Element  {
                 foo() {}
                 bar() {}
                 static publicMethods = ['foo', 'bar'];
             }
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
+                isStateful: true,
                 props: {},
                 methods: {
                     foo: 1,
@@ -47,21 +70,18 @@ describe('def.js', () => {
         });
 
         it('should infer attribute name from public props', () => {
-            const def = class MyComponent {
+            const def = class MyComponent extends Element  {
                 static publicProps = {
-                    foo: 1,
-                    xBar: 2,
+                    foo: true,
+                    xBar: {},
                 };
             }
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
+                isStateful: true,
                 props: {
-                    foo: {
-                        initializer: 1,
-                    },
-                    xBar: {
-                        initializer: 2,
-                    },
+                    foo: 1,
+                    xBar: 1,
                 },
                 methods: {},
                 observedAttrs: {},

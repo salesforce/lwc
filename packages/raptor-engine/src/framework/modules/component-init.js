@@ -1,5 +1,6 @@
 import { createVM, setLinkedVNode } from "../vm.js";
 import assert from "../assert.js";
+import { isUndefined } from "../language.js";
 
 // this hook will set up the component instance associated to the new vnode,
 // and link the new vnode with the corresponding component
@@ -11,7 +12,7 @@ function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
             vnode.toString = (): string => `[object:vnode ${vnode.sel}]`;
         }
     });
-    if (!Ctor) {
+    if (isUndefined(Ctor)) {
         return;
     }
     /**

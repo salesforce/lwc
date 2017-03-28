@@ -1,5 +1,5 @@
 import assert from "../assert.js";
-import { create } from "../language.js";
+import { create, isUndefined } from "../language.js";
 
 const EmptyObj = create(null);
 
@@ -8,7 +8,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     let oldProps = oldVnode.data.props;
     let props = vnode.data.props;
 
-    if (!oldProps && !props) {
+    if (isUndefined(oldProps) && isUndefined(props)) {
         return;
     }
     if (oldProps === props) {

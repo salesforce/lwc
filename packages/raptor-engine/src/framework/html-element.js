@@ -3,10 +3,10 @@ import { scheduleRehydration, getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
 import { addComponentEventListener, removeComponentEventListener } from "./component.js";
 import { markComponentAsDirty } from "./component.js";
-import { isArray, freeze, seal, defineProperty, getOwnPropertyNames } from "./language.js";
+import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject } from "./language.js";
 import { getPropertyProxy } from "./properties.js";
 import { GlobalHTMLProperties } from "./dom.js";
-import { getPropNameFromAttrName } from "./utils.js";
+import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils.js";
 
 function getLinkedElement(cmp: ComponentElement): HTMLElement {
     const vnode = getLinkedVNode(cmp);
@@ -16,11 +16,19 @@ function getLinkedElement(cmp: ComponentElement): HTMLElement {
     return elm;
 }
 
-function ComponentElement(): ComponentElement {
-    // This should always be empty, and any initialization should be done lazily
-}
+// This should be an empty function, and any initialization should be done lazily
+function ComponentElement(): ComponentElement {}
 
 ComponentElement.prototype = {
+    // Raptor.Element APIs
+    renderedCallback: noop,
+    render: noop,
+
+    // Web Component - The Good Parts
+    connectedCallback: noop,
+    disconnectedCallback: noop,
+
+    // HTML Element - The Good Parts
     dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
         // custom elements will rely on the DOM dispatchEvent mechanism
@@ -86,12 +94,7 @@ ComponentElement.prototype = {
         });
         // normalizing attrs from compiler into HTML global attributes
         let raw = attrs && attrName in attrs ? attrs[attrName] : null;
-        if (raw === true) {
-            raw = '';
-        } else if (raw === false) {
-            raw = null;
-        }
-        return raw !== null ? raw + '' : null;
+        return toAttributeValue(raw);
     },
     getBoundingClientRect(): DOMRect {
         const elm = getLinkedElement(this);
@@ -120,7 +123,7 @@ ComponentElement.prototype = {
         assert.vm(vm);
         let { classListObj } = vm;
         // lazy creation of the ClassList Object the first time it is accessed.
-        if (!classListObj) {
+        if (isUndefined(classListObj)) {
             classListObj = new ClassList(vm);
             vm.classListObj = classListObj;
         }
@@ -138,7 +141,7 @@ ComponentElement.prototype = {
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
-        if (typeof newState !== Object || isArray(newState)) {
+        if (!isObject(newState) || isArray(newState)) {
             throw new TypeError(`${vm} fails to set new state to ${newState}. \`this.state\` can only be set to an object.`);
         }
         vm.cmpState = Object.assign({}, newState);
@@ -154,7 +157,7 @@ ComponentElement.prototype = {
         const { data: { attrs } } = vnode;
         const is = attrs && attrs.is;
         return `<${vnode.sel}${ is ? ' is="${is}' : '' }>`;
-    }
+    },
 }
 
 // Global HTML Attributes

@@ -7,10 +7,6 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker.js";
-import {
-    defineProperty,
-    getOwnPropertyDescriptor,
-} from "./language.js";
 
 const ObjectPropertyToProxyMap = new WeakMap();
 const ProxySet = new WeakSet();
@@ -24,6 +20,10 @@ function getter(target: Object, key: string | Symbol): any {
 }
 
 function setter(target: Object, key: string | Symbol, value: any): boolean {
+    if (isRendering) {
+        // TODO: should this be an error? or a console.error?
+        throw new Error(`Setting property \`${key}\` of ${target} during the rendering process of ${vmBeingRendered} is invalid. The render phase should have no side effects on the state of any component.`);
+    }
     const oldValue = target[key];
     if (oldValue !== value) {
         target[key] = value;
@@ -66,31 +66,4 @@ export function getPropertyProxy(value: Object): any {
     ObjectPropertyToProxyMap.set(value, proxy);
     ProxySet.add(proxy);
     return proxy;
-}
-
-export function hookComponentLocalProperty(vm: VM, key: string | Symbol) {
-    assert.vm(vm);
-    const { component, privates } = vm;
-    const descriptor = getOwnPropertyDescriptor(component, key);
-    const { get, set, configurable } = descriptor;
-    assert.block(() => {
-        if (get || set || !configurable) {
-            // TODO: classList is only really ignored when extending Element,
-            // we should take that into consideration on this condition at some point.
-            if (key !== 'classList') {
-                console.warn(`component ${vm} has a property key ${key} that cannot be watched for changes.`);
-            }
-        }
-    });
-    if (configurable && !get && !set) {
-        let { value, enumerable, writable } = descriptor;
-        privates[key] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
-        defineProperty(component, key, {
-            get: (): any => getter(privates, key),
-            set: (newValue: any): boolean => setter(privates, key, newValue),
-            configurable,
-            enumerable,
-            writable,
-        });
-    }
 }

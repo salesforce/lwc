@@ -1,11 +1,12 @@
 import assert from "../assert.js";
 import { assign } from "../language.js";
+import { isUndefined } from "../language.js";
 
 function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     const { data, vm } = vnode;
     assert.invariant(data.class === undefined, `Engine Error: vnode.data.class should be undefined for ${vm}.`);
     let { className, classMap } = data;
-    if (!className && !classMap && !vm) {
+    if (isUndefined(className) && isUndefined(classMap) && isUndefined(vm)) {
         return;
     }
 

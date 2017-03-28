@@ -26,6 +26,20 @@ const assert = {
     fail(msg: string) {
         throw new Error(msg);
     },
+    logError(msg: string) {
+        try {
+            throw new Error(msg);
+        } catch (e) {
+            console.error(e);
+        }
+    },
+    logWarning(msg: string) {
+        try {
+            throw new Error(msg);
+        } catch (e) {
+            console.warn(e);
+        }
+    },
 };
 
 export default assert;

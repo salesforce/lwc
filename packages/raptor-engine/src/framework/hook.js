@@ -46,7 +46,7 @@ function destroy(vnode: ComponentVNode) {
 function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
     assert.vnode(vnode);
     assert.vm(vnode.vm);
-    if (!vnode.vm.wasInserted) {
+    if (vnode.vm.wasInserted === false) {
         // when inserting a root element, or when reusing a DOM element for a new
         // component instance, the insert() hook is never called because the element
         // was already in the DOM before creating the instance, and diffing the

@@ -2,13 +2,13 @@ import {
     addComponentSlot,
     removeComponentSlot,
 } from "../component.js";
-import { create } from "../language.js";
+import { create, isUndefined } from "../language.js";
 
 const EmptyObj = create(null);
 
 function update(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
-    if (!vm) {
+    if (isUndefined(vm)) {
         return;
     }
 

@@ -1,5 +1,6 @@
 import * as target from '../patch.js';
 import * as api from "../api.js";
+import { Element } from "../html-element.js";
 import assert from 'power-assert';
 
 describe('patch.js', () => {
@@ -8,7 +9,7 @@ describe('patch.js', () => {
 
         it('should call connectedCallback asyncronously', () => {
             let flag = false;
-            const def = class MyComponent {
+            const def = class MyComponent extends Element {
                 connectedCallback() {
                     flag = true;
                 }
@@ -24,7 +25,7 @@ describe('patch.js', () => {
 
         it('should call renderedCallback asyncronously', () => {
             let flag = false;
-            const def = class MyComponent {
+            const def = class MyComponent extends Element {
                 renderedCallback() {
                     flag = true;
                 }
@@ -40,7 +41,7 @@ describe('patch.js', () => {
 
         it('should preserve the creation order and the hook order', () => {
             let chars = '^';
-            const def1 = class MyComponent {
+            const def1 = class MyComponent extends Element {
                 connectedCallback() {
                     chars += 'connected-1:';
                 }
@@ -48,7 +49,7 @@ describe('patch.js', () => {
                     chars += 'rendered-1:';
                 }
             }
-            const def2 = class MyComponent {
+            const def2 = class MyComponent extends Element{
                 connectedCallback() {
                     chars += 'connected-2:';
                 }

@@ -3,13 +3,13 @@ import {
     resetComponentProp,
     updateComponentProp,
 } from "../component.js";
-import { assign, create } from "../language.js";
+import { assign, create, isUndefined } from "../language.js";
 
 const EmptyObj = create(null);
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
-    if (!vm) {
+    if (isUndefined(vm)) {
         return;
     }
 

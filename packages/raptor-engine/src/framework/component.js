@@ -1,106 +1,41 @@
 import assert from "./assert.js";
-import { subscribeToSetHook } from "./watcher.js";
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
 } from "./invoker.js";
 import {
-    internal,
-} from "./def.js";
-import {
     isRendering,
-    vmBeingRendered,
     invokeComponentAttributeChangedCallback,
     invokeComponentRenderedCallback,
+    invokeComponentMethod,
 } from "./invoker.js";
 import {
-    hookComponentLocalProperty,
-    getPropertyProxy,
-} from "./properties.js";
-import {
-    defineProperty,
-    getPrototypeOf,
-    getOwnPropertyDescriptor,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
     isArray,
+    isUndefined,
 } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 
-function hookComponentReflectiveProperty(vm: VM, propName: string) {
-    const { component, cmpProps, def: { props: publicPropsConfig } } = vm;
-    assert.block(() => {
-        const target = getPrototypeOf(component);
-        const { get, set } = getOwnPropertyDescriptor(component, propName) || getOwnPropertyDescriptor(target, propName);
-        assert.invariant(get[internal] && set[internal], `component ${vm} has tampered with property ${propName} during construction.`);
-    });
-    defineProperty(component, propName, {
-        get: (): any => {
-            const value = cmpProps[propName];
-            if (isRendering && vmBeingRendered) {
-                subscribeToSetHook(vmBeingRendered, cmpProps, propName);
-            }
-            return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
-        },
-        set: (newValue: any) => {
-            assert.invariant(false, `Property ${propName} of ${vm} cannot be set to ${newValue} because it is a public property controlled by the owner element.`);
-        },
-        configurable: true,
-        enumerable: true,
-    });
-    // this guarantees that the default value is always in place before anything else.
-    const config: PropDef = publicPropsConfig[propName];
-    cmpProps[propName] = getDefaultValueFromConfig(config);
-}
-
-function hookComponentPublicMethod(vm: VM, methodName: string) {
-    const { component, cmpProps } = vm;
-    defineProperty(cmpProps, methodName, {
-        value: (...args: any): any => component[methodName](...args),
-        configurable: false,
-        writable: false,
-        enumerable: true,
-    });
-}
-
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
-    vm.component = invokeComponentConstructor(vm, Ctor);
-}
-
-export function initComponent(vm: VM) {
-    assert.vm(vm);
-    const { component, cmpProps, def: { props: publicPropsConfig, methods: publicMethodsConfig, observedAttrs } } = vm;
+    // setting the default values for public props
+    // TODO: we can remove this initialization once the compiler does the initialization
+    // in the constructor.
+    const { cmpProps, def: { props: publicPropsConfig, methods: publicMethodsConfig } } = vm;
     // reflective properties
     for (let propName in publicPropsConfig) {
-        hookComponentReflectiveProperty(vm, propName);
+        const { cmpProps, def: { props: publicPropsConfig } } = vm;
+        // this guarantees that the default value is always in place before anything else.
+        const config: PropDef = publicPropsConfig[propName];
+        cmpProps[propName] = getDefaultValueFromConfig(config);
     }
     // expose public methods as props on the Element
     for (let methodName in publicMethodsConfig) {
-        hookComponentPublicMethod(vm, methodName);
+        cmpProps[methodName] = (...args: any): any => invokeComponentMethod(vm, methodName, args);
     }
-    // non-reflective properties
-    getOwnPropertyNames(component).forEach((propName: string) => {
-        if (propName in publicPropsConfig) {
-            return;
-        }
-        hookComponentLocalProperty(vm, propName);
-    });
-    // non-reflective symbols
-    getOwnPropertySymbols(component).forEach((symbol: Symbol) => {
-        hookComponentLocalProperty(vm, symbol);
-    });
-
-    // notifying observable attributes if they are initialized with default or custom value
-    for (let propName in publicPropsConfig) {
-        const attrName = getAttrNameFromPropName(propName);
-        const defaultValue = cmpProps[propName];
-        // default value is an engine abstraction, and therefore should be treated as a regular
-        // attribute mutation process, and therefore notified.
-        if (defaultValue !== undefined && observedAttrs[attrName]) {
-            invokeComponentAttributeChangedCallback(vm, attrName, undefined, defaultValue);
-        }
-    }
+    // create the component instance
+    const component = invokeComponentConstructor(vm, Ctor);
+    // TODO: in dev-mode, we should freeze the component object, but can we make a more descriptive error when devs attempt to mutate something
+    vm.component = component;
 }
 
 export function clearListeners(vm: VM) {
@@ -120,14 +55,14 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
     const config: PropDef = publicPropsConfig[propName];
-    if (newValue === undefined && config) {
+    if (isUndefined(newValue) && config) {
         newValue = getDefaultValueFromConfig(config);
     }
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
         const attrName = getAttrNameFromPropName(propName);
-        if (observedAttrs[attrName]) {
+        if (attrName in observedAttrs) {
             invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to a new value.`);
@@ -150,7 +85,7 @@ export function resetComponentProp(vm: VM, propName: string) {
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
         const attrName = getAttrNameFromPropName(propName);
-        if (observedAttrs[attrName]) {
+        if (attrName in observedAttrs) {
             invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
         console.log(`Marking ${vm} as dirty: property "${propName}" set to its default value.`);
@@ -164,10 +99,10 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     assert.vm(vm);
     assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
     let { cmpEvents } = vm;
-    if (!cmpEvents) {
+    if (isUndefined(cmpEvents)) {
         vm.cmpEvents = cmpEvents = {};
     }
-    if (!cmpEvents[eventName]) {
+    if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
     }
     assert.block(() => {
@@ -217,7 +152,7 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
         newValue = undefined;
     }
     if (oldValue !== newValue) {
-        if (!cmpSlots) {
+        if (isUndefined(cmpSlots)) {
             vm.cmpSlots = cmpSlots = {};
         }
         cmpSlots[slotName] = newValue;

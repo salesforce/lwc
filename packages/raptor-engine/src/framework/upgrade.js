@@ -7,7 +7,7 @@ import {
 } from "./component.js";
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
-import { defineProperties } from "./language.js";
+import { defineProperties, isUndefined } from "./language.js";
 import { getPropNameFromAttrName } from "./utils.js";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
@@ -39,7 +39,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const oldValue = getAttribute.call(element, attrName);
         setAttribute.call(element, attrName, newValue);
         newValue = getAttribute.call(element, attrName);
-        if (observedAttrs[attrName] && oldValue !== newValue) {
+        if (attrName in observedAttrs && oldValue !== newValue) {
             invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
     };
@@ -66,7 +66,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const oldValue = getAttribute.call(element, attrName);
         removeAttribute.call(element, attrName);
         const newValue = getAttribute.call(element, attrName);
-        if (observedAttrs[attrName] && oldValue !== newValue) {
+        if (attrName in observedAttrs && oldValue !== newValue) {
             invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
         }
     };
@@ -118,7 +118,7 @@ function getInitialProps(element: HTMLElement, Ctor: Class<Component>): HashTabl
 
 function getInitialSlots(element: HTMLElement, Ctor: Class<Component>): HashTable<any> {
     const { slotNames } = getComponentDef(Ctor);
-    if (!slotNames) {
+    if (isUndefined(slotNames)) {
         return;
     }
     // TODO: implement algo to resolve slots
@@ -130,7 +130,7 @@ function getInitialSlots(element: HTMLElement, Ctor: Class<Component>): HashTabl
  * https://www.w3.org/TR/custom-elements/#upgrades
  */
 function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
-    if (!Ctor) {
+    if (isUndefined(Ctor)) {
         throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
     }
     const props = getInitialProps(element, Ctor);

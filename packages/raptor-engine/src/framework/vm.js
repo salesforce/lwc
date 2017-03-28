@@ -1,7 +1,6 @@
 import assert from "./assert.js";
 import { getComponentDef } from "./def.js";
 import {
-    initComponent,
     createComponent,
 } from "./component.js";
 import { h } from "./api.js";
@@ -15,6 +14,10 @@ export function createVM(vnode: ComponentVNode) {
     const { Ctor } = vnode;
     console.log(`[object:vm ${Ctor.name}] is being initialized.`);
     const def = getComponentDef(Ctor);
+    if (!def.isStateful) {
+        // TODO: update when functionals are supported
+        throw new TypeError(`${Ctor.name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
+    }
     const vm: VM = {
         isScheduled: false,
         isDirty: true,
@@ -46,10 +49,6 @@ export function createVM(vnode: ComponentVNode) {
     // to the component works fine as well because we can use `vmBeingCreated`
     // in getLinkedVNode() as a fallback patch for resolution.
     setLinkedVNode(vm.component, vnode);
-    // note to self: initComponent() is needed as a separate step because observable
-    // attributes might invoke user-land code that can do certain things that can
-    // require the linking to be in place from the previous line.
-    initComponent(vm);
 }
 
 const ComponentToVNodeMap = new WeakMap();

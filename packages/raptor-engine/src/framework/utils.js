@@ -47,7 +47,7 @@ const propNameToAttributeNameMap = {
     htmlFor: 'for',
 };
 // Few more exceptions where the attribute name matches the property in lowercase.
-HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach((propName: string): void => {
+HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach((propName: string) => {
     propNameToAttributeNameMap[propName] = propName.toLowerCase();
 });
 
@@ -59,3 +59,15 @@ export function getAttrNameFromPropName(propName: string): string {
     }
     return attrName;
 }
+
+export function toAttributeValue(raw: any): string | null {
+    // normalizing attrs from compiler into HTML global attributes
+    if (raw === true) {
+        raw = '';
+    } else if (raw === false) {
+        raw = null;
+    }
+    return raw !== null ? raw + '' : null;
+}
+
+export function noop() {}
