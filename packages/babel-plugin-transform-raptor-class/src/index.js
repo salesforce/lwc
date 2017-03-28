@@ -114,7 +114,7 @@ module.exports = function (babel) {
                     });
 
                     // Tranform to publicProps
-                    let value = prop.node.value || t.numbericLiteral(1);
+                    let value = prop.node.value || t.numericLiteral(1);
                     if (!t.isLiteral(value) && !t.isIdentifier(value)) {
                         value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
                     }
