@@ -82,9 +82,9 @@ node("raptor_node") {
 
                 // CHANGE_URL is set only when the job is triggered by opening a PR
                 // or by pushing on an existing PR
-                if (env.CHANGE_URL) {
-                    triggerBenchmark("origin/$env.CHANGE_TARGET", currentCommit, CHANGE_URL)
-                }
+                // if (env.CHANGE_URL) {
+                //     triggerBenchmark("origin/$env.CHANGE_TARGET", currentCommit, CHANGE_URL)
+                // }
             }
         }
     } catch (e) {
