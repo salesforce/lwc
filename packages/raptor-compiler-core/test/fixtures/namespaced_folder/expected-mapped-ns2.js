@@ -17,7 +17,6 @@ class Cmp1 {
     }
 
 }
-Cmp1.tagName = "ns2-cmp1";
 Cmp1.templateUsedIds = templateUsedIds;
 
 export default Cmp1;

@@ -15,7 +15,6 @@ class Default {
   }
 
 }
-Default.tagName = "x-default";
 Default.templateUsedIds = templateUsedIds;
 
 export default Default;

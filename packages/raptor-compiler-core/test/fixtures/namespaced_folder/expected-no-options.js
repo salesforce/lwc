@@ -15,7 +15,6 @@ class FooBar {
   }
 
 }
-FooBar.tagName = "foo-bar";
 FooBar.templateUsedIds = templateUsedIds;
 
 export default FooBar;

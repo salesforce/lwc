@@ -30,7 +30,6 @@ class RelativeImport {
     }
 
 }
-RelativeImport.tagName = 'myns-relative_import';
 RelativeImport.templateUsedIds = templateUsedIds;
 
 return RelativeImport;

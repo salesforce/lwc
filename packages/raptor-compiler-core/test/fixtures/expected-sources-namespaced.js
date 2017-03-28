@@ -12,6 +12,8 @@ const templateUsedIds = [];
 const Test = 1;
 class ClassAndTemplate {
     constructor() {
+        this.t = Test;
+
         this.counter = 0;
     }
 
@@ -20,7 +22,6 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = "customns-class_and_template";
 ClassAndTemplate.publicProps = {
     t: Test
 };

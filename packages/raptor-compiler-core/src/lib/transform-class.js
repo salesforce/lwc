@@ -1,4 +1,5 @@
 import raptorClassTransformPlugin from 'babel-plugin-transform-raptor-class';
+import publicFieldsPlugin from 'babel-plugin-transform-class-properties';
 import { transform } from 'babel-core';
 
 export default function (code: string, options: any) {
@@ -10,10 +11,15 @@ export default function (code: string, options: any) {
     let localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
-        plugins: [ [raptorClassTransformPlugin, {
-            componentNamespace: options.componentNamespace,
-            componentName : componentName
-        }]],
+        plugins: [
+            [
+                raptorClassTransformPlugin, {
+                    componentNamespace: options.componentNamespace,
+                    componentName : componentName
+                }
+            ],
+            publicFieldsPlugin
+        ],
         parserOpts: { plugins: ['*'] },
         filename
     };

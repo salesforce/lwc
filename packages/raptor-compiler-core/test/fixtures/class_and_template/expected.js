@@ -62,7 +62,6 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.tagName = 'x-classandtemplate';
 ClassAndTemplate.publicProps = {
     min: DefaultMinValue,
     max: DefaultMaxValue,

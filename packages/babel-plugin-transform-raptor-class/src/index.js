@@ -2,10 +2,8 @@
 const pathLib = require('path');
 
 const PUBLIC_METHOD_DECORATOR = 'method';
-const UNKNOWN_NAMESPACE = 'unknown';
 const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
-const KEY_TAG = 'tagName';
 const KEY_RENDER = 'render';
 
 module.exports = function (babel) {
@@ -98,7 +96,6 @@ module.exports = function (babel) {
         const keys = {
             [KEY_PROPS]: false,
             [KEY_METHODS]: false,
-            [KEY_TAG]: false,
         };
 
         for (let prop of classBody) {
@@ -117,12 +114,11 @@ module.exports = function (babel) {
                     });
 
                     // Tranform to publicProps
-                    let value = prop.node.value || t.nullLiteral();
+                    let value = prop.node.value || t.numberLiteral(1);
                     if (!t.isLiteral(value) && !t.isIdentifier(value)) {
                         value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
                     }
                     publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
-                    prop.remove();
 
                     // Static props
                 } else {
@@ -153,15 +149,6 @@ module.exports = function (babel) {
                 prop.node.decorators = null;
             }
 
-        }
-
-        if (!keys[KEY_TAG]) {
-            const componentName = state.opts.componentName || className;
-            const componentNs = state.opts.componentNamespace;
-            const ns = componentNs ? componentNs : componentName.indexOf('-') === -1 ? UNKNOWN_NAMESPACE : '';
-            const tagName = ns ? (`${ns}-${componentName}`).toLowerCase() : componentName;
-
-            extraBody.push(addClassStaticMember(className, KEY_TAG, t.stringLiteral(tagName)));
         }
 
         if (!keys[KEY_PROPS] && publicProps.length) {

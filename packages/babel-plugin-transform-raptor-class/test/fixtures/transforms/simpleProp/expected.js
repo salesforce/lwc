@@ -1,6 +1,7 @@
 import { templateUsedIds as _t } from "./actual.html";
 import _tmpl from "./actual.html";
 export default class Test {
+    test = 1;
     constructor() {}
     test() {}
 
@@ -9,7 +10,6 @@ export default class Test {
     }
 
 }
-Test.tagName = "unknown-test";
 Test.publicProps = {
     test: 1
 };

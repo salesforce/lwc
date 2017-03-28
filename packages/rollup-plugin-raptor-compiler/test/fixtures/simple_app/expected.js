@@ -15,7 +15,6 @@ class Foo extends HTMLElement {
         return html$1;
     }
 }
-Foo.tagName = "x-foo";
 
 const memoized = Symbol('memoize');
 var html = function ($api, $cmp, $slotset) {

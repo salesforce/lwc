@@ -164,6 +164,7 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
+            //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'));
             assert.equal(trim(actual), trim(expected));
         });
