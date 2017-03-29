@@ -96,7 +96,7 @@ describe('emit asserts for embedded sources: ', () => {
                 'myns/class_and_template/class_and_template.html': html,
             },
             mapNamespaceFromPath: true,
-            format: 'aura',
+            format: 'amd',
         };
 
         return runCompile(entry, opts)
@@ -115,17 +115,17 @@ describe('emit asserts for embedded sources: ', () => {
         const rel2 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative2.js')).toString();
         const rel3 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative3.js')).toString();
 
-        const entry = 'myns/components/relative_import/relative_import.js';
+        const entry = 'myns/relative_import/relative_import.js';
 
         const opts = {
             mapNamespaceFromPath: true,
-            format: 'aura',
+            format: 'amd',
             sources: {
-                'myns/components/relative_import/relative_import.html': html,
-                'myns/components/relative_import/relative_import.js' : js,
-                'myns/components/relative_import/relative.js' : rel,
-                'myns/components/relative_import/other/relative2.js' : rel2,
-                'myns/components/relative_import/other/relative3.js' : rel3
+                'myns/relative_import/relative_import.html': html,
+                'myns/relative_import/relative_import.js' : js,
+                'myns/relative_import/relative.js' : rel,
+                'myns/relative_import/other/relative2.js' : rel2,
+                'myns/relative_import/other/relative3.js' : rel3
             }
         };
 
@@ -144,7 +144,7 @@ describe('emit asserts for modes: ', () => {
     it('Test prod mode', () => {
         const entry = path.join(fixtureCmpDir, 'class_and_template.js');
         const opts = {
-            format : 'aura',
+            format : 'amd',
             mode   : 'prod',
         };
 

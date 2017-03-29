@@ -4,12 +4,12 @@ import fs from 'fs';
 
 export { basename, dirname, join, extname };
 
-export const ltng_format = 'aura';
 export const DEFAULT_NS = 'x';
 
 export function normalizeEntryPath(path: string) {
     path = normalize(path.replace(/\/$/, ''));
-    return extname(path) ? path : join(path, path.split(sep).pop() + '.js' );
+    const ext = extname(path);
+    return ext ? path : join(path, path.split(sep).pop() + ext);
 }
 
 export function fileParts(filePath: string) {
@@ -35,11 +35,11 @@ export function getSource(path: string, sources: any) {
 * 'foo.js' => ns: default, name: foo
 * '.../foo/foo.js' => ns: default, name: foo
 * '.../myns/foo/foo.js' => ns: myns, name: foo
-* '.../myns/components/foo/foo.js' => ns: myns, name: foo
 */
 export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
+    const ext = extname(path);
     const parts = path.split('/');
-    const name = basename(parts.pop(), '.js');
+    const name = basename(parts.pop(), ext);
     let ns = name.indexOf('-') === -1 ? DEFAULT_NS : null;
     let tmpNs = parts.pop();
 
@@ -48,7 +48,7 @@ export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     }
     // If mapping folder structure override namespace
     if (tmpNs && mapNamespaceFromPath) {
-        ns = tmpNs === 'components' ? parts.pop() : tmpNs;
+        ns = tmpNs;
     }
 
     return {
@@ -85,8 +85,4 @@ export function mergeMetadata (metadata: any) {
     }
 
     return { bundleDependencies: classDependencies.concat(templateDependencies) };
-}
-
-export function transformAmdToLtng (code: string) {
-    return code.replace('define', '$A.componentService.addModule');
 }
