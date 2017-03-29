@@ -8,6 +8,7 @@
     "test": "lerna run test",
     "build": "lerna run build",
     "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
+    "build:engine": "lerna run build:interop:dev && lerna run build:interop:prod && cp packages/raptor-engine/dist/interop.* dist/engine/",
     "start": "lerna exec yarn start --scope raptor-engine",
     "clean:dist": "rimraf dist/",
     "clean:node_modules": "lerna exec -- rm -rf ./node_modules && rm -rf ./node_modules",
