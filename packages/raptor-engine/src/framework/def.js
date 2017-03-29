@@ -12,6 +12,7 @@ import {
     freeze,
     create,
     isUndefined,
+    toString,
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
@@ -25,7 +26,7 @@ const CtorToDefMap = new WeakMap();
 const EmptyObject = Object.freeze(Object.create(null));
 
 function isElementComponent(Ctor: any, protoSet?: Set = new Set()): boolean {
-    if (!Ctor && protoSet.has(Ctor)) {
+    if (!Ctor || protoSet.has(Ctor)) {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = Object.getPrototypeOf(Ctor);
@@ -41,10 +42,10 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
         return CtorToDefMap.get(Ctor);
     }
     const isStateful = isElementComponent(Ctor);
-    assert.isTrue(Ctor.constructor, `Missing ${Ctor.name}.constructor, ${Ctor.name} should have a constructor property.`);
     const name: string = Ctor.name;
-    assert.isTrue(name, `${Ctor} should have a name property.`);
-    const props = getPropsHash(Ctor);
+    assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a name property which must be a string instead of ${name}.`);
+    assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a constructor property.`);
+    const props = getPublicPropertiesHash(Ctor);
     if (isStateful) {
         const proto = Ctor.prototype;
         for (let propName in props) {
@@ -52,9 +53,12 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
             assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property, use the constructor to define it instead.`);
             defineProperties(proto, createPublicPropertyDescriptorMap(propName));
         }
+    } else {
+        // TODO: update when functionals are supported
+        throw new TypeError(`${name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
     }
-    const methods = isStateful ? getMethodsHash(Ctor) : EmptyObject;
-    const observedAttrs = isStateful ? getObservedAttrsHash(Ctor) : EmptyObject;
+    const methods = isStateful ? getPublicMethodsHash(Ctor) : EmptyObject;
+    const observedAttrs = isStateful ? getObservedAttributesHash(Ctor) : EmptyObject;
     const def = {
         name,
         isStateful,
@@ -62,7 +66,7 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
         methods,
         observedAttrs,
     };
-    assert.block(() => {
+    assert.block(function devModeCheck() {
         freeze(Ctor);
         freeze(Ctor.prototype);
         freeze(def);
@@ -86,20 +90,20 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
             assert.logError(`You should not attempt to read the value of public property ${propName} in "${vm}" during the construction process because its value has not been set by the owner component yet. Use the constructor to set default values for each public property.`);
             return;
         }
-        const value = cmpProps[propName];
-        return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
+        return cmpProps[propName];
     }
-    function setter(newValue: any) {
+    function setter(value: any) {
         const vnode = getLinkedVNode(this);
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
         const { cmpProps, component } = vm;
         if (component) {
-            assert.logError(`Component "${vm}" can only be set to a new value for public property ${propName} during construction.`);
+            assert.logError(`Component "${vm}" can only set a new value for public property ${propName} during construction.`);
             return;
         }
-        cmpProps[propName] = newValue;
+        // proxifying before storing it is a must for public props
+        cmpProps[propName] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
     }
     descriptors[propName] = {
         get: getter,
@@ -110,13 +114,13 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
     return descriptors;
 }
 
-function getPropsHash(target: Object): HashTable<PropDef> {
+function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
     const props: HashTable = target.publicProps || {};
     if (!props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: HashTable<PropDef>, propName: string): HashTable<PropDef> => {
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, attribute, experimental } = GlobalHTMLProperties[propName];
                 const msg = [];
@@ -138,14 +142,14 @@ function getPropsHash(target: Object): HashTable<PropDef> {
     }, create(null));
 }
 
-function getMethodsHash(target: Object): HashTable<number> {
+function getPublicMethodsHash(target: Object): HashTable<number> {
     const publicMethods = target.publicMethods;
     if (!publicMethods || !publicMethods.length) {
         return EmptyObject;
     }
-    return publicMethods.reduce((methodsHash: HashTable, methodName: string): HashTable => {
+    return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             assert.isTrue(typeof target.prototype[methodName] === 'function', `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
             freeze(target.prototype[methodName]);
         });
@@ -153,12 +157,12 @@ function getMethodsHash(target: Object): HashTable<number> {
     }, create(null));
 }
 
-function getObservedAttrsHash(target: Object): HashTable<number> {
+function getObservedAttributesHash(target: Object): HashTable<number> {
     // To match WC semantics, only if you have the callback in the prototype, you
     if (!target.prototype.attributeChangedCallback || !target.observedAttributes || !target.observedAttributes.length) {
         return EmptyObject;
     }
-    return target.observedAttributes.reduce((observedAttributes: HashTable, attrName: string): HashTable => {
+    return target.observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable => {
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));

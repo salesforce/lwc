@@ -20,7 +20,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(() => {
+            assert.block(function devModeCheck() {
                 throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.getAttribute("${attrName}")\` you can access the corresponding public property using \`element.${propName};\`. This distintion is important because getAttribute will returned the value casted to string.`);
             });
             return;
@@ -31,7 +31,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(() => {
+            assert.block(function devModeCheck() {
                 throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.setAttribute("${attrName}", someValue)\` you can update the corresponding public property using \`element.${propName} = someValue;\`. This distintion is important because setAttribute will cast the new value to string before setting it into the corresponding property.`);
             });
             return;
@@ -47,13 +47,13 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(() => {
+            assert.block(function devModeCheck() {
                 throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.removeAttribute("${attrName}")\` you can update the corresponding public property using \`element.${propName} = undefined;\`. This distintion is important because removeAttribute will set the corresponding property value to \`null\`.`);
             });
             return;
         }
 
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             const propName = getPropNameFromAttrName(attrName);
             if (propsConfig[propName]) {
                 updateComponentProp(vm, propName, newValue);

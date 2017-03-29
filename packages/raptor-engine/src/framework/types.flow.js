@@ -15,16 +15,13 @@ declare interface HashTable<T> {
     [key: string]: T
 }
 
-declare interface PropDef {
-    initializer?: Function | number | string
-}
+declare interface PropDef {}
 
 declare interface ComponentDef {
     name: string,
     isStateful: boolean,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
-    observedProps: HashTable<number>,
     observedAttrs: HashTable<number>
 }
 
@@ -33,7 +30,6 @@ declare class ComponentElement extends Component {
 }
 
 declare class VM {
-    privates: HashTable<any>;
     cmpState: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpSlots: HashTable<Array<VNode>>;

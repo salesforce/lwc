@@ -41,7 +41,6 @@ describe('Raptor.Element', () => {
         });
     });
 
-
     describe('#getAttribute()', () => {
         it('should throw when no attribute name is provided', () => {
             const def = class MyComponent extends Element {
@@ -105,6 +104,54 @@ describe('Raptor.Element', () => {
         });
     });
 
+    describe('#state', () => {
+        it('should have a valid value during construction', () => {
+            let state;
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    state = this.state;
+                }
+            }
+            createElement('x-foo', { is: def });
+            assert.deepEqual(state, {});
+        });
+        it('should be mutable during construction', () => {
+            let state;
+            let o = { foo: 1 };
+            let x = { bar: 2 };
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = o;
+                    this.state = x;
+                    this.state.baz = 3;
+                    state = this.state;
+                }
+            }
+            createElement('x-foo', { is: def });
+            assert.deepEqual(state, { foo: undefined, bar: 2, baz: 3 }, 'deep structure');
+            assert.notEqual(state, x, 'proxified state object');
+            assert("baz" in x === false, 'invalid mutation of a source object');
+            assert("bar" in o === false, 'invalid mutation of a source object');
+        });
+        it('should accept member properties', () => {
+            let state;
+            let o = { foo: 1 };
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state.x = 1;
+                    this.state.y = o;
+                    state = this.state;
+                }
+            }
+            createElement('x-foo', { is: def });
+            assert.deepEqual(state, { x: 1, y: o }, 'deep structure');
+            assert.notEqual(state.y, o, 'proxified object');
+        });
+    });
+
     describe('global HTML Properties', () => {
         it('should always return undefined', () => {
             let attrTitle;
@@ -116,6 +163,20 @@ describe('Raptor.Element', () => {
             }
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
             assert.equal(attrTitle, undefined, 'wrong attribute');
+        });
+    });
+
+    describe('#toString()', () => {
+        it('should produce a nice tag', () => {
+            let str;
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    str = this.toString();
+                }
+            }
+            createElement('x-foo', { is: def });
+            assert.equal(str, '<x-foo>');
         });
     });
 

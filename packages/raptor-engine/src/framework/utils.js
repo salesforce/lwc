@@ -13,8 +13,6 @@ export function addCallbackToNextTick(callback: any) {
             for (let i = 0, len = callbacks.length; i < len; i += 1) {
                 callbacks[i]();
             }
-        }).catch((error: Error) => {
-            assert.fail(`Error attempting to execute internal engine callback in the next tick: ${error.message}`);
         });
     }
     nextTickCallbackQueue.push(callback);

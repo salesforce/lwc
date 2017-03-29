@@ -31,6 +31,7 @@ ClassList.prototype = {
         const { cmpClasses } = vm;
         // Add specified class values. If these classes already exist in attribute of the element, then they are ignored.
         classNames.forEach((className: String) => {
+            className = className + '';
             if (!cmpClasses[className]) {
                 cmpClasses[className] = true;
                 console.log(`Marking ${vm} as dirty: classname "${className}" was added.`);
@@ -47,6 +48,7 @@ ClassList.prototype = {
         const { cmpClasses } = vm;
         // Remove specified class values.
         classNames.forEach((className: String) => {
+            className = className + '';
             if (cmpClasses[className]) {
                 cmpClasses[className] = false;
                 const vm = this[INTERNAL_VM];
@@ -64,7 +66,7 @@ ClassList.prototype = {
         const { cmpClasses } = vm;
         // Return class value by index in collection.
         return getOwnPropertyNames(cmpClasses)
-            .filter((className: string): boolean => cmpClasses[className])[index] || null;
+            .filter((className: string): boolean => cmpClasses[className + ''])[index] || null;
     },
     toggle(className: String, force: any): boolean {
         const vm = this[INTERNAL_VM];
@@ -95,6 +97,6 @@ ClassList.prototype = {
     toString(): string {
         const vm = this[INTERNAL_VM];
         const { cmpClasses } = vm;
-        return getOwnPropertyNames(cmpClasses).filter((className: string): boolean => cmpClasses[className]).join(' ');
+        return getOwnPropertyNames(cmpClasses).filter((className: string): boolean => cmpClasses[className + '']).join(' ');
     }
 };

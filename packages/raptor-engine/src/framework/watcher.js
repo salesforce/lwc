@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { scheduleRehydration } from "./vm.js";
 import { markComponentAsDirty } from "./component.js";
-import { isUndefined } from "./language.js";
+import { isUndefined, toString } from "./language.js";
 
 const TargetToPropsMap = new WeakMap();
 
@@ -12,7 +12,7 @@ export function notifyListeners(target: Object, key: string | Symbol) {
         if (set) {
             set.forEach((vm: VM) => {
                 assert.vm(vm);
-                console.log(`Marking ${vm} as dirty: property "${key}" of ${target} was set to a new value.`);
+                console.log(`Marking ${vm} as dirty: property "${toString(key)}" of ${toString(target)} was set to a new value.`);
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
                     console.log(`Scheduling ${vm} for rehydration due to mutation.`);

@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
-import { isArray, create, isUndefined } from "./language.js";
+import { isArray, create, isUndefined, toString } from "./language.js";
 
 const EmptyData = create(null);
 
@@ -30,11 +30,11 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
             list.push(vnode);
         }
 
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             const vnodes = isArrayNode ? vnode : [vnode];
             vnodes.forEach((vnode: VNode | any) => {
                 if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
-                    assert.logWarning(`Missing "key" attribute for element <${vnode.sel}> in iteration of ${items} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of "${vnode.Ctor.name}".`);
+                    assert.logWarning(`Missing "key" attribute for element <${vnode.sel}> in iteration of ${toString(items)} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of "${toString(vnode.Ctor.name)}".`);
                 }
             });
         });
@@ -79,7 +79,7 @@ export function f(items: Array<any>): Array<any>  {
             flattened.push(item);
         }
     }
-    assert.block(() => {
+    assert.block(function devModeCheck() {
         flattened.forEach((vnodeOrString: string | VNode) => {
             if (typeof vnodeOrString === 'string') {
                 return;

@@ -1,22 +1,21 @@
 import assert from "./assert.js";
 import { getComponentDef } from "./def.js";
-import {
-    createComponent,
-} from "./component.js";
+import { createComponent } from "./component.js";
+import { getPropertyProxy } from "./properties.js";
 import { h } from "./api.js";
 import { patch } from "./patch.js";
-import { isArray } from "./language.js";
+import { isArray, toString } from "./language.js";
 import { addCallbackToNextTick } from "./utils.js";
 
 export function createVM(vnode: ComponentVNode) {
     assert.vnode(vnode);
     assert.invariant(vnode.elm instanceof HTMLElement, `VM creation requires a DOM element to be associated to vnode ${vnode}.`);
     const { Ctor } = vnode;
-    console.log(`[object:vm ${Ctor.name}] is being initialized.`);
     const def = getComponentDef(Ctor);
+    console.log(`[object:vm ${def.name}] is being initialized.`);
     if (!def.isStateful) {
         // TODO: update when functionals are supported
-        throw new TypeError(`${Ctor.name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
+        throw new TypeError(`${def.name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
     }
     const vm: VM = {
         isScheduled: false,
@@ -24,9 +23,8 @@ export function createVM(vnode: ComponentVNode) {
         wasInserted: false,
         def,
         context: {},
-        privates: {},
-        cmpState: {},
         cmpProps: {},
+        cmpState: undefined,
         cmpSlots: undefined,
         cmpEvents: undefined,
         cmpClasses: undefined,
@@ -35,9 +33,9 @@ export function createVM(vnode: ComponentVNode) {
         fragment: [],
         listeners: new Set(),
     };
-    assert.block(() => {
+    assert.block(function devModeCheck() {
         vm.toString = (): string => {
-            return `[object:vm ${Ctor.name}]`;
+            return `[object:vm ${def.name}]`;
         };
     });
     vnode.vm = vm;
@@ -78,7 +76,7 @@ export function rehydrate(vm: vm) {
         const vnode = getLinkedVNode(vm.component);
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
         const { sel, Ctor, data: { hook, key, slotset, attrs, className, classMap, _props, _on }, children } = vnode;
-        assert.invariant(isArray(children), 'Rendered ${vm}.children should always have an array of vnodes instead of ${children}');
+        assert.invariant(isArray(children), `Rendered ${vm}.children should always have an array of vnodes instead of ${toString(children)}`);
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
         // to patch this vnode the last time, mimic what happen when the

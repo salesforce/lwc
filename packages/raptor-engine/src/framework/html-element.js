@@ -2,8 +2,7 @@ import assert from "./assert.js";
 import { scheduleRehydration, getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
 import { addComponentEventListener, removeComponentEventListener } from "./component.js";
-import { markComponentAsDirty } from "./component.js";
-import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject } from "./language.js";
+import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language.js";
 import { getPropertyProxy } from "./properties.js";
 import { GlobalHTMLProperties } from "./dom.js";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils.js";
@@ -39,7 +38,7 @@ ComponentElement.prototype = {
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             if (arguments.length > 2) {
                 console.error(`this.addEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
@@ -55,7 +54,7 @@ ComponentElement.prototype = {
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             if (arguments.length > 2) {
                 console.error(`this.removeEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
             }
@@ -78,7 +77,7 @@ ComponentElement.prototype = {
             return null;
         }
         // logging errors for experimentals and special attributes
-        assert.block(() => {
+        assert.block(function devModeCheck() {
             const propName = getPropNameFromAttrName(attrName);
             const { def: { props: publicPropsConfig } } = vm;
             if (publicPropsConfig[propName]) {
@@ -134,21 +133,33 @@ ComponentElement.prototype = {
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
-        return getPropertyProxy(vm.cmpState);
+        let { cmpState } = vm;
+        if (isUndefined(cmpState)) {
+            cmpState = vm.cmpState = getPropertyProxy(create(null)); // lazy creation of the cmpState
+        }
+        return cmpState;
     },
     set state(newState: HashTable<any>) {
         const vnode = getLinkedVNode(this);
         assert.vnode(vnode);
         const { vm } = vnode;
         assert.vm(vm);
-        if (!isObject(newState) || isArray(newState)) {
+        if (!newState || !isObject(newState) || isArray(newState)) {
             throw new TypeError(`${vm} fails to set new state to ${newState}. \`this.state\` can only be set to an object.`);
         }
-        vm.cmpState = Object.assign({}, newState);
-        if (!vm.isDirty) {
-            markComponentAsDirty(vm);
-            console.log(`Scheduling ${vm} for rehydration due to changes in the state object assignment.`);
-            scheduleRehydration(vm);
+        let { cmpState } = vm;
+        if (isUndefined(cmpState)) {
+            cmpState = vm.cmpState = getPropertyProxy(create(null)); // lazy creation of the cmpState
+        }
+        if (cmpState !== newState) {
+            for (let key in cmpState) {
+                if (!(key in newState)) {
+                    cmpState[key] = undefined; // we prefer setting it to undefined than deleting it with has perf implications
+                }
+            }
+            for (let key in newState) {
+                cmpState[key] = newState[key];
+            }
         }
     },
     toString(): string {
@@ -161,7 +172,7 @@ ComponentElement.prototype = {
 }
 
 // Global HTML Attributes
-assert.block(() => {
+assert.block(function devModeCheck() {
 
     getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
         if (propName in ComponentElement.prototype) {
