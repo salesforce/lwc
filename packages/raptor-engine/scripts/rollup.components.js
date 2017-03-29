@@ -67,22 +67,19 @@ function buildBundles(configs) {
 const configs = [];
 
 // seaching for all components in all namespaces
-glob.sync('fixtures/namespaces/*/components/**/*.js').forEach(function (p) {
-    const entry = path.basename(p, '.js');
-    p = path.dirname(p);
+glob.sync('fixtures/namespaces/prototype/**/*.js').forEach(function (cmpPath) {
+    const entry = path.basename(cmpPath, '.js');
+    const p = path.dirname(cmpPath);
     const pieces = p.split(path.sep);
     const name = pieces.pop();
-    const isComponent = pieces.pop() === 'components';
     const namespace = pieces.pop();
-    if (name === entry && isComponent) {
+    if (name === entry) {
         configs.push({
             folder: p,
             input: {
-                entry: path.join(p, name + '.js'),
-                // TODO: review by raptor rollup pluging doesn't use componentName and componentNamespace
+                entry: cmpPath,
                 plugins: [raptor({
-                    componentName: name,
-                    componentNamespace: namespace,
+                    mapNamespaceFromPath: true
                 })].concat(componentsPlugins),
             },
             output: {
