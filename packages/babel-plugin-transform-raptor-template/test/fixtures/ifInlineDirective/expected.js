@@ -1,9 +1,8 @@
-const memoized = Symbol('memoize');
-export default function ($api, $cmp, $slotset) {
+export default function tmpl($api, $cmp, $slotset, $ctx) {
     const _expr = $cmp.isTrue || $api.e(),
           _expr2 = !$cmp.isTrue2 || $api.e();
 
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [_expr && $api.h(
         "p",
         {},
@@ -14,4 +13,4 @@ export default function ($api, $cmp, $slotset) {
         ["2"]
     )];
 }
-export const templateUsedIds = ["isTrue", "isTrue2"];
+tmpl.ids = ["isTrue", "isTrue2"];

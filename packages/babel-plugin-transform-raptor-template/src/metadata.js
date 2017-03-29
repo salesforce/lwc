@@ -12,6 +12,7 @@ export default {
         this.usedIds = {};
         meta.templateUsedIds = meta.templateUsedIds || [];
         meta.templateDependencies = meta.templateDependencies || [];
+        meta.definedSlots = meta.definedSlots || [];
         this.metadata = meta;
     },
     addUsedId(node: any) {
@@ -26,6 +27,9 @@ export default {
             this.usedIds[name] = true;
             meta.templateUsedIds.push(name);
         }
+    },
+    addSlotDefinition(slotName: string) {
+        this.metadata.definedSlots.push(slotName);
     },
     addComponentDependency(id: string) {
        this.metadata.templateDependencies.push(id);

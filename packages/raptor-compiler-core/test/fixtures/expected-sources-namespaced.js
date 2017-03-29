@@ -1,13 +1,11 @@
-const memoized = Symbol('memoize');
-var _tmpl = function ($api, $cmp, $slotset) {
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+function tmpl($api, $cmp, $slotset, $ctx) {
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},
         []
     )];
-};
-const templateUsedIds = [];
+}
 
 const Test = 1;
 class ClassAndTemplate {
@@ -18,13 +16,12 @@ class ClassAndTemplate {
     }
 
     render() {
-        return _tmpl;
+        return tmpl;
     }
 
 }
 ClassAndTemplate.publicProps = {
     t: Test
 };
-ClassAndTemplate.templateUsedIds = templateUsedIds;
 
 export default ClassAndTemplate;

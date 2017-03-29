@@ -28,8 +28,8 @@ describe('emit asserts for namespaced_folder: ', () => {
         .then((result) => {
             const actual = result.code;
             //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, nsFolder, 'expected-no-options.js'));
-            assert.equal(trim(actual), trim(expected));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options.js'));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 
@@ -42,8 +42,8 @@ describe('emit asserts for namespaced_folder: ', () => {
         .then((result) => {
             const actual = result.code;
             //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, nsFolder, 'expected-no-options-unknown-ns.js'));
-            assert.equal(trim(actual), trim(expected));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options-unknown-ns.js'));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 
@@ -56,22 +56,8 @@ describe('emit asserts for namespaced_folder: ', () => {
         .then((result) => {
             const actual = result.code;
             //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, nsFolder, 'expected-mapped-ns1.js'));
-            assert.equal(trim(actual), trim(expected));
-        })
-    });
-
-    it('Compile with `mapping namespace from path` (within components folder)', () => {
-        const ns2 = '/ns2/components';
-        const cmp1 = '/cmp1/cmp1.js';
-        const fixtureCmpDir = path.join(fixturesDir, nsFolder, ns2, cmp1);
-
-        return runCompile(fixtureCmpDir, { mapNamespaceFromPath: true })
-        .then((result) => {
-            const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, nsFolder, 'expected-mapped-ns2.js'));
-            assert.equal(trim(actual), trim(expected));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-mapped-ns1.js'));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 });
@@ -95,7 +81,7 @@ describe('emit asserts for embedded sources: ', () => {
             const actual = result.code;
             //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced.js'));
-            assert.equal(trim(actual), trim(expected));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 
@@ -118,7 +104,7 @@ describe('emit asserts for embedded sources: ', () => {
             const actual = result.code;
             //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced-format.js'));
-            assert.equal(trim(actual), trim(expected));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 
@@ -148,7 +134,7 @@ describe('emit asserts for embedded sources: ', () => {
             const actual = result.code;
             //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-relative-import.js'));
-            assert.equal(trim(actual), trim(expected));
+            assert.equal(trim(expected), trim(actual));
         })
     });
 });
@@ -166,7 +152,7 @@ describe('emit asserts for modes: ', () => {
             const actual = result.code;
             //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'));
-            assert.equal(trim(actual), trim(expected));
+            assert.equal(trim(expected), trim(actual));
         });
     });
  });

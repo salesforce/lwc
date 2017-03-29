@@ -22,6 +22,7 @@ export default function({ types: t }: BabelTypes): any {
     const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
+    const generateExpandoProperty = (prop, value) => t.expressionStatement(t.assignmentExpression('=', t.memberExpression(t.identifier(CONST.TMPL_FUNCTION_NAME), t.identifier(prop)), value));
     const applyPrimitive = (primitive: string) => {
         const id = t.identifier(`${API_PARAM}.${primitive}`);
         id._primitive = primitive; // Expando used for grouping slots (optimization)
@@ -94,11 +95,13 @@ export default function({ types: t }: BabelTypes): any {
 
                     // Generate used identifiers
                     const usedIds =  state.file.metadata.templateUsedIds;
-                    path.pushContainer('body',
-                        t.exportNamedDeclaration(
-                            t.variableDeclaration('const', [t.variableDeclarator(t.identifier('templateUsedIds'), t.valueToNode(usedIds))]), []
-                        )
-                    );
+                    const definedSlots =  state.file.metadata.definedSlots;
+                    if (usedIds.length) {
+                        path.pushContainer('body', generateExpandoProperty('ids', t.valueToNode(usedIds)));
+                    }
+                    if (definedSlots.length) {
+                        path.pushContainer('body', generateExpandoProperty('slots', t.valueToNode(definedSlots)));
+                    }
                 }
             },
             JSXElement: {
@@ -400,6 +403,7 @@ export default function({ types: t }: BabelTypes): any {
             const slotSet = t.identifier(`${SLOT_SET}.${slotName}`);
             const slot = t.logicalExpression('||', slotSet, children);
             slot._meta = meta;
+            metadata.addSlotDefinition(slotName);
             return slot;
         }
 

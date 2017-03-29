@@ -1,24 +1,23 @@
-import { HTMLElement, createElement } from 'raptor';
+import { Element, createElement } from 'raptor';
 
-const memoized$1 = Symbol();
-var html$1 = function ($api, $cmp, $slotset) {
-    const m = $cmp[memoized$1] || ($cmp[memoized$1] = {});
+function tmpl$1($api, $cmp, $slotset, $ctx) {
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "div",
         {},
         [$api.s($cmp.x)]
     )];
-};
+}
+tmpl$1.ids = ["x"];
 
-class Foo extends HTMLElement {
+class Foo extends Element {
     render() {
-        return html$1;
+        return tmpl$1;
     }
 }
 
-const memoized = Symbol('memoize');
-var html = function ($api, $cmp, $slotset) {
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+function tmpl($api, $cmp, $slotset, $ctx) {
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "div",
         {
@@ -36,17 +35,16 @@ var html = function ($api, $cmp, $slotset) {
             }
         )]
     )];
-};
+}
 
 class App {
     constructor() {
         this.list = [];
     }
     render() {
-        return html;
+        return tmpl;
     }
 }
-App.tagName = "x-app";
 
 const container = document.getElementById('main');
 const element = createElement('x-app', { is: App });

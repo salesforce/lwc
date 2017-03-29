@@ -3,12 +3,14 @@ export const ATTRS  = 'attrs';
 
 export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
+export const TMPL_FUNCTION_NAME = 'tmpl';
 
 export const DIRECTIVE_SYMBOL = ':';
 export const MODULE_SYMBOL = ':';
 export const CMP_INSTANCE = '$cmp';
 export const API_PARAM = '$api';
 export const SLOT_SET = '$slotset';
+export const CONTEXT = '$ctx';
 export const TEMPLATE_TAG = 'template';
 export const SLOT_TAG = 'slot';
 export const DEFAULT_SLOT_NAME = '$default$';

@@ -76,16 +76,15 @@ export function mergeMetadata (metadata: any) {
     const templateUsedIds = [];
     const templateDependencies = [];
     const classDependencies = [];
+    const definedSlots = [];
     for (let i in metadata) {
         templateUsedIds.push(...metadata[i].templateUsedIds || []);
         templateDependencies.push(...metadata[i].templateDependencies || []);
         classDependencies.push(...metadata[i].classDependencies || []);
+        definedSlots.push(...metadata[i].definedSlots || []);
     }
 
-    return {
-        bundleDependencies: classDependencies.concat(templateDependencies),
-        templateUsedIds
-    };
+    return { bundleDependencies: classDependencies.concat(templateDependencies) };
 }
 
 export function transformAmdToLtng (code: string) {

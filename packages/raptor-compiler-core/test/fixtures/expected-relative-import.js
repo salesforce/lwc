@@ -1,15 +1,13 @@
 $A.componentService.addModule('myns:relative_import', function () { 'use strict';
 
-const memoized = Symbol('memoize');
-var _tmpl = function ($api, $cmp, $slotset) {
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+function tmpl($api, $cmp, $slotset, $ctx) {
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},
         []
     )];
-};
-const templateUsedIds = [];
+}
 
 function test() {}
 
@@ -26,11 +24,10 @@ class RelativeImport {
     }
 
     render() {
-        return _tmpl;
+        return tmpl;
     }
 
 }
-RelativeImport.templateUsedIds = templateUsedIds;
 
 return RelativeImport;
 

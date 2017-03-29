@@ -77,15 +77,12 @@ module.exports = function (babel) {
         const cmpName = pathLib.basename(classPath, '.js');
         const name = './' + cmpName + '.html';
         const id = state.file.addImport(name, 'default', 'tmpl');
-        const templateProps = state.file.addImport(name, 'templateUsedIds', 't');
 
         path.pushContainer('body', t.classMethod(
             'method',
             t.identifier(KEY_RENDER), [],
             t.blockStatement([t.returnStatement(id)])
         ));
-
-        return addClassStaticMember(className, 'templateUsedIds', templateProps);
     }
 
     function transformClassBody(className, path, state) {
@@ -160,7 +157,7 @@ module.exports = function (babel) {
         }
 
         if (!keys[KEY_RENDER]) {
-            extraBody.push(injectRenderer(className, path, state));
+            injectRenderer(className, path, state);
         }
 
         return extraBody;

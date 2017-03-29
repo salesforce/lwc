@@ -6,9 +6,8 @@ const _m = function ($api, $cmp) {
     return $cmp.handleClick.bind($cmp);
 };
 
-const memoized = Symbol('memoize');
-export default function ($api, $cmp, $slotset) {
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+export default function tmpl($api, $cmp, $slotset, $ctx) {
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},
@@ -31,4 +30,3 @@ export default function ($api, $cmp, $slotset) {
         )]
     )];
 }
-export const templateUsedIds = [];

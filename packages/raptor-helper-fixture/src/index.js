@@ -27,7 +27,7 @@ function generateTestCase(dir, name, babelOpts) {
 
             // Check code output
             const expected = fs.readFileSync(expectedPath);
-            assert.equal(trim(actual), trim(expected));
+            assert.equal(trim(expected), trim(actual));
         } catch (error) {
             try {
                 const expected = JSON.parse(fs.readFileSync(errorPath));

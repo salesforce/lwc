@@ -1,11 +1,10 @@
-import {API_PARAM , CMP_INSTANCE, SLOT_SET } from './constants';
+import {API_PARAM , CMP_INSTANCE, SLOT_SET, TMPL_FUNCTION_NAME, CONTEXT } from './constants';
 import { template } from 'babel-core';
 
  export const moduleExports = template(`
-const memoized = Symbol('memoize');
-export default function (${API_PARAM}, ${CMP_INSTANCE}, ${SLOT_SET}) {
+export default function ${TMPL_FUNCTION_NAME}(${API_PARAM}, ${CMP_INSTANCE}, ${SLOT_SET}, ${CONTEXT}) {
     HOISTED_IDS
-    const m = ${CMP_INSTANCE}[memoized] || (${CMP_INSTANCE}[memoized] = {});
+    const m = ${CONTEXT}.memoized || (${CONTEXT}.memoized = {});
     return STATEMENT;
 }`, { sourceType: 'module' });
 

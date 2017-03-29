@@ -1,1 +1,1 @@
-$A.componentService.addModule('x:class_and_template',function(){'use strict';const a=Symbol('memoize');var b=function(f,g){g[a]||(g[a]={});return[f.h('section',{},[])]};const d=1;class e{constructor(){this.t=d,this.counter=0}render(){return b}}return e.publicProps={t:d},e.templateUsedIds=[],e});
+$A.componentService.addModule('x:class_and_template',function(){'use strict';function a(d,e,f,g){g.memoized||(g.memoized={});return[d.h('section',{},[])]}const b=1;class c{constructor(){this.t=b,this.counter=0}render(){return a}}return c.publicProps={t:b},c});

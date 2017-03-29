@@ -7,7 +7,7 @@ import path from 'path';
 const filePath = process.argv[2] || '';
 const entry = path.resolve(filePath);
 const options = {
-    format: 'aura',
+    format: 'es',
 };
 
 compile(entry, options)

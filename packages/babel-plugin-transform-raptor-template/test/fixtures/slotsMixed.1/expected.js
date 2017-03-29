@@ -1,10 +1,9 @@
 import _xB from "x-b";
-const memoized = Symbol('memoize');
-export default function ($api, $cmp, $slotset) {
+export default function tmpl($api, $cmp, $slotset, $ctx) {
     const _expr = $cmp.isLoading || $api.e(),
           _expr2 = $cmp.haveLoadedItems || $api.e();
 
-    const m = $cmp[memoized] || ($cmp[memoized] = {});
+    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "div",
         {},
@@ -28,4 +27,4 @@ export default function ($api, $cmp, $slotset) {
         )]
     )];
 }
-export const templateUsedIds = ["isLoading", "haveLoadedItems", "menuItems"];
+tmpl.ids = ["isLoading", "haveLoadedItems", "menuItems"];

@@ -43,7 +43,6 @@ describe('emit asserts for simple_app: ', () => {
         doRollup(entry)
         .then(bundle => {
             const actual = bundle.generate({}).code;
-            //console.log(actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'simple_app/expected.js'));
             assert.equal(trim(actual), trim(expected));
         })
