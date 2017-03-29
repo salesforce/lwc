@@ -1,9 +1,9 @@
 const _m2 = function ($api, $cmp) {
-    return $cmp.handlePress.bind($cmp);
+    return $cmp.handlePress;
 };
 
 const _m = function ($api, $cmp) {
-    return $cmp.handleClick.bind($cmp);
+    return $cmp.handleClick;
 };
 
 export default function tmpl($api, $cmp, $slotset, $ctx) {

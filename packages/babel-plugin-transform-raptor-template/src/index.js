@@ -513,8 +513,9 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             if (directive === DIRECTIVES.bind) {
-                const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
-                valueNode = memoizeSubtree(bindExpression, path);
+                // TODO: Figure out the final memoization pattern
+                // const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
+                valueNode = memoizeSubtree(valueNode, path);
             }
 
         } else {

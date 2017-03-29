@@ -1,7 +1,7 @@
 import _nsFoo from "ns-foo";
 
 const _m = function ($api, $cmp) {
-    return $cmp.myFooCallback.bind($cmp);
+    return $cmp.myFooCallback;
 };
 
 export default function tmpl($api, $cmp, $slotset, $ctx) {
