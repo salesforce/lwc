@@ -1,6 +1,8 @@
 import { Element } from "../html-element.js";
 import { createElement } from "../upgrade.js";
 import assert from 'power-assert';
+import * as api from "../api.js";
+import { patch } from '../patch.js';
 
 describe('Raptor.Element', () => {
 
@@ -39,6 +41,85 @@ describe('Raptor.Element', () => {
             createElement('x-foo', { is: def });
             assert(containsFoo === true, 'classList does not contain "foo"');
         });
+
+        describe('integration', () => {
+
+            it('should support outer className', () => {
+                let vnode;
+                const def = class MyComponent extends Element {}
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { className: 'foo' });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'foo');
+            });
+
+            it('should support outer classMap', () => {
+                let vnode;
+                const def = class MyComponent extends Element {}
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { classMap: { foo: 1 } });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'foo');
+            });
+
+            it('should combine inner classes first and then data.className', () => {
+                let vnode;
+                const def = class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.classList.add('foo');
+                    }
+                }
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { className: 'bar  baz' });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'bar baz foo');
+            });
+
+            it('should not allow deleting outer classes from within', () => {
+                let vnode;
+                const def = class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.classList.remove('foo');
+                    }
+                }
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { className: 'foo' });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'foo');
+            });
+
+            it('should dedupe all classes', () => {
+                let vnode;
+                const def = class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.classList.add('foo');
+                    }
+                }
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { className: 'foo   foo' });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'foo');
+            });
+
+            it('should combine outer classMap and inner classes', () => {
+                let vnode;
+                const def = class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.classList.add('foo');
+                    }
+                }
+                const elm = document.createElement('x-foo');
+                vnode = api.c('x-foo', def, { classMap: { bar: 1 } });
+                patch(elm, vnode);
+                assert.equal(elm.className, 'bar foo');
+            });
+
+        });
+
     });
 
     describe('#getAttribute()', () => {
