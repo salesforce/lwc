@@ -134,7 +134,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
             // validating slot names
             const { slots = [] } = html;
             for (let slotName in cmpSlots) {
-                if (slots.indexOf(slotName) === -1) {
+                if (!slots.includes(slotName)) {
                     // TODO: this should never really happen because the compiler should always validate
                     console.warn(`Ignoreing unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
                 }

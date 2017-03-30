@@ -12,8 +12,16 @@ export function invokeComponentMethod(vm: VM, methodName: string, args: Array<an
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    const result = component[methodName].apply(component, args);
+    let result, error;
+    try {
+        result = component[methodName].apply(component, args);
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
     return result;
 }
 
@@ -21,8 +29,16 @@ export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Comp
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    const component = new Ctor();
+    let component, error;
+    try {
+        component = new Ctor();
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
     return component;
 }
 
@@ -30,24 +46,48 @@ export function invokeComponentDisconnectedCallback(vm: VM) {
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    component.disconnectedCallback();
+    let error;
+    try {
+        component.disconnectedCallback();
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
 }
 
 export function invokeComponentConnectedCallback(vm: VM) {
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    component.connectedCallback();
+    let error;
+    try {
+        component.connectedCallback();
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
 }
 
 export function invokeComponentRenderedCallback(vm: VM) {
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    component.renderedCallback();
+        let error;
+    try {
+        component.renderedCallback();
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
@@ -58,11 +98,19 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     const vmBeingRenderedInception = vmBeingRendered;
     isRendering = true;
     vmBeingRendered = vm;
-    const html = component.render();
-    const result = evaluateTemplate(html, vm);
+    let result, error;
+    try {
+        const html = component.render();
+        result = evaluateTemplate(html, vm);
+    } catch (e) {
+        error = e;
+    }
     isRendering = isRenderingInception;
     vmBeingRendered = vmBeingRenderedInception;
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
     return result;
 }
 
@@ -71,6 +119,14 @@ export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string
     assert.isTrue(component.attributeChangedCallback, `invokeComponentAttributeChangedCallback() should not be called if \`component.attributeChangedCallback()\` is not defined.`)
     const ctx = currentContext;
     establishContext(context);
-    component.attributeChangedCallback(attrName, oldValue, newValue);
+    let error;
+    try {
+        component.attributeChangedCallback(attrName, oldValue, newValue);
+    } catch (e) {
+        error = e;
+    }
     establishContext(ctx);
+    if (error) {
+        throw error; // rethrowing the original error after restoring the context
+    }
 }

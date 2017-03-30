@@ -8,9 +8,10 @@ import {
     vmBeingRendered,
 } from "./invoker.js";
 import { isUndefined, defineProperty, toString } from "./language.js";
+import { Element as ComponentElement } from "./html-element.js";
 
-const ObjectPropertyToProxyMap = new WeakMap();
-const ProxySet = new WeakSet();
+const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
+const ProxyCache: Map<Object, boolean> = new WeakMap(); // use to identify any proxy created by this piece of logic. 
 
 function getter(target: Object, key: string | Symbol): any {
     const value = target[key];
@@ -46,26 +47,32 @@ const propertyProxyHandler = {
 };
 
 export function getPropertyProxy(value: Object): any {
+    assert.isTrue(typeof value === "object", "perf-optimization: avoid calling this method for non-object value.");
     if (value === null) {
         return value;
     }
-    if (value instanceof Node) {
+    if (value instanceof Node || value instanceof ComponentElement) {
         assert.block(function devModeCheck() {
             console.warn(`Storing references to DOM Nodes in general is discoraged. Instead, use querySelector and querySelectorAll to find the elements when needed. TODO: provide a link to the full explanation.`);
         });
         return value;
     }
-    assert.isTrue(typeof value === "object", "perf-optimization: avoid calling this method for non-object value.");
-    if (ProxySet.has(value)) {
+    if (value instanceof Element) {
+        assert.block(function devModeCheck() {
+            console.warn(`Storing references to Component Instances is discoraged. TODO: provide a link to the full explanation.`);
+        });
         return value;
     }
-
-    if (ObjectPropertyToProxyMap.has(value)) {
-        return ObjectPropertyToProxyMap.get(value);
+    if (ProxyCache.get(value)) {
+        return value;
     }
-    const proxy = new Proxy(value, propertyProxyHandler);
-    ObjectPropertyToProxyMap.set(value, proxy);
-    ProxySet.add(proxy);
+    let proxy = ObjectPropertyToProxyCache.get(value);
+    if (proxy) {
+        return proxy;
+    }
+    proxy = new Proxy(value, propertyProxyHandler);
+    ObjectPropertyToProxyCache.set(value, proxy);
+    ProxyCache.set(proxy, true);
     return proxy;
 }
 

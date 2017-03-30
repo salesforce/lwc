@@ -18,7 +18,7 @@ function createCustomComponent(html) {
 
 describe('template.js', () => {
 
-    describe('rendering phase', () => {
+    describe('integration', () => {
 
         it('should provide four arguments', () => {
             let $api, $cmp, $slotset, $context;
@@ -36,7 +36,7 @@ describe('template.js', () => {
 
         it('should revoke cmp and slotset proxies', () => {
             let $cmp, $slotset;
-            const vnode = createCustomComponent(function ($a, $c, $s) {
+            createCustomComponent(function ($a, $c, $s) {
                 $cmp = $c;
                 $slotset = $s;
             });
@@ -45,7 +45,7 @@ describe('template.js', () => {
             assert.throws(() => $slotset.$default$, 'default slot name');
             assert.throws(() => $slotset.foo, 'unknown slot name');
         });
-        
+
         it('should prevent a getter to be accessed twice in the same render phase', () => {
             let counter = 0;
             let vnode;
@@ -57,7 +57,7 @@ describe('template.js', () => {
                     counter += 1;
                 }
                 render() {
-                    target.evaluateTemplate(function (api, cmp, slotset, context) {
+                    target.evaluateTemplate(function (api, cmp) {
                         cmp.x;
                         cmp.y;
                         cmp.x;
@@ -84,7 +84,7 @@ describe('template.js', () => {
                     counter += 1;
                 }
                 render() {
-                    target.evaluateTemplate(function (api, cmp, slotset, context) {
+                    target.evaluateTemplate(function (api, cmp) {
                         cmp.x;
                         cmp.y;
                     }, vnode.vm);
@@ -97,25 +97,25 @@ describe('template.js', () => {
         });
 
         it('should throw when attempting to set a property member of slotset', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp, slotset, context) {
+            assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 slotset.x = [];
             }));
         });
 
         it('should throw when attempting to set a property member of cmp', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp, slotset, context) {
+            assert.throws(() => createCustomComponent(function (api, cmp) {
                 cmp.x = [];
             }));
         });
 
         it('should throw when attempting to delete a property member of slotset', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp, slotset, context) {
+            assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 delete slotset.x;
             }));
         });
 
         it('should throw when attempting to delete a property member of cmp', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp, slotset, context) {
+            assert.throws(() => createCustomComponent(function (api, cmp) {
                 delete cmp.x;
             }));
         });

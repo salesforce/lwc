@@ -37,9 +37,7 @@ function destroy(vnode: ComponentVNode) {
     if (vm.component.disconnectedCallback) {
         addCallbackToNextTick((): void => invokeComponentDisconnectedCallback(vm));
     }
-    if (vm.listeners.size > 0) {
-        clearListeners(vm);
-    }
+    clearListeners(vm);
     console.log(`"${vm}" was destroyed.`);
 }
 

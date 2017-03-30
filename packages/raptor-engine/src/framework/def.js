@@ -22,25 +22,22 @@ import { getPropertyProxy } from "./properties.js";
 import { getLinkedVNode } from "./vm.js";
 import { Element } from "./html-element.js";
 
-const CtorToDefMap = new WeakMap();
+const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
 const EmptyObject = Object.freeze(Object.create(null));
 
-function isElementComponent(Ctor: any, protoSet?: Set = new Set()): boolean {
-    if (!Ctor || protoSet.has(Ctor)) {
+function isElementComponent(Ctor: any, protoSet?: Array<any> = []): boolean {
+    if (!Ctor || protoSet.includes(Ctor)) {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = Object.getPrototypeOf(Ctor);
     if (proto === Element) {
         return true;
     }
-    protoSet.add(Ctor);
+    protoSet.push(Ctor);
     return isElementComponent(proto, protoSet);
 }
 
-export function getComponentDef(Ctor: Class<Component>): ComponentDef {
-    if (CtorToDefMap.has(Ctor)) {
-        return CtorToDefMap.get(Ctor);
-    }
+function createComponentDef(Ctor: Class<Component>): ComponentDef {
     const isStateful = isElementComponent(Ctor);
     const name: string = Ctor.name;
     assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a name property which must be a string instead of ${name}.`);
@@ -59,7 +56,7 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
     }
     const methods = isStateful ? getPublicMethodsHash(Ctor) : EmptyObject;
     const observedAttrs = isStateful ? getObservedAttributesHash(Ctor) : EmptyObject;
-    const def = {
+    const def: ComponentDef = {
         name,
         isStateful,
         props,
@@ -74,7 +71,6 @@ export function getComponentDef(Ctor: Class<Component>): ComponentDef {
         freeze(methods);
         freeze(observedAttrs);
     });
-    CtorToDefMap.set(Ctor, def);
     return def;
 }
 
@@ -103,7 +99,7 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
             return;
         }
         // proxifying before storing it is a must for public props
-        cmpProps[propName] = (value && typeof value === 'object') ? getPropertyProxy(value) : value;
+        cmpProps[propName] = typeof value === 'object' ? getPropertyProxy(value) : value;
     }
     descriptors[propName] = {
         get: getter,
@@ -166,4 +162,14 @@ function getObservedAttributesHash(target: Object): HashTable<number> {
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));
+}
+
+export function getComponentDef(Ctor: Class<Component>): ComponentDef {
+    let def = CtorToDefMap.get(Ctor);
+    if (def) {
+        return def;
+    }
+    def = createComponentDef(Ctor);
+    CtorToDefMap.set(Ctor, def);
+    return def;
 }

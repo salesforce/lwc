@@ -1,7 +1,6 @@
 import assert from "./assert.js";
 import { getComponentDef } from "./def.js";
 import { createComponent } from "./component.js";
-import { getPropertyProxy } from "./properties.js";
 import { h } from "./api.js";
 import { patch } from "./patch.js";
 import { isArray, toString } from "./language.js";
@@ -30,8 +29,10 @@ export function createVM(vnode: ComponentVNode) {
         cmpClasses: undefined,
         classListObj: undefined,
         component: undefined,
+        // used to store the latest result of the render method
         fragment: [],
-        listeners: new Set(),
+        // used to track down all object-key pairs that makes this vm reactive
+        deps: [],
     };
     assert.block(function devModeCheck() {
         vm.toString = (): string => {
@@ -49,7 +50,7 @@ export function createVM(vnode: ComponentVNode) {
     setLinkedVNode(vm.component, vnode);
 }
 
-const ComponentToVNodeMap = new WeakMap();
+const ComponentToVNodeMap: Map<Component, VNode> = new WeakMap();
 
 let vnodeBeingConstructed: ComponentVNode | null = null;
 
