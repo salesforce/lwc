@@ -2,6 +2,7 @@ import assert from "./assert.js";
 import { isArray, create } from "./language.js";
 
 let nextTickCallbackQueue = undefined;
+const SPACE_CHAR = 32;
 
 export function addCallbackToNextTick(callback: any) {
     assert.isTrue(typeof callback === 'function', `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
@@ -69,3 +70,22 @@ export function toAttributeValue(raw: any): string | null {
 }
 
 export function noop() {}
+
+export function getMapFromClassName(className: string): Object {
+    const map = {};
+    let start = 0;
+    let i;
+    for (i = 0; i < className.length; i++) {
+        if (className.charCodeAt(i) === SPACE_CHAR) {
+            if (i > start) {
+              map[className.slice(start, i)] = true;
+            }
+            start = i + 1;
+        }
+    }
+
+    if (i > start) {
+        map[className.slice(start, i)] = true;
+    }
+    return map;
+}

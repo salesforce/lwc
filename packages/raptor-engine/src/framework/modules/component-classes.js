@@ -1,6 +1,7 @@
 import assert from "../assert.js";
 import { assign } from "../language.js";
 import { isUndefined } from "../language.js";
+import { getMapFromClassName } from "../utils.js";
 
 function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     const { data, vm } = vnode;
@@ -15,11 +16,9 @@ function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     // In this
     if (className) {
         assert.invariant(!classMap, `Compiler Error: vnode.data.classMap cannot be present when vnode.data.className is defined for ${vm}.`);
-        classMap = className.split(/\s+/).reduce((r: HashTable<boolean>, v: string): HashTable<boolean> => {
-            r[v] = true;
-            return r;
-        }, {});
+        classMap = getMapFromClassName(className);
     }
+
     let cmpClassMap;
     if (vm) {
         cmpClassMap = vm.cmpClasses;
