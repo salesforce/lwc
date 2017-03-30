@@ -65,26 +65,21 @@ let currentMemoized: HashTable<any> | null = null;
 
 const cmpProxyHandler = {
     get: (cmp: Object, key: string | Symbol): any => {
-        if (currentMemoized == null || vmBeingRendered === null || vmBeingRendered.component !== cmp) {
+        if (currentMemoized === null || vmBeingRendered === null || vmBeingRendered.component !== cmp) {
             throw new Error(`Internal Error: getFieldValue() should only be accessible during rendering phase.`);
         }
-        const { cache } = currentMemoized;
-        if (key in cache) {
-            return cache[key];
+        if (key in currentMemoized) {
+            return currentMemoized[key];
         }
         assert.block(function devModeCheck() {
             if (hasOwnProperty.call(cmp, key)) {
                 const fields = getOwnFields(cmp);
                 switch (fields[key]) {
                     case 1:
-                        if (!currentMemoized.callingFromGetter) {
-                            assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. It can only be used from template via a getter, and will not be reactive.`);
-                        }
+                        assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. It can only be used from template via a getter, and will not be reactive unless it is moved to \`this.state.${toString(key)}\`.`);
                         break;
                     case 2:
-                        if (!currentMemoized.callingFromGetter) {
-                            assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is added as an expando property of the component and considered a private field. It can only be used from the template via a getter, and will not be reactive.`);
-                        }
+                        assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is added as an expando property of the component and considered a private field. It can only be used from the template via a getter, and will not be reactive unless it is moved to \`this.state.${toString(key)}\`.`);
                         break;
                     case 3:
                         assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\`, which is considered a mutable private field. This property cannot be used as part of the UI because mutations of it cannot be observed. Alternative, you can move this property to \`this.state.${toString(key)}\` to access it from the template.`);
@@ -97,9 +92,6 @@ const cmpProxyHandler = {
         });
 
         // slow path to access component's properties from template
-        assert.block(() => {
-            currentMemoized.callingFromGetter = true;
-        });
         let value;
         const { cmpState, cmpProps, def: { props: publicPropsConfig } } = vmBeingRendered;
         if (key === 'state' && cmpState) {
@@ -110,14 +102,11 @@ const cmpProxyHandler = {
         } else {
             value = cmp[key];
         }
-        assert.block(() => {
-            currentMemoized.callingFromGetter = false;
-        });
         if (typeof value === 'function') {
             // binding every function value accessed from template
             value = bind(value, cmp);
         }
-        cache[key] = value;
+        currentMemoized[key] = value;
         return value;
     },
     set: (cmp: Object, key: string | Symbol): boolean => {
@@ -164,12 +153,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
         const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
         const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
         const outerMemoized = currentMemoized;
-        currentMemoized = {
-            cache: create(null),
-        };
-        assert.block(() => {
-            currentMemoized.callingFromGetter = false;
-        });
+        currentMemoized = create(null);
         result = html.call(undefined, api, cmp, slotset, context);
         currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
         slotsetRevoke();
