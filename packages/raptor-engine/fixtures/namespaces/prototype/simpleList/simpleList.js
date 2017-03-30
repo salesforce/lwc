@@ -25,8 +25,8 @@ export default class SimpleList extends Element {
     constructor() {
         super();
         this.counter = 0;
-        this.itemClassName = 'item';
-        this.data = [];
+        this.state.itemClassName = 'item';
+        this.state.data = [];
     }
 
     static get observedAttributes() {
@@ -34,13 +34,13 @@ export default class SimpleList extends Element {
     }
 
     attributeChangedCallback() {
-        this.data = produceNewData(this.data, this.min, this.max);
+        this.state.data = produceNewData(this.state.data, this.min, this.max);
     }
 
     handleClick() {
         this.counter += 1;
-        const newData = produceNewData(this.data, this.min, this.max);
-        this.data = newData;
+        const newData = produceNewData(this.state.data, this.min, this.max);
+        this.state.data = newData;
         console.log('clicked');
     }
 

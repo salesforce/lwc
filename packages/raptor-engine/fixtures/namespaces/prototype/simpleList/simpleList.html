@@ -3,7 +3,7 @@
         <h1 eval:if={header}>{header}</h1>
         <ul class="foo">
             <li class="first">header</li>
-            <li repeat:for="item of data" class={itemClassName}>
+            <li repeat:for="item of state.data" class={state.itemClassName}>
                 Value of X = {item.x}
             </li>
             <li class="last">footer</li>
