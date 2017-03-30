@@ -13,8 +13,6 @@ module.exports = function (babel) {
     return {
         name: 'raptor-class-transform',
         pre(file) {
-            file.metadata.importRefs = Object.create(null);
-            file.metadata.usedRefs = Object.create(null);
             file.metadata.classDependencies = [];
         },
         visitor: {
@@ -32,9 +30,6 @@ module.exports = function (babel) {
                     }
                     state.opts.className = declaration.id.name;
                     state.opts.componentNamespace = state.opts.componentNamespace;
-                },
-                exit(path, state) {
-                    state.file.metadata.classDependencies = Object.keys(state.file.metadata.usedRefs);
                 }
             },
             ClassDeclaration(path, state) {
@@ -46,18 +41,8 @@ module.exports = function (babel) {
                 path.skip(); // Skip traversing children
                 const dep = path.node.source.value;
                 if (dep[0] !== '.') { // Filter relative paths
-                    path.node.specifiers.forEach(s => {
-                        state.file.metadata.importRefs[s.local.name] = dep;
-                    });
+                    state.file.metadata.classDependencies.push(dep);
                 }
-            },
-            Identifier(path, state) {
-                const name = path.node.name;
-                const ref = state.file.metadata.importRefs[name];
-                if (ref && !path.scope.hasOwnBinding(name)) {
-                    state.file.metadata.usedRefs[ref] = true;
-                }
-
             }
         }
     };

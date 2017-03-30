@@ -28,10 +28,10 @@ describe('Class dependency calculation ', () => {
         assert.deepStrictEqual(classDependencies, expected, `Expected depdendency ${expected}`);
     });
 
-    it('Test unused dependency', () => {
-        const usedDep = path.join(fixturesDir, 'dependencies/unused-dependency.js');
+    it('Test multiple dependencies', () => {
+        const usedDep = path.join(fixturesDir, 'dependencies/multiple-dependencies.js');
         const { metadata : { classDependencies } } = transform(usedDep, BABEL_CONFIG);
-        const expected = [];
+        const expected = ['external-lib', 'external-lib2', 'external-lib3'];
         assert.deepStrictEqual(classDependencies, expected, `Expected no dependencies`);
     });
 });
