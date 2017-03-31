@@ -26,14 +26,14 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
     if (oldOn !== newOn && (oldOn || newOn)) {
         oldOn = oldOn || EmptyObj;
         newOn = newOn || EmptyObj;
-        // removed event listeners should be reset in component's events
+        // removed event handlers should be reset in component's events
         for (key in oldOn) {
             if (!(key in newOn)) {
                 removeComponentEventListener(vm, key, oldOn[key]);
             }
         }
 
-        // new or different event listeners should be set in component's events
+        // new or different event handlers should be set in component's events
         for (key in newOn) {
             cur = newOn[key];
             old = oldOn[key];
@@ -46,7 +46,7 @@ function syncEvents(oldVnode: VNode, vnode: ComponentVNode) {
         }
     }
 
-    // reflection of component event listeners into data.on for the regular diffing algo
+    // reflection of component event handlers into data.on for the regular diffing algo
     if (vm.cmpEvents) {
         assert.invariant(vnode.data.on === undefined, 'vnode.data.on should be undefined.');
         vnode.data.on = assign({}, vm.cmpEvents);

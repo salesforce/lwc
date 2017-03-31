@@ -1,16 +1,18 @@
 import assert from "./assert.js";
 import { scheduleRehydration } from "./vm.js";
 import { markComponentAsDirty } from "./component.js";
-import { isUndefined, toString } from "./language.js";
+import { isUndefined, toString, create, indexOf } from "./language.js";
 
-const TargetToPropsMap = new WeakMap();
+const TargetToReactiveRecordMap: Map<Object, ReactiveRecord> = new WeakMap();
 
 export function notifyListeners(target: Object, key: string | Symbol) {
-    if (TargetToPropsMap.has(target)) {
-        const PropNameToListenersMap = TargetToPropsMap.get(target);
-        const set = PropNameToListenersMap.get(key);
-        if (set) {
-            set.forEach((vm: VM) => {
+    const reactiveRecord = TargetToReactiveRecordMap.get(target);
+    if (reactiveRecord) {
+        const value = reactiveRecord[key];
+        if (value) {
+            const len = value.length;
+            for (let i = 0; i < len; i += 1) {
+                const vm = value[i];
                 assert.vm(vm);
                 console.log(`Marking ${vm} as dirty: property "${toString(key)}" of ${toString(target)} was set to a new value.`);
                 if (!vm.isDirty) {
@@ -18,28 +20,27 @@ export function notifyListeners(target: Object, key: string | Symbol) {
                     console.log(`Scheduling ${vm} for rehydration due to mutation.`);
                     scheduleRehydration(vm);
                 }
-            });
+            }
         }
     }
 }
 
 export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol) {
     assert.vm(vm);
-    let PropNameToListenersMap;
-    if (!TargetToPropsMap.has(target)) {
-        PropNameToListenersMap = new Map();
-        TargetToPropsMap.set(target, PropNameToListenersMap);
-    } else {
-        PropNameToListenersMap = TargetToPropsMap.get(target);
+    let reactiveRecord: ReactiveRecord = TargetToReactiveRecordMap.get(target);
+    if (isUndefined(reactiveRecord)) {
+        const newRecord: ReactiveRecord = create(null);
+        reactiveRecord = newRecord;
+        TargetToReactiveRecordMap.set(target, newRecord);
     }
-    let set = PropNameToListenersMap.get(key);
-    if (isUndefined(set)) {
-        set = new Set();
-        PropNameToListenersMap.set(key, set);
+    let value = reactiveRecord[key];
+    if (isUndefined(value)) {
+        value = [];
+        reactiveRecord[key] = value;
     }
-    if (!set.has(vm)) {
-        set.add(vm);
+    if (indexOf.call(value, vm) === -1) {
+        value.push(vm);
         // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.listeners.add(set);
+        vm.deps.push(value);
     }
 }

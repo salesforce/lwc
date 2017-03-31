@@ -1,6 +1,6 @@
 import assert from "./assert.js";
 import * as api from "./api.js";
-import { isArray, isObject, create, slice, isUndefined, toString, bind } from "./language.js";
+import { isArray, isObject, create, indexOf, slice, isUndefined, toString, hasOwnProperty, bind } from "./language.js";
 import { getOwnFields, extractOwnFields } from "./properties.js";
 import { vmBeingRendered } from "./invoker.js";
 import { subscribeToSetHook } from "./watcher.js";
@@ -134,7 +134,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
             // validating slot names
             const { slots = [] } = html;
             for (let slotName in cmpSlots) {
-                if (slots.indexOf(slotName) === -1) {
+                if (indexOf.call(slots, slotName) === -1) {
                     // TODO: this should never really happen because the compiler should always validate
                     console.warn(`Ignoreing unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
                 }

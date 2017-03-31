@@ -12,7 +12,7 @@ declare class Component {
 }
 
 declare interface HashTable<T> {
-    [key: string]: T
+    [key: string]: T,
 }
 
 declare interface PropDef {}
@@ -22,11 +22,11 @@ declare interface ComponentDef {
     isStateful: boolean,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
-    observedAttrs: HashTable<number>
+    observedAttrs: HashTable<number>,
 }
 
 declare class ComponentElement extends Component {
-    classList: DOMTokenList
+    classList: DOMTokenList;
 }
 
 declare class VM {
@@ -42,7 +42,7 @@ declare class VM {
     context: HashTable<any>;
     component: Component;
     fragment: Array<VNode>;
-    listeners: Set<Set<VM>>;
+    deps: Array<Array<VM>>;
     classListObj: DOMTokenList,
     toString(): string;
 }
@@ -59,7 +59,7 @@ declare class VNode  {
     data: Object;
     children: Array<string | VNode>;
     text: string;
-    elm: EventTarget
+    elm: EventTarget;
 }
 
 declare interface RenderAPI {

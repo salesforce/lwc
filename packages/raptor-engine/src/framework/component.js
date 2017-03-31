@@ -3,12 +3,13 @@ import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
     isRendering,
+    vmBeingRendered,
     invokeComponentAttributeChangedCallback,
     invokeComponentRenderedCallback,
     invokeComponentMethod,
 } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";
-import { isArray, isUndefined, create, toString } from "./language.js";
+import { isArray, isUndefined, create, toString, indexOf } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 import { extractOwnFields } from "./properties.js";
 
@@ -29,15 +30,23 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
 
 export function clearListeners(vm: VM) {
     assert.vm(vm);
-    const { listeners } = vm;
-    listeners.forEach((propSet: Set<VM>): boolean => propSet.delete(vm));
-    listeners.clear();
+    const { deps } = vm;
+    const len = deps.length;
+    if (len) {
+        for (let i = 0; i < len; i += 1) {
+            const set = deps[i];
+            const pos = indexOf.call(deps[i], vm);
+            assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
+            set.splice(pos, 1);
+        }
+        deps.length = 0;
+    }
 }
 
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
     const config: PropDef = publicPropsConfig[propName];
     if (isUndefined(config)) {
         // TODO: this should never really happen because the compiler should always validate
@@ -58,7 +67,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
 export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm}.${propName}`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
     const config: PropDef = publicPropsConfig[propName];
     if (isUndefined(config)) {
         // not need to log the error here because we will do it on updateComponentProp()
@@ -78,7 +87,7 @@ export function resetComponentProp(vm: VM, propName: string) {
 
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
     assert.vm(vm);
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
     let { cmpEvents } = vm;
     if (isUndefined(cmpEvents)) {
         vm.cmpEvents = cmpEvents = create(null);
@@ -87,7 +96,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         cmpEvents[eventName] = [];
     }
     assert.block(function devModeCheck() {
-        if (cmpEvents[eventName] && cmpEvents[eventName].indexOf(newHandler) !== -1) {
+        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) === -1) {
             console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
         }
     });
@@ -101,12 +110,12 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
 
 export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
     assert.vm(vm);
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
     const { cmpEvents } = vm;
     if (cmpEvents) {
-        const listeners = cmpEvents[eventName];
-        const pos = listeners && listeners.indexOf(oldHandler);
-        if (listeners && pos > -1) {
+        const handlers = cmpEvents[eventName];
+        const pos = handlers && indexOf.call(handlers, oldHandler);
+        if (handlers && pos > -1) {
             cmpEvents[eventName].splice(pos, 1);
             if (!vm.isDirty) {
                 markComponentAsDirty(vm);
@@ -115,13 +124,13 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         }
     }
     assert.block(function devModeCheck() {
-        console.warn(`Event listener ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the listeners that you have added already for ${vm}.`);
+        console.warn(`Event handler ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the event handlers that you have added already for ${vm}.`);
     });
 }
 
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
     assert.vm(vm);
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
     assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${toString(newValue)} for slot ${slotName} in ${vm}.`)
     let { cmpSlots } = vm;
     let oldValue = cmpSlots && cmpSlots[slotName];
@@ -146,7 +155,7 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
 
 export function removeComponentSlot(vm: VM, slotName: string) {
     assert.vm(vm);
-    assert.invariant(!isRendering, `${vm}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
     const { cmpSlots } = vm;
@@ -176,6 +185,6 @@ export function renderComponent(vm: VM) {
 export function markComponentAsDirty(vm: VM) {
     assert.vm(vm);
     assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
-    assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering.`);
+    assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     vm.isDirty = true;
 }

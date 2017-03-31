@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import h from "snabbdom/h";
-import { isArray, create, isUndefined, toString } from "./language.js";
+import { isArray, create, isUndefined, toString, push } from "./language.js";
 
 const EmptyData = create(null);
 
@@ -25,7 +25,7 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
         const vnode = factory(items[i], i);
         const isArrayNode = isArray(vnode);
         if (isArrayNode) {
-            Array.prototype.push.apply(list, vnode);
+            push.apply(list, vnode);
         } else {
             list.push(vnode);
         }
