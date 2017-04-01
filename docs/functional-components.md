@@ -25,12 +25,12 @@ modules/ns/foo/foo.js
 ```js
 import html from "./foo.html"
 
-export default function (props) {
+export default function (compiler, props) {
     const { name = 'your name', url = '#' } = props;
-    return html({
+    return compiler({
         name,
         tagline: 'you can click on the link above',
         url,
-    });
+    }, html);
 }
 ```

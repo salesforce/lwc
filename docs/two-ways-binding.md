@@ -6,33 +6,37 @@ In some edge cases, an attribute must be set to a value, but also allow the rece
 
 ```html
 <template>
-    <foo-bar model:price={value} />
+    <foo-bar model:price={state.x} />
 </template>
 ```
 
-The `model:` annotation behaves very similarly to `set:` with the difference that the receiver *must* explicitely add the property corresponding to the attribute (in this case `price`) as a two-ways bound property, e.g.:
+The `model:` annotation only work with `state` values. You can't not use `model:` annotation for static values, or public property values. If the component that is receiving the property annotated with `model:` ever dispatch the `change` event, with the event's `detail` object containing a property `price` (for the example above), then the `state.x` will be updated to the new value provided via `event.detail.price`, e.g.:
 
 ```js
-export default class FooBar {
+export default class FooBar extends Element {
     price = 0;
 
-    handleChange(event) {
-        this.price = event.currentTarget.value;
+    handleEventToDoublePrice(event) {
+        this.dispatchEvent(new CustomEvent('change', {
+            detail: {
+                price: this.price * 2,
+            }
+        }));
     }
 }
 FooBar.twoWaysProps = ['price'];
 ```
 
-If `'price'` is not in the collection of `twoWaysProps`, it will result on a static error.
+Additionally, the developer of the component that supports the two-ways bound property should annotate the class definition. If `'price'` is not in the collection of `twoWaysProps`, any component that attempt to use the `model:` annotation for this component, will result on a static error.
 
-Additionally, if the `set:` annotation is used in a declated two-ways bound property, the value will never change as a result of a mutation in the receiver, although the receive might get rehydratated on its own.
+Additionally, if a two-ways bound property is defined, but the consumer of the component is not passing the `model:` annotation, everything works just the same as a regular public property that can only be changed by the owner component at will, and the value will never change as a result of a mutation in `foo-bar` from the example above, e.g.:
 
 ```html
 <template>
-    <foo-bar set:price="value" />
+    <foo-bar price={state.x} />
 </template>
 ```
 
 ## Important Notice
 
-The caveat here is that mutations on the parent component will always rehydrate the receiver (as corresponding), setting `price` attribute to a new value, independently of the state of the `this.price` property on the receiver, while local mutations of `this.price` in the receiver will not update the `this.value` on the parent component.
+The caveat here is that mutations on the parent component will always rehydrate the instance of `foo-bar` (as corresponding), setting `price` attribute to a new value, independently of the value of the `this.price` property on the `foo-bar`, while `change` events with `event.detail.price` will not update the `this.state.x` on the parent component.
