@@ -29,10 +29,6 @@ declare class ComponentElement extends Component {
     classList: DOMTokenList;
 }
 
-declare interface ReactiveRecord {
-    [key: string]: Array<VM>,
-}
-
 declare class VM {
     cmpState: HashTable<any>;
     cmpProps: HashTable<any>;

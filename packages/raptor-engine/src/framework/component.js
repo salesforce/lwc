@@ -9,7 +9,7 @@ import {
     invokeComponentMethod,
 } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";
-import { isArray, isUndefined, create, toString } from "./language.js";
+import { isArray, isUndefined, create, toString, indexOf } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 import { extractOwnFields } from "./properties.js";
 
@@ -35,7 +35,7 @@ export function clearListeners(vm: VM) {
     if (len) {
         for (let i = 0; i < len; i += 1) {
             const set = deps[i];
-            const pos = deps[i].indexOf(vm);
+            const pos = indexOf.call(deps[i], vm);
             assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
             set.splice(pos, 1);
         }
@@ -96,7 +96,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         cmpEvents[eventName] = [];
     }
     assert.block(function devModeCheck() {
-        if (cmpEvents[eventName] && !cmpEvents[eventName].includes(newHandler)) {
+        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) === -1) {
             console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
         }
     });
@@ -114,7 +114,7 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     const { cmpEvents } = vm;
     if (cmpEvents) {
         const handlers = cmpEvents[eventName];
-        const pos = handlers && handlers.indexOf(oldHandler);
+        const pos = handlers && indexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
             cmpEvents[eventName].splice(pos, 1);
             if (!vm.isDirty) {

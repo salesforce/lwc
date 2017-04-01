@@ -11,6 +11,7 @@ import assert from "./assert.js";
 import {
     freeze,
     create,
+    indexOf,
     isUndefined,
     toString,
     defineProperties,
@@ -26,7 +27,7 @@ const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
 const EmptyObject = Object.freeze(Object.create(null));
 
 function isElementComponent(Ctor: any, protoSet?: Array<any> = []): boolean {
-    if (!Ctor || protoSet.includes(Ctor)) {
+    if (!Ctor || indexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = Object.getPrototypeOf(Ctor);

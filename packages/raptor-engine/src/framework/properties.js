@@ -7,13 +7,12 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker.js";
-import { isUndefined, defineProperty, toString } from "./language.js";
-import { Element as ComponentElement } from "./html-element.js";
+import { isUndefined, defineProperty, hasOwnProperty, toString } from "./language.js";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
-const ProxyCache: Map<Object, boolean> = new WeakMap(); // use to identify any proxy created by this piece of logic. 
+const ProxyCache: Map<Object, boolean> = new WeakMap(); // use to identify any proxy created by this piece of logic.
 
-function getter(target: Object, key: string | Symbol): any {
+function propertyGetter(target: Object, key: string | Symbol): any {
     const value = target[key];
     if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, key);
@@ -21,7 +20,7 @@ function getter(target: Object, key: string | Symbol): any {
     return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
 }
 
-function setter(target: Object, key: string | Symbol, value: any): boolean {
+function propertySetter(target: Object, key: string | Symbol, value: any): boolean {
     if (isRendering) {
         // TODO: should this be an error? or a console.error?
         throw new Error(`Setting property \`${toString(key)}\` of ${toString(target)} during the rendering process of ${vmBeingRendered} is invalid. The render phase should have no side effects on the state of any component.`);
@@ -34,16 +33,16 @@ function setter(target: Object, key: string | Symbol, value: any): boolean {
     return true;
 }
 
-function deleteProperty(target: Object, key: string | Symbol): boolean {
+function propertyDelete(target: Object, key: string | Symbol): boolean {
     delete target[key];
     notifyListeners(target, key);
     return true;
 }
 
 const propertyProxyHandler = {
-    get: (target: Object, key: string | Symbol): any => getter(target, key),
-    set: (target: Object, key: string | Symbol, newValue: any): boolean => setter(target, key, newValue),
-    deleteProperty: (target: Object, key: string | Symbol): boolean => deleteProperty(target, key),
+    get: (target: Object, key: string | Symbol): any => propertyGetter(target, key),
+    set: (target: Object, key: string | Symbol, newValue: any): boolean => propertySetter(target, key, newValue),
+    deleteProperty: (target: Object, key: string | Symbol): boolean => propertyDelete(target, key),
 };
 
 export function getPropertyProxy(value: Object): any {
@@ -51,19 +50,17 @@ export function getPropertyProxy(value: Object): any {
     if (value === null) {
         return value;
     }
-    if (value instanceof Node || value instanceof ComponentElement) {
+    // TODO: perf opt - we should try to give identity to propertyProxies so we can test
+    // them faster than a weakmap lookup.
+    if (ProxyCache.get(value)) {
+        return value;
+    }
+    // TODO: optimize this check
+    // TODO: and alternative here is to throw a hard error in dev mode so in prod we don't have to do the check
+    if (value instanceof Node) {
         assert.block(function devModeCheck() {
             console.warn(`Storing references to DOM Nodes in general is discoraged. Instead, use querySelector and querySelectorAll to find the elements when needed. TODO: provide a link to the full explanation.`);
         });
-        return value;
-    }
-    if (value instanceof Element) {
-        assert.block(function devModeCheck() {
-            console.warn(`Storing references to Component Instances is discoraged. TODO: provide a link to the full explanation.`);
-        });
-        return value;
-    }
-    if (ProxyCache.get(value)) {
         return value;
     }
     let proxy = ObjectPropertyToProxyCache.get(value);
