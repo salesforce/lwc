@@ -14,7 +14,7 @@ function produceNewData(oldData, min, max) {
     return data;
 }
 
-import { Element } from "raptor";
+import { Element } from "engine";
 
 export default class SimpleList extends Element {
     min = DefaultMinValue;

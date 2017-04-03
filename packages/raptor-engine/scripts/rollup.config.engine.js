@@ -12,13 +12,12 @@ const uglify = require('rollup-plugin-uglify');
 const flow = require('rollup-plugin-flow');
 const strip = require('rollup-plugin-strip');
 const { copyright } = require('./utils.js');
-
 const isProduction = process.env.NODE_ENV === 'production';
 const version = require('../package.json').version;
 
 module.exports = {
     entry: p.resolve('src/framework/main.js'),
-    dest: p.resolve(`dist/interop.${isProduction ? 'min.js' : 'js'}`),
+    dest: p.resolve(`dist/engine.${isProduction ? 'min.js' : 'js'}`),
     format: 'iife',
     moduleName: 'Engine',
     banner: copyright,
