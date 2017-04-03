@@ -32,12 +32,7 @@ module.exports = {
         babel({
             babelrc: false,
             presets: [
-                [
-                    "es2015",
-                    {
-                        "modules": false
-                    }
-                ]
+                ["env", { "modules": false }]
             ],
         }),
         nodeResolve({

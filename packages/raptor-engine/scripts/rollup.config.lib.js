@@ -27,19 +27,10 @@ module.exports = {
         babel({
             babelrc: false,
             presets: [
-                [
-                    "es2015",
-                    {
-                        "modules": false
-                    }
-                ]
+                ["env", { "modules": false }]
             ],
         }),
-        nodeResolve({
-            module: true,
-        }),
-        commonjs({
-            sourceMap: false,
-        }),
+        nodeResolve({ module: true }),
+        commonjs({ sourceMap: false }),
     ],
 };
