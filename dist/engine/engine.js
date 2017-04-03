@@ -1,63 +1,6 @@
 (function (exports) {
 'use strict';
 
-var registry = {
-    raptor: {
-        get ns() {
-            return Promise.resolve(Main);
-        }
-    }
-};
-
-function loaderEvaluate(moduleStatus) {
-    var exports = void 0;
-    moduleStatus.ns = Promise.all(moduleStatus.deps.map(function (name) {
-        return name === 'exports' ? Promise.resolve(exports = {}) : loaderImportMethod(name);
-    })).then(function (resolvedNamespaces) {
-        var returnedValue = moduleStatus.definition.apply(undefined, resolvedNamespaces);
-        return exports || returnedValue;
-    });
-    return moduleStatus.ns;
-}
-
-function loaderLoadAndEvaluate(name) {
-    return Promise.reject(new TypeError('Bundle ' + name + ' does not exist in the registry.'));
-}
-
-function loaderImportMethod(name) {
-    if (!name) {
-        return Promise.reject(new TypeError('loader.import()\'s name is required to be a non-empty string value.'));
-    }
-    name = name.toLowerCase();
-    var moduleStatus = registry[name];
-    if (!moduleStatus) {
-        return loaderLoadAndEvaluate(name);
-    }
-    if (!moduleStatus.ns) {
-        return loaderEvaluate(moduleStatus);
-    }
-    return moduleStatus.ns;
-}
-
-function amdDefineMethod(name, deps, definition) {
-    if (!definition) {
-        amdDefineMethod(name, [], deps);
-        return;
-    }
-    if (typeof name !== 'string') {
-        throw new TypeError('Invalid AMD define() call.');
-    }
-    name = name.toLowerCase();
-    if (registry[name]) {
-        console.warn('Duplicated AMD entry ignored for name=' + name);
-    }
-    registry[name] = {
-        deps: deps,
-        definition: definition,
-        ns: undefined
-    };
-}
-
 var assert = {
     invariant: function invariant(value, msg) {
         if (!value) {
@@ -1207,7 +1150,7 @@ function subscribeToSetHook(vm, target, key) {
 var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var ObjectPropertyToProxyCache = new WeakMap();
-var ProxyCache = new WeakMap(); // use to identify any proxy created by this piece of logic. 
+var ProxyCache = new WeakMap(); // use to identify any proxy created by this piece of logic.
 
 function propertyGetter(target, key) {
     var value = target[key];
@@ -3159,18 +3102,6 @@ function createElement(tagName) {
 
 // TODO: how can a user dismount a component and kick in the destroy mechanism?
 
-
-
-var Main = Object.freeze({
-	loaderImportMethodTemporary: loaderImportMethod,
-	defineTemporary: amdDefineMethod,
-	createElement: createElement,
-	getComponentDef: getComponentDef,
-	Element: ComponentElement
-});
-
-exports.loaderImportMethodTemporary = loaderImportMethod;
-exports.defineTemporary = amdDefineMethod;
 exports.createElement = createElement;
 exports.getComponentDef = getComponentDef;
 exports.Element = ComponentElement;
