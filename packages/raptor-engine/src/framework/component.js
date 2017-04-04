@@ -96,7 +96,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         cmpEvents[eventName] = [];
     }
     assert.block(function devModeCheck() {
-        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) === -1) {
+        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) !== -1) {
             console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
         }
     });
