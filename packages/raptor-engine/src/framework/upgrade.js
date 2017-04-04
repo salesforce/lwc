@@ -80,7 +80,7 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let methodName in methods) {
         descriptors[methodName] = {
             value: function (): any {
-                return component[methodName](...arguments);
+                return component[methodName].apply(component, arguments);
             },
             configurable: false,
             writable: false,

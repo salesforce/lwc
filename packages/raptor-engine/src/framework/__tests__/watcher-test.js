@@ -16,8 +16,8 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def);
-            const vnode2 = api.c('x-foo', def);
+            const vnode1 = api.c('x-foo', def, {});
+            const vnode2 = api.c('x-foo', def, {});
             patch(elm, vnode1);
             patch(vnode1, vnode2);
             assert.strictEqual(counter, 1);
@@ -74,8 +74,8 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def);
-            const vnode2 = api.c('x-foo', def, { slotset: { x: [api.h('p')] } });
+            const vnode1 = api.c('x-foo', def, {});
+            const vnode2 = api.c('x-foo', def, { slotset: { x: [api.h('p', {}, [])] } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
             assert.strictEqual(counter, 2);
@@ -113,7 +113,7 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             assert.strictEqual(counter, 1);
             state.x = 1;
@@ -135,7 +135,7 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             assert.strictEqual(counter, 1);
             state.x = 1; // this is not used in the rendering phase
@@ -153,7 +153,7 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             assert.throws(() => patch(elm, vnode));
         });
 
@@ -175,7 +175,7 @@ describe('watcher.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             assert.strictEqual(counter, 1);
             state.x = 1; // this is marked as reactive

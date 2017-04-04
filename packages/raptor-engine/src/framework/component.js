@@ -9,7 +9,7 @@ import {
     invokeComponentMethod,
 } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";
-import { isArray, isUndefined, create, toString, indexOf } from "./language.js";
+import { isArray, isUndefined, create, toString, ArrayIndexOf, ArrayPush, ArraySplice } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 import { extractOwnFields } from "./properties.js";
 
@@ -18,7 +18,9 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
     const { cmpProps, def: { methods: publicMethodsConfig } } = vm;
     // expose public methods as props on the Element
     for (let methodName in publicMethodsConfig) {
-        cmpProps[methodName] = (...args: any): any => invokeComponentMethod(vm, methodName, args);
+        cmpProps[methodName] = function (): any {
+            return invokeComponentMethod(vm, methodName, arguments)
+        };
     }
     // create the component instance
     const component = invokeComponentConstructor(vm, Ctor);
@@ -35,9 +37,9 @@ export function clearListeners(vm: VM) {
     if (len) {
         for (let i = 0; i < len; i += 1) {
             const set = deps[i];
-            const pos = indexOf.call(deps[i], vm);
+            const pos = ArrayIndexOf.call(deps[i], vm);
             assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
-            set.splice(pos, 1);
+            ArraySplice.call(set, pos, 1);
         }
         deps.length = 0;
     }
@@ -96,12 +98,12 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         cmpEvents[eventName] = [];
     }
     assert.block(function devModeCheck() {
-        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) !== -1) {
+        if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
             console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
         }
     });
     // TODO: we might need to hook into this listener for Locker Service
-    cmpEvents[eventName].push(newHandler);
+    ArrayPush.call(cmpEvents[eventName], newHandler);
     console.log(`Marking ${vm} as dirty: event handler for "${eventName}" has been added.`);
     if (!vm.isDirty) {
         markComponentAsDirty(vm);
@@ -114,9 +116,9 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     const { cmpEvents } = vm;
     if (cmpEvents) {
         const handlers = cmpEvents[eventName];
-        const pos = handlers && indexOf.call(handlers, oldHandler);
+        const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
-            cmpEvents[eventName].splice(pos, 1);
+            ArraySplice.call(cmpEvents[eventName], pos, 1);
             if (!vm.isDirty) {
                 markComponentAsDirty(vm);
             }

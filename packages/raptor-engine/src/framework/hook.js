@@ -6,6 +6,7 @@ import {
 import { clearListeners } from "./component.js";
 import { rehydrate } from "./vm.js";
 import { addCallbackToNextTick } from "./utils.js";
+import { ArrayPush } from "./language.js";
 
 function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -20,7 +21,8 @@ function insert(vnode: ComponentVNode) {
         rehydrate(vm);
         // replacing the vnode's children collection so successive patching routines
         // will diff against the full tree, not a only partial one.
-        children.splice(0, children.length).push.apply(children, vm.fragment);
+        children.length = 0;
+        ArrayPush.apply(children, vm.fragment);
     }
     if (vm.component.connectedCallback) {
         addCallbackToNextTick((): void => invokeComponentConnectedCallback(vm));

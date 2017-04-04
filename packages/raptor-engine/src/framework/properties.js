@@ -40,9 +40,9 @@ function propertyDelete(target: Object, key: string | Symbol): boolean {
 }
 
 const propertyProxyHandler = {
-    get: (target: Object, key: string | Symbol): any => propertyGetter(target, key),
-    set: (target: Object, key: string | Symbol, newValue: any): boolean => propertySetter(target, key, newValue),
-    deleteProperty: (target: Object, key: string | Symbol): boolean => propertyDelete(target, key),
+    get: propertyGetter,
+    set: propertySetter,
+    deleteProperty: propertyDelete,
 };
 
 export function getPropertyProxy(value: Object): any {

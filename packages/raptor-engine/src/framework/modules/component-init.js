@@ -6,12 +6,6 @@ import { isUndefined } from "../language.js";
 // and link the new vnode with the corresponding component
 function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
     const { Ctor } = vnode;
-    assert.block(function devModeCheck() {
-        // adding toString to all vnodes for debuggability
-        if (!vnode.toString) {
-            vnode.toString = (): string => `[object:vnode ${vnode.sel}]`;
-        }
-    });
     if (isUndefined(Ctor)) {
         return;
     }

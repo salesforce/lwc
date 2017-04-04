@@ -11,9 +11,10 @@ import assert from "./assert.js";
 import {
     freeze,
     create,
-    indexOf,
+    ArrayIndexOf,
     isUndefined,
     toString,
+    ArrayPush,
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
@@ -28,15 +29,16 @@ import { subscribeToSetHook } from "./watcher.js";
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
 const EmptyObject = Object.freeze(Object.create(null));
 
-function isElementComponent(Ctor: any, protoSet?: Array<any> = []): boolean {
-    if (!Ctor || indexOf.call(protoSet, Ctor) >= 0) {
+function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
+    protoSet = protoSet || [];
+    if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = Object.getPrototypeOf(Ctor);
     if (proto === Element) {
         return true;
     }
-    protoSet.push(Ctor);
+    ArrayPush.call(protoSet, Ctor);
     return isElementComponent(proto, protoSet);
 }
 

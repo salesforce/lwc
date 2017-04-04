@@ -53,20 +53,33 @@ declare class ComponentVNode extends VNode {
     toString: () => string;
 }
 
+export interface VNodeData {
+    props?: any;
+    attrs?: any;
+    className?: string;
+    classMap?: HashTable<string>;
+    style?: any;
+    on?: HashTable<EventListener>;
+    hook?: Hooks;
+    key?: number | string;
+    ns?: string; // for SVGs
+    [key: string]: any; // for any other 3rd party module
+}
+
 declare class VNode  {
-    sel: string;
+    sel: string | undefined;
+    data: VNodeData | undefined;
+    children: Array<VNode | string> | undefined;
+    elm: Node | undefined;
+    text: string | undefined;
     key: number | string;
-    data: Object;
-    children: Array<string | VNode>;
-    text: string;
-    elm: EventTarget;
 }
 
 declare interface RenderAPI {
     c(tagName: string, Ctor: Class<Component>, data: Object): VNode,
-    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode,
-    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>,
-    s(value: any): string,
-    e(): string,
+    h(tagName: string, data: Object, children: Array<any>): VNode,
+    v(tagName: string, data: VNodeData, children?: Array<any>, text?: string, elm?: Element | Text, Ctor?: Class<Component>): VNode,
+    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode>,
+    n(children: Array<VNode|null|number|string|Node>): Array<VNode>,
     f(items: Array<any>): Array<any>,
 }

@@ -1,45 +1,20 @@
 import assert from "./assert.js";
 import * as api from "./api.js";
-import { isArray, isObject, create, indexOf, slice, isUndefined, toString, hasOwnProperty, bind } from "./language.js";
+import { n as createVNode } from "./api.js";
+import { isArray, isObject, create, ArrayIndexOf, ArraySlice, toString, hasOwnProperty, bind } from "./language.js";
 import { getOwnFields, extractOwnFields } from "./properties.js";
 import { vmBeingRendered } from "./invoker.js";
 import { subscribeToSetHook } from "./watcher.js";
 
 const EmptySlots = create(null);
 
-function wrapDOMNode(element: Node): VNode {
-    // TODO: generalize this to support all kind of Nodes
-    // TODO: instead of creating the h() directly, use toVNode() or something else from snabbdom
-    // TODO: the element could be derivated from another raptor component, in which case we should
-    // use the corresponding vnode instead
-    assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
-    const tagName = element.tagName.toLowerCase();
-    // TODO: support "is"" attribute
-    const vnode = api.h(tagName, {});
-    vnode.elm = element;
-    return vnode;
-}
-
 function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Array<VNode> {
     if (!elementOrVnodeOrArrayOfVnodes) {
         return [];
     }
     // never mutate the original array
-    const vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? slice.call(elementOrVnodeOrArrayOfVnodes, 0) : [elementOrVnodeOrArrayOfVnodes];
-    for (let i = 0; i < vnodes.length; i += 1) {
-        const elm = vnodes[i];
-        // TODO: we can improve this detection mechanism
-        if (elm && (elm.sel || elm.text)) {
-            // this is usually the default behavior, we wire this up for that reason.
-            assert.vnode(elm, `Invalid element ${toString(vnodes[i])} returned in ${i + 1} position when calling ${vm}.render().`);
-        } else if (elm instanceof Node) {
-            vnodes[i] = wrapDOMNode(elm);
-        } else {
-            // supporting text nodes
-            vnodes[i] = { text: (elm === null || isUndefined(elm)) ? '' : elm + '' };
-        }
-    }
-    return vnodes;
+    const vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? ArraySlice.call(elementOrVnodeOrArrayOfVnodes, 0) : [elementOrVnodeOrArrayOfVnodes];
+    return createVNode(vnodes);
 }
 
 function getSlotsetValue(slotset: HashTable<Array<VNodes>>, slotName: string): Array<VNodes> {
@@ -134,7 +109,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
             // validating slot names
             const { slots = [] } = html;
             for (let slotName in cmpSlots) {
-                if (indexOf.call(slots, slotName) === -1) {
+                if (ArrayIndexOf.call(slots, slotName) === -1) {
                     // TODO: this should never really happen because the compiler should always validate
                     console.warn(`Ignoreing unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
                 }

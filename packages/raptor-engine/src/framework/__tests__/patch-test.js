@@ -15,7 +15,7 @@ describe('patch.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             target.patch(elm, vnode);
             assert(flag === false, 'connectedCallback should not run syncronously');
             return Promise.resolve().then(() => {
@@ -31,7 +31,7 @@ describe('patch.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def);
+            const vnode = api.c('x-foo', def, {});
             target.patch(elm, vnode);
             assert(flag === false, 'renderedCallback should not run syncronously');
             return Promise.resolve().then(() => {
@@ -58,10 +58,10 @@ describe('patch.js', () => {
                 }
             }
             const elm1 = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def1);
+            const vnode1 = api.c('x-foo', def1, {});
             target.patch(elm1, vnode1);
             const elm2 = document.createElement('x-bar');
-            const vnode2 = api.c('x-bar', def2);
+            const vnode2 = api.c('x-bar', def2, {});
             target.patch(elm2, vnode2);
             assert.equal(chars, '^');
             return Promise.resolve().then(() => {

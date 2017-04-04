@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { isArray, create } from "./language.js";
+import { isArray, create, ArrayPush } from "./language.js";
 
 let nextTickCallbackQueue = undefined;
 const SPACE_CHAR = 32;
@@ -16,7 +16,7 @@ export function addCallbackToNextTick(callback: any) {
             }
         });
     }
-    nextTickCallbackQueue.push(callback);
+    ArrayPush.call(nextTickCallbackQueue, callback);
 }
 
 const CAMEL_REGEX = /-([a-z])/g;
@@ -71,14 +71,14 @@ export function toAttributeValue(raw: any): string | null {
 
 export function noop() {}
 
-export function getMapFromClassName(className: string): Object {
+export function getMapFromClassName(className: string): HashTable<boolean> {
     const map = {};
     let start = 0;
-    let i;
-    for (i = 0; i < className.length; i++) {
+    let i, len = className.length;
+    for (i = 0; i < len; i++) {
         if (className.charCodeAt(i) === SPACE_CHAR) {
             if (i > start) {
-              map[className.slice(start, i)] = true;
+                map[className.slice(start, i)] = true;
             }
             start = i + 1;
         }

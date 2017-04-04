@@ -14,7 +14,7 @@ const {
     hasOwnProperty,
 } = Object;
 const isArray = Array.isArray;
-const { slice, indexOf, push } = Array.prototype;
+const { slice: ArraySlice, splice: ArraySplice, indexOf: ArrayIndexOf, push: ArrayPush } = Array.prototype;
 
 export {
     freeze,
@@ -30,10 +30,11 @@ export {
     getOwnPropertyNames,
     getOwnPropertySymbols,
     hasOwnProperty,
-    slice,
+    ArraySlice,
+    ArraySplice,
     isArray,
-    indexOf,
-    push,
+    ArrayIndexOf,
+    ArrayPush,
 }
 
 export function isUndefined(obj: any): boolean {

@@ -111,7 +111,7 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     if (error) {
         throw error; // rethrowing the original error after restoring the context
     }
-    return result;
+    return result || [];
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {

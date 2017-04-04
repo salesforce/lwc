@@ -1,21 +1,86 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
-import h from "snabbdom/h";
-import { isArray, create, isUndefined, toString, push } from "./language.js";
+import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language.js";
 
+const CHAR_S = 115;
+const CHAR_V = 118;
+const CHAR_G = 103;
 const EmptyData = create(null);
+const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 
-// [c]ustom element node
-export function c(sel: string, Ctor: Class<Component>, data: Object = EmptyData): Object {
-    const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
-    assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    const vnode = h(sel, { hook, key, slotset, attrs, className, classMap, _props, _on }, []);
-    vnode.Ctor = Ctor;
+// Node Types
+// https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+const ELEMENT_NODE = 1; // An Element node such as <p> or <div>.
+const TEXT_NODE = 3;    // The actual Text of Element or Attr.
+
+function nodeToVNode(elm: Node): VNode {
+    // TODO: generalize this to support all kind of Nodes
+    // TODO: instead of creating the vnode() directly, use toVNode() or something else from snabbdom
+    // TODO: the element could be derivated from another raptor component, in which case we should
+    // use the corresponding vnode instead
+    assert.isTrue(elm instanceof Node, "Only Node can be wrapped by h()");
+    const { nodeType } = elm;
+    if (nodeType === TEXT_NODE) {
+        return v(undefined, undefined, undefined, elm.textContent, elm);
+    }
+    if (nodeType === ELEMENT_NODE) {
+        // TODO: support "is"" attribute
+        return v(elm.tagName.toLowerCase(), undefined, undefined, undefined, elm);
+    }
+    throw new Error(`Invalid NodeType: ` + nodeType);
+}
+
+function addNS(data: any, children: Array<VNode> | undefined, sel: string | undefined) {
+    data.ns = NamespaceAttributeForSVG;
+    if (isUndefined(children) || sel === 'foreignObject') {
+        return;
+    }
+    const len = children.length;
+    for (let i = 0; i < len; ++i) {
+        const child = children[i];
+        let { data } = child;
+        if (data !== undefined) {
+            const grandChildren: Array<VNode> = child.children;
+            addNS(data, grandChildren, child.sel);
+        }
+    }
+}
+
+// [v]node node
+export function v(sel: string | undefined, data: VNodeData, children: Array<VNode | string> | undefined, text?: string | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
+    data = data || EmptyData;
+    let { key } = data;
+    const vnode = { sel, data, children, text, elm, key, Ctor };
+    assert.block(function devModeCheck() {
+        // adding toString to all vnodes for debuggability
+        vnode.toString = (): string => `[object:vnode ${sel}]`;
+    });
     return vnode;
 }
 
 // [h]tml node
-export { h };
+export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
+    assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
+    assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
+    assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+    if (children.length) {
+        n(children);
+    }
+    if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
+        addNS(data, children, sel);
+    }
+    return v(sel, data, children);
+}
+
+// [c]ustom element node
+export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
+    assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
+    assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
+    assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
+    const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
+    assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
+    return v(sel, { hook, key, slotset, attrs, className, classMap, _props, _on }, [], undefined, undefined, Ctor);
+}
 
 // [i]terable node
 export function i(items: Array<any>, factory: Function): Array<VNode> {
@@ -23,15 +88,13 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
     const list = [];
     for (let i = 0; i < len; i += 1) {
         const vnode = factory(items[i], i);
-        const isArrayNode = isArray(vnode);
-        if (isArrayNode) {
-            push.apply(list, vnode);
+        if (isArray(vnode)) {
+            ArrayPush.apply(list, vnode);
         } else {
-            list.push(vnode);
+            ArrayPush.call(list, vnode);
         }
-
         assert.block(function devModeCheck() {
-            const vnodes = isArrayNode ? vnode : [vnode];
+            const vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach((vnode: VNode | any) => {
                 if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
                     assert.logWarning(`Missing "key" attribute for element <${vnode.sel}> in iteration of ${toString(items)} for index ${i} of ${len}. Solution: You can set a "key" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of "${toString(vnode.Ctor.name)}".`);
@@ -44,39 +107,33 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
 
 /**
  * [s]tringify
- * This is used to guarantee that we never send null, object or undefined as a text children to snabbdom
- * - null and undefined should produce empty entry
- * - string values are on the fast lane
- * - any other object will be intentionally casted as strings
  */
-export function s(value: any = ''): string  {
-    return typeof value === 'string' ? value : (value === null ? '' : '' + value);
+export function s(value: any = ''): any {
+    // deprecated
+    return value;
 }
 
 /**
  * [e]mpty
- * This is used to guarantee that we never send null, object or undefined as a text children to snabbdom
- * - null and undefined should produce empty entry
- * - string values are on the fast lane
- * - any other object will be intentionally casted as strings
  */
-export function e(): string  {
+export function e(): string {
+    // deprecated
     return '';
 }
 
 /**
  * [f]lattening
  */
-export function f(items: Array<any>): Array<any>  {
-    assert.isTrue(isArray(items), 'flattening api can only work with arrays.')
+export function f(items: Array<any>): Array<any> {
+    assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     const len = items.length;
     const flattened = [];
     for (let i = 0; i < len; i += 1) {
         const item = items[i];
         if (isArray(item)) {
-            flattened.push.apply(flattened, item);
+            ArrayPush.apply(flattened, item);
         } else {
-            flattened.push(item);
+            ArrayPush.call(flattened, item);
         }
     }
     assert.block(function devModeCheck() {
@@ -88,4 +145,23 @@ export function f(items: Array<any>): Array<any>  {
         });
     });
     return flattened;
+}
+
+// [n]ormalize children nodes
+export function n(children: Array<VNode|null|number|string|Node>): Array<VNode> {
+    const len = children.length;
+    for (let i = 0; i < len; ++i) {
+        const child = children[i];
+        const t = typeof child;
+        if (t === 'object' && child && "Ctor" in child) {
+             continue;
+        } else if (t === 'string' || t === 'number') {
+            children[i] = v(undefined, undefined, undefined, child);
+        } else if ("nodeType" in child) {
+            children[i] = nodeToVNode(child);
+        } else {
+            children[i] = v(undefined, undefined, undefined, child || '');
+        }
+    }
+    return children;
 }

@@ -12,7 +12,7 @@ function createCustomComponent(html) {
         }
     }
     const elm = document.createElement('x-foo');
-    vnode = api.c('x-foo', def);
+    vnode = api.c('x-foo', def, {});
     return patch(elm, vnode);
 }
 
@@ -66,7 +66,7 @@ describe('template.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def);
+            vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             assert.strictEqual(counter, 2);
         });
@@ -91,7 +91,7 @@ describe('template.js', () => {
                 }
             }
             const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def);
+            vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             assert.strictEqual(counter, 3);
         });
@@ -146,14 +146,9 @@ describe('template.js', () => {
             let result
             const elm = document.createElement('p');
             result = target.evaluateTemplate([elm], { component: 1 });
-            assert.deepEqual([{
-                sel: 'p',
-                data: {},
-                children: undefined,
-                text: undefined,
-                elm: elm,
-                key: undefined,
-            }], result);
+            assert.equal(result.length, 1, 'single child');
+            assert.equal(result[0].sel, 'p', 'selector');
+            assert.deepEqual(result[0].data, {}, 'data');
         });
 
     });

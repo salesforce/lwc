@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { scheduleRehydration } from "./vm.js";
 import { markComponentAsDirty } from "./component.js";
-import { isUndefined, toString, create, indexOf } from "./language.js";
+import { isUndefined, toString, create, ArrayIndexOf, ArrayPush } from "./language.js";
 
 const TargetToReactiveRecordMap: Map<Object, ReactiveRecord> = new WeakMap();
 
@@ -38,9 +38,9 @@ export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol)
         value = [];
         reactiveRecord[key] = value;
     }
-    if (indexOf.call(value, vm) === -1) {
-        value.push(vm);
+    if (ArrayIndexOf.call(value, vm) === -1) {
+        ArrayPush.call(value, vm);
         // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.deps.push(value);
+        ArrayPush.call(vm.deps, value);
     }
 }
