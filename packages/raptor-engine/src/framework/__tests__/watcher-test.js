@@ -215,6 +215,27 @@ describe('watcher.js', () => {
             assert.strictEqual(counter, 2);
         });
 
+        it('should mark public prop as reactive even if it is used via a getter', () => {
+            let counter = 0;
+            let newValue, oldValue;
+            const def = class MyComponent2 extends Element {
+                attributeChangedCallback(attrName, ov, nv) {
+                    counter++;
+                    newValue = nv;
+                    oldValue = ov;
+                }
+            }
+            def.publicProps = { x: 1 };
+            def.observedAttributes = ['x'];
+            const elm = document.createElement('x-foo');
+            const vnode1 = api.c('x-foo', def, { props: { x: 2 } });
+            const vnode2 = api.c('x-foo', def, { props: { x: 2 } });
+            patch(elm, vnode1);
+            patch(vnode1, vnode2);
+            assert.strictEqual(counter, 1);
+            assert.strictEqual(newValue, 2);
+            assert.strictEqual(oldValue, undefined);
+        });
 
     });
 
