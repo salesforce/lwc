@@ -4,7 +4,9 @@ Only stateful components expose the lifecycle to developers. Raptor aligns with 
 
 ## Lifecycle Hooks
 
-Raptor components provide "lifecycle" hooks that allow us to respond to changes to a component, such as when it gets created, rendered, inserted or destroyed. To add a lifecycle hook to a component, implement the hook as a method on your component subclass.
+Raptor components provide "lifecycle" hooks that allow us to respond to changes to a component, such as when it gets created, rendered, inserted or destroyed.
+
+The hook to know when a component is created is just the `constructor()` method on your component subclass, which is called once during the lifespan of each component instance. To add any other lifecycle hook to a component, implement the hook as a method on your component subclass.
 
 For example, to be notified when Raptor has inserted your component in the DOM so you can attach a listener, and remove the listener when the component is removed from the DOM, implement the `connectedCallback()` and `disconnectedCallback()` methods:
 
