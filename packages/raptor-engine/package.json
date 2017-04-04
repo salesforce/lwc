@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -56,7 +56,7 @@
     "rollup-plugin-flow": "^v1.1.0",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^2.0.0",
-    "rollup-plugin-raptor-compiler": "0.6.1",
+    "rollup-plugin-raptor-compiler": "0.6.2",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
