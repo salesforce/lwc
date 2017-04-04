@@ -11,7 +11,7 @@ import {
 import { notifyListeners } from "./watcher.js";
 import { isArray, isUndefined, create, toString, ArrayIndexOf, ArrayPush, ArraySplice } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
-import { extractOwnFields } from "./properties.js";
+import { extractOwnFields, getPropertyProxy } from "./properties.js";
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
@@ -57,6 +57,11 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     }
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
+        assert.block(function devModeCheck() {
+            if (typeof newValue === 'object') {
+                assert.invariant(getPropertyProxy(newValue) === newValue, `updateComponentProp() should always received proxified object values instead of ${newValue} in ${vm}.`);
+            }
+        });
         cmpProps[propName] = newValue;
         const attrName = getAttrNameFromPropName(propName);
         if (attrName in observedAttrs) {

@@ -2,9 +2,8 @@ import assert from "./assert.js";
 import { patch } from "./patch.js";
 import { scheduleRehydration } from "./vm.js";
 import { invokeComponentAttributeChangedCallback } from "./invoker.js";
-import {
-    updateComponentProp,
-} from "./component.js";
+import { updateComponentProp } from "./component.js";
+import { getPropertyProxy } from "./properties.js";
 import { getComponentDef } from "./def.js";
 import { c } from "./api.js";
 import { defineProperties, isUndefined } from "./language.js";
@@ -91,8 +90,10 @@ function linkProperties(element: HTMLElement, vm: VM) {
     for (let propName in propsConfig) {
         descriptors[propName] = {
             get: (): any => component[propName],
-            set: (newValue: any) => {
-                updateComponentProp(vm, propName, newValue);
+            set: (value: any) => {
+                // proxifying before storing it is a must for public props
+                value = typeof value === 'object' ? getPropertyProxy(value) : value;
+                updateComponentProp(vm, propName, value);
                 if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
                     scheduleRehydration(vm);
