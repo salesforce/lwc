@@ -22,6 +22,8 @@ import { GlobalHTMLProperties } from "./dom.js";
 import { getPropertyProxy } from "./properties.js";
 import { getLinkedVNode } from "./vm.js";
 import { Element } from "./html-element.js";
+import { isRendering, vmBeingRendered } from "./invoker.js";
+import { subscribeToSetHook } from "./watcher.js";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
 const EmptyObject = Object.freeze(Object.create(null));
@@ -86,6 +88,11 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
         if (isUndefined(component)) {
             assert.logError(`You should not attempt to read the value of public property ${propName} in "${vm}" during the construction process because its value has not been set by the owner component yet. Use the constructor to set default values for each public property.`);
             return;
+        }
+        if (isRendering) {
+            // this is needed because the proxy used by template.js is not sufficient
+            // for public props accessed from within a getter in the component.
+            subscribeToSetHook(vmBeingRendered, cmpProps, propName);
         }
         return cmpProps[propName];
     }
