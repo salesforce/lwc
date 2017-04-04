@@ -58,15 +58,23 @@ var defineProperties = Object.defineProperties;
 var hasOwnProperty = Object.hasOwnProperty;
 var isArray = Array.isArray;
 var _Array$prototype = Array.prototype;
-var slice = _Array$prototype.slice;
-var indexOf = _Array$prototype.indexOf;
-var push = _Array$prototype.push;
+var ArraySlice = _Array$prototype.slice;
+var ArraySplice = _Array$prototype.splice;
+var ArrayIndexOf = _Array$prototype.indexOf;
+var ArrayPush = _Array$prototype.push;
 function isUndefined(obj) {
     return obj === undefined;
 }
 
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
 function isObject(o) {
     return (typeof o === 'undefined' ? 'undefined' : _typeof$1(o)) === 'object';
+}
+
+function isString(obj) {
+    return typeof obj === 'string';
 }
 
 var OtS = {}.toString;
@@ -244,7 +252,7 @@ function addCallbackToNextTick(callback) {
             }
         });
     }
-    nextTickCallbackQueue.push(callback);
+    ArrayPush.call(nextTickCallbackQueue, callback);
 }
 
 var CAMEL_REGEX = /-([a-z])/g;
@@ -302,8 +310,9 @@ function noop() {}
 function getMapFromClassName(className) {
     var map = {};
     var start = 0;
-    var i = void 0;
-    for (i = 0; i < className.length; i++) {
+    var i = void 0,
+        len = className.length;
+    for (i = 0; i < len; i++) {
         if (className.charCodeAt(i) === SPACE_CHAR) {
             if (i > start) {
                 map[className.slice(start, i)] = true;
@@ -333,7 +342,8 @@ function insert(vnode) {
         rehydrate(vm);
         // replacing the vnode's children collection so successive patching routines
         // will diff against the full tree, not a only partial one.
-        children.splice(0, children.length).push.apply(children, vm.fragment);
+        children.length = 0;
+        ArrayPush.apply(children, vm.fragment);
     }
     if (vm.component.connectedCallback) {
         addCallbackToNextTick(function () {
@@ -382,104 +392,89 @@ var lifeCycleHooks = {
     postpatch: postpatch
 };
 
-function interopDefault(ex) {
-	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
-}
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var vnode = createCommonjsModule(function (module) {
-module.exports = function (sel, data, children, text, elm) {
-  var key = data === undefined ? undefined : data.key;
-  return { sel: sel, data: data, children: children,
-    text: text, elm: elm, key: key };
-};
-});
-
-var vnode$1 = interopDefault(vnode);
-
-
-var require$$2 = Object.freeze({
-  default: vnode$1
-});
-
-var is = createCommonjsModule(function (module) {
-module.exports = {
-  array: Array.isArray,
-  primitive: function primitive(s) {
-    return typeof s === 'string' || typeof s === 'number';
-  }
-};
-});
-
-var is$1 = interopDefault(is);
-var array = is.array;
-var primitive = is.primitive;
-
-var require$$1 = Object.freeze({
-  default: is$1,
-  array: array,
-  primitive: primitive
-});
-
-var h = createCommonjsModule(function (module) {
-var VNode = interopDefault(require$$2);
-var is = interopDefault(require$$1);
-
-function addNS(data, children, sel) {
-  data.ns = 'http://www.w3.org/2000/svg';
-
-  if (sel !== 'foreignObject' && children !== undefined) {
-    for (var i = 0; i < children.length; ++i) {
-      addNS(children[i].data, children[i].children, children[i].sel);
-    }
-  }
-}
-
-module.exports = function h(sel, b, c) {
-  var data = {},
-      children,
-      text,
-      i;
-  if (c !== undefined) {
-    data = b;
-    if (is.array(c)) {
-      children = c;
-    } else if (is.primitive(c)) {
-      text = c;
-    }
-  } else if (b !== undefined) {
-    if (is.array(b)) {
-      children = b;
-    } else if (is.primitive(b)) {
-      text = b;
-    } else {
-      data = b;
-    }
-  }
-  if (is.array(children)) {
-    for (i = 0; i < children.length; ++i) {
-      if (is.primitive(children[i])) children[i] = VNode(undefined, undefined, undefined, children[i]);
-    }
-  }
-  if (sel[0] === 's' && sel[1] === 'v' && sel[2] === 'g') {
-    addNS(data, children, sel);
-  }
-  return VNode(sel, data, children, text, undefined);
-};
-});
-
-var h$1 = interopDefault(h);
-
 var _typeof$3 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var CHAR_S = 115;
+var CHAR_V = 118;
+var CHAR_G = 103;
 var EmptyData = create(null);
+var NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
+
+// Node Types
+// https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+var ELEMENT_NODE = 1; // An Element node such as <p> or <div>.
+var TEXT_NODE = 3; // The actual Text of Element or Attr.
+
+function nodeToVNode(elm) {
+    // TODO: generalize this to support all kind of Nodes
+    // TODO: instead of creating the vnode() directly, use toVNode() or something else from snabbdom
+    // TODO: the element could be derivated from another raptor component, in which case we should
+    // use the corresponding vnode instead
+    assert.isTrue(elm instanceof Node, "Only Node can be wrapped by h()");
+    var nodeType = elm.nodeType;
+
+    if (nodeType === TEXT_NODE) {
+        return v(undefined, undefined, undefined, elm.textContent, elm);
+    }
+    if (nodeType === ELEMENT_NODE) {
+        // TODO: support "is"" attribute
+        return v(elm.tagName.toLowerCase(), undefined, undefined, undefined, elm);
+    }
+    throw new Error("Invalid NodeType: " + nodeType);
+}
+
+function addNS(data, children, sel) {
+    data.ns = NamespaceAttributeForSVG;
+    if (isUndefined(children) || sel === 'foreignObject') {
+        return;
+    }
+    var len = children.length;
+    for (var _i = 0; _i < len; ++_i) {
+        var child = children[_i];
+        var _data = child.data;
+
+        if (_data !== undefined) {
+            var grandChildren = child.children;
+            addNS(_data, grandChildren, child.sel);
+        }
+    }
+}
+
+// [v]node node
+function v(sel, data, children, text, elm, Ctor) {
+    data = data || EmptyData;
+    var _data2 = data,
+        key = _data2.key;
+
+    var vnode = { sel: sel, data: data, children: children, text: text, elm: elm, key: key, Ctor: Ctor };
+    assert.block(function devModeCheck() {
+        // adding toString to all vnodes for debuggability
+        vnode.toString = function () {
+            return "[object:vnode " + sel + "]";
+        };
+    });
+    return vnode;
+}
+
+// [h]tml node
+function h(sel, data, children) {
+    assert.isTrue(isString(sel), "h() 1st argument sel must be a string.");
+    assert.isTrue(isObject(data), "h() 2nd argument data must be an object.");
+    assert.isTrue(isArray(children), "h() 3rd argument children must be an array.");
+    if (children.length) {
+        n(children);
+    }
+    if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
+        addNS(data, children, sel);
+    }
+    return v(sel, data, children);
+}
 
 // [c]ustom element node
-function c(sel, Ctor) {
-    var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : EmptyData;
+function c(sel, Ctor, data) {
+    assert.isTrue(isString(sel), "c() 1st argument sel must be a string.");
+    assert.isTrue(isFunction(Ctor), "c() 2nd argument Ctor must be a function.");
+    assert.isTrue(isObject(data), "c() 3nd argument data must be an object.");
     var key = data.key,
         slotset = data.slotset,
         attrs = data.attrs,
@@ -489,9 +484,7 @@ function c(sel, Ctor) {
         _on = data.on;
 
     assert.isTrue(arguments.length < 4, "Compiler Issue: Custom elements expect up to 3 arguments, received " + arguments.length + " instead.");
-    var vnode = h$1(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, attrs: attrs, className: className, classMap: classMap, _props: _props, _on: _on }, []);
-    vnode.Ctor = Ctor;
-    return vnode;
+    return v(sel, { hook: lifeCycleHooks, key: key, slotset: slotset, attrs: attrs, className: className, classMap: classMap, _props: _props, _on: _on }, [], undefined, undefined, Ctor);
 }
 
 // [i]terable node
@@ -499,52 +492,44 @@ function i(items, factory) {
     var len = isArray(items) ? items.length : 0;
     var list = [];
 
-    var _loop = function _loop(_i) {
-        var vnode = factory(items[_i], _i);
-        var isArrayNode = isArray(vnode);
-        if (isArrayNode) {
-            push.apply(list, vnode);
+    var _loop = function _loop(_i2) {
+        var vnode = factory(items[_i2], _i2);
+        if (isArray(vnode)) {
+            ArrayPush.apply(list, vnode);
         } else {
-            list.push(vnode);
+            ArrayPush.call(list, vnode);
         }
-
         assert.block(function devModeCheck() {
-            var vnodes = isArrayNode ? vnode : [vnode];
+            var vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach(function (vnode) {
                 if (vnode && (typeof vnode === "undefined" ? "undefined" : _typeof$3(vnode)) === 'object' && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
-                    assert.logWarning("Missing \"key\" attribute for element <" + vnode.sel + "> in iteration of " + toString(items) + " for index " + _i + " of " + len + ". Solution: You can set a \"key\" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of \"" + toString(vnode.Ctor.name) + "\".");
+                    assert.logWarning("Missing \"key\" attribute for element <" + vnode.sel + "> in iteration of " + toString(items) + " for index " + _i2 + " of " + len + ". Solution: You can set a \"key\" attribute to a unique value so the diffing algo can guarantee to preserve the internal state of the instance of \"" + toString(vnode.Ctor.name) + "\".");
                 }
             });
         });
     };
 
-    for (var _i = 0; _i < len; _i += 1) {
-        _loop(_i);
+    for (var _i2 = 0; _i2 < len; _i2 += 1) {
+        _loop(_i2);
     }
     return list;
 }
 
 /**
  * [s]tringify
- * This is used to guarantee that we never send null, object or undefined as a text children to snabbdom
- * - null and undefined should produce empty entry
- * - string values are on the fast lane
- * - any other object will be intentionally casted as strings
  */
 function s() {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
-    return typeof value === 'string' ? value : value === null ? '' : '' + value;
+    // deprecated
+    return value;
 }
 
 /**
  * [e]mpty
- * This is used to guarantee that we never send null, object or undefined as a text children to snabbdom
- * - null and undefined should produce empty entry
- * - string values are on the fast lane
- * - any other object will be intentionally casted as strings
  */
 function e() {
+    // deprecated
     return '';
 }
 
@@ -555,12 +540,12 @@ function f(items) {
     assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     var len = items.length;
     var flattened = [];
-    for (var _i2 = 0; _i2 < len; _i2 += 1) {
-        var item = items[_i2];
+    for (var _i3 = 0; _i3 < len; _i3 += 1) {
+        var item = items[_i3];
         if (isArray(item)) {
-            flattened.push.apply(flattened, item);
+            ArrayPush.apply(flattened, item);
         } else {
-            flattened.push(item);
+            ArrayPush.call(flattened, item);
         }
     }
     assert.block(function devModeCheck() {
@@ -574,50 +559,45 @@ function f(items) {
     return flattened;
 }
 
+// [n]ormalize children nodes
+function n(children) {
+    var len = children.length;
+    for (var _i4 = 0; _i4 < len; ++_i4) {
+        var child = children[_i4];
+        var t = typeof child === "undefined" ? "undefined" : _typeof$3(child);
+        if (t === 'object' && child && "Ctor" in child) {
+            continue;
+        } else if (t === 'string' || t === 'number') {
+            children[_i4] = v(undefined, undefined, undefined, child);
+        } else if ("nodeType" in child) {
+            children[_i4] = nodeToVNode(child);
+        } else {
+            children[_i4] = v(undefined, undefined, undefined, child || '');
+        }
+    }
+    return children;
+}
+
 var api = Object.freeze({
+    v: v,
+    h: h,
     c: c,
-    h: h$1,
     i: i,
     s: s,
     e: e,
-    f: f
+    f: f,
+    n: n
 });
 
 var EmptySlots = create(null);
-
-function wrapDOMNode(element) {
-    // TODO: generalize this to support all kind of Nodes
-    // TODO: instead of creating the h() directly, use toVNode() or something else from snabbdom
-    // TODO: the element could be derivated from another raptor component, in which case we should
-    // use the corresponding vnode instead
-    assert.isTrue(element instanceof HTMLElement, "Only HTMLElements can be wrapped by h()");
-    var tagName = element.tagName.toLowerCase();
-    // TODO: support "is"" attribute
-    var vnode = h$1(tagName, {});
-    vnode.elm = element;
-    return vnode;
-}
 
 function normalizeRenderResult(vm, elementOrVnodeOrArrayOfVnodes) {
     if (!elementOrVnodeOrArrayOfVnodes) {
         return [];
     }
     // never mutate the original array
-    var vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? slice.call(elementOrVnodeOrArrayOfVnodes, 0) : [elementOrVnodeOrArrayOfVnodes];
-    for (var i = 0; i < vnodes.length; i += 1) {
-        var elm = vnodes[i];
-        // TODO: we can improve this detection mechanism
-        if (elm && (elm.sel || elm.text)) {
-            // this is usually the default behavior, we wire this up for that reason.
-            assert.vnode(elm, "Invalid element " + toString(vnodes[i]) + " returned in " + (i + 1) + " position when calling " + vm + ".render().");
-        } else if (elm instanceof Node) {
-            vnodes[i] = wrapDOMNode(elm);
-        } else {
-            // supporting text nodes
-            vnodes[i] = { text: elm === null || isUndefined(elm) ? '' : elm + '' };
-        }
-    }
-    return vnodes;
+    var vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? ArraySlice.call(elementOrVnodeOrArrayOfVnodes, 0) : [elementOrVnodeOrArrayOfVnodes];
+    return n(vnodes);
 }
 
 function getSlotsetValue(slotset, slotName) {
@@ -723,7 +703,7 @@ function evaluateTemplate(html, vm) {
                 slots = _html$slots === undefined ? [] : _html$slots;
 
             for (var slotName in cmpSlots) {
-                if (indexOf.call(slots, slotName) === -1) {
+                if (ArrayIndexOf.call(slots, slotName) === -1) {
                     // TODO: this should never really happen because the compiler should always validate
                     console.warn("Ignoreing unknown provided slot name \"" + slotName + "\" in " + vm + ". This is probably a typo on the slot attribute.");
                 }
@@ -880,7 +860,7 @@ function invokeComponentRenderMethod(vm) {
     if (error) {
         throw error; // rethrowing the original error after restoring the context
     }
-    return result;
+    return result || [];
 }
 
 function invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue) {
@@ -910,11 +890,7 @@ function createComponent(vm, Ctor) {
 
     var _loop = function _loop(methodName) {
         cmpProps[methodName] = function () {
-            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-            }
-
-            return invokeComponentMethod(vm, methodName, args);
+            return invokeComponentMethod(vm, methodName, arguments);
         };
     };
 
@@ -937,9 +913,9 @@ function clearListeners(vm) {
     if (len) {
         for (var i = 0; i < len; i += 1) {
             var set = deps[i];
-            var pos = indexOf.call(deps[i], vm);
+            var pos = ArrayIndexOf.call(deps[i], vm);
             assert.invariant(pos > -1, "when clearing up deps, the vm must be part of the collection.");
-            set.splice(pos, 1);
+            ArraySplice.call(set, pos, 1);
         }
         deps.length = 0;
     }
@@ -1007,12 +983,12 @@ function addComponentEventListener(vm, eventName, newHandler) {
         cmpEvents[eventName] = [];
     }
     assert.block(function devModeCheck() {
-        if (cmpEvents[eventName] && indexOf.call(cmpEvents[eventName], newHandler) === -1) {
+        if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
             console.warn("Adding the same event listener " + newHandler + " for the event \"" + eventName + "\" will result on calling the same handler multiple times for " + vm + ". In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component " + vm + ".");
         }
     });
     // TODO: we might need to hook into this listener for Locker Service
-    cmpEvents[eventName].push(newHandler);
+    ArrayPush.call(cmpEvents[eventName], newHandler);
     console.log("Marking " + vm + " as dirty: event handler for \"" + eventName + "\" has been added.");
     if (!vm.isDirty) {
         markComponentAsDirty(vm);
@@ -1026,9 +1002,9 @@ function removeComponentEventListener(vm, eventName, oldHandler) {
 
     if (cmpEvents) {
         var handlers = cmpEvents[eventName];
-        var pos = handlers && indexOf.call(handlers, oldHandler);
+        var pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
-            cmpEvents[eventName].splice(pos, 1);
+            ArraySplice.call(cmpEvents[eventName], pos, 1);
             if (!vm.isDirty) {
                 markComponentAsDirty(vm);
             }
@@ -1140,10 +1116,10 @@ function subscribeToSetHook(vm, target, key) {
         value = [];
         reactiveRecord[key] = value;
     }
-    if (indexOf.call(value, vm) === -1) {
-        value.push(vm);
+    if (ArrayIndexOf.call(value, vm) === -1) {
+        ArrayPush.call(value, vm);
         // we keep track of the sets that vm is listening from to be able to do some clean up later on
-        vm.deps.push(value);
+        ArrayPush.call(vm.deps, value);
     }
 }
 
@@ -1180,15 +1156,9 @@ function propertyDelete(target, key) {
 }
 
 var propertyProxyHandler = {
-    get: function get(target, key) {
-        return propertyGetter(target, key);
-    },
-    set: function set(target, key, newValue) {
-        return propertySetter(target, key, newValue);
-    },
-    deleteProperty: function deleteProperty(target, key) {
-        return propertyDelete(target, key);
-    }
+    get: propertyGetter,
+    set: propertySetter,
+    deleteProperty: propertyDelete
 };
 
 function getPropertyProxy(value) {
@@ -1623,17 +1593,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var CtorToDefMap = new WeakMap();
 var EmptyObject = Object.freeze(Object.create(null));
 
-function isElementComponent(Ctor) {
-    var protoSet = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-    if (!Ctor || indexOf.call(protoSet, Ctor) >= 0) {
+function isElementComponent(Ctor, protoSet) {
+    protoSet = protoSet || [];
+    if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
     var proto = Object.getPrototypeOf(Ctor);
     if (proto === ComponentElement) {
         return true;
     }
-    protoSet.push(Ctor);
+    ArrayPush.call(protoSet, Ctor);
     return isElementComponent(proto, protoSet);
 }
 
@@ -1688,6 +1657,11 @@ function createPublicPropertyDescriptorMap(propName) {
         if (isUndefined(component)) {
             assert.logError("You should not attempt to read the value of public property " + propName + " in \"" + vm + "\" during the construction process because its value has not been set by the owner component yet. Use the constructor to set default values for each public property.");
             return;
+        }
+        if (isRendering) {
+            // this is needed because the proxy used by template.js is not sufficient
+            // for public props accessed from within a getter in the component.
+            subscribeToSetHook(vmBeingRendered, cmpProps, propName);
         }
         return cmpProps[propName];
     }
@@ -1876,7 +1850,7 @@ function rehydrate(vm) {
         // as the source of true, in case the parent tries to rehydrate against that one.
         // TODO: we can optimize this proces by using proto-chain, or Object.assign() without
         // having to call h() directly.
-        var oldVnode = h$1(sel, vnode.data, vnode.children);
+        var oldVnode = h(sel, vnode.data, vnode.children);
         oldVnode.Ctor = Ctor;
         oldVnode.elm = vnode.elm;
         oldVnode.vm = vnode.vm;
@@ -1904,14 +1878,6 @@ function scheduleRehydration(vm) {
 function initializeComponent(oldVnode, vnode) {
     var Ctor = vnode.Ctor;
 
-    assert.block(function devModeCheck() {
-        // adding toString to all vnodes for debuggability
-        if (!vnode.toString) {
-            vnode.toString = function () {
-                return "[object:vnode " + vnode.sel + "]";
-            };
-        }
-    });
     if (isUndefined(Ctor)) {
         return;
     }
@@ -2186,7 +2152,8 @@ function rerender(oldVnode, vnode) {
     }
     // replacing the vnodes in the children array without replacing the array itself
     // because the engine has a hard reference to the original array object.
-    children.splice(0, children.length).push.apply(children, vm.fragment);
+    children.length = 0;
+    ArrayPush.apply(children, vm.fragment);
 }
 
 var componentChildren = {
@@ -2252,6 +2219,48 @@ var props = {
     create: update$1,
     update: update$1
 };
+
+function interopDefault(ex) {
+	return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var vnode = createCommonjsModule(function (module) {
+module.exports = function (sel, data, children, text, elm) {
+  var key = data === undefined ? undefined : data.key;
+  return { sel: sel, data: data, children: children,
+    text: text, elm: elm, key: key };
+};
+});
+
+var vnode$1 = interopDefault(vnode);
+
+
+var require$$2 = Object.freeze({
+  default: vnode$1
+});
+
+var is = createCommonjsModule(function (module) {
+module.exports = {
+  array: Array.isArray,
+  primitive: function primitive(s) {
+    return typeof s === 'string' || typeof s === 'number';
+  }
+};
+});
+
+var is$1 = interopDefault(is);
+var array = is.array;
+var primitive = is.primitive;
+
+var require$$1 = Object.freeze({
+  default: is$1,
+  array: array,
+  primitive: primitive
+});
 
 var htmldomapi = createCommonjsModule(function (module) {
 function createElement(tagName) {
@@ -3107,5 +3116,5 @@ exports.getComponentDef = getComponentDef;
 exports.Element = ComponentElement;
 
 }((this.Engine = this.Engine || {})));
-/** version: 0.6.1 */
+/** version: 0.6.2 */
 //# sourceMappingURL=engine.js.map
