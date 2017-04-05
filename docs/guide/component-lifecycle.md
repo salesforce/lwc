@@ -18,7 +18,7 @@ export default class Foo extends Element {
     this.addEventListener('mouseenter', this.lightUp);
     this.addEventListener('mouseleave', this.lightDown);
   }
-  connectedCallback() {
+  disconnectedCallback() {
     this.removeEventListener('mouseenter', this.lightUp);
     this.removeEventListener('mouseleave', this.lightDown);
   }
@@ -33,7 +33,7 @@ export default class Foo extends Element {
 
 > Note: removing listeners is a good practice, but not strictly necessary since the engine will clean all remaining listeners when destroying an HOST element.
 
-> Note: these two hooks are well document as part of the Web Component specification.
+> Note: these two hooks are well documented as part of the Web Component specification.
 
 Additinonally, the `renderedCallback()` is a Raptor's specific, and it is used to indicated that a component has finished the rendering phase, which can occur multiple times (due to mutations) during the lifespan of the component in the application.
 
@@ -51,4 +51,4 @@ export default class Foo extends Element {
 }
 ```
 
-> Note: all hooks are guarantee to be called after all child elements of the component (based on its template) are created and inserted inside the HOST element.
+> Note: all hooks are guaranteed to be called after all child elements of the component (based on its template) are created and inserted inside the HOST element.
