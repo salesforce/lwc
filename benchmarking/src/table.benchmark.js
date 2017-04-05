@@ -15,10 +15,17 @@ import {
 let tableElement;
 let store;
 
-for (let TableClass of [Table, TableComponent]) {
+const componentNameMapping = {
+    'benchmark-table': Table,
+    'benchmark-table-component': TableComponent
+};
+
+for (let tableName of Object.keys(componentNameMapping)) {
+    const TableClass = componentNameMapping[tableName];
+
     const insertTableComponent = function(cb) {
         if (!tableElement) {
-            tableElement = createElement(TableClass.tagName, { is: TableClass });
+            tableElement = createElement(tableName, { is: TableClass });
             document.body.appendChild(tableElement);
         }
 
@@ -26,7 +33,7 @@ for (let TableClass of [Table, TableComponent]) {
     }
 
     benchmark({
-        name: `${TableClass.tagName}/create/1k`,
+        name: `${tableName}/create/1k`,
         description: 'Duration for create 1k rows',
         before(cb) {
             insertTableComponent(() => {
@@ -48,7 +55,7 @@ for (let TableClass of [Table, TableComponent]) {
     });
 
     benchmark({
-        name: `${TableClass.tagName}/update10th/1k`,
+        name: `${tableName}/update10th/1k`,
         description: 'Duration to update every 10th rows',
         before(cb) {
             insertTableComponent(() => {
@@ -72,7 +79,7 @@ for (let TableClass of [Table, TableComponent]) {
     });
 
     benchmark({
-        name: `${TableClass.tagName}/create/10k`,
+        name: `${tableName}/create/10k`,
         description: 'Duration for create 10k rows',
         before(cb) {
             insertTableComponent(() => {
@@ -94,7 +101,7 @@ for (let TableClass of [Table, TableComponent]) {
     });
 
     benchmark({
-        name: `${TableClass.tagName}/append/1k`,
+        name: `${tableName}/append/1k`,
         description: 'Duration for appending 1k row to 10k existing rows',
         before(cb) {
             insertTableComponent(() => {
@@ -118,7 +125,7 @@ for (let TableClass of [Table, TableComponent]) {
     });
 
     benchmark({
-        name: `${TableClass.tagName}/clear/10k`,
+        name: `${tableName}/clear/10k`,
         description: 'Duration for clearing 10k rows',
         before(cb) {
             insertTableComponent(() => {
@@ -130,7 +137,7 @@ for (let TableClass of [Table, TableComponent]) {
             });
         },
         run(cb) {
-            tableElement = [];
+            tableElement.rows = [];
             nextTick(cb);
         },
     });

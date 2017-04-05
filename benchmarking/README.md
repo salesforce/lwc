@@ -1,89 +1,73 @@
 # Raptor Benchmarking
 
-## Key features
+## Bundles
 
-* No hard dependency on Selenium / Webdriver or any other headless browsers.
-* Capability to gather numbers directly from the CLI.
-* Take a snapshot of the benchmark and the framework as standalone bundle. This offer the capability to:
-    * replay the commit history to investigate performance regression
-    * run the benchmark on any device directly from within the browser
-
-### Directory sctructure
-
-```bash
-├── dist                # Directory containing the bundles artefacts & runner static application
-├── runner              # Directory containing code related to the benchmark runner
-│   ├── cli                 # CLI used for running the benchmark from the command line
-│   ├── manager             # Runner shell application (written in Raptor)
-│   ├── index.html          # Runner shell HTML page
-│   └── runner.js           # A micro test runner injected in the runner frame
-├── scripts             # Directory containing usefull build scripts
-└── src                 # Directory containing the benchmarks files (glob: *.benchmark.js)
-```
-
-### Bundle structure
-
-Each bundle is a directory containing 2 files:
+A *bundle* is a static snapshot of the framework with the benchmarking tests. By default the generated bundles are located in the `dist` directory. On the file system, a bundle is a directory containing 2 files:
 * `bundle.js`: raptor framework + associated benchmarking tests
 * `info.json`: metadata related to the bundle
 
-The bundle folder name uses the following structure `bundle_<id>_<git-hash>_<branch_name>`:
-* `id`: timestamp when the build has been generated
-* `git_hash`: short version of the git commit hash associated to the bundle
-* `branch_name`: git branch name associated to the commit. All the `/` character get replaced with `-`
-
-In order to ease the comparision between different version of the framework, the build step on top creating the bundle folder in the `/dist` directory, also create the following symbolic links: `HEAD`, `<git-hash>`, `<branch_name>`
-
-### Runner
-
-The application in divided into 2 pieces:
-* `manager.js`: Single page application created with Raptor. It takes care of instanciating the runner iframes and pretty print the results.
-* `runner.js`: Micro benchmark runner. This script injected with the bundle in the iframe.
-
-## How to use
-
-### How to create bundles
-
-Before running a benchmark you need to create bundles.
+> **Note:** For each commit, the CI job generates a new bundle and publish it to the [raptor/benchmark-artifacts repo](https://git.soma.salesforce.com/raptor/benchmark-artifacts).
 
 ```bash
-npm run build
-
-# Compare branches
-git checkout master
-npm run build                           # /dist/master
-git checkout my-feature
-npm run build                           # /dist/my-feature
-
-# Compare commit
-git checkout 1071769
-npm run build                           # /dist/1071769
-git checkout 9f9eec7
-npm run build                           # /dist/9f9eec7
-
-# Compare uncommitted changes
-npm run build  --label=new-changes      # /dist/new-changes
-git stash
-npm run build  --label=with-changes     # /dist/with-changes
+yarn run build
 ```
+
+**Options**:
+
+* **`name`**: Set the name of the bundle. (default: `[current git hash hash]`)
+
+## Runner
+
+The *runner* is a standale javascript application. It receives as input one or multiple bundles, run the bundles in isolation, report and compoare the benchmark results. You can start the runner by directly accesing the app via a browser or using the runner cli.
 
 ### Runner app
 
+You can run the following commands to build and start the bundle app. The app is then accessible at [http://localhost:8000/](http://localhost:8000/).
+
 ```bash
-npm start
-open http://localhost:8000/index.html?base=/HEAD
+yarn run build-runner
+yarn run serve
 ```
 
-You can pass the following query strings to the runner:
-* `base` - **required**: the bundle folder url used as base for benchmarking
-* `compare`: the bundle folder url used to compare against the base
-* `grep`: a string used to filter the benchmark to run
+**Options**:
 
-**Examples**:
-* http://localhost:8000/index.html?base=/HEAD
-* http://localhost:8000/index.html?base=/HEAD&compare=/master
-* http://localhost:8000/index.html?base=/benchmarking&compare=/master&grep=table
+The runner can be configured either from the form, or by passing the parameter as query string in the url.
+
+* **Base URL**: URL of the base bundle. (required: `true`, url param: `base`)
+* **Compare URL**: URL of the bundle to compare against the `base` bundle. (url param: `compare`)
+* **Filter**: Instead of running all the test, the runner will only run the tests matching the pattern (url param: `grep`)
+* **Maximum benchmark duration**: The upper-bound duration a benchmark should run in ms. (url param: `maxDuration`)
+* **Minimum benchmark sample**: The lower-bound number of iteration a benchmark should run. (url param: `minSampleCount`)
 
 ### Runner CLI
 
-TODO
+It's also possible to run the benchmark comparison from the command line. The CLI takes care of spawning a new browser, load the benchmark application with the parameters and retrieve the benchmark results.
+
+```bash
+yarn run cli
+```
+
+**Options**:
+
+* **`server`**: URL of the runner application (default: `https://localhost:8000/index.html`)
+* **`browser`**: Name of the browser to start. (values: [`chrome`, `firefox`], default: `chrome`)
+* **`reporter`**: Type of output (values: [`pretty`, `json`, `markdown`], default: `pretty`)
+* **`dest`**: File path where the output will the saved.
+* + all the options that can be passed to the runner application.
+
+**Examples**:
+
+```bash
+# Run the benchmark for the bundle named HEAD served from the dist directory.
+yarn run cli -- --base=/HEAD
+
+# Run a quick benchmark for sanity check.
+yarn run cli -- --base=/HEAD --max-duration=1 --min-sample-count=2
+
+# Compare 2 bundles from the central bundle repository and store the results as markdown
+yarn run cli -- \
+    --base=https://git.soma.salesforce.com/pages/raptor/benchmark-artifacts/2b29efe \
+    --compare=https://git.soma.salesforce.com/pages/raptor/benchmark-artifacts/530706c \
+    --reporter=markdown \
+    --dest=./results.md
+```

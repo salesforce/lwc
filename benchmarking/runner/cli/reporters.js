@@ -3,64 +3,75 @@
 import fs from 'fs';
 import Table from 'cli-table';
 
-import BenchmarkResult, { groupBenchmarkByName } from '../shared/benchmark-results';
+import {
+    bundleResultsIterator,
+} from '../shared/bundle';
 
-function compareBenchmarkResults(base, compare) {
-    const compareRes = BenchmarkResult.compare(base, compare);
+function markdownDropdown(title, content) {
+    return [
+        '<p><details>',
+        `<summary><b>${title}</b></summary>`,
+        content,
+        '</details></p>',
+    ].join('\n');
+}
 
-    switch (compareRes) {
-        case 0: // Statically not differenciable
-            return '👌';
+function markdownReplayMessage(url) {
+    const content = [
+        '<p>You can do this by opening the following link in your browser<br/>',
+        `<code><a href=${url}>${url}</code>`,
+        '</p>',
+    ].join('\n');
 
-        case 1: // Base is better than compare
-            return '👎';
+    return markdownDropdown(
+        'Want to replay the benchmark?',
+        content
+    );
+}
 
-        case -1: // Compare is better than base
-            return '👍';
+function formatStats(benchmark, shouldCompareBundles) {
+    const { stats, compare } = benchmark;
 
-        default:
-            throw new Error(`Unexpected compare value of ${compareRes}`);
+    const cells = stats.map(stat => (
+        stat ? `${stat.median.toFixed(2)} (± ${stat.mad.toFixed(2)} ms)` : 'N/A'
+    ));
+
+    if (shouldCompareBundles) {
+        let formattedCompare = 'N/A';
+
+        if (compare === 0) {
+            formattedCompare = '👌'
+        } else if (compare === 1) {
+            formattedCompare = '👎'
+        } else {
+            formattedCompare = '👍'
+        }
+
+        cells.push(formattedCompare);
     }
+
+    return cells;
 }
 
 function buildTable(bundles) {
-    const isComparable = bundles.length === 2;
-    const labels = bundles.map(bundle => bundle.label);
-    const head = ['', ...labels];
+    const shouldCompareBundles = bundles.length >= 2;
 
-    if (isComparable) {
+    const head = [
+        'name',
+        ...bundles.map(bundle => `${bundle.label} (${bundle.info.commitHash})`)
+    ];
+
+    if (shouldCompareBundles) {
         head.push('trend');
     }
 
-    const benchmarkResults = bundles.map(({ results }) => (
-        results.map(result => new BenchmarkResult(result.name, result.samples))
-    ));
-
-    const groupedResults = groupBenchmarkByName(...benchmarkResults);
-
-    const rows = groupedResults.map(benchmark => {
-        const { name, results } = benchmark;
-
-        const data = results.map(benchmark => {
-            if (benchmark) {
-                const { median, mad } = benchmark.stats;
-                return `${median.toFixed(3)} ± ${mad.toFixed(3)}`;
-            } else {
-                return '';
-            }
-        });
-
-        if (isComparable) {
-            if (results.length === 2 && results.every(Boolean)) {
-                const [base, compare] = results;
-                data.push(compareBenchmarkResults(base, compare));
-            } else {
-                data.push('');
-            }
-        }
-
-        return [name, ...data];
-    });
+    const rows = [];
+    for (let [name, benchmark] of bundleResultsIterator(bundles)) {
+        rows.push([
+            name,
+            ...formatStats(benchmark, shouldCompareBundles),
+        ]);
+    }
 
     return [
         head,
@@ -68,66 +79,81 @@ function buildTable(bundles) {
     ]
 }
 
-class JSONReporter {
-    constructor({ dest }) {
-        if (!dest) {
-            throw new Error('JSON reporter expect a dest argument');
-        }
-
-        this.dest = dest;
+export function jsonFormatter ({ dest }) {
+    if (!dest) {
+        throw new Error('JSON formatter expects a dest argument')
     }
 
-    run(results) {
-        const formatted = JSON.stringify(results, null, 4);
-        fs.writeFileSync(this.dest, formatted);
+    return (err, res) => {
+        let content = res;
+
+        if (err) {
+            const { message, stack } = err;
+            content = { message, stack };
+        }
+
+        fs.writeFileSync(dest, JSON.stringify(content, null, 4));
+    };
+}
+
+export function markdownFormatter ({ dest }, url) {
+    if (!dest) {
+        throw new Error('Markdown formatter expects a dest argument')
+    }
+
+    return (err, res) => {
+        const lines = [];
+
+        if (err) {
+            lines.push(
+                '### 🚫 Benchmark performance results 🚫',
+                'Oops an error occurred during the benchmark!',
+                '```',
+                err.stack,
+                '```',
+            );
+
+        } else {
+            const [head, ...rows] = buildTable(res);
+            const table = [
+                head,
+                head.map(() => `---`),
+                ...rows
+            ];
+
+            const resultDropdown = markdownDropdown(
+                'What is the raw performance result?',
+                `<pre><code>${JSON.stringify(res, null, 4)}</code></pre>`,
+            );
+
+            lines.push(
+                '### Benchmark performance results',
+                table.map(row => row.join(' | ')).join('\n'),
+                resultDropdown
+            );
+        }
+
+        const content = [
+            ...lines,
+            markdownReplayMessage(url),
+        ].join('\n');
+
+        fs.writeFileSync(dest, content);
     }
 }
 
-class MarkdownReporter {
-    constructor({ dest }) {
-        if (!dest) {
-            throw new Error('Markdown reporter expect a dest argument');
+export function cliFormatter() {
+    return (err, res) => {
+        // Because the cli already print errors, do nothing if there is an error
+        if (err) {
+            return;
         }
 
-        this.dest = dest;
-    }
-
-    run(results) {
-        const [head, ...rows] = buildTable(results);
-
-        const table = [
-            head,
-            head.map(() => `---`),
-            ...rows
-        ];
-
-        const formattedTable = table.map(row => row.join(' | ')).join('\n');
-        fs.writeFileSync(this.dest, formattedTable);
-    }
-}
-
-class PrettyTable {
-    run(bundles) {
-        const [head, ...rows] = buildTable(bundles)
+        const [head, ...rows] = buildTable(res)
 
         const table = new Table({ head });
         table.push(...rows);
 
         console.log(table.toString());
     }
-}
-
-const REPORTER_TYPES = {
-    json: JSONReporter,
-    markdown: MarkdownReporter,
-    pretty: PrettyTable,
-};
-
-export default function(type, argv) {
-    if (!(type in REPORTER_TYPES)) {
-        throw new Error(`${type} is not a valid reporter.`);
-    }
-
-    const FormatterClass = REPORTER_TYPES[type];
-    return new FormatterClass(argv);
 }

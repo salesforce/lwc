@@ -75,6 +75,7 @@ export default function browserFactory(browser) {
         '--disable-extensions',
         '--disable-translate',
         '--no-first-run',
+        '--ignore-certificate-errors',
         `--user-data-dir=${profilePath}`
     ]);
 }

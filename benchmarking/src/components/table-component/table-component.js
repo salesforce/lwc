@@ -1,4 +1,6 @@
-export default class TableComponent {
+import { Element } from 'raptor-engine';
+
+export default class TableComponent extends Element {
     rows = [];
 
     handleSelect() {

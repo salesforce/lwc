@@ -1,25 +1,73 @@
 /* eslint-env node */
 
 import path from 'path';
+import https from 'https';
+
+import pem from 'pem';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-const DEFAULT_HOSTNAME = 'localhost';
+import {
+    HANDLER_ACK_ENDPOINT,
+    HANDLER_ERROR_ENDPOINT,
+    HANDLER_RESULTS_ENDPOINT,
+} from '../shared/config';
+
+const CONNECTION_TIMEOUT = 10 * 1000;
+const DEFAULT_HOST = 'localhost';
 const DEFAULT_PORT = 8000;
-const ENDPOINT = 'callback';
 const DIST_FOLDER = path.join(__dirname, '../../dist');
 
+function loggerMiddleware(req, res, next) {
+    console.log(`[callback-handler] ${req.method} - ${req.originalUrl}`);
+    next();
+}
+
+function createExpressServer(cb) {
+    const app = express();
+
+    app.use(cors());
+    app.use(bodyParser.json());
+    app.use(loggerMiddleware);
+    app.use(express.static(DIST_FOLDER));
+
+    app.post(HANDLER_ERROR_ENDPOINT, ({ body }, res) => {
+        res.sendStatus(200);
+        const err = new Error(body.message);
+        err.stack = body.stack;
+        cb(err);
+    });
+
+    app.post(HANDLER_RESULTS_ENDPOINT, ({ body }, res) => {
+        res.sendStatus(200);
+        cb(null, body);
+    });
+
+    const ackTimeout = setTimeout(() => {
+        const err = new Error(`Browser has not acknowledged after ${CONNECTION_TIMEOUT} ms`);
+        cb(err);
+    }, CONNECTION_TIMEOUT);
+
+    app.post(HANDLER_ACK_ENDPOINT, (_, res) => {
+        res.sendStatus(200);
+        clearTimeout(ackTimeout);
+    });
+
+    return app
+}
+
 class CallbackHandler {
-    constructor(hostname = DEFAULT_HOSTNAME, port = DEFAULT_PORT) {
+    constructor(host = DEFAULT_HOST, port = DEFAULT_PORT) {
         this.server = null;
 
-        this.hostname = hostname
+        this.host = host;
         this.port = port;
+        this.ackTimeout = null;
     }
 
-    get endpoint() {
-        return `http://${this.hostname}:${this.port}/${ENDPOINT}`;
+    get hostname() {
+        return `https://${this.host}:${this.port}`;
     }
 
     start(cb) {
@@ -29,25 +77,23 @@ class CallbackHandler {
             throw new Error('Callback handler is already running');
         }
 
-        const app = express();
+        pem.createCertificate({
+            day: 1,
+            selfSigned: true
+        }, (err, keys) => {
+            if (err) {
+                return cb(err);
+            }
 
-        app.use(cors());
-        app.use(bodyParser.json());
+            var app = createExpressServer(cb);
+            var server = https.createServer({
+                key: keys.serviceKey,
+                cert: keys.certificate
+            }, app);
 
-        app.use((req, res, next) => {
-            console.log(`[callback-handler] ${req.method} - ${req.originalUrl}`);
-            next();
-        })
-
-        app.use(express.static(DIST_FOLDER));
-
-        app.post(`/${ENDPOINT}`, ({body}, res) => {
-            res.sendStatus(200);
-            cb(body);
-        });
-
-        this.server = app.listen(this.port, () => {
-            console.log(`Listening on callback url: ${this.endpoint}`);
+            server.listen(DEFAULT_PORT, () => (
+                console.log(`callback handler running at ${this.hostname}`)
+            ));
         });
     }
 

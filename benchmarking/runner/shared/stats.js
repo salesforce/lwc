@@ -36,6 +36,14 @@ export function medianAbsoluteDeviation(arr) {
     return median(arr.map(x => Math.abs(x - med)))
 }
 
+export function formatNumber(num) {
+    if (typeof num != 'number') {
+        throw new TypeError('formatNumber expects a number, received', typeof num);
+    }
+
+    return num.toFixed(3);
+}
+
 // From https://github.com/bestiejs/benchmark.js/blob/master/benchmark.js#L1391
 export function compare(sample1, sample2) {
     var zStat,

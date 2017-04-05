@@ -3,13 +3,13 @@ NEXUS_PROXY = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
 GIT_SOMA_SSH_CREDENTIAL = "8ee1b190-5d0e-463b-a516-45c7261723ce"
 
 BENCHMARKING_JENKINS_JOB = "raptor-performance-benchmark"
-BENCHMARKING_ARTEFACT_REPO = "git@git.soma.salesforce.com:raptor/benchmark-artefacts.git"
+BENCHMARKING_ARTIFACT_REPO = "git@git.soma.salesforce.com:raptor/benchmark-artifacts.git"
 
 // FIXME: Waiting for git service user
 GIT_USER_EMAIL = "p.dartus@salesforce.com"
 GIT_USER_NAME = "p-dartus"
 
-def helpers
+helpers = null
 
 // must specify the CloudBees docker label which maps to the appropriate docker image
 // aka do not change this.
@@ -61,13 +61,13 @@ node("raptor_node") {
 
                 // Inject git credentials
                 sshagent([GIT_SOMA_SSH_CREDENTIAL]) {
-                    // Clone the artefact repo as the dist folder
-                    sh "git clone $BENCHMARKING_ARTEFACT_REPO dist"
+                    // Clone the artifact repo as the dist folder
+                    sh "git clone $BENCHMARKING_ARTIFACT_REPO dist"
 
-                    // Build the benchmark artefact for the current commit
-                    sh "NO_ALIAS=true yarn run build"
+                    // Build the benchmark artifact for the current commit
+                    sh "yarn run build"
 
-                    // Commit and push the artefact folder
+                    // Commit and push the artifact folder
                     // Requires a mutex to avoid multiple multiple commit and push occuring a the same time and resulting to merge conflict
                     lock('build-benchmark-bundle') {
                         dir ("dist") {
@@ -78,14 +78,13 @@ node("raptor_node") {
                     }
                 }
 
-                def currentCommit = helpers.getCommitHash("HEAD")
-
-                // CHANGE_URL is set only when the job is triggered by opening a PR
-                // or by pushing on an existing PR
-                // if (env.CHANGE_URL) {
-                //     triggerBenchmark("origin/$env.CHANGE_TARGET", currentCommit, CHANGE_URL)
-                // }
             }
+        }
+
+        if (helpers.isPullRequest()) {
+            triggerCompareBenchmark()
+        } else if (helpers.isMaster()) {
+            triggerTrendBenchmark()
         }
     } catch (e) {
         // retrieve last committer email
@@ -104,15 +103,18 @@ node("raptor_node") {
     }
 }
 
-// Start async the performance benchmark of 2 commits.
-def triggerBenchmark(String baseBranch, String compareCommit, String changeURL) {
+def triggerCompareBenchmark() {
     build (
         job: BENCHMARKING_JENKINS_JOB,
         parameters: [
-            [$class: 'StringParameterValue', name: 'baseBranch', value: baseBranch],
-            [$class: 'StringParameterValue', name: 'compareCommit', value: compareCommit],
-            [$class: 'StringParameterValue', name: 'changeURL', value: changeURL],
+            [$class: 'StringParameterValue', name: 'baseBranch', value: "origin/$env.CHANGE_TARGET"],
+            [$class: 'StringParameterValue', name: 'compareCommit', value: helpers.getCommitHash("HEAD")],
+            [$class: 'StringParameterValue', name: 'changeURL', value: env.CHANGE_URL],
         ],
         wait: false
     )
+}
+
+def triggerTrendBenchmark() {
+    echo "TODO: benchmark trending"
 }

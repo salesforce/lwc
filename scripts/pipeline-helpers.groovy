@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
 
 // Note added to all the comments issued by the bot
 BOT_SIGNATURE = '> CI Bot'
@@ -42,19 +43,29 @@ def requestGithub(path, method='GET', data=null) {
 
 // Send a comment on a specific issue or pull request
 def commentOnIssue(prInfo, content) {
-    def sanatizedContent = content.replace('\n', '\\n') + "\\n" + BOT_SIGNATURE
+    def payload = JsonOutput.toJson([
+        body: content + "\n" + BOT_SIGNATURE
+    ])
+
     return requestGithub(
         "/repos/$prInfo.owner/$prInfo.repo/issues/$prInfo.issueId/comments",
         'POST',
-        '{ "body": "' + sanatizedContent + '" }'
+        payload
     )
 }
 
 def postStatusOnCommit(prInfo, commit, status) {
+    def payload = JsonOutput.toJson([
+        state: status.state,
+        target_url: env.BUILD_URL,
+        description: status.description,
+        context: status.context
+    ])
+
     return requestGithub(
         "/repos/$prInfo.owner/$prInfo.repo/statuses/$commit",
         'POST',
-        '{ "state": "' + status.state + '", "target_url": "' + env.BUILD_URL + '", "description": "' + status.description + '", "context": "' + status.context + '"  }'
+        payload
     )
 }
 
@@ -78,11 +89,10 @@ def deletedPreviousComments(prInfo) {
     return deleteRequests
 }
 
-// leave verbose on for a few weeks to aid log debugging
 // TODO - yarn has a race condition. running it a second time solves the issue and it doesn't redownloaded everything.
 // it's ugly but it works. see https://github.com/yarnpkg/yarn/issues/820.
 def yarnInstall() {
-    sh "yarn install --verbose || yarn install --verbose"
+    sh "yarn install || yarn install"
 }
 
 // Extract owner repo and issueId from from the issue extractChangeURL
@@ -102,6 +112,7 @@ def extractChangeURLInfo(changeURL) {
 }
 
 // Return the commit hash referenced by the revision specifier
+// Note: Because Jenkins is taking care of merging the branches, it requires some trick to get the actual commit hash.
 def getCommitHash(String revisionSpecifier, boolean shortFormat=false) {
     def gitCommit = sh(
         returnStdout: true,
@@ -111,6 +122,16 @@ def getCommitHash(String revisionSpecifier, boolean shortFormat=false) {
     return shortFormat ?
         gitCommit.take(7) :
         gitCommit
+}
+
+// Returns true job triggered by a commit on master
+def isMaster() {
+    return env.BRANCH_NAME == "master"
+}
+
+// Returns true if job trigered by a PR change.
+def isPullRequest() {
+    return env.CHANGE_ID != null
 }
 
 return this

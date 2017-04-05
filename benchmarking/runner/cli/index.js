@@ -4,14 +4,21 @@ import minimist from 'minimist';
 
 import browser from './browser';
 import handler from './callback-handler';
-import reporters from './reporters';
+import {
+    cliFormatter,
+    jsonFormatter,
+    markdownFormatter,
+} from './reporters';
 
-import { formatUrl } from '../shared/url';
+import {
+    toQueryString,
+} from '../shared/config';
 
 const argv = minimist(process.argv.slice(2), {
     default: {
+        browser: 'chrome',
         reporter: 'pretty',
-        server: 'http://localhost:8000/index.html',
+        server: 'https://localhost:8000/index.html',
         timeout: 5 * 60 * 1000,
     }
 });
@@ -19,45 +26,66 @@ const argv = minimist(process.argv.slice(2), {
 const {
     browser: browserName,
     server: runnerUrl,
-    base: basePath,
-    compare: comparePath,
     reporter: reporterType,
+
+    base,
+    compare,
+    grep,
     'max-duration': maxDuration,
     'min-sample-count': minSampleCount,
-    grep,
 } = argv;
 
 if (!browserName) {
     throw new Error(`Missing browser parameter`);
-} else if (!basePath) {
+} else if (!base) {
      throw new Error(`Missing base parameter`);
 }
 
-const reporter = reporters(reporterType, argv);
+let reporterFactory;
+switch (reporterType) {
+    case 'pretty':
+        reporterFactory = cliFormatter;
+        break;
+
+    case 'json':
+        reporterFactory = jsonFormatter;
+        break;
+
+    case 'markdown':
+        reporterFactory = markdownFormatter;
+        break;
+
+    default:
+        throw new Error(`Unknown repoter type ${reporterType}`);
+}
+
 const handlerInstance = handler();
 const browserInstance = browser(browserName);
 
-const url = formatUrl(runnerUrl, {
-    base: basePath,
-    compare: comparePath,
-    callbackUrl: handlerInstance.endpoint,
-    start: true,
+const url = runnerUrl + toQueryString({
+    base,
+    compare,
     minSampleCount,
     maxDuration,
     grep,
+    start: true,
+    handlerHostname: handlerInstance.hostname,
 });
-
 console.log('Benchmark url:', url);
 
+const reporter = reporterFactory(argv, url);
+
 browserInstance.start(url);
-handlerInstance.start(res => {
+handlerInstance.start((err, res) => {
+    // Need to wrap the reporter call with a try-catch block because babel-node
+    // doesn't handle well the uncaughtException
     try {
-        reporter.run(res);
+        reporter(err, res);
     } catch (err) {
         killAll(err);
     }
 
-    killAll();
+    killAll(err);
 });
 
 const timeout = setTimeout(() => (
@@ -79,6 +107,10 @@ function killAll(err) {
     }
 
     if (err) {
+        if (reporter) {
+            reporter(err);
+        }
+
         console.error(err);
     }
 
