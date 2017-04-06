@@ -17,7 +17,8 @@
   "scripts": {
     "build": "babel src/ --out-dir dist/",
     "prepublish": "yarn run build",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "test": "echo 'No tests in raptor-helper-fixture'"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

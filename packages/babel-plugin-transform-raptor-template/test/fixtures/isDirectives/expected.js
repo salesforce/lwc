@@ -16,7 +16,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             is: "ns-row"
                         }
                     }
-                ) : $api.e();
+                ) : undefined;
             })
         )]
     )];

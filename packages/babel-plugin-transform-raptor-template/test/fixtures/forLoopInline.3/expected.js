@@ -9,7 +9,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                     className: item.x
                 },
-                [$api.s(item)]
+                [item]
             );
         })
     )];

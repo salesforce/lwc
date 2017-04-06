@@ -7,11 +7,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             {},
             ["1"]
-        ) : $api.e(), $api.s($cmp.foo), $cmp.isTrue ? $api.h(
+        ) : undefined, $cmp.foo, $cmp.isTrue ? $api.h(
             "p",
             {},
             ["3"]
-        ) : $api.e()]
+        ) : undefined]
     )];
 }
 tmpl.ids = ["isTrue", "foo"];

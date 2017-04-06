@@ -1,7 +1,7 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const _expr = $cmp.isTrue || $api.e(),
-          _expr2 = $cmp.isTrue || $api.e(),
-          _expr3 = $cmp.isTrue || $api.e();
+    const _expr = $cmp.isTrue || undefined,
+          _expr2 = $cmp.isTrue || undefined,
+          _expr3 = $cmp.isTrue || undefined;
 
     const m = $ctx.memoized || ($ctx.memoized = {});
     return [_expr && $api.h(

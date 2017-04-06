@@ -1,7 +1,7 @@
 import _xB from "x-b";
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const _expr = $cmp.isLoading || $api.e(),
-          _expr2 = $cmp.haveLoadedItems || $api.e();
+    const _expr = $cmp.isLoading || undefined,
+          _expr2 = $cmp.haveLoadedItems || undefined;
 
     const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(

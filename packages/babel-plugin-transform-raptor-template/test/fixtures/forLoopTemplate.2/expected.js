@@ -7,11 +7,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             return [$api.h(
                 "p",
                 {},
-                ["1", $api.s(item)]
+                ["1", item]
             ), $api.h(
                 "p",
                 {},
-                ["2", $api.s(item)]
+                ["2", item]
             )];
         })
     )];

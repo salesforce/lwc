@@ -7,11 +7,11 @@ import componentEvents from "./modules/component-events.js";
 import componentChildren from "./modules/component-children.js";
 import props from "./modules/props.js";
 
-import { init } from "snabbdom";
-import attrs from "snabbdom/modules/attributes";
-import styles from "snabbdom/modules/style";
-import classes from "snabbdom/modules/class";
-import events from "snabbdom/modules/eventlisteners";
+import { init } from "../3rdparty/snabbdom/snabbdom.js";
+import attrs from "./modules/attrs";
+import styles from "./modules/styles";
+import classes from "./modules/classes";
+import events from "./modules/events";
 
 export const patch = init([
     componentInit,

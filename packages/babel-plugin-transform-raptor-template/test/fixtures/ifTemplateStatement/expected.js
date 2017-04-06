@@ -1,11 +1,11 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const _expr = $cmp.isTrue || $api.e();
+    const _expr = $cmp.isTrue || undefined;
 
     const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},
-        [_expr && $api.s($cmp.foo), _expr && $api.s($cmp.bar)]
+        [_expr && $cmp.foo, _expr && $cmp.bar]
     )];
 }
 tmpl.ids = ["isTrue", "foo", "bar"];

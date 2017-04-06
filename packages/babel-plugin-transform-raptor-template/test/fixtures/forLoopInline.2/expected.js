@@ -14,11 +14,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 [$api.h(
                     "p",
                     {},
-                    [$api.s(item)]
+                    [item]
                 ), $api.h(
                     "p",
                     {},
-                    [$api.s($cmp.item2)]
+                    [$cmp.item2]
                 )]
             );
         })

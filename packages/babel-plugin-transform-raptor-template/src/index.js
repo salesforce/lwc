@@ -15,7 +15,7 @@ const SLOT_SET = CONST.SLOT_SET;
 const IF_MODIFIERS = CONST.IF_MODIFIERS;
 const EVAL_MODIFIERS = CONST.EVAL_MODIFIERS;
 const API_PARAM = CONST.API_PARAM;
-const { ITERATOR, EMPTY, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT } = CONST.RENDER_PRIMITIVES;
+const { ITERATOR, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
 export default function({ types: t }: BabelTypes): any {
     // -- Helpers ------------------------------------------------------
@@ -218,7 +218,7 @@ export default function({ types: t }: BabelTypes): any {
         if (nextNode && nextNode._meta && nextNode._meta.applyElseTransform /*TBI*/) {
             nextNode._processed = true;
         } else {
-            nextNode = t.callExpression(applyPrimitive(EMPTY), []);
+            nextNode = t.identifier('undefined');
         }
 
         return t.conditionalExpression(exprNode, node, nextNode);
@@ -247,7 +247,7 @@ export default function({ types: t }: BabelTypes): any {
 
             if (t.isJSXExpressionContainer(child)) {
                 // remove the JSXContainer <wrapper></wrapper>
-                child = t.callExpression(applyPrimitive(TEXT), [child.expression]);
+                child = child.expression;
             }
 
             if (meta && meta.isSlotTag) {
@@ -279,7 +279,7 @@ export default function({ types: t }: BabelTypes): any {
                             exprNode = t.unaryExpression('!', exprNode);
                         }
 
-                        const init = t.logicalExpression('||', exprNode, t.callExpression(applyPrimitive(EMPTY), []));
+                        const init = t.logicalExpression('||', exprNode, t.identifier('undefined'));
                         const id = path.scope.generateUidIdentifier('expr');
                         state.customScope.pushVarDeclaration({ id, init, kind: 'const' });
 

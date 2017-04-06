@@ -116,9 +116,9 @@ export function s(value: any = ''): any {
 /**
  * [e]mpty
  */
-export function e(): string {
+export function e(): null {
     // deprecated
-    return '';
+    return null;
 }
 
 /**
@@ -136,14 +136,6 @@ export function f(items: Array<any>): Array<any> {
             ArrayPush.call(flattened, item);
         }
     }
-    assert.block(function devModeCheck() {
-        flattened.forEach((vnodeOrString: string | VNode) => {
-            if (typeof vnodeOrString === 'string') {
-                return;
-            }
-            assert.vnode(vnodeOrString, 'Invalid children element, it should be a string or a vnode.');
-        });
-    });
     return flattened;
 }
 
@@ -153,14 +145,14 @@ export function n(children: Array<VNode|null|number|string|Node>): Array<VNode> 
     for (let i = 0; i < len; ++i) {
         const child = children[i];
         const t = typeof child;
-        if (t === 'object' && child && "Ctor" in child) {
-             continue;
-        } else if (t === 'string' || t === 'number') {
+        if (t === 'string' || t === 'number') {
             children[i] = v(undefined, undefined, undefined, child);
-        } else if ("nodeType" in child) {
-            children[i] = nodeToVNode(child);
-        } else {
-            children[i] = v(undefined, undefined, undefined, child || '');
+        } else if (child && !("Ctor" in child)) {
+            if ("nodeType" in child) {
+                children[i] = nodeToVNode(child);
+            } else {
+                children[i] = v(undefined, undefined, undefined, child);
+            }
         }
     }
     return children;
