@@ -1,7 +1,7 @@
 {
   "name": "raptor-html-cleanup-transform",
   "description": "Raptor pre HTML cleanup",
-  "version": "0.4.2",
+  "version": "0.6.3",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
