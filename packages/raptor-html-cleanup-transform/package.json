@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^3.16.1",
+    "eslint": "^3.19.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
-    "babel-core": "^6.23.1"
+    "babel-core": "^6.24.0"
   },
   "scripts": {
     "test": "mocha",

@@ -155,6 +155,36 @@ describe('emit asserts for modes: ', () => {
             assert.equal(trim(expected), trim(actual));
         });
     });
+
+     it('Test compat mode', () => {
+        const entry = path.join(fixtureCmpDir, 'class_and_template.js');
+        const opts = {
+            format : 'amd',
+            mode   : 'compat',
+        };
+
+        return runCompile(entry, opts).then((result) => {
+            const actual = result.code;
+            //console.log(actual);
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compat-mode.js'));
+            assert.equal(trim(expected), trim(actual));
+        });
+    });
+
+
+    it('Test all mode', () => {
+        const entry = path.join(fixtureCmpDir, 'class_and_template.js');
+        const opts = {
+            format : 'amd',
+            mode   : 'all',
+        };
+
+        return runCompile(entry, opts).then((result) => {
+            const actual = Object.keys(result);
+            const expected = ['dev', 'prod', 'compat'];
+            assert.deepStrictEqual(actual, expected);
+        });
+    });
  });
 
 function runCompile(filePath, options = {}) {

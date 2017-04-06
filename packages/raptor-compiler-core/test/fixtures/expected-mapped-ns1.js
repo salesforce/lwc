@@ -1,10 +1,6 @@
 function tmpl($api, $cmp, $slotset, $ctx) {
     const m = $ctx.memoized || ($ctx.memoized = {});
-    return [$api.h(
-        "p",
-        {},
-        ["CMP1"]
-    )];
+    return [$api.h("p", {}, ["CMP1"])];
 }
 
 class Cmp1 {

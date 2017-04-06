@@ -8,6 +8,7 @@ const filePath = process.argv[2] || '';
 const entry = path.resolve(filePath);
 const options = {
     format: 'es',
+    mode: 'dev',
 };
 
 compile(entry, options)
