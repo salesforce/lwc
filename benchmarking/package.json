@@ -1,9 +1,10 @@
 {
   "scripts": {
     "clean": "rimraf dist/",
-    "build": "yarn run link && node scripts/build",
-    "link": "(cd ../packages/raptor-engine && yarn link); (cd ../packages/rollup-plugin-raptor-compiler && yarn link); yarn link raptor-engine rollup-plugin-raptor-compiler",
-    "build-runner": "webpack --config scripts/webpack.config.js",
+    "build": "yarn run link:engine && yarn run link:compiler && node scripts/build",
+    "link:engine": "(cd ../packages/raptor-engine && yarn unlink; yarn link) && yarn link raptor-engine",
+    "link:compiler": "(cd ../packages/rollup-plugin-raptor-compiler && yarn unlink; yarn link) && yarn link rollup-plugin-raptor-compiler",
+    "build:runner": "webpack --config scripts/webpack.config.js",
     "cli": "babel-node ./runner/cli",
     "serve": "cd dist && python -m SimpleHTTPServer 8000"
   },

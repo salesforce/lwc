@@ -2,7 +2,7 @@ GITHUB_STATUS_CONTEXT = "continuous-integration/jenkins/performance"
 BENCHMARKING_ARTEFACT_PAGE = "https://git.soma.salesforce.com/pages/raptor/benchmark-artifacts"
 
 BENCHMARK_BROWSER_NAME = "chrome"
-BENCHMARK_TIMEOUT = 15 * 60 * 1000
+BENCHMARK_TIMEOUT = 30 * 60 * 1000
 
 helpers = null
 prInfo = null

@@ -40,8 +40,9 @@ class Browser {
 
         this.process = childProcess.spawn(
             this.execPath,
-            [...this.args, url]
+            [...this.args, url],
         );
+
 
         this.process.stdout.on('data', data => console.log('[browser]', data.toString()))
         this.process.stderr.on('data', data => console.error('[browser]', data.toString()))
@@ -72,10 +73,15 @@ export default function browserFactory(browser) {
     const profilePath = fs.mkdtempSync(`/tmp/raptor-benchmarking-${browser}`);
 
     return new Browser(browserPath, [
+        '--no-sandbox',
+        `--js-flags=--expose-gc`,
+        '--disable-infobars',
+        '--disable-background-networking',
         '--disable-extensions',
         '--disable-translate',
         '--no-first-run',
         '--ignore-certificate-errors',
-        `--user-data-dir=${profilePath}`
+        '--enable-precise-memory-info',
+        `--user-data-dir=${profilePath}`,
     ]);
 }

@@ -17,6 +17,14 @@ function isSamplingCompleted(benchmark, results, { minSampleCount, maxDuration }
     return  reachMaxSample && reachedMaxTime;
 }
 
+function forceGC() {
+    if ('gc' in window) {
+        for (let i = 0; i < 3; i++) {
+            window.gc();
+        }
+    }
+}
+
 function runSampling(resolve, reject, benchmark, results, options) {
     const before = function before() {
         if (benchmark.before) {
@@ -30,6 +38,8 @@ function runSampling(resolve, reject, benchmark, results, options) {
         if (isSamplingCompleted(benchmark, results, options)) {
             return resolve(results);
         }
+
+        forceGC();
 
         const timeStart = performance.now();
         benchmark.run(() => {
