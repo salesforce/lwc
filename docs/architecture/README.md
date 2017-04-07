@@ -4,6 +4,7 @@ The following are a series of flow diagrams describing the internal behavior of 
 
 ## Component Creation
 
+```
                      Λ                                              Λ
          .─.        ╱ ╲             ┌────────┐                     ╱ ╲            ┌────────┐        ┌────────────────┐
         (   )─────▶▕ 1 ▏─────────┬─▶│ create ├─────┬─────────────▶▕ 2 ▏──────────▶│ render │───────▶│ patch children │
@@ -29,6 +30,7 @@ The following are a series of flow diagrams describing the internal behavior of 
                                                    │  ┌──────────────────────────┐                         (   )
                                                    └──│ attributeChangedCallback │                          `─'
                                                       └──────────────────────────┘
+```
 
 *Conditions*:
 
@@ -38,6 +40,7 @@ The following are a series of flow diagrams describing the internal behavior of 
 
 ## Schedule Rehydration
 
+```
                      Λ
          .─.        ╱ ╲ yes    ┌─────────────────┐     ┌────────┐     ┌────────────────┐     ┌────────────────────┐
         (   )─────▶▕ 1 ▏──────▶│ patch component │────▶│ render │────▶│ patch children │────▶│ patch HOST element │
@@ -53,6 +56,8 @@ The following are a series of flow diagrams describing the internal behavior of 
                      │                                                                                 .─.
                      └───────────────────────────────────────────────────────────────────────────────▶(   )
                                                                                                        `─'
+```
+
 *Conditions*:
 
  * 1 - Is component marked as dirty?
@@ -60,6 +65,7 @@ The following are a series of flow diagrams describing the internal behavior of 
 
 ## State Object
 
+```
                            Λ
         .─.               ╱ ╲                     .─.
        (   )────────────▶▕ 1 ▏──────────────────▶(   )
@@ -95,6 +101,7 @@ The following are a series of flow diagrams describing the internal behavior of 
        │  ┌─────────────────────────────────┐
        └──│ schedule dependency dehydration │
           └─────────────────────────────────┘
+```
 
 *Conditions*:
 
