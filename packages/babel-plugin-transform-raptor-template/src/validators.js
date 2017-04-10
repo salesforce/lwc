@@ -13,7 +13,6 @@ export function validateTemplateRootFormat(path: Path) {
         throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
     }
 
-    // $FlowFixMe: not sure how to typecast to the non-array type
     const templateTagName: Path = path.get('body.0.expression.openingElement.name');
     if (templateTagName.node.name !== CONST.TEMPLATE_TAG) {
         throw path.buildCodeFrameError('Root tag should be a template');
