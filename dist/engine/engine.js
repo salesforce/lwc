@@ -3009,5 +3009,5 @@ exports.getComponentDef = getComponentDef;
 exports.Element = ComponentElement;
 
 }((this.Engine = this.Engine || {})));
-/** version: 0.7.0 */
+/** version: 0.7.1 */
 //# sourceMappingURL=engine.js.map
