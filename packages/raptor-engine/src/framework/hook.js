@@ -7,6 +7,7 @@ import { clearListeners } from "./component.js";
 import { rehydrate } from "./vm.js";
 import { addCallbackToNextTick } from "./utils.js";
 import { ArrayPush } from "./language.js";
+import { invokeServiceHook, services } from "./services.js";
 
 function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -24,6 +25,10 @@ function insert(vnode: ComponentVNode) {
         children.length = 0;
         ArrayPush.apply(children, vm.fragment);
     }
+    const { connected } = services;
+    if (connected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
+    }
     if (vm.component.connectedCallback) {
         addCallbackToNextTick((): void => invokeComponentConnectedCallback(vm));
     }
@@ -36,6 +41,10 @@ function destroy(vnode: ComponentVNode) {
     assert.vm(vm);
     assert.isTrue(vm.wasInserted, `${vm} is not inserted.`);
     vm.wasInserted = false;
+    const { disconnected } = services;
+    if (disconnected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, disconnected));
+    }
     if (vm.component.disconnectedCallback) {
         addCallbackToNextTick((): void => invokeComponentDisconnectedCallback(vm));
     }

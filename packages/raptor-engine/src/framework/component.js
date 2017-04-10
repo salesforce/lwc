@@ -12,6 +12,7 @@ import { notifyListeners } from "./watcher.js";
 import { isArray, isUndefined, create, toString, ArrayIndexOf, ArrayPush, ArraySplice } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
 import { extractOwnFields, getPropertyProxy } from "./properties.js";
+import { invokeServiceHook, services } from "./services.js";
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
@@ -184,6 +185,10 @@ export function renderComponent(vm: VM) {
     vm.isDirty = false;
     vm.fragment = vnodes;
     assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    const { rehydrated } = services;
+    if (rehydrated) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));
+    }
     if (vm.component.renderedCallback) {
         addCallbackToNextTick((): void => invokeComponentRenderedCallback(vm));
     }
