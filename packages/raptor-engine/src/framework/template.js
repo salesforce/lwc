@@ -111,7 +111,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
             for (let slotName in cmpSlots) {
                 if (ArrayIndexOf.call(slots, slotName) === -1) {
                     // TODO: this should never really happen because the compiler should always validate
-                    console.warn(`Ignoreing unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
+                    console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
                 }
             }
 
