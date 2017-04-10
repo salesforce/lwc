@@ -75,10 +75,7 @@ module.exports = function (babel) {
         const publicProps = [];
         const publicMethods = [];
         const extraBody = [];
-        const keys = {
-            [KEY_PROPS]: false,
-            [KEY_METHODS]: false,
-        };
+        const keys = { [KEY_PROPS]: false, [KEY_METHODS]: false };
 
         for (let prop of classBody) {
             let key = prop.node.key.name;

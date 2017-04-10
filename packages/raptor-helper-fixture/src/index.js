@@ -1,7 +1,6 @@
 import * as babel from 'babel-core';
 import * as fs from 'fs';
 import * as path from 'path';
-
 import assert from 'power-assert';
 
 function trim(str) {
@@ -24,7 +23,6 @@ function generateTestCase(dir, name, babelOpts) {
     (isOnly(dir) ? it.only : it)(name, () => {
         try {
             const { code: actual} = transform(actualPath, babelOpts);
-
             // Check code output
             const expected = fs.readFileSync(expectedPath);
             assert.equal(trim(expected), trim(actual));
