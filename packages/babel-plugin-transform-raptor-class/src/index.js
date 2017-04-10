@@ -92,12 +92,7 @@ module.exports = function (babel) {
                         }
                     });
 
-                    // Tranform to publicProps
-                    let value = prop.node.value || t.numericLiteral(1);
-                    if (!t.isLiteral(value) && !t.isIdentifier(value)) {
-                        value = t.functionExpression(null, [], t.blockStatement([t.returnStatement(value)]));
-                    }
-                    publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), value));
+                    publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
 
                     // Static props
                 } else {

@@ -1,1 +1,1 @@
-define('x-class_and_template',function(){'use strict';function a(d,e,f,g){g.memoized||(g.memoized={});return[d.h('section',{},[])]}const b=1;class c{constructor(){this.t=b,this.counter=0}render(){return a}}return c.publicProps={t:b},c});
+define('x-class_and_template',function(){'use strict';function a(d,e,f,g){g.memoized||(g.memoized={});return[d.h('section',{},[])]}class c{constructor(){this.t=1,this.counter=0}render(){return a}}return c.publicProps={t:1},c});

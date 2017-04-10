@@ -150,7 +150,7 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
-            //console.log(actual);
+            //console.log('>>', actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'));
             assert.equal(trim(expected), trim(actual));
         });
@@ -165,7 +165,7 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
-            //console.log(actual);
+            //console.log('>>', actual);
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compat-mode.js'));
             assert.equal(trim(expected), trim(actual));
         });

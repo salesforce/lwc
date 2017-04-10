@@ -20,7 +20,7 @@ define('myns-class_and_template', function () {
 
     }
     ClassAndTemplate.publicProps = {
-        t: Test
+        t: 1
     };
 
     return ClassAndTemplate;

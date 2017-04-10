@@ -21,7 +21,7 @@ class ClassAndTemplate {
 
 }
 ClassAndTemplate.publicProps = {
-    t: Test
+    t: 1
 };
 
 export default ClassAndTemplate;
