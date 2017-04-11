@@ -1,11 +1,8 @@
 import assert from "./assert.js";
-import {
-    invokeComponentConnectedCallback,
-    invokeComponentDisconnectedCallback,
-} from "./invoker.js";
+import { invokeComponentMethod } from "./invoker.js";
 import { clearListeners } from "./component.js";
 import { rehydrate } from "./vm.js";
-import { addCallbackToNextTick } from "./utils.js";
+import { addCallbackToNextTick, noop } from "./utils.js";
 import { ArrayPush } from "./language.js";
 import { invokeServiceHook, services } from "./services.js";
 
@@ -15,7 +12,8 @@ function insert(vnode: ComponentVNode) {
     assert.vm(vm);
     assert.isFalse(vm.wasInserted, `${vm} is already inserted.`);
     vm.wasInserted = true;
-    if (vm.isDirty) {
+    const { isDirty, component: { connectedCallback } } = vm;
+    if (isDirty) {
         // this code path guarantess that when patching the custom element for the first time,
         // the body is computed only after the element is in the DOM, otherwise the hooks
         // for any children's vnode are not going to be useful.
@@ -29,8 +27,8 @@ function insert(vnode: ComponentVNode) {
     if (connected) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
     }
-    if (vm.component.connectedCallback) {
-        addCallbackToNextTick((): void => invokeComponentConnectedCallback(vm));
+    if (connectedCallback && connectedCallback !== noop) {
+        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'connectedCallback'));
     }
     console.log(`"${vm}" was inserted.`);
 }
@@ -42,13 +40,14 @@ function destroy(vnode: ComponentVNode) {
     assert.isTrue(vm.wasInserted, `${vm} is not inserted.`);
     vm.wasInserted = false;
     const { disconnected } = services;
+    const { component: { disconnectedCallback } } = vm;
+    clearListeners(vm);
     if (disconnected) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, disconnected));
     }
-    if (vm.component.disconnectedCallback) {
-        addCallbackToNextTick((): void => invokeComponentDisconnectedCallback(vm));
+    if (disconnectedCallback && disconnectedCallback !== noop) {
+        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'disconnectedCallback'));
     }
-    clearListeners(vm);
     console.log(`"${vm}" was destroyed.`);
 }
 

@@ -8,7 +8,7 @@ import { evaluateTemplate } from "./template.js";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export function invokeComponentMethod(vm: VM, methodName: string, args: Array<any>): any {
+export function invokeComponentMethod(vm: VM, methodName: string, args?: Array<any>): any {
     const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -40,54 +40,6 @@ export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Comp
         throw error; // rethrowing the original error after restoring the context
     }
     return component;
-}
-
-export function invokeComponentDisconnectedCallback(vm: VM) {
-    const { component, context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
-    let error;
-    try {
-        component.disconnectedCallback();
-    } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        throw error; // rethrowing the original error after restoring the context
-    }
-}
-
-export function invokeComponentConnectedCallback(vm: VM) {
-    const { component, context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
-    let error;
-    try {
-        component.connectedCallback();
-    } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        throw error; // rethrowing the original error after restoring the context
-    }
-}
-
-export function invokeComponentRenderedCallback(vm: VM) {
-    const { component, context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
-        let error;
-    try {
-        component.renderedCallback();
-    } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        throw error; // rethrowing the original error after restoring the context
-    }
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {

@@ -5,12 +5,11 @@ import {
     isRendering,
     vmBeingRendered,
     invokeComponentAttributeChangedCallback,
-    invokeComponentRenderedCallback,
     invokeComponentMethod,
 } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";
 import { isArray, isUndefined, create, toString, ArrayIndexOf, ArrayPush, ArraySplice } from "./language.js";
-import { addCallbackToNextTick, getAttrNameFromPropName } from "./utils.js";
+import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils.js";
 import { extractOwnFields, getPropertyProxy } from "./properties.js";
 import { invokeServiceHook, services } from "./services.js";
 
@@ -185,12 +184,13 @@ export function renderComponent(vm: VM) {
     vm.isDirty = false;
     vm.fragment = vnodes;
     assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    const { component: { renderedCallback } } = vm;
+    if (renderedCallback && renderedCallback !== noop) {
+        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'renderedCallback'));
+    }
     const { rehydrated } = services;
     if (rehydrated) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));
-    }
-    if (vm.component.renderedCallback) {
-        addCallbackToNextTick((): void => invokeComponentRenderedCallback(vm));
     }
 }
 
