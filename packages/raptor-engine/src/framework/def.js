@@ -15,6 +15,7 @@ import {
     isUndefined,
     toString,
     ArrayPush,
+    defineProperty,
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
@@ -69,12 +70,16 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         observedAttrs,
     };
     assert.block(function devModeCheck() {
-        freeze(Ctor);
         freeze(Ctor.prototype);
-        freeze(def);
         freeze(props);
         freeze(methods);
         freeze(observedAttrs);
+        for (let key in def) {
+            defineProperty(def, key, {
+                configurable: false,
+                writable: false,
+            });
+        }
     });
     return def;
 }

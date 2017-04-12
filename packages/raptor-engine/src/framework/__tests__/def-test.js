@@ -16,6 +16,16 @@ describe('def.js', () => {
             });
         });
 
+        it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
+            class MyComponent extends Element {}
+            const def = target.getComponentDef(MyComponent);
+            assert.throws(() => {
+                def.name = 'something else';
+            });
+            def.expando = 1;
+            assert.equal(1, def.expando);
+        });
+
         it('should throw for stateful components not extending Element', () => {
             const def = class MyComponent {}
             assert.throws(() => target.getComponentDef(def));
