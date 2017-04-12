@@ -1,11 +1,13 @@
-/* eslint-env node */
 const compiler = require('raptor-compiler-core');
 const path = require('path');
-const glob = require("glob");
-const DEFAULT_NS = 'x';
+const glob = require('glob');
 
-function initializePaths(opts) {
-    const entry = opts.entry;
+const {
+    DEFAULT_NS,
+    DEFAULT_OPTIONS,
+} = require('./constants');
+
+function getModulePaths(opts, entry) {
     const pathDir = path.dirname(entry);
     const pattern = pathDir + '/**/*.js';
 
@@ -31,36 +33,41 @@ function initializePaths(opts) {
         return mapping;
     }, {});
 
-    opts.componentMapping = componentMapping;
-    //console.log(opts);
+    return componentMapping;
 }
 
-function normalizeOptions(opts) {
-    opts.mapNamespaceFromPath = !!opts.mapNamespaceFromPath;
-    opts.bundle = opts.bundle !== undefined ? opts.bundle : false;
-}
+module.exports = function rollupRaptorCompiler(opts = {}) {
+    const options = Object.assign(DEFAULT_OPTIONS, opts, {
+        mapNamespaceFromPath: Boolean(opts.mapNamespaceFromPath),
+    })
 
-module.exports = (pluginOpts) => {
-    pluginOpts || (pluginOpts = {});
-    normalizeOptions(pluginOpts);
-
-    const opts = Object.assign({}, pluginOpts); // create a local copy
+    let entry = null;
+    let modulePaths = {};
     return {
         name: 'rollup-raptor-compiler',
-        options(rollupOptions) {
-            if (!opts.entry) {
-                opts.entry = rollupOptions.entry;
-                initializePaths(opts);
-            }
+        options({ entry: rollupEntry }) {
+            entry = rollupEntry;
         },
-        resolveId (importee) {
-            const id = opts.componentMapping[importee];
-            if (id) { return id; }
+        resolveId (importee, importer) {
+            const isEntry = !importer;
+            const isRelativeImport = importee[0] === '.';
+            if (isEntry || isRelativeImport) {
+                return;
+            }
+
+            const isPathCached = importee in modulePaths;
+            if (!isPathCached) {
+                modulePaths = getModulePaths(opts, entry);
+            }
+
+            return modulePaths[importee];
         },
         transform (code, fileName) {
-            return compiler.compile(fileName, Object.assign({}, pluginOpts, {
+            const compilerConfig = Object.assign({}, options, {
                 sources: { [fileName]: code }
-            }));
+            });
+
+            return compiler.compile(fileName, compilerConfig);
         }
     }
 }
