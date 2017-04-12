@@ -3,7 +3,6 @@ import componentProps from "./modules/component-props.js";
 import componentAttrs from "./modules/component-attrs.js";
 import componentClasses from "./modules/component-classes.js";
 import componentSlotset from "./modules/component-slotset.js";
-import componentEvents from "./modules/component-events.js";
 import componentChildren from "./modules/component-children.js";
 import props from "./modules/props.js";
 
@@ -19,7 +18,6 @@ export const patch = init([
     componentProps,
     componentAttrs,
     componentClasses,
-    componentEvents,
     componentChildren,
     props,
     attrs,

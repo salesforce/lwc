@@ -77,9 +77,9 @@ export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
     assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
     assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
-    const { key, slotset, attrs, className, classMap, props: _props, on: _on } = data;
+    const { key, slotset, attrs, on, className, classMap, props: _props } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    return v(sel, { hook, key, slotset, attrs, className, classMap, _props, _on }, [], undefined, undefined, Ctor);
+    return v(sel, { hook, key, slotset, attrs, on, className, classMap, _props }, [], undefined, undefined, Ctor);
 }
 
 // [i]terable node

@@ -2,9 +2,8 @@ import {
     addComponentSlot,
     removeComponentSlot,
 } from "../component.js";
-import { create, isUndefined } from "../language.js";
-
-const EmptyObj = create(null);
+import { isUndefined } from "../language.js";
+import { EmptyObject } from "../utils.js";
 
 function update(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -18,8 +17,8 @@ function update(oldVnode: VNode, vnode: ComponentVNode) {
     // infuse key-value pairs from slotset into the component
     if (oldSlots !== newSlots && (oldSlots || newSlots)) {
         let key: string, cur: any;
-        oldSlots = oldSlots || EmptyObj;
-        newSlots = newSlots || EmptyObj;
+        oldSlots = oldSlots || EmptyObject;
+        newSlots = newSlots || EmptyObject;
         // removed slots should be removed from component's slotset
         for (key in oldSlots) {
             if (!(key in newSlots)) {

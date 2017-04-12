@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { scheduleRehydration, getLinkedVNode } from "./vm.js";
+import { getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
 import { addComponentEventListener, removeComponentEventListener } from "./component.js";
 import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language.js";
@@ -40,14 +40,11 @@ ComponentElement.prototype = {
         assert.vm(vm);
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
                 console.error(`this.addEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
         });
         addComponentEventListener(vm, type, listener);
-        if (vm.isDirty) {
-            console.log(`Scheduling ${vm} for rehydration due to the addition of an event listener for ${type}.`);
-            scheduleRehydration(vm);
-        }
     },
     removeEventListener(type: string, listener: EventListener) {
         const vnode = getLinkedVNode(this);
@@ -60,10 +57,6 @@ ComponentElement.prototype = {
             }
         });
         removeComponentEventListener(vm, type, listener);
-        if (vm.isDirty) {
-            console.log(`Scheduling ${vm} for rehydration due to the removal of an event listener for ${type}.`);
-            scheduleRehydration(vm);
-        }
     },
     getAttribute(attrName: string): string | null {
         const vnode = getLinkedVNode(this);

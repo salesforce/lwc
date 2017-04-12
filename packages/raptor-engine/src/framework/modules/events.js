@@ -1,102 +1,87 @@
-function invokeHandler(handler: any, vnode?: VNode, event?: Event) {
-  if (typeof handler === "function") {
-    // call function handler
-    handler.call(vnode, event, vnode);
-  } else if (typeof handler === "object") {
-    // call handler with arguments
-    if (typeof handler[0] === "function") {
-      // special case for single argument for performance
-      if (handler.length === 2) {
-        handler[0].call(vnode, handler[1], event, vnode);
-      } else {
-        var args = handler.slice(1);
-        args.push(event);
-        args.push(vnode);
-        handler[0].apply(vnode, args);
-      }
-    } else {
-      // call multiple handlers
-      for (var i = 0; i < handler.length; i++) {
-        invokeHandler(handler[i]);
-      }
-    }
-  }
-}
+import assert from "../assert.js";
+import { create } from "../language.js";
+import { dispatchComponentEvent } from "../component.js";
+import { EmptyObject } from "../utils.js";
 
 function handleEvent(event: Event, vnode: VNode) {
-  var name = event.type,
-      on = vnode.data.on;
+    const { type } = event;
+    const { data: { on }, vm } = vnode;
 
-  // call event handler(s) if exists
-  if (on && on[name]) {
-    invokeHandler(on[name], vnode, event);
-  }
+    let uninterrupted = true;
+    if (vm && vm.cmpEvents && vm.cmpEvents[type]) {
+        try {
+        uninterrupted = dispatchComponentEvent(vm, event);
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    // call event handler if exists
+    if (on && on[type] && uninterrupted) {
+        on[type].call(undefined, event);
+    }
 }
 
 function createListener(): EventListener {
-  return function handler(event: Event) {
-    handleEvent(event, handler.vnode);
-  }
+    return function handler(event: Event) {
+        handleEvent(event, handler.vnode);
+    }
 }
 
-function updateEventListeners(oldVnode: VNode, vnode?: VNode) {
-  var oldOn = oldVnode.data.on,
-      oldListener = oldVnode.listener,
-      oldElm: Element = oldVnode.elm,
-      on = vnode && vnode.data.on,
-      elm: Element = (vnode && vnode.elm),
-      name: string;
-
-  // optimization for reused immutable handlers
-  if (oldOn === on) {
-    return;
-  }
-
-  // remove existing listeners which no longer used
-  if (oldOn && oldListener) {
-    // if element changed or deleted we remove all existing listeners unconditionally
-    if (!on) {
-      for (name in oldOn) {
-        // remove listener if element was changed or existing listeners removed
-        oldElm.removeEventListener(name, oldListener, false);
-      }
-    } else {
-      for (name in oldOn) {
-        // remove listener if existing listener removed
-        if (!on[name]) {
-          oldElm.removeEventListener(name, oldListener, false);
+function removeAllEventListeners(vnode: VNode) {
+    const { data: { eventNames }, listener } = vnode;
+    // remove existing listeners
+    if (eventNames && listener) {
+        const { elm } = vnode;
+        for (let name in eventNames) {
+            // remove listener if element was changed or existing listeners removed
+            elm.removeEventListener(name, listener, false);
         }
-      }
+        vnode.listener = undefined;
     }
-  }
+}
 
-  // add new listeners which has not already attached
-  if (on) {
-    // reuse existing listener or create new
-    var listener = vnode.listener = oldVnode.listener || createListener();
-    // update vnode for listener
+function updateEventListeners(oldVnode: VNode, vnode: VNode) {
+    const { data: { eventNames: oldEventNames = EmptyObject } } = oldVnode;
+    const { data: { on = EmptyObject }, vm } = vnode;
+    const cmpEvents = vm && vm.cmpEvents || EmptyObject;
+
+    if (oldEventNames === EmptyObject && on === EmptyObject && cmpEvents === EmptyObject) {
+        return;
+    }
+
+    const { elm } = vnode;
+    const { listener: oldListener, elm: oldElm } = oldVnode;
+    const listener = vnode.listener = oldListener || createListener();
     listener.vnode = vnode;
+    assert.invariant(vnode.data.eventNames === undefined, 'vnode.data.eventNames should be undefined since it is an expando for this module.');
+    const eventNames = vnode.data.eventNames = create(null);
 
-    // if element changed or added we add all needed listeners unconditionally
-    if (!oldOn) {
-      for (name in on) {
-        // add listener if element was changed or new listeners added
-        elm.addEventListener(name, listener, false);
-      }
-    } else {
-      for (name in on) {
-        // add listener if new listener added
-        if (!oldOn[name]) {
-          elm.addEventListener(name, listener, false);
+    let name;
+    for (name in on) {
+        eventNames[name] = 1;
+        if (oldEventNames[name] !== 1) {
+            elm.addEventListener(name, listener, false);
         }
-      }
     }
-  }
+    for (name in cmpEvents) {
+        if (cmpEvents[name] && eventNames[name] !== 1) {
+            eventNames[name] = 1;
+            if (oldEventNames[name] !== 1) {
+                elm.addEventListener(name, listener, false);
+            }
+        }
+    }
+    for (name in oldEventNames) {
+        if (eventNames[name] !== 1) {
+            oldElm.removeEventListener(name, oldListener, false);
+        }
+    }
 }
 
 const eventListenersModule: Module = {
-  create: updateEventListeners,
-  update: updateEventListeners,
-  destroy: updateEventListeners
+    create: updateEventListeners,
+    update: updateEventListeners,
+    destroy: removeAllEventListeners
 };
 export default eventListenersModule;

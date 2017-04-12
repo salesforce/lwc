@@ -25,9 +25,9 @@ import { getLinkedVNode } from "./vm.js";
 import { Element } from "./html-element.js";
 import { isRendering, vmBeingRendered } from "./invoker.js";
 import { subscribeToSetHook } from "./watcher.js";
+import { EmptyObject } from "./utils.js";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
-const EmptyObject = Object.freeze(Object.create(null));
 
 function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     protoSet = protoSet || [];

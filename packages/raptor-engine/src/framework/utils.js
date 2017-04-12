@@ -1,8 +1,10 @@
 import assert from "./assert.js";
-import { isArray, create, ArrayPush } from "./language.js";
+import { isArray, create, seal, ArrayPush } from "./language.js";
 
 let nextTickCallbackQueue = undefined;
 const SPACE_CHAR = 32;
+
+export let EmptyObject = seal(create(null));
 
 export function addCallbackToNextTick(callback: any) {
     assert.isTrue(typeof callback === 'function', `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);

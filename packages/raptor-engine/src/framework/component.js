@@ -101,6 +101,11 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     }
     if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
+        // only rehydrate when an entire new class of event is added.
+        console.log(`Marking ${vm} as dirty: new event name "${eventName}".`);
+        if (!vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
     }
     assert.block(function devModeCheck() {
         if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
@@ -109,10 +114,6 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     });
     // TODO: we might need to hook into this listener for Locker Service
     ArrayPush.call(cmpEvents[eventName], newHandler);
-    console.log(`Marking ${vm} as dirty: event handler for "${eventName}" has been added.`);
-    if (!vm.isDirty) {
-        markComponentAsDirty(vm);
-    }
 }
 
 export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
@@ -124,8 +125,13 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
             ArraySplice.call(cmpEvents[eventName], pos, 1);
-            if (!vm.isDirty) {
-                markComponentAsDirty(vm);
+            if (cmpEvents[eventName].length === 0) {
+                cmpEvents[eventName] = undefined;
+                // only rehydrate when an entire class of event is removed.
+                console.log(`Marking ${vm} as dirty: removed event name "${eventName}".`);
+                if (!vm.isDirty) {
+                    markComponentAsDirty(vm);
+                }
             }
             return;
         }
@@ -133,6 +139,31 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     assert.block(function devModeCheck() {
         console.warn(`Event handler ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the event handlers that you have added already for ${vm}.`);
     });
+}
+
+// returns `true` if immidiate propagation was never invoked, otherwise returns `false`
+export function dispatchComponentEvent(vm: VM, event: Event): boolean {
+    assert.vm(vm);
+    assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
+    const { cmpEvents, component } = vm;
+    const { type } = event;
+    assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is certainty that there is at least one listener in queue for ${type} on ${vm}.`);
+    const handlers = cmpEvents[type];
+    let uninterrupted = true;
+    const { stopImmediatePropagation } = event;
+    event.stopImmediatePropagation = function() {
+        uninterrupted = false;
+        stopImmediatePropagation.call(this);
+    }
+    handlers.forEach((handler: EventHandler) => {
+        if (uninterrupted) {
+            // TODO: method invocation control
+            handler.call(component, event);
+        }
+    });
+    // restoring original methods
+    event.stopImmediatePropagation = stopImmediatePropagation;
+    return uninterrupted;
 }
 
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {

@@ -30,20 +30,20 @@ declare class ComponentElement extends Component {
 }
 
 declare class VM {
-    cmpState: HashTable<any>;
+    cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
-    cmpSlots: HashTable<Array<VNode>>;
-    cmpEvents: HashTable<Array<EventListener>>;
-    cmpClasses: HashTable<Boolean>;
+    cmpSlots?: HashTable<Array<VNode>>;
+    cmpEvents?: HashTable<Array<EventListener>>;
+    cmpClasses?: HashTable<Boolean>;
     isScheduled: boolean;
     isDirty: boolean;
     wasInserted: boolean;
     def: ComponentDef;
     context: HashTable<any>;
-    component: Component;
+    component?: Component;
     fragment: Array<VNode>;
     deps: Array<Array<VM>>;
-    classListObj: DOMTokenList,
+    classListObj?: DOMTokenList,
     toString(): string;
 }
 

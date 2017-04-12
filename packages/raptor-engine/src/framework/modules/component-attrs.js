@@ -1,7 +1,6 @@
 import { invokeComponentAttributeChangedCallback } from "../invoker.js";
-import { create, isUndefined } from "../language.js";
-
-const EmptyObj = create(null);
+import { isUndefined } from "../language.js";
+import { EmptyObject } from "../utils.js";
 
 function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -20,8 +19,8 @@ function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     if (oldAttrs !== newAttrs && (oldAttrs || newAttrs)) {
 
         let key: string, cur: any;
-        oldAttrs = oldAttrs || EmptyObj;
-        newAttrs = newAttrs || EmptyObj;
+        oldAttrs = oldAttrs || EmptyObject;
+        newAttrs = newAttrs || EmptyObject;
         // removed props should be reset in component's props
         for (key in oldAttrs) {
             if (key in observedAttrs && !(key in newAttrs)) {

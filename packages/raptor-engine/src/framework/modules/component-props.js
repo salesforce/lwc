@@ -3,9 +3,8 @@ import {
     resetComponentProp,
     updateComponentProp,
 } from "../component.js";
-import { assign, create, isUndefined } from "../language.js";
-
-const EmptyObj = create(null);
+import { assign, isUndefined } from "../language.js";
+import { EmptyObject } from "../utils.js";
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -19,8 +18,8 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     // infuse key-value pairs from _props into the component
     if (oldProps !== newProps && (oldProps || newProps)) {
         let key: string, cur: any;
-        oldProps = oldProps || EmptyObj;
-        newProps = newProps || EmptyObj;
+        oldProps = oldProps || EmptyObject;
+        newProps = newProps || EmptyObject;
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {

@@ -1,7 +1,6 @@
 import assert from "../assert.js";
-import { create, isUndefined } from "../language.js";
-
-const EmptyObj = create(null);
+import { isUndefined } from "../language.js";
+import { EmptyObject } from "../utils.js";
 
 // TODO: eventually use the one shipped by snabbdom directly
 function update(oldVnode: VNode, vnode: VNode) {
@@ -15,8 +14,8 @@ function update(oldVnode: VNode, vnode: VNode) {
         return;
     }
 
-    oldProps = oldProps || EmptyObj;
-    props = props || EmptyObj;
+    oldProps = oldProps || EmptyObject;
+    props = props || EmptyObject;
 
     let key: string, cur: any, old: any;
     const { elm } = vnode;
