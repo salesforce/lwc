@@ -51,7 +51,7 @@ export function isCustomElement(tagName) {
 }
 
 function isCustomAttribute(attrName) {
-    return attrName === 'role' || attrName === 'is' || isDataOrAria(attrName);
+    return attrName === 'role' || attrName === 'is' || attrName === 'key' || isDataOrAria(attrName);
 }
 
 function transformAttr(attr) {
