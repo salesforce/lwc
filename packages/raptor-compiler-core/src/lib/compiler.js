@@ -31,7 +31,10 @@ export function compileBundle(entry: string, options: any): Promise<any> {
     ];
 
     return new Promise((resolve: (bundleResult: any) => void, reject: (element: HTMLElement) => void) => {
-        rollup({ entry, plugins })
+        rollup({
+            entry,
+            plugins
+        })
         .then((bundle: any) => {
             const normalizedModuleName = [options.componentNamespace, options.componentName].join('-');
             const bundleResult = bundle.generate({

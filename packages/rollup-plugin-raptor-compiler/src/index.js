@@ -1,11 +1,12 @@
 const compiler = require('raptor-compiler-core');
+const pluginUtils = require('rollup-pluginutils');
 const path = require('path');
 const glob = require('glob');
+const { DEFAULT_NS, DEFAULT_OPTIONS } = require('./constants');
 
-const {
-    DEFAULT_NS,
-    DEFAULT_OPTIONS,
-} = require('./constants');
+function resolveEnginePath() {
+    return require.resolve('raptor-engine').replace('raptor.js', 'raptor.es.js');
+}
 
 function getModulePaths(opts, entry) {
     const pathDir = path.dirname(entry);
@@ -37,20 +38,30 @@ function getModulePaths(opts, entry) {
 }
 
 module.exports = function rollupRaptorCompiler(opts = {}) {
-    const options = Object.assign(DEFAULT_OPTIONS, opts, {
+    const filter = pluginUtils.createFilter(opts.include, opts.exclude);
+
+    const options = Object.assign({}, DEFAULT_OPTIONS, opts, {
         mapNamespaceFromPath: Boolean(opts.mapNamespaceFromPath),
     })
 
     let entry = null;
     let modulePaths = {};
+    let resolveEngine;
     return {
         name: 'rollup-raptor-compiler',
-        options({ entry: rollupEntry }) {
+        options({ entry: rollupEntry, resolveEngine: resolveEngineResource }) {
             entry = rollupEntry;
+            resolveEngine = resolveEngineResource === false ? false : options.resolveEngine;
         },
+
         resolveId (importee, importer) {
             const isEntry = !importer;
             const isRelativeImport = importee[0] === '.';
+
+            if (resolveEngine && importee === 'engine') {
+                return resolveEnginePath();
+            }
+
             if (isEntry || isRelativeImport) {
                 return;
             }
@@ -63,6 +74,8 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
             return modulePaths[importee];
         },
         transform (code, fileName) {
+            if (!filter(fileName)) return;
+
             const compilerConfig = Object.assign({}, options, {
                 sources: { [fileName]: code }
             });

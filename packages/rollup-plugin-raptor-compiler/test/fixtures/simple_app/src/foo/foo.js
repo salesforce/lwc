@@ -1,4 +1,4 @@
-import { Element } from "raptor";
+import { Element } from "engine";
 import html from "./foo.html";
 
 export default class Foo extends Element {

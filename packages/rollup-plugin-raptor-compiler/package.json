@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "glob": "^7.1.1",
-    "raptor-compiler-core": "0.8.0"
+    "raptor-compiler-core": "0.8.0",
+    "raptor-engine": "0.8.0",
+    "rollup-pluginutils": "^2.0.1"
   },
   "scripts": {
     "test": "mocha",

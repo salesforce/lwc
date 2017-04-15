@@ -49,13 +49,17 @@ describe('emit asserts for simple_app: ', () => {
     });
 });
 
-function doRollup(entry, options = {}) {
+function doRollup(entry, options = { resolveEngine: false }) {
     return rollup.rollup({
         entry,
-        external: ['raptor'],
         plugins: [
             rollupCompile(options)
         ],
+        onwarn(warn) {
+            if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
+                console.warn(warn.message);
+            }
+        }
     }).then(bundle => (
         bundle.generate({
             format: 'es'
