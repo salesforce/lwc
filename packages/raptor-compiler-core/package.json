@@ -1,6 +1,6 @@
 {
   "name": "raptor-compiler-core",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "The raptor compiler",
   "main": "dist/index.js",
   "author": "",
