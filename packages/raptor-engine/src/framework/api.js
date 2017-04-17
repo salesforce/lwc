@@ -63,6 +63,9 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
     assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
     assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
     assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+    // checking reserved internal data properties
+    assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
+    assert.invariant(data.eventNames === undefined, `vnode.data.eventNames should be undefined when calling h().`);
     if (children.length) {
         n(children);
     }
@@ -77,6 +80,9 @@ export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
     assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
     assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
+        // checking reserved internal data properties
+    assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
+    assert.invariant(data.eventNames === undefined, `vnode.data.eventNames should be undefined when calling c().`);
     const { key, slotset, attrs, on, className, classMap, props: _props } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
     return v(sel, { hook, key, slotset, attrs, on, className, classMap, _props }, [], undefined, undefined, Ctor);

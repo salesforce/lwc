@@ -1,23 +1,26 @@
 import assert from "./assert.js";
-import { isArray, create, seal, ArrayPush } from "./language.js";
+import { create, seal, ArrayPush } from "./language.js";
 
-let nextTickCallbackQueue = undefined;
+let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
 
 export let EmptyObject = seal(create(null));
 
-export function addCallbackToNextTick(callback: any) {
-    assert.isTrue(typeof callback === 'function', `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
-    if (!isArray(nextTickCallbackQueue)) {
-        nextTickCallbackQueue = [];
-        Promise.resolve(nextTickCallbackQueue).then((callbacks: Array<Callback>) => {
-            assert.isTrue(isArray(callbacks), `${callbacks} must be the array of callbacks`);
-            nextTickCallbackQueue = undefined;
-            for (let i = 0, len = callbacks.length; i < len; i += 1) {
-                callbacks[i]();
-            }
-        });
+function flushCallbackQueue() {
+    assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+    const callbacks: Array<Callback> = nextTickCallbackQueue;
+    nextTickCallbackQueue = []; // reset to a new queue
+    for (let i = 0, len = callbacks.length; i < len; i += 1) {
+        callbacks[i]();
     }
+}
+
+export function addCallbackToNextTick(callback: Callback) {
+    assert.isTrue(typeof callback === 'function', `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
+    if (nextTickCallbackQueue.length === 0) {
+        Promise.resolve().then(flushCallbackQueue);
+    }
+    // TODO: eventually, we might want to have priority when inserting callbacks
     ArrayPush.call(nextTickCallbackQueue, callback);
 }
 

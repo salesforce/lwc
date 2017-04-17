@@ -1,7 +1,7 @@
 import assert from "./assert.js";
 import { invokeComponentMethod } from "./invoker.js";
 import { clearListeners } from "./component.js";
-import { rehydrate } from "./vm.js";
+import { rehydrate, lockUID, unlockUID } from "./vm.js";
 import { addCallbackToNextTick, noop } from "./utils.js";
 import { ArrayPush } from "./language.js";
 import { invokeServiceHook, services } from "./services.js";
@@ -10,8 +10,8 @@ function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm, children } = vnode;
     assert.vm(vm);
-    assert.isFalse(vm.wasInserted, `${vm} is already inserted.`);
-    vm.wasInserted = true;
+    assert.isFalse(vm.uid, `${vm} is already inserted.`);
+    lockUID(vm);
     const { isDirty, component: { connectedCallback } } = vm;
     if (isDirty) {
         // this code path guarantess that when patching the custom element for the first time,
@@ -37,8 +37,10 @@ function destroy(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
-    assert.isTrue(vm.wasInserted, `${vm} is not inserted.`);
-    vm.wasInserted = false;
+    assert.isTrue(vm.uid, `${vm} is not inserted.`);
+    unlockUID(vm);
+    // just in case it comes back, with this we guarantee re-rendering it
+    vm.isDirty = true;
     const { disconnected } = services;
     const { component: { disconnectedCallback } } = vm;
     clearListeners(vm);
@@ -54,7 +56,7 @@ function destroy(vnode: ComponentVNode) {
 function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
     assert.vnode(vnode);
     assert.vm(vnode.vm);
-    if (vnode.vm.wasInserted === false) {
+    if (vnode.vm.uid === 0) {
         // when inserting a root element, or when reusing a DOM element for a new
         // component instance, the insert() hook is never called because the element
         // was already in the DOM before creating the instance, and diffing the
@@ -63,8 +65,8 @@ function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
         insert(vnode);
         // Note: we don't have to worry about destroy() hook being called before this
         // one because they never happen in the same patching mechanism, only one
-        // of them is called. In the case of the insert() hook, we use the `wasInserted`
-        // flag to dedupe the calls since they both can happen in the same patching process.
+        // of them is called. In the case of the insert() hook, we use the value of `uid`
+        // to dedupe the calls since they both can happen in the same patching process.
     }
 }
 

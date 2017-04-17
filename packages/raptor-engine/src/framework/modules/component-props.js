@@ -1,4 +1,3 @@
-import assert from "../assert.js";
 import {
     resetComponentProp,
     updateComponentProp,
@@ -36,8 +35,6 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         }
     }
 
-    // reflection of component props into data.props for the regular diffing algo
-    assert.invariant(vnode.data.props === undefined, 'vnode.data.props should be undefined.');
     // TODO: opt out if cmpProps is empty (right now it is never empty)
     vnode.data.props = assign({}, vm.cmpProps);
 }

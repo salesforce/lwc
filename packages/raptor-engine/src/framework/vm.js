@@ -1,10 +1,26 @@
 import assert from "./assert.js";
 import { getComponentDef } from "./def.js";
 import { createComponent } from "./component.js";
-import { h } from "./api.js";
 import { patch } from "./patch.js";
-import { isArray, toString } from "./language.js";
+import { assign, create, isArray, toString, ArrayPush } from "./language.js";
 import { addCallbackToNextTick } from "./utils.js";
+
+let uid: number = 0;
+const globalMap: HashTable<VM> = create(null);
+
+export function lockUID(vm: VM) {
+    assert.vm(vm);
+    assert.invariant(vm.uid === 0, `${vm} is already locked to a previous generated uid.`);
+    vm.uid = ++uid;
+    globalMap[uid] = vm;
+}
+
+export function unlockUID(vm: VM) {
+    assert.vm(vm);
+    assert.invariant(vm.uid > 0, `${vm} is not locked to a previous generated uid.`);
+    globalMap[vm.uid] = undefined;
+    vm.uid = 0;
+}
 
 export function createVM(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -17,9 +33,9 @@ export function createVM(vnode: ComponentVNode) {
         throw new TypeError(`${def.name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
     }
     const vm: VM = {
+        uid: 0,
         isScheduled: false,
         isDirty: true,
-        wasInserted: false,
         def,
         context: {},
         cmpProps: {},
@@ -36,7 +52,7 @@ export function createVM(vnode: ComponentVNode) {
     };
     assert.block(function devModeCheck() {
         vm.toString = (): string => {
-            return `[object:vm ${def.name}]`;
+            return `[object:vm ${def.name} (${vm.uid ? vm.uid : 'standalone'})]`;
         };
     });
     vnode.vm = vm;
@@ -71,37 +87,45 @@ export function getLinkedVNode(component: Component): ComponentVNode {
     return vnode;
 }
 
-export function rehydrate(vm: vm) {
+export function rehydrate(vm: VM) {
     assert.vm(vm);
-    if (vm.isDirty) {
+    if (vm.uid && vm.isDirty) {
         const vnode = getLinkedVNode(vm.component);
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        const { sel, Ctor, data: { hook, key, slotset, attrs, on, className, classMap, _props }, children } = vnode;
-        assert.invariant(isArray(children), `Rendered ${vm}.children should always have an array of vnodes instead of ${toString(children)}`);
+        assert.invariant(isArray(vnode.children), `Rendered ${vm}.children should always have an array of vnodes instead of ${toString(vnode.children)}`);
         // when patch() is invoked from within the component life-cycle due to
         // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
         // to patch this vnode the last time, mimic what happen when the
         // owner re-renders, but we do so by keeping the vnode originally used by parent
         // as the source of true, in case the parent tries to rehydrate against that one.
-        // TODO: we can optimize this proces by using proto-chain, or Object.assign() without
-        // having to call h() directly.
-        const oldVnode = h(sel, vnode.data, vnode.children);
-        oldVnode.Ctor = Ctor;
-        oldVnode.elm = vnode.elm;
-        oldVnode.vm = vnode.vm;
-        // This list here must be in synch with api.c()
-        // TODO: abstract this so we don't have to keep code in sync.
-        vnode.data = { hook, key, slotset, attrs, on, className, classMap, _props };
+        const oldVnode = assign({}, vnode);
+        const { data } = vnode;
+        vm.isDirty = true;
+        vnode.data = assign({}, data);
         vnode.children = [];
         patch(oldVnode, vnode);
     }
     vm.isScheduled = false;
 }
 
+let rehydrateQueue: Array<VM> = [];
+
+function flushRehydrationQueue() {
+    assert.invariant(rehydrateQueue.length, `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`);
+    const vms: Array<VM> = rehydrateQueue.sort((a: VM, b: VM): boolean => a.uid > b.uid);
+    rehydrateQueue = []; // reset to a new queue
+    for (let i = 0, len = vms.length; i < len; i += 1) {
+        rehydrate(vms[i]);
+    }
+}
+
 export function scheduleRehydration(vm: VM) {
     assert.vm(vm);
     if (!vm.isScheduled) {
         vm.isScheduled = true;
-        addCallbackToNextTick((): void => rehydrate(vm));
+        if (rehydrateQueue.length === 0) {
+            addCallbackToNextTick(flushRehydrationQueue);
+        }
+        ArrayPush.call(rehydrateQueue, vm);
     }
 }

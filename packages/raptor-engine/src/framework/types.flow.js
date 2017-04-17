@@ -30,6 +30,7 @@ declare class ComponentElement extends Component {
 }
 
 declare class VM {
+    uid: number,
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpSlots?: HashTable<Array<VNode>>;
@@ -37,7 +38,6 @@ declare class VM {
     cmpClasses?: HashTable<Boolean>;
     isScheduled: boolean;
     isDirty: boolean;
-    wasInserted: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component?: Component;

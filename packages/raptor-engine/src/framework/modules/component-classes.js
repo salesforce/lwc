@@ -5,7 +5,6 @@ import { getMapFromClassName } from "../utils.js";
 
 function syncClassNames(oldVnode: VNode, vnode: ComponentVNode) {
     const { data, vm } = vnode;
-    assert.invariant(data.class === undefined, `Engine Error: vnode.data.class should be undefined for ${vm}.`);
     let { className, classMap } = data;
     if (isUndefined(className) && isUndefined(classMap) && isUndefined(vm)) {
         return;

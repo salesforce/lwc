@@ -1,4 +1,3 @@
-import assert from "../assert.js";
 import { create } from "../language.js";
 import { dispatchComponentEvent } from "../component.js";
 import { EmptyObject } from "../utils.js";
@@ -54,7 +53,6 @@ function updateEventListeners(oldVnode: VNode, vnode: VNode) {
     const { listener: oldListener, elm: oldElm } = oldVnode;
     const listener = vnode.listener = oldListener || createListener();
     listener.vnode = vnode;
-    assert.invariant(vnode.data.eventNames === undefined, 'vnode.data.eventNames should be undefined since it is an expando for this module.');
     const eventNames = vnode.data.eventNames = create(null);
 
     let name;
