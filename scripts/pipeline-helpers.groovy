@@ -1,4 +1,4 @@
-import groovy.json.JsonSlurper
+import groovy.json.JsonSlurperClassic
 import groovy.json.JsonOutput
 
 // Note added to all the comments issued by the bot
@@ -6,7 +6,7 @@ BOT_SIGNATURE = '> CI Bot'
 
 @NonCPS
 def jsonParse(def json) {
-    final slurper = new JsonSlurper()
+    final slurper = new JsonSlurperClassic()
     return slurper.parseText(json)
 }
 

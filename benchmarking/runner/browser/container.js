@@ -2,6 +2,7 @@ import {
     RUNNER_SCRIPT_PATH
 } from '../shared/config';
 
+import IframeWrapper from './iframe-wrapper';
 import {
     removeNodeChildren,
     mapSeriePromise,
@@ -58,37 +59,19 @@ function setProgress({ element, status }, value = 0) {
     progressEl.style.width =`${value * 100}%`;
 }
 
-function injectSript(iframe, src) {
-    return new Promise((resolve, reject) => {
-        let scriptTag = iframe.contentDocument.createElement('script');
-        scriptTag.type = 'text/javascript';
-        scriptTag.src = src;
-        iframe.contentDocument.body.appendChild(scriptTag);
-
-        scriptTag.onerror = (...args) => reject(args);
-        scriptTag.onload = resolve;
-    });
-}
-
 function createRunnerIframe ({ element, bundle, onError }) {
     const body = element.querySelector(TEMPLATE_SELECTORS.iframe);
-    removeNodeChildren(body);
-
-    const iframe = document.createElement('iframe');
-    body.appendChild(iframe);
-
-    iframe.contentWindow.onerror = (msg, err, lin, col, error) => onError(error);
-    iframe.contentWindow.addEventListener('unhandledrejection', promise => onError(promise.reason));
+    const iframe = new IframeWrapper(body, onError);
 
     return Promise.resolve()
-        .then(() => injectSript(iframe, RUNNER_SCRIPT_PATH))
-        .then(() => injectSript(iframe, bundle.fileUrl))
+        .then(() => iframe.injectScript(RUNNER_SCRIPT_PATH))
+        .then(() => iframe.injectScript(bundle.fileUrl))
         .then(() => iframe);
 }
 
 function listMatchingBenchmarks(container, config) {
     return createRunnerIframe(container).then(iframe => {
-        const { runner } = iframe.contentWindow;
+        const { runner } = iframe.window;
         let benchmarks = runner.getRegisteredBenchmark().map(benchmark => benchmark.name);
 
         if (config.grep) {
@@ -96,14 +79,21 @@ function listMatchingBenchmarks(container, config) {
             benchmarks = benchmarks.filter(name => name.match(regex));
         }
 
+        iframe.destroy();
+
         return benchmarks;
     });
 }
 
 function runBenchmark(container, config, name) {
     return createRunnerIframe(container).then(iframe => {
-        const { runner } = iframe.contentWindow;
-        return runner.runSingleBenchmark(name, config);
+        const { runner } = iframe.window;
+        return runner.runSingleBenchmark(name, config).then(res => {
+            iframe.destroy();
+
+            // Do a local copy of the benchmark results, it prevents the iframe from leaking.
+            return JSON.parse(JSON.stringify(res));
+        });
     });
 }
 
