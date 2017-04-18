@@ -10,7 +10,7 @@ import {
 import { isUndefined, defineProperty, hasOwnProperty, toString } from "./language.js";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
-const ProxyCache: Map<Object, boolean> = new WeakMap(); // use to identify any proxy created by this piece of logic.
+const ProxyCache: Set<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
 
 function propertyGetter(target: Object, key: string | Symbol): any {
     const value = target[key];
@@ -52,7 +52,7 @@ export function getPropertyProxy(value: Object): any {
     }
     // TODO: perf opt - we should try to give identity to propertyProxies so we can test
     // them faster than a weakmap lookup.
-    if (ProxyCache.get(value)) {
+    if (ProxyCache.has(value)) {
         return value;
     }
     // TODO: optimize this check
@@ -69,7 +69,7 @@ export function getPropertyProxy(value: Object): any {
     }
     proxy = new Proxy(value, propertyProxyHandler);
     ObjectPropertyToProxyCache.set(value, proxy);
-    ProxyCache.set(proxy, true);
+    ProxyCache.add(proxy);
     return proxy;
 }
 
