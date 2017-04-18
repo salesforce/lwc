@@ -43,6 +43,7 @@ export function createVM(vnode: ComponentVNode) {
         cmpSlots: undefined,
         cmpEvents: undefined,
         cmpClasses: undefined,
+        cmpTemplate: undefined,
         classListObj: undefined,
         component: undefined,
         // used to store the latest result of the render method

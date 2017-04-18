@@ -4,6 +4,7 @@ import {
     establishContext,
 } from "./context.js";
 import { evaluateTemplate } from "./template.js";
+import { create, isFunction } from "./language.js";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -43,7 +44,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Comp
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
-    const { component, context } = vm;
+    const { component, context, cmpTemplate } = vm;
     const ctx = currentContext;
     establishContext(context);
     const isRenderingInception = isRendering;
@@ -53,6 +54,10 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     let result, error;
     try {
         const html = component.render();
+        if (html !== cmpTemplate && isFunction(html)) {
+            context.tplCache = create(null); // reset the momizer for template
+            vm.cmpTemplate = html;
+        }
         result = evaluateTemplate(html, vm);
     } catch (e) {
         error = e;

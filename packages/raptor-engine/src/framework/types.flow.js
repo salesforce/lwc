@@ -36,6 +36,7 @@ declare class VM {
     cmpSlots?: HashTable<Array<VNode>>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpClasses?: HashTable<Boolean>;
+    cmpTemplate?: any;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;

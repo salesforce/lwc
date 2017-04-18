@@ -100,7 +100,8 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
     // when `html` is a facotyr, it has to be invoked
     // TODO: add identity to the html functions
     if (typeof html === 'function') {
-        let { component, context, cmpSlots = EmptySlots } = vm;
+        let { component, context: { tplCache }, cmpSlots = EmptySlots } = vm;
+        assert.isTrue(typeof tplCache === 'object', `vm.context.tplCache must be an object created before calling evaluateTemplate().`);
         assert.block(function devModeCheck() {
             // before every render, in dev-mode, we will like to know all expandos and
             // all private-fields-like properties, so we can give meaningful errors.
@@ -129,7 +130,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
         const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
         const outerMemoized = currentMemoized;
         currentMemoized = create(null);
-        result = html.call(undefined, api, cmp, slotset, context);
+        result = html.call(undefined, api, cmp, slotset, tplCache);
         currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
         slotsetRevoke();
         componentRevoke();
