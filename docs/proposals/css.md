@@ -1,4 +1,8 @@
-## CSS definition for a Component
+# CSS definition for a Component
+
+## Status
+
+_drafted_
 
 ### Template Declaration
 
