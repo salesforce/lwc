@@ -52,7 +52,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const config: PropDef = publicPropsConfig[propName];
     if (isUndefined(config)) {
         // TODO: this should never really happen because the compiler should always validate
-        console.warn(`Ignoreing unknown public property ${propName} of ${vm}. This is probably a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
+        console.warn(`Ignoring unknown public property ${propName} of ${vm}. This is probably a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
         return;
     }
     let oldValue = cmpProps[propName];
