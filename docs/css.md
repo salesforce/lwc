@@ -18,8 +18,6 @@ p { margin: 10px 0; }
 
 The CSS will be compiled, and a prefix will be added on every rule to guarantee that especifity of the rule only applies to the body of the host element (the custom element that represents the component).
 
-The rule of
-
 ### Styling the host element
 
 The `:host` allows you to style the element hosting the component:
@@ -42,6 +40,67 @@ The `:host` allows you to style the element hosting the component:
 The CSS will be compiled, and a prefix will replace `:host` to guarantee that especifity of the rule only applies to the host element (the custom element that represents the component).
 
 One gotcha is that rules in the parent page have higher specificity than `:host` rules defined in CSS file, but lower specificity than a `style` attribute defined on the host element.
+
+
+### Proposal 1
+
+x-foo.html
+```html
+<template>
+    <div>
+        <p>
+            <x-bar>
+                <div onclick={handleClick}>
+</template>
+<style>
+div { border-color: blue; }
+</style>
+```
+
+x-bar.html
+```html
+<template>
+    <div>
+        <slot></slot>
+    </div>
+</template>
+<style>
+div { border-color: gray; }
+</style>
+<link href="some.css">
+```
+
+some.css
+```css
+:host { border-color: yellow; }
+```
+
+Assuming that there is a `main.js` that creates the instance of `x-foo`, the output markup will be:
+
+```html
+<x-foo x="maintpl">
+    <div x="footpl">
+        <p x="footpl">
+            <x-bar x="footpl">
+                <div x="bartpl">
+                    <slot x="bartpl">
+                        <div onclick={handleClick} x="footpl">
+```
+
+and the styles added to the document will be:
+
+```css
+/* from foo component */
+div[x="footpl"] { color: blue; }
+
+/* from bar component */
+x-bar, [is="x-bar"] { border-color: yellow; }
+div[x="bartpl"] { color: blue; }
+```
+
+This proposal relis on the fact that a unique key can be produced (it is a function of the name of the component and the name of the template), and this key can be added to the associated css and added as attribute to each element in the template, and used at the same time as a matching prefix on every css rule.
+
+The `host` rule is special, and it is not really bound to the template, but to the host. Rendering one template vs another should not imply changes in the style of the host element, that will be a problem.
 
 ## Important Notice
 
