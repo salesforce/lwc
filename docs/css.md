@@ -50,7 +50,7 @@ x-foo.html
     <div>
         <p>
             <x-bar>
-                <div onclick={handleClick}>
+                <div>
 </template>
 <style>
 div { border-color: blue; }
@@ -84,7 +84,7 @@ Assuming that there is a `main.js` that creates the instance of `x-foo`, the out
             <x-bar x="footpl">
                 <div x="bartpl">
                     <slot x="bartpl">
-                        <div onclick={handleClick} x="footpl">
+                        <div x="footpl">
 ```
 
 and the styles added to the document will be:
