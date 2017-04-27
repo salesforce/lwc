@@ -35,6 +35,7 @@ describe('watcher.js', () => {
                     // the same rule applies, but without an observable difference.
                     return function html($api, $cmp) {
                         $cmp.x;
+                        return [];
                     };
                 }
             }
@@ -70,6 +71,7 @@ describe('watcher.js', () => {
                     counter++;
                     return function html($api, $cmp, $slotset) {
                         $slotset.x;
+                        return [];
                     };
                 }
             }
@@ -109,6 +111,7 @@ describe('watcher.js', () => {
                     counter++;
                     return function html($api, $cmp) {
                         $cmp.state.x;
+                        return [];
                     };
                 }
             }
@@ -171,6 +174,7 @@ describe('watcher.js', () => {
                         if (counter === 1) {
                             $cmp.state.x;
                         }
+                        return [];
                     };
                 }
             }
@@ -203,6 +207,7 @@ describe('watcher.js', () => {
                     // the same rule applies, but without an observable difference.
                     return function html($api, $cmp) {
                         $cmp.foo;
+                        return [];
                     };
                 }
             }

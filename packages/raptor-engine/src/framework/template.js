@@ -1,21 +1,11 @@
 import assert from "./assert.js";
 import * as api from "./api.js";
-import { n as createVNode } from "./api.js";
-import { isArray, isObject, create, ArrayIndexOf, ArraySlice, toString, hasOwnProperty, bind } from "./language.js";
+import { isArray, isUndefined, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language.js";
 import { getOwnFields, extractOwnFields } from "./properties.js";
 import { vmBeingRendered } from "./invoker.js";
 import { subscribeToSetHook } from "./watcher.js";
 
 const EmptySlots = create(null);
-
-function normalizeRenderResult(vm: VM, elementOrVnodeOrArrayOfVnodes: any): Array<VNode> {
-    if (!elementOrVnodeOrArrayOfVnodes) {
-        return [];
-    }
-    // never mutate the original array
-    const vnodes = isArray(elementOrVnodeOrArrayOfVnodes) ? ArraySlice.call(elementOrVnodeOrArrayOfVnodes, 0) : [elementOrVnodeOrArrayOfVnodes];
-    return createVNode(vnodes);
-}
 
 function getSlotsetValue(slotset: HashTable<Array<VNodes>>, slotName: string): Array<VNodes> {
     assert.isTrue(isObject(slotset), `Invalid slotset value ${toString(slotset)}`);
@@ -96,7 +86,6 @@ const cmpProxyHandler = {
 
 export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
     assert.vm(vm);
-    let result = html;
     // when `html` is a facotyr, it has to be invoked
     // TODO: add identity to the html functions
     if (typeof html === 'function') {
@@ -130,11 +119,15 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
         const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
         const outerMemoized = currentMemoized;
         currentMemoized = create(null);
-        result = html.call(undefined, api, cmp, slotset, tplCache);
+        let vnodes = html.call(undefined, api, cmp, slotset, tplCache);
+        assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
         currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
         slotsetRevoke();
         componentRevoke();
+        return vnodes;
     }
-    // the render method can return many different things, here we attempt to normalize it.
-    return normalizeRenderResult(vm, result);
+    if (!isUndefined(html)) {
+        assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./mytemplate.html"\`) or undefined, instead, it has returned ${html}.`);
+    }
+    return [];
 }

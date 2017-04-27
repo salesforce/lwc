@@ -8,17 +8,22 @@ describe('invoker.js', () => {
 
     describe('integration', () => {
 
+        var child;
+
+        beforeEach(function() {
+            child = api.h('p', {}, []);
+        });
+
         it('should invoke connectedCallback() after all child are inserted into the dom', () => {
             let counter = 0;
             const elm = document.createElement('x-foo');
-            const child = document.createElement('p');
             const def = class MyComponent1 extends Element {
                 connectedCallback() {
                     counter++;
-                    assert.strictEqual(elm.childNodes[0], child, 'the child element is not in the dom yet');
+                    assert.strictEqual(elm.childNodes[0], child.elm, 'the child element is not in the dom yet');
                 }
                 render() {
-                    return child;
+                    return () => [child];
                 }
             }
             const vnode = api.c('x-foo', def, {});
@@ -32,7 +37,6 @@ describe('invoker.js', () => {
         it('should invoke disconnectedCallback() after all child are removed from the dom', () => {
             let counter = 0;
             const elm = document.createElement('x-foo');
-            const child = document.createElement('p');
             document.body.appendChild(elm);
             const def = class MyComponent2 extends Element {
                 disconnectedCallback() {
@@ -40,7 +44,7 @@ describe('invoker.js', () => {
                     assert.strictEqual(elm.childNodes.length, 0, 'the child element is not removed from the dom yet');
                 }
                 render() {
-                    return child;
+                    return () => [child];
                 }
             }
             const vnode1 = api.c('x-foo', def, {});
@@ -58,14 +62,13 @@ describe('invoker.js', () => {
         it('should invoke renderedCallback() async after every change after all child are inserted', () => {
             let counter = 0;
             const elm = document.createElement('x-foo');
-            const child = document.createElement('p');
             const def = class MyComponent3 extends Element {
                 renderedCallback() {
                     counter++;
-                    assert.strictEqual(elm.childNodes[0], child, 'the child element is not in the dom yet');
+                    assert.strictEqual(elm.childNodes[0], child.elm, 'the child element is not in the dom yet');
                 }
                 render() {
-                    return child;
+                    return () => [child];
                 }
             }
             const vnode = api.c('x-foo', def, {});

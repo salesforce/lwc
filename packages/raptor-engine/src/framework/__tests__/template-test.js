@@ -27,6 +27,7 @@ describe('template.js', () => {
                 $cmp = $c;
                 $slotset = $s;
                 $memoizer = $m;
+                return [];
             });
             assert.strictEqual($api, api, 'api ns object should be provided');
             assert($cmp && typeof $cmp === 'object', 'cmp should be provided');
@@ -39,6 +40,7 @@ describe('template.js', () => {
             createCustomComponent(function ($a, $c, $s) {
                 $cmp = $c;
                 $slotset = $s;
+                return [];
             });
             assert.throws(() => $cmp.state, 'state property member');
             assert.throws(() => $cmp.foo, 'unknown property member');
@@ -62,6 +64,7 @@ describe('template.js', () => {
                         cmp.y;
                         cmp.x;
                         cmp.y;
+                        return [];
                     };
                 }
             }
@@ -87,6 +90,7 @@ describe('template.js', () => {
                     return function (api, cmp) {
                         cmp.x;
                         cmp.y;
+                        return [];
                     };
                 }
             }
@@ -99,24 +103,28 @@ describe('template.js', () => {
         it('should throw when attempting to set a property member of slotset', () => {
             assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 slotset.x = [];
+                return [];
             }));
         });
 
         it('should throw when attempting to set a property member of cmp', () => {
             assert.throws(() => createCustomComponent(function (api, cmp) {
                 cmp.x = [];
+                return [];
             }));
         });
 
         it('should throw when attempting to delete a property member of slotset', () => {
             assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 delete slotset.x;
+                return [];
             }));
         });
 
         it('should throw when attempting to delete a property member of cmp', () => {
             assert.throws(() => createCustomComponent(function (api, cmp) {
                 delete cmp.x;
+                return [];
             }));
         });
 
@@ -127,10 +135,12 @@ describe('template.js', () => {
             function html1(api, cmp, slotset, memoizer) {
                 memoizer.m0 = memoizer.m0 || cmp.x;
                 value = memoizer.m0;
+                return [];
             }
             function html2(api, cmp, slotset, memoizer) {
                 memoizer.m0 = memoizer.m0 || cmp.x;
                 value = memoizer.m0;
+                return [];
             }
             class MyComponent2 extends Element {
                 render() {
@@ -155,31 +165,35 @@ describe('template.js', () => {
 
     describe('evaluateTemplate()', () => {
 
-        it('should normalize empty values', () => {
+        it('should normalize undefined', () => {
             let result
             result = target.evaluateTemplate(undefined, { component: 1 });
             assert.deepEqual(result, [], 'undefined');
-            result = target.evaluateTemplate(null, { component: 1 });
-            assert.deepEqual(result, [], 'null');
-            result = target.evaluateTemplate("", { component: 1 });
-            assert.deepEqual(result, [], 'empty string');
         });
 
-        it('should normalize dom elements', () => {
-            let result
-            const elm = document.createElement('p');
-            result = target.evaluateTemplate(elm, { component: 1 });
-            assert(Array.isArray(result), 'return an array');
-            assert(result.length === 1, 'with one element');
+        it('should throw for null value', () => {
+            assert.throws(() => {
+                target.evaluateTemplate(null, { component: 1 });
+            });
+        });
+        it('should throw for empty values', () => {
+            assert.throws(() => {
+                target.evaluateTemplate("", { component: 1 });
+            });
         });
 
-        it('should normalize array of dom elements', () => {
-            let result
+        it('should throw for dom elements', () => {
             const elm = document.createElement('p');
-            result = target.evaluateTemplate([elm], { component: 1 });
-            assert.equal(result.length, 1, 'single child');
-            assert.equal(result[0].sel, 'p', 'selector');
-            assert.deepEqual(result[0].data, {}, 'data');
+            assert.throws(() => {
+                target.evaluateTemplate(elm, { component: 1 });
+            });
+        });
+
+        it('should throw for array of dom elements', () => {
+            const elm = document.createElement('p');
+            assert.throws(() => {
+                target.evaluateTemplate([elm], { component: 1 });
+            });
         });
 
     });

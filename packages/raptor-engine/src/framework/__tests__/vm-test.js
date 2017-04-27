@@ -50,7 +50,7 @@ describe('vm.js', () => {
             const vnodeChild = api.c('x-bar', ChildComponent41, {});
             class MyComponent4 extends Element {
                 render() {
-                    return vnodeChild;
+                    return () => [vnodeChild];
                 }
             }
             vnode0 = api.c('x-foo', MyComponent4, {});
@@ -71,7 +71,7 @@ describe('vm.js', () => {
             class MyComponent5 extends Element {
                 render() {
                     vnodeChild = api.c('x-bar', ChildComponent51, {});
-                    return vnodeChild;
+                    return () => [vnodeChild];
                 }
             }
             vnode0 = api.c('x-foo', MyComponent5, {});
