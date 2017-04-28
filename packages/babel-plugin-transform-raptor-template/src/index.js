@@ -524,7 +524,12 @@ export default function({ types: t }: BabelTypes): any {
             }
 
             if (valueName === 'className' && t.isStringLiteral(valueNode)) {
-                const classObj = valueNode.value.trim().split(' ').reduce((r, k) => { r[k] = true; return r; }, {});
+                const className = valueNode.value;
+                const classObj = className.trim().split(/\s+/).reduce((acc, k) => {
+                    acc[k] = true;
+                    return acc;
+                }, {});
+
                 valueNode = t.valueToNode(classObj);
                 valueName = 'classMap';
             }
