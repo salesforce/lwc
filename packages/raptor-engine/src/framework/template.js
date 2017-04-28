@@ -41,17 +41,17 @@ const cmpProxyHandler = {
                 const fields = getOwnFields(cmp);
                 switch (fields[key]) {
                     case 1:
-                        assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. It can only be used from template via a getter, and will not be reactive unless it is moved to \`this.state.${toString(key)}\`.`);
+                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(key)}\`.`);
                         break;
                     case 2:
-                        assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\` directly, which is added as an expando property of the component and considered a private field. It can only be used from the template via a getter, and will not be reactive unless it is moved to \`this.state.${toString(key)}\`.`);
+                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\` directly, which is added as an expando property of the component and considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(key)}\`.`);
                         break;
                     case 3:
-                        assert.logError(`The template used by ${cmp} is accessing \`this.${toString(key)}\`, which is considered a mutable private field. This property cannot be used as part of the UI because mutations of it cannot be observed. Alternative, you can move this property to \`this.state.${toString(key)}\` to access it from the template.`);
+                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\`, which is considered a mutable private field but mutations cannot be observed. Instead move it to \`this.state.${toString(key)}\`.`);
                         break;
                     default:
                         // TODO: this should never really happen because the compiler should always validate
-                        console.warn(`The template used by ${cmp} is accessing \`this.${toString(key)}\`, which is not declared. This is probably a typo on the template.`);
+                        console.warn(`${cmp}'s template is accessing \`this.${toString(key)}\`, which is not declared by the component. This is likely a typo in the template.`);
                 }
             }
         });
@@ -75,11 +75,11 @@ const cmpProxyHandler = {
         return value;
     },
     set: (cmp: Object, key: string | Symbol): boolean => {
-        assert.logError(`Invalid assigment: ${cmp} cannot set a new value for property ${key} during the rendering phase.`);
+        assert.logError(`Invalid assignment: ${cmp} cannot set a new value for property ${key} during the rendering phase.`);
         return false;
     },
     deleteProperty: (cmp: Object, key: string | Symbol): boolean => {
-        assert.logError(`Invalid delete statement: Component "${cmp}" cannot delete property ${key} during the rendering phase.`);
+        assert.logError(`Invalid delete statement: ${cmp} cannot delete property ${key} during the rendering phase.`);
         return false;
     },
 };
@@ -110,7 +110,7 @@ export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
             ids.forEach((propName: string) => {
                 if (!(propName in component)) {
                     // TODO: this should never really happen because the compiler should always validate
-                    console.warn(`The template rendered by ${vm} might attempt to access \`this.${propName}\`, which is not declared. This is probably a typo on the template.`);
+                    console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
                 }
             });
 

@@ -10,14 +10,14 @@ const globalMap: HashTable<VM> = create(null);
 
 export function lockUID(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.uid === 0, `${vm} is already locked to a previous generated uid.`);
+    assert.invariant(vm.uid === 0, `${vm} is already locked to a previously generated uid.`);
     vm.uid = ++uid;
     globalMap[uid] = vm;
 }
 
 export function unlockUID(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.uid > 0, `${vm} is not locked to a previous generated uid.`);
+    assert.invariant(vm.uid > 0, `${vm} is not locked to a previously generated uid.`);
     globalMap[vm.uid] = undefined;
     vm.uid = 0;
 }
@@ -30,7 +30,7 @@ export function createVM(vnode: ComponentVNode) {
     console.log(`[object:vm ${def.name}] is being initialized.`);
     if (!def.isStateful) {
         // TODO: update when functionals are supported
-        throw new TypeError(`${def.name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
+        throw new TypeError(`${def.name} is not an Element. Only components extending Element from "engine" are supported. In the future functional components will be supported.`);
     }
     const vm: VM = {
         uid: 0,

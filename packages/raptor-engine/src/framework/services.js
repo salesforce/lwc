@@ -7,7 +7,7 @@ export const services: Services = create(null);
 
 export function register(service: ServiceCallback) {
     if (!isObject(service)) {
-        throw new TypeError(`Invalid Service Declaration: ${service}`);
+        throw new TypeError(`Invalid service declaration, ${service}: service must be an object`);
     }
     for (let i = 0; i < hooks.length; ++i) {
         const hookName = hooks[i];

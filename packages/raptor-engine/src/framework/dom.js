@@ -29,7 +29,7 @@ export const GlobalHTMLProperties = {
     },
     className: {
         attribute: 'class',
-        error: `Property \`className\` is consider a harmful API. Instead, you can rely on property \`classList\` which offers similar funcionality but without having to do string manipulation, and without conflicting with classes provided by the owner element.`,
+        error: `Using property "className" is an anti-pattern because of slow runtime behavior and conflicting with classes provided by the owner element. Instead use property "classList".`,
     },
     contentEditable: {
         attribute: 'contenteditable',
@@ -42,7 +42,7 @@ export const GlobalHTMLProperties = {
     },
     dataset: {
         readOnly: true,
-        msg: 'Property \`dataset\` is consider a harmful API. Instead you can declare \`static observedAttributes = ["data-foo"]\` and then use the \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification everytime the attribute "data-foo" changes, which offers similar read functionality but without exposing the live bindings to user-land.',
+        msg: 'Using property "dataset" is an anti-pattern. Instead declare \`static observedAttributes = ["data-foo"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes.',
     },
     dir: {
         attribute: 'dir',
@@ -117,7 +117,7 @@ export const GlobalHTMLProperties = {
     },
     style: {
         attribute: 'style',
-        error: `Property \`style\` is consider a harmful API. Writing logic that relies on the "style" attribute or \`style\` property is discouraged.`,
+        error: `Using property or attribute "style" is an anti-pattern. Instead use property "classList".`,
     },
     tabIndex: {
         attribute: 'tabindex',
@@ -135,7 +135,7 @@ export const GlobalHTMLProperties = {
     slot: {
         attribute: 'slot',
         experimental: true,
-        error: `Writing logic that relies on "slot" attribute or \`slot\` property is discouraged`
+        error: `Using property or attribute "slot" is an anti-pattern.`
     }
 };
 

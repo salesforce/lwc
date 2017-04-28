@@ -42,7 +42,7 @@ function update(oldVnode: VNode, vnode: VNode) {
                 // only touching the dom if the prop really changes.
                 assert.block(function devModeCheck() {
                     if (elm[key] === cur && old !== undefined && !vnode.isRoot) {
-                        console.warn(`unneccessary update of property "${key}" in ${elm}, it has the same value in ${vnode.vm || vnode}.`);
+                        console.warn(`Unneccessary update of property "${key}" in ${elm}, it has the same value in ${vnode.vm || vnode}.`);
                     }
                 });
                 elm[key] = cur;

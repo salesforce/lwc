@@ -52,7 +52,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     const config: PropDef = publicPropsConfig[propName];
     if (isUndefined(config)) {
         // TODO: this should never really happen because the compiler should always validate
-        console.warn(`Ignoring unknown public property ${propName} of ${vm}. This is probably a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
+        console.warn(`Ignoring unknown public property ${propName} of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
         return;
     }
     let oldValue = cmpProps[propName];
@@ -109,7 +109,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     }
     assert.block(function devModeCheck() {
         if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
-            console.warn(`Adding the same event listener ${newHandler} for the event "${eventName}" will result on calling the same handler multiple times for ${vm}. In most cases, this is an issue, instead, you can add the event listener in the constructor(), which is guarantee to be executed only once during the life-cycle of the component ${vm}.`);
+            console.warn(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the constructor() which is executed once per component instance.`);
         }
     });
     // TODO: we might need to hook into this listener for Locker Service
@@ -137,7 +137,7 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         }
     }
     assert.block(function devModeCheck() {
-        console.warn(`Event handler ${oldHandler} not found for event "${eventName}", this is an unneccessary operation. Only attempt to remove the event handlers that you have added already for ${vm}.`);
+        console.warn(`Did not find event listener ${oldHandler} for event "${eventName}" on ${vm}. Instead only remove an event listener once.`);
     });
 }
 
@@ -147,7 +147,7 @@ export function dispatchComponentEvent(vm: VM, event: Event): boolean {
     assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
     const { cmpEvents, component } = vm;
     const { type } = event;
-    assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is certainty that there is at least one listener in queue for ${type} on ${vm}.`);
+    assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is at least one listener in queue for ${type} on ${vm}.`);
     const handlers = cmpEvents[type];
     let uninterrupted = true;
     const { stopImmediatePropagation } = event;
@@ -208,7 +208,7 @@ export function removeComponentSlot(vm: VM, slotName: string) {
 
 export function renderComponent(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.isDirty, `Component ${vm} is not dirty.`);
+    assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
     clearListeners(vm);
     const vnodes = invokeComponentRenderMethod(vm);

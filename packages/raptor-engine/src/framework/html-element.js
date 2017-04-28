@@ -41,7 +41,7 @@ ComponentElement.prototype = {
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
                 // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                console.error(`this.addEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+                console.error(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
         });
         addComponentEventListener(vm, type, listener);
@@ -53,7 +53,7 @@ ComponentElement.prototype = {
         assert.vm(vm);
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
-                console.error(`this.removeEventListener() on component ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
+                console.error(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
             }
         });
         removeComponentEventListener(vm, type, listener);
@@ -65,7 +65,7 @@ ComponentElement.prototype = {
         assert.vm(vm);
         if (!attrName) {
             if (arguments.length === 0) {
-                throw new TypeError(`Failed to execute 'getAttribute' on ${vm}: 1 argument required, but only 0 present.`);
+                throw new TypeError(`Failed to execute \`getAttribute\` on ${vm}: 1 argument is required, got 0.`);
             }
             return null;
         }
@@ -74,13 +74,13 @@ ComponentElement.prototype = {
             const propName = getPropNameFromAttrName(attrName);
             const { def: { props: publicPropsConfig } } = vm;
             if (publicPropsConfig[propName]) {
-                throw new ReferenceError(`Attribute "${attrName}" correspond to public property ${propName} from ${vm}. Instead of trying to access it via \`this.getAttribute("${attrName}")\` you should use \`this.${propName}\` instead. Use \`getAttribute()\` only to access global HTML attributes.`);
+                throw new ReferenceError(`Attribute "${attrName}" corresponds to public property ${propName} from ${vm}. Instead use \`this.${propName}\`. Only use \`getAttribute()\` to access global HTML attributes.`);
             } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, experimental } = GlobalHTMLProperties[propName];
                 if (error) {
                     console.error(error);
                 } else if (experimental) {
-                    console.error(`Writing logic that relies on experimental attribute "${attrName}" is discouraged, until this feature is standarized and supported by all evergreen browsers. Property \`${propName}\` and attribute "${attrName}" will be ignored by this engine to prevent you from producing non-standard components.`);
+                    console.error(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
                 }
             }
         });
@@ -138,7 +138,7 @@ ComponentElement.prototype = {
         const { vm } = vnode;
         assert.vm(vm);
         if (!newState || !isObject(newState) || isArray(newState)) {
-            throw new TypeError(`${vm} fails to set new state to ${newState}. \`this.state\` can only be set to an object.`);
+            throw new TypeError(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an object.`);
         }
         let { cmpState } = vm;
         if (isUndefined(cmpState)) {
@@ -147,7 +147,7 @@ ComponentElement.prototype = {
         if (cmpState !== newState) {
             for (let key in cmpState) {
                 if (!(key in newState)) {
-                    cmpState[key] = undefined; // we prefer setting it to undefined than deleting it with has perf implications
+                    cmpState[key] = undefined; // prefer setting to undefined over deleting for perf reasons
                 }
             }
             for (let key in newState) {
@@ -169,7 +169,7 @@ assert.block(function devModeCheck() {
 
     getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
         if (propName in ComponentElement.prototype) {
-            return; // not need to redefined something that we are already exposing.
+            return; // no need to redefine something that we are already exposing
         }
         defineProperty(ComponentElement.prototype, propName, {
             get: function () {
@@ -179,20 +179,21 @@ assert.block(function devModeCheck() {
                 assert.vm(vm);
                 const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
                 const msg = [];
-                msg.push(`Accessing the reserved property \`${propName}\` in ${vm} is disabled.`);
+                msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
                 if (error) {
                     msg.push(error);
                 } else {
                     if (experimental) {
-                        msg.push(`* Writing logic that relies on experimental property \`${propName}\` is discouraged, until this feature is standarized and supported by all evergreen browsers. Property \`${propName}\` and attribute "${attribute}" will be ignored by this engine to prevent you from producing non-standard components.`);
+                        msg.push(`This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`);
                     }
                     if (readOnly) {
-                        msg.push(`* Read-only property derivated from attributes, it is better to rely on the original source of the value.`);
+                        // TODO - need to improve this message
+                        msg.push(`Property is read-only.`);
                     }
                     if (attribute) {
-                        msg.push(`You cannot access to the value of the global property \`${propName}\` directly, but since this property is reflective of attribute "${attribute}", you have two options to can access to the attribute value:`);
-                        msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value at any given time. This option is more suitable for accessing the value in a getter during the rendering process.`);
-                        msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and then use the \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification every time the attribute "${attribute}" changes. This option is more suitable for reactive programming, e.g.: fetching new content every time the attribute is updated.`);
+                        msg.push(`"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
+                        msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
+                        msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                     }
                 }
                 console.log(msg.join('\n'));

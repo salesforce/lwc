@@ -46,19 +46,19 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
 function createComponentDef(Ctor: Class<Component>): ComponentDef {
     const isStateful = isElementComponent(Ctor);
     const name: string = Ctor.name;
-    assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a name property which must be a string instead of ${name}.`);
-    assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a constructor property.`);
+    assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
+    assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a "constructor" property.`);
     const props = getPublicPropertiesHash(Ctor);
     if (isStateful) {
         const proto = Ctor.prototype;
         for (let propName in props) {
-            // initializing getters and setters for each public props on the target prototype
-            assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property, use the constructor to define it instead.`);
+            // initializing getters and setters for each public prop on the target prototype
+            assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
             defineProperties(proto, createPublicPropertyDescriptorMap(propName));
         }
     } else {
         // TODO: update when functionals are supported
-        throw new TypeError(`${name} is not an Element. At the moment, only components extending Element from "engine" are supported. Functional components will eventually be supported.`);
+        throw new TypeError(`${name} is not an Element. Only components extending Element from "engine" are supported. In the future functional components will be supported.`);
     }
     const methods = isStateful ? getPublicMethodsHash(Ctor) : EmptyObject;
     const observedAttrs = isStateful ? getObservedAttributesHash(Ctor) : EmptyObject;
@@ -93,7 +93,7 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
         assert.vm(vm);
         const { cmpProps, component } = vm;
         if (isUndefined(component)) {
-            assert.logError(`You should not attempt to read the value of public property ${propName} in "${vm}" during the construction process because its value has not been set by the owner component yet. Use the constructor to set default values for each public property.`);
+            assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
             return;
         }
         if (isRendering) {
@@ -110,7 +110,7 @@ function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptor
         assert.vm(vm);
         const { cmpProps, component } = vm;
         if (component) {
-            assert.logError(`Component "${vm}" can only set a new value for public property ${propName} during construction.`);
+            assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
             return;
         }
         // proxifying before storing it is a must for public props
@@ -138,12 +138,11 @@ function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {
-                    msg.push(`Writing logic that relies on experimental property \`${propName}\` is discouraged, until this feature is standarized and supported by all evergreen browsers. Property \`${propName}\` and attribute "${attribute}" will be ignored by this engine to prevent you from producing non-standard components.`);
+                    msg.push(`"${propName}" is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`);
                 } else {
-                    // TODO: this only applies to stateful components, need more details.
-                    msg.push(`Re-defining a reserved global HTML property \`${propName}\` is not allowed in Component "${target.name}". You cannot access to the value of the global property directly, but since this property is reflective of attribute "${attribute}", you have two options to can access to the attribute value:`);
-                    msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value at any given time. This option is more suitable for accessing the value in a getter during the rendering process.`);
-                    msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and then use the \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification every time the attribute "${attribute}" changes. This option is more suitable for reactive programming, e.g.: fetching new content every time the attribute is updated.`);
+                    msg.push(`"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
+                    msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
+                    msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                 }
                 console.error(msg.join('\n'));
             }

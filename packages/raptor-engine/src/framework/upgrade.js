@@ -20,7 +20,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
             assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.getAttribute("${attrName}")\` you can access the corresponding public property using \`element.${propName};\`. This distintion is important because getAttribute will returned the value casted to string.`);
+                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
             });
             return;
         }
@@ -31,7 +31,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
             assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.setAttribute("${attrName}", someValue)\` you can update the corresponding public property using \`element.${propName} = someValue;\`. This distintion is important because setAttribute will cast the new value to string before setting it into the corresponding property.`);
+                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
             });
             return;
         }
@@ -47,7 +47,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
             assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid Attribute "${attrName}" for component ${vm}. Instead of using \`element.removeAttribute("${attrName}")\` you can update the corresponding public property using \`element.${propName} = undefined;\`. This distintion is important because removeAttribute will set the corresponding property value to \`null\`.`);
+                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = undefined;\`.`);
             });
             return;
         }

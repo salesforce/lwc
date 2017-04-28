@@ -1,44 +1,54 @@
 # Services in Raptor
 
-Just like the virtual DOM implementation (currently snabbdom) provides some hooks for controlling part of the diffing process for vnodes, we need a similar infrastructure for component instances. Keep in mind that this API is not intended to be used by Components Authors, this is intended to be used by the App Developer, and it is a high-privilegue low-level API.
+Just like the virtual DOM implementation (currently snabbdom) provides hooks for controlling the diffing process of vnodes, we need similar capabilities for component instances. This API is not intended for component authors; it is a high-privilege low-level API for application developers.
 
 __This is the first draft of what we call Raptor Services.__
 
 ## Use Cases
 
-* As an app developer, I can measure the time to create and render per component.
+* As an app developer, I can measure the runtime of creation and rendering per component.
 * As an app developer, I can provide extension points for the default component declaration format to support new features.
 
 ## Proposal
 
-
 ### Registration
 
-There is a need for a Service Registration process, this process is particular interesting because it is something that you do once, by adding has many services as you want when the app is booting, and you never change it again. In fact, services cannot be unregistered, and if a service wants to be flagged, the service itself can implement its own mechanism to intervene in the component's life-cycle or not. The following code represents the registration of a new service:
+Services must be registered to participate in the lifecycle of components. Services must register during application boot so they may be involved in all stages of all components. Because services are an application concern it is expected the application defines which services are available within it.
+
+Services may not be unregistered. A sevice may instead choose not to exhibit behavior at any time.
+
+The following code demonstrates the registration of a new service:
 
 ```js
-Raptor.service({
+Raptor.register({
     declared: (Ctor, def) => {}, // removed from first implementation
-    constructed: (cmp, def) => {}, // removed from first implementation
-    appended: (cmp, def) => {},
-    removed: (cmp, def) => {},
-    rehydrated: (cmp, def) => {}
+    constructed: (cmp, data, def, context) => {}, // removed from first implementation
+    connected: (cmp, data, def, context) => {},
+    disconnected: (cmp, data, def, context) => {},
+    rehydrated: (cmp, data, def, context) => {}
 });
 ```
 
-_note: the registration order do matters, and dictates the order in which the different services' hooks will be invoked._
+_Note: the order of registration is important: it dictates the order in which the different services' hooks will be invoked._
 
 ### Hooks
 
-Each of the hooks provided via the registration process will be invoked at some point during the life-cycle of each component:
+Each of the hooks provided via the registration process will be invoked for each component at the relevant lifecycle stage. All hooks are provided the following parameters (except the `declared` hook):
 
-* `declared(Ctor, def)`: Invoked once, the first time a component declaration is inspected by the raptor engine during the internal call to `getComponentDef(Ctor)`. As a result, the `declaration` hook will be invoked right after by passing the component declaration (Ctor) and the default definition (`def`) of the component declaration after the engine inspect it. This `def` object is mutable, and can be used by the service to store more meta information about the declaration.
-* `constructed(cmp, def)`: after the component instance is created by invoking its constructor, this hook will be invoked, passing the component instance, and the definition object `def` that can be use to access metadata about the component declaration.
-* `appended(cmp, def)`: after the component instance is appended to the DOM, this hook will be invoked, passing the component instance, and the definition object `def` that can be use to access metadata about the component declaration.
-* `removed(cmp, def)`: after the component instance is removed from the DOM, this hook will be invoked, passing the component instance, and the definition object `def` that can be use to access metadata about the component declaration.
-* `rehydrated(cmp, def)`: after the component instance is re-rendered due to a mutation on its state or its props, this hook will be invoked, passing the component instance, and the definition object `def` that can be use to access metadata about the component declaration.
+* `cmp`: the component instance
+* `data`: TODO
+* `def`: the component definition
+* `context`: TODO
 
-_note: this hooks are stateless, they return nothing, and they store nothing since they are spliced into functions that will be called directly without context._
+The available hooks are:
+
+* `declared(Ctor, def)`: Invoked once, the first time a component declaration is inspected by the raptor engine during the internal call to `getComponentDef(Ctor)`. As a result, the `declared` hook will be invoked right after by passing the component declaration (`Ctor`) and the default definition (`def`) of the component declaration after the engine inspects it. This `def` object is mutable and can be used by the service to store more metadata about the declaration.
+* `constructed(cmp, data, def, context)`: invoked after the component instance is created by invoking its constructor.
+* `connected(cmp, data, def, context)`: invoked after the component instance is appended to the DOM.
+* `disconnected(cmp, data, def, context)`: invoked after the component instance is removed from the DOM.
+* `rehydrated(cmp, data, def, context)`: invoked after the component instance is re-rendered due to a mutation on its state or its props.
+
+_Note: the hooks are stateless, they return nothing, and they store nothing since they are spliced into functions that will be called directly without context._
 
 ### Examples
 
@@ -48,13 +58,13 @@ _note: this hooks are stateless, they return nothing, and they store nothing sin
 Raptor.service({
     declared: (Ctor, def) => {
         if (!Ctor.x) {
-            return; // exist fast if there is nothing to do
+            return; // exit fast if there is nothing to do
         }
         // Act if the constructor is marked to be decorated with `x`
         // Assert: Ctor must extends Raptor.Element.
         const selector = Ctor.x.selector;
         Ctor.prototype.focus = transferableFocusFactory(selector);
-        Ctor.prototype.focus = transferableBlurFactory(selector);
+        Ctor.prototype.blur = transferableBlurFactory(selector);
         // expose the two new public methods
         def.publicMethods.push('focus', 'blur');
     },
@@ -81,13 +91,13 @@ Raptor.service({
         }
         ...
     },
-    appended: (Ctor, data, def, context) => {
+    connected: (Ctor, data, def, context) => {
         if (!def.locker) {
             return;
         }
         ...
     },
-    removed: (Ctor, data, def, context) => {
+    disconnected: (Ctor, data, def, context) => {
         if (!def.locker) {
             return;
         }
@@ -96,6 +106,6 @@ Raptor.service({
 });
 ```
 
-#### 3. Metric Service
+#### 3. Metrics Service
 
 TBD
