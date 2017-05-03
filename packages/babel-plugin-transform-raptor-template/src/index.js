@@ -520,6 +520,12 @@ export default function({ types: t }: BabelTypes): any {
 
         } else {
             if (valueName === 'style') {
+                if (!t.isStringLiteral(valueNode)) {
+                    // FIXME: Should not need to throw the error from the JSX opening tag. Babel outputs a warning when throwing from the attribute
+                    // because it has been modified previously to bind the expression to the component.
+                    throw path.parentPath.buildCodeFrameError(`Dynamic style attribute not supported`);
+                }
+
                 valueNode = t.valueToNode(parseStyles(prop.value.value));
             }
 
