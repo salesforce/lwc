@@ -1,13 +1,7 @@
 const parse5 = require('parse5');
+const { serializeAttributes } = require('./attributes');
 
-const {
-    serializeAttributes
-} = require('./attributes');
-
-const {
-    isUnaryTag,
-    EXPRESSION_SYMBOL_END
-} = require('./constants');
+const { isUnaryTag, EXPRESSION_SYMBOL_END } = require('./constants');
 
 function serializeArrayNode(nodes, src) {
     return nodes.reduce((acc, child) => (
@@ -58,10 +52,7 @@ function serializeTreeNode(node, src) {
 
 module.exports = {
     transform (src) {
-        const parsed = parse5.parseFragment(src, {
-            locationInfo: true,
-        });
-
+        const parsed = parse5.parseFragment(src, { locationInfo: true });
         return serializeTreeNode(parsed, src);
     }
 };

@@ -7,7 +7,7 @@ import sourceResolver from './rollup-plugin-source-resolver';
 import rollupRemoveAnnotations from './rollup-plugin-remove-annotations';
 import { rollup } from 'rollup';
 
-export function compileResource(entry: string, options: any): Promise<any> {
+export function compileFile(entry: string, options: any): Promise<any> {
     const ext = extname(entry);
     const src = getSource(entry, options.sources);
 
@@ -31,10 +31,7 @@ export function compileBundle(entry: string, options: any): Promise<any> {
     ];
 
     return new Promise((resolve: (bundleResult: any) => void, reject: (element: HTMLElement) => void) => {
-        rollup({
-            entry,
-            plugins
-        })
+        rollup({ entry, plugins })
         .then((bundle: any) => {
             const normalizedModuleName = [options.componentNamespace, options.componentName].join('-');
             const bundleResult = bundle.generate({
@@ -57,10 +54,9 @@ function rollupTransform(options: any): any {
     return {
         name: 'rollup-transform',
         transform (src: string, filename: string) {
-            return compileResource(filename, Object.assign({}, { filename }, options)).then((result: any) => {
-                options.$metadata[filename] = result.metadata;
-                return result;
-            });
+            const result = compileFile(filename, Object.assign({}, { filename }, options));
+            options.$metadata[filename] = result.metadata;
+            return result;
         }
     }
 }

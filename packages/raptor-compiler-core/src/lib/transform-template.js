@@ -20,5 +20,5 @@ export default function (src: string, options: any): any {
     // #FIXME: Returns for now only a subset of the transform result because the ast property in
     // the result makes rollup throw.
     // Returning the AST instead of the generated code would greately improve the compilation time.
-    return Promise.resolve({ code, map, metadata });
+    return { code, map, metadata };
 }

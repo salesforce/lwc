@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import assert from 'power-assert';
-import {compile} from '../src/index';
+import { compile, compileResource } from '../src/index';
 
 function trim(str) {
     return str.toString().replace(/^\s+|\s+$/, '');
@@ -16,6 +16,16 @@ const skipTests = [
 ];
 
 const fixturesDir = path.join(__dirname, 'fixtures');
+
+
+describe('compile individual resources: ', () => {
+    it('compile with no options - no namespace', () => {
+        const htmlFile = path.join(fixturesDir, 'class_and_template/class_and_template.html');
+        const expected = fs.readFileSync(path.join(fixturesDir, 'expected-template.js'));
+        const result = compileResource(htmlFile, {});
+        assert.equal(trim(expected), trim(result.code));
+    });
+});
 
 describe('emit asserts for namespaced_folder: ', () => {
     const nsFolder = 'namespaced_folder';
