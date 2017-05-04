@@ -1,81 +1,67 @@
-/* eslint-env node */
-'use strict';
-
 const parse5 = require('parse5');
-const Readable = require('stream').Readable;
-const constants = require('./constants');
-const isUnaryTag = constants.isUnaryTag;
 
-function normalizeAttrName(name) {
-    // :foo => d:foo
-    if (name[0] === constants.DIRECTIVE_SYMBOL) {
-        return constants.DEFAULT_DIRECTIVE_PREFIX + name;
+const {
+    serializeAttributes
+} = require('./attributes');
+
+const {
+    isUnaryTag,
+    EXPRESSION_SYMBOL_END
+} = require('./constants');
+
+function serializeArrayNode(nodes, src) {
+    return nodes.reduce((acc, child) => (
+        acc + serializeTreeNode(child, src)
+    ), '');
+}
+
+function serializeTag(node, src) {
+    const { nodeName } = node;
+
+    let attrs = '';
+    if (node.attrs.length) {
+        attrs = ' ' + serializeAttributes(node, src);
     }
-    // @foo => bind:foo
-    if (name[0] === constants.EVENT_HANDLER_SYMBOL) {
-        return constants.EVENT_HANDLER_DIRECTIVE_PREFIX + constants.DIRECTIVE_SYMBOL + name.substring(1);
-    }
-    return name;
-}
 
-function generateHTMLAttr(attr) {
-    var value = attr.unquoted ? attr.value : `"${attr.value}"`;
-    return `${attr.name}=${value}`;
-}
-
-function isExpression(str) {
-    return str[0] === '{' && str[str.length - 1] === '}';
-}
-
-function parseAttrs(attrs) {
-    const normalizedAttrs = attrs.map((attr) => {
-        return {
-            name: attr.prefix ? `${attr.prefix}:${attr.name}` : normalizeAttrName(attr.name),
-            value : attr.value,
-            unquoted: isExpression(attr.value) }
+    if (isUnaryTag(nodeName)) {
+        // Add a whitespace between the last attribute and the self closing tag
+        // to remove any ambiguity when parsing: <input value={myValue}/>
+        if (attrs.charAt(attrs.length - 1) === EXPRESSION_SYMBOL_END) {
+            attrs += ' ';
         }
-    );
-    return normalizedAttrs.map(generateHTMLAttr);
-}
 
-function createStreamParser(output) {
-    const sax = new parse5.SAXParser();
-    sax.on('startTag', (tagName, rawAttrs) => {
-        const attrs = rawAttrs && rawAttrs.length ? ' ' + parseAttrs(rawAttrs).join(' ') : '';
-        const tag = isUnaryTag(tagName) ? `<${tagName}${attrs}/>` : `<${tagName}${attrs}>`;
-        output.push(tag);
-    });
-    // sax.on('comment', comment => {/* skip commnents */});
-    sax.on('endTag', (tag) => output.push(`</${tag}>`));
-    sax.on('text', (text) => output.push(text));
+        return `<${nodeName}${attrs}/>`
+    } else {
+        const children = nodeName === 'template' ?
+            serializeTreeNode(node.content, src) :
+            serializeArrayNode(node.childNodes, src);
 
-    return sax;
-}
-
-class HTMLReadable extends Readable {
-    constructor(src) {
-        super();
-        this.src = src;
+        return `<${nodeName}${attrs}>${children}</${nodeName}>`;
     }
-    _read() {
-        this.push(this.src);
-        this.push(null);
+}
+
+function serializeTreeNode(node, src) {
+    switch (node.nodeName) {
+        case '#comment':
+            return ''; // Strip the comment intentionally
+
+        case '#text':
+            return node.value;
+
+        case '#document-fragment':
+            return serializeArrayNode(node.childNodes, src);
+
+        default:
+            return serializeTag(node, src);
     }
 }
 
 module.exports = {
-    transform (buffer) {
-        const src = buffer.toString();
-        // We do a first pass so we get the "correct" beahviour when dealing with broken self-closing/missing tags.
-        const parsed = parse5.serialize(parse5.parseFragment(src));
-        // Now we do our own transformations to make it "JSX" compliant
-        return new Promise(function (resolve) {
-            const output = [];
-            const parser = createStreamParser(output);
-            const sourceStream = new HTMLReadable(parsed);
-
-            sourceStream.pipe(parser);
-            parser.on('end', () => resolve(output.join('')));
+    transform (src) {
+        const parsed = parse5.parseFragment(src, {
+            locationInfo: true,
         });
+
+        return serializeTreeNode(parsed, src);
     }
 };

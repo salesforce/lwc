@@ -14,12 +14,11 @@ export default function (src: string, options: any): any {
 
     localBabelConfig = Object.assign({}, options.babelConfig, localBabelConfig);
 
-    return templateCleanupPlugin.transform(src).then((result) => {
-        const transformed = transform(result, localBabelConfig);
-        return {
-            code: transformed.code,
-            map: transformed.map,
-            metadata: transformed.metadata
-        };
-    });
+    const cleanSrc = templateCleanupPlugin.transform(src);
+    const { code, map, metadata } = transform(cleanSrc, localBabelConfig);
+
+    // #FIXME: Returns for now only a subset of the transform result because the ast property in
+    // the result makes rollup throw.
+    // Returning the AST instead of the generated code would greately improve the compilation time.
+    return Promise.resolve({ code, map, metadata });
 }
