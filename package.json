@@ -15,7 +15,7 @@
     "clean:packages": "lerna run clean",
     "preinstall": "node -e \"if (process.env.npm_execpath.indexOf('yarn')===-1) throw new Error('npm is not supported, instead use \\\"yarn install\\\"')\"",
     "prepublish": "lerna bootstrap --concurrency 1 && yarn run build",
-    "release": "yarn run prepublish && lerna publish --skip-temp-tag --exact"
+    "release": "yarn run prepublish && lerna publish --exact"
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,7 @@
     "eslint": "^3.19.0",
     "eslint-plugin-flowtype": "^2.30.0",
     "flow-bin": "^0.43.0",
-    "lerna": "2.0.0-beta.38",
+    "lerna": "2.0.0-rc.4",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",

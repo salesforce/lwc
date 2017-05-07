@@ -5,6 +5,8 @@ const PUBLIC_METHOD_DECORATOR = 'method';
 const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
 const KEY_RENDER = 'render';
+const KEY_LABELS = 'labels';
+const KEY_RENDER_CALLBACK = 'renderCallback';
 
 module.exports = function (babel) {
     'use strict';
@@ -14,6 +16,7 @@ module.exports = function (babel) {
         name: 'raptor-class-transform',
         pre(file) {
             file.metadata.classDependencies = [];
+            file.metadata.labels = [];
         },
         visitor: {
             Program: {
@@ -75,7 +78,8 @@ module.exports = function (babel) {
         const publicProps = [];
         const publicMethods = [];
         const extraBody = [];
-        const keys = { [KEY_PROPS]: false, [KEY_METHODS]: false };
+        const knownStaticKeys = { [KEY_PROPS]: false, [KEY_METHODS]: false };
+        const labels = state.file.metadata.labels;
 
         for (let prop of classBody) {
             let key = prop.node.key.name;
@@ -92,29 +96,42 @@ module.exports = function (babel) {
                         }
                     });
 
-                    publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
+                    // Blacklist state from pulicProps
+                    if (prop.node.key.name !== 'state') {
+                        publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
+                    }
 
                     // Static props
                 } else {
-                    if (key in keys) {
-                        keys[key] = true;
+                    // Flag that public static props are already define
+                    if (key in knownStaticKeys) {
+                        knownStaticKeys[key] = true;
                     }
-                    extraBody.push(addClassStaticMember(className, key, prop.node.value));
+
+                    // This is a temporal workaround to prefetch labels until we implement i18n properly
+                    // https://git.soma.salesforce.com/raptor/raptor/issues/196
+                    if (key === KEY_LABELS && prop.node.value.elements) {
+                        labels.push.apply(labels, prop.node.value.elements.map(m => m.value));
+                    } else {
+                        extraBody.push(addClassStaticMember(className, key, prop.node.value));
+                    }
                     prop.remove();
                 }
 
                 // Methods
-            } else if (prop.isClassMethod({
-                    kind: 'method'
-                })) {
+            } else if (prop.isClassMethod({ kind: 'method' })) {
                 // Push to publich method
                 if (prop.node.decorators && prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
                     publicMethods.push(key);
                 }
 
+                if (key === KEY_RENDER_CALLBACK) {
+                    throw path.buildCodeFrameError(`Wrong lilfecycle method name ${KEY_RENDER_CALLBACK}. You probably meant renderedCallback`);
+                }
+
                 // If it has a render method later we won't do the transform
                 if (key === KEY_RENDER && !prop.node.static) {
-                    keys[key] = true;
+                    knownStaticKeys[key] = true;
                 }
             }
 
@@ -125,15 +142,15 @@ module.exports = function (babel) {
 
         }
 
-        if (!keys[KEY_PROPS] && publicProps.length) {
+        if (!knownStaticKeys[KEY_PROPS] && publicProps.length) {
             extraBody.push(addClassStaticMember(className, KEY_PROPS, t.objectExpression(publicProps)));
         }
 
-        if (!keys[KEY_METHODS] && publicMethods.length) {
+        if (!knownStaticKeys[KEY_METHODS] && publicMethods.length) {
             extraBody.push(addClassStaticMember(className, KEY_METHODS, t.valueToNode(publicMethods)));
         }
 
-        if (!keys[KEY_RENDER]) {
+        if (!knownStaticKeys[KEY_RENDER]) {
             injectRenderer(className, path, state);
         }
 
