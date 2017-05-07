@@ -22,7 +22,8 @@
     "url": "https://git.soma.salesforce.com/raptor/raptor.git"
   },
   "bin": {
-    "raptor-template": "bin/raptor-template-cli.js"
+    "raptor-template": "bin/raptor-template-cli.js",
+    "raptor-compiler": "bin/raptor-compiler-cli.js"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
@@ -33,8 +34,6 @@
     "babili": "0.0.12",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
-    "eslint-plugin-flowtype": "^2.30.0",
-    "flow-bin": "^0.43.0",
     "lerna": "2.0.0-rc.4",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
