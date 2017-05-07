@@ -7,7 +7,7 @@ import sourceResolver from './rollup-plugin-source-resolver';
 import rollupRemoveAnnotations from './rollup-plugin-remove-annotations';
 import { rollup } from 'rollup';
 
-export function compileFile(entry: string, options: any): Promise<any> {
+export function compileFile(entry: string, options: any): Object {
     const ext = extname(entry);
     const src = getSource(entry, options.sources);
 
@@ -15,7 +15,7 @@ export function compileFile(entry: string, options: any): Promise<any> {
 
     if (ext === '.html') {
         return transformTemplate(src, options);
-    } else if (ext === '.js') {
+    } else if (ext === '.js' || ext === '.ts') {
         return transformClass(src, options);
     } else {
         throw new Error(`Can't compile extension ${ext}`);
