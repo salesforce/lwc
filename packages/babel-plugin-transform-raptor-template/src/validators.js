@@ -7,9 +7,7 @@ export function validateTemplateRootFormat(path: Path) {
 
     if (!rootChildrens.length) {
         throw path.buildCodeFrameError('Missing root template tag');
-        // $FlowFixMe: not sure how to typecast to the array type
     } else if (rootChildrens.length > 1) {
-        // $FlowFixMe: not sure how to typecast to the array type
         throw rootChildrens.pop().buildCodeFrameError('Unexpected token');
     }
 

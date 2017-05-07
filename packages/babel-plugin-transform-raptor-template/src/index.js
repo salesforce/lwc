@@ -1,5 +1,4 @@
 /* eslint-env node */
-// $FlowFixMe: not sure why this does not work
 import jsxPlugin from 'babel-plugin-syntax-jsx';
 import * as CONST from './constants';
 import * as validator from './validators';
@@ -57,7 +56,6 @@ export default function({ types: t }: BabelTypes): any {
             validator.validatePrimitiveValues(path);
             const { node, attrMeta } = normalizeAttributeName(path.node.name, path.get('name'));
             const value = normalizeAttributeValue(path.node.value, attrMeta, path.get('value'));
-            // $FlowFixMe: Wrong babel union types
             const nodeProperty = t.objectProperty(node, value);
             nodeProperty._meta = attrMeta; // Attach metadata for further inspection
             path.replaceWith(nodeProperty);
@@ -86,7 +84,6 @@ export default function({ types: t }: BabelTypes): any {
 
                     const bodyPath = path.get('body');
                     const rootElement = bodyPath.find((child: Path): boolean => {
-                        // $FlowFixMe: How to annotate the refinement here?
                         return child.isExpressionStatement() && child.node.expression._jsxElement;
                     });
 
@@ -709,7 +706,6 @@ export default function({ types: t }: BabelTypes): any {
          node = node || t.booleanLiteral(true);
 
          if (t.isJSXExpressionContainer(node)) {
-             // $FlowFixMe: Wrong Literal casting
              node = node.expression;
              attrMeta.expressionContainer = true;
          } else {
@@ -731,7 +727,6 @@ export default function({ types: t }: BabelTypes): any {
 
         if (attrMeta.directive === DIRECTIVES.repeat) {
             const parsedValue = parseForStatement(node.value);
-            // $FlowFixMe: Wrong Literal casting
             node.value = parsedValue.for;
             attrMeta.inForScope = parsedValue.args;
         }

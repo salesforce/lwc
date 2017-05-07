@@ -21,7 +21,7 @@
     "mkdirp": "^0.5.1",
     "pem": "^1.9.4",
     "rimraf": "^2.6.1",
-    "rollup": "^0.41.5",
+    "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^2.0.0",

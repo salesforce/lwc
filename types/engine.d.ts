@@ -1,6 +1,17 @@
+/* eslint-disable */
+
+interface RenderAPI {
+    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode;
+    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode;
+    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>;
+    s(value: any): string;
+    e(): string;
+    f(items: Array<any>): Array<any>;
+}
+
 declare class Component {
     constructor();
-    render(): Node | VNode | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode;
+    render(): Node | VNode | ((api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode);
     connectedCallback(): void;
     disconnectedCallback(): void;
     renderedCallback(): void;
@@ -59,13 +70,4 @@ declare class VNode {
     children?: Array<string|VNode>;
     text: string;
     elm?: EventTarget;
-}
-
-interface RenderAPI {
-    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode;
-    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode;
-    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>;
-    s(value: any = ''): string;
-    e(): string;
-    f(items: Array<any>): Array<any>;
 }

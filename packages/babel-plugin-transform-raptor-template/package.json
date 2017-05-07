@@ -8,11 +8,8 @@
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",
-    "babel-eslint": "^7.2.1",
     "babel-preset-env": "^1.3.2",
     "babel-preset-flow": "^6.23.0",
-    "eslint": "^3.19.0",
-    "eslint-plugin-flowtype": "^2.30.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "raptor-helper-fixture": "0.8.0",
@@ -29,7 +26,6 @@
     "build": "babel src/ --out-dir dist/",
     "build:fixtures": "babel-node ./scripts/build-fixtures.js",
     "test": "mocha --compilers js:babel-register",
-    "lint": "eslint src/",
     "prepublish": "yarn run build"
   },
   "publishConfig": {

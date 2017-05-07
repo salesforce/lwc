@@ -1,3 +1,4 @@
+/* eslint-env node */
 const compiler = require('raptor-compiler-core');
 const pluginUtils = require('rollup-pluginutils');
 const path = require('path');

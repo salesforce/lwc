@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "noEmit": true,
+        "allowJs": true,
+        "checkJs": true
+    },
+    "exclude": [
+      "node_modules",
+      "packages/babel-plugin-tranform-raptor-template/node_modules",
+      "packages/babel-plugin-tranform-raptor-class/node_modules",
+      "packages/raptor-engine/node_modules",
+      "packages/raptor-compiler-core/node_modules",
+      "packages/rollup-plugin-raptor-compiler/node_modules",
+      "**/__test__/*.js"
+    ]
+}

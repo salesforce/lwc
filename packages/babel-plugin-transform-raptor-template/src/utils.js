@@ -39,7 +39,7 @@ if (!Array.prototype.includes) {
   };
 }
 
-export function makeMap(str: string): string => string {
+export function makeMap(str: string): any {
     const map = Object.create(null);
     const list = str.split(',');
 

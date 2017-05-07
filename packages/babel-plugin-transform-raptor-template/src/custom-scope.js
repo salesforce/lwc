@@ -1,5 +1,4 @@
 export default class {
-    scoped: Array<any>;
     constructor () {
         this.scoped = [];
     }

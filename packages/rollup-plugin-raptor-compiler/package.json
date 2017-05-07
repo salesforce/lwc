@@ -5,11 +5,10 @@
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^3.19.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "babel-core": "^6.24.0",
-    "rollup": "^0.41.4"
+    "rollup": "^0.41.6"
   },
   "dependencies": {
     "glob": "^7.1.1",
@@ -18,8 +17,7 @@
     "rollup-pluginutils": "^2.0.1"
   },
   "scripts": {
-    "test": "mocha",
-    "lint": "eslint src/"
+    "test": "mocha"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

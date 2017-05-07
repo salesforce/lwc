@@ -1,6 +1,6 @@
 {
     "extends": "eslint:recommended",
-    "parser": "babel-eslint",
+    "parser": "typescript-eslint-parser",
     "env": {
         "es6": true,
         "browser": true,
@@ -11,7 +11,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "flowtype"
+        "typescript"
     ],
     "rules": {
         "no-console": 0
