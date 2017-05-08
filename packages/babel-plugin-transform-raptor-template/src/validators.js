@@ -36,7 +36,9 @@ export function validatePrimitiveValues(path: any) {
 
 export function validateHTMLAttribute(tagName: string, attrName: string, path: Path) {
     if (!isValidHTMLAttribute(tagName, attrName)) {
-        throw path.parentPath.buildCodeFrameError(`HTML Error: The attribute "${attrName}" is not defined the tag "${tagName}"`);
+        throw path.parentPath.buildCodeFrameError(
+            `"${attrName}" is not a valid attribute for ${tagName}. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tagName}`
+        );
     }
 }
 
