@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-raptor-template",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Babel plugin to transform a HTML template into Raptor format",
   "main": "dist/index.js",
   "author": "",
@@ -12,13 +12,13 @@
     "babel-preset-flow": "^6.23.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
-    "raptor-helper-fixture": "0.8.0",
+    "raptor-helper-fixture": "0.9.0",
     "rimraf": "^2.6.1"
   },
   "dependencies": {
     "babel-plugin-syntax-jsx": "^6.18.0",
-    "css-parse": "^2.0.0",
     "camelcase": "^4.0.0",
+    "css-parse": "^2.0.0",
     "decamelize": "^1.2.0"
   },
   "scripts": {
