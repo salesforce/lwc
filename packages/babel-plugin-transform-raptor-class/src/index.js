@@ -1,7 +1,8 @@
 /* eslint-env node */
 const pathLib = require('path');
 
-const PUBLIC_METHOD_DECORATOR = 'method';
+const DEPRECATED_PUBLIC_METHOD_DECORATOR = 'method';
+const API_DECORATOR = 'api';
 const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
 const KEY_RENDER = 'render';
@@ -120,9 +121,15 @@ module.exports = function (babel) {
 
                 // Methods
             } else if (prop.isClassMethod({ kind: 'method' })) {
-                // Push to publich method
-                if (prop.node.decorators && prop.node.decorators[0].expression.name === PUBLIC_METHOD_DECORATOR) {
-                    publicMethods.push(key);
+                // Push to public method
+                if (prop.node.decorators && prop.node.decorators.length) {
+                    const publicDecorator = prop.node.decorators.find(i => {
+                        return i.expression.name === DEPRECATED_PUBLIC_METHOD_DECORATOR || i.expression.name === API_DECORATOR
+                    });
+
+                    if (publicDecorator) {
+                        publicMethods.push(key);
+                    }
                 }
 
                 if (key === KEY_RENDER_CALLBACK) {
