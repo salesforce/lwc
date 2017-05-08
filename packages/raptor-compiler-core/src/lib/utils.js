@@ -77,12 +77,18 @@ export function mergeMetadata (metadata: any) {
     const templateDependencies = [];
     const classDependencies = [];
     const definedSlots = [];
+    const labels = [];
+
     for (let i in metadata) {
         templateUsedIds.push(...metadata[i].templateUsedIds || []);
         templateDependencies.push(...metadata[i].templateDependencies || []);
         classDependencies.push(...metadata[i].classDependencies || []);
         definedSlots.push(...metadata[i].definedSlots || []);
+        labels.push(...metadata[i].labels || []);
     }
 
-    return { bundleDependencies: classDependencies.concat(templateDependencies) };
+    return {
+        bundleDependencies: classDependencies.concat(templateDependencies),
+        bundleLabels: labels
+    };
 }
