@@ -7,7 +7,7 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker.js";
-import { isUndefined, defineProperty, hasOwnProperty, toString } from "./language.js";
+import { isUndefined, defineProperty, hasOwnProperty, toString, isArray } from "./language.js";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
 const ProxyCache: Set<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
@@ -28,6 +28,12 @@ function propertySetter(target: Object, key: string | Symbol, value: any): boole
     const oldValue = target[key];
     if (oldValue !== value) {
         target[key] = value;
+        notifyListeners(target, key);
+    } else if (key === 'length' && isArray(target)) {
+        // fix for issue #236: push will add the new index, and by the time length
+        // is updated, the internal length is already equal to the new length value
+        // therefore, the oldValue is equal to the value. This is the forking logic
+        // to support this use case.
         notifyListeners(target, key);
     }
     return true;

@@ -244,6 +244,72 @@ describe('watcher.js', () => {
 
     });
 
+    describe('#reactivity()', () => {
+        it('should react when a reactive array invokes Array.prototype.push()', () => {
+            let counter = 0;
+            class MyComponent1 extends Element {
+                constructor() {
+                    super();
+                    this.state.list = [1, 2];
+                }
+                render() {
+                    counter++;
+                    this.state.list.map((v) => v + 1);
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode1 = api.c('x-foo', MyComponent1, {});
+            patch(elm, vnode1);
+            assert.strictEqual(counter, 1);
+            vnode1.vm.component.state.list.push(3);
+            return Promise.resolve().then(() => {
+                assert.strictEqual(counter, 2);
+            });
+        });
+        it('should react when a reactive array invokes Array.prototype.pop()', () => {
+            let counter = 0;
+            class MyComponent1 extends Element {
+                constructor() {
+                    super();
+                    this.state.list = [1, 2];
+                }
+                render() {
+                    counter++;
+                    this.state.list.map((v) => v + 1);
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode1 = api.c('x-foo', MyComponent1, {});
+            patch(elm, vnode1);
+            assert.strictEqual(counter, 1);
+            vnode1.vm.component.state.list.pop();
+            return Promise.resolve().then(() => {
+                assert.strictEqual(counter, 2);
+            });
+        });
+        it('should react when a reactive array invokes Array.prototype.unshift()', () => {
+            let counter = 0;
+            class MyComponent1 extends Element {
+                constructor() {
+                    super();
+                    this.state.list = [1, 2];
+                }
+                render() {
+                    counter++;
+                    this.state.list.map((v) => v + 1);
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode1 = api.c('x-foo', MyComponent1, {});
+            patch(elm, vnode1);
+            assert.strictEqual(counter, 1);
+            vnode1.vm.component.state.list.unshift(3);
+            return Promise.resolve().then(() => {
+                assert.strictEqual(counter, 2);
+            });
+        });
+    });
+
     describe('#subscribeToSetHook()', () => {
         // TBD
     });
