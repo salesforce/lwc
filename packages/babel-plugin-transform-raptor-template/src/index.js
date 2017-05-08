@@ -55,7 +55,7 @@ export default function({ types: t }: BabelTypes): any {
         JSXAttribute(path: Path) {
             validator.validatePrimitiveValues(path);
             const { node, attrMeta } = normalizeAttributeName(path.node.name, path.get('name'));
-            const value = normalizeAttributeValue(path.node.value, attrMeta, path.get('value'));
+            const value = normalizeAttributeValue(path.get('value'), attrMeta);
             const nodeProperty = t.objectProperty(node, value);
             nodeProperty._meta = attrMeta; // Attach metadata for further inspection
             path.replaceWith(nodeProperty);
@@ -702,8 +702,8 @@ export default function({ types: t }: BabelTypes): any {
         return { node, attrMeta };
     }
 
-    function normalizeAttributeValue(node: any, attrMeta: MetaConfig): BabelNode {
-         node = node || t.booleanLiteral(true);
+    function normalizeAttributeValue(path: any, attrMeta: MetaConfig): BabelNode {
+         let node = path.node || t.booleanLiteral(true);
 
          if (t.isJSXExpressionContainer(node)) {
              node = node.expression;
@@ -729,6 +729,10 @@ export default function({ types: t }: BabelTypes): any {
             const parsedValue = parseForStatement(node.value);
             node.value = parsedValue.for;
             attrMeta.inForScope = parsedValue.args;
+        }
+
+        if (attrMeta.event && t.isStringLiteral(node)) {
+            throw path.buildCodeFrameError('Unexpected event handlers value. All event handlers should be bound to an identifier.');
         }
 
         return node;

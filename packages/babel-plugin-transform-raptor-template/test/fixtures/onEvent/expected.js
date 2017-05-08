@@ -30,3 +30,4 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         )]
     )];
 }
+tmpl.ids = ["handleClick", "handlePress"];
