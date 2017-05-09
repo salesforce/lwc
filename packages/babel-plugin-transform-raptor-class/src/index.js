@@ -7,7 +7,11 @@ const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
 const KEY_RENDER = 'render';
 const KEY_LABELS = 'labels';
-const KEY_RENDER_CALLBACK = 'renderCallback';
+const KEY_MISSPELLED_METHODS = {
+    'renderCallback': 'renderedCallback',
+    'connectCallback': 'connectedCallback',
+    'disconnectCallback': 'disconnectedCallback'
+}
 
 module.exports = function (babel) {
     'use strict';
@@ -132,8 +136,8 @@ module.exports = function (babel) {
                     }
                 }
 
-                if (key === KEY_RENDER_CALLBACK) {
-                    throw path.buildCodeFrameError(`Wrong lilfecycle method name ${KEY_RENDER_CALLBACK}. You probably meant renderedCallback`);
+                if (key in KEY_MISSPELLED_METHODS) {
+                    throw path.buildCodeFrameError(`Wrong lifecycle method name ${key}. You probably meant ${KEY_MISSPELLED_METHODS[key]}`);
                 }
 
                 // If it has a render method later we won't do the transform

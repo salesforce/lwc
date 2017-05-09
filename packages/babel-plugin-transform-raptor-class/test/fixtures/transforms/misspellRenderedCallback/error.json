@@ -1,0 +1,5 @@
+{
+  "message": "Wrong lifecycle method name renderCallback. You probably meant renderedCallback",
+  "line": 1,
+  "column": 26
+}
