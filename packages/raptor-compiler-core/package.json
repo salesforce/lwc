@@ -1,6 +1,6 @@
 {
   "name": "raptor-compiler-core",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "The raptor compiler",
   "main": "dist/index.js",
   "author": "",
@@ -42,8 +42,8 @@
     "babel-plugin-transform-es2015-unicode-regex": "^6.22.0",
     "babel-plugin-transform-exponentiation-operator": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-raptor-class": "0.9.0",
-    "babel-plugin-transform-raptor-template": "0.9.0",
+    "babel-plugin-transform-raptor-class": "0.9.1",
+    "babel-plugin-transform-raptor-template": "0.9.1",
     "babel-plugin-transform-regenerator": "^6.22.0",
     "babel-preset-babili": "0.0.12",
     "babel-preset-env": "^1.3.2",
