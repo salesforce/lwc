@@ -8,7 +8,7 @@
     </section>
     <section class="s2">
         Other Child
-        <template eval:if={isTrue}>
+        <template if:true={isTrue}>
             <template for:each="item of items">
                 <p>X1</p><p>X2</p>
             </template>

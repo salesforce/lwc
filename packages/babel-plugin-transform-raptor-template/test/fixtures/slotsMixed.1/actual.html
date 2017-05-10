@@ -1,11 +1,11 @@
 <template>
     <div>
         <x-b>
-            <template eval:if={isLoading}>
+            <template if:true={isLoading}>
                 <div></div>
             </template>
-            <template eval:if={haveLoadedItems}>
-                <template repeat:for="item of menuItems">
+            <template if:true={haveLoadedItems}>
+                <template for:each="item of menuItems">
                     x
                 </template>
             </template>

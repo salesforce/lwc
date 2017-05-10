@@ -1,7 +1,7 @@
 <template>
     <section>
         <ns-cmp>
-            <template eval:if={isTrue}>
+            <template if:true={isTrue}>
                 <p slot>S1</p>
             </template>
             <p slot>S2</p>

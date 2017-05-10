@@ -1,7 +1,7 @@
 <template>
     <table>
         <tbody>
-            <tr is="ns-row" repeat:for="row of rows" eval:if={row.visible}>
+            <tr is="ns-row" for:each="row of rows" if:true={row.visible}>
             </tr>
         </tbody>
     </table>

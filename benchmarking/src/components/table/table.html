@@ -1,7 +1,7 @@
 <template>
     <table>
         <tbody>
-            <template repeat:for="row of rows">
+            <template for:each="row of rows">
                 <tr class={row.className}>
                     <td>{row.id}</td>
                     <td><a onclick={handleSelect}>{row.label}</a></td>

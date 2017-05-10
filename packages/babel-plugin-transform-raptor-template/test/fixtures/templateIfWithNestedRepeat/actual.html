@@ -1,7 +1,7 @@
 <template>
-    <template eval:if={isTrue}>
+    <template if:true={isTrue}>
         Outer
-        <template repeat:for="item of items">
+        <template for:each="item of items">
             <p>Inner</p>
         </template>
     </template>

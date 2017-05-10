@@ -2,11 +2,6 @@ import _nsTable from "ns-table";
 import _nsBuzz from "ns-buzz";
 import _nsBar from "ns-bar";
 import _nsFoo from "ns-foo";
-
-const _m = function ($api, $cmp) {
-    return $cmp.p.foo;
-};
-
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.c(
@@ -14,7 +9,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         _nsFoo,
         {
             props: {
-                d: m._m || (m._m = _m($api, $cmp))
+                d: $cmp.p.foo
             }
         }
     ), $api.h(
@@ -113,4 +108,4 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         []
     )];
 }
-tmpl.ids = ["foo"];
+tmpl.ids = ["p", "foo"];

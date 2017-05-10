@@ -108,7 +108,7 @@ export default function({ types: t }: BabelTypes): any {
                     path.replaceWith(t.inherits(callExpr, path.node));
                     path.node._jsxElement = true;
 
-                    if (path.node._meta.directives[DIRECTIVES.repeat]) {
+                    if (path.node._meta.directives[DIRECTIVES.for]) {
                         path.node._meta.varDeclarations = this.customScope.getAllVarDeclarations();
                         this.customScope.removeScopePathBindings(path);
                     }
@@ -123,7 +123,7 @@ export default function({ types: t }: BabelTypes): any {
 
                     validator.validateElementMetadata(meta, path);
 
-                    const createsScope = !!meta.directives[DIRECTIVES.repeat];
+                    const createsScope = !!meta.directives[DIRECTIVES.for];
                     if (createsScope) {
                         this.customScope.registerScopePathBindings(path, meta.scoped);
                     }
@@ -188,7 +188,7 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     function applyRepeatDirectiveToNode(meta, node) {
-        const forExpr = meta[DIRECTIVES.repeat];
+        const forExpr = meta[DIRECTIVES.for];
         const args = meta.inForScope ? meta.inForScope.map((a) => t.identifier(a)) : [];
         const blockNodes = meta.varDeclarations.length ? [createVarDeclaration(meta.varDeclarations)] : [];
 
@@ -471,7 +471,7 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     function isMetaDirective(name) {
-        return name === DIRECTIVES.if || name === DIRECTIVES.repeat;
+        return name === DIRECTIVES.if || name === DIRECTIVES.for;
     }
 
     function transformProp(prop, path, meta, state) {
@@ -504,12 +504,12 @@ export default function({ types: t }: BabelTypes): any {
                 inScope = scopedVars.indexOf(rootMember) !== -1;
                 valueNode = transformBindingLiteral(valueNode.value, inScope);
 
-                if (!inScope && directive === DIRECTIVES.if || directive === DIRECTIVES.repeat) {
+                if (!inScope && directive === DIRECTIVES.if || directive === DIRECTIVES.for) {
                     metadata.addUsedId(rootMember, state, t);
                 }
             }
 
-            if (directive === DIRECTIVES.bind) {
+            if (directive === DIRECTIVES.on) {
                 // TODO: Figure out the final memoization pattern
                 // const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
                 valueNode = memoizeSubtree(valueNode, path);
@@ -636,16 +636,11 @@ export default function({ types: t }: BabelTypes): any {
         }
 
         if (directive === DIRECTIVES.for) {
-            directive = DIRECTIVES.repeat;
-            modifier = 'for';
+            attrMeta.applyRepeatTransform = true;
         }
 
         if (directive === DIRECTIVES.if) {
             attrMeta.applyIfTransform = true;
-        }
-
-        if (directive === DIRECTIVES.repeat) {
-            attrMeta.applyRepeatTransform = true;
         }
 
         attrMeta.directive = directive;
@@ -675,7 +670,7 @@ export default function({ types: t }: BabelTypes): any {
         if (node.name.indexOf(DIRECTIVES.on) === 0) {
             const rawEventName = node.name.substring(2);
             node.name = attrMeta.event = rawEventName;
-            attrMeta.directive = DIRECTIVES.bind;
+            attrMeta.directive = DIRECTIVES.on;
 
         // Special is directive
         } else if (node.name === DIRECTIVES.is) {
@@ -704,7 +699,6 @@ export default function({ types: t }: BabelTypes): any {
 
     function normalizeAttributeValue(path: any, attrMeta: MetaConfig): BabelNode {
          let node = path.node || t.booleanLiteral(true);
-
          if (t.isJSXExpressionContainer(node)) {
              node = node.expression;
              attrMeta.expressionContainer = true;
@@ -725,14 +719,20 @@ export default function({ types: t }: BabelTypes): any {
             attrMeta.slot = node.value;
         }
 
-        if (attrMeta.directive === DIRECTIVES.repeat) {
+        if (attrMeta.directive === DIRECTIVES.for) {
             const parsedValue = parseForStatement(node.value);
             node.value = parsedValue.for;
             attrMeta.inForScope = parsedValue.args;
         }
 
-        if (attrMeta.event && t.isStringLiteral(node)) {
-            throw path.buildCodeFrameError('Unexpected event handlers value. All event handlers should be bound to an identifier.');
+        if (t.isStringLiteral(node)) {
+            if (attrMeta.event) {
+                throw path.buildCodeFrameError('Unexpected string literal. All event handlers should be bound to an identifier.');
+            }
+
+            if (attrMeta.directive === DIRECTIVES.if) {
+                throw path.buildCodeFrameError('Unexpected string literal. All "if" directives have to be bound to an identifier');
+            }
         }
 
         return node;

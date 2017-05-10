@@ -1,0 +1,5 @@
+{
+  "message": "Error validating attribute fooBar. Custom element attributes must be all lowercase. Try \"foo-bar\" instead",
+  "line": 3,
+  "column": 8
+}

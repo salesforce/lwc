@@ -1,6 +1,6 @@
 <template>
     <section>
-        <template repeat:for="(item, index) of items">
+        <template for:each="(item, index) of items">
             <p>1{item}</p>
             <p>2{item.foo}</p>
             <p>3{other}</p>

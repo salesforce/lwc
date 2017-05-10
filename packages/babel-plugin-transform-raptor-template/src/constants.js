@@ -5,7 +5,6 @@ export const DATASET = 'dataset';
 export const DATA_ATTRIBUTE_PREFIX = 'data-';
 export const TMPL_FUNCTION_NAME = 'tmpl';
 
-export const DIRECTIVE_SYMBOL = ':';
 export const MODULE_SYMBOL = ':';
 export const CMP_INSTANCE = '$cmp';
 export const API_PARAM = '$api';
@@ -16,38 +15,23 @@ export const SLOT_TAG = 'slot';
 export const DEFAULT_SLOT_NAME = '$default$';
 
 export const DIRECTIVES = {
-    repeat    : 'repeat',
-    for       : 'for',
-    if        : 'if',
-    on        : 'on',
-    is        : 'is',
-    bind      : 'bind',
-    set       : 'set',
-    eval      : 'eval',
+    for : 'for',
+    if  : 'if',
+    on  : 'on',
+    is  : 'is'
 };
 
 export const IF_MODIFIERS = {
-    'true'     : 'isTrue',
-    'is-true'  : 'isTrue',
-    'false'    : 'isFalse',
-    'is-false' : 'isFalse',
-    'is-not'   : 'isFalse',
-};
-
-export const EVAL_MODIFIERS = {
-    if   : 'if',
-    else : 'else',
+    'true'        : 'isTrue',
+    'false'       : 'isFalse',
+    'strict-true' : 'isStrictTrue',
 };
 
 export const MODIFIERS = {
-    repeat : { 'for': 'for' },
     for    : { each: 'each' },
     on     : '*',
     is     : '*',
-    bind   : '*',
-    set    : '*',
-    if     : IF_MODIFIERS,
-    eval   : EVAL_MODIFIERS,
+    'if'   : IF_MODIFIERS,
 };
 
 export const RENDER_PRIMITIVES = {
