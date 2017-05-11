@@ -2,24 +2,21 @@ import assert from "./assert.js";
 import { getComponentDef } from "./def.js";
 import { createComponent } from "./component.js";
 import { patch } from "./patch.js";
-import { assign, create, isArray, toString, ArrayPush } from "./language.js";
+import { assign, isArray, toString, ArrayPush } from "./language.js";
 import { addCallbackToNextTick } from "./utils.js";
 
-let uid: number = 0;
-const globalMap: HashTable<VM> = create(null);
+let idx: number = 0;
 
-export function lockUID(vm: VM) {
+export function addInsertionIndex(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.uid === 0, `${vm} is already locked to a previously generated uid.`);
-    vm.uid = ++uid;
-    globalMap[uid] = vm;
+    assert.invariant(vm.idx === 0, `${vm} is already locked to a previously generated idx.`);
+    vm.idx = ++idx;
 }
 
-export function unlockUID(vm: VM) {
+export function removeInsertionIndex(vm: VM) {
     assert.vm(vm);
-    assert.invariant(vm.uid > 0, `${vm} is not locked to a previously generated uid.`);
-    globalMap[vm.uid] = undefined;
-    vm.uid = 0;
+    assert.invariant(vm.idx > 0, `${vm} is not locked to a previously generated idx.`);
+    vm.idx = 0;
 }
 
 export function createVM(vnode: ComponentVNode) {
@@ -33,7 +30,7 @@ export function createVM(vnode: ComponentVNode) {
         throw new TypeError(`${def.name} is not an Element. Only components extending Element from "engine" are supported. In the future functional components will be supported.`);
     }
     const vm: VM = {
-        uid: 0,
+        idx: 0,
         isScheduled: false,
         isDirty: true,
         def,
@@ -42,10 +39,13 @@ export function createVM(vnode: ComponentVNode) {
         cmpState: undefined,
         cmpSlots: undefined,
         cmpEvents: undefined,
+        cmpListener: undefined,
         cmpClasses: undefined,
         cmpTemplate: undefined,
+        cmpRoot: undefined,
         classListObj: undefined,
         component: undefined,
+        vnode,
         // used to store the latest result of the render method
         fragment: [],
         // used to track down all object-key pairs that makes this vm reactive
@@ -53,45 +53,26 @@ export function createVM(vnode: ComponentVNode) {
     };
     assert.block(function devModeCheck() {
         vm.toString = (): string => {
-            return `[object:vm ${def.name} (${vm.uid ? vm.uid : 'standalone'})]`;
+            return `[object:vm ${def.name} (${vm.idx})]`;
         };
     });
     vnode.vm = vm;
-    const vnodeBeingConstructedInception = vnodeBeingConstructed;
-    vnodeBeingConstructed = vnode;
     createComponent(vm, Ctor);
-    vnodeBeingConstructed = vnodeBeingConstructedInception;
-    // note to self: invocations during construction to get the vnode associated
-    // to the component works fine as well because we can use `vmBeingCreated`
-    // in getLinkedVNode() as a fallback patch for resolution.
-    setLinkedVNode(vm.component, vnode);
+    return vm;
 }
 
-const ComponentToVNodeMap: Map<Component, VNode> = new WeakMap();
-
-let vnodeBeingConstructed: ComponentVNode | null = null;
-
-export function setLinkedVNode(component: Component, vnode: ComponentVNode) {
+export function relinkVM(vm: VM, vnode: ComponentVNode) {
+    assert.vm(vm);
     assert.vnode(vnode);
     assert.isTrue(vnode.elm instanceof HTMLElement, `Only DOM elements can be linked to their corresponding component.`);
-    ComponentToVNodeMap.set(component, vnode);
+    assert.invariant(vm.component, `vm.component is required to be defined before ${vm} gets linked to ${vnode}.`);
+    vnode.vm = vm;
+    vm.vnode = vnode;
 }
-
-export function getLinkedVNode(component: Component): ComponentVNode {
-    assert.isTrue(component, `invalid component`);
-    // note to self: we fallback to `vmBeingCreated` in case users
-    // invoke something during the constructor execution, in which
-    // case this mapping hasn't been stable yet, but we know that's
-    // the only case.
-    const vnode = ComponentToVNodeMap.get(component) || vnodeBeingConstructed;
-    assert.vnode(vnode);
-    return vnode;
-}
-
 export function rehydrate(vm: VM) {
     assert.vm(vm);
-    if (vm.uid && vm.isDirty) {
-        const vnode = getLinkedVNode(vm.component);
+    if (vm.idx && vm.isDirty) {
+        const { vnode } = vm;
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
         assert.invariant(isArray(vnode.children), `Rendered ${vm}.children should always have an array of vnodes instead of ${toString(vnode.children)}`);
         // when patch() is invoked from within the component life-cycle due to
@@ -100,9 +81,6 @@ export function rehydrate(vm: VM) {
         // owner re-renders, but we do so by keeping the vnode originally used by parent
         // as the source of true, in case the parent tries to rehydrate against that one.
         const oldVnode = assign({}, vnode);
-        const { data } = vnode;
-        vm.isDirty = true;
-        vnode.data = assign({}, data);
         vnode.children = [];
         patch(oldVnode, vnode);
     }
@@ -113,7 +91,7 @@ let rehydrateQueue: Array<VM> = [];
 
 function flushRehydrationQueue() {
     assert.invariant(rehydrateQueue.length, `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`);
-    const vms: Array<VM> = rehydrateQueue.sort((a: VM, b: VM): boolean => a.uid > b.uid);
+    const vms: Array<VM> = rehydrateQueue.sort((a: VM, b: VM): boolean => a.idx > b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         rehydrate(vms[i]);

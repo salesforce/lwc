@@ -6,12 +6,15 @@ import {
     vmBeingRendered,
     invokeComponentAttributeChangedCallback,
     invokeComponentMethod,
+    invokeComponentCallback,
 } from "./invoker.js";
 import { notifyListeners } from "./watcher.js";
-import { isArray, isUndefined, create, toString, ArrayIndexOf, ArrayPush, ArraySplice } from "./language.js";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language.js";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils.js";
 import { extractOwnFields, getPropertyProxy } from "./properties.js";
 import { invokeServiceHook, services } from "./services.js";
+
+export let vmBeingConstructed: VM | null = null;
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
@@ -23,11 +26,14 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
         };
     }
     // create the component instance
+    const vmBeingConstructedInception = vmBeingConstructed;
+    vmBeingConstructed = vm;
     const component = invokeComponentConstructor(vm, Ctor);
+    vmBeingConstructed = vmBeingConstructedInception;
     assert.block(function devModeCheck() {
         extractOwnFields(component);
     });
-    vm.component = component;
+    assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
 }
 
 export function clearListeners(vm: VM) {
@@ -92,27 +98,37 @@ export function resetComponentProp(vm: VM, propName: string) {
     }
 }
 
+export function createComponentListener(): EventListener {
+    return function handler(event: Event) {
+        dispatchComponentEvent(handler.vm, event);
+    }
+}
+
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
     assert.vm(vm);
     assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
-    let { cmpEvents } = vm;
+    let { cmpEvents, cmpListener } = vm;
     if (isUndefined(cmpEvents)) {
+        // this piece of code must be in sync with modules/component-events
         vm.cmpEvents = cmpEvents = create(null);
+        vm.cmpListener = cmpListener = createComponentListener();
+        cmpListener.vm = vm;
     }
     if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
-        // only rehydrate when an entire new class of event is added.
-        console.log(`Marking ${vm} as dirty: new event name "${eventName}".`);
         if (!vm.isDirty) {
-            markComponentAsDirty(vm);
+            // if the element is already in the DOM and rendered, we intentionally make a sync mutation
+            // here and also keep track of the mutation for a possible rehydration later on without having
+            // to rehydrate just now.
+            const { vnode: { elm } } = vm;
+            elm.addEventListener(eventName, cmpListener, false);
         }
     }
     assert.block(function devModeCheck() {
         if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
-            console.warn(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the constructor() which is executed once per component instance.`);
+            console.warn(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the connectedCallback() hook.`);
         }
     });
-    // TODO: we might need to hook into this listener for Locker Service
     ArrayPush.call(cmpEvents[eventName], newHandler);
 }
 
@@ -125,14 +141,6 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
             ArraySplice.call(cmpEvents[eventName], pos, 1);
-            if (cmpEvents[eventName].length === 0) {
-                cmpEvents[eventName] = undefined;
-                // only rehydrate when an entire class of event is removed.
-                console.log(`Marking ${vm} as dirty: removed event name "${eventName}".`);
-                if (!vm.isDirty) {
-                    markComponentAsDirty(vm);
-                }
-            }
             return;
         }
     }
@@ -141,7 +149,6 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     });
 }
 
-// returns `true` if immidiate propagation was never invoked, otherwise returns `false`
 export function dispatchComponentEvent(vm: VM, event: Event): boolean {
     assert.vm(vm);
     assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
@@ -155,15 +162,12 @@ export function dispatchComponentEvent(vm: VM, event: Event): boolean {
         uninterrupted = false;
         stopImmediatePropagation.call(this);
     }
-    handlers.forEach((handler: EventHandler) => {
-        if (uninterrupted) {
-            // TODO: method invocation control
-            handler.call(component, event);
-        }
-    });
+    for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
+        // TODO: only if the event is `composed` it can be dispatched
+        invokeComponentCallback(vm, handlers[i], component, [event]);
+    }
     // restoring original methods
     event.stopImmediatePropagation = stopImmediatePropagation;
-    return uninterrupted;
 }
 
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {

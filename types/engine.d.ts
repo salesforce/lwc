@@ -1,73 +1,122 @@
-/* eslint-disable */
-
-interface RenderAPI {
-    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode;
-    h(tagName: string, data: Object, children?: Array<any>, text?: string): VNode;
-    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode | VNode>;
-    s(value: any): string;
-    e(): string;
-    f(items: Array<any>): Array<any>;
-}
-
 declare class Component {
-    constructor();
-    render(): Node | VNode | ((api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => VNode);
+    constructor(): this;
+    render(): void | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => Array<VNode>;
     connectedCallback(): void;
     disconnectedCallback(): void;
     renderedCallback(): void;
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
-    static publicProps: any;
-    static publicMethods: Array<string>;
-    static templateUsedProps: Array<string>;
-    static observedAttributes: Array<string>;
+    publicProps: any;
+    publicMethods: Array<string>;
+    templateUsedProps: Array<string>;
+    observedAttributes: Array<string>
 }
 
-interface HashTable<T> {
-    [key: string]: T;
+declare interface HashTable<T> {
+    [key: string]: T,
 }
 
-interface PropDef {
-    initializer?: Function | number | string;
+declare interface PropDef {}
+
+declare interface ComponentDef {
+    name: string,
+    isStateful: boolean,
+    props: HashTable<PropDef>,
+    methods: HashTable<number>,
+    observedAttrs: HashTable<number>,
 }
 
-interface ComponentDef {
-    name: string;
-    props: HashTable<PropDef>;
-    methods: HashTable<number>;
-    observedProps: HashTable<number>;
-    observedAttrs: HashTable<number>;
-}
-
-interface PlainHTMLElement extends HTMLElement {
+declare class ComponentElement extends Component {
     classList: DOMTokenList;
 }
 
 declare class VM {
-    privates: HashTable<any>;
+    uid: number;
+    cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
-    cmpSlots: HashTable<Array<VNode>>;
-    cmpEvents: HashTable<Array<EventListener>>;
+    cmpSlots?: HashTable<Array<VNode>>;
+    cmpEvents?: HashTable<Array<EventListener>>;
+    cmpListener?: (event: Event) => void;
+    cmpClasses?: HashTable<Boolean>;
+    cmpTemplate?: any;
+    cmpRoot?: ShadowRoot;
     isScheduled: boolean;
     isDirty: boolean;
-    wasInserted: boolean;
     def: ComponentDef;
     context: HashTable<any>;
-    component: Component;
+    component?: Component;
+    vnode?: VNode;
     fragment: Array<VNode>;
-    listeners: Set<Set<VM>>;
+    deps: Array<Array<VM>>;
+    classListObj?: DOMTokenList;
+    toString(): string;
 }
 
 declare class ComponentVNode extends VNode {
-    Ctor: () => void;
+    Ctor: Class<Component>;
     vm: VM;
     toString: () => string;
 }
 
-declare class VNode {
-    sel: string;
-    key?: number|string;
-    data: Object;
-    children?: Array<string|VNode>;
-    text: string;
-    elm?: EventTarget;
+export type PreHook = () => any;
+export type InitHook = (vNode: VNode) => any;
+export type CreateHook = (emptyVNode: VNode, vNode: VNode) => any;
+export type InsertHook = (vNode: VNode) => any;
+export type PrePatchHook = (oldVNode: VNode, vNode: VNode) => any;
+export type UpdateHook = (oldVNode: VNode, vNode: VNode) => any;
+export type PostPatchHook = (oldVNode: VNode, vNode: VNode) => any;
+export type DestroyHook = (vNode: VNode) => any;
+export type RemoveHook = (vNode: VNode, removeCallback: () => void) => any;
+export type PostHook = () => any;
+
+export interface Hooks {
+  pre?: PreHook;
+  init?: InitHook;
+  create?: CreateHook;
+  insert?: InsertHook;
+  prepatch?: PrePatchHook;
+  update?: UpdateHook;
+  postpatch?: PostPatchHook;
+  destroy?: DestroyHook;
+  remove?: RemoveHook;
+  post?: PostHook;
+}
+
+export interface VNodeData {
+    props?: any;
+    attrs?: any;
+    className?: string;
+    classMap?: HashTable<string>;
+    style?: any;
+    on?: HashTable<EventListener>;
+    hook?: Hooks;
+    key?: number | string;
+    ns?: string; // for SVGs
+    [key: string]: any; // for any other 3rd party module
+}
+
+declare class VNode  {
+    sel: string | undefined;
+    data: VNodeData | undefined;
+    children: Array<VNode | string> | undefined;
+    elm: Node | undefined;
+    text: string | undefined;
+    key: number | string;
+}
+
+declare interface RenderAPI {
+    c(tagName: string, Ctor: Class<Component>, data: Object): VNode,
+    h(tagName: string, data: Object, children: Array<any>): VNode,
+    v(tagName: string, data: VNodeData, children?: Array<any>, text?: string, elm?: Element | Text, Ctor?: Class<Component>): VNode,
+    i(items: Array<any>, factory: () => VNode | VNode): Array<VNode>,
+    n(children: Array<VNode|null|number|string|Node>): Array<VNode>,
+    f(items: Array<any>): Array<any>,
+    b(fn: EventListener): EventListener,
+}
+
+export type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
+
+export interface Services {
+  connected?: ServiceCallback;
+  disconnected?: ServiceCallback;
+  rehydrated?: ServiceCallback;
 }

@@ -12,7 +12,6 @@ import {
     freeze,
     create,
     ArrayIndexOf,
-    isUndefined,
     toString,
     ArrayPush,
     defineProperty,
@@ -21,11 +20,7 @@ import {
     getOwnPropertyNames,
 } from "./language.js";
 import { GlobalHTMLProperties } from "./dom.js";
-import { getPropertyProxy } from "./properties.js";
-import { getLinkedVNode } from "./vm.js";
-import { Element } from "./html-element.js";
-import { isRendering, vmBeingRendered } from "./invoker.js";
-import { subscribeToSetHook } from "./watcher.js";
+import { Element, createPublicPropertyDescriptorMap } from "./html-element.js";
 import { EmptyObject } from "./utils.js";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
@@ -82,47 +77,6 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         }
     });
     return def;
-}
-
-function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptorMap {
-    const descriptors = {};
-    function getter(): any {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
-        assert.vm(vm);
-        const { cmpProps, component } = vm;
-        if (isUndefined(component)) {
-            assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
-            return;
-        }
-        if (isRendering) {
-            // this is needed because the proxy used by template.js is not sufficient
-            // for public props accessed from within a getter in the component.
-            subscribeToSetHook(vmBeingRendered, cmpProps, propName);
-        }
-        return cmpProps[propName];
-    }
-    function setter(value: any) {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
-        assert.vm(vm);
-        const { cmpProps, component } = vm;
-        if (component) {
-            assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
-            return;
-        }
-        // proxifying before storing it is a must for public props
-        cmpProps[propName] = typeof value === 'object' ? getPropertyProxy(value) : value;
-    }
-    descriptors[propName] = {
-        get: getter,
-        set: setter,
-        enumerable: true,
-        configurable: true,
-    };
-    return descriptors;
 }
 
 function getPublicPropertiesHash(target: Object): HashTable<PropDef> {

@@ -1,4 +1,4 @@
-import { createVM, setLinkedVNode } from "../vm.js";
+import { createVM, relinkVM } from "../vm.js";
 import assert from "../assert.js";
 import { isUndefined } from "../language.js";
 
@@ -14,13 +14,10 @@ function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
      * is because the creation of the component does require the element to be available.
      */
     assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
-    const { vm } = oldVnode;
-    if (vm && oldVnode.Ctor === Ctor) {
-        vnode.vm = vm;
-        setLinkedVNode(vm.component, vnode);
+    if (oldVnode.vm && oldVnode.Ctor === Ctor) {
+        relinkVM(oldVnode.vm, vnode);
     } else {
         createVM(vnode);
-        console.log(`Component for ${vnode.vm} was created.`);
     }
     assert.invariant(vnode.vm.component, `vm ${vnode.vm} should have a component and element associated to it.`);
 }

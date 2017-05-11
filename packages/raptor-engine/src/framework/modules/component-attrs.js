@@ -15,26 +15,27 @@ function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     let { data: { attrs: oldAttrs } } = oldVnode;
     let { data: { attrs: newAttrs } } = vnode;
 
+    if (oldAttrs === newAttrs || (isUndefined(oldAttrs) && isUndefined(oldAttrs))) {
+        return;
+    }
+
     // infuse key-value pairs from _props into the component
-    if (oldAttrs !== newAttrs && (oldAttrs || newAttrs)) {
-
-        let key: string, cur: any;
-        oldAttrs = oldAttrs || EmptyObject;
-        newAttrs = newAttrs || EmptyObject;
-        // removed props should be reset in component's props
-        for (key in oldAttrs) {
-            if (key in observedAttrs && !(key in newAttrs)) {
-                invokeComponentAttributeChangedCallback(vm, key, oldAttrs[key], null);
-            }
+    let key: string, cur: any;
+    oldAttrs = oldAttrs || EmptyObject;
+    newAttrs = newAttrs || EmptyObject;
+    // removed props should be reset in component's props
+    for (key in oldAttrs) {
+        if (key in observedAttrs && !(key in newAttrs)) {
+            invokeComponentAttributeChangedCallback(vm, key, oldAttrs[key], null);
         }
+    }
 
-        // new or different props should be set in component's props
-        for (key in newAttrs) {
-            if (key in observedAttrs) {
-                cur = newAttrs[key];
-                if (!(key in oldAttrs) || oldAttrs[key] != cur) {
-                    invokeComponentAttributeChangedCallback(vm, key, oldAttrs[key], cur);
-                }
+    // new or different props should be set in component's props
+    for (key in newAttrs) {
+        if (key in observedAttrs) {
+            cur = newAttrs[key];
+            if (!(key in oldAttrs) || oldAttrs[key] != cur) {
+                invokeComponentAttributeChangedCallback(vm, key, oldAttrs[key], cur);
             }
         }
     }

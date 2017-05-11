@@ -1,6 +1,7 @@
 import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language.js";
+import { vmBeingRendered, invokeComponentCallback } from "./invoker.js";
 
 const CHAR_S = 115;
 const CHAR_V = 118;
@@ -163,4 +164,16 @@ export function n(children: Array<VNode|null|number|string|Node>): Array<VNode> 
         }
     }
     return children;
+}
+
+// [b]ind function
+export function b(fn: EventListener): EventListener {
+    assert.vm(vmBeingRendered);
+    function handler(event: Event) {
+        // TODO: only if the event is `composed` it can be dispatched
+        invokeComponentCallback(handler.vm, handler.fn, handler.vm.component, [event]);
+    }
+    handler.vm = vmBeingRendered;
+    handler.fn = fn;
+    return handler;
 }

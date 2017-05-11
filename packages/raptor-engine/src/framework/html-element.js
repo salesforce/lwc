@@ -1,22 +1,70 @@
 import assert from "./assert.js";
-import { getLinkedVNode } from "./vm.js";
 import { ClassList } from "./class-list.js";
-import { addComponentEventListener, removeComponentEventListener } from "./component.js";
+import { Root } from "./root.js";
+import { vmBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component.js";
 import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language.js";
 import { getPropertyProxy } from "./properties.js";
 import { GlobalHTMLProperties } from "./dom.js";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils.js";
+import { isRendering, vmBeingRendered } from "./invoker.js";
+import { subscribeToSetHook } from "./watcher.js";
 
-function getLinkedElement(cmp: ComponentElement): HTMLElement {
-    const vnode = getLinkedVNode(cmp);
-    assert.vnode(vnode);
-    const { elm } = vnode;
-    assert.isTrue(elm instanceof HTMLElement, `Invalid association between component ${cmp} and element ${elm}.`);
-    return elm;
+export const ViewModelReflection = Symbol('internal');
+
+function invokedFromConstructor(component: ComponentElement): boolean {
+    return vmBeingConstructed && vmBeingConstructed.component === component;
 }
 
-// This should be an empty function, and any initialization should be done lazily
-function ComponentElement(): ComponentElement {}
+function getLinkedElement(cmp: ComponentElement): HTMLElement {
+    return cmp[ViewModelReflection].vnode.elm;
+}
+
+export function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptorMap {
+    const descriptors = {};
+    function getter(): any {
+        const vm = this[ViewModelReflection];
+        assert.vm(vm);
+        if (invokedFromConstructor(this)) {
+            assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+            return;
+        }
+        const { cmpProps } = vm;
+        if (isRendering) {
+            // this is needed because the proxy used by template.js is not sufficient
+            // for public props accessed from within a getter in the component.
+            subscribeToSetHook(vmBeingRendered, cmpProps, propName);
+        }
+        return cmpProps[propName];
+    }
+    function setter(value: any) {
+        const vm = this[ViewModelReflection];
+        assert.vm(vm);
+        if (!invokedFromConstructor(this)) {
+            assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
+            return;
+        }
+        const { cmpProps } = vm;
+        // proxifying before storing it is a must for public props
+        cmpProps[propName] = typeof value === 'object' ? getPropertyProxy(value) : value;
+    }
+    descriptors[propName] = {
+        get: getter,
+        set: setter,
+        enumerable: true,
+        configurable: true,
+    };
+    return descriptors;
+}
+
+// This should be as performant as possible, while any initialization should be done lazily
+function ComponentElement(): ComponentElement {
+    assert.vm(vmBeingConstructed, `Invalid construction.`);
+    assert.vnode(vmBeingConstructed.vnode, `Invalid construction.`);
+    const vnode = vmBeingConstructed.vnode;
+    assert.invariant(vnode.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vnode}.`);
+    vmBeingConstructed.component = this;
+    this[ViewModelReflection] = vmBeingConstructed;
+}
 
 ComponentElement.prototype = {
     // Raptor.Element APIs
@@ -30,13 +78,12 @@ ComponentElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
+        assert.isTrue(invokedFromConstructor(this), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event ${event} just yet.`);
         // custom elements will rely on the DOM dispatchEvent mechanism
         return elm.dispatchEvent(event);
     },
     addEventListener(type: string, listener: EventListener) {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
@@ -47,9 +94,7 @@ ComponentElement.prototype = {
         addComponentEventListener(vm, type, listener);
     },
     removeEventListener(type: string, listener: EventListener) {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
@@ -59,10 +104,9 @@ ComponentElement.prototype = {
         removeComponentEventListener(vm, type, listener);
     },
     getAttribute(attrName: string): string | null {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { data: { attrs }, vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
+        const { vnode: { data: { attrs } } } = vm;
         if (!attrName) {
             if (arguments.length === 0) {
                 throw new TypeError(`Failed to execute \`getAttribute\` on ${vm}: 1 argument is required, got 0.`);
@@ -90,41 +134,52 @@ ComponentElement.prototype = {
     },
     getBoundingClientRect(): DOMRect {
         const elm = getLinkedElement(this);
+        assert.isTrue(invokedFromConstructor(this), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         return elm.getBoundingClientRect();
     },
     querySelector(selectors: string): Element {
         const elm = getLinkedElement(this);
         // TODO: locker service might need to do something here
-        // TODO: filter out elements that you don't own
-        return elm.querySelector(selectors);
+        // TODO: filter out elements that you own
+        assert.isTrue(invokedFromConstructor(this), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        return elm.querySelectorAll(selectors)[0];
     },
     querySelectorAll(selectors: string): NodeList {
         const elm = getLinkedElement(this);
         // TODO: locker service might need to do something here
-        // TODO: filter out elements that you don't own
+        // TODO: filter out elements that you own
+        assert.isTrue(invokedFromConstructor(this), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         return elm.querySelectorAll(selectors);
     },
     get tagName(): string {
-        const element = getLinkedElement(this);
-        return element.tagName + ''; // avoiding side-channeling
+        const elm = getLinkedElement(this);
+        return elm.tagName + ''; // avoiding side-channeling
     },
     get classList(): DOMTokenList {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
         let { classListObj } = vm;
         // lazy creation of the ClassList Object the first time it is accessed.
         if (isUndefined(classListObj)) {
-            classListObj = new ClassList(vm);
+            vm.cmpClasses = {};
+            classListObj = new ClassList(this, vm.cmpClasses);
             vm.classListObj = classListObj;
         }
         return classListObj;
     },
+    get root(): ShadowRoot {
+        const vm = this[ViewModelReflection];
+        assert.vm(vm);
+        let { cmpRoot } = vm;
+        // lazy creation of the ShadowRoot Object the first time it is accessed.
+        if (isUndefined(cmpRoot)) {
+            cmpRoot = new Root(vm);
+            vm.cmpRoot = cmpRoot;
+        }
+        return cmpRoot;
+    },
     get state(): HashTable<any> {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
         let { cmpState } = vm;
         if (isUndefined(cmpState)) {
@@ -133,9 +188,7 @@ ComponentElement.prototype = {
         return cmpState;
     },
     set state(newState: HashTable<any>) {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { vm } = vnode;
+        const vm = this[ViewModelReflection];
         assert.vm(vm);
         if (!newState || !isObject(newState) || isArray(newState)) {
             throw new TypeError(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an object.`);
@@ -156,11 +209,11 @@ ComponentElement.prototype = {
         }
     },
     toString(): string {
-        const vnode = getLinkedVNode(this);
-        assert.vnode(vnode);
-        const { data: { attrs } } = vnode;
+        const vm = this[ViewModelReflection];
+        assert.vm(vm);
+        const { vnode: { sel, data: { attrs } } } = vm;
         const is = attrs && attrs.is;
-        return `<${vnode.sel}${ is ? ' is="${is}' : '' }>`;
+        return `<${sel}${ is ? ' is="${is}' : '' }>`;
     },
 }
 
@@ -173,9 +226,7 @@ assert.block(function devModeCheck() {
         }
         defineProperty(ComponentElement.prototype, propName, {
             get: function () {
-                const vnode = getLinkedVNode(this);
-                assert.vnode(vnode);
-                const { vm } = vnode;
+                const vm = this[ViewModelReflection];
                 assert.vm(vm);
                 const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
                 const msg = [];

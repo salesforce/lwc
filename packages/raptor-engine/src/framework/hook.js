@@ -1,27 +1,22 @@
 import assert from "./assert.js";
 import { invokeComponentMethod } from "./invoker.js";
 import { clearListeners } from "./component.js";
-import { rehydrate, lockUID, unlockUID } from "./vm.js";
+import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm.js";
 import { addCallbackToNextTick, noop } from "./utils.js";
-import { ArrayPush } from "./language.js";
 import { invokeServiceHook, services } from "./services.js";
 
 function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
-    const { vm, children } = vnode;
+    const { vm } = vnode;
     assert.vm(vm);
-    assert.isFalse(vm.uid, `${vm} is already inserted.`);
-    lockUID(vm);
+    assert.isFalse(vm.idx, `${vm} is already inserted.`);
+    addInsertionIndex(vm);
     const { isDirty, component: { connectedCallback } } = vm;
     if (isDirty) {
         // this code path guarantess that when patching the custom element for the first time,
         // the body is computed only after the element is in the DOM, otherwise the hooks
         // for any children's vnode are not going to be useful.
         rehydrate(vm);
-        // replacing the vnode's children collection so successive patching routines
-        // will diff against the full tree, not a only partial one.
-        children.length = 0;
-        ArrayPush.apply(children, vm.fragment);
     }
     const { connected } = services;
     if (connected) {
@@ -37,8 +32,8 @@ function destroy(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
-    assert.isTrue(vm.uid, `${vm} is not inserted.`);
-    unlockUID(vm);
+    assert.isTrue(vm.idx, `${vm} is not inserted.`);
+    removeInsertionIndex(vm);
     // just in case it comes back, with this we guarantee re-rendering it
     vm.isDirty = true;
     const { disconnected } = services;
@@ -56,7 +51,7 @@ function destroy(vnode: ComponentVNode) {
 function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
     assert.vnode(vnode);
     assert.vm(vnode.vm);
-    if (vnode.vm.uid === 0) {
+    if (vnode.vm.idx === 0) {
         // when inserting a root element, or when reusing a DOM element for a new
         // component instance, the insert() hook is never called because the element
         // was already in the DOM before creating the instance, and diffing the
@@ -65,7 +60,7 @@ function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
         insert(vnode);
         // Note: we don't have to worry about destroy() hook being called before this
         // one because they never happen in the same patching mechanism, only one
-        // of them is called. In the case of the insert() hook, we use the value of `uid`
+        // of them is called. In the case of the insert() hook, we use the value of `idx`
         // to dedupe the calls since they both can happen in the same patching process.
     }
 }

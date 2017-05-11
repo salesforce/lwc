@@ -32,11 +32,11 @@ describe('def.js', () => {
         });
 
         it('should understand static observedAttributes', () => {
-            const def = class MyComponent extends Element  {
-                static observedAttributes = ['foo', 'x-bar'];
+            class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
-            assert.deepEqual(target.getComponentDef(def), {
+            MyComponent.observedAttributes = ['foo', 'x-bar'];
+            assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 isStateful: true,
                 props: {},
@@ -49,10 +49,9 @@ describe('def.js', () => {
         });
 
         it('should match WC semantic to ignore observedAttributes if no callback is provided', () => {
-            const def = class MyComponent extends Element  {
-                static observedAttributes = ['foo', 'x-bar'];
-            }
-            assert.deepEqual(target.getComponentDef(def), {
+            class MyComponent extends Element  {}
+            MyComponent.observedAttributes = ['foo', 'x-bar'];
+            assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 isStateful: true,
                 props: {},
@@ -62,12 +61,12 @@ describe('def.js', () => {
         });
 
         it('should understand static publicMethods', () => {
-            const def = class MyComponent extends Element  {
+            class MyComponent extends Element  {
                 foo() {}
                 bar() {}
-                static publicMethods = ['foo', 'bar'];
             }
-            assert.deepEqual(target.getComponentDef(def), {
+            MyComponent.publicMethods = ['foo', 'bar'];
+            assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 isStateful: true,
                 props: {},
@@ -80,13 +79,12 @@ describe('def.js', () => {
         });
 
         it('should infer attribute name from public props', () => {
-            const def = class MyComponent extends Element  {
-                static publicProps = {
-                    foo: true,
-                    xBar: {},
-                };
-            }
-            assert.deepEqual(target.getComponentDef(def), {
+            class MyComponent extends Element  {}
+            MyComponent.publicProps = {
+                foo: true,
+                xBar: {},
+            };
+            assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 isStateful: true,
                 props: {

@@ -9,13 +9,14 @@ import { create, isFunction } from "./language.js";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export function invokeComponentMethod(vm: VM, methodName: string, args?: Array<any>): any {
-    const { component, context } = vm;
+export function invokeComponentCallback(vm: VM, fn: () => any, fnCtx: any, args?: Array<any>): any {
+    const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
     let result, error;
     try {
-        result = component[methodName].apply(component, args);
+        // TODO: membrane proxy for all args that are objects
+        result = fn.apply(fnCtx, args);
     } catch (e) {
         error = e;
     }
@@ -24,6 +25,11 @@ export function invokeComponentMethod(vm: VM, methodName: string, args?: Array<a
         throw error; // rethrowing the original error after restoring the context
     }
     return result;
+}
+
+export function invokeComponentMethod(vm: VM, methodName: string, args?: Array<any>): any {
+    const { component } = vm;
+    return invokeComponentCallback(vm, component[methodName], component, args);
 }
 
 export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Component {

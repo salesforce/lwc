@@ -10,7 +10,7 @@ function rerender(oldVnode: VNode, vnode: ComponentVNode) {
     const { children } = vnode;
     // if diffing is against an inserted VM, it means the element is already
     // in the DOM and we can compute its body.
-    if (vm.uid && vm.isDirty) {
+    if (vm.idx && vm.isDirty) {
         assert.invariant(oldVnode.children !== children, `If component is dirty, the children collections must be different. In theory this should never happen.`);
         renderComponent(vm);
     }
