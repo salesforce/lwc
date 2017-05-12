@@ -967,7 +967,7 @@ babel-runtime@^6.0.0, babel-runtime@^6.18.0, babel-runtime@^6.22.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
-babel-template@^6.16.0, babel-template@^6.22.0, babel-template@^6.24.1:
+babel-template@^6.16.0, babel-template@^6.24.1:
   version "6.24.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-template/-/babel-template-6.24.1.tgz#04ae514f1f93b3a2537f2a0f60a5a45fb8308333"
   dependencies:
@@ -977,7 +977,7 @@ babel-template@^6.16.0, babel-template@^6.22.0, babel-template@^6.24.1:
     babylon "^6.11.0"
     lodash "^4.2.0"
 
-babel-template@^6.23.0:
+babel-template@^6.22.0, babel-template@^6.23.0:
   version "6.23.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-template/-/babel-template-6.23.0.tgz#04d4f270adbb3aa704a8143ae26faa529238e638"
   dependencies:
@@ -1786,13 +1786,13 @@ dateformat@^1.0.11, dateformat@^1.0.12:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-debug@2.2.0, debug@^2.1.1, debug@~2.2.0:
+debug@2.2.0, debug@^2.1.1, debug@^2.2.0, debug@~2.2.0:
   version "2.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
   dependencies:
     ms "0.7.1"
 
-debug@2.6.1, debug@^2.2.0:
+debug@2.6.1:
   version "2.6.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
   dependencies:
@@ -5870,8 +5870,8 @@ whatwg-encoding@^1.0.1:
     iconv-lite "0.4.13"
 
 whatwg-url@^4.3.0:
-  version "4.7.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/whatwg-url/-/whatwg-url-4.7.1.tgz#df4dc2e3f25a63b1fa5b32ed6d6c139577d690de"
+  version "4.8.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/whatwg-url/-/whatwg-url-4.8.0.tgz#d2981aa9148c1e00a41c5a6131166ab4683bbcc0"
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"

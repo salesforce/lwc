@@ -115,7 +115,7 @@ glob.sync('fixtures/**/*.js').forEach(function (cmpPath) {
             input: {
                 entry: cmpPath,
                 plugins: [
-                    raptor()
+                    raptor({ resolveEngine: false })
                 ].concat(componentsPlugins),
             },
             output: {
