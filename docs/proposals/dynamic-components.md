@@ -27,7 +27,7 @@ The problem is that to create a component programatically, you have to use `Rapt
 
 ## Proposals
 
-### Imperative API to create templates
+### Proposal 1: Imperative API to create templates
 
 A very low level API that let you create a dynamic template that can be returned in your render method.
 
@@ -67,7 +67,7 @@ Cons:
 
 _Note: the render() method might also expect a promise of the dynamic template._
 
-### Imperative API to create a new opaque object representing a custom element
+### Proposal 2: Imperative API to create a new opaque object representing a custom element
 
 ```js
 export default class Foo extends Element {
@@ -88,7 +88,7 @@ Cons:
 
 _Note: the render() method might also expect a promise of the dynamic element._
 
-### Promise Based Template
+### Proposal 3: Promise Based Template
 
 ```js
 import { Element } from "engine";
