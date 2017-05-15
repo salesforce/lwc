@@ -1,11 +1,11 @@
-import assert from "./assert.js";
+import assert from "./assert";
 import {
     getOwnPropertyNames,
     defineProperty,
     isUndefined,
-} from "./language.js";
+} from "./language";
 
-import { ViewModelReflection } from "./html-element.js";
+import { ViewModelReflection } from "./html-element";
 
 function getLinkedElement(classList: ClassList): HTMLElement {
     return classList[ViewModelReflection].vnode.elm;

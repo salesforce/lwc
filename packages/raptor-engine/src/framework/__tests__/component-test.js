@@ -1,7 +1,7 @@
-import * as target from '../component.js';
+import * as target from '../component';
 import assert from 'power-assert';
 
-describe('component.js', function () {
+describe('component', function () {
 
     describe('#createComponent()', () => {
         it('should throw for non-object values', () => {

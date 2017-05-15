@@ -1,7 +1,7 @@
 import target from '../component-classes';
 import assert from 'power-assert';
 
-describe('module/component-classes.js', () => {
+describe('module/component-classes', () => {
     it('should apply vm.cmpClasses', () => {
         const elm = document.createElement('p');
         const vnode = { elm, data: {}, vm: { cmpClasses: { foo: true } } };

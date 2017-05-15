@@ -1,9 +1,9 @@
 import {
     resetComponentProp,
     updateComponentProp,
-} from "../component.js";
-import { assign, isUndefined } from "../language.js";
-import { EmptyObject } from "../utils.js";
+} from "../component";
+import { assign, isUndefined } from "../language";
+import { EmptyObject } from "../utils";
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;

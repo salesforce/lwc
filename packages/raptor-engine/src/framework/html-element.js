@@ -1,13 +1,13 @@
-import assert from "./assert.js";
-import { ClassList } from "./class-list.js";
-import { Root } from "./root.js";
-import { vmBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component.js";
-import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language.js";
-import { getPropertyProxy } from "./properties.js";
-import { GlobalHTMLProperties } from "./dom.js";
-import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils.js";
-import { isRendering, vmBeingRendered } from "./invoker.js";
-import { subscribeToSetHook } from "./watcher.js";
+import assert from "./assert";
+import { ClassList } from "./class-list";
+import { Root } from "./root";
+import { vmBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
+import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language";
+import { getPropertyProxy } from "./properties";
+import { GlobalHTMLProperties } from "./dom";
+import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
+import { isRendering, vmBeingRendered } from "./invoker";
+import { subscribeToSetHook } from "./watcher";
 
 export const ViewModelReflection = Symbol('internal');
 
@@ -30,7 +30,7 @@ export function createPublicPropertyDescriptorMap(propName: string): PropertyDes
         }
         const { cmpProps } = vm;
         if (isRendering) {
-            // this is needed because the proxy used by template.js is not sufficient
+            // this is needed because the proxy used by template is not sufficient
             // for public props accessed from within a getter in the component.
             subscribeToSetHook(vmBeingRendered, cmpProps, propName);
         }

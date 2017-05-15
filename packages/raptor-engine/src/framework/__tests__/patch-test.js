@@ -1,9 +1,9 @@
-import * as target from '../patch.js';
-import * as api from "../api.js";
-import { Element } from "../html-element.js";
+import * as target from '../patch';
+import * as api from "../api";
+import { Element } from "../html-element";
 import assert from 'power-assert';
 
-describe('patch.js', () => {
+describe('patch', () => {
 
     describe('#patch()', () => {
 

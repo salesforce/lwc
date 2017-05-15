@@ -1,7 +1,7 @@
 import target from '../classes';
 import assert from 'power-assert';
 
-describe('module/classes.js', () => {
+describe('module/classes', () => {
     it('should apply data.class', () => {
         const elm = document.createElement('p');
         const vnode = { elm, data: { class: { foo: true } } };

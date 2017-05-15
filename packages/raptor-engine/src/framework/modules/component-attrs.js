@@ -1,6 +1,6 @@
-import { invokeComponentAttributeChangedCallback } from "../invoker.js";
-import { isUndefined } from "../language.js";
-import { EmptyObject } from "../utils.js";
+import { invokeComponentAttributeChangedCallback } from "../invoker";
+import { isUndefined } from "../language";
+import { EmptyObject } from "../utils";
 
 function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;

@@ -1,7 +1,7 @@
-import target from '../assert.js';
+import target from '../assert';
 import assert from 'power-assert';
 
-describe('assert.js', function () {
+describe('assert', function () {
     describe('#isTrue()', function () {
         it('should throw Error for false', () => {
             assert.throws(

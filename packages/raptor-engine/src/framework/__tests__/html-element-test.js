@@ -1,8 +1,8 @@
-import { Element } from "../html-element.js";
-import { createElement } from "../upgrade.js";
+import { Element } from "../html-element";
+import { createElement } from "../upgrade";
 import assert from 'power-assert';
 
-describe('html-element.js', () => {
+describe('html-element', () => {
 
     describe('#getBoundingClientRect()', () => {
         it('should return empty during construction', () => {

@@ -1,7 +1,7 @@
-import assert from "./assert.js";
-import { scheduleRehydration } from "./vm.js";
-import { markComponentAsDirty } from "./component.js";
-import { isUndefined, toString, create, ArrayIndexOf, ArrayPush } from "./language.js";
+import assert from "./assert";
+import { scheduleRehydration } from "./vm";
+import { markComponentAsDirty } from "./component";
+import { isUndefined, toString, create, ArrayIndexOf, ArrayPush } from "./language";
 
 const TargetToReactiveRecordMap: Map<Object, ReactiveRecord> = new WeakMap();
 

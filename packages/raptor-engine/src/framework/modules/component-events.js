@@ -1,6 +1,6 @@
-import { isUndefined } from "../language.js";
-import { createComponentListener } from "../component.js";
-import { EmptyObject } from "../utils.js";
+import { isUndefined } from "../language";
+import { createComponentListener } from "../component";
+import { EmptyObject } from "../utils";
 
 function removeAllCmpEventListeners(vnode: VNode) {
     const { vm } = vnode;

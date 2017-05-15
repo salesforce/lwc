@@ -1,13 +1,13 @@
-import assert from "./assert.js";
-import { patch } from "./patch.js";
-import { scheduleRehydration } from "./vm.js";
-import { invokeComponentAttributeChangedCallback } from "./invoker.js";
-import { updateComponentProp } from "./component.js";
-import { getPropertyProxy } from "./properties.js";
-import { getComponentDef } from "./def.js";
-import { c } from "./api.js";
-import { defineProperties, isUndefined } from "./language.js";
-import { getPropNameFromAttrName } from "./utils.js";
+import assert from "./assert";
+import { patch } from "./patch";
+import { scheduleRehydration } from "./vm";
+import { invokeComponentAttributeChangedCallback } from "./invoker";
+import { updateComponentProp } from "./component";
+import { getPropertyProxy } from "./properties";
+import { getComponentDef } from "./def";
+import { c } from "./api";
+import { defineProperties, isUndefined } from "./language";
+import { getPropNameFromAttrName } from "./utils";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
 

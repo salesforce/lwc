@@ -1,10 +1,10 @@
-// import * as target from '../watcher.js';
-import * as api from "../api.js";
-import { patch } from '../patch.js';
-import { Element } from "../html-element.js";
+// import * as target from '../watcher';
+import * as api from "../api";
+import { patch } from '../patch';
+import { Element } from "../html-element";
 import assert from 'power-assert';
 
-describe('vm.js', () => {
+describe('vm', () => {
 
     describe('integration', () => {
 

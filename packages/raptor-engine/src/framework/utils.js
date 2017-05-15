@@ -1,5 +1,5 @@
-import assert from "./assert.js";
-import { create, seal, ArrayPush, freeze } from "./language.js";
+import assert from "./assert";
+import { create, seal, ArrayPush, freeze } from "./language";
 
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
@@ -39,7 +39,7 @@ export function getPropNameFromAttrName(attrName: string): string {
 const CAPS_REGEX = /[A-Z]/g;
 import {
     HTMLPropertyNamesWithLowercasedReflectiveAttributes,
-} from "./dom.js";
+} from "./dom";
 
 /**
  * This dictionary contains the mapping between property names

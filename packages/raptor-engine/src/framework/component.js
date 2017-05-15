@@ -1,4 +1,4 @@
-import assert from "./assert.js";
+import assert from "./assert";
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -7,12 +7,12 @@ import {
     invokeComponentAttributeChangedCallback,
     invokeComponentMethod,
     invokeComponentCallback,
-} from "./invoker.js";
-import { notifyListeners } from "./watcher.js";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language.js";
-import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils.js";
-import { extractOwnFields, getPropertyProxy } from "./properties.js";
-import { invokeServiceHook, services } from "./services.js";
+} from "./invoker";
+import { notifyListeners } from "./watcher";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
+import { extractOwnFields, getPropertyProxy } from "./properties";
+import { invokeServiceHook, services } from "./services";
 
 export let vmBeingConstructed: VM | null = null;
 

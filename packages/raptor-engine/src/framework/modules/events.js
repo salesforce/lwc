@@ -1,5 +1,5 @@
-import { isUndefined } from "../language.js";
-import { EmptyObject } from "../utils.js";
+import { isUndefined } from "../language";
+import { EmptyObject } from "../utils";
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;

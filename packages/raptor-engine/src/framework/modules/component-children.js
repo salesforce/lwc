@@ -1,6 +1,6 @@
-import assert from "../assert.js";
-import { renderComponent } from "../component.js";
-import { isUndefined, ArrayPush } from "../language.js";
+import assert from "../assert";
+import { renderComponent } from "../component";
+import { isUndefined, ArrayPush } from "../language";
 
 function rerender(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;

@@ -1,7 +1,7 @@
-import * as target from '../template.js';
-import * as api from "../api.js";
-import { patch } from '../patch.js';
-import { Element } from "../html-element.js";
+import * as target from '../template';
+import * as api from "../api";
+import { patch } from '../patch';
+import { Element } from "../html-element";
 import assert from 'power-assert';
 
 function createCustomComponent(html) {
@@ -16,7 +16,7 @@ function createCustomComponent(html) {
     return patch(elm, vnode);
 }
 
-describe('template.js', () => {
+describe('template', () => {
 
     describe('integration', () => {
 

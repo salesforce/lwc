@@ -1,9 +1,9 @@
 import assert from 'power-assert';
-import { c } from "../../api.js";
-import { patch } from "../../patch.js";
-import { Element } from "../../html-element.js";
+import { c } from "../../api";
+import { patch } from "../../patch";
+import { Element } from "../../html-element";
 
-describe('module/component-events.js', () => {
+describe('module/component-events', () => {
 
     describe('for vm with internal event logic', () => {
 

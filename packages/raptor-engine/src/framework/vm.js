@@ -1,9 +1,9 @@
-import assert from "./assert.js";
-import { getComponentDef } from "./def.js";
-import { createComponent } from "./component.js";
-import { patch } from "./patch.js";
-import { assign, isArray, toString, ArrayPush } from "./language.js";
-import { addCallbackToNextTick } from "./utils.js";
+import assert from "./assert";
+import { getComponentDef } from "./def";
+import { createComponent } from "./component";
+import { patch } from "./patch";
+import { assign, isArray, toString, ArrayPush } from "./language";
+import { addCallbackToNextTick } from "./utils";
 
 let idx: number = 0;
 

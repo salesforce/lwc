@@ -1,8 +1,8 @@
-import * as target from '../api.js';
+import * as target from '../api';
 import assert from 'power-assert';
-import { Element } from "../html-element.js";
+import { Element } from "../html-element";
 
-describe('api.js', () => {
+describe('api', () => {
 
     describe('#c()', () => {
         it('should convert className to a classMap property', () => {

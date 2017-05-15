@@ -1,6 +1,6 @@
-import { createVM, relinkVM } from "../vm.js";
-import assert from "../assert.js";
-import { isUndefined } from "../language.js";
+import { createVM, relinkVM } from "../vm";
+import assert from "../assert";
+import { isUndefined } from "../language";
 
 // this hook will set up the component instance associated to the new vnode,
 // and link the new vnode with the corresponding component

@@ -7,7 +7,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from "./assert.js";
+import assert from "./assert";
 import {
     freeze,
     create,
@@ -18,10 +18,10 @@ import {
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
-} from "./language.js";
-import { GlobalHTMLProperties } from "./dom.js";
-import { Element, createPublicPropertyDescriptorMap } from "./html-element.js";
-import { EmptyObject } from "./utils.js";
+} from "./language";
+import { GlobalHTMLProperties } from "./dom";
+import { Element, createPublicPropertyDescriptorMap } from "./html-element";
+import { EmptyObject } from "./utils";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
 

@@ -1,7 +1,7 @@
 import target from '../props';
 import assert from 'power-assert';
 
-describe('module/props.js', () => {
+describe('module/props', () => {
 
     it('should not set the input element value when the new value matches (reconcilation)', () => {
         const elm = {};

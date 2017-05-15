@@ -1,7 +1,7 @@
-import * as target from '../properties.js';
+import * as target from '../properties';
 import assert from 'power-assert';
 
-describe('properties.js', function () {
+describe('properties', function () {
 
     describe('#hookComponentLocalProperty()', function () {
         // TBD: mock for vm is needed here

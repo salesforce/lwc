@@ -1,13 +1,13 @@
-import assert from "./assert.js";
+import assert from "./assert";
 import {
     subscribeToSetHook,
     notifyListeners,
-} from "./watcher.js";
+} from "./watcher";
 import {
     isRendering,
     vmBeingRendered,
-} from "./invoker.js";
-import { isUndefined, defineProperty, hasOwnProperty, toString, isArray } from "./language.js";
+} from "./invoker";
+import { isUndefined, defineProperty, hasOwnProperty, toString, isArray } from "./language";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
 const ProxyCache: Set<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.

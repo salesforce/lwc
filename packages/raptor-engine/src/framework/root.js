@@ -1,7 +1,7 @@
-import assert from "./assert.js";
-import { ViewModelReflection } from "./html-element.js";
-import { defineProperty } from "./language.js";
-import { vmBeingConstructed } from "./component.js";
+import assert from "./assert";
+import { ViewModelReflection } from "./html-element";
+import { defineProperty } from "./language";
+import { vmBeingConstructed } from "./component";
 
 function invokedFromConstructor(component: ComponentElement): boolean {
     return vmBeingConstructed && vmBeingConstructed.component === component;

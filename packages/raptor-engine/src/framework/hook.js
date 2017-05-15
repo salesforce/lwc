@@ -1,9 +1,9 @@
-import assert from "./assert.js";
-import { invokeComponentMethod } from "./invoker.js";
-import { clearListeners } from "./component.js";
-import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm.js";
-import { addCallbackToNextTick, noop } from "./utils.js";
-import { invokeServiceHook, services } from "./services.js";
+import assert from "./assert";
+import { invokeComponentMethod } from "./invoker";
+import { clearListeners } from "./component";
+import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm";
+import { addCallbackToNextTick, noop } from "./utils";
+import { invokeServiceHook, services } from "./services";
 
 function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);

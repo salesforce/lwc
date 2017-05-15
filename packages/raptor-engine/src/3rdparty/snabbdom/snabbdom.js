@@ -1,4 +1,4 @@
-import { v as vnode } from '../../framework/api.js';
+import { v as vnode } from '../../framework/api';
 import * as is from './is';
 import htmlDomApi from './htmldomapi';
 function isUndef(s) { return s === undefined; }

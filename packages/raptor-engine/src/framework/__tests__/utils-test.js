@@ -1,7 +1,7 @@
-import * as target from '../utils.js';
+import * as target from '../utils';
 import assert from 'power-assert';
 
-describe('utils.js', () => {
+describe('utils', () => {
     describe('#addCallbackToNextTick()', () => {
 
         it('should throw for non-callable values', () => {

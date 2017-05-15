@@ -1,9 +1,9 @@
-import assert from "./assert.js";
-import * as api from "./api.js";
-import { isArray, isUndefined, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language.js";
-import { getOwnFields, extractOwnFields } from "./properties.js";
-import { vmBeingRendered } from "./invoker.js";
-import { subscribeToSetHook } from "./watcher.js";
+import assert from "./assert";
+import * as api from "./api";
+import { isArray, isUndefined, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language";
+import { getOwnFields, extractOwnFields } from "./properties";
+import { vmBeingRendered } from "./invoker";
+import { subscribeToSetHook } from "./watcher";
 
 const EmptySlots = create(null);
 

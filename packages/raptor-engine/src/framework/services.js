@@ -1,5 +1,5 @@
-import assert from "./assert.js";
-import { isUndefined, isObject, isArray, create } from "./language.js";
+import assert from "./assert";
+import { isUndefined, isObject, isArray, create } from "./language";
 
 const hooks = ['rehydrated', 'connected', 'disconnected'];
 

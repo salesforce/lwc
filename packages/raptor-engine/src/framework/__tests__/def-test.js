@@ -1,8 +1,8 @@
-import * as target from "../def.js";
-import { Element } from "../html-element.js";
+import * as target from "../def";
+import { Element } from "../html-element";
 import assert from 'power-assert';
 
-describe('def.js', () => {
+describe('def', () => {
     describe('#getComponentDef()', () => {
 
         it('should understand empty constructors', () => {

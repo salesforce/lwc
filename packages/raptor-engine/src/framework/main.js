@@ -1,4 +1,4 @@
-export { createElement } from "./upgrade.js";
-export { getComponentDef } from "./def.js";
-export { Element } from "./html-element.js";
-export { register } from "./services.js";
+export { createElement } from "./upgrade";
+export { getComponentDef } from "./def";
+export { Element } from "./html-element";
+export { register } from "./services";

@@ -1,10 +1,10 @@
-import { ClassList } from "../class-list.js";
+import { ClassList } from "../class-list";
 import assert from 'power-assert';
-import { Element } from "../html-element.js";
-import * as api from "../api.js";
-import { patch } from '../patch.js';
+import { Element } from "../html-element";
+import * as api from "../api";
+import { patch } from '../patch';
 
-describe('class-list.js', () => {
+describe('class-list', () => {
     describe('#constructor()', () => {
 
         it('should throw for invalid component reference', () => {

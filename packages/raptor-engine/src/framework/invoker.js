@@ -1,10 +1,10 @@
-import assert from "./assert.js";
+import assert from "./assert";
 import {
     currentContext,
     establishContext,
-} from "./context.js";
-import { evaluateTemplate } from "./template.js";
-import { create, isFunction } from "./language.js";
+} from "./context";
+import { evaluateTemplate } from "./template";
+import { create, isFunction } from "./language";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;

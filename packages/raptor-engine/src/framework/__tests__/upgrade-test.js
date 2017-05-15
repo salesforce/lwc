@@ -1,8 +1,8 @@
-import { Element } from "../html-element.js";
-import { createElement } from "../upgrade.js";
+import { Element } from "../html-element";
+import { createElement } from "../upgrade";
 import assert from 'power-assert';
 
-describe('upgrade.js', () => {
+describe('upgrade', () => {
 
     describe('#createElement()', () => {
 

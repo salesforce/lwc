@@ -1,6 +1,6 @@
-import assert from "../assert.js";
-import { isUndefined } from "../language.js";
-import { EmptyObject } from "../utils.js";
+import assert from "../assert";
+import { isUndefined } from "../language";
+import { EmptyObject } from "../utils";
 
 // TODO: eventually use the one shipped by snabbdom directly
 function update(oldVnode: VNode, vnode: VNode) {

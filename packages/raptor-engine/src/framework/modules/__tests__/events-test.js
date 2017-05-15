@@ -1,9 +1,9 @@
 import assert from 'power-assert';
-import { h, c } from "../../api.js";
-import { patch } from "../../patch.js";
-import { Element } from "../../html-element.js";
+import { h, c } from "../../api";
+import { patch } from "../../patch";
+import { Element } from "../../html-element";
 
-describe('module/events.js', () => {
+describe('module/events', () => {
 
     describe('from snabbdom', () => {
 

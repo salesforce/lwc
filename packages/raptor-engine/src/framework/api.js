@@ -1,8 +1,8 @@
-import assert from "./assert.js";
-import { lifeCycleHooks as hook } from "./hook.js";
-import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language.js";
-import { vmBeingRendered, invokeComponentCallback } from "./invoker.js";
-import { getMapFromClassName } from "./utils.js";
+import assert from "./assert";
+import { lifeCycleHooks as hook } from "./hook";
+import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language";
+import { vmBeingRendered, invokeComponentCallback } from "./invoker";
+import { getMapFromClassName } from "./utils";
 
 const CHAR_S = 115;
 const CHAR_V = 118;

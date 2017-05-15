@@ -1,4 +1,4 @@
-import { EmptyObject } from "../utils.js";
+import { EmptyObject } from "../utils";
 
 function updateClass(oldVnode: VNode, vnode: VNode) {
     const { data: { class: oldClass = EmptyObject } } = oldVnode;
