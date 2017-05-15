@@ -154,11 +154,9 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
  * then we fallback to the normal Web-Components workflow.
  */
 export function createElement(tagName: string, options: any = {}): HTMLElement {
-    let Ctor = typeof options.is === 'function' ? options.is : null;
-    if (Ctor) {
-        delete options.is;
-    }
-    const element = document.createElement(tagName, options);
+    const Ctor = typeof options.is === 'function' ? options.is : null;
+    const element = document.createElement(tagName, Ctor ? null : options);
+
     if (Ctor && element instanceof HTMLElement) {
         upgradeElement(element, Ctor);
     }
