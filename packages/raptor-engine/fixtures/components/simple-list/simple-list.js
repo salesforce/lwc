@@ -44,7 +44,7 @@ export default class SimpleList extends Element {
         console.log('clicked');
     }
 
-    @method foo() {
+    @api foo() {
         console.log('foo was called: ', arguments);
         return 1;
     }

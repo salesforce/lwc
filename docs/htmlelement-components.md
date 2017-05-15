@@ -102,7 +102,7 @@ Foo.publicProps = {
 
 ## Public Methods
 
-By default, if the class definition is going to be process by the Raptor Compiler, it can infer that all public properties decorated with `@method` are going to be used as the public methods of the component. If the compiler is not available, a static member can be used to manually specify the public methods. Similarely, if you are extending another Component Definition, you can take care of the aggregation of public methods.
+By default, if the class definition is going to be process by the Raptor Compiler, it can infer that all public properties decorated with `@api` are going to be used as the public methods of the component. If the compiler is not available, a static member can be used to manually specify the public methods. Similarely, if you are extending another Component Definition, you can take care of the aggregation of public methods.
 
 ### Specifying Public Methods manually
 

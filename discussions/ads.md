@@ -2,7 +2,7 @@
 
 ## Questions
 
-* 
+*
 ## Important Pieces
 
 * To enable server-side data graph evaluation (before cmp instantiation on the client), need to evaluate query parameter values. How do you get these values?
@@ -17,7 +17,7 @@
 
 
 ** how to get these valuesquery parameters require values
-public methods -> decorated with @method
+public methods -> decorated with @api
 * public attributes -> decorate with @attribute or via `static attributes` definition
 * private fields -> language (for now, we will stay away until formalized by Ecma)
 * template attributes -> anything available in the component instance (this.<something>), no signal is needed.
@@ -43,8 +43,7 @@ export default class {
     bar = 2;
 
     // public methods
-    @method()
-    focus(abs: Event, xyz: Function) {}
+    @api focus(abs: Event, xyz: Function) {}
 
     static attributes = {
         bar: AuraTypes.Boolean.required
