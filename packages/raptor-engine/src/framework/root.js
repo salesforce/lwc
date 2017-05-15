@@ -3,19 +3,17 @@ import { ViewModelReflection } from "./html-element.js";
 import { defineProperty } from "./language.js";
 import { vmBeingConstructed } from "./component.js";
 
-const INTERNAL_CMP = Symbol('internal');
-
 function invokedFromConstructor(component: ComponentElement): boolean {
     return vmBeingConstructed && vmBeingConstructed.component === component;
 }
 
 function getLinkedElement(root): HTMLElement {
-    return root[INTERNAL_CMP][ViewModelReflection].vnode.elm;
+    return root[ViewModelReflection].vnode.elm;
 }
 
-export function Root(component: ComponentElement): ShadowRoot {
-    defineProperty(this, INTERNAL_CMP, {
-        value: component,
+export function Root(vm: VM): ShadowRoot {
+    defineProperty(this, ViewModelReflection, {
+        value: vm,
         writable: false,
         enumerable: false,
         configurable: false,
@@ -38,7 +36,7 @@ Root.prototype = {
         return elm.querySelectorAll(selectors);
     },
     toString(): string {
-        const cmp = this[INTERNAL_CMP];
-        return `Current ShadowRoot for ${cmp}`;
+        const vm = this[ViewModelReflection];
+        return `Current ShadowRoot for ${vm.component}`;
     }
 };

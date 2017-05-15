@@ -25,10 +25,6 @@ export function createVM(vnode: ComponentVNode) {
     const { Ctor } = vnode;
     const def = getComponentDef(Ctor);
     console.log(`[object:vm ${def.name}] is being initialized.`);
-    if (!def.isStateful) {
-        // TODO: update when functionals are supported
-        throw new TypeError(`${def.name} is not an Element. Only components extending Element from "engine" are supported. In the future functional components will be supported.`);
-    }
     const vm: VM = {
         idx: 0,
         isScheduled: false,

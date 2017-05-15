@@ -30,9 +30,7 @@ let currentMemoized: HashTable<any> | null = null;
 
 const cmpProxyHandler = {
     get: (cmp: Object, key: string | Symbol): any => {
-        if (currentMemoized === null || vmBeingRendered === null || vmBeingRendered.component !== cmp) {
-            throw new Error(`Internal Error: getFieldValue() should only be accessible during rendering phase.`);
-        }
+        assert.invariant(currentMemoized !== null && vmBeingRendered !== null && vmBeingRendered.component === cmp, ` getFieldValue() should only be accessible during rendering phase.`);
         if (key in currentMemoized) {
             return currentMemoized[key];
         }

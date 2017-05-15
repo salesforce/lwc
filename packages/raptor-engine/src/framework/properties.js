@@ -22,8 +22,8 @@ function propertyGetter(target: Object, key: string | Symbol): any {
 
 function propertySetter(target: Object, key: string | Symbol, value: any): boolean {
     if (isRendering) {
-        // TODO: should this be an error? or a console.error?
-        throw new Error(`Setting property "${toString(key)}" of ${toString(target)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
+        assert.logError(`Setting property "${toString(key)}" of ${toString(target)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
+        return false;
     }
     const oldValue = target[key];
     if (oldValue !== value) {
@@ -64,9 +64,7 @@ export function getPropertyProxy(value: Object): any {
     // TODO: optimize this check
     // TODO: and alternative here is to throw a hard error in dev mode so in prod we don't have to do the check
     if (value instanceof Node) {
-        assert.block(function devModeCheck() {
-            console.warn(`Do not store references to DOM Nodes. Instead use \`this.querySelector()\` and \`this.querySelectorAll()\` to find the nodes when needed.`);
-        });
+        assert.logWarning(`Do not store references to DOM Nodes. Instead use \`this.querySelector()\` and \`this.querySelectorAll()\` to find the nodes when needed.`);
         return value;
     }
     let proxy = ObjectPropertyToProxyCache.get(value);

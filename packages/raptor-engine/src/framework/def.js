@@ -39,27 +39,21 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
 }
 
 function createComponentDef(Ctor: Class<Component>): ComponentDef {
-    const isStateful = isElementComponent(Ctor);
+    assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
     const name: string = Ctor.name;
     assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
     assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a "constructor" property.`);
     const props = getPublicPropertiesHash(Ctor);
-    if (isStateful) {
-        const proto = Ctor.prototype;
-        for (let propName in props) {
-            // initializing getters and setters for each public prop on the target prototype
-            assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-            defineProperties(proto, createPublicPropertyDescriptorMap(propName));
-        }
-    } else {
-        // TODO: update when functionals are supported
-        throw new TypeError(`${name} is not an Element. Only components extending Element from "engine" are supported. In the future functional components will be supported.`);
+    const proto = Ctor.prototype;
+    for (let propName in props) {
+        // initializing getters and setters for each public prop on the target prototype
+        assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+        defineProperties(proto, createPublicPropertyDescriptorMap(propName));
     }
-    const methods = isStateful ? getPublicMethodsHash(Ctor) : EmptyObject;
-    const observedAttrs = isStateful ? getObservedAttributesHash(Ctor) : EmptyObject;
+    const methods = getPublicMethodsHash(Ctor);
+    const observedAttrs = getObservedAttributesHash(Ctor);
     const def: ComponentDef = {
         name,
-        isStateful,
         props,
         methods,
         observedAttrs,

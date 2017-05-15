@@ -32,7 +32,6 @@ describe('class-list.js', () => {
             vnode = api.c('x-foo', def, { classMap: { foo: 1 } });
             patch(elm, vnode);
             assert.equal(elm.className, 'foo');
-            console.error(45, document.body.innerHTML);
         });
 
         it('should combine inner classes first and then data.className', () => {

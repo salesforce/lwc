@@ -1,24 +1,27 @@
+import { EmptyObject } from "../utils.js";
+
 function updateClass(oldVnode: VNode, vnode: VNode) {
-  var cur: any, name: string, elm: Element = vnode.elm,
-      oldClass = oldVnode.data.class,
-      klass = vnode.data.class;
+    const { data: { class: oldClass = EmptyObject } } = oldVnode;
+    const { elm, data: { class: klass = EmptyObject } } = vnode;
 
-  if (!oldClass && !klass) return;
-  if (oldClass === klass) return;
-  oldClass = oldClass || {};
-  klass = klass || {};
+    if (oldClass === klass) {
+        return;
+    }
 
-  for (name in oldClass) {
-    if (!klass[name]) {
-      elm.classList.remove(name);
+    const innerClass = (vnode.vm && vnode.vm.cmpClasses) || EmptyObject;
+
+    let name: string
+    for (name in oldClass) {
+        // remove only if it is not in the new class collection and it is not set from within the instance
+        if (!klass[name] && !innerClass[name]) {
+            elm.classList.remove(name);
+        }
     }
-  }
-  for (name in klass) {
-    cur = klass[name];
-    if (cur !== oldClass[name]) {
-      elm.classList[cur ? 'add' : 'remove'](name);
+    for (name in klass) {
+        if (!oldClass[name]) {
+            elm.classList.add(name);
+        }
     }
-  }
 }
 
 const classModule: Module = {

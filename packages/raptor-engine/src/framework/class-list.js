@@ -2,32 +2,23 @@ import assert from "./assert.js";
 import {
     getOwnPropertyNames,
     defineProperty,
+    isUndefined,
 } from "./language.js";
 
-import { ViewModelReflection, Element } from "./html-element.js";
-
-const INTERNAL_CMP = Symbol('internal');
-const INTERNAL_DATA = Symbol('internal');
+import { ViewModelReflection } from "./html-element.js";
 
 function getLinkedElement(classList: ClassList): HTMLElement {
-    return classList[INTERNAL_CMP][ViewModelReflection].vnode.elm;
+    return classList[ViewModelReflection].vnode.elm;
 }
 
 // This needs some more work. ClassList is a weird DOM api because it
 // is a TokenList, but not an Array. For now, we are just implementing
 // the simplest one.
 // https://www.w3.org/TR/dom/#domtokenlist
-export function ClassList(component: Component, cmpClasses: HashTable<Boolean>): DOMTokenList {
-    assert.isTrue(component instanceof Element, `${component} must be an instance of Element.`);
-    assert.isTrue(typeof component === 'object', `${cmpClasses} should be an object.`);
-    defineProperty(this, INTERNAL_CMP, {
-        value: component,
-        writable: false,
-        enumerable: false,
-        configurable: false,
-    });
-    defineProperty(this, INTERNAL_DATA, {
-        value: cmpClasses,
+export function ClassList(vm: VM): DOMTokenList {
+    assert.vm(vm);
+    defineProperty(this, ViewModelReflection, {
+        value: vm,
         writable: false,
         enumerable: false,
         configurable: false,
@@ -36,41 +27,59 @@ export function ClassList(component: Component, cmpClasses: HashTable<Boolean>):
 
 ClassList.prototype = {
     add(...classNames: Array<String>) {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         const elm = getLinkedElement(this);
         // Add specified class values. If these classes already exist in attribute of the element, then they are ignored.
         classNames.forEach((className: String) => {
             className = className + '';
             if (!cmpClasses[className]) {
                 cmpClasses[className] = true;
-                // we intentionally make a sync mutation here and also keep track of the mutation
-                // for a possible rehydration later on without having to rehydrate just now.
-                elm.classList.add(className);
+                // this is not only an optimization, it is also needed to avoid adding the same
+                // class twice when the initial diffing algo kicks in without an old vm to track
+                // what was already added to the DOM.
+                if (!vm.isDirty) {
+                    // we intentionally make a sync mutation here and also keep track of the mutation
+                    // for a possible rehydration later on without having to rehydrate just now.
+                    elm.classList.add(className);
+                }
             }
         });
     },
     remove(...classNames: Array<String>) {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         const elm = getLinkedElement(this);
         // Remove specified class values.
         classNames.forEach((className: String) => {
             className = className + '';
             if (cmpClasses[className]) {
                 cmpClasses[className] = false;
-                // we intentionally make a sync mutation here and also keep track of the mutation
-                // for a possible rehydration later on without having to rehydrate just now.
-                elm.classList.remove(className);
+                // this is not only an optimization, it is also needed to avoid removing the same
+                // class twice when the initial diffing algo kicks in without an old vm to track
+                // what was already added to the DOM.
+                if (!vm.isDirty) {
+                    // we intentionally make a sync mutation here when needed and also keep track of the mutation
+                    // for a possible rehydration later on without having to rehydrate just now.
+                    const ownerClass = this[ViewModelReflection].vnode.data.class;
+                    // This is only needed if the owner is not forcing that class to be present in case of conflicts.
+                    if (isUndefined(ownerClass) || !ownerClass[className]) {
+                        elm.classList.remove(className);
+                    }
+                }
             }
         });
     },
     item(index: Number): string | void {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         // Return class value by index in collection.
         return getOwnPropertyNames(cmpClasses)
             .filter((className: string): boolean => cmpClasses[className + ''])[index] || null;
     },
     toggle(className: String, force: any): boolean {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         // When only one argument is present: Toggle class value; i.e., if class exists then remove it and return false, if not, then add it and return true.
         // When a second argument is present: If the second argument evaluates to true, add specified class value, and if it evaluates to false, remove it.
         if (arguments.length > 1) {
@@ -89,12 +98,14 @@ ClassList.prototype = {
         return true;
     },
     contains(className: String): boolean {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         // Checks if specified class value exists in class attribute of the element.
         return !!cmpClasses[className];
     },
     toString(): string {
-        const cmpClasses = this[INTERNAL_DATA];
+        const vm = this[ViewModelReflection];
+        const { cmpClasses } = vm;
         return getOwnPropertyNames(cmpClasses).filter((className: string): boolean => cmpClasses[className + '']).join(' ');
     }
 };

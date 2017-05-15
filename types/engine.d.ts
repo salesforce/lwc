@@ -19,7 +19,6 @@ declare interface PropDef {}
 
 declare interface ComponentDef {
     name: string,
-    isStateful: boolean,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
     observedAttrs: HashTable<number>,

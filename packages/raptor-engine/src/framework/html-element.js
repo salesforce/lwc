@@ -88,7 +88,7 @@ ComponentElement.prototype = {
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
                 // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                console.error(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
         });
         addComponentEventListener(vm, type, listener);
@@ -98,7 +98,7 @@ ComponentElement.prototype = {
         assert.vm(vm);
         assert.block(function devModeCheck() {
             if (arguments.length > 2) {
-                console.error(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
+                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
             }
         });
         removeComponentEventListener(vm, type, listener);
@@ -162,7 +162,7 @@ ComponentElement.prototype = {
         // lazy creation of the ClassList Object the first time it is accessed.
         if (isUndefined(classListObj)) {
             vm.cmpClasses = {};
-            classListObj = new ClassList(this, vm.cmpClasses);
+            classListObj = new ClassList(vm);
             vm.classListObj = classListObj;
         }
         return classListObj;
@@ -191,7 +191,8 @@ ComponentElement.prototype = {
         const vm = this[ViewModelReflection];
         assert.vm(vm);
         if (!newState || !isObject(newState) || isArray(newState)) {
-            throw new TypeError(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an object.`);
+            assert.logError(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an object.`);
+            return;
         }
         let { cmpState } = vm;
         if (isUndefined(cmpState)) {

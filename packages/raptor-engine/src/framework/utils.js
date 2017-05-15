@@ -1,5 +1,5 @@
 import assert from "./assert.js";
-import { create, seal, ArrayPush } from "./language.js";
+import { create, seal, ArrayPush, freeze } from "./language.js";
 
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
@@ -76,8 +76,14 @@ export function toAttributeValue(raw: any): string | null {
 
 export function noop() {}
 
+const classNameToClassMap = create(null);
+
 export function getMapFromClassName(className: string): HashTable<boolean> {
-    const map = {};
+    let map = classNameToClassMap[className];
+    if (map) {
+        return map;
+    }
+    map = {};
     let start = 0;
     let i, len = className.length;
     for (i = 0; i < len; i++) {
@@ -92,5 +98,10 @@ export function getMapFromClassName(className: string): HashTable<boolean> {
     if (i > start) {
         map[className.slice(start, i)] = true;
     }
+    classNameToClassMap[className] = map;
+    assert.block(() => {
+        // just to make sure that this object never changes as part of the diffing algo
+        freeze(map);
+    });
     return map;
 }

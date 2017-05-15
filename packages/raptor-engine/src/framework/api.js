@@ -2,6 +2,7 @@ import assert from "./assert.js";
 import { lifeCycleHooks as hook } from "./hook.js";
 import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language.js";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker.js";
+import { getMapFromClassName } from "./utils.js";
 
 const CHAR_S = 115;
 const CHAR_V = 118;
@@ -14,7 +15,7 @@ const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const ELEMENT_NODE = 1; // An Element node such as <p> or <div>.
 const TEXT_NODE = 3;    // The actual Text of Element or Attr.
 
-function nodeToVNode(elm: Node): VNode {
+function nodeToVNode(elm: Node): VNode | null {
     // TODO: generalize this to support all kind of Nodes
     // TODO: instead of creating the vnode() directly, use toVNode() or something else from snabbdom
     // TODO: the element could be derivated from another raptor component, in which case we should
@@ -28,7 +29,8 @@ function nodeToVNode(elm: Node): VNode {
         // TODO: support "is"" attribute
         return v(elm.tagName.toLowerCase(), undefined, undefined, undefined, elm);
     }
-    throw new Error(`Invalid NodeType: ` + nodeType);
+    assert.fail(`Invalid NodeType: ` + nodeType);
+    return null;
 }
 
 function addNS(data: any, children: Array<VNode> | undefined, sel: string | undefined) {
@@ -66,7 +68,9 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
     assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     // checking reserved internal data properties
     assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
-    assert.invariant(data.eventNames === undefined, `vnode.data.eventNames should be undefined when calling h().`);
+    const { classMap, className } = data;
+    assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+    data.class = classMap || (className && getMapFromClassName(className));
     if (children.length) {
         n(children);
     }
@@ -83,10 +87,12 @@ export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         // checking reserved internal data properties
     assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
-    assert.invariant(data.eventNames === undefined, `vnode.data.eventNames should be undefined when calling c().`);
     const { key, slotset, attrs, on, className, classMap, props: _props } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
-    return v(sel, { hook, key, slotset, attrs, on, className, classMap, _props }, [], undefined, undefined, Ctor);
+    data = { hook, key, slotset, attrs, on, _props };
+    assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+    data.class = classMap || (className && getMapFromClassName(className));
+    return v(sel, data, [], undefined, undefined, Ctor);
 }
 
 // [i]terable node
@@ -111,22 +117,6 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
         });
     }
     return list;
-}
-
-/**
- * [s]tringify
- */
-export function s(value: any = ''): any {
-    // deprecated
-    return value;
-}
-
-/**
- * [e]mpty
- */
-export function e(): null {
-    // deprecated
-    return null;
 }
 
 /**

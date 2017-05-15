@@ -19,9 +19,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
-            });
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
             return;
         }
         return getAttribute.call(element, attrName);
@@ -30,9 +28,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
-            });
+            assert.error(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
             return;
         }
         const oldValue = getAttribute.call(element, attrName);
@@ -46,9 +42,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.block(function devModeCheck() {
-                throw new ReferenceError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = undefined;\`.`);
-            });
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = undefined;\`.`);
             return;
         }
 

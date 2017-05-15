@@ -116,6 +116,9 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     }
     if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
+        // this is not only an optimization, it is also needed to avoid adding the same
+        // listener twice when the initial diffing algo kicks in without an old vm to track
+        // what was already added to the DOM.
         if (!vm.isDirty) {
             // if the element is already in the DOM and rendered, we intentionally make a sync mutation
             // here and also keep track of the mutation for a possible rehydration later on without having
@@ -126,7 +129,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     }
     assert.block(function devModeCheck() {
         if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
-            console.warn(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the connectedCallback() hook.`);
+            assert.logWarning(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the connectedCallback() hook.`);
         }
     });
     ArrayPush.call(cmpEvents[eventName], newHandler);
@@ -145,7 +148,7 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         }
     }
     assert.block(function devModeCheck() {
-        console.warn(`Did not find event listener ${oldHandler} for event "${eventName}" on ${vm}. Instead only remove an event listener once.`);
+        assert.logWarning(`Did not find event listener ${oldHandler} for event "${eventName}" on ${vm}. Instead only remove an event listener once.`);
     });
 }
 

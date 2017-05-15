@@ -9,7 +9,6 @@ describe('def.js', () => {
             const def = class MyComponent extends Element {}
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
-                isStateful: true,
                 props: {},
                 methods: {},
                 observedAttrs: {},
@@ -38,7 +37,6 @@ describe('def.js', () => {
             MyComponent.observedAttributes = ['foo', 'x-bar'];
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                isStateful: true,
                 props: {},
                 methods: {},
                 observedAttrs: {
@@ -53,7 +51,6 @@ describe('def.js', () => {
             MyComponent.observedAttributes = ['foo', 'x-bar'];
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                isStateful: true,
                 props: {},
                 methods: {},
                 observedAttrs: {},
@@ -68,7 +65,6 @@ describe('def.js', () => {
             MyComponent.publicMethods = ['foo', 'bar'];
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                isStateful: true,
                 props: {},
                 methods: {
                     foo: 1,
@@ -86,7 +82,6 @@ describe('def.js', () => {
             };
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                isStateful: true,
                 props: {
                     foo: 1,
                     xBar: 1,
