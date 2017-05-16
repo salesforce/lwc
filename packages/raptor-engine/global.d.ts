@@ -1,6 +1,7 @@
+type Template = (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => undefined | Array<VNode>;
+
 declare class Component {
-    constructor(): this;
-    render(): void | (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => Array<VNode>;
+    render(): void | Template;
     connectedCallback(): void;
     disconnectedCallback(): void;
     renderedCallback(): void;
@@ -51,23 +52,23 @@ declare class VM {
 }
 
 declare class ComponentVNode extends VNode {
-    Ctor: Class<Component>;
+    Ctor: ObjectConstructor;
     vm: VM;
     toString: () => string;
 }
 
-export type PreHook = () => any;
-export type InitHook = (vNode: VNode) => any;
-export type CreateHook = (emptyVNode: VNode, vNode: VNode) => any;
-export type InsertHook = (vNode: VNode) => any;
-export type PrePatchHook = (oldVNode: VNode, vNode: VNode) => any;
-export type UpdateHook = (oldVNode: VNode, vNode: VNode) => any;
-export type PostPatchHook = (oldVNode: VNode, vNode: VNode) => any;
-export type DestroyHook = (vNode: VNode) => any;
-export type RemoveHook = (vNode: VNode, removeCallback: () => void) => any;
-export type PostHook = () => any;
+type PreHook = () => any;
+type InitHook = (vNode: VNode) => any;
+type CreateHook = (emptyVNode: VNode, vNode: VNode) => any;
+type InsertHook = (vNode: VNode) => any;
+type PrePatchHook = (oldVNode: VNode, vNode: VNode) => any;
+type UpdateHook = (oldVNode: VNode, vNode: VNode) => any;
+type PostPatchHook = (oldVNode: VNode, vNode: VNode) => any;
+type DestroyHook = (vNode: VNode) => any;
+type RemoveHook = (vNode: VNode, removeCallback: () => void) => any;
+type PostHook = () => any;
 
-export interface Hooks {
+interface Hooks {
   pre?: PreHook;
   init?: InitHook;
   create?: CreateHook;
@@ -80,7 +81,7 @@ export interface Hooks {
   post?: PostHook;
 }
 
-export interface VNodeData {
+interface VNodeData {
     props?: any;
     attrs?: any;
     className?: string;
@@ -103,18 +104,18 @@ declare class VNode  {
 }
 
 declare interface RenderAPI {
-    c(tagName: string, Ctor: Class<Component>, data: Object): VNode,
+    c(tagName: string, Ctor: ObjectConstructor, data: Object): VNode,
     h(tagName: string, data: Object, children: Array<any>): VNode,
-    v(tagName: string, data: VNodeData, children?: Array<any>, text?: string, elm?: Element | Text, Ctor?: Class<Component>): VNode,
+    v(tagName: string, data: VNodeData, children?: Array<any>, text?: string, elm?: Element | Text, Ctor?: ObjectConstructor): VNode,
     i(items: Array<any>, factory: () => VNode | VNode): Array<VNode>,
     n(children: Array<VNode|null|number|string|Node>): Array<VNode>,
     f(items: Array<any>): Array<any>,
     b(fn: EventListener): EventListener,
 }
 
-export type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
+type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
 
-export interface Services {
+interface Services {
   connected?: ServiceCallback;
   disconnected?: ServiceCallback;
   rehydrated?: ServiceCallback;

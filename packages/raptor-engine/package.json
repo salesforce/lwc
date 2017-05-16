@@ -61,7 +61,7 @@
   "jest": {
     "testRegex": "/__tests__/",
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "src/framework/*.js"
     ],
     "coverageReporters": [
       "lcov",
@@ -71,11 +71,15 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 50,
-        "functions": 50,
-        "lines": 50,
-        "statements": 50
+        "branches": 65,
+        "functions": 65,
+        "lines": 70,
+        "statements": 70
       }
     }
+  },
+  "dependencies": {
+    "global": "^4.3.2",
+    "typescript": "^2.3.2"
   }
 }
