@@ -61,7 +61,6 @@ code review process delightful!
 Raptor relies on type annotataions heavily.
 
 * Make sure your editor supports [typescript](https://www.typescriptlang.org/).
-* Additionally, you can use [flow](https://flowtype.org/).
 
 ### eslint
 

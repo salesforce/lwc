@@ -7,7 +7,7 @@
   "jsnext:main": "./lib/raptor.es.js",
   "scripts": {
     "clean": "rimraf dist/ fake-cdn/ fake-html/ && git checkout fake-cdn fake-html",
-    "test": "jest --coverage --verbose",
+    "test": "jest --coverage",
     "build": "yarn run build:lib",
     "start": "yarn run build:fixtures && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.engine.js & node scripts/build-fixtures.js --watch && forever stop raptor",
     "stop": "forever stopall",
@@ -18,8 +18,6 @@
     "build:fixtures": "node scripts/build-fixtures.js",
     "build:services": "node scripts/rollup.services.js",
     "build:all": "yarn run build:fixtures --production && yarn run build:dist && yarn run build:lib",
-    "flow": "flow --show-all-errors",
-    "flowlint": "flow",
     "prepublish": "yarn run build"
   },
   "publishConfig": {
@@ -29,7 +27,6 @@
     "babel-cli": "^6.24.0",
     "babel-jest": "17.0.2",
     "babel-loader": "^6.4.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-polyfill": "^6.13.0",
     "babel-preset-env": "^1.3.2",
     "babel-preset-flow": "^6.23.0",
@@ -37,7 +34,6 @@
     "eslint": "^3.19.0",
     "expect": "^1.20.2",
     "express": "^4.14.0",
-    "flow-bin": "^0.43.0",
     "forever": "^0.15.2",
     "glob": "^7.1.1",
     "jest-cli": "17.0.2",

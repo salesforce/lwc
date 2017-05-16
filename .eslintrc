@@ -15,10 +15,5 @@
     ],
     "rules": {
         "no-console": 0
-    },
-    "settings": {
-        "flowtype": {
-            "onlyFilesWithFlowAnnotation": false
-        }
     }
 }
