@@ -52,8 +52,8 @@ export function isTrue(obj: any): boolean {
 export function isFunction(obj: any): boolean {
     return typeof obj === 'function';
 }
-export function isObject(o: any): boolean {
-    return typeof o === 'object';
+export function isObject(obj: any): boolean {
+    return typeof obj === 'object';
 }
 
 export function isString(obj: any): boolean {
@@ -62,6 +62,10 @@ export function isString(obj: any): boolean {
 
 export function isNumber(obj: any): boolean {
     return typeof obj === 'number';
+}
+
+export function isPromise(obj: any): boolean {
+    return typeof obj === 'object' && obj === Promise.resolve(obj);
 }
 
 const OtS = {}.toString;

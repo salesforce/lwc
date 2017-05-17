@@ -14,6 +14,35 @@ describe('invoker', () => {
             child = api.h('p', {}, []);
         });
 
+        it('should support undefined result from render()', () => {
+            let counter = 0;
+            const elm = document.createElement('x-foo');
+            class MyComponent extends Element {
+                render() {
+                    counter++;
+                    return;
+                }
+            }
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode); // insert `x-foo`
+            return Promise.resolve().then(() => {
+                assert.strictEqual(counter, 1);
+            });
+        });
+
+        it('should throw if render() returns something that is not a function or a promise or undefined', () => {
+            const elm = document.createElement('x-foo');
+            class MyComponent extends Element {
+                render() {
+                    return 1;
+                }
+            }
+            const vnode = api.c('x-foo', MyComponent, {});
+            assert.throws(() => {
+                patch(elm, vnode); // insert `x-foo`
+            });
+        });
+
         it('should invoke connectedCallback() after all child are inserted into the dom', () => {
             let counter = 0;
             const elm = document.createElement('x-foo');

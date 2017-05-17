@@ -165,34 +165,34 @@ describe('template', () => {
 
     describe('evaluateTemplate()', () => {
 
-        it('should normalize undefined', () => {
-            let result
-            result = target.evaluateTemplate(undefined, { component: 1 });
-            assert.deepEqual(result, [], 'undefined');
+        it('should throw for undefined value', () => {
+            assert.throws(() => {
+                target.evaluateTemplate({ component: 1 }, undefined);
+            });
         });
 
         it('should throw for null value', () => {
             assert.throws(() => {
-                target.evaluateTemplate(null, { component: 1 });
+                target.evaluateTemplate({ component: 1 }, null);
             });
         });
         it('should throw for empty values', () => {
             assert.throws(() => {
-                target.evaluateTemplate("", { component: 1 });
+                target.evaluateTemplate({ component: 1 }, "");
             });
         });
 
         it('should throw for dom elements', () => {
             const elm = document.createElement('p');
             assert.throws(() => {
-                target.evaluateTemplate(elm, { component: 1 });
+                target.evaluateTemplate({ component: 1 }, elm);
             });
         });
 
         it('should throw for array of dom elements', () => {
             const elm = document.createElement('p');
             assert.throws(() => {
-                target.evaluateTemplate([elm], { component: 1 });
+                target.evaluateTemplate({ component: 1 }, [elm]);
             });
         });
 

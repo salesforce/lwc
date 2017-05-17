@@ -4,7 +4,8 @@ import {
     establishContext,
 } from "./context";
 import { evaluateTemplate } from "./template";
-import { create, isFunction } from "./language";
+import { deferredTemplate } from "./defer";
+import { isUndefined, isFunction, isPromise } from "./language";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -50,7 +51,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Comp
 }
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
-    const { component, context, cmpTemplate } = vm;
+    const { component, context } = vm;
     const ctx = currentContext;
     establishContext(context);
     const isRenderingInception = isRendering;
@@ -60,11 +61,13 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     let result, error;
     try {
         const html = component.render();
-        if (html !== cmpTemplate && isFunction(html)) {
-            context.tplCache = create(null); // reset the momizer for template
-            vm.cmpTemplate = html;
+        if (isFunction(html)) {
+            result = evaluateTemplate(vm, html);
+        } else if (isPromise(html)) {
+            result = deferredTemplate(vm, html);
+        } else if (!isUndefined(html)) {
+            assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./mytemplate.html"\`) or undefined, instead, it has returned ${html}.`);
         }
-        result = evaluateTemplate(html, vm);
     } catch (e) {
         error = e;
     }

@@ -1,6 +1,6 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isUndefined, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language";
+import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language";
 import { getOwnFields, extractOwnFields } from "./properties";
 import { vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
@@ -65,7 +65,7 @@ const cmpProxyHandler = {
         } else {
             value = cmp[key];
         }
-        if (typeof value === 'function') {
+        if (isFunction(value)) {
             // binding every function value accessed from template
             value = bind(value, cmp);
         }
@@ -82,50 +82,49 @@ const cmpProxyHandler = {
     },
 };
 
-export function evaluateTemplate(html: any, vm: VM): Array<VNode> {
+export function evaluateTemplate(vm: VM, html: any): Array<VNode> {
     assert.vm(vm);
-    // when `html` is a facotyr, it has to be invoked
+    assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
     // TODO: add identity to the html functions
-    if (typeof html === 'function') {
-        let { component, context: { tplCache }, cmpSlots = EmptySlots } = vm;
-        assert.isTrue(typeof tplCache === 'object', `vm.context.tplCache must be an object created before calling evaluateTemplate().`);
-        assert.block(function devModeCheck() {
-            // before every render, in dev-mode, we will like to know all expandos and
-            // all private-fields-like properties, so we can give meaningful errors.
-            extractOwnFields(component);
+    let { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
+    // reset the cache momizer for template when needed
+    if (html !== cmpTemplate) {
+        context.tplCache = create(null);
+        vm.cmpTemplate = html;
+    }
+    assert.isTrue(typeof context.tplCache === 'object', `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
+    assert.block(function devModeCheck() {
+        // before every render, in dev-mode, we will like to know all expandos and
+        // all private-fields-like properties, so we can give meaningful errors.
+        extractOwnFields(component);
 
-            // validating slot names
-            const { slots = [] } = html;
-            for (let slotName in cmpSlots) {
-                if (ArrayIndexOf.call(slots, slotName) === -1) {
-                    // TODO: this should never really happen because the compiler should always validate
-                    console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
-                }
+        // validating slot names
+        const { slots = [] } = html;
+        for (let slotName in cmpSlots) {
+            if (ArrayIndexOf.call(slots, slotName) === -1) {
+                // TODO: this should never really happen because the compiler should always validate
+                console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
             }
+        }
 
-            // validating identifiers used by template that should be provided by the component
-            const { ids = [] } = html;
-            ids.forEach((propName: string) => {
-                if (!(propName in component)) {
-                    // TODO: this should never really happen because the compiler should always validate
-                    console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
-                }
-            });
-
+        // validating identifiers used by template that should be provided by the component
+        const { ids = [] } = html;
+        ids.forEach((propName: string) => {
+            if (!(propName in component)) {
+                // TODO: this should never really happen because the compiler should always validate
+                console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
+            }
         });
-        const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
-        const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
-        const outerMemoized = currentMemoized;
-        currentMemoized = create(null);
-        let vnodes = html.call(undefined, api, cmp, slotset, tplCache);
-        assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
-        currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
-        slotsetRevoke();
-        componentRevoke();
-        return vnodes;
-    }
-    if (!isUndefined(html)) {
-        assert.fail(`The template rendered by ${vm} must return an imported template tag (e.g.: \`import html from "./mytemplate.html"\`) or undefined, instead, it has returned ${html}.`);
-    }
-    return [];
+
+    });
+    const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
+    const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
+    const outerMemoized = currentMemoized;
+    currentMemoized = create(null);
+    let vnodes = html.call(undefined, api, cmp, slotset, context.tplCache);
+    assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
+    currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
+    slotsetRevoke();
+    componentRevoke();
+    return vnodes;
 }
