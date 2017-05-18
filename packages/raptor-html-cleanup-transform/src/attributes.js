@@ -38,7 +38,7 @@ function isQuotedAttribute(src, location) {
     const rawAttribute = extractRaw(src, location);
     const [, value] = rawAttribute.split('=');
 
-    return value.startsWith('"') && value.endsWith('"');
+    return value && value.startsWith('"') && value.endsWith('"');
 }
 
 function normalizeAttrValue(attr, location, src) {
