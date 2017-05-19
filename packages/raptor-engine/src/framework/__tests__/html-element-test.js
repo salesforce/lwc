@@ -1,29 +1,24 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
+import { OwnerKey } from "../vm";
+import * as api from "../api";
+import { patch } from '../patch';
 import assert from 'power-assert';
 
 describe('html-element', () => {
 
     describe('#getBoundingClientRect()', () => {
-        it('should return empty during construction', () => {
-            let rect;
+        it('should throw during construction', () => {
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    rect = this.getBoundingClientRect();
+                    this.getBoundingClientRect();
                 }
             }
-            createElement('x-foo', { is: def });
-            assert.deepEqual(rect, {
-                bottom: 0,
-                height: 0,
-                left: 0,
-                right: 0,
-                top: 0,
-                width: 0,
+            assert.throws(() => {
+                createElement('x-foo', { is: def });
             });
         });
-
     });
 
     describe('#classList()', () => {
@@ -178,6 +173,82 @@ describe('html-element', () => {
             createElement('x-foo', { is: def });
             assert.equal(str, '<x-foo>');
         });
+    });
+
+    describe('#querySelector()', () => {
+
+        it('should allow searching for the passed element', () => {
+            const outerp = api.h('p', {}, []);
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [outerp]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                const node = vnode.vm.component.querySelector('p');
+                assert.strictEqual('P', node.tagName);
+                assert(vnode.vm.uid !== node[OwnerKey], 'uid was not propagated');
+            });
+        });
+
+        it('should ignore element from template', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('p', {}, [])]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                const node = vnode.vm.component.querySelector('p');
+                assert.strictEqual(undefined, node);
+            });
+        });
+
+    });
+
+    describe('#querySelectorAll()', () => {
+
+        it('should allow searching for passed elements', () => {
+            const outerp = api.h('p', {}, []);
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [outerp]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                const nodes = vnode.vm.component.querySelectorAll('p');
+                assert.strictEqual(1, nodes.length);
+                assert(vnode.vm.uid !== nodes[0][OwnerKey], 'uid was not propagated');
+            });
+        });
+
+        it('should ignore elements from template', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('p', {}, [])]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                const nodes = vnode.vm.component.querySelectorAll('p');
+                assert.strictEqual(0, nodes.length);
+            });
+        });
+
     });
 
 });

@@ -3,7 +3,7 @@ import * as is from './is';
 import htmlDomApi from './htmldomapi';
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
-var emptyNode = vnode('', {}, [], undefined, undefined);
+var emptyNode = { sel: "", data: {}, children: [] };
 function sameVnode(vnode1, vnode2) {
     return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }

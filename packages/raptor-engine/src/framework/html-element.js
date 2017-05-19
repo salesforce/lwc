@@ -1,22 +1,24 @@
 import assert from "./assert";
 import { ClassList } from "./class-list";
 import { Root } from "./root";
-import { vmBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
-import { isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language";
+import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
+import { ArrayFilter, isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language";
 import { getPropertyProxy } from "./properties";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
+import { wasNodePassedIntoVM } from "./vm";
 
 export const ViewModelReflection = Symbol('internal');
 
-function invokedFromConstructor(component: ComponentElement): boolean {
-    return vmBeingConstructed && vmBeingConstructed.component === component;
-}
-
 function getLinkedElement(cmp: ComponentElement): HTMLElement {
     return cmp[ViewModelReflection].vnode.elm;
+}
+
+function querySelectorAllFromComponent(cmp: ComponentElement, selectors: string): NodeList {
+    const elm = getLinkedElement(cmp);
+    return elm.querySelectorAll(selectors);
 }
 
 export function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptorMap {
@@ -24,7 +26,7 @@ export function createPublicPropertyDescriptorMap(propName: string): PropertyDes
     function getter(): any {
         const vm = this[ViewModelReflection];
         assert.vm(vm);
-        if (invokedFromConstructor(this)) {
+        if (isBeingConstructed(vm)) {
             assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
             return;
         }
@@ -39,7 +41,7 @@ export function createPublicPropertyDescriptorMap(propName: string): PropertyDes
     function setter(value: any) {
         const vm = this[ViewModelReflection];
         assert.vm(vm);
-        if (!invokedFromConstructor(this)) {
+        if (!isBeingConstructed(vm)) {
             assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
             return;
         }
@@ -78,7 +80,7 @@ ComponentElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
-        assert.isTrue(invokedFromConstructor(this), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event ${event} just yet.`);
+        assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event ${event} just yet.`);
         // custom elements will rely on the DOM dispatchEvent mechanism
         return elm.dispatchEvent(event);
     },
@@ -134,22 +136,37 @@ ComponentElement.prototype = {
     },
     getBoundingClientRect(): DOMRect {
         const elm = getLinkedElement(this);
-        assert.isTrue(invokedFromConstructor(this), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
+        assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         return elm.getBoundingClientRect();
     },
-    querySelector(selectors: string): Element {
-        const elm = getLinkedElement(this);
-        // TODO: locker service might need to do something here
-        // TODO: filter out elements that you own
-        assert.isTrue(invokedFromConstructor(this), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
-        return elm.querySelectorAll(selectors)[0];
+    querySelector(selectors: string): Node {
+        const vm = this[ViewModelReflection];
+        assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        const nodeList = querySelectorAllFromComponent(this, selectors);
+        for (let i = 0, len = nodeList.length; i < len; i += 1) {
+            if (wasNodePassedIntoVM(vm, nodeList[i])) {
+                // TODO: locker service might need to return a membrane proxy
+                return nodeList[i];
+            }
+        }
+        assert.block(() => {
+            if (this.root.querySelector(selectors)) {
+                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
+            }
+        });
     },
     querySelectorAll(selectors: string): NodeList {
-        const elm = getLinkedElement(this);
+        const vm = this[ViewModelReflection];
+        assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        const nodeList = querySelectorAllFromComponent(this, selectors);
         // TODO: locker service might need to do something here
-        // TODO: filter out elements that you own
-        assert.isTrue(invokedFromConstructor(this), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
-        return elm.querySelectorAll(selectors);
+        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
+        assert.block(() => {
+            if (filteredNodes.length === 0 && this.root.querySelectorAll(selectors).length) {
+                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
+            }
+        });
+        return filteredNodes;
     },
     get tagName(): string {
         const elm = getLinkedElement(this);

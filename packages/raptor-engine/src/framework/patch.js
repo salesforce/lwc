@@ -12,6 +12,7 @@ import attrs from "./modules/attrs";
 import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
+import uid from "./modules/uid";
 
 export const patch = init([
     componentInit,
@@ -26,4 +27,5 @@ export const patch = init([
     classes,
     styles,
     events,
+    uid,
 ]);

@@ -9,7 +9,8 @@ declare class Component {
     publicProps: any;
     publicMethods: Array<string>;
     templateUsedProps: Array<string>;
-    observedAttributes: Array<string>
+    observedAttributes: Array<string>;
+    labels: Array<string>;
 }
 
 declare interface HashTable<T> {
@@ -31,6 +32,7 @@ declare class ComponentElement extends Component {
 
 declare class VM {
     uid: number;
+    idx: number;
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpSlots?: HashTable<Array<VNode>>;
@@ -101,6 +103,7 @@ declare class VNode  {
     elm: Node | undefined;
     text: string | undefined;
     key: number | string;
+    uid: number;
 }
 
 declare interface RenderAPI {

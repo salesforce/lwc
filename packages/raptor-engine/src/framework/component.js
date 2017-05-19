@@ -16,6 +16,11 @@ import { invokeServiceHook, services } from "./services";
 
 export let vmBeingConstructed: VM | null = null;
 
+export function isBeingConstructed(vm: VM): boolean {
+    assert.vm(vm);
+    return vmBeingConstructed === vm;
+}
+
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
     const { cmpProps, def: { methods: publicMethodsConfig } } = vm;

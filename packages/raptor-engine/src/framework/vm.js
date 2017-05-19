@@ -6,6 +6,9 @@ import { assign, isArray, toString, ArrayPush } from "./language";
 import { addCallbackToNextTick } from "./utils";
 
 let idx: number = 0;
+let uid: number = 0;
+
+export const OwnerKey = Symbol('key');
 
 export function addInsertionIndex(vm: VM) {
     assert.vm(vm);
@@ -25,7 +28,9 @@ export function createVM(vnode: ComponentVNode) {
     const { Ctor } = vnode;
     const def = getComponentDef(Ctor);
     console.log(`[object:vm ${def.name}] is being initialized.`);
+    uid += 1;
     const vm: VM = {
+        uid,
         idx: 0,
         isScheduled: false,
         isDirty: true,
@@ -103,4 +108,21 @@ export function scheduleRehydration(vm: VM) {
         }
         ArrayPush.call(rehydrateQueue, vm);
     }
+}
+
+export function isNodeOwnedByVM(vm: VM, node: Node): boolean {
+    assert.vm(vm);
+    assert.invariant(node instanceof Node, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
+    assert.childNode(vm.vnode.elm, node, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${vm}`);
+    // @ts-ignore
+    return node[OwnerKey] === vm.uid;
+}
+
+export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
+    assert.vm(vm);
+    assert.invariant(node instanceof Node, `isNodePassedToVM() should be called with a node as the second argument instead of ${node}`);
+    assert.childNode(vm.vnode.elm, node, `isNodePassedToVM() should never be called with a node that is not a child node of ${vm}`);
+    const { vnode: { uid: ownerUid } } = vm;
+    // @ts-ignore
+    return node[OwnerKey] === ownerUid;
 }

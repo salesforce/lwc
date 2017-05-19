@@ -7,7 +7,7 @@ import { patch } from '../patch';
 describe('class-list', () => {
     describe('#constructor()', () => {
 
-        it('should throw for invalid component reference', () => {
+        it('should throw for invalid vm reference', () => {
             assert.throws(() => new ClassList(), 'prevent creation of such objects in user-land');
         });
 

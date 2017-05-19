@@ -53,7 +53,10 @@ function addNS(data: any, children: Array<VNode> | undefined, sel: string | unde
 export function v(sel: string | undefined, data: VNodeData, children: Array<VNode | string> | undefined, text?: string | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
     data = data || EmptyData;
     let { key } = data;
-    const vnode = { sel, data, children, text, elm, key, Ctor };
+    // we try to identify the owner, but for root elements and other special cases, we
+    // can just fallback to 0 which means top level creation.
+    const uid = vmBeingRendered ? vmBeingRendered.uid : 0;
+    const vnode = { sel, data, children, text, elm, key, Ctor, uid };
     assert.block(function devModeCheck() {
         // adding toString to all vnodes for debuggability
         vnode.toString = (): string => `[object:vnode ${sel}]`;

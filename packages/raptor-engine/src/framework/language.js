@@ -14,7 +14,13 @@ const {
     hasOwnProperty,
 } = Object;
 const isArray = Array.isArray;
-const { slice: ArraySlice, splice: ArraySplice, indexOf: ArrayIndexOf, push: ArrayPush } = Array.prototype;
+const {
+    filter: ArrayFilter,
+    slice: ArraySlice,
+    splice: ArraySplice,
+    indexOf: ArrayIndexOf,
+    push: ArrayPush
+} = Array.prototype;
 
 export {
     freeze,
@@ -32,6 +38,7 @@ export {
     hasOwnProperty,
     ArraySlice,
     ArraySplice,
+    ArrayFilter,
     isArray,
     ArrayIndexOf,
     ArrayPush,
