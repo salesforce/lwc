@@ -1,13 +1,4 @@
-const _m2 = function ($api, $cmp) {
-    return $cmp.handlePress;
-};
-
-const _m = function ($api, $cmp) {
-    return $cmp.handleClick;
-};
-
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},
@@ -15,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "div",
             {
                 on: {
-                    click: m._m || (m._m = _m($api, $cmp))
+                    click: $ctx._m || ($ctx._m = $api.b($cmp.handleClick))
                 }
             },
             ["x"]
@@ -23,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "div",
             {
                 on: {
-                    press: m._m2 || (m._m2 = _m2($api, $cmp))
+                    press: $ctx._m2 || ($ctx._m2 = $api.b($cmp.handlePress))
                 }
             },
             ["x"]

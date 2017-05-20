@@ -3,7 +3,6 @@ import _nsBuzz from "ns-buzz";
 import _nsBar from "ns-bar";
 import _nsFoo from "ns-foo";
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.c(
         "ns-foo",
         _nsFoo,

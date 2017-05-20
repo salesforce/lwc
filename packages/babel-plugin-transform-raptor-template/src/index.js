@@ -4,17 +4,18 @@ import * as CONST from './constants';
 import * as validator from './validators';
 import CustomScope from './custom-scope';
 import metadata from './metadata';
-import { moduleExports, memoizeFunction, memoizeLookup} from './templates';
+import { moduleExports } from './templates';
 import { isTopLevelProp, parseStyles, toCamelCase, cleanJSXElement } from './utils';
 import { isSvgNsAttribute, isSVG, getPropertyNameFromAttrName, isProp } from './html-attrs';
 
 const DIRECTIVES = CONST.DIRECTIVES;
 const CMP_INSTANCE = CONST.CMP_INSTANCE;
 const SLOT_SET = CONST.SLOT_SET;
+const CONTEXT = CONST.CONTEXT;
 const IF_MODIFIERS = CONST.IF_MODIFIERS;
 const EVAL_MODIFIERS = CONST.EVAL_MODIFIERS;
 const API_PARAM = CONST.API_PARAM;
-const { ITERATOR, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
+const { BOUND, ITERATOR, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
 
 export default function({ types: t }: BabelTypes): any {
     // -- Helpers ------------------------------------------------------
@@ -22,6 +23,12 @@ export default function({ types: t }: BabelTypes): any {
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
     const generateExpandoProperty = (prop, value) => t.expressionStatement(t.assignmentExpression('=', t.memberExpression(t.identifier(CONST.TMPL_FUNCTION_NAME), t.identifier(prop)), value));
+    const memoizeInline = ((id, expression) => {
+    return t.logicalExpression('||',
+        t.memberExpression(t.identifier(CONTEXT), id),
+        t.assignmentExpression('=', t.memberExpression(t.identifier(CONTEXT), id), expression)
+    );
+});
     const applyPrimitive = (primitive: string) => {
         const id = t.identifier(`${API_PARAM}.${primitive}`);
         id._primitive = primitive; // Expando used for grouping slots (optimization)
@@ -512,7 +519,8 @@ export default function({ types: t }: BabelTypes): any {
             if (directive === DIRECTIVES.on) {
                 // TODO: Figure out the final memoization pattern
                 // const bindExpression = t.callExpression(t.memberExpression(valueNode, t.identifier('bind')), [t.identifier(CMP_INSTANCE)]);
-                valueNode = memoizeSubtree(valueNode, path);
+                const boundApi = t.callExpression(applyPrimitive(BOUND), [valueNode]);
+                valueNode = memoizeSubtree(boundApi, path);
             }
 
         } else {
@@ -620,13 +628,9 @@ export default function({ types: t }: BabelTypes): any {
     }
 
     function memoizeSubtree(expression: any, path: Path) {
-        const root = path.find((path) => path.isProgram());
         const id = path.scope.generateUidIdentifier("m");
-        const m = memoizeLookup({ ID: id });
-        const hoistedMemoization = memoizeFunction({ ID: id, STATEMENT: expression });
-        hoistedMemoization._memoize = true;
-        root.unshiftContainer('body', hoistedMemoization);
-        return m.expression;
+        const m = memoizeInline(id, expression, t);
+        return m;
     }
 
     function normalizeDirectives(attrMeta: MetaConfig, directive: string, modifier: string) {

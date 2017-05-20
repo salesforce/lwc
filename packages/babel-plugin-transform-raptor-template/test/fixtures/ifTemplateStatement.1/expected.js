@@ -1,7 +1,6 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const _expr = $cmp.bar || undefined;
 
-    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "section",
         {},

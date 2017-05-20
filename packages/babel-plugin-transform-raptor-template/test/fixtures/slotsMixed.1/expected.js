@@ -3,7 +3,6 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     const _expr = $cmp.isLoading || undefined,
           _expr2 = $cmp.haveLoadedItems || undefined;
 
-    const m = $ctx.memoized || ($ctx.memoized = {});
     return [$api.h(
         "div",
         {},

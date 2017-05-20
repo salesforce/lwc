@@ -18,7 +18,14 @@ const ignore = [
     'mutliHtmlRootError',
     'rootTagTemplateError',
     'slotsErrorDirectives',
-    'customElementInvalidAttributeError'
+    'customElementInvalidAttributeError',
+    'attrCamelCaseError',
+    'attrHtmlInvalid',
+    'dynamicStyle',
+    'handlerCustomElement',
+    'handlerHTML',
+    'ifLiteralError',
+    'onEventInline'
 ];
 
 fs.readdirSync(baseDir).forEach((testName) => {

@@ -35,6 +35,7 @@ export const MODIFIERS = {
 };
 
 export const RENDER_PRIMITIVES = {
+    BOUND           : 'b',
     ITERATOR        : 'i',
     FLATTENING      : 'f',
     EMPTY           : 'e',
