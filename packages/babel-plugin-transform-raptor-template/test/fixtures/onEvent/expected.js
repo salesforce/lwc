@@ -9,7 +9,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     click: $ctx._m || ($ctx._m = $api.b($cmp.handleClick))
                 }
             },
-            ["x"]
+            [$api.t("x")]
         ), $api.h(
             "div",
             {
@@ -17,7 +17,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     press: $ctx._m2 || ($ctx._m2 = $api.b($cmp.handlePress))
                 }
             },
-            ["x"]
+            [$api.t("x")]
         )]
     )];
 }

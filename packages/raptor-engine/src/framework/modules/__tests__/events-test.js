@@ -1,5 +1,5 @@
 import assert from 'power-assert';
-import { h, c } from "../../api";
+import { h, c, t } from "../../api";
 import { patch } from "../../patch";
 import { Element } from "../../html-element";
 
@@ -18,7 +18,7 @@ describe('module/events', () => {
             var result = [];
             function clicked(ev) { result.push(ev); }
             var vnode = h('div', {on: {click: clicked}}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode0, vnode).elm;
             elm.click();
@@ -28,10 +28,10 @@ describe('module/events', () => {
         it('does not attach new listener', function() {
             var result = [];
             var vnode1 = h('div', {on: {click: function() { result.push(1); }}}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             var vnode2 = h('div', {on: {click: function() { result.push(2); }}}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
@@ -44,13 +44,13 @@ describe('module/events', () => {
             var result = [];
             function clicked(ev) { result.push(ev); }
             var vnode1 = h('div', {on: {click: clicked}}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
             assert.equal(1, result.length);
             var vnode2 = h('div', {on: {}}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode1, vnode2).elm;
             elm.click();
@@ -61,7 +61,7 @@ describe('module/events', () => {
             var result = [];
             function clicked() { result.push(this); result.push.apply(result, arguments); }
             var vnode1 = h('div', {on: {click: clicked }}, [
-                h('a', {}, ['Click my parent']),
+                h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
@@ -76,7 +76,7 @@ describe('module/events', () => {
                 click: function(ev) { result.push(ev); }
             };
             var vnode1 = h('div', {on: sharedHandlers}, [
-                h('a', {on: sharedHandlers}, ['Click my parent']),
+                h('a', {on: sharedHandlers}, [t('Click my parent')]),
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
@@ -90,11 +90,11 @@ describe('module/events', () => {
             function onClick1() { result.push(1); }
             function onClick2() { result.push(2); }
             var on = {click: onClick1 };
-            var vnode1 = h('div', {on}, ['Click']);
+            var vnode1 = h('div', {on}, [t('Click')]);
             patch(vnode0, vnode1);
-            var vnode2 = h('div', {on}, ['Click']);
+            var vnode2 = h('div', {on}, [t('Click')]);
             patch(vnode1, vnode2);
-            var vnode3 = h('div', {on: {click: onClick2}}, ['Click']);
+            var vnode3 = h('div', {on: {click: onClick2}}, [t('Click')]);
             elm = patch(vnode2, vnode3).elm;
             elm.click();
             assert.equal(1, result.length);

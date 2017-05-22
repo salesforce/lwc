@@ -11,7 +11,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     $default$: [$api.h(
                         "p",
                         {},
-                        ["S3"]
+                        [$api.t("S3")]
                     )]
                 }
             }

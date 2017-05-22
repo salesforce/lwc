@@ -7,15 +7,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         [$api.h(
             "p",
             {},
-            ["1"]
+            [$api.t("1")]
         ), _expr && $api.h(
             "p",
             {},
-            ["2"]
+            [$api.t("2")]
         ), $api.h(
             "p",
             {},
-            ["3"]
+            [$api.t("3")]
         )]
     )];
 }

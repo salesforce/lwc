@@ -15,25 +15,30 @@ const CONTEXT = CONST.CONTEXT;
 const IF_MODIFIERS = CONST.IF_MODIFIERS;
 const EVAL_MODIFIERS = CONST.EVAL_MODIFIERS;
 const API_PARAM = CONST.API_PARAM;
-const { BOUND, ITERATOR, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING } = CONST.RENDER_PRIMITIVES;
+const { BOUND, ITERATOR, VIRTUAL_ELEMENT, CREATE_ELEMENT, CUSTOM_ELEMENT, FLATTENING, TEXT, DYNAMIC } = CONST.RENDER_PRIMITIVES;
+
 
 export default function({ types: t }: BabelTypes): any {
     // -- Helpers ------------------------------------------------------
+    const applyComputedValue = (node: any) => t.callExpression(t.memberExpression(t.identifier(API_PARAM), t.identifier(DYNAMIC)), [node]);
     const applyThisToIdentifier = (path: any): any => path.replaceWith(t.memberExpression(t.identifier(CMP_INSTANCE), path.node));
     const isWithinJSXExpression = (path: any) => path.find((p: any): boolean => p.isJSXExpressionContainer());
     const getMemberFromNodeStringLiteral = (node: BabelNodeStringLiteral, i: number = 0): string => node.value.split('.')[i];
     const generateExpandoProperty = (prop, value) => t.expressionStatement(t.assignmentExpression('=', t.memberExpression(t.identifier(CONST.TMPL_FUNCTION_NAME), t.identifier(prop)), value));
     const memoizeInline = ((id, expression) => {
-    return t.logicalExpression('||',
-        t.memberExpression(t.identifier(CONTEXT), id),
-        t.assignmentExpression('=', t.memberExpression(t.identifier(CONTEXT), id), expression)
-    );
-});
+        return t.logicalExpression('||',
+            t.memberExpression(t.identifier(CONTEXT), id),
+            t.assignmentExpression('=', t.memberExpression(t.identifier(CONTEXT), id), expression)
+        );
+    });
+
     const applyPrimitive = (primitive: string) => {
         const id = t.identifier(`${API_PARAM}.${primitive}`);
         id._primitive = primitive; // Expando used for grouping slots (optimization)
         return id;
     };
+
+
 
     const BoundThisVisitor = {
         ThisExpression(path: Path) {
@@ -149,6 +154,7 @@ export default function({ types: t }: BabelTypes): any {
                 if (isWithinJSXExpression(path)) {
                     path.stop();
                     path.traverse(BoundThisVisitor, { customScope : state.customScope });
+                    path.replaceWith(applyComputedValue(path.node));
                 }
             },
             // Transform container expressions from {foo} => {this.foo}
@@ -157,12 +163,18 @@ export default function({ types: t }: BabelTypes): any {
                 if (isWithinJSXExpression(path) && !this.customScope.hasBinding(path.node.name)) {
                     metadata.addUsedId(path.node, state, t);
                     applyThisToIdentifier(path);
+                    path.replaceWith(applyComputedValue(path.node));
                 }
             },
             JSXText(path) {
                 const cleanedText = cleanJSXElement(path.node);
                 if (cleanedText) {
-                    path.replaceWith(t.stringLiteral(cleanedText));
+                    path.replaceWith(
+                        t.callExpression(
+                            t.memberExpression(t.identifier(API_PARAM), t.identifier(TEXT)),
+                            [t.stringLiteral(cleanedText)]
+                        )
+                    );
                 } else {
                     path.remove();
                 }

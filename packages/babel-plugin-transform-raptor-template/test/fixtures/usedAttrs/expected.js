@@ -5,7 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         [$api.h(
             "p",
             {},
-            [$cmp.obj.sub]
+            [$api.d($cmp.obj.sub)]
         )]
     )];
 }

@@ -5,11 +5,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [_expr && $api.h(
         "p",
         {},
-        ["1"]
+        [$api.t("1")]
     ), _expr2 && $api.h(
         "p",
         {},
-        ["2"]
+        [$api.t("2")]
     )];
 }
 tmpl.ids = ["isTrue", "isTrue2"];

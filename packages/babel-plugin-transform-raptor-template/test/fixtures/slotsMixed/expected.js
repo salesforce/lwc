@@ -5,23 +5,23 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         $api.f([$api.h(
             "p",
             {},
-            ["Before header"]
-        ), $slotset.header || ["Default header"], $api.h(
+            [$api.t("Before header")]
+        ), $slotset.header || [$api.t("Default header")], $api.h(
             "p",
             {},
-            ["In"]
+            [$api.t("In")]
         ), $api.h(
             "p",
             {},
-            ["between"]
+            [$api.t("between")]
         ), $slotset.$default$ || [$api.h(
             "p",
             {},
-            ["Default body"]
+            [$api.t("Default body")]
         )], $slotset.footer || [$api.h(
             "p",
             {},
-            ["Default footer"]
+            [$api.t("Default footer")]
         )]])
     )];
 }

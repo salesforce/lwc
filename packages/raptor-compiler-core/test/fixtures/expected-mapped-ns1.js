@@ -1,5 +1,5 @@
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h("p", {}, ["CMP1"])];
+    return [$api.h("p", {}, [$api.t("CMP1")])];
 }
 
 class Cmp1 {

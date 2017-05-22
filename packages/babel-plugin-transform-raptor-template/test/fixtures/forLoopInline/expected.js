@@ -13,7 +13,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 [$api.h(
                     "p",
                     {},
-                    ["items"]
+                    [$api.t("items")]
                 )]
             );
         })

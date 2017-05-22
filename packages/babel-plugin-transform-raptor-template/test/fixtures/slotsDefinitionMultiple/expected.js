@@ -5,11 +5,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         $api.f([$api.h(
             "p",
             {},
-            ["Sibling"]
+            [$api.t("Sibling")]
         ), $slotset.$default$ || [$api.h(
             "p",
             {},
-            ["Default slot content"]
+            [$api.t("Default slot content")]
         )]])
     )];
 }

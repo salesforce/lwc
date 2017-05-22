@@ -13,11 +13,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     $default$: [_expr && $api.h(
                         "p",
                         {},
-                        ["S1"]
+                        [$api.t("S1")]
                     ), $api.h(
                         "p",
                         {},
-                        ["S2"]
+                        [$api.t("S2")]
                     )]
                 }
             }

@@ -8,7 +8,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                     key: item.key
                 },
-                [item.value]
+                [$api.d(item.value)]
             );
         })
     )];

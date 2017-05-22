@@ -10,7 +10,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                     key: item.key,
                     slotset: {
-                        $default$: [item.value]
+                        $default$: [$api.d(item.value)]
                     }
                 }
             );

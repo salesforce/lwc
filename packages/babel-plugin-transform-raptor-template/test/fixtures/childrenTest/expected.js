@@ -8,12 +8,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 s1: true
             }
         },
-        $api.f(["Other Child", $api.i($cmp.items, function (item) {
-            return "X";
+        $api.f([$api.t("Other Child"), $api.i($cmp.items, function (item) {
+            return $api.t("X");
         }), $api.h(
             "p",
             {},
-            ["Last child"]
+            [$api.t("Last child")]
         )])
     ), $api.h(
         "section",
@@ -22,17 +22,17 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 s2: true
             }
         },
-        $api.f(["Other Child", _expr && $api.i(
+        $api.f([$api.t("Other Child"), _expr && $api.i(
             $cmp.items,
             function (item) {
                 return [$api.h(
                     "p",
                     {},
-                    ["X1"]
+                    [$api.t("X1")]
                 ), $api.h(
                     "p",
                     {},
-                    ["X2"]
+                    [$api.t("X2")]
                 )];
             }
         )])
@@ -46,7 +46,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         $api.f([$api.h(
             "p",
             {},
-            ["Last child"]
+            [$api.t("Last child")]
         ), $api.i($cmp.items, function (item) {
             return $api.h(
                 "div",
@@ -64,11 +64,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         [$api.h(
             "p",
             {},
-            ["Other child1"]
+            [$api.t("Other child1")]
         ), $api.h(
             "p",
             {},
-            ["Other child2"]
+            [$api.t("Other child2")]
         )]
     )];
 }

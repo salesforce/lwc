@@ -5,11 +5,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         [$cmp.isTrue ? $api.h(
             "p",
             {},
-            ["1"]
-        ) : undefined, $cmp.foo, $cmp.isTrue ? $api.h(
+            [$api.t("1")]
+        ) : undefined, $api.d($cmp.foo), $cmp.isTrue ? $api.h(
             "p",
             {},
-            ["3"]
+            [$api.t("3")]
         ) : undefined]
     )];
 }

@@ -4,7 +4,7 @@ function tmpl$1($api, $cmp, $slotset, $ctx) {
     return [$api.h(
         "div",
         {},
-        [$cmp.x]
+        [$api.d($cmp.x)]
     )];
 }
 tmpl$1.ids = ["x"];

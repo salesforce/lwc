@@ -42,7 +42,8 @@ export const RENDER_PRIMITIVES = {
     CREATE_ELEMENT  : 'h',
     VIRTUAL_ELEMENT : 'v',
     CUSTOM_ELEMENT  : 'c',
-    TEXT            : 's',
+    DYNAMIC         : 'd',
+    TEXT            : 't',
 };
 
 export const RENDER_PRIMITIVE_KEYS = Object.keys(RENDER_PRIMITIVES).map(k => RENDER_PRIMITIVES[k]);

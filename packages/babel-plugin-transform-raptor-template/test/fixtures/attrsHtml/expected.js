@@ -10,7 +10,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     "aria-hidden": "x"
                 }
             },
-            ["x"]
+            [$api.t("x")]
         )]
     )];
 }

@@ -6,16 +6,16 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             return [$api.h(
                 "p",
                 {},
-                ["1", item]
+                [$api.t("1"), item]
             ), $api.h(
                 "p",
                 {},
-                ["2", item]
+                [$api.t("2"), item]
             )];
         }), $api.h(
             "p",
             {},
-            ["3", $cmp.item]
+            [$api.t("3"), $api.d($cmp.item)]
         )])
     )];
 }

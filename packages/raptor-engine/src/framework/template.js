@@ -82,7 +82,7 @@ const cmpProxyHandler = {
     },
 };
 
-export function evaluateTemplate(vm: VM, html: any): Array<VNode> {
+export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
     assert.vm(vm);
     assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
     // TODO: add identity to the html functions

@@ -10,29 +10,6 @@ const CHAR_G = 103;
 const EmptyData = create(null);
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 
-// Node Types
-// https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
-const ELEMENT_NODE = 1; // An Element node such as <p> or <div>.
-const TEXT_NODE = 3;    // The actual Text of Element or Attr.
-
-function nodeToVNode(elm: Node): VNode | null {
-    // TODO: generalize this to support all kind of Nodes
-    // TODO: instead of creating the vnode() directly, use toVNode() or something else from snabbdom
-    // TODO: the element could be derivated from another raptor component, in which case we should
-    // use the corresponding vnode instead
-    assert.isTrue(elm instanceof Node, "Only Node can be wrapped by h()");
-    const { nodeType } = elm;
-    if (nodeType === TEXT_NODE) {
-        return v(undefined, undefined, undefined, elm.textContent, elm);
-    }
-    if (nodeType === ELEMENT_NODE) {
-        // TODO: support "is"" attribute
-        return v(elm.tagName.toLowerCase(), undefined, undefined, undefined, elm);
-    }
-    assert.fail(`Invalid NodeType: ` + nodeType);
-    return null;
-}
-
 function addNS(data: any, children: Array<VNode> | undefined, sel: string | undefined) {
     data.ns = NamespaceAttributeForSVG;
     if (isUndefined(children) || sel === 'foreignObject') {
@@ -50,7 +27,7 @@ function addNS(data: any, children: Array<VNode> | undefined, sel: string | unde
 }
 
 // [v]node node
-export function v(sel: string | undefined, data: VNodeData, children: Array<VNode | string> | undefined, text?: string | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
+export function v(sel: string | undefined, data: VNodeData | undefined, children: Array<VNode | string> | undefined, text?: string | number | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
     data = data || EmptyData;
     let { key } = data;
     // we try to identify the owner, but for root elements and other special cases, we
@@ -74,9 +51,9 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
     const { classMap, className } = data;
     assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));
-    if (children.length) {
-        n(children);
-    }
+    assert.block(function devModeCheck() {
+        children.forEach((vnode) => assert.vnode(vnode, `Upgrade the compiler, it should produce vnode's children only.`));
+    });
     if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
         addNS(data, children, sel);
     }
@@ -101,7 +78,7 @@ export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
 // [i]terable node
 export function i(items: Array<any>, factory: Function): Array<VNode> {
     const len = isArray(items) ? items.length : 0;
-    const list = [];
+    const list: Array<VNode> = [];
     for (let i = 0; i < len; i += 1) {
         const vnode = factory(items[i], i);
         if (isArray(vnode)) {
@@ -128,7 +105,7 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
 export function f(items: Array<any>): Array<any> {
     assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     const len = items.length;
-    const flattened = [];
+    const flattened: Array<VNode|null|number|string> = [];
     for (let i = 0; i < len; i += 1) {
         const item = items[i];
         if (isArray(item)) {
@@ -140,23 +117,17 @@ export function f(items: Array<any>): Array<any> {
     return flattened;
 }
 
-// [n]ormalize children nodes
-export function n(children: Array<VNode|null|number|string|Node>): Array<VNode> {
-    const len = children.length;
-    for (let i = 0; i < len; ++i) {
-        const child = children[i];
-        const t = typeof child;
-        if (t === 'string' || t === 'number') {
-            children[i] = v(undefined, undefined, undefined, child);
-        } else if (child && !("Ctor" in child)) {
-            if ("nodeType" in child) {
-                children[i] = nodeToVNode(child);
-            } else {
-                children[i] = v(undefined, undefined, undefined, child);
-            }
-        }
+// [t]ext node
+export function t(value: string | number): VNode {
+    return v(undefined, undefined, undefined, value);
+}
+
+// [d]ynamic value to produce a text vnode
+export function d(value: any): VNode | null {
+    if (value === undefined || value === null) {
+        return null;
     }
-    return children;
+    return v(undefined, undefined, undefined, value);
 }
 
 // [b]ind function

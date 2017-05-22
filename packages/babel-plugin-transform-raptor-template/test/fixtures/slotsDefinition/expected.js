@@ -5,7 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         $slotset.$default$ || [$api.h(
             "p",
             {},
-            ["Default slot content"]
+            [$api.t("Default slot content")]
         )]
     )];
 }

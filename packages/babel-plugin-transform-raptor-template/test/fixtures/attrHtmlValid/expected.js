@@ -10,7 +10,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     maxlength: "5"
                 }
             },
-            ["x"]
+            [$api.t("x")]
         )]
     )];
 }

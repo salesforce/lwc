@@ -18,7 +18,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     ), _expr2 && $api.i(
                         $cmp.menuItems,
                         function (item) {
-                            return "x";
+                            return $api.t("x");
                         }
                     )])
                 }

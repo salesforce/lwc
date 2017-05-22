@@ -161,6 +161,22 @@ describe('template', () => {
             assert.strictEqual('two', value);
         });
 
+        it('should support array of vnode', () => {
+            let vnode;
+            function html() {
+                return [api.t('some text')];
+            }
+            class MyComponent3 extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = document.createElement('x-foo');
+            vnode = api.c('x-foo', MyComponent3, {});
+            patch(elm, vnode);
+            assert.strictEqual('some text', elm.textContent);
+        });
+
     });
 
     describe('evaluateTemplate()', () => {

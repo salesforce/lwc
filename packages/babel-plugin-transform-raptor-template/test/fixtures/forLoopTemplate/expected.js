@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             return $api.h(
                 "p",
                 {},
-                ["1", item]
+                [$api.t("1"), item]
             );
         })
     )];

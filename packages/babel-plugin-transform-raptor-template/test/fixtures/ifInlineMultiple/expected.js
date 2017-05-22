@@ -6,15 +6,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [_expr && $api.h(
         "p",
         {},
-        ["1"]
+        [$api.t("1")]
     ), _expr2 && $api.h(
         "p",
         {},
-        ["2"]
+        [$api.t("2")]
     ), _expr3 && $api.h(
         "p",
         {},
-        ["3"]
+        [$api.t("3")]
     )];
 }
 tmpl.ids = ["isTrue"];
