@@ -34,6 +34,11 @@ describe('api', () => {
             assert.deepEqual(vnode.data.class, { foo: true });
         });
 
+        it('should allow null entries in children', () => {
+            const vnode = target.h('p', {}, [null]);
+            assert.deepEqual([null], vnode.children);
+        });
+
         it('should split classNames on white spaces', () => {
             const vnode = target.h('p', { className: 'foo bar   baz' }, []);
             assert.deepEqual(vnode.data.class, { foo: true, bar: true, baz: true });
@@ -46,6 +51,15 @@ describe('api', () => {
                     classMap: { foo: true }
                 }, []);
             }, /className/);
+        });
+
+        it('should throw for anything other than vnode and null', () => {
+            assert.throws(() => {
+                target.h('p', {}, ['text']);
+            });
+            assert.throws(() => {
+                target.h('p', {}, [undefined]);
+            });
         });
     });
 

@@ -52,7 +52,12 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
     assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));
     assert.block(function devModeCheck() {
-        children.forEach((vnode) => assert.vnode(vnode, `Upgrade the compiler, it should produce vnode's children only.`));
+        children.forEach((vnode) => {
+            if (vnode === null) {
+                return;
+            }
+            assert.vnode(vnode);
+        });
     });
     if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
         addNS(data, children, sel);
