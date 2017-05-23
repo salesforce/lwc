@@ -10,11 +10,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             _nsCmp,
             {
                 slotset: {
-                    $default$: [_expr && $api.h(
+                    $default$: [_expr ? $api.h(
                         "p",
                         {},
                         [$api.t("S1")]
-                    ), $api.h(
+                    ) : null, $api.h(
                         "p",
                         {},
                         [$api.t("S2")]

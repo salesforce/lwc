@@ -4,7 +4,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [$api.h(
         "section",
         {},
-        [_expr && $api.d($cmp.foo), _expr && $api.d($cmp.bar)]
+        [_expr ? $api.d($cmp.foo) : null, _expr ? $api.d($cmp.bar) : null]
     )];
 }
 tmpl.ids = ["isTrue", "foo", "bar"];

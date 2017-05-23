@@ -11,11 +11,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             _xB,
             {
                 slotset: {
-                    $default$: $api.f([_expr && $api.h(
+                    $default$: $api.f([_expr ? $api.h(
                         "div",
                         {},
                         []
-                    ), _expr2 && $api.i(
+                    ) : null, _expr2 && $api.i(
                         $cmp.menuItems,
                         function (item) {
                             return $api.t("x");

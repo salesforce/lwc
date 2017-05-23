@@ -182,7 +182,7 @@ export default function({ types: t }: BabelTypes): any {
         }
     };
 
-    function prettyPrintExpr (callExpr) {
+    function prettyPrintExpr(callExpr) {
         if (!t.isArrayExpression(callExpr)) {
             callExpr._prettyCall = true;
         }
@@ -300,7 +300,7 @@ export default function({ types: t }: BabelTypes): any {
                         state.customScope.pushVarDeclaration({ id, init, kind: 'const' });
 
                         if (t.isArrayExpression(child)) {
-                            child.elements.forEach(c => elems.push(t.logicalExpression('&&', id, c)));
+                            child.elements.forEach(c => elems.push(t.conditionalExpression(id, c, t.nullLiteral())));
                         } else {
                             elems.push(t.logicalExpression('&&', id, child));
                             innerIteration = child._iteration;

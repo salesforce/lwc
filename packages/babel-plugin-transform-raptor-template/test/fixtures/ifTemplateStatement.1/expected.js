@@ -8,11 +8,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             {},
             [$api.t("1")]
-        ), _expr && $api.h(
+        ), _expr ? $api.h(
             "p",
             {},
             [$api.t("2")]
-        ), $api.h(
+        ) : null, $api.h(
             "p",
             {},
             [$api.t("3")]
