@@ -155,6 +155,37 @@ describe('class-list', () => {
             assert.strictEqual(null, b);
         });
 
+        it('should update on the next tick when dirty', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state.x = 1;
+                    this.classList.add('foo');
+                }
+                addAnotherClass() {
+                    this.classList.add('bar');
+                }
+                addOtherClass() {
+                    this.classList.add('baz');
+                }
+                render() {
+                    this.state.x;
+                }
+            }
+            MyComponent.publicProps = { x: true };
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { props: { x: 1 } });
+            patch(elm, vnode);
+            assert.strictEqual('foo', elm.className);
+            vnode.vm.component.addAnotherClass(); // add when not dirty
+            vnode.vm.component.state.x = 2; // dirty trigger
+            vnode.vm.component.addOtherClass(); // adding after dirty
+            assert.strictEqual(true, vnode.vm.isDirty, 'should be dirty');
+            return Promise.resolve().then(() => {
+                assert.strictEqual('foo bar baz', elm.className);
+            });
+        });
+
     });
 
 });

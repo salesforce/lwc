@@ -38,7 +38,7 @@ ClassList.prototype = {
                 // this is not only an optimization, it is also needed to avoid adding the same
                 // class twice when the initial diffing algo kicks in without an old vm to track
                 // what was already added to the DOM.
-                if (!vm.isDirty) {
+                if (vm.idx) {
                     // we intentionally make a sync mutation here and also keep track of the mutation
                     // for a possible rehydration later on without having to rehydrate just now.
                     elm.classList.add(className);
@@ -58,7 +58,7 @@ ClassList.prototype = {
                 // this is not only an optimization, it is also needed to avoid removing the same
                 // class twice when the initial diffing algo kicks in without an old vm to track
                 // what was already added to the DOM.
-                if (!vm.isDirty) {
+                if (vm.idx) {
                     // we intentionally make a sync mutation here when needed and also keep track of the mutation
                     // for a possible rehydration later on without having to rehydrate just now.
                     const ownerClass = this[ViewModelReflection].vnode.data.class;

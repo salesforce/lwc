@@ -88,6 +88,7 @@ interface VNodeData {
     attrs?: any;
     className?: string;
     classMap?: HashTable<string>;
+    class?: HashTable<string>;
     style?: any;
     on?: HashTable<EventListener>;
     hook?: Hooks;

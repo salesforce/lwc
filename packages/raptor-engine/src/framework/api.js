@@ -33,7 +33,7 @@ export function v(sel: string | undefined, data: VNodeData | undefined, children
     // we try to identify the owner, but for root elements and other special cases, we
     // can just fallback to 0 which means top level creation.
     const uid = vmBeingRendered ? vmBeingRendered.uid : 0;
-    const vnode = { sel, data, children, text, elm, key, Ctor, uid };
+    const vnode: VNode = { sel, data, children, text, elm, key, Ctor, uid };
     assert.block(function devModeCheck() {
         // adding toString to all vnodes for debuggability
         vnode.toString = (): string => `[object:vnode ${sel}]`;
@@ -66,7 +66,7 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
 }
 
 // [c]ustom element node
-export function c(sel: string, Ctor: Class<Component>, data: Object): Object {
+export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
     assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
     assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
