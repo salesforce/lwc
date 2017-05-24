@@ -234,7 +234,7 @@ export default function({ types: t }: BabelTypes): any {
         if (nextNode && nextNode._meta && nextNode._meta.applyElseTransform /*TBI*/) {
             nextNode._processed = true;
         } else {
-            nextNode = t.identifier('undefined');
+            nextNode = t.nullLiteral();
         }
 
         return t.conditionalExpression(exprNode, node, nextNode);
