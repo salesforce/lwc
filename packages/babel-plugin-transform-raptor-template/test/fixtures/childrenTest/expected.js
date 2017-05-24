@@ -22,7 +22,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 s2: true
             }
         },
-        $api.f([$api.t("Other Child"), _expr && $api.i(
+        $api.f([$api.t("Other Child"), _expr ? $api.i(
             $cmp.items,
             function (item) {
                 return [$api.h(
@@ -35,7 +35,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     [$api.t("X2")]
                 )];
             }
-        )])
+        ) : null])
     ), $api.h(
         "section",
         {

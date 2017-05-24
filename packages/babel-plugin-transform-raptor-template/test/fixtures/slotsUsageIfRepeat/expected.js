@@ -10,7 +10,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 s2: true
             },
             slotset: {
-                $default$: _expr && $api.i(
+                $default$: [_expr ? $api.i(
                     $cmp.items,
                     function (item) {
                         return $api.h(
@@ -19,7 +19,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             [$api.t("X")]
                         );
                     }
-                )
+                ) : null]
             }
         }
     )];

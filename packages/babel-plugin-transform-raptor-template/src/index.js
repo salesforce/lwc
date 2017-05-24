@@ -302,7 +302,7 @@ export default function({ types: t }: BabelTypes): any {
                         if (t.isArrayExpression(child)) {
                             child.elements.forEach(c => elems.push(t.conditionalExpression(id, c, t.nullLiteral())));
                         } else {
-                            elems.push(t.logicalExpression('&&', id, child));
+                            elems.push(t.conditionalExpression(id, child, t.nullLiteral()));
                             innerIteration = child._iteration;
                         }
 

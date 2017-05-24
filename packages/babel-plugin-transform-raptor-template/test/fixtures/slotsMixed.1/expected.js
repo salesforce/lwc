@@ -15,12 +15,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         "div",
                         {},
                         []
-                    ) : null, _expr2 && $api.i(
+                    ) : null, _expr2 ? $api.i(
                         $cmp.menuItems,
                         function (item) {
                             return $api.t("x");
                         }
-                    )])
+                    ) : null])
                 }
             }
         )]
