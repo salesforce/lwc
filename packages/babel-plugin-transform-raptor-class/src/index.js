@@ -97,7 +97,7 @@ module.exports = function (babel) {
                     // Throw if we find `this`. (needs refinement)
                     prop.traverse({
                         ThisExpression() {
-                            throw new Error('Reference to the instance is now allowed in class properties');
+                            throw new Error('Reference to the instance is not allowed in class properties');
                         }
                     });
 
