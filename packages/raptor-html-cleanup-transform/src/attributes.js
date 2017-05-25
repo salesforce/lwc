@@ -43,9 +43,9 @@ function isQuotedAttribute(src, location) {
 
 function normalizeAttrValue(attr, location, src) {
     const { prefix, name, value } = attr;
-
     const locKey = prefix ? `${prefix}:${name}` : name;
-    const attrLocation = location.attrs[locKey];
+    /* We need `toLowerCase()` for special cases like svg viewBox */
+    const attrLocation = location.attrs[locKey] || location.attrs[locKey.toLowerCase()];
 
     const rawAttribute = extractRaw(src, attrLocation);
     const { line, col } = attrLocation;

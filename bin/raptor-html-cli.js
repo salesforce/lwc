@@ -22,13 +22,8 @@ console.log('Reading:', absPath, '\n\n');
         console.log(src);
         console.log('>> End Source ----------------------------------------------');
 
-        parser.transform(src)
-        .then(result => {
-            console.log('\n>> Code --------------------------------------------------');
-            console.log('\n', result);
-            console.log('>> End Code ------------------------------------------------');
-        })
-        .catch(error => {
-            console.log(error);
-        });
+        const result = parser.transform(src)
+        console.log('\n>> Code --------------------------------------------------');
+        console.log('\n', result);
+        console.log('>> End Code ------------------------------------------------');
     }
