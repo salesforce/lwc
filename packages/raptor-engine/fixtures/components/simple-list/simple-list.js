@@ -17,16 +17,19 @@ function produceNewData(oldData, min, max) {
 import { Element } from "engine";
 
 export default class SimpleList extends Element {
-    min = DefaultMinValue;
-    max = DefaultMaxValue;
-    label = 'default label';
-    header = 'default header';
+    @api min = DefaultMinValue;
+    @api max = DefaultMaxValue;
+    @api label = 'default label';
+    @api header = 'default header';
+
+    state = {
+        itemClassName: 'item',
+        data: [],
+    };
 
     constructor() {
         super();
         this.counter = 0;
-        this.state.itemClassName = 'item';
-        this.state.data = [];
     }
 
     static get observedAttributes() {
