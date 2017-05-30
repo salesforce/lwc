@@ -29,16 +29,17 @@ function tagName(elm) {
     return elm.tagName;
 }
 function setTextContent(node, text) {
-    node.textContent = text;
+    node.nodeValue = text;
 }
 function getTextContent(node) {
-    return node.textContent;
+    return node.nodeValue;
 }
 function isElement(node) {
     return node.nodeType === 1;
 }
 function isText(node) {
-    return node.nodeType === 3;
+    // Performance optimization over `return node.nodeType === 3;`
+    return node.splitText !== undefined;
 }
 function isComment(node) {
     return node.nodeType === 8;

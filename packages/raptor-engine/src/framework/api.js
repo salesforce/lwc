@@ -30,7 +30,7 @@ function addNS(data: any, children: Array<VNode> | undefined, sel: string | unde
 export function v(sel: string | undefined, data: VNodeData | undefined, children: Array<VNode | string> | undefined, text?: string | number | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
     data = data || EmptyData;
     let { key } = data;
-    // we try to identify the owner, but for root elements and other special cases, we
+    // Try to identify the owner, but for root elements and other special cases, we
     // can just fallback to 0 which means top level creation.
     const uid = vmBeingRendered ? vmBeingRendered.uid : 0;
     const vnode: VNode = { sel, data, children, text, elm, key, Ctor, uid };
