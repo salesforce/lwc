@@ -32,7 +32,7 @@ const ATTRIBUTE_NAME_START_CHAR = ':A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8
 const ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
 const isDataOrAria = RegExp.prototype.test.bind( new RegExp('^(data|aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$'));
 
-export const isCommonAttr = makeMap(
+export const isGlobalAttribute = makeMap(
     'role,accesskey,class,contenteditable,contextmenu,dir,draggable,dropzone,hidden,' +
     'id,itemprop,lang,slot,spellcheck,style,tabindex,title'
 );
@@ -49,7 +49,7 @@ export function isCustomElement(tagName) {
     return tagName.indexOf('-') > 0;
 }
 
-function isCustomAttribute(attrName) {
+function isAriaOrDataOrFrmkAttribute(attrName) {
     return attrName === 'role' || attrName === 'is' || attrName === 'key' || isDataOrAria(attrName);
 }
 
@@ -58,7 +58,7 @@ function transformAttr(attr) {
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string, /*attrValue: string*/) {
-    if (isCustomAttribute(attrName)) {
+    if (isAriaOrDataOrFrmkAttribute(attrName)) {
         return true;
     }
 
@@ -66,12 +66,30 @@ export function isValidHTMLAttribute(tagName: string, attrName: string, /*attrVa
     return !!validElements && (validElements.length ? validElements.indexOf(tagName) !== -1 : true) /* applies to all */;
 }
 
-export function isProp(tagName: string, attrName: string, hasIsAttr: boolean) {
-    const validAttr = hasIsAttr && isValidHTMLAttribute(tagName, attrName);
-    return (isCustomElement(tagName) || hasIsAttr) && !isCustomAttribute(attrName) && !isCommonAttr(attrName) && !validAttr;
+// TODO: We will be adding more whitelisting here as we find bugs...
+function isInputSpecialCase(tagName: string, attrName: string) {
+    return tagName === 'input' && attrName !== "type";
+}
 
+/*
+* Attribute vs. Prop
+* We consider is an attribute if any of the conditions apply:
+* 1) Is a special attribute (role, aria, key, is, data-)
+* 2) Is a global attr (commong to all tags)
+* 3) Is an html with no `is` and its not an input tag (input is special)
+* 4) If has an is attr and is a valid HTMl for the current tagName
+*/
+export function isAttribute(tagName: string, attrName: string, hasIsAttr: boolean): boolean {
+    return isGlobalAttribute(attrName) ||
+           isAriaOrDataOrFrmkAttribute(attrName) ||
+           (!isCustomElement(tagName) && !hasIsAttr && !isInputSpecialCase(tagName, attrName)) ||
+           (hasIsAttr && isValidHTMLAttribute(tagName, attrName));
+}
+
+export function isProp(tagName: string, attrName: string, hasIsAttr: boolean) {
+    return !isAttribute(tagName, attrName, hasIsAttr);
 }
 
 export function getPropertyNameFromAttrName(attrName: string, tagName: string) {
-    return  transformAttr((isSVG(tagName) || isCustomAttribute(attrName)) ? attrName : toCamelCase(attrName));
+    return  transformAttr((isSVG(tagName) || isAriaOrDataOrFrmkAttribute(attrName)) ? attrName : toCamelCase(attrName));
 }

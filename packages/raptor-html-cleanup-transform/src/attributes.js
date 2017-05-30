@@ -41,6 +41,10 @@ function isQuotedAttribute(src, location) {
     return value && value.startsWith('"') && value.endsWith('"');
 }
 
+function isEmptyValue(rawAttribute) {
+    return rawAttribute.indexOf('=') === -1;
+}
+
 function normalizeAttrValue(attr, location, src) {
     const { prefix, name, value } = attr;
     const locKey = prefix ? `${prefix}:${name}` : name;
@@ -50,9 +54,15 @@ function normalizeAttrValue(attr, location, src) {
     const rawAttribute = extractRaw(src, attrLocation);
     const { line, col } = attrLocation;
 
+    if (isEmptyValue(rawAttribute)) {
+        return null;
+    }
+
     const isQuoted = isQuotedAttribute(src, attrLocation);
     const isValidExpression = value.match(VALID_EXPRESSION_REGEX);
     const isPotentialExpression = value.match(POTENTIAL_EXPRESSION_REGEX);
+
+
 
     if (isValidExpression) {
         if (isQuoted) {
@@ -119,10 +129,11 @@ function normalizeAttrValue(attr, location, src) {
 }
 
 function serializeAttributes(node, src) {
-    const attributeList = node.attrs.map(attr => ([
-        normalizeAttrName(attr),
-        normalizeAttrValue(attr, node.__location, src),
-    ]).join('='));
+    const attributeList = node.attrs.map(attr => {
+        const key = normalizeAttrName(attr);
+        const value = normalizeAttrValue(attr, node.__location, src);
+        return value !== null ? `${key}=${value}` : key;
+    });
 
     return attributeList.join(' ');
 }

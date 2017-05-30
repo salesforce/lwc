@@ -1,0 +1,9 @@
+<template>
+    <h2>{state.value}</h2>
+    <input type="range" oninput={onRangeChange} min="0" max="100" value={state.value}>
+    <input type="checkbox" checked={state.checked}>
+    <input type="checkbox" checked>
+    <div>
+        <button onclick={handleForceValueChange}>Force Range Value to 100</button>
+    </div>
+</template>
