@@ -1,0 +1,112 @@
+import _nsFoo from "ns-foo";
+import _nsBar from "ns-bar";
+import _nsBuzz from "ns-buzz";
+import _nsTable from "ns-table";
+export default function tmpl($api, $cmp, $slotset, $ctx) {
+    return [$api.c(
+        "ns-foo",
+        _nsFoo,
+        {
+            props: {
+                d: $cmp.p.foo
+            }
+        }
+    ), $api.h(
+        "a",
+        {
+            classMap: {
+                test: true
+            },
+            attrs: {
+                "data-foo": "datafoo",
+                "aria-hidden": "h",
+                role: "presentation",
+                href: "/foo",
+                title: "test",
+                tabindex: "test"
+            }
+        },
+        []
+    ), $api.c(
+        "ns-bar",
+        _nsBar,
+        {
+            classMap: {
+                r: true
+            },
+            attrs: {
+                "data-xx": "foo",
+                "aria-hidden": "hidden",
+                role: "xx",
+                tabindex: "bar"
+            },
+            props: {
+                fooBar: "x",
+                foo: "bar",
+                bgcolor: "blue"
+            }
+        }
+    ), $api.h(
+        "svg",
+        {
+            classMap: {
+                cubano: true
+            },
+            attrs: {
+                focusable: "true"
+            }
+        },
+        [$api.h(
+            "use",
+            {
+                attrs: {
+                    "xlink:href": "xx"
+                }
+            },
+            []
+        )]
+    ), $api.c(
+        "div",
+        _nsBuzz,
+        {
+            attrs: {
+                is: "ns-buzz",
+                "aria-hidden": "hidden"
+            },
+            props: {
+                bgcolor: "x"
+            }
+        }
+    ), $api.h(
+        "table",
+        {
+            attrs: {
+                bgcolor: "x"
+            }
+        },
+        []
+    ), $api.c(
+        "table",
+        _nsTable,
+        {
+            attrs: {
+                bgcolor: "x",
+                is: "ns-table",
+                tabindex: "2"
+            },
+            props: {
+                bar: "test",
+                min: "3"
+            }
+        }
+    ), $api.h(
+        "div",
+        {
+            className: $cmp.foo,
+            attrs: {
+                "aria-hidden": "hidden"
+            }
+        },
+        []
+    )];
+}

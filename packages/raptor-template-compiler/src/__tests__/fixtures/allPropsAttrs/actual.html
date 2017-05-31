@@ -1,0 +1,30 @@
+<template>
+    <ns-foo d={p.foo}></ns-foo>
+    <a
+        class="test"
+        data-foo="datafoo"
+        aria-hidden="h"
+        role="presentation"
+        href="/foo"
+        title="test"
+        tabindex="test"
+    ></a>
+    <ns-bar
+        class="r"
+        data-xx="foo"
+        aria-hidden="hidden"
+        foo-bar="x"
+        foo="bar"
+        role="xx"
+        tabindex="bar"
+        bgcolor="blue"
+    ></ns-bar>
+
+    <svg class="cubano" focusable="true">
+        <use xlink:href="xx"></use>
+    </svg>
+    <div is="ns-buzz" bgcolor="x" aria-hidden="hidden" ></div>
+    <table bgcolor="x"></table>
+    <table bgcolor="x" is="ns-table" tabindex="2" bar="test" min="3"></table>
+    <div class={foo} aria-hidden="hidden"></div>
+</template>

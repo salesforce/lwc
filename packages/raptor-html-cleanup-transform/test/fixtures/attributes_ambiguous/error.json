@@ -1,5 +1,0 @@
-{
-  "message": "Ambiguous attribute value foo=\"{bar}\". If you want to make it a valid identifier you should remove the surrounding quotes foo={bar}. If you want to make it a string you should escape it foo=\"\\{bar}\".",
-  "line": 2,
-  "column": 14
-}

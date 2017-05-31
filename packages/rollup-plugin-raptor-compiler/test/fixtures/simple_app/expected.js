@@ -7,7 +7,6 @@ function tmpl$1($api, $cmp, $slotset, $ctx) {
         [$api.d($cmp.x)]
     )];
 }
-tmpl$1.ids = ["x"];
 
 class Foo extends Element {
     render() {

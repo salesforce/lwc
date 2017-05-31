@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Slot tag can't be associated with directives",
+    "start": 32,
+    "length": 31
+  }],
+  "metadata": {
+    "usedIds": ["isTrue"]
+  }
+}

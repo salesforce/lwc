@@ -1,0 +1,6 @@
+{
+  "metadata": {
+    "usedIds": ["isTrue", "items"],
+    "componentDependency": ["a-b"]
+  }
+}

@@ -1,5 +1,0 @@
-{
-  "message": "Unexpected string literal. All \"if\" directives have to be bound to an identifier",
-  "column": 26,
-  "line": 3
-}

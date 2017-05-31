@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "myProp=\"foo\" is not valid attribute for x-test. All attributes name should be all lowercase.",
+    "start": 23,
+    "length": 12
+  }],
+  "metadata": {
+    "componentDependency": ["x-test"]
+  }
+}

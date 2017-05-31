@@ -1,0 +1,6 @@
+{
+  "metadata": {
+    "usedIds": ["p", "foo"],
+    "componentDependency": ["ns-foo", "ns-bar", "ns-buzz", "ns-table"]
+  }
+}

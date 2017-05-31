@@ -1,24 +1,15 @@
-import raptorTemplatePlugin from 'babel-plugin-transform-raptor-template';
-import templateCleanupPlugin from 'raptor-html-cleanup-transform';
-import { transform } from 'babel-core';
+import compile from 'raptor-template-compiler';
 
-export default function (src: string, options: any): any {
-    options = options || {};
+export default function (src: string): any {
+    const { code, metadata, warnings } = compile(src);
 
-    let localBabelConfig = {
-        babelrc: false,
-        sourceMaps: true,
-        plugins: [ raptorTemplatePlugin ],
-        filename: options.filename
-    };
-
-    localBabelConfig = Object.assign({}, options.babelConfig, localBabelConfig);
-
-    const cleanSrc = templateCleanupPlugin.transform(src);
-    const { code, map, metadata } = transform(cleanSrc, localBabelConfig);
+    const fatalError = warnings.find((warning: any) => warning.level === 'error');
+    if (fatalError) {
+        throw new Error(fatalError.message);
+    }
 
     // #FIXME: Returns for now only a subset of the transform result because the ast property in
     // the result makes rollup throw.
     // Returning the AST instead of the generated code would greately improve the compilation time.
-    return { code, map, metadata };
+    return { code, metadata };
 }

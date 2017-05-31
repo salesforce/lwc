@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "If directive should be an expression",
+    "start": 43,
+    "length": 16
+  }],
+  "metadata": {
+    "usedIds": ["foo", "bar"]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Multiple roots found",
+    "start": 38,
+    "length": 10
+  }]
+}

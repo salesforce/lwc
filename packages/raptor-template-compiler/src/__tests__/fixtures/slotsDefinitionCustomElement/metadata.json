@@ -1,0 +1,6 @@
+{
+  "metadata": {
+    "componentDependency": ["x-foo"],
+    "definedSlots": ["$default$"]
+  }
+}

@@ -1,12 +1,13 @@
 /* eslint-env node, mocha */
 import * as fs from 'fs';
 import * as path from 'path';
+import * as prettier from 'prettier';
 
 import assert from 'power-assert';
 import { compile, compileResource } from '../src/index';
 
-function trim(str) {
-    return str.toString().replace(/^\s+|\s+$/, '');
+function pretty(str) {
+    return prettier.format(str, {});
 }
 
 const BASE_CONFIG = {};
@@ -17,13 +18,14 @@ const skipTests = [
 
 const fixturesDir = path.join(__dirname, 'fixtures');
 
-
 describe('compile individual resources: ', () => {
     it('compile with no options - no namespace', () => {
-        const htmlFile = path.join(fixturesDir, 'class_and_template/class_and_template.html');
-        const expected = fs.readFileSync(path.join(fixturesDir, 'expected-template.js'));
-        const result = compileResource(htmlFile, {});
-        assert.equal(trim(expected), trim(result.code));
+        const actualFile = path.join(fixturesDir, 'class_and_template/class_and_template.html');
+        const expectedFile = path.join(fixturesDir, 'expected-template.js');
+
+        const expected = fs.readFileSync(expectedFile, 'utf-8');
+        const actual = compileResource(actualFile, {});
+        assert.equal(pretty(actual.code), pretty(expected));
     });
 });
 
@@ -37,9 +39,8 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir)
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 
@@ -51,9 +52,8 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir)
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options-unknown-ns.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options-unknown-ns.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 
@@ -65,17 +65,16 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir, { mapNamespaceFromPath: true })
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-mapped-ns1.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-mapped-ns1.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 });
 
 describe('emit asserts for embedded sources: ', () => {
     it('Compile using sources', () => {
-        const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html')).toString();
-        const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js')).toString();
+        const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html'), 'utf-8');
+        const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js'), 'utf-8');
         const entry = '/customNs/class_and_template/class_and_template.js';
 
         const opts = {
@@ -89,15 +88,14 @@ describe('emit asserts for embedded sources: ', () => {
         return runCompile(entry, opts)
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 
     it('Compile using sources and format', () => {
-        const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html')).toString();
-        const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js')).toString();
+        const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html'), 'utf-8');
+        const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js'), 'utf-8');
         const entry = 'myns/class_and_template/class_and_template.js';
 
         const opts = {
@@ -112,18 +110,17 @@ describe('emit asserts for embedded sources: ', () => {
         return runCompile(entry, opts)
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced-format.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-sources-namespaced-format.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 
     it('Compile using folder sources and format', () => {
-        const html = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.html')).toString();
-        const js = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.js')).toString();
-        const rel = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative.js')).toString();
-        const rel2 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative2.js')).toString();
-        const rel3 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative3.js')).toString();
+        const html = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.html'), 'utf-8');
+        const js = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.js'), 'utf-8');
+        const rel = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative.js'), 'utf-8');
+        const rel2 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative2.js'), 'utf-8');
+        const rel3 = fs.readFileSync(path.join(fixturesDir, 'relative_import/other/relative3.js'), 'utf-8');
 
         const entry = 'myns/relative_import/relative_import.js';
 
@@ -142,9 +139,8 @@ describe('emit asserts for embedded sources: ', () => {
         return runCompile(entry, opts)
         .then((result) => {
             const actual = result.code;
-            //console.log(actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-relative-import.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-relative-import.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         })
     });
 });
@@ -160,9 +156,8 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
-            //console.log('>>', actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-mode.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         });
     });
 
@@ -175,9 +170,8 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
-            //console.log('>>', actual);
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compat-mode.js'));
-            assert.equal(trim(expected), trim(actual));
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compat-mode.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
         });
     });
 

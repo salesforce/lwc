@@ -1,4 +1,0 @@
-{
-  "presets": ["env", "flow"],
-  "plugins": ["babel-plugin-syntax-jsx"]
-}

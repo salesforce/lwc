@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Missing root template tag",
+    "start": 0,
+    "length": 0
+  }]
+}

@@ -43,11 +43,10 @@
     "babel-plugin-transform-exponentiation-operator": "^6.22.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-raptor-class": "0.10.0",
-    "babel-plugin-transform-raptor-template": "0.10.3",
     "babel-plugin-transform-regenerator": "^6.22.0",
     "babel-preset-babili": "^0.0.12",
     "babel-preset-env": "^1.5.1",
-    "raptor-html-cleanup-transform": "0.10.0",
+    "raptor-template-compiler": "0.10.3",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1"
   },

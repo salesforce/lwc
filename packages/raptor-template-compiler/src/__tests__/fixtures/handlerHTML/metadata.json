@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Event handler should be an expression",
+    "start": 38,
+    "length": 26
+  }]
+}

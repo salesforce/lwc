@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Invalid expression { Math.random() } - Template expression doens't allow CallExpression",
+    "start": 18,
+    "length": 17
+  }]
+}

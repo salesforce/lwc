@@ -1,0 +1,6 @@
+{
+  "metadata": {
+    "usedIds": ["isLoading", "haveLoadedItems", "menuItems"],
+    "componentDependency": ["x-b"]
+  }
+}

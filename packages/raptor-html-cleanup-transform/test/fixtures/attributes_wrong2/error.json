@@ -1,5 +1,0 @@
-{
-  "message": "Ambiguous attribute value value=\"{myValue}/\". If you want to make it a string you should escape it value=\"\\{myValue}/\"",
-  "line": 2,
-  "column": 12
-}

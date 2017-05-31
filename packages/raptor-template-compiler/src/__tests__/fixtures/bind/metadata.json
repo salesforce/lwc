@@ -1,0 +1,6 @@
+{
+  "metadata": {
+    "usedIds": ["handleFoo"],
+    "componentDependency": ["ns-foo"]
+  }
+}

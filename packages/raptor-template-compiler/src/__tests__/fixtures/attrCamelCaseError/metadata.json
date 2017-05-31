@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "fooBar=\"test\" is not valid attribute for x-foo. All attributes name should be all lowercase.",
+    "start": 40,
+    "length": 13
+  }],
+  "metadata": {
+    "componentDependency": ["x-foo"]
+  }
+}

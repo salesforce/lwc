@@ -1,5 +1,0 @@
-{
-  "message": "Unexpected string literal. All event handlers should be bound to an identifier.",
-  "line": 3,
-  "column": 22
-}
