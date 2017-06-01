@@ -1,6 +1,6 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty, bind } from "./language";
+import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
 import { getOwnFields, extractOwnFields } from "./properties";
 import { vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
@@ -64,10 +64,6 @@ const cmpProxyHandler = {
             value = cmpProps[key];
         } else {
             value = cmp[key];
-        }
-        if (isFunction(value)) {
-            // binding every function value accessed from template
-            value = bind(value, cmp);
         }
         currentMemoized[key] = value;
         return value;

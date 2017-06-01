@@ -177,6 +177,70 @@ describe('template', () => {
             assert.strictEqual('some text', elm.textContent);
         });
 
+        it('should profixied default objects', () => {
+            const x = [1, 2, 3];
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.x = x;
+                }
+            }
+            MyComponent.publicProps = { x: true };
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            assert(elm.x === vnode.vm.component.x, 'default property x should be accesible');
+            assert(elm.x !== x, 'property x should be profixied');
+            assert.deepEqual(elm.x, x, 'property x should match the original object x');
+        });
+
+        it('should profixied property objects', () => {
+            const x = [1, 2, 3];
+            class MyComponentParent extends Element {
+                constructor() {
+                    super();
+                    this.state.x = x;
+                }
+            }
+            class MyComponentChild extends Element {
+                constructor() {
+                    super();
+                }
+            }
+            MyComponentChild.publicProps = { x: true };
+            const elm1 = document.createElement('x-parent');
+            const elm2 = document.createElement('x-child');
+            const vnode1 = api.c('x-parent', MyComponentParent, {});
+            patch(elm1, vnode1);
+            const vnode2 = api.c('x-child', MyComponentChild, { props: { x: vnode1.vm.component.state.x }});
+            patch(elm2, vnode2);
+            assert(elm2.x !== x, 'property x should be profixied');
+            assert.strictEqual(vnode1.vm.component.state.x, vnode2.vm.component.x, 'proxified objects retain identity');
+            assert.deepEqual(elm2.x, x, 'property x should match the passed property x');
+        });
+
+        it('should not profixied or bound methods', () => {
+            let x, y;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    x = this.x;
+                }
+                x() {}
+                render() {
+                    return function ($api, $cmp) {
+                        y = $cmp.x;
+                        return [];
+                    }
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            assert(typeof x === "function", 'x should have been set');
+            assert.strictEqual(x, y, 'methods should not be bound or proxified');
+        });
+
     });
 
     describe('evaluateTemplate()', () => {
