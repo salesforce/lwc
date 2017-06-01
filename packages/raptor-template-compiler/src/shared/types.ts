@@ -61,7 +61,7 @@ export type IRNode =
     | IRElement
     | IRText;
 
-interface IRBaseAttribute {
+export interface IRBaseAttribute {
     name: string;
     location: parse5.MarkupData.Location;
 }

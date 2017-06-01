@@ -8,14 +8,14 @@ import {
     HTMLText,
 } from './types';
 
-type VisitorFn = (element: IRNode) => void;
+export type VisitorFn = (element: IRNode) => void;
 
-interface NodeVisitor {
+export interface NodeVisitor {
     enter?: VisitorFn;
     exit?: VisitorFn;
 }
 
-interface Visitor {
+export interface Visitor {
     [type: string]: NodeVisitor;
 }
 

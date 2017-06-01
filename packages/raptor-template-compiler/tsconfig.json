@@ -4,8 +4,7 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "outDir": "dist",
-
-    "allowJs": true,
+    "declaration": true,
 
     "noImplicitAny": false,
     "strictNullChecks": true,

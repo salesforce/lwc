@@ -3,6 +3,7 @@
   "version": "0.10.3",
   "description": "Template compiler package",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

@@ -1,13 +1,13 @@
 import * as parse5 from 'parse5';
 
-type VisitorFn = (element: parse5.AST.Node) => void;
+export type VisitorFn = (element: parse5.AST.Node) => void;
 
-interface NodeVisitor {
+export interface NodeVisitor {
     enter?: VisitorFn;
     exit?: VisitorFn;
 }
 
-interface Visitor {
+export interface Visitor {
     [type: string]: NodeVisitor;
 }
 
