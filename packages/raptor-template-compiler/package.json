@@ -36,6 +36,7 @@
     "camelcase": "^4.1.0",
     "css-parse": "^2.0.0",
     "decamelize": "^1.2.0",
+    "he": "^1.1.1",
     "parse5": "^3.0.2"
   }
 }

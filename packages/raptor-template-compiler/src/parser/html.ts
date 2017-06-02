@@ -1,4 +1,5 @@
 import * as parse5 from 'parse5';
+import * as he from 'he';
 
 export type VisitorFn = (element: parse5.AST.Node) => void;
 
@@ -102,4 +103,8 @@ export function cleanTextNode(value: string): string {
     }
 
     return str;
+}
+
+export function decodeTextContent(source: string): string {
+    return he.decode(source);
 }

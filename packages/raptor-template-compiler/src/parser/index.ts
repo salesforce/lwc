@@ -6,6 +6,7 @@ import {
     traverseHTML,
     getSource,
     cleanTextNode,
+    decodeTextContent,
 } from './html';
 
 import {
@@ -148,7 +149,7 @@ export default function parse(source: string): {
                             return warnAt(error.message, location);
                         }
                     } else {
-                        value = token;
+                        value = decodeTextContent(token);
                     }
 
                     const textNode = createText(node, value);

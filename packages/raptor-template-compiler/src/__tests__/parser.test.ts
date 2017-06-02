@@ -19,6 +19,15 @@ describe('parsing', () => {
         expect(get(root, 'children.0.children.0.value')).toBe('hello');
     });
 
+    it('html entities', () => {
+        const { root } = parse(`<template>
+            <p>foo&amp;bar</p>
+            <p>const &#123; foo &#125; = bar;</p>
+        </template>`);
+        expect(get(root, 'children.0.children.0.value')).toBe('foo&bar');
+        expect(get(root, 'children.1.children.0.value')).toBe('const { foo } = bar;');
+    });
+
     it('text identifier', () => {
         const { root } = parse(`<template>{msg}</template>`);
         expect(get(root, 'children.0.value')).toBeDefined();
