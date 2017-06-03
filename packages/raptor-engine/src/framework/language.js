@@ -19,7 +19,8 @@ const {
     slice: ArraySlice,
     splice: ArraySplice,
     indexOf: ArrayIndexOf,
-    push: ArrayPush
+    push: ArrayPush,
+    map: ArrayMap,
 } = Array.prototype;
 
 export {
@@ -39,6 +40,7 @@ export {
     ArraySlice,
     ArraySplice,
     ArrayFilter,
+    ArrayMap,
     isArray,
     ArrayIndexOf,
     ArrayPush,

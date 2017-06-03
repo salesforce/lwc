@@ -44,7 +44,6 @@ const assert = {
         }
     },
     childNode(container: Node, node: Node, msg: string) {
-        console.log(compareDocumentPosition.call(node, container), compareDocumentPosition.call(container, node), 4444);
         assert.isTrue(compareDocumentPosition.call(node, container) & DOCUMENT_POSITION_CONTAINS, msg || `${node} must be a child node of ${container}`);
     }
 };
