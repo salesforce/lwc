@@ -94,7 +94,7 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
         assert.block(function devModeCheck() {
             const vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach((vnode: VNode | any) => {
-                if (vnode && typeof vnode === 'object' && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
+                if (vnode && isObject(vnode) && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
                     // TODO - it'd be nice to log the owner component rather than the iteration children
                     assert.logWarning(`Missing "key" attribute in iteration with child "${toString(vnode.Ctor.name)}", index ${i} of ${len}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }

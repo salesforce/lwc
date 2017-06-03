@@ -47,7 +47,7 @@ export function createPublicPropertyDescriptorMap(propName: string): PropertyDes
         }
         const { cmpProps } = vm;
         // proxifying before storing it is a must for public props
-        cmpProps[propName] = typeof value === 'object' ? getPropertyProxy(value) : value;
+        cmpProps[propName] = isObject(value) ? getPropertyProxy(value) : value;
     }
     descriptors[propName] = {
         get: getter,

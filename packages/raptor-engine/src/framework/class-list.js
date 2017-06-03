@@ -3,6 +3,7 @@ import {
     getOwnPropertyNames,
     defineProperty,
     isUndefined,
+    forEach,
 } from "./language";
 
 import { ViewModelReflection } from "./html-element";
@@ -26,12 +27,12 @@ export function ClassList(vm: VM): DOMTokenList {
 }
 
 ClassList.prototype = {
-    add(...classNames: Array<String>) {
+    add() {
         const vm = this[ViewModelReflection];
         const { cmpClasses } = vm;
         const elm = getLinkedElement(this);
         // Add specified class values. If these classes already exist in attribute of the element, then they are ignored.
-        classNames.forEach((className: String) => {
+        forEach.call(arguments, (className: String) => {
             className = className + '';
             if (!cmpClasses[className]) {
                 cmpClasses[className] = true;
@@ -46,12 +47,12 @@ ClassList.prototype = {
             }
         });
     },
-    remove(...classNames: Array<String>) {
+    remove() {
         const vm = this[ViewModelReflection];
         const { cmpClasses } = vm;
         const elm = getLinkedElement(this);
         // Remove specified class values.
-        classNames.forEach((className: String) => {
+        forEach.call(arguments, (className: String) => {
             className = className + '';
             if (cmpClasses[className]) {
                 cmpClasses[className] = false;
@@ -61,7 +62,7 @@ ClassList.prototype = {
                 if (vm.idx) {
                     // we intentionally make a sync mutation here when needed and also keep track of the mutation
                     // for a possible rehydration later on without having to rehydrate just now.
-                    const ownerClass = this[ViewModelReflection].vnode.data.class;
+                    const ownerClass = vm.vnode.data.class;
                     // This is only needed if the owner is not forcing that class to be present in case of conflicts.
                     if (isUndefined(ownerClass) || !ownerClass[className]) {
                         elm.classList.remove(className);

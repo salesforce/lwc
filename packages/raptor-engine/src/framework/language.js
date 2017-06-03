@@ -21,6 +21,7 @@ const {
     indexOf: ArrayIndexOf,
     push: ArrayPush,
     map: ArrayMap,
+    forEach,
 } = Array.prototype;
 
 export {
@@ -44,6 +45,7 @@ export {
     isArray,
     ArrayIndexOf,
     ArrayPush,
+    forEach,
 }
 
 export function isUndefined(obj: any): boolean {

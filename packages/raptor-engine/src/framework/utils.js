@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction } from "./language";
 
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
@@ -16,7 +16,7 @@ function flushCallbackQueue() {
 }
 
 export function addCallbackToNextTick(callback: Callback) {
-    assert.isTrue(typeof callback === 'function', `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
+    assert.isTrue(isFunction(callback), `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
     if (nextTickCallbackQueue.length === 0) {
         Promise.resolve().then(flushCallbackQueue);
     }

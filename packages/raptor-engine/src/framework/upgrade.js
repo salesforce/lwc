@@ -6,7 +6,7 @@ import { updateComponentProp } from "./component";
 import { getPropertyProxy } from "./properties";
 import { getComponentDef } from "./def";
 import { c } from "./api";
-import { defineProperties, isUndefined } from "./language";
+import { defineProperties, isUndefined, isObject, isFunction } from "./language";
 import { getPropNameFromAttrName } from "./utils";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
@@ -86,7 +86,7 @@ function linkProperties(element: HTMLElement, vm: VM) {
             get: (): any => component[propName],
             set: (value: any) => {
                 // proxifying before storing it is a must for public props
-                value = typeof value === 'object' ? getPropertyProxy(value) : value;
+                value = isObject(value) ? getPropertyProxy(value) : value;
                 updateComponentProp(vm, propName, value);
                 if (vm.isDirty) {
                     console.log(`Scheduling ${vm} for rehydration.`);
@@ -154,7 +154,7 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
  * then we fallback to the normal Web-Components workflow.
  */
 export function createElement(tagName: string, options: any = {}): HTMLElement {
-    const Ctor = typeof options.is === 'function' ? options.is : null;
+    const Ctor = isFunction(options.is) ? options.is : null;
     const element = document.createElement(tagName, Ctor ? null : options);
 
     if (Ctor && element instanceof HTMLElement) {

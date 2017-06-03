@@ -9,7 +9,7 @@ import {
     invokeComponentCallback,
 } from "./invoker";
 import { notifyListeners } from "./watcher";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
 import { invokeServiceHook, services } from "./services";
@@ -69,7 +69,7 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         assert.block(function devModeCheck() {
-            if (typeof newValue === 'object') {
+            if (isObject(newValue)) {
                 assert.invariant(getPropertyProxy(newValue) === newValue, `updateComponentProp() should always received proxified object values instead of ${newValue} in ${vm}.`);
             }
         });

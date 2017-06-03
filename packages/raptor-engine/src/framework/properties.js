@@ -7,7 +7,7 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker";
-import { isUndefined, defineProperty, hasOwnProperty, toString, isArray } from "./language";
+import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject } from "./language";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
 const ProxyCache: Set<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
@@ -17,7 +17,7 @@ function propertyGetter(target: Object, key: string | Symbol): any {
     if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, key);
     }
-    return (value && typeof value === 'object') ? getPropertyProxy(value) : value;
+    return (value && isObject(value)) ? getPropertyProxy(value) : value;
 }
 
 function propertySetter(target: Object, key: string | Symbol, value: any): boolean {
@@ -52,7 +52,7 @@ const propertyProxyHandler = {
 };
 
 export function getPropertyProxy(value: Object): any {
-    assert.isTrue(typeof value === "object", "perf-optimization: avoid calling this method for non-object value.");
+    assert.isTrue(isObject(value), "perf-optimization: avoid calling this method for non-object value.");
     if (value === null) {
         return value;
     }

@@ -18,6 +18,8 @@ import {
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    isString,
+    isFunction,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { Element, createPublicPropertyDescriptorMap } from "./html-element";
@@ -41,7 +43,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
 function createComponentDef(Ctor: Class<Component>): ComponentDef {
     assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
     const name: string = Ctor.name;
-    assert.isTrue(name && typeof name === 'string', `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
+    assert.isTrue(name && isString(name), `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
     assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a "constructor" property.`);
     const props = getPublicPropertiesHash(Ctor);
     const proto = Ctor.prototype;
@@ -108,7 +110,7 @@ function getPublicMethodsHash(target: Object): HashTable<number> {
     return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable => {
         methodsHash[methodName] = 1;
         assert.block(function devModeCheck() {
-            assert.isTrue(typeof target.prototype[methodName] === 'function', `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
+            assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
             freeze(target.prototype[methodName]);
         });
         return methodsHash;

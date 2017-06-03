@@ -88,7 +88,7 @@ export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
         context.tplCache = create(null);
         vm.cmpTemplate = html;
     }
-    assert.isTrue(typeof context.tplCache === 'object', `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
+    assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
     assert.block(function devModeCheck() {
         // before every render, in dev-mode, we will like to know all expandos and
         // all private-fields-like properties, so we can give meaningful errors.
