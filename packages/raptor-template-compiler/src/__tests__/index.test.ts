@@ -40,8 +40,8 @@ describe('snapshots ', () => {
                 const actualMeta = actual.metadata;
                 const expectMeta = expetedMetaData.metadata || {};
 
-                expect(Array.from(actualMeta.usedIds)).toEqual(expectMeta.usedIds || []);
-                expect(Array.from(actualMeta.componentDependency)).toEqual(expectMeta.componentDependency || []);
+                expect(Array.from(actualMeta.templateUsedIds)).toEqual(expectMeta.templateUsedIds || []);
+                expect(Array.from(actualMeta.templateDependencies)).toEqual(expectMeta.templateDependencies || []);
                 expect(Array.from(actualMeta.definedSlots)).toEqual(expectMeta.definedSlots || []);
             }
         });

@@ -1,20 +1,23 @@
 #!/usr/bin/env babel-node
 /* eslint-env node */
-
 import { compile } from '../packages/raptor-compiler-core/src/index.js';
-import path from 'path';
+import * as path from 'path';
 
 const filePath = process.argv[2] || '';
 const entry = path.resolve(filePath);
 const options = {
-    format: 'es',
-    mode: 'dev',
+    format: 'amd',
+    mode: 'all',
 };
 
 compile(entry, options)
 .then((result) => {
     console.log('\n>> Code --------------------------------------------------');
-    console.log('\n', result.code || result);
+    if (result.code) {
+        console.log('\n', result.code);
+    } else {
+        Object.keys(result).map(r => console.log(`Mode: ${r}: `, result[r].code, '------------------------------------------------'));
+    }
     console.log('>> End Code ------------------------------------------------');
 
     console.log('\n>> Metadata --------------------------------------------------');

@@ -1,29 +1,29 @@
 define('myns-relative_import', function () {
-    'use strict';
 
-    function tmpl($api, $cmp, $slotset, $ctx) {
-        return [$api.h("section", {}, [])];
+function tmpl($api, $cmp, $slotset, $ctx) {
+    return [$api.h("section", {}, [])];
+}
+
+function test() {}
+
+function sibling() {}
+
+function inner() {
+    return sibling();
+}
+
+class RelativeImport {
+    constructor() {
+        this.x = test();
+        this.y = inner();
     }
 
-    function test() {}
-
-    function sibling() {}
-
-    function inner() {
-        return sibling();
+    render() {
+        return tmpl;
     }
 
-    class RelativeImport {
-        constructor() {
-            this.x = test();
-            this.y = inner();
-        }
+}
 
-        render() {
-            return tmpl;
-        }
+return RelativeImport;
 
-    }
-
-    return RelativeImport;
 });

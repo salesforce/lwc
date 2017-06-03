@@ -5,12 +5,13 @@ export const MODES = {
     DEV: 'dev',
     PROD: 'prod',
     COMPAT: 'compat',
+    PROD_COMPAT: 'prod_compat',
     ALL : 'all'
 };
 
 const BABILI_CONFIG = babili();
 
-const BASE_BABEL_CONFIG = {
+export const BASE_BABEL_CONFIG = {
     babelrc: false,
     sourceMaps: true,
     parserOpts: { plugins: ['*'] },
@@ -26,13 +27,23 @@ export const DEV_BABEL_CONFIG = Object.assign(
 export const PROD_BABEL_CONFIG = Object.assign(
     {},
     { plugins: BABEL_PLUGINS_LATEST },
-    BASE_BABEL_CONFIG,
-    BABILI_CONFIG
+    BASE_BABEL_CONFIG
 );
 
 export const COMPAT_BABEL_CONFIG = Object.assign(
     {},
     { plugins: BABEL_PLUGINS_COMPAT },
+    BASE_BABEL_CONFIG
+);
+
+export const PROD_COMPAT_BABEL_CONFIG = Object.assign(
+    {},
+    { plugins: BABEL_PLUGINS_COMPAT },
+    BASE_BABEL_CONFIG
+);
+
+export const MINIFY_CONFIG = Object.assign(
+    {},
     BASE_BABEL_CONFIG,
     BABILI_CONFIG
-);
+)

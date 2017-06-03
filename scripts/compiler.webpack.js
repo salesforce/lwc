@@ -43,11 +43,6 @@ module.exports = function (/*env*/) {
                     presets: [
                         'babili',
                         'flow',
-                        ['env', {
-                            targets: {
-                                node: 5
-                            }
-                        }]
                     ],
                     babelrc: false,
                 }

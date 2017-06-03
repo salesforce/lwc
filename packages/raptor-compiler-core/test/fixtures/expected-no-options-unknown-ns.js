@@ -1,11 +1,11 @@
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h("section", {}, [])];
+  return [$api.h("section", {}, [])];
 }
 
 class Default {
-    render() {
-        return tmpl;
-    }
+  render() {
+    return tmpl;
+  }
 
 }
 

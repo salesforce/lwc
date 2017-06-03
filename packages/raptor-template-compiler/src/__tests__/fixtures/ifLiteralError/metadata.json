@@ -6,6 +6,6 @@
     "length": 16
   }],
   "metadata": {
-    "usedIds": ["foo", "bar"]
+    "templateUsedIds": ["foo", "bar"]
   }
 }

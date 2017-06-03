@@ -6,6 +6,6 @@
     "length": 13
   }],
   "metadata": {
-    "componentDependency": ["x-foo"]
+    "templateDependencies": ["x-foo"]
   }
 }

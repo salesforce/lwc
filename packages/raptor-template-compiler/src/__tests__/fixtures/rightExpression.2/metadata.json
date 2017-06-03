@@ -1,5 +1,5 @@
 {
   "metadata": {
-    "usedIds": ["foo", "bar"]
+    "templateUsedIds": ["foo", "bar"]
   }
 }

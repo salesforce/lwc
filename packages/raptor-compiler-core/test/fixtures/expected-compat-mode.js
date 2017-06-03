@@ -1,1 +1,34 @@
-var _createClass=function(){function a(b,c){for(var e,d=0;d<c.length;d++)e=c[d],e.enumerable=e.enumerable||!1,e.configurable=!0,'value'in e&&(e.writable=!0),Object.defineProperty(b,e.key,e)}return function(b,c,d){return c&&a(b.prototype,c),d&&a(b,d),b}}();function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError('Cannot call a class as a function')}define('x-class_and_template',function(){'use strict';function a(d){return[d.h('section',{},[])]}var c=function(){function d(){_classCallCheck(this,d),this.t=1,this.counter=0}return _createClass(d,[{key:'render',value:function render(){return a}}]),d}();return c.publicProps={t:1},c});
+define('x-class_and_template', ['compat/helpers/classCallCheck', 'compat/helpers/createClass'], function (_classCallCheck, _createClass) {
+
+function tmpl($api, $cmp, $slotset, $ctx) {
+    return [$api.h("section", {}, [])];
+}
+
+var Test = 1;
+
+var ClassAndTemplate = function () {
+    function ClassAndTemplate() {
+        _classCallCheck(this, ClassAndTemplate);
+
+        this.t = Test;
+
+        this.counter = 0;
+    }
+
+    _createClass(ClassAndTemplate, [{
+        key: "render",
+        value: function render() {
+            return tmpl;
+        }
+    }]);
+
+    return ClassAndTemplate;
+}();
+
+ClassAndTemplate.publicProps = {
+    t: 1
+};
+
+return ClassAndTemplate;
+
+});

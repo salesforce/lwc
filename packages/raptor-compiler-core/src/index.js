@@ -2,6 +2,7 @@ import { normalizeEntryPath, normalizeOptions } from './lib/utils';
 import { compileFile, compileBundle } from './lib/compiler';
 
 const BASE_OPTIONS = {
+    format: 'es',
     babelConfig: {
         babelrc: false,
         sourceMaps: true

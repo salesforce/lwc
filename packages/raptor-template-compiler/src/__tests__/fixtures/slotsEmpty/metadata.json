@@ -1,5 +1,5 @@
 {
   "metadata": {
-    "componentDependency": ["x-cmp"]
+    "templateDependencies": ["x-cmp"]
   }
 }

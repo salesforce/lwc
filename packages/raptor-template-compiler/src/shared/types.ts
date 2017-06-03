@@ -90,9 +90,9 @@ export interface CompilationWarning {
 }
 
 export interface CompilationMetdata {
-    usedIds: Set<string>;
-    definedSlots: Set<string>;
-    componentDependency: Set<string>;
+    templateUsedIds: string[];
+    definedSlots: string[];
+    templateDependencies: string[];
 }
 
 export interface CompilationOutput {

@@ -1,13 +1,11 @@
 /* eslint-env node, mocha */
 import * as fs from 'fs';
 import * as path from 'path';
-import * as prettier from 'prettier';
-
 import assert from 'power-assert';
 import { compile, compileResource } from '../src/index';
 
 function pretty(str) {
-    return prettier.format(str, {});
+    return str.toString().replace(/^\s+|\s+$/, '');
 }
 
 const BASE_CONFIG = {};
@@ -161,7 +159,7 @@ describe('emit asserts for modes: ', () => {
         });
     });
 
-     it('Test compat mode', () => {
+    it('Test compat mode', () => {
         const entry = path.join(fixtureCmpDir, 'class_and_template.js');
         const opts = {
             format : 'amd',
@@ -171,6 +169,20 @@ describe('emit asserts for modes: ', () => {
         return runCompile(entry, opts).then((result) => {
             const actual = result.code;
             const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compat-mode.js'), 'utf-8');
+            assert.equal(pretty(expected), pretty(actual));
+        });
+    });
+
+    it('Test prod_compat mode', () => {
+        const entry = path.join(fixtureCmpDir, 'class_and_template.js');
+        const opts = {
+            format : 'amd',
+            mode   : 'prod_compat',
+        };
+
+        return runCompile(entry, opts).then((result) => {
+            const actual = result.code;
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-prod-compat-mode.js'), 'utf-8');
             assert.equal(pretty(expected), pretty(actual));
         });
     });
@@ -185,7 +197,7 @@ describe('emit asserts for modes: ', () => {
 
         return runCompile(entry, opts).then((result) => {
             const actual = Object.keys(result);
-            const expected = ['dev', 'prod', 'compat'];
+            const expected = ['dev', 'prod', 'compat', 'prod_compat'];
             assert.deepStrictEqual(actual, expected);
         });
     });

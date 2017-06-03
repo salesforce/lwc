@@ -65,9 +65,9 @@ export default function parse(source: string): {
 } {
     const warnings: CompilationWarning[] = [];
     const metadata: CompilationMetdata = {
-        usedIds: new Set(),
-        definedSlots: new Set(),
-        componentDependency: new Set(),
+        templateUsedIds: [],
+        definedSlots: [],
+        templateDependencies: [],
     };
 
     const fragment = parseHTML(source);
@@ -323,7 +323,10 @@ export default function parse(source: string): {
 
         if (component) {
             element.component = component;
-            metadata.componentDependency.add(component);
+            const dependencies = metadata.templateDependencies;
+            if (!dependencies.includes(component)) {
+                dependencies.push(component);
+            }
         }
     }
 
@@ -353,7 +356,10 @@ export default function parse(source: string): {
         }
 
         element.slotName = name;
-        metadata.definedSlots.add(name);
+
+        if (!metadata.definedSlots.includes(name)) {
+            metadata.definedSlots.push(name);
+        }
     }
 
     function dispathCustomElementChildrenInSlots(element: IRElement) {
@@ -428,8 +434,8 @@ export default function parse(source: string): {
         const expression = parseExpression(sourceExpression);
         const identifier = getRootIdentifier(expression);
 
-        if (isComponentProp(identifier, node)) {
-            metadata.usedIds.add(identifier.name);
+        if (isComponentProp(identifier, node) && !metadata.templateUsedIds.includes(identifier.name)) {
+            metadata.templateUsedIds.push(identifier.name);
         }
 
         return expression;

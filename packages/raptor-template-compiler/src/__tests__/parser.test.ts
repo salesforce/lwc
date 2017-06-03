@@ -416,7 +416,7 @@ describe('props and attributes', () => {
 describe('metadata', () => {
     it('usedIds simple', () => {
         const { metadata } = parse(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
-        expect(Array.from(metadata.usedIds)).toEqual(['visible', 'titleClass', 'text']);
+        expect(Array.from(metadata.templateUsedIds)).toEqual(['visible', 'titleClass', 'text']);
     });
 
     it('usedIds with expression', () => {
@@ -427,7 +427,7 @@ describe('metadata', () => {
                 </template>
             </div>
         </template>`);
-        expect(Array.from(metadata.usedIds)).toEqual(['state', 'componentProp']);
+        expect(Array.from(metadata.templateUsedIds)).toEqual(['state', 'componentProp']);
     });
 
     it('dependent component', () => {
@@ -436,7 +436,7 @@ describe('metadata', () => {
             <button is="x-button"></button>
         </template>`);
 
-        expect(Array.from(metadata.componentDependency)).toEqual(['x-menu', 'x-button']);
+        expect(Array.from(metadata.templateDependencies)).toEqual(['x-menu', 'x-button']);
     });
 
     it('slots', () => {

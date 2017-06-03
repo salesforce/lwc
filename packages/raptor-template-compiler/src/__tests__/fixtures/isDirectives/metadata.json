@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "usedIds": ["rows"],
-    "componentDependency": ["ns-row"]
+    "templateUsedIds": ["rows"],
+    "templateDependencies": ["ns-row"]
   }
 }

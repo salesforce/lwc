@@ -261,8 +261,8 @@ assert@^1.1.1:
     util "0.10.3"
 
 ast-pretty-print@^1.1.5:
-  version "1.1.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ast-pretty-print/-/ast-pretty-print-1.1.5.tgz#23a1c8ff96fad9f597a9b3e59acbf42eb2ff0a19"
+  version "1.2.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ast-pretty-print/-/ast-pretty-print-1.2.1.tgz#22c3ff891c9f49580e66bb178c7d68a5c030abda"
   dependencies:
     ansi-styles "^3.0.0"
 
@@ -308,7 +308,7 @@ aws4@^1.2.1:
   version "1.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/aws4/-/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-babel-cli@^6.10.1, babel-cli@^6.24.0:
+babel-cli@^6.24.0, babel-cli@^6.24.1:
   version "6.24.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-cli/-/babel-cli-6.24.1.tgz#207cd705bba61489b2ea41b5312341cf6aca2283"
   dependencies:
@@ -400,9 +400,9 @@ babel-helper-define-map@^6.24.1:
     babel-types "^6.24.1"
     lodash "^4.2.0"
 
-babel-helper-evaluate-path@^0.0.3:
-  version "0.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-evaluate-path/-/babel-helper-evaluate-path-0.0.3.tgz#1d103ac9d4a59e5d431842212f151785f7ac547b"
+babel-helper-evaluate-path@^0.1.0:
+  version "0.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-evaluate-path/-/babel-helper-evaluate-path-0.1.0.tgz#95d98c4ea36150483db2e7d3ec9e1954a72629cb"
 
 babel-helper-explode-assignable-expression@^6.24.1:
   version "6.24.1"
@@ -412,9 +412,9 @@ babel-helper-explode-assignable-expression@^6.24.1:
     babel-traverse "^6.24.1"
     babel-types "^6.24.1"
 
-babel-helper-flip-expressions@^0.0.2:
-  version "0.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-flip-expressions/-/babel-helper-flip-expressions-0.0.2.tgz#7bab2cf61162bc92703e9b298ef512bcf77d6787"
+babel-helper-flip-expressions@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-flip-expressions/-/babel-helper-flip-expressions-0.1.1.tgz#3659b2409a7b78131261302a993088d1c082fab4"
 
 babel-helper-function-name@^6.24.1:
   version "6.24.1"
@@ -444,13 +444,9 @@ babel-helper-is-nodes-equiv@^0.0.1:
   version "0.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-is-nodes-equiv/-/babel-helper-is-nodes-equiv-0.0.1.tgz#34e9b300b1479ddd98ec77ea0bbe9342dfe39684"
 
-babel-helper-is-void-0@^0.0.1:
-  version "0.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-is-void-0/-/babel-helper-is-void-0-0.0.1.tgz#ed74553b883e68226ae45f989a99b02c190f105a"
-
-babel-helper-mark-eval-scopes@^0.0.3:
-  version "0.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-mark-eval-scopes/-/babel-helper-mark-eval-scopes-0.0.3.tgz#902f75aeb537336edc35eb9f52b6f09db7785328"
+babel-helper-is-void-0@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-is-void-0/-/babel-helper-is-void-0-0.1.1.tgz#72f21a3abba0bef3837f9174fca731aed9a02888"
 
 babel-helper-mark-eval-scopes@^0.1.1:
   version "0.1.1"
@@ -496,9 +492,9 @@ babel-helper-replace-supers@^6.24.1:
     babel-traverse "^6.24.1"
     babel-types "^6.24.1"
 
-babel-helper-to-multiple-sequence-expressions@^0.0.4:
-  version "0.0.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-to-multiple-sequence-expressions/-/babel-helper-to-multiple-sequence-expressions-0.0.4.tgz#d94414b386b6286fbaad77f073dea9b34324b01c"
+babel-helper-to-multiple-sequence-expressions@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-helper-to-multiple-sequence-expressions/-/babel-helper-to-multiple-sequence-expressions-0.1.1.tgz#5f1b832b39e4acf954e9137f0251395c71196b35"
 
 babel-helpers@^6.24.1:
   version "6.24.1"
@@ -554,12 +550,12 @@ babel-plugin-istanbul@^2.0.0:
     test-exclude "^2.1.1"
 
 babel-plugin-istanbul@^4.0.0:
-  version "4.1.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.3.tgz#6ee6280410dcf59c7747518c3dfd98680958f102"
+  version "4.1.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.4.tgz#18dde84bf3ce329fddf3f4103fae921456d8e587"
   dependencies:
     find-up "^2.1.0"
-    istanbul-lib-instrument "^1.7.1"
-    test-exclude "^4.1.0"
+    istanbul-lib-instrument "^1.7.2"
+    test-exclude "^4.1.1"
 
 babel-plugin-jest-hoist@^17.0.2:
   version "17.0.2"
@@ -569,20 +565,19 @@ babel-plugin-jest-hoist@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-20.0.3.tgz#afedc853bd3f8dc3548ea671fbe69d03cc2c1767"
 
-babel-plugin-minify-builtins@^0.0.2:
-  version "0.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-builtins/-/babel-plugin-minify-builtins-0.0.2.tgz#f3be6121763c0c518d5ef82067cef4b615c9498c"
+babel-plugin-minify-builtins@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-builtins/-/babel-plugin-minify-builtins-0.1.1.tgz#b027c62464e58a3eb4b880e4456050f009d9a5bb"
   dependencies:
-    babel-helper-evaluate-path "^0.0.3"
+    babel-helper-evaluate-path "^0.1.0"
 
-babel-plugin-minify-constant-folding@^0.0.4:
-  version "0.0.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-constant-folding/-/babel-plugin-minify-constant-folding-0.0.4.tgz#b6e231026a6035e88ceadd206128d7db2b5c15e6"
+babel-plugin-minify-constant-folding@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-constant-folding/-/babel-plugin-minify-constant-folding-0.1.1.tgz#905fd18b19f1eccbdea251f6f4935edfaee14ab8"
   dependencies:
-    babel-helper-evaluate-path "^0.0.3"
-    jsesc "^2.4.0"
+    babel-helper-evaluate-path "^0.1.0"
 
-babel-plugin-minify-dead-code-elimination@^0.1.4:
+babel-plugin-minify-dead-code-elimination@^0.1.6:
   version "0.1.6"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-dead-code-elimination/-/babel-plugin-minify-dead-code-elimination-0.1.6.tgz#c5471346fb0a1046863fd765c784cba97d7b22e3"
   dependencies:
@@ -590,49 +585,49 @@ babel-plugin-minify-dead-code-elimination@^0.1.4:
     babel-helper-remove-or-void "^0.1.1"
     lodash.some "^4.6.0"
 
-babel-plugin-minify-flip-comparisons@^0.0.2:
-  version "0.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-flip-comparisons/-/babel-plugin-minify-flip-comparisons-0.0.2.tgz#7d0953aa5876ede6118966bda9edecc63bf346ab"
+babel-plugin-minify-flip-comparisons@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-flip-comparisons/-/babel-plugin-minify-flip-comparisons-0.1.1.tgz#74b8e515c911ba3f5a4933ccf724554320bd5498"
   dependencies:
-    babel-helper-is-void-0 "^0.0.1"
+    babel-helper-is-void-0 "^0.1.1"
 
-babel-plugin-minify-guarded-expressions@^0.0.4:
-  version "0.0.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-guarded-expressions/-/babel-plugin-minify-guarded-expressions-0.0.4.tgz#957104a760e6a7ffd967005a7a11621bb42fd11c"
+babel-plugin-minify-guarded-expressions@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-guarded-expressions/-/babel-plugin-minify-guarded-expressions-0.1.1.tgz#446c124c725c38f93859fed706c9aae1cfabc7ff"
   dependencies:
-    babel-helper-flip-expressions "^0.0.2"
+    babel-helper-flip-expressions "^0.1.1"
 
-babel-plugin-minify-infinity@^0.0.3:
-  version "0.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-infinity/-/babel-plugin-minify-infinity-0.0.3.tgz#4cc99b61d12b434ce80ad675103335c589cba9a1"
+babel-plugin-minify-infinity@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-infinity/-/babel-plugin-minify-infinity-0.1.1.tgz#62e91d2ff3c46520d67bc5bdbedfd15eaf3df851"
 
-babel-plugin-minify-mangle-names@^0.0.8:
-  version "0.0.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-mangle-names/-/babel-plugin-minify-mangle-names-0.0.8.tgz#1e2fea856dd742d5697aa26b427e41258a8c5b79"
+babel-plugin-minify-mangle-names@^0.1.2:
+  version "0.1.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-mangle-names/-/babel-plugin-minify-mangle-names-0.1.2.tgz#0ca139c450a734fde2583e49cb8db453c1753271"
   dependencies:
-    babel-helper-mark-eval-scopes "^0.0.3"
+    babel-helper-mark-eval-scopes "^0.1.1"
 
-babel-plugin-minify-numeric-literals@^0.0.1:
-  version "0.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-numeric-literals/-/babel-plugin-minify-numeric-literals-0.0.1.tgz#9597e6c31154d7daf3744d0bd417c144b275bd53"
+babel-plugin-minify-numeric-literals@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-numeric-literals/-/babel-plugin-minify-numeric-literals-0.1.1.tgz#d4b8b0c925f874714ee33ee4b26678583d7ce7fb"
 
-babel-plugin-minify-replace@^0.0.1:
-  version "0.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.0.1.tgz#5d5aea7cb9899245248d1ee9ce7a2fe556a8facc"
+babel-plugin-minify-replace@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.1.1.tgz#002f6d0156332077cd8ab9b08c1a04e6196bf98d"
 
-babel-plugin-minify-simplify@^0.0.8:
-  version "0.0.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-simplify/-/babel-plugin-minify-simplify-0.0.8.tgz#597b23327bba4373fed1c51461a689bce9ff4979"
+babel-plugin-minify-simplify@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-simplify/-/babel-plugin-minify-simplify-0.1.1.tgz#f6aa6b5b6846171eda02c2062f680ddbc3f7937f"
   dependencies:
-    babel-helper-flip-expressions "^0.0.2"
+    babel-helper-flip-expressions "^0.1.1"
     babel-helper-is-nodes-equiv "^0.0.1"
-    babel-helper-to-multiple-sequence-expressions "^0.0.4"
+    babel-helper-to-multiple-sequence-expressions "^0.1.1"
 
-babel-plugin-minify-type-constructors@^0.0.4:
-  version "0.0.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-type-constructors/-/babel-plugin-minify-type-constructors-0.0.4.tgz#52d8b623775107523227719ade2d0b7458758b5f"
+babel-plugin-minify-type-constructors@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-minify-type-constructors/-/babel-plugin-minify-type-constructors-0.1.1.tgz#63c9da537084d76b297e6c4d27c2b781ff0e747f"
   dependencies:
-    babel-helper-is-void-0 "^0.0.1"
+    babel-helper-is-void-0 "^0.1.1"
 
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
@@ -854,23 +849,23 @@ babel-plugin-transform-flow-strip-types@^6.22.0:
     babel-plugin-syntax-flow "^6.18.0"
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-inline-consecutive-adds@^0.0.2:
-  version "0.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.0.2.tgz#a58fcecfc09c08fbf9373a5a3e70746c03d01fc1"
+babel-plugin-transform-inline-consecutive-adds@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.1.1.tgz#7104335cf09abee7426f053cdf362d10e0696bfa"
 
-babel-plugin-transform-member-expression-literals@^6.8.1:
+babel-plugin-transform-member-expression-literals@^6.8.3:
   version "6.8.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-member-expression-literals/-/babel-plugin-transform-member-expression-literals-6.8.3.tgz#4eefa7fa1d3a86d05ac220bc3fdf96d5ed1835d6"
 
-babel-plugin-transform-merge-sibling-variables@^6.8.2:
+babel-plugin-transform-merge-sibling-variables@^6.8.4:
   version "6.8.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-merge-sibling-variables/-/babel-plugin-transform-merge-sibling-variables-6.8.4.tgz#813a433f2d8c6989ee3a9c5e0cb46d3752d367a9"
 
-babel-plugin-transform-minify-booleans@^6.8.0:
+babel-plugin-transform-minify-booleans@^6.8.2:
   version "6.8.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-minify-booleans/-/babel-plugin-transform-minify-booleans-6.8.2.tgz#8451579f706e702c1e1ab2756de5c8ea369cf07c"
 
-babel-plugin-transform-property-literals@^6.8.1:
+babel-plugin-transform-property-literals@^6.8.3:
   version "6.8.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-property-literals/-/babel-plugin-transform-property-literals-6.8.3.tgz#0dcd2ecf0486c54c23f84817f911c4ab0e8d4b99"
 
@@ -880,23 +875,29 @@ babel-plugin-transform-regenerator@^6.22.0:
   dependencies:
     regenerator-transform "0.9.11"
 
-babel-plugin-transform-regexp-constructors@^0.0.6:
-  version "0.0.6"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-regexp-constructors/-/babel-plugin-transform-regexp-constructors-0.0.6.tgz#0d92607f0d26268296980cb7c1dea5f2dd3e1e20"
+babel-plugin-transform-regexp-constructors@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-regexp-constructors/-/babel-plugin-transform-regexp-constructors-0.1.1.tgz#312ab7487cc88a1c62ee25ea1b6087e89b87799c"
 
-babel-plugin-transform-remove-console@^6.8.1:
+babel-plugin-transform-remove-console@^6.8.3:
   version "6.8.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-remove-console/-/babel-plugin-transform-remove-console-6.8.3.tgz#313441720324ad20af0fb009fa59e8102364626b"
 
-babel-plugin-transform-remove-debugger@^6.8.1:
+babel-plugin-transform-remove-debugger@^6.8.3:
   version "6.8.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-remove-debugger/-/babel-plugin-transform-remove-debugger-6.8.3.tgz#5064f2d843b77ce660ebaa7760be30eb925bb93f"
 
-babel-plugin-transform-remove-undefined@^0.0.5:
-  version "0.0.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-remove-undefined/-/babel-plugin-transform-remove-undefined-0.0.5.tgz#12ef11805e06e861dd2eb0c7cc041d2184b8f410"
+babel-plugin-transform-remove-undefined@^0.1.1:
+  version "0.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-remove-undefined/-/babel-plugin-transform-remove-undefined-0.1.1.tgz#57276fec8723e9f342c9ccb2b7bd6b48e1b1d84f"
 
-babel-plugin-transform-simplify-comparison-operators@^6.8.1:
+babel-plugin-transform-runtime@^6.23.0:
+  version "6.23.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-runtime/-/babel-plugin-transform-runtime-6.23.0.tgz#88490d446502ea9b8e7efb0fe09ec4d99479b1ee"
+  dependencies:
+    babel-runtime "^6.22.0"
+
+babel-plugin-transform-simplify-comparison-operators@^6.8.3:
   version "6.8.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-simplify-comparison-operators/-/babel-plugin-transform-simplify-comparison-operators-6.8.3.tgz#2e47e11e5f8dc33e97476e0263151d5fd57e1c4c"
 
@@ -907,7 +908,7 @@ babel-plugin-transform-strict-mode@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
-babel-plugin-transform-undefined-to-void@^6.8.0:
+babel-plugin-transform-undefined-to-void@^6.8.2:
   version "6.8.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.8.2.tgz#fe2b1d294eb05e87524eb93724dea6e2c3d66fa1"
 
@@ -919,32 +920,32 @@ babel-polyfill@^6.13.0, babel-polyfill@^6.23.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.10.0"
 
-babel-preset-babili@^0.0.12:
-  version "0.0.12"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-babili/-/babel-preset-babili-0.0.12.tgz#74d79205d54feae6470bc84231da0b9ac9fc7de9"
+babel-preset-babili@^0.1.2:
+  version "0.1.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-babili/-/babel-preset-babili-0.1.2.tgz#bac3e515e556a07e1b342ce6fd87c62527f86a94"
   dependencies:
-    babel-plugin-minify-builtins "^0.0.2"
-    babel-plugin-minify-constant-folding "^0.0.4"
-    babel-plugin-minify-dead-code-elimination "^0.1.4"
-    babel-plugin-minify-flip-comparisons "^0.0.2"
-    babel-plugin-minify-guarded-expressions "^0.0.4"
-    babel-plugin-minify-infinity "^0.0.3"
-    babel-plugin-minify-mangle-names "^0.0.8"
-    babel-plugin-minify-numeric-literals "^0.0.1"
-    babel-plugin-minify-replace "^0.0.1"
-    babel-plugin-minify-simplify "^0.0.8"
-    babel-plugin-minify-type-constructors "^0.0.4"
-    babel-plugin-transform-inline-consecutive-adds "^0.0.2"
-    babel-plugin-transform-member-expression-literals "^6.8.1"
-    babel-plugin-transform-merge-sibling-variables "^6.8.2"
-    babel-plugin-transform-minify-booleans "^6.8.0"
-    babel-plugin-transform-property-literals "^6.8.1"
-    babel-plugin-transform-regexp-constructors "^0.0.6"
-    babel-plugin-transform-remove-console "^6.8.1"
-    babel-plugin-transform-remove-debugger "^6.8.1"
-    babel-plugin-transform-remove-undefined "^0.0.5"
-    babel-plugin-transform-simplify-comparison-operators "^6.8.1"
-    babel-plugin-transform-undefined-to-void "^6.8.0"
+    babel-plugin-minify-builtins "^0.1.1"
+    babel-plugin-minify-constant-folding "^0.1.1"
+    babel-plugin-minify-dead-code-elimination "^0.1.6"
+    babel-plugin-minify-flip-comparisons "^0.1.1"
+    babel-plugin-minify-guarded-expressions "^0.1.1"
+    babel-plugin-minify-infinity "^0.1.1"
+    babel-plugin-minify-mangle-names "^0.1.2"
+    babel-plugin-minify-numeric-literals "^0.1.1"
+    babel-plugin-minify-replace "^0.1.1"
+    babel-plugin-minify-simplify "^0.1.1"
+    babel-plugin-minify-type-constructors "^0.1.1"
+    babel-plugin-transform-inline-consecutive-adds "^0.1.1"
+    babel-plugin-transform-member-expression-literals "^6.8.3"
+    babel-plugin-transform-merge-sibling-variables "^6.8.4"
+    babel-plugin-transform-minify-booleans "^6.8.2"
+    babel-plugin-transform-property-literals "^6.8.3"
+    babel-plugin-transform-regexp-constructors "^0.1.1"
+    babel-plugin-transform-remove-console "^6.8.3"
+    babel-plugin-transform-remove-debugger "^6.8.3"
+    babel-plugin-transform-remove-undefined "^0.1.1"
+    babel-plugin-transform-simplify-comparison-operators "^6.8.3"
+    babel-plugin-transform-undefined-to-void "^6.8.2"
     lodash.isplainobject "^4.0.6"
 
 babel-preset-env@^1.5.1:
@@ -1052,12 +1053,12 @@ babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1:
     lodash "^4.2.0"
     to-fast-properties "^1.0.1"
 
-babili@^0.0.12:
-  version "0.0.12"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babili/-/babili-0.0.12.tgz#c24625c1f04eda2815186e505e3c2a74ee8922ad"
+babili@^0.1.2:
+  version "0.1.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babili/-/babili-0.1.2.tgz#77231b3977272394863936cb88bf7baf276f97f5"
   dependencies:
-    babel-cli "^6.10.1"
-    babel-preset-babili "^0.0.12"
+    babel-cli "^6.24.1"
+    babel-preset-babili "^0.1.2"
 
 babylon@7.0.0-beta.8:
   version "7.0.0-beta.8"
@@ -3257,65 +3258,65 @@ isstream@0.1.x, isstream@~0.1.2:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
 istanbul-api@^1.0.0-aplha.10, istanbul-api@^1.1.1:
-  version "1.1.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-api/-/istanbul-api-1.1.8.tgz#a844e55c6f9aeee292e7f42942196f60b23dc93e"
+  version "1.1.9"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-api/-/istanbul-api-1.1.9.tgz#2827920d380d4286d857d57a2968a841db8a7ec8"
   dependencies:
     async "^2.1.4"
     fileset "^2.0.2"
-    istanbul-lib-coverage "^1.1.0"
-    istanbul-lib-hook "^1.0.6"
-    istanbul-lib-instrument "^1.7.1"
-    istanbul-lib-report "^1.1.0"
-    istanbul-lib-source-maps "^1.2.0"
-    istanbul-reports "^1.1.0"
+    istanbul-lib-coverage "^1.1.1"
+    istanbul-lib-hook "^1.0.7"
+    istanbul-lib-instrument "^1.7.2"
+    istanbul-lib-report "^1.1.1"
+    istanbul-lib-source-maps "^1.2.1"
+    istanbul-reports "^1.1.1"
     js-yaml "^3.7.0"
     mkdirp "^0.5.1"
     once "^1.4.0"
 
-istanbul-lib-coverage@^1.0.0, istanbul-lib-coverage@^1.0.1, istanbul-lib-coverage@^1.1.0:
-  version "1.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-coverage/-/istanbul-lib-coverage-1.1.0.tgz#caca19decaef3525b5d6331d701f3f3b7ad48528"
+istanbul-lib-coverage@^1.0.0, istanbul-lib-coverage@^1.0.1, istanbul-lib-coverage@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-coverage/-/istanbul-lib-coverage-1.1.1.tgz#73bfb998885299415c93d38a3e9adf784a77a9da"
 
-istanbul-lib-hook@^1.0.6:
-  version "1.0.6"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-hook/-/istanbul-lib-hook-1.0.6.tgz#c0866d1e81cf2d5319249510131fc16dee49231f"
+istanbul-lib-hook@^1.0.7:
+  version "1.0.7"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-hook/-/istanbul-lib-hook-1.0.7.tgz#dd6607f03076578fe7d6f2a630cf143b49bacddc"
   dependencies:
     append-transform "^0.4.0"
 
-istanbul-lib-instrument@^1.1.1, istanbul-lib-instrument@^1.1.4, istanbul-lib-instrument@^1.4.2, istanbul-lib-instrument@^1.7.1:
-  version "1.7.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-instrument/-/istanbul-lib-instrument-1.7.1.tgz#169e31bc62c778851a99439dd99c3cc12184d360"
+istanbul-lib-instrument@^1.1.1, istanbul-lib-instrument@^1.1.4, istanbul-lib-instrument@^1.4.2, istanbul-lib-instrument@^1.7.2:
+  version "1.7.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-instrument/-/istanbul-lib-instrument-1.7.2.tgz#6014b03d3470fb77638d5802508c255c06312e56"
   dependencies:
     babel-generator "^6.18.0"
     babel-template "^6.16.0"
     babel-traverse "^6.18.0"
     babel-types "^6.18.0"
     babylon "^6.13.0"
-    istanbul-lib-coverage "^1.1.0"
+    istanbul-lib-coverage "^1.1.1"
     semver "^5.3.0"
 
-istanbul-lib-report@^1.1.0:
-  version "1.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-report/-/istanbul-lib-report-1.1.0.tgz#444c4ecca9afa93cf584f56b10f195bf768c0770"
+istanbul-lib-report@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-report/-/istanbul-lib-report-1.1.1.tgz#f0e55f56655ffa34222080b7a0cd4760e1405fc9"
   dependencies:
-    istanbul-lib-coverage "^1.1.0"
+    istanbul-lib-coverage "^1.1.1"
     mkdirp "^0.5.1"
     path-parse "^1.0.5"
     supports-color "^3.1.2"
 
-istanbul-lib-source-maps@^1.1.0, istanbul-lib-source-maps@^1.2.0:
-  version "1.2.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.0.tgz#8c7706d497e26feeb6af3e0c28fd5b0669598d0e"
+istanbul-lib-source-maps@^1.1.0, istanbul-lib-source-maps@^1.2.1:
+  version "1.2.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.1.tgz#a6fe1acba8ce08eebc638e572e294d267008aa0c"
   dependencies:
     debug "^2.6.3"
-    istanbul-lib-coverage "^1.1.0"
+    istanbul-lib-coverage "^1.1.1"
     mkdirp "^0.5.1"
     rimraf "^2.6.1"
     source-map "^0.5.3"
 
-istanbul-reports@^1.1.0:
-  version "1.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-reports/-/istanbul-reports-1.1.0.tgz#1ef3b795889219cfb5fad16365f6ce108d5f8c66"
+istanbul-reports@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-reports/-/istanbul-reports-1.1.1.tgz#042be5c89e175bc3f86523caab29c014e77fee4e"
   dependencies:
     handlebars "^4.0.3"
 
@@ -3379,9 +3380,9 @@ jest-cli@^17.0.2:
     worker-farm "^1.3.1"
     yargs "^6.3.0"
 
-jest-cli@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-cli/-/jest-cli-20.0.3.tgz#fe88ddbb7a9f3a16d0ed55339a0a2424f7f0d361"
+jest-cli@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-cli/-/jest-cli-20.0.4.tgz#e532b19d88ae5bc6c417e8b0593a6fe954b1dc93"
   dependencies:
     ansi-escapes "^1.4.0"
     callsites "^2.0.0"
@@ -3393,15 +3394,15 @@ jest-cli@^20.0.3:
     istanbul-lib-instrument "^1.4.2"
     istanbul-lib-source-maps "^1.1.0"
     jest-changed-files "^20.0.3"
-    jest-config "^20.0.3"
+    jest-config "^20.0.4"
     jest-docblock "^20.0.3"
     jest-environment-jsdom "^20.0.3"
-    jest-haste-map "^20.0.3"
-    jest-jasmine2 "^20.0.3"
+    jest-haste-map "^20.0.4"
+    jest-jasmine2 "^20.0.4"
     jest-message-util "^20.0.3"
     jest-regex-util "^20.0.3"
     jest-resolve-dependencies "^20.0.3"
-    jest-runtime "^20.0.3"
+    jest-runtime "^20.0.4"
     jest-snapshot "^20.0.3"
     jest-util "^20.0.3"
     micromatch "^2.3.11"
@@ -3428,18 +3429,18 @@ jest-config@^17.0.3:
     jest-util "^17.0.2"
     json-stable-stringify "^1.0.0"
 
-jest-config@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-20.0.3.tgz#a934f27eea764915801cdda26f6f8eec2ac79266"
+jest-config@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-20.0.4.tgz#e37930ab2217c913605eff13e7bd763ec48faeea"
   dependencies:
     chalk "^1.1.3"
     glob "^7.1.1"
     jest-environment-jsdom "^20.0.3"
     jest-environment-node "^20.0.3"
-    jest-jasmine2 "^20.0.3"
+    jest-jasmine2 "^20.0.4"
     jest-matcher-utils "^20.0.3"
     jest-regex-util "^20.0.3"
-    jest-resolve "^20.0.3"
+    jest-resolve "^20.0.4"
     jest-validate "^20.0.3"
     pretty-format "^20.0.3"
 
@@ -3509,9 +3510,9 @@ jest-haste-map@^17.0.3:
     sane "~1.4.1"
     worker-farm "^1.3.1"
 
-jest-haste-map@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-haste-map/-/jest-haste-map-20.0.3.tgz#6377d537eaf34eb5f75121a691cae3fde82ba971"
+jest-haste-map@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-haste-map/-/jest-haste-map-20.0.4.tgz#653eb55c889ce3c021f7b94693f20a4159badf03"
   dependencies:
     fb-watchman "^2.0.0"
     graceful-fs "^4.1.11"
@@ -3529,9 +3530,9 @@ jest-jasmine2@^17.0.3:
     jest-snapshot "^17.0.3"
     jest-util "^17.0.2"
 
-jest-jasmine2@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-jasmine2/-/jest-jasmine2-20.0.3.tgz#18c4e9d029da7ed1ae727c55300064d1a0542974"
+jest-jasmine2@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-jasmine2/-/jest-jasmine2-20.0.4.tgz#fcc5b1411780d911d042902ef1859e852e60d5e1"
   dependencies:
     chalk "^1.1.3"
     graceful-fs "^4.1.11"
@@ -3623,9 +3624,9 @@ jest-resolve@^17.0.3:
     jest-haste-map "^17.0.3"
     resolve "^1.1.6"
 
-jest-resolve@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve/-/jest-resolve-20.0.3.tgz#375307aa40f78532d40ff8b17d5300b1519f8dd4"
+jest-resolve@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve/-/jest-resolve-20.0.4.tgz#9448b3e8b6bafc15479444c6499045b7ffe597a5"
   dependencies:
     browser-resolve "^1.11.2"
     is-builtin-module "^1.0.0"
@@ -3651,9 +3652,9 @@ jest-runtime@^17.0.3:
     multimatch "^2.1.0"
     yargs "^6.3.0"
 
-jest-runtime@^20.0.3:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-runtime/-/jest-runtime-20.0.3.tgz#dddd22bbc429e26e6a96d1acd46ca55714b09252"
+jest-runtime@^20.0.4:
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-runtime/-/jest-runtime-20.0.4.tgz#a2c802219c4203f754df1404e490186169d124d8"
   dependencies:
     babel-core "^6.0.0"
     babel-jest "^20.0.3"
@@ -3661,10 +3662,10 @@ jest-runtime@^20.0.3:
     chalk "^1.1.3"
     convert-source-map "^1.4.0"
     graceful-fs "^4.1.11"
-    jest-config "^20.0.3"
-    jest-haste-map "^20.0.3"
+    jest-config "^20.0.4"
+    jest-haste-map "^20.0.4"
     jest-regex-util "^20.0.3"
-    jest-resolve "^20.0.3"
+    jest-resolve "^20.0.4"
     jest-util "^20.0.3"
     json-stable-stringify "^1.0.1"
     micromatch "^2.3.11"
@@ -3735,10 +3736,10 @@ jest-validate@^20.0.3:
     pretty-format "^20.0.3"
 
 jest@^20.0.0:
-  version "20.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest/-/jest-20.0.3.tgz#e4fd054c4f1170a116a00761da4cfdb73f1cdc33"
+  version "20.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest/-/jest-20.0.4.tgz#3dd260c2989d6dad678b1e9cc4d91944f6d602ac"
   dependencies:
-    jest-cli "^20.0.3"
+    jest-cli "^20.0.4"
 
 jodid25519@^1.0.0:
   version "1.0.2"
@@ -3788,10 +3789,6 @@ jsdom@^9.12.0, jsdom@^9.8.1:
 jsesc@^1.3.0:
   version "1.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsesc/-/jsesc-1.3.0.tgz#46c3fec8c1892b12b0833db9bc7622176dbab34b"
-
-jsesc@^2.4.0:
-  version "2.5.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsesc/-/jsesc-2.5.1.tgz#e421a2a8e20d6b0819df28908f782526b96dd1fe"
 
 jsesc@~0.5.0:
   version "0.5.0"
@@ -5824,9 +5821,9 @@ test-exclude@^2.1.1:
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
 
-test-exclude@^4.1.0:
-  version "4.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/test-exclude/-/test-exclude-4.1.0.tgz#04ca70b7390dd38c98d4a003a173806ca7991c91"
+test-exclude@^4.1.1:
+  version "4.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/test-exclude/-/test-exclude-4.1.1.tgz#4d84964b0966b0087ecc334a2ce002d3d9341e26"
   dependencies:
     arrify "^1.0.1"
     micromatch "^2.3.11"
@@ -5950,8 +5947,8 @@ tslint@^5.2.0:
     tsutils "^2.0.0"
 
 tsutils@^2.0.0:
-  version "2.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tsutils/-/tsutils-2.1.0.tgz#5be8376c929528f65b302de9e17b0004e4c1eb20"
+  version "2.3.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tsutils/-/tsutils-2.3.0.tgz#96e661d7c2363f31adc8992ac67bbe7b7fc175e5"
 
 tty-browserify@0.0.0:
   version "0.0.0"
@@ -5996,8 +5993,8 @@ typescript-eslint-parser@^3.0.0:
     semver "5.3.0"
 
 typescript@^2.3.2:
-  version "2.3.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/typescript/-/typescript-2.3.3.tgz#9639f3c3b40148e8ca97fe08a51dd1891bb6be22"
+  version "2.3.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
 
 uglify-js@^2.6, uglify-js@^2.6.1, uglify-js@^2.8.5:
   version "2.8.27"

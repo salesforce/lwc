@@ -1,5 +1,5 @@
 {
   "metadata": {
-    "componentDependency": ["ns-row"]
+    "templateDependencies": ["ns-row"]
   }
 }

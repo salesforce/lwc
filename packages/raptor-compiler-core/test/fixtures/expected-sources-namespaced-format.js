@@ -1,26 +1,26 @@
 define('myns-class_and_template', function () {
-    'use strict';
 
-    function tmpl($api, $cmp, $slotset, $ctx) {
-        return [$api.h("section", {}, [])];
+function tmpl($api, $cmp, $slotset, $ctx) {
+    return [$api.h("section", {}, [])];
+}
+
+const Test = 1;
+class ClassAndTemplate {
+    constructor() {
+        this.t = Test;
+
+        this.counter = 0;
     }
 
-    const Test = 1;
-    class ClassAndTemplate {
-        constructor() {
-            this.t = Test;
-
-            this.counter = 0;
-        }
-
-        render() {
-            return tmpl;
-        }
-
+    render() {
+        return tmpl;
     }
-    ClassAndTemplate.publicProps = {
-        t: 1
-    };
 
-    return ClassAndTemplate;
+}
+ClassAndTemplate.publicProps = {
+    t: 1
+};
+
+return ClassAndTemplate;
+
 });

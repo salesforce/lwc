@@ -339,7 +339,7 @@ export default function(templateRoot: IRElement, metadata: CompilationMetdata): 
         STATEMENT:  statement,
     }) as t.Statement;
 
-    const imports = Array.from(metadata.componentDependency).map((cmpClassName) => (
+    const imports = metadata.templateDependencies.map((cmpClassName) => (
         importFromComponentName(cmpClassName)
     ));
 

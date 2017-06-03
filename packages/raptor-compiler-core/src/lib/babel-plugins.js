@@ -41,10 +41,10 @@ import regenerator from "babel-plugin-transform-regenerator";
 // export const PLUGINS_LATEST = {
 //     debug: true,
 //     targets: {
-//         chrome: 57,
+//         chrome: 58,
 //         safari: 10,
 //         firefox: 53,
-//         edge: 14
+//         edge: 15
 //     },
 //     modules: false,
 // };
@@ -58,12 +58,9 @@ import regenerator from "babel-plugin-transform-regenerator";
 // };
 
 export const BABEL_PLUGINS_LATEST = [
-    [destructuring, {}],
-    [forOf, {}],
     [functionName, {}],
-    [exponentiator, {}],
     [asyncGenerator, {}],
-    [trailingCommas, {}]
+    [exponentiator, {}]
 ];
 // IE11 and above
 export const BABEL_PLUGINS_COMPAT = [
@@ -89,5 +86,10 @@ export const BABEL_PLUGINS_COMPAT = [
     [exponentiator, {}],
     [asyncGenerator, {}],
     [trailingCommas, {}],
-    [blockScoped, {}]
+    [blockScoped, {}],
+    ["transform-runtime", {
+      helpers: true,
+      polyfill: false,
+      moduleName: "compat"
+    }]
 ];
