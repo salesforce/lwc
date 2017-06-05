@@ -2,6 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "module": "es2015",
-    "noEmit": true
+    "noEmit": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "strict": true
   }
 }

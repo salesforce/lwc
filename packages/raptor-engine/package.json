@@ -8,6 +8,7 @@
   "scripts": {
     "clean": "rimraf dist/ fake-cdn/ fake-html/ && git checkout fake-cdn fake-html",
     "test": "jest --coverage",
+    "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "yarn run build:lib",
     "start": "yarn run build:fixtures && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.engine.js & node scripts/build-fixtures.js --watch && forever stop raptor",
