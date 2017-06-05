@@ -1,7 +1,7 @@
 define('myns-class_and_template', function () {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h("section", {}, [])];
+  return [$api.h("section", {}, [])];
 }
 
 const Test = 1;

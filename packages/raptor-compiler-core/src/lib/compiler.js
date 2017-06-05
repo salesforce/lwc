@@ -3,6 +3,7 @@ import { getSource, mergeMetadata } from './utils';
 import transformClass from './transform-class';
 import transformTemplate from './transform-template';
 import transformBundle from './transform-bundle';
+import { MODES } from './constants';
 import sourceResolver from './rollup-plugin-source-resolver';
 import { rollup } from 'rollup';
 
@@ -31,11 +32,29 @@ export function compileBundle(entry, options) {
     return new Promise((resolve, reject) => {
         rollup({ entry, plugins })
         .then((bundle) => {
-            const bundleResult = bundle.generate({ format: 'es' });
+            const devBundleOptions = {
+                moduleId: options.normalizedModuleName,
+                interop: false,
+                useStrict: false,
+                format: options.format
+            };
+
+            const isDevMode = options.mode === MODES.DEV;
+            const bundleOptions = isDevMode ?  devBundleOptions : { format: 'es' };
+            const bundleResult = bundle.generate(bundleOptions);
             bundleResult.metadata = mergeMetadata(options.$metadata);
-            // TODO: Eventually use the AST tree as input so we don't have to re-parse it
-            // Bugs on compiler to fix that!
-            resolve(transformBundle(entry, bundleResult, options));
+
+            // In dev mode we don't need to do any more transforms, return early
+            if (isDevMode) {
+                resolve({
+                    code: bundleResult.code,
+                    map: bundleResult.map,
+                    metadata: bundleResult.metadata
+                });
+            } else {
+                // For any other mode, we need to do more transformations
+                resolve(transformBundle(entry, bundleResult, options));
+            }
         })
         .catch(reject);
     });

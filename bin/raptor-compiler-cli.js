@@ -3,12 +3,29 @@
 import { compile } from '../packages/raptor-compiler-core/src/index.js';
 import * as path from 'path';
 
-const filePath = process.argv[2] || '';
+const args = process.argv.slice(2);
+if (!args.length) {
+    console.log(`[ERROR]: Missing parameters.
+    Usage: ./bin/raptor-compiler-cli.js path/to/file.js
+            --format [ amd | es6 | iife ]
+            --mode [ dev | prod | compat | prod_compat | all ]`
+    );
+    process.exit();
+}
+
+const options = { format: 'es6', mode: 'dev' };
+let filePath, arg;
+
+while (arg = args.shift()) {
+    if (arg.indexOf('-') === 0) {
+        options[arg.replace(/-/g, '')] = args.shift();
+    } else {
+        filePath = arg;
+    }
+}
+
 const entry = path.resolve(filePath);
-const options = {
-    format: 'amd',
-    mode: 'all',
-};
+
 
 compile(entry, options)
 .then((result) => {

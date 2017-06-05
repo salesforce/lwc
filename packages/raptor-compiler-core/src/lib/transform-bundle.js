@@ -2,7 +2,7 @@ import { transform, transformFromAst } from 'babel-core';
 import { MODES, DEV_BABEL_CONFIG, PROD_BABEL_CONFIG, COMPAT_BABEL_CONFIG, MINIFY_CONFIG, PROD_COMPAT_BABEL_CONFIG } from './constants';
 import { rollup } from 'rollup';
 
-export default function(entry: string, bundle: any, options: any) {
+export default function(entry, bundle, options) {
     options = options || {};
 
     switch (options.mode) {
@@ -25,8 +25,6 @@ export default function(entry: string, bundle: any, options: any) {
 }
 
 function transformBundle(entry, bundle, babelConfig, options, minify) {
-    const normalizedModuleName = [options.componentNamespace, options.componentName].join('-');
-
     return rollup({
         entry,
         // Don't bail on imports, the imports get resolved during linking
@@ -55,7 +53,7 @@ function transformBundle(entry, bundle, babelConfig, options, minify) {
     }).then(bundleResult => {
         const result = bundleResult.generate({
             format: options.format,
-            moduleId: normalizedModuleName,
+            moduleId: options.normalizedModuleName,
             interop: false,
             useStrict: false
         });

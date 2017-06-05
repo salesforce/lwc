@@ -6,13 +6,13 @@ export { basename, dirname, join, extname };
 
 export const DEFAULT_NS = 'x';
 
-export function normalizeEntryPath(path: string) {
+export function normalizeEntryPath(path) {
     path = normalize(path.replace(/\/$/, ''));
     const ext = extname(path);
     return ext ? path : join(path, path.split(sep).pop() + ext);
 }
 
-export function fileParts(filePath: string) {
+export function fileParts(filePath) {
     const filename = basename(filePath);
     const rawExt = extname(filename);
     const ext = rawExt.substring(1);
@@ -20,7 +20,7 @@ export function fileParts(filePath: string) {
     return { name: name, ext: ext };
 }
 
-export function getSource(path: string, sources: any) {
+export function getSource(path, sources) {
     sources = sources || {};
     const filename = basename(path);
     const src = sources[filename] || sources[path];
@@ -36,7 +36,7 @@ export function getSource(path: string, sources: any) {
 * '.../foo/foo.js' => ns: default, name: foo
 * '.../myns/foo/foo.js' => ns: myns, name: foo
 */
-export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
+export function getQualifiedName(path, mapNamespaceFromPath) {
     const ext = extname(path);
     const parts = path.split('/');
     const name = basename(parts.pop(), ext);
@@ -57,12 +57,13 @@ export function getQualifiedName(path: string, mapNamespaceFromPath: boolean) {
     };
 }
 
-export function normalizeOptions(options: any) {
+export function normalizeOptions(options) {
     const entry = options.entry;
     const qName = getQualifiedName(entry, options.mapNamespaceFromPath);
 
     options.componentNamespace = options.componentNamespace || qName.componentNamespace;
     options.componentName = options.componentName || qName.componentName;
+    options.normalizedModuleName = [options.componentNamespace, options.componentName].join('-');
     options.bundle = options.bundle !== undefined ? options.bundle : true;
     options.mode = options.mode || MODES.DEV;
     options.sources = options.sources || {};
@@ -72,7 +73,7 @@ export function normalizeOptions(options: any) {
     return options;
 }
 
-export function mergeMetadata (metadata: any) {
+export function mergeMetadata (metadata) {
     const templateUsedIds = [];
     const templateDependencies = [];
     const classDependencies = [];

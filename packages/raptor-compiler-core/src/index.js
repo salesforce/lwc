@@ -9,7 +9,7 @@ const BASE_OPTIONS = {
     }
 };
 
-export function compile(entry: string, options: any): Promise<any> {
+export function compile(entry, options){
     options = options || {};
     entry = normalizeEntryPath(entry);
     options = normalizeOptions(Object.assign({}, { entry }, BASE_OPTIONS, options));
@@ -20,7 +20,7 @@ export function compile(entry: string, options: any): Promise<any> {
     }
 }
 
-export function compileResource(entry: string, options: any): Object {
+export function compileResource(entry, options) {
     options = options || {};
     entry = normalizeEntryPath(entry);
     options = normalizeOptions(Object.assign({}, { entry }, BASE_OPTIONS, options));

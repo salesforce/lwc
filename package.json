@@ -22,15 +22,9 @@
     "url": "https://git.soma.salesforce.com/raptor/raptor.git"
   },
   "bin": {
-    "raptor-template": "bin/raptor-template-cli.js",
     "raptor-compiler": "bin/raptor-compiler-cli.js"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-loader": "^7.0.0",
-    "babel-preset-env": "^1.5.1",
-    "babel-preset-flow": "^6.23.0",
-    "babili": "^0.1.2",
     "glob": "^7.1.1",
     "lerna": "2.0.0-rc.5",
     "mocha": "^3.2.0",
@@ -38,6 +32,7 @@
     "prettier": "^1.3.1",
     "rimraf": "^2.6.1",
     "string-replace-webpack-plugin": "^0.1.3",
-    "webpack": "^2.3.3"
+    "webpack": "^2.3.3",
+    "webpack-closure-compiler": "^2.1.4"
   }
 }

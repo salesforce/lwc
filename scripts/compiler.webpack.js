@@ -1,7 +1,8 @@
 /* eslint-env node */
-const webpack = require('webpack');
 const path = require('path');
+const webpack = require('webpack');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
+const ClosureCompilerPlugin = require('webpack-closure-compiler');
 const compilerPkg = require('../packages/raptor-compiler-core/package.json');
 
 module.exports = function (/*env*/) {
@@ -20,11 +21,16 @@ module.exports = function (/*env*/) {
             net: 'empty',
         },
         plugins: [
-            new webpack.DefinePlugin({
-                'process.hrtime': 'Date.now'
-            }),
+            new webpack.DefinePlugin({ 'process.hrtime': 'Date.now' }),
             new StringReplacePlugin(),
-
+            new ClosureCompilerPlugin({
+                compiler: {
+                    language_in: 'ES6',
+                    language_out: 'ES5',
+                    compilation_level: 'SIMPLE'
+                },
+                concurrency: 4,
+            })
         ],
         module: {
             loaders: [{
@@ -35,17 +41,6 @@ module.exports = function (/*env*/) {
                         replacement: () => compilerPkg.version
                     }]
                 })
-            }, {
-                test: /\.js$/,
-                exclude: /(bower_components)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: [
-                        'babili',
-                        'flow',
-                    ],
-                    babelrc: false,
-                }
             }]
         }
     }]

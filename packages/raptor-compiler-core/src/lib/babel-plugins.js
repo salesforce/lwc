@@ -21,7 +21,6 @@ import computedProps from "babel-plugin-transform-es2015-computed-properties";
 import destructuring from "babel-plugin-transform-es2015-destructuring";
 import duplicatedKeys from "babel-plugin-transform-es2015-duplicate-keys";
 import forOf from "babel-plugin-transform-es2015-for-of";
-import functionName from "babel-plugin-transform-es2015-function-name";
 import strLiterals from "babel-plugin-transform-es2015-literals";
 import objSuper from "babel-plugin-transform-es2015-object-super";
 import parameters from "babel-plugin-transform-es2015-parameters";
@@ -31,9 +30,7 @@ import stickyRegex from "babel-plugin-transform-es2015-sticky-regex";
 import templateLiterals from "babel-plugin-transform-es2015-template-literals";
 import typeofSymbol from "babel-plugin-transform-es2015-typeof-symbol";
 import uniRegex from "babel-plugin-transform-es2015-unicode-regex";
-import exponentiator from "babel-plugin-transform-exponentiation-operator";
 import regenerator from "babel-plugin-transform-regenerator";
-
 
 // We could use a more advance filtering as showed here:
 // https://github.com/babel/babel-preset-env
@@ -57,11 +54,6 @@ import regenerator from "babel-plugin-transform-regenerator";
 //     modules: false,
 // };
 
-export const BABEL_PLUGINS_LATEST = [
-    [functionName, {}],
-    [asyncGenerator, {}],
-    [exponentiator, {}]
-];
 // IE11 and above
 export const BABEL_PLUGINS_COMPAT = [
     [arrowFunctions, {}],
@@ -72,7 +64,6 @@ export const BABEL_PLUGINS_COMPAT = [
     [destructuring, {}],
     [duplicatedKeys, {}],
     [forOf, {}],
-    [functionName, {}],
     [strLiterals, {}],
     [objSuper, {}],
     [parameters, {}],
@@ -83,7 +74,6 @@ export const BABEL_PLUGINS_COMPAT = [
     [typeofSymbol, {}],
     [uniRegex, {}],
     [regenerator, {}],
-    [exponentiator, {}],
     [asyncGenerator, {}],
     [trailingCommas, {}],
     [blockScoped, {}],

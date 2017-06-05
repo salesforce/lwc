@@ -1,6 +1,7 @@
 *.log
 -local-*
 .DS_Store
+dist
 node_modules
 packages/raptor-engine/fake-cdn/**/*.js
 packages/raptor-engine/fake-cdn/**/*.map

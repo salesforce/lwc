@@ -1,7 +1,7 @@
 define('myns-relative_import', function () {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h("section", {}, [])];
+  return [$api.h("section", {}, [])];
 }
 
 function test() {}

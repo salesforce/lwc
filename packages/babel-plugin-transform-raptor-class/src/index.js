@@ -1,7 +1,6 @@
 /* eslint-env node */
 const pathLib = require('path');
 
-const DEPRECATED_PUBLIC_METHOD_DECORATOR = 'method';
 const API_DECORATOR = 'api';
 const KEY_PROPS = 'publicProps';
 const KEY_METHODS = 'publicMethods';
@@ -65,6 +64,18 @@ module.exports = function (babel) {
         );
     }
 
+    function extractApiPublicDecorator(key, node, list) {
+        if (node.decorators && node.decorators.length) {
+            const apiIndex = node.decorators.findIndex(i => i.expression.name === API_DECORATOR);
+            if (apiIndex !== -1) {
+                if (list) {
+                    list.push(key);
+                }
+                node.decorators.splice(apiIndex, 1);
+            }
+        }
+    }
+
     function injectRenderer(className, path, state) {
         const classPath = state.opts.componentName || state.file.opts.filename;
         const cmpName = pathLib.basename(classPath, '.js');
@@ -103,6 +114,7 @@ module.exports = function (babel) {
 
                     // Blacklist state from pulicProps
                     if (prop.node.key.name !== 'state') {
+                        extractApiPublicDecorator(key, prop.node);
                         publicProps.push(t.objectProperty(t.identifier(prop.node.key.name), t.numericLiteral(1)));
                     }
 
@@ -126,15 +138,7 @@ module.exports = function (babel) {
                 // Methods
             } else if (prop.isClassMethod({ kind: 'method' })) {
                 // Push to public method
-                if (prop.node.decorators && prop.node.decorators.length) {
-                    const publicDecorator = prop.node.decorators.find(i => {
-                        return i.expression.name === DEPRECATED_PUBLIC_METHOD_DECORATOR || i.expression.name === API_DECORATOR
-                    });
-
-                    if (publicDecorator) {
-                        publicMethods.push(key);
-                    }
-                }
+                extractApiPublicDecorator(key, prop.node, publicMethods);
 
                 if (key in KEY_MISSPELLED_METHODS) {
                     throw path.buildCodeFrameError(`Wrong lifecycle method name ${key}. You probably meant ${KEY_MISSPELLED_METHODS[key]}`);
@@ -144,11 +148,6 @@ module.exports = function (babel) {
                 if (key === KEY_RENDER && !prop.node.static) {
                     knownStaticKeys[key] = true;
                 }
-            }
-
-            // Remove all decorators
-            if (prop.node) {
-                prop.node.decorators = null;
             }
 
         }
