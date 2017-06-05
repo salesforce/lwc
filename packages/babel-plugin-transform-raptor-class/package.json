@@ -1,13 +1,13 @@
 {
   "name": "babel-plugin-transform-raptor-class",
   "description": "Babel plugin to transform a raptor class",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
-    "raptor-helper-fixture": "0.10.4"
+    "raptor-helper-fixture": "0.10.5"
   },
   "scripts": {
     "test": "mocha"
