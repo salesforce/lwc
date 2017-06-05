@@ -5,14 +5,11 @@
  */
 
 const p = require('path');
-const babel = require('rollup-plugin-babel');
-const commonjs = require('rollup-plugin-commonjs');
-const flow = require('rollup-plugin-flow');
-const nodeResolve = require('rollup-plugin-node-resolve');
+const typescript = require('rollup-plugin-typescript');
 const { copyright } = require('./utils.js');
 
 module.exports = {
-    entry: p.resolve('src/framework/main.js'),
+    entry: p.resolve('src/framework/main.ts'),
     targets: [
         { dest: 'lib/raptor.js', format: 'cjs' },
         { dest: 'lib/raptor.es.js', format: 'es' },
@@ -20,17 +17,8 @@ module.exports = {
     banner: copyright,
     external: [],
     plugins: [
-        flow({
-            all: true,
-            exclude: '**/node_modules/**',
+        typescript({
+            typescript: require('typescript'),
         }),
-        babel({
-            babelrc: false,
-            presets: [
-                ["env", { "modules": false }]
-            ],
-        }),
-        nodeResolve({ module: true }),
-        commonjs({ sourceMap: false }),
     ],
 };

@@ -8,6 +8,7 @@
   "scripts": {
     "clean": "rimraf dist/ fake-cdn/ fake-html/ && git checkout fake-cdn fake-html",
     "test": "jest --coverage",
+    "lint": "eslint src/**/*.ts",
     "build": "yarn run build:lib",
     "start": "yarn run build:fixtures && forever --uid raptor fake-server/server.js & rollup -w -c scripts/rollup.config.lib.js & rollup -w -c scripts/rollup.config.engine.js & node scripts/build-fixtures.js --watch && forever stop raptor",
     "stop": "forever stopall",
@@ -16,7 +17,6 @@
     "build:engine:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.engine.js",
     "build:dist": "yarn run build:engine:dev && yarn run build:engine:prod",
     "build:fixtures": "node scripts/build-fixtures.js",
-    "build:services": "node scripts/rollup.services.js",
     "build:all": "yarn run build:fixtures --production && yarn run build:dist && yarn run build:lib",
     "prepublish": "yarn run build"
   },
@@ -24,49 +24,43 @@
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-jest": "^17.0.2",
-    "babel-loader": "^6.4.1",
-    "babel-polyfill": "^6.13.0",
-    "babel-preset-env": "^1.5.1",
-    "babel-preset-flow": "^6.23.0",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
+    "eslint-plugin-typescript": "^0.1.0",
     "expect": "^1.20.2",
     "express": "^4.14.0",
     "forever": "^0.15.2",
     "glob": "^7.1.1",
-    "jest-cli": "^17.0.2",
+    "jest": "^20.0.4",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",
     "rollup": "^0.41.6",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-commonjs": "^3.3.1",
-    "rollup-plugin-flow": "^v1.1.0",
     "rollup-plugin-inject": "^1.4.1",
-    "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-raptor-compiler": "0.10.3",
-    "rollup-plugin-replace": "^1.1.1",
-    "rollup-plugin-strip": "^1.1.1",
+    "rollup-plugin-strip-caridy-patched": "^1.1.1",
+    "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^2.5.0",
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
     "snabbdom": "^0.5.4",
-    "string-replace-webpack-plugin": "^0.1.3",
-    "typescript": "^2.3.2",
+    "typescript": "^2.3.4",
+    "typescript-eslint-parser": "^3.0.0",
     "watch": "^1.0.0",
     "yargs": "^6.0.0"
   },
   "jest": {
-    "moduleFileExtensions": ["ts", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "testRegex": "/__tests__/",
     "transform": {
       "^.+\\.(ts|js)$": "<rootDir>/scripts/jest-preprocessor.js"
     },
     "collectCoverageFrom": [
-      "src/framework/*.js"
+      "src/framework/*.ts"
     ],
     "coverageReporters": [
       "lcov",
@@ -77,9 +71,9 @@
     "coverageThreshold": {
       "global": {
         "branches": 65,
-        "functions": 65,
-        "lines": 70,
-        "statements": 70
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
       }
     }
   }

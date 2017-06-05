@@ -5,18 +5,15 @@
  */
 
 const p = require('path');
-const babel = require('rollup-plugin-babel');
-const nodeResolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
 const uglify = require('rollup-plugin-uglify');
-const flow = require('rollup-plugin-flow');
-const strip = require('rollup-plugin-strip');
+const strip = require('rollup-plugin-strip-caridy-patched');
+const typescript = require('rollup-plugin-typescript');
 const { copyright } = require('./utils.js');
 const isProduction = process.env.NODE_ENV === 'production';
 const version = require('../package.json').version;
 
 module.exports = {
-    entry: p.resolve('src/framework/main.js'),
+    entry: p.resolve('src/framework/main.ts'),
     dest: p.resolve(`dist/engine.${isProduction ? 'min.js' : 'js'}`),
     format: 'iife',
     moduleName: 'Engine',
@@ -25,25 +22,13 @@ module.exports = {
     sourceMap: true,
     globals: {},
     plugins: [
-        flow({
-            all: true,
-            exclude: '**/node_modules/**',
-        }),
-        babel({
-            babelrc: false,
-            presets: [
-                ["env", { "modules": false }]
-            ],
-        }),
-        nodeResolve({
-            module: true,
-        }),
-        commonjs({
-            sourceMap: true,
+        typescript({
+            typescript: require('typescript'),
         }),
         isProduction && strip({
             debugger: true,
             functions: [ 'console.*', 'assert.*' ],
+            include: '**/*.ts',
         }),
         isProduction && uglify({
             warnings: false,

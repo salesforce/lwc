@@ -16,8 +16,8 @@
     "@types/babylon" "*"
 
 "@types/babel-traverse@^6.7.16":
-  version "6.7.16"
-  resolved "https://registry.npmjs.org/@types/babel-traverse/-/babel-traverse-6.7.16.tgz#52f475893b8633f653499d745302fa5572a7bd05"
+  version "6.7.17"
+  resolved "https://registry.npmjs.org/@types/babel-traverse/-/babel-traverse-6.7.17.tgz#5212a4edced81f53a6c4fb1fd7a34aa4ff6cf36b"
   dependencies:
     "@types/babel-types" "*"
 
@@ -32,12 +32,12 @@
     "@types/babel-types" "*"
 
 "@types/jest@^19.2.3":
-  version "19.2.3"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-19.2.3.tgz#61748040e8589a891dfc2ec1d16a2dd74482980e"
+  version "19.2.4"
+  resolved "https://registry.npmjs.org/@types/jest/-/jest-19.2.4.tgz#543651712535962b7dc615e18e4a381fc2687442"
 
 "@types/node@^6.0.46":
-  version "6.0.73"
-  resolved "https://registry.npmjs.org/@types/node/-/node-6.0.73.tgz#85dc4bb6f125377c75ddd2519a1eeb63f0a4ed70"
+  version "6.0.77"
+  resolved "https://registry.npmjs.org/@types/node/-/node-6.0.77.tgz#3e4d569a427f17085e1ee4ecd3c31befb56af7b5"
 
 JSONStream@^1.0.4:
   version "1.3.1"
@@ -50,9 +50,9 @@ abab@^1.0.3:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
 
-abbrev@1, abbrev@1.0.x:
-  version "1.0.9"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
+abbrev@1:
+  version "1.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
 
 accepts@~1.3.3:
   version "1.3.3"
@@ -87,13 +87,13 @@ acorn@^2.4.0:
   version "2.7.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-2.7.0.tgz#ab6e7d9d886aaca8b085bc3312b79a198433f0e7"
 
-acorn@^3.0.4, acorn@^3.1.0, acorn@^3.2.0:
+acorn@^3.0.4, acorn@^3.1.0:
   version "3.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
 acorn@^4.0.0, acorn@^4.0.3, acorn@^4.0.4:
-  version "4.0.11"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-4.0.11.tgz#edcda3bd937e7556410d42ed5860f67399c794c0"
+  version "4.0.13"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-4.0.13.tgz#105495ae5361d697bd195c825192e1ad7f253787"
 
 acorn@^5.0.0, acorn@^5.0.1:
   version "5.0.3"
@@ -144,14 +144,6 @@ ansi-styles@^3.0.0:
   dependencies:
     color-convert "^1.0.0"
 
-ansicolors@~0.2.1:
-  version "0.2.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansicolors/-/ansicolors-0.2.1.tgz#be089599097b74a5c9c4a84a0cdbcdb62bd87aef"
-
-any-promise@^1.0.0, any-promise@^1.3.0:
-  version "1.3.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
-
 anymatch@^1.3.0:
   version "1.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/anymatch/-/anymatch-1.3.0.tgz#a3e52fa39168c825ff57b0248126ce5a8ff95507"
@@ -166,8 +158,8 @@ append-transform@^0.4.0:
     default-require-extensions "^1.0.0"
 
 aproba@^1.0.3:
-  version "1.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/aproba/-/aproba-1.1.1.tgz#95d3600f07710aa0e9298c726ad5ecf2eacbabab"
+  version "1.1.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/aproba/-/aproba-1.1.2.tgz#45c6629094de4e96f693ef7eab74ae079c240fc1"
 
 are-we-there-yet@~1.1.2:
   version "1.1.4"
@@ -191,10 +183,6 @@ arr-diff@^2.0.0:
 arr-flatten@^1.0.1:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/arr-flatten/-/arr-flatten-1.0.3.tgz#a274ed85ac08849b6bd7847c4580745dc51adfb1"
-
-array-differ@^1.0.0:
-  version "1.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/array-differ/-/array-differ-1.0.0.tgz#eff52e3758249d33be402b8bb8e564bb2b5d4031"
 
 array-equal@^1.0.0:
   version "1.0.0"
@@ -261,14 +249,10 @@ assert@^1.1.1:
     util "0.10.3"
 
 ast-pretty-print@^1.1.5:
-  version "1.2.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ast-pretty-print/-/ast-pretty-print-1.2.1.tgz#22c3ff891c9f49580e66bb178c7d68a5c030abda"
+  version "1.3.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ast-pretty-print/-/ast-pretty-print-1.3.0.tgz#6654e50ee3de665c541fcf038ddbae5097ce8c43"
   dependencies:
     ansi-styles "^3.0.0"
-
-ast-types@0.9.8:
-  version "0.9.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ast-types/-/ast-types-0.9.8.tgz#6cb6a40beba31f49f20928e28439fc14a3dab078"
 
 async-each@^1.0.0:
   version "1.0.1"
@@ -282,7 +266,7 @@ async@0.2.x, async@~0.2.10, async@~0.2.9:
   version "0.2.10"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
-async@1.x, async@^1.4.0, async@^1.5.0:
+async@^1.4.0, async@^1.5.0:
   version "1.5.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
 
@@ -329,7 +313,7 @@ babel-cli@^6.24.0, babel-cli@^6.24.1:
   optionalDependencies:
     chokidar "^1.6.1"
 
-babel-code-frame@6.22.0, babel-code-frame@^6.16.0, babel-code-frame@^6.22.0:
+babel-code-frame@^6.16.0, babel-code-frame@^6.22.0:
   version "6.22.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-code-frame/-/babel-code-frame-6.22.0.tgz#027620bee567a88c32561574e7fd0801d33118e4"
   dependencies:
@@ -503,14 +487,6 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
-babel-jest@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-jest/-/babel-jest-17.0.2.tgz#8d51e0d03759713c331f108eb0b2eaa4c6efff74"
-  dependencies:
-    babel-core "^6.0.0"
-    babel-plugin-istanbul "^2.0.0"
-    babel-preset-jest "^17.0.2"
-
 babel-jest@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-jest/-/babel-jest-20.0.3.tgz#e4a03b13dc10389e140fc645d09ffc4ced301671"
@@ -519,14 +495,13 @@ babel-jest@^20.0.3:
     babel-plugin-istanbul "^4.0.0"
     babel-preset-jest "^20.0.3"
 
-babel-loader@^6.4.1:
-  version "6.4.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-loader/-/babel-loader-6.4.1.tgz#0b34112d5b0748a8dcdbf51acf6f9bd42d50b8ca"
+babel-loader@^7.0.0:
+  version "7.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-loader/-/babel-loader-7.0.0.tgz#2e43a66bee1fff4470533d0402c8a4532fafbaf7"
   dependencies:
     find-cache-dir "^0.1.1"
-    loader-utils "^0.2.16"
+    loader-utils "^1.0.2"
     mkdirp "^0.5.1"
-    object-assign "^4.0.1"
 
 babel-messages@^6.23.0:
   version "6.23.0"
@@ -540,15 +515,6 @@ babel-plugin-check-es2015-constants@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-istanbul@^2.0.0:
-  version "2.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-istanbul/-/babel-plugin-istanbul-2.0.3.tgz#266b304b9109607d60748474394676982f660df4"
-  dependencies:
-    find-up "^1.1.2"
-    istanbul-lib-instrument "^1.1.4"
-    object-assign "^4.1.0"
-    test-exclude "^2.1.1"
-
 babel-plugin-istanbul@^4.0.0:
   version "4.1.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.4.tgz#18dde84bf3ce329fddf3f4103fae921456d8e587"
@@ -556,10 +522,6 @@ babel-plugin-istanbul@^4.0.0:
     find-up "^2.1.0"
     istanbul-lib-instrument "^1.7.2"
     test-exclude "^4.1.1"
-
-babel-plugin-jest-hoist@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-17.0.2.tgz#213488ce825990acd4c30f887dca09fffeb45235"
 
 babel-plugin-jest-hoist@^20.0.3:
   version "20.0.3"
@@ -912,7 +874,7 @@ babel-plugin-transform-undefined-to-void@^6.8.2:
   version "6.8.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.8.2.tgz#fe2b1d294eb05e87524eb93724dea6e2c3d66fa1"
 
-babel-polyfill@^6.13.0, babel-polyfill@^6.23.0:
+babel-polyfill@^6.23.0:
   version "6.23.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-polyfill/-/babel-polyfill-6.23.0.tgz#8364ca62df8eafb830499f699177466c3b03499d"
   dependencies:
@@ -989,12 +951,6 @@ babel-preset-flow@^6.23.0:
   dependencies:
     babel-plugin-transform-flow-strip-types "^6.22.0"
 
-babel-preset-jest@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-jest/-/babel-preset-jest-17.0.2.tgz#141e935debe164aaa0364c220d31ccb2176493b2"
-  dependencies:
-    babel-plugin-jest-hoist "^17.0.2"
-
 babel-preset-jest@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-jest/-/babel-preset-jest-20.0.3.tgz#cbacaadecb5d689ca1e1de1360ebfc66862c178a"
@@ -1060,13 +1016,9 @@ babili@^0.1.2:
     babel-cli "^6.24.1"
     babel-preset-babili "^0.1.2"
 
-babylon@7.0.0-beta.8:
-  version "7.0.0-beta.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babylon/-/babylon-7.0.0-beta.8.tgz#2bdc5ae366041442c27e068cce6f0d7c06ea9949"
-
 babylon@^6.11.0, babylon@^6.13.0, babylon@^6.15.0, babylon@^6.17.0:
-  version "6.17.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babylon/-/babylon-6.17.1.tgz#17f14fddf361b695981fe679385e4f1c01ebd86f"
+  version "6.17.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babylon/-/babylon-6.17.2.tgz#201d25ef5f892c41bae49488b08db0dd476e9f5c"
 
 balanced-match@^0.4.1:
   version "0.4.2"
@@ -1135,7 +1087,7 @@ brorand@^1.0.1:
   version "1.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
 
-browser-resolve@^1.11.0, browser-resolve@^1.11.2:
+browser-resolve@^1.11.2:
   version "1.11.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/browser-resolve/-/browser-resolve-1.11.2.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
   dependencies:
@@ -1215,10 +1167,6 @@ bser@^2.0.0:
   dependencies:
     node-int64 "^0.4.0"
 
-buffer-shims@~1.0.0:
-  version "1.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
-
 buffer-xor@^1.0.2:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
@@ -1231,7 +1179,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-builtin-modules@^1.0.0, builtin-modules@^1.1.0:
+builtin-modules@^1.0.0:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
 
@@ -1291,15 +1239,8 @@ camelcase@^4.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
 caniuse-lite@^1.0.30000670:
-  version "1.0.30000670"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000670.tgz#c94f7dbf0b68eaadc46d3d203f46e82e7801135e"
-
-cardinal@^1.0.0:
-  version "1.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cardinal/-/cardinal-1.0.0.tgz#50e21c1b0aa37729f9377def196b5a9cec932ee9"
-  dependencies:
-    ansicolors "~0.2.1"
-    redeyed "~1.0.0"
+  version "1.0.30000677"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000677.tgz#43090233d4b2c7190657f95455983d94d264baaa"
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -1312,7 +1253,7 @@ center-align@^0.1.1:
     align-text "^0.1.3"
     lazy-cache "^1.0.3"
 
-chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
+chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/chalk/-/chalk-1.1.3.tgz#a8115c55e4a702fe4d150abd3872822a7e09fc98"
   dependencies:
@@ -1362,19 +1303,6 @@ cli-cursor@^2.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cli-cursor/-/cli-cursor-2.1.0.tgz#b35dac376479facc3e94747d41d0d0f5238ffcb5"
   dependencies:
     restore-cursor "^2.0.0"
-
-cli-table@^0.3.1:
-  version "0.3.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cli-table/-/cli-table-0.3.1.tgz#f53b05266a8b1a0b934b3d0821e6e2dc5914ae23"
-  dependencies:
-    colors "1.0.3"
-
-cli-usage@^0.1.1:
-  version "0.1.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cli-usage/-/cli-usage-0.1.4.tgz#7c01e0dc706c234b39c933838c8e20b2175776e2"
-  dependencies:
-    marked "^0.3.6"
-    marked-terminal "^1.6.2"
 
 cli-width@^2.0.0:
   version "2.1.0"
@@ -1445,13 +1373,13 @@ colors@0.6.x, colors@0.x.x, colors@~0.6.2:
   version "0.6.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/colors/-/colors-0.6.2.tgz#2423fe6678ac0c5dae8852e5d0e5be08c997abcc"
 
-colors@1.0.3, colors@~1.0.3:
-  version "1.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
-
 colors@^1.1.2:
   version "1.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/colors/-/colors-1.1.2.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
+
+colors@~1.0.3:
+  version "1.0.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
 columnify@^1.5.4:
   version "1.5.4"
@@ -1470,7 +1398,7 @@ command-join@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/command-join/-/command-join-2.0.0.tgz#52e8b984f4872d952ff1bdc8b98397d27c7144cf"
 
-commander@2.9.0, commander@^2.8.1:
+commander@2.9.0, commander@^2.8.1, commander@^2.9.0:
   version "2.9.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
   dependencies:
@@ -1486,6 +1414,10 @@ compare-func@^1.3.1:
   dependencies:
     array-ify "^1.0.0"
     dot-prop "^3.0.0"
+
+compare-versions@2.0.1:
+  version "2.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/compare-versions/-/compare-versions-2.0.1.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -1725,6 +1657,13 @@ cross-env@^3.1.4:
     cross-spawn "^5.1.0"
     is-windows "^1.0.0"
 
+cross-spawn@^4.0.0:
+  version "4.0.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cross-spawn/-/cross-spawn-4.0.2.tgz#7b9247621c23adfdd3856004a823cbe397424d41"
+  dependencies:
+    lru-cache "^4.0.1"
+    which "^1.2.9"
+
 cross-spawn@^5.0.1, cross-spawn@^5.1.0:
   version "5.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cross-spawn/-/cross-spawn-5.1.0.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
@@ -1830,21 +1769,15 @@ dateformat@^1.0.11, dateformat@^1.0.12:
     get-stdin "^4.0.1"
     meow "^3.3.0"
 
-debug@2.6.0:
+debug@2.6.0, debug@^2.1.1, debug@^2.2.0:
   version "2.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
     ms "0.7.2"
 
-debug@2.6.7:
+debug@2.6.7, debug@^2.6.3:
   version "2.6.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.7.tgz#92bad1f6d05bbb6bba22cca88bcd0ec894c2861e"
-  dependencies:
-    ms "2.0.0"
-
-debug@^2.1.1, debug@^2.2.0, debug@^2.6.3:
-  version "2.6.8"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
     ms "2.0.0"
 
@@ -1936,11 +1869,15 @@ detect-indent@^4.0.0:
   dependencies:
     repeating "^2.0.0"
 
+detect-indent@^5.0.0:
+  version "5.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/detect-indent/-/detect-indent-5.0.0.tgz#3871cc0a6a002e8c3e5b3cf7f336264675f06b9d"
+
 diff-match-patch@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/diff-match-patch/-/diff-match-patch-1.0.0.tgz#1cc3c83a490d67f95d91e39f6ad1f2e086b63048"
 
-diff@3.2.0, diff@^3.0.0, diff@^3.2.0:
+diff@3.2.0, diff@^3.2.0:
   version "3.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/diff/-/diff-3.2.0.tgz#c9ce393a4b7cbd0b058a725c93df299027868ff9"
 
@@ -1973,6 +1910,10 @@ dot-prop@^3.0.0:
   dependencies:
     is-obj "^1.0.0"
 
+double-ended-queue@^2.1.0-0:
+  version "2.1.0-0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/double-ended-queue/-/double-ended-queue-2.1.0-0.tgz#103d3527fd31528f40188130c841efdd78264e5c"
+
 duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
@@ -1992,8 +1933,8 @@ ee-first@1.1.1:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
 electron-to-chromium@^1.3.11:
-  version "1.3.11"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/electron-to-chromium/-/electron-to-chromium-1.3.11.tgz#744761df1d67b492b322ce9aa0aba5393260eb61"
+  version "1.3.13"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/electron-to-chromium/-/electron-to-chromium-1.3.13.tgz#1b3a5eace6e087bb5e257a100b0cbfe81b2891fc"
 
 elliptic@^6.0.0:
   version "6.4.0"
@@ -2011,19 +1952,19 @@ emojis-list@^2.0.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/emojis-list/-/emojis-list-2.1.0.tgz#4daa4d9db00f9819880c79fa457ae5b09a1fd389"
 
-empower-core@^0.6.1:
-  version "0.6.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/empower-core/-/empower-core-0.6.1.tgz#6c187f502fcef7554d57933396aac655483772b1"
+empower-core@^0.6.2:
+  version "0.6.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/empower-core/-/empower-core-0.6.2.tgz#5adef566088e31fba80ba0a36df47d7094169144"
   dependencies:
     call-signature "0.0.2"
     core-js "^2.0.0"
 
-empower@^1.1.0:
-  version "1.2.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/empower/-/empower-1.2.1.tgz#b63302741b6d503a241bff115befc948c8362c60"
+empower@^1.2.2:
+  version "1.2.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/empower/-/empower-1.2.2.tgz#8b4f288c1c3990094e254c8dce15c553d07f39a4"
   dependencies:
     core-js "^2.0.0"
-    empower-core "^0.6.1"
+    empower-core "^0.6.2"
 
 encodeurl@~1.0.1:
   version "1.0.1"
@@ -2068,8 +2009,8 @@ es-to-primitive@^1.1.1:
     is-symbol "^1.0.1"
 
 es5-ext@^0.10.14, es5-ext@^0.10.9, es5-ext@~0.10.14:
-  version "0.10.21"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/es5-ext/-/es5-ext-0.10.21.tgz#19a725f9e51d0300bbc1e8e821109fd9daf55925"
+  version "0.10.22"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/es5-ext/-/es5-ext-0.10.22.tgz#1876c51f990769c112c781ea3ebe89f84fd39071"
   dependencies:
     es6-iterator "2"
     es6-symbol "~3.1"
@@ -2127,7 +2068,7 @@ escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1
   version "1.0.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
-escodegen@1.8.x, escodegen@^1.6.1:
+escodegen@^1.6.1:
   version "1.8.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/escodegen/-/escodegen-1.8.1.tgz#5a5b53af4693110bebb0867aa3430dd3b70a1018"
   dependencies:
@@ -2200,17 +2141,13 @@ espree@^3.4.0:
     acorn "^5.0.1"
     acorn-jsx "^3.0.0"
 
-esprima@2.7.x, esprima@^2.7.1:
+esprima@^2.7.1:
   version "2.7.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/esprima/-/esprima-2.7.3.tgz#96e3b70d5779f6ad49cd032673d1c312767ba581"
 
 esprima@^3.1.1:
   version "3.1.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/esprima/-/esprima-3.1.3.tgz#fdca51cee6133895e3c88d535ce49dbff62a4633"
-
-esprima@~3.0.0:
-  version "3.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/esprima/-/esprima-3.0.0.tgz#53cf247acda77313e551c3aa2e73342d3fb4f7d9"
 
 espurify@^1.6.0:
   version "1.7.0"
@@ -2251,7 +2188,7 @@ estree-walker@^0.3.0:
   version "0.3.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/estree-walker/-/estree-walker-0.3.1.tgz#e6b1a51cf7292524e7237c312e5fe6660c1ce1aa"
 
-esutils@2.0.2, esutils@^2.0.2:
+esutils@^2.0.2:
   version "2.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
 
@@ -2291,6 +2228,18 @@ exec-sh@^0.2.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/exec-sh/-/exec-sh-0.2.0.tgz#14f75de3f20d286ef933099b2ce50a90359cef10"
   dependencies:
     merge "^1.1.3"
+
+execa@^0.5.0:
+  version "0.5.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/execa/-/execa-0.5.1.tgz#de3fb85cb8d6e91c85bcbceb164581785cb57b36"
+  dependencies:
+    cross-spawn "^4.0.0"
+    get-stream "^2.2.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
 
 execa@^0.6.3:
   version "0.6.3"
@@ -2370,9 +2319,11 @@ extend@~3.0.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
 
 external-editor@^2.0.1:
-  version "2.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/external-editor/-/external-editor-2.0.2.tgz#384f6d8ae02054235c19e0a142c6d6fc36ad9363"
+  version "2.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/external-editor/-/external-editor-2.0.4.tgz#1ed9199da9cbfe2ef2f7a31b2fde8b0d12368972"
   dependencies:
+    iconv-lite "^0.4.17"
+    jschardet "^1.4.2"
     tmp "^0.0.31"
 
 extglob@^0.3.1:
@@ -2393,7 +2344,7 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
-fb-watchman@^1.8.0, fb-watchman@^1.9.0:
+fb-watchman@^1.8.0:
   version "1.9.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fb-watchman/-/fb-watchman-1.9.2.tgz#a24cf47827f82d38fb59a69ad70b76e3b6ae7383"
   dependencies:
@@ -2472,14 +2423,14 @@ find-cache-dir@^0.1.1:
     mkdirp "^0.5.1"
     pkg-dir "^1.0.0"
 
-find-up@^1.0.0, find-up@^1.1.2:
+find-up@^1.0.0:
   version "1.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/find-up/-/find-up-1.1.2.tgz#6b2e9822b1a2ce0a60ab64d610eccad53cb24d0f"
   dependencies:
     path-exists "^2.0.0"
     pinkie-promise "^2.0.0"
 
-find-up@^2.1.0:
+find-up@^2.0.0, find-up@^2.1.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/find-up/-/find-up-2.1.0.tgz#45d1b7e506c717ddd482775a2b77920a3c0c57a7"
   dependencies:
@@ -2502,17 +2453,6 @@ flatiron@~0.4.2:
     director "1.2.7"
     optimist "0.6.0"
     prompt "0.2.14"
-
-flow-parser@0.45.0:
-  version "0.45.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/flow-parser/-/flow-parser-0.45.0.tgz#aa29d4ae27f06aa02817772bba0fcbefef7e62f0"
-
-flow-remove-types@^1.1.0:
-  version "1.2.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/flow-remove-types/-/flow-remove-types-1.2.1.tgz#58e261bf8b842bd234c86cafb982a1213aff0edb"
-  dependencies:
-    babylon "^6.15.0"
-    vlq "^0.2.1"
 
 for-in@^1.0.1:
   version "1.0.2"
@@ -2584,21 +2524,13 @@ fresh@0.5.0:
   version "0.5.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fresh/-/fresh-0.5.0.tgz#f474ca5e6a9246d6fd8e0953cfa9b9c805afa78e"
 
-fs-extra@^2.0.0:
-  version "2.1.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fs-extra/-/fs-extra-2.1.2.tgz#046c70163cef9aad46b0e4a7fa467fb22d71de35"
+fs-extra@^3.0.1:
+  version "3.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fs-extra/-/fs-extra-3.0.1.tgz#3794f378c58b342ea7dbbb23095109c4b3b62291"
   dependencies:
     graceful-fs "^4.1.2"
-    jsonfile "^2.1.0"
-
-fs-promise@^2.0.2:
-  version "2.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fs-promise/-/fs-promise-2.0.3.tgz#f64e4f854bcf689aa8bddcba268916db3db46854"
-  dependencies:
-    any-promise "^1.3.0"
-    fs-extra "^2.0.0"
-    mz "^2.6.0"
-    thenify-all "^1.6.0"
+    jsonfile "^3.0.0"
+    universalify "^0.1.0"
 
 fs-readdir-recursive@^1.0.0:
   version "1.0.0"
@@ -2677,13 +2609,16 @@ get-port@^3.1.0:
   version "3.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/get-port/-/get-port-3.1.0.tgz#ef01b18a84ca6486970ff99e54446141a73ffd3e"
 
-get-stdin@5.0.1:
-  version "5.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/get-stdin/-/get-stdin-5.0.1.tgz#122e161591e21ff4c52530305693f20e6393a398"
-
 get-stdin@^4.0.1:
   version "4.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/get-stdin/-/get-stdin-4.0.1.tgz#b968c6b0a04384324902e8bf1a5df32579a450fe"
+
+get-stream@^2.2.0:
+  version "2.3.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/get-stream/-/get-stream-2.3.1.tgz#5f38f93f346009666ee0150a054167f91bdd95de"
+  dependencies:
+    object-assign "^4.0.1"
+    pinkie-promise "^2.0.0"
 
 get-stream@^3.0.0:
   version "3.0.0"
@@ -2753,17 +2688,7 @@ glob@7.1.1:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^5.0.15:
-  version "5.0.15"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
-  dependencies:
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "2 || 3"
-    once "^1.3.0"
-    path-is-absolute "^1.0.0"
-
-glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.0.6, glob@^7.1.1:
+glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2:
   version "7.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/glob/-/glob-7.1.2.tgz#c19c9df9a028702d678612384a6552404c636d15"
   dependencies:
@@ -2811,11 +2736,11 @@ growl@1.9.2:
   version "1.9.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/growl/-/growl-1.9.2.tgz#0ea7743715db8d8de2c5ede1775e1b45ac85c02f"
 
-growly@^1.2.0, growly@^1.3.0:
+growly@^1.3.0:
   version "1.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
 
-handlebars@^4.0.1, handlebars@^4.0.2, handlebars@^4.0.3:
+handlebars@^4.0.2, handlebars@^4.0.3:
   version "4.0.10"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/handlebars/-/handlebars-4.0.10.tgz#3d30c718b09a3d96f23ea4cc1f403c4d3ba9ff4f"
   dependencies:
@@ -2877,6 +2802,10 @@ hawk@~3.1.3:
     hoek "2.x.x"
     sntp "1.x.x"
 
+he@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/he/-/he-1.1.1.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
+
 hmac-drbg@^1.0.0:
   version "1.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"
@@ -2934,6 +2863,10 @@ i@0.3.x:
 iconv-lite@0.4.13:
   version "0.4.13"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
+
+iconv-lite@^0.4.17:
+  version "0.4.17"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/iconv-lite/-/iconv-lite-0.4.17.tgz#4fdaa3b38acbc2c031b045d0edcdfe1ecab18c8d"
 
 ieee754@^1.1.4:
   version "1.1.8"
@@ -3064,7 +2997,7 @@ is-callable@^1.0.4, is-callable@^1.1.1, is-callable@^1.1.3:
   version "1.1.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-callable/-/is-callable-1.1.3.tgz#86eb75392805ddc33af71c92a0eedf74ee7604b2"
 
-is-ci@^1.0.10, is-ci@^1.0.9:
+is-ci@^1.0.10:
   version "1.0.10"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-ci/-/is-ci-1.0.10.tgz#f739336b2632365061a9d48270cd56ae3369318e"
   dependencies:
@@ -3075,8 +3008,8 @@ is-date-object@^1.0.1:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-date-object/-/is-date-object-1.0.1.tgz#9aa20eb6aeebbff77fbd33e74ca01b33581d3a16"
 
 is-dotfile@^1.0.0:
-  version "1.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-dotfile/-/is-dotfile-1.0.2.tgz#2c132383f39199f8edc268ca01b9b007d205cc4d"
+  version "1.0.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-dotfile/-/is-dotfile-1.0.3.tgz#a6a2f32ffd2dfb04f5ca25ecd0f6b83cf798a1e1"
 
 is-equal-shallow@^0.1.3:
   version "0.1.3"
@@ -3257,7 +3190,7 @@ isstream@0.1.x, isstream@~0.1.2:
   version "0.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
 
-istanbul-api@^1.0.0-aplha.10, istanbul-api@^1.1.1:
+istanbul-api@^1.1.1:
   version "1.1.9"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-api/-/istanbul-api-1.1.9.tgz#2827920d380d4286d857d57a2968a841db8a7ec8"
   dependencies:
@@ -3273,7 +3206,7 @@ istanbul-api@^1.0.0-aplha.10, istanbul-api@^1.1.1:
     mkdirp "^0.5.1"
     once "^1.4.0"
 
-istanbul-lib-coverage@^1.0.0, istanbul-lib-coverage@^1.0.1, istanbul-lib-coverage@^1.1.1:
+istanbul-lib-coverage@^1.0.1, istanbul-lib-coverage@^1.1.1:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-coverage/-/istanbul-lib-coverage-1.1.1.tgz#73bfb998885299415c93d38a3e9adf784a77a9da"
 
@@ -3283,7 +3216,7 @@ istanbul-lib-hook@^1.0.7:
   dependencies:
     append-transform "^0.4.0"
 
-istanbul-lib-instrument@^1.1.1, istanbul-lib-instrument@^1.1.4, istanbul-lib-instrument@^1.4.2, istanbul-lib-instrument@^1.7.2:
+istanbul-lib-instrument@^1.4.2, istanbul-lib-instrument@^1.7.2:
   version "1.7.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul-lib-instrument/-/istanbul-lib-instrument-1.7.2.tgz#6014b03d3470fb77638d5802508c255c06312e56"
   dependencies:
@@ -3320,65 +3253,9 @@ istanbul-reports@^1.1.1:
   dependencies:
     handlebars "^4.0.3"
 
-istanbul@^0.4.5:
-  version "0.4.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/istanbul/-/istanbul-0.4.5.tgz#65c7d73d4c4da84d4f3ac310b918fb0b8033733b"
-  dependencies:
-    abbrev "1.0.x"
-    async "1.x"
-    escodegen "1.8.x"
-    esprima "2.7.x"
-    glob "^5.0.15"
-    handlebars "^4.0.1"
-    js-yaml "3.x"
-    mkdirp "0.5.x"
-    nopt "3.x"
-    once "1.x"
-    resolve "1.1.x"
-    supports-color "^3.1.0"
-    which "^1.1.1"
-    wordwrap "^1.0.0"
-
-jest-changed-files@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-changed-files/-/jest-changed-files-17.0.2.tgz#f5657758736996f590a51b87e5c9369d904ba7b7"
-
 jest-changed-files@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-changed-files/-/jest-changed-files-20.0.3.tgz#9394d5cc65c438406149bef1bf4d52b68e03e3f8"
-
-jest-cli@^17.0.2:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-cli/-/jest-cli-17.0.3.tgz#700b8c02a9ea0ec9eab0cd5a9fd42d8a858ce146"
-  dependencies:
-    ansi-escapes "^1.4.0"
-    callsites "^2.0.0"
-    chalk "^1.1.1"
-    graceful-fs "^4.1.6"
-    is-ci "^1.0.9"
-    istanbul-api "^1.0.0-aplha.10"
-    istanbul-lib-coverage "^1.0.0"
-    istanbul-lib-instrument "^1.1.1"
-    jest-changed-files "^17.0.2"
-    jest-config "^17.0.3"
-    jest-environment-jsdom "^17.0.2"
-    jest-file-exists "^17.0.0"
-    jest-haste-map "^17.0.3"
-    jest-jasmine2 "^17.0.3"
-    jest-mock "^17.0.2"
-    jest-resolve "^17.0.3"
-    jest-resolve-dependencies "^17.0.3"
-    jest-runtime "^17.0.3"
-    jest-snapshot "^17.0.3"
-    jest-util "^17.0.2"
-    json-stable-stringify "^1.0.0"
-    node-notifier "^4.6.1"
-    sane "~1.4.1"
-    strip-ansi "^3.0.1"
-    throat "^3.0.0"
-    which "^1.1.1"
-    worker-farm "^1.3.1"
-    yargs "^6.3.0"
 
 jest-cli@^20.0.4:
   version "20.0.4"
@@ -3415,20 +3292,6 @@ jest-cli@^20.0.4:
     worker-farm "^1.3.1"
     yargs "^7.0.2"
 
-jest-config@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-17.0.3.tgz#b6ed75d90d090b731fd894231904cadb7d5a5df2"
-  dependencies:
-    chalk "^1.1.1"
-    istanbul "^0.4.5"
-    jest-environment-jsdom "^17.0.2"
-    jest-environment-node "^17.0.2"
-    jest-jasmine2 "^17.0.3"
-    jest-mock "^17.0.2"
-    jest-resolve "^17.0.3"
-    jest-util "^17.0.2"
-    json-stable-stringify "^1.0.0"
-
 jest-config@^20.0.4:
   version "20.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-20.0.4.tgz#e37930ab2217c913605eff13e7bd763ec48faeea"
@@ -3444,15 +3307,6 @@ jest-config@^20.0.4:
     jest-validate "^20.0.3"
     pretty-format "^20.0.3"
 
-jest-diff@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-diff/-/jest-diff-17.0.3.tgz#8fb31efab3b314d7b61b7b66b0bdea617ef1c02f"
-  dependencies:
-    chalk "^1.1.3"
-    diff "^3.0.0"
-    jest-matcher-utils "^17.0.3"
-    pretty-format "~4.2.1"
-
 jest-diff@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-diff/-/jest-diff-20.0.3.tgz#81f288fd9e675f0fb23c75f1c2b19445fe586617"
@@ -3466,14 +3320,6 @@ jest-docblock@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-docblock/-/jest-docblock-20.0.3.tgz#17bea984342cc33d83c50fbe1545ea0efaa44712"
 
-jest-environment-jsdom@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-jsdom/-/jest-environment-jsdom-17.0.2.tgz#a3098dc29806d40802c52b62b848ab6aa00fdba0"
-  dependencies:
-    jest-mock "^17.0.2"
-    jest-util "^17.0.2"
-    jsdom "^9.8.1"
-
 jest-environment-jsdom@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-jsdom/-/jest-environment-jsdom-20.0.3.tgz#048a8ac12ee225f7190417713834bb999787de99"
@@ -3482,33 +3328,12 @@ jest-environment-jsdom@^20.0.3:
     jest-util "^20.0.3"
     jsdom "^9.12.0"
 
-jest-environment-node@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-node/-/jest-environment-node-17.0.2.tgz#aff6133f4ca2faddcc5b0ce7d25cec83e16d8463"
-  dependencies:
-    jest-mock "^17.0.2"
-    jest-util "^17.0.2"
-
 jest-environment-node@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-node/-/jest-environment-node-20.0.3.tgz#d488bc4612af2c246e986e8ae7671a099163d403"
   dependencies:
     jest-mock "^20.0.3"
     jest-util "^20.0.3"
-
-jest-file-exists@^17.0.0:
-  version "17.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-file-exists/-/jest-file-exists-17.0.0.tgz#7f63eb73a1c43a13f461be261768b45af2cdd169"
-
-jest-haste-map@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-haste-map/-/jest-haste-map-17.0.3.tgz#5232783e70577217b6b17d2a1c1766637a1d2fbd"
-  dependencies:
-    fb-watchman "^1.9.0"
-    graceful-fs "^4.1.6"
-    multimatch "^2.1.0"
-    sane "~1.4.1"
-    worker-farm "^1.3.1"
 
 jest-haste-map@^20.0.4:
   version "20.0.4"
@@ -3520,15 +3345,6 @@ jest-haste-map@^20.0.4:
     micromatch "^2.3.11"
     sane "~1.6.0"
     worker-farm "^1.3.1"
-
-jest-jasmine2@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-jasmine2/-/jest-jasmine2-17.0.3.tgz#d4336b89f3ad288269a1c8e2bfc180dcf89c6ad1"
-  dependencies:
-    graceful-fs "^4.1.6"
-    jest-matchers "^17.0.3"
-    jest-snapshot "^17.0.3"
-    jest-util "^17.0.2"
 
 jest-jasmine2@^20.0.4:
   version "20.0.4"
@@ -3544,34 +3360,12 @@ jest-jasmine2@^20.0.4:
     once "^1.4.0"
     p-map "^1.1.1"
 
-jest-matcher-utils@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matcher-utils/-/jest-matcher-utils-17.0.3.tgz#f108e49b956e152c6626dcc0aba864f59ab7b0d3"
-  dependencies:
-    chalk "^1.1.3"
-    pretty-format "~4.2.1"
-
-jest-matcher-utils@^19.0.0:
-  version "19.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matcher-utils/-/jest-matcher-utils-19.0.0.tgz#5ecd9b63565d2b001f61fbf7ec4c7f537964564d"
-  dependencies:
-    chalk "^1.1.3"
-    pretty-format "^19.0.0"
-
 jest-matcher-utils@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matcher-utils/-/jest-matcher-utils-20.0.3.tgz#b3a6b8e37ca577803b0832a98b164f44b7815612"
   dependencies:
     chalk "^1.1.3"
     pretty-format "^20.0.3"
-
-jest-matchers@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matchers/-/jest-matchers-17.0.3.tgz#88b95348c919343db86d08f12354a8650ae7eddf"
-  dependencies:
-    jest-diff "^17.0.3"
-    jest-matcher-utils "^17.0.3"
-    jest-util "^17.0.2"
 
 jest-matchers@^20.0.3:
   version "20.0.3"
@@ -3590,10 +3384,6 @@ jest-message-util@^20.0.3:
     micromatch "^2.3.11"
     slash "^1.0.0"
 
-jest-mock@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-mock/-/jest-mock-17.0.2.tgz#3dfe9221afd9aa61b3d9992840813a358bb2f429"
-
 jest-mock@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-mock/-/jest-mock-20.0.3.tgz#8bc070e90414aa155c11a8d64c869a0d5c71da59"
@@ -3602,27 +3392,11 @@ jest-regex-util@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-regex-util/-/jest-regex-util-20.0.3.tgz#85bbab5d133e44625b19faf8c6aa5122d085d762"
 
-jest-resolve-dependencies@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve-dependencies/-/jest-resolve-dependencies-17.0.3.tgz#bbd37f4643704b97a980927212f3ab12b06e8894"
-  dependencies:
-    jest-file-exists "^17.0.0"
-    jest-resolve "^17.0.3"
-
 jest-resolve-dependencies@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve-dependencies/-/jest-resolve-dependencies-20.0.3.tgz#6e14a7b717af0f2cb3667c549de40af017b1723a"
   dependencies:
     jest-regex-util "^20.0.3"
-
-jest-resolve@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve/-/jest-resolve-17.0.3.tgz#7692a79de2831874375e9d664bc782c29e4da262"
-  dependencies:
-    browser-resolve "^1.11.2"
-    jest-file-exists "^17.0.0"
-    jest-haste-map "^17.0.3"
-    resolve "^1.1.6"
 
 jest-resolve@^20.0.4:
   version "20.0.4"
@@ -3631,26 +3405,6 @@ jest-resolve@^20.0.4:
     browser-resolve "^1.11.2"
     is-builtin-module "^1.0.0"
     resolve "^1.3.2"
-
-jest-runtime@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-runtime/-/jest-runtime-17.0.3.tgz#eff4055fe8c3e17c95ed1aaaf5f719c420b86b1f"
-  dependencies:
-    babel-core "^6.0.0"
-    babel-jest "^17.0.2"
-    babel-plugin-istanbul "^2.0.0"
-    chalk "^1.1.3"
-    graceful-fs "^4.1.6"
-    jest-config "^17.0.3"
-    jest-file-exists "^17.0.0"
-    jest-haste-map "^17.0.3"
-    jest-mock "^17.0.2"
-    jest-resolve "^17.0.3"
-    jest-snapshot "^17.0.3"
-    jest-util "^17.0.2"
-    json-stable-stringify "^1.0.0"
-    multimatch "^2.1.0"
-    yargs "^6.3.0"
 
 jest-runtime@^20.0.4:
   version "20.0.4"
@@ -3672,17 +3426,6 @@ jest-runtime@^20.0.4:
     strip-bom "3.0.0"
     yargs "^7.0.2"
 
-jest-snapshot@^17.0.3:
-  version "17.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-snapshot/-/jest-snapshot-17.0.3.tgz#c8199db4ccbd5515cfecc8e800ab076bdda7abc0"
-  dependencies:
-    jest-diff "^17.0.3"
-    jest-file-exists "^17.0.0"
-    jest-matcher-utils "^17.0.3"
-    jest-util "^17.0.2"
-    natural-compare "^1.4.0"
-    pretty-format "~4.2.1"
-
 jest-snapshot@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-snapshot/-/jest-snapshot-20.0.3.tgz#5b847e1adb1a4d90852a7f9f125086e187c76566"
@@ -3693,17 +3436,6 @@ jest-snapshot@^20.0.3:
     jest-util "^20.0.3"
     natural-compare "^1.4.0"
     pretty-format "^20.0.3"
-
-jest-util@^17.0.2:
-  version "17.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-util/-/jest-util-17.0.2.tgz#9fd9da8091e9904fb976da7e4d8912ca26968638"
-  dependencies:
-    chalk "^1.1.1"
-    diff "^3.0.0"
-    graceful-fs "^4.1.6"
-    jest-file-exists "^17.0.0"
-    jest-mock "^17.0.2"
-    mkdirp "^0.5.1"
 
 jest-util@^20.0.3:
   version "20.0.3"
@@ -3717,15 +3449,6 @@ jest-util@^20.0.3:
     leven "^2.1.0"
     mkdirp "^0.5.1"
 
-jest-validate@19.0.0:
-  version "19.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-validate/-/jest-validate-19.0.0.tgz#8c6318a20ecfeaba0ba5378bfbb8277abded4173"
-  dependencies:
-    chalk "^1.1.1"
-    jest-matcher-utils "^19.0.0"
-    leven "^2.0.0"
-    pretty-format "^19.0.0"
-
 jest-validate@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-validate/-/jest-validate-20.0.3.tgz#d0cfd1de4f579f298484925c280f8f1d94ec3cab"
@@ -3735,7 +3458,7 @@ jest-validate@^20.0.3:
     leven "^2.1.0"
     pretty-format "^20.0.3"
 
-jest@^20.0.0:
+jest@^20.0.4:
   version "20.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest/-/jest-20.0.4.tgz#3dd260c2989d6dad678b1e9cc4d91944f6d602ac"
   dependencies:
@@ -3751,7 +3474,7 @@ js-tokens@^3.0.0:
   version "3.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/js-tokens/-/js-tokens-3.0.1.tgz#08e9f132484a2c45a30907e9dc4d5567b7f114d7"
 
-js-yaml@3.x, js-yaml@^3.5.1, js-yaml@^3.7.0:
+js-yaml@^3.5.1, js-yaml@^3.7.0:
   version "3.8.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/js-yaml/-/js-yaml-3.8.4.tgz#520b4564f86573ba96662af85a8cafa7b4b5a6f6"
   dependencies:
@@ -3762,7 +3485,11 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
-jsdom@^9.12.0, jsdom@^9.8.1:
+jschardet@^1.4.2:
+  version "1.4.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jschardet/-/jschardet-1.4.2.tgz#2aa107f142af4121d145659d44f50830961e699a"
+
+jsdom@^9.12.0:
   version "9.12.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsdom/-/jsdom-9.12.0.tgz#e8c546fffcb06c00d4833ca84410fed7f8a097d4"
   dependencies:
@@ -3820,9 +3547,9 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
-jsonfile@^2.1.0:
-  version "2.4.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsonfile/-/jsonfile-2.4.0.tgz#3736a2b428b87bbda0cc83b53fa3d633a35c2ae8"
+jsonfile@^3.0.0:
+  version "3.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jsonfile/-/jsonfile-3.0.0.tgz#92e7c7444e5ffd5fa32e6a9ae8b85034df8347d0"
   optionalDependencies:
     graceful-fs "^4.1.6"
 
@@ -3867,9 +3594,9 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-lerna@2.0.0-rc.4:
-  version "2.0.0-rc.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lerna/-/lerna-2.0.0-rc.4.tgz#567fc62c1d46190ce5f5ee0f654e0a9c9a63bdba"
+lerna@2.0.0-rc.5:
+  version "2.0.0-rc.5"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lerna/-/lerna-2.0.0-rc.5.tgz#b59d168caaac6e3443078c1bce194208c9aa3090"
   dependencies:
     async "^1.5.0"
     chalk "^1.1.1"
@@ -3881,16 +3608,17 @@ lerna@2.0.0-rc.4:
     dedent "^0.7.0"
     execa "^0.6.3"
     find-up "^2.1.0"
-    fs-promise "^2.0.2"
+    fs-extra "^3.0.1"
     get-port "^3.1.0"
-    glob "^7.0.6"
+    glob "^7.1.2"
     globby "^6.1.0"
     graceful-fs "^4.1.11"
     inquirer "^3.0.6"
+    is-ci "^1.0.10"
     load-json-file "^2.0.0"
     lodash "^4.17.4"
-    minimatch "^3.0.0"
-    npmlog "^4.0.2"
+    minimatch "^3.0.4"
+    npmlog "^4.1.0"
     p-finally "^1.0.0"
     path-exists "^3.0.0"
     read-cmd-shim "^1.0.1"
@@ -3900,13 +3628,13 @@ lerna@2.0.0-rc.4:
     semver "^5.1.0"
     signal-exit "^3.0.2"
     strong-log-transformer "^1.0.6"
-    temp-write "^3.2.0"
-    write-file-atomic "^1.3.3"
-    write-json-file "^2.0.0"
-    write-pkg "^2.1.0"
-    yargs "^7.1.0"
+    temp-write "^3.3.0"
+    write-file-atomic "^2.1.0"
+    write-json-file "^2.1.0"
+    write-pkg "^3.0.1"
+    yargs "^8.0.1"
 
-leven@^2.0.0, leven@^2.1.0:
+leven@^2.1.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
 
@@ -3949,6 +3677,14 @@ loader-utils@^0.2.16, loader-utils@^0.2.5, loader-utils@~0.2.2, loader-utils@~0.
     json5 "^0.5.0"
     object-assign "^4.0.1"
 
+loader-utils@^1.0.2:
+  version "1.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/loader-utils/-/loader-utils-1.1.0.tgz#c98aef488bcceda2ffb5e2de646d6a754429f5cd"
+  dependencies:
+    big.js "^3.1.3"
+    emojis-list "^2.0.0"
+    json5 "^0.5.0"
+
 locate-path@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/locate-path/-/locate-path-2.0.0.tgz#2b568b265eec944c6d9c0de9c3dbbbca0354cd8e"
@@ -3956,30 +3692,11 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash._arraycopy@^3.0.0:
-  version "3.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._arraycopy/-/lodash._arraycopy-3.0.0.tgz#76e7b7c1f1fb92547374878a562ed06a3e50f6e1"
-
-lodash._arrayeach@^3.0.0:
-  version "3.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._arrayeach/-/lodash._arrayeach-3.0.0.tgz#bab156b2a90d3f1bbd5c653403349e5e5933ef9e"
-
 lodash._baseassign@^3.0.0:
   version "3.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._baseassign/-/lodash._baseassign-3.2.0.tgz#8c38a099500f215ad09e59f1722fd0c52bfe0a4e"
   dependencies:
     lodash._basecopy "^3.0.0"
-    lodash.keys "^3.0.0"
-
-lodash._baseclone@^3.0.0:
-  version "3.3.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._baseclone/-/lodash._baseclone-3.3.0.tgz#303519bf6393fe7e42f34d8b630ef7794e3542b7"
-  dependencies:
-    lodash._arraycopy "^3.0.0"
-    lodash._arrayeach "^3.0.0"
-    lodash._baseassign "^3.0.0"
-    lodash._basefor "^3.0.0"
-    lodash.isarray "^3.0.0"
     lodash.keys "^3.0.0"
 
 lodash._basecopy@^3.0.0:
@@ -3989,14 +3706,6 @@ lodash._basecopy@^3.0.0:
 lodash._basecreate@^3.0.0:
   version "3.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._basecreate/-/lodash._basecreate-3.0.3.tgz#1bc661614daa7fc311b7d03bf16806a0213cf821"
-
-lodash._basefor@^3.0.0:
-  version "3.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._basefor/-/lodash._basefor-3.0.3.tgz#7550b4e9218ef09fad24343b612021c79b4c20c2"
-
-lodash._bindcallback@^3.0.0:
-  version "3.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._bindcallback/-/lodash._bindcallback-3.0.1.tgz#e531c27644cf8b57a99e17ed95b35c748789392e"
 
 lodash._getnative@^3.0.0:
   version "3.9.1"
@@ -4009,17 +3718,6 @@ lodash._isiterateecall@^3.0.0:
 lodash._reinterpolate@~3.0.0:
   version "3.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
-
-lodash.assign@^4.2.0:
-  version "4.2.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
-
-lodash.clonedeep@^3.0.0:
-  version "3.0.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.clonedeep/-/lodash.clonedeep-3.0.2.tgz#a0a1e40d82a5ea89ff5b147b8444ed63d92827db"
-  dependencies:
-    lodash._baseclone "^3.0.0"
-    lodash._bindcallback "^3.0.0"
 
 lodash.create@3.1.1:
   version "3.1.1"
@@ -4108,7 +3806,7 @@ magic-string@^0.10.0:
   dependencies:
     vlq "^0.2.1"
 
-magic-string@^0.15.0, magic-string@^0.15.2:
+magic-string@^0.15.0:
   version "0.15.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/magic-string/-/magic-string-0.15.2.tgz#0681d7388741bbc3addaa65060992624c6c09e9c"
   dependencies:
@@ -4130,23 +3828,15 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
-marked-terminal@^1.6.2:
-  version "1.7.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/marked-terminal/-/marked-terminal-1.7.0.tgz#c8c460881c772c7604b64367007ee5f77f125904"
-  dependencies:
-    cardinal "^1.0.0"
-    chalk "^1.1.3"
-    cli-table "^0.3.1"
-    lodash.assign "^4.2.0"
-    node-emoji "^1.4.1"
-
-marked@^0.3.6:
-  version "0.3.6"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
-
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
+
+mem@^1.1.0:
+  version "1.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
+  dependencies:
+    mimic-fn "^1.0.0"
 
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"
@@ -4233,7 +3923,7 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
 
-"minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@^3.0.4, minimatch@~3.0.2:
+minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@^3.0.4, minimatch@~3.0.2:
   version "3.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
   dependencies:
@@ -4243,23 +3933,23 @@ minimist@0.0.8, minimist@~0.0.1:
   version "0.0.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
 
-minimist@1.2.0, minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0:
-  version "1.2.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
-
 minimist@^0.1.0:
   version "0.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimist/-/minimist-0.1.0.tgz#99df657a52574c21c9057497df742790b2b4c0de"
 
-mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@0.x.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0:
+minimist@^1.1.1, minimist@^1.1.3, minimist@^1.2.0:
+  version "1.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
+
+mkdirp@0.5.1, mkdirp@0.x.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0:
   version "0.5.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
 
 mocha@^3.2.0:
-  version "3.4.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mocha/-/mocha-3.4.1.tgz#a3802b4aa381934cacb38de70cf771621da8f9af"
+  version "3.4.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mocha/-/mocha-3.4.2.tgz#d0ef4d332126dbf18d0d640c9b382dd48be97594"
   dependencies:
     browser-stdout "1.3.0"
     commander "2.9.0"
@@ -4289,15 +3979,6 @@ ms@2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-multimatch@^2.1.0:
-  version "2.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/multimatch/-/multimatch-2.1.0.tgz#9c7906a22fb4c02919e2f5f75161b4cdbd4b2a2b"
-  dependencies:
-    array-differ "^1.0.0"
-    array-union "^1.0.1"
-    arrify "^1.0.0"
-    minimatch "^3.0.0"
-
 mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
@@ -4305,14 +3986,6 @@ mute-stream@0.0.5:
 mute-stream@0.0.7, mute-stream@~0.0.4:
   version "0.0.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
-
-mz@^2.6.0:
-  version "2.6.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mz/-/mz-2.6.0.tgz#c8b8521d958df0a4f2768025db69c719ee4ef1ce"
-  dependencies:
-    any-promise "^1.0.0"
-    object-assign "^4.0.1"
-    thenify-all "^1.0.0"
 
 nan@^2.3.0:
   version "2.6.2"
@@ -4337,12 +4010,6 @@ ncp@0.4.x:
 negotiator@0.6.1:
   version "0.6.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
-
-node-emoji@^1.4.1:
-  version "1.5.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/node-emoji/-/node-emoji-1.5.1.tgz#fd918e412769bf8c448051238233840b2aff16a1"
-  dependencies:
-    string.prototype.codepointat "^0.2.0"
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -4376,18 +4043,6 @@ node-libs-browser@^2.0.0:
     util "^0.10.3"
     vm-browserify "0.0.4"
 
-node-notifier@^4.6.1:
-  version "4.6.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/node-notifier/-/node-notifier-4.6.1.tgz#056d14244f3dcc1ceadfe68af9cff0c5473a33f3"
-  dependencies:
-    cli-usage "^0.1.1"
-    growly "^1.2.0"
-    lodash.clonedeep "^3.0.0"
-    minimist "^1.1.1"
-    semver "^5.1.0"
-    shellwords "^0.1.0"
-    which "^1.0.5"
-
 node-notifier@^5.0.2:
   version "5.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/node-notifier/-/node-notifier-5.1.2.tgz#2fa9e12605fa10009d44549d6fcd8a63dde0e4ff"
@@ -4398,8 +4053,8 @@ node-notifier@^5.0.2:
     which "^1.2.12"
 
 node-pre-gyp@^0.6.29:
-  version "0.6.34"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/node-pre-gyp/-/node-pre-gyp-0.6.34.tgz#94ad1c798a11d7fc67381b50d47f8cc18d9799f7"
+  version "0.6.36"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/node-pre-gyp/-/node-pre-gyp-0.6.36.tgz#db604112cb74e0d477554e9b505b17abddfab786"
   dependencies:
     mkdirp "^0.5.1"
     nopt "^4.0.1"
@@ -4410,12 +4065,6 @@ node-pre-gyp@^0.6.29:
     semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
-
-nopt@3.x:
-  version "3.0.6"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/nopt/-/nopt-3.0.6.tgz#c6465dbf08abcd4db359317f79ac68a646b28ff9"
-  dependencies:
-    abbrev "1"
 
 nopt@^4.0.1:
   version "4.0.1"
@@ -4445,7 +4094,7 @@ npm-run-path@^2.0.0:
   dependencies:
     path-key "^2.0.0"
 
-npmlog@^4.0.2:
+npmlog@^4.0.2, npmlog@^4.1.0:
   version "4.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/npmlog/-/npmlog-4.1.0.tgz#dc59bee85f64f00ed424efb2af0783df25d1c0b5"
   dependencies:
@@ -4511,7 +4160,7 @@ on-finished@~2.3.0:
   dependencies:
     ee-first "1.1.1"
 
-once@1.x, once@^1.3.0, once@^1.3.3, once@^1.4.0:
+once@^1.3.0, once@^1.3.3, once@^1.4.0:
   version "1.4.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
   dependencies:
@@ -4571,6 +4220,14 @@ os-locale@^1.4.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-locale/-/os-locale-1.4.0.tgz#20f9f17ae29ed345e8bde583b13d2009803c14d9"
   dependencies:
     lcid "^1.0.0"
+
+os-locale@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-locale/-/os-locale-2.0.0.tgz#15918ded510522b81ee7ae5a309d54f639fc39a4"
+  dependencies:
+    execa "^0.5.0"
+    lcid "^1.0.0"
+    mem "^1.1.0"
 
 os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.1:
   version "1.0.2"
@@ -4825,11 +4482,11 @@ power-assert-util-string-width@^1.1.1:
     eastasianwidth "^0.1.1"
 
 power-assert@^1.4.2:
-  version "1.4.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/power-assert/-/power-assert-1.4.2.tgz#43319cd0fecd3221f276f1cc49ffa2eaeb9a1815"
+  version "1.4.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/power-assert/-/power-assert-1.4.3.tgz#190997419d162baab7e72199675adc8d1c99fb24"
   dependencies:
     define-properties "^1.1.2"
-    empower "^1.1.0"
+    empower "^1.2.2"
     power-assert-formatter "^1.3.1"
     universal-deep-strict-equal "^1.2.1"
     xtend "^4.0.0"
@@ -4843,25 +4500,8 @@ preserve@^0.2.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
 prettier@^1.3.1:
-  version "1.3.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/prettier/-/prettier-1.3.1.tgz#fa0ea84b45ac0ba6de6a1e4cecdcff900d563151"
-  dependencies:
-    ast-types "0.9.8"
-    babel-code-frame "6.22.0"
-    babylon "7.0.0-beta.8"
-    chalk "1.1.3"
-    esutils "2.0.2"
-    flow-parser "0.45.0"
-    get-stdin "5.0.1"
-    glob "7.1.1"
-    jest-validate "19.0.0"
-    minimist "1.2.0"
-
-pretty-format@^19.0.0:
-  version "19.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pretty-format/-/pretty-format-19.0.0.tgz#56530d32acb98a3fa4851c4e2b9d37b420684c84"
-  dependencies:
-    ansi-styles "^3.0.0"
+  version "1.4.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/prettier/-/prettier-1.4.2.tgz#bcdd95ed1eca434ac7f98ca26ea4d25a2af6a2ac"
 
 pretty-format@^20.0.3:
   version "20.0.3"
@@ -4869,10 +4509,6 @@ pretty-format@^20.0.3:
   dependencies:
     ansi-regex "^2.1.1"
     ansi-styles "^3.0.0"
-
-pretty-format@~4.2.1:
-  version "4.2.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pretty-format/-/pretty-format-4.2.3.tgz#8894c2ac81419cf801629d8f66320a25380d8b05"
 
 prettyjson@^1.1.2:
   version "1.2.1"
@@ -4970,8 +4606,10 @@ randomatic@^1.1.3:
     kind-of "^3.0.2"
 
 randombytes@^2.0.0, randombytes@^2.0.1:
-  version "2.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/randombytes/-/randombytes-2.0.3.tgz#674c99760901c3c4112771a31e521dc349cc09ec"
+  version "2.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/randombytes/-/randombytes-2.0.4.tgz#9551df208422c8f80eb58e2326dd0b840ff22efd"
+  dependencies:
+    safe-buffer "^5.0.1"
 
 range-parser@~1.2.0:
   version "1.2.0"
@@ -4999,6 +4637,13 @@ read-pkg-up@^1.0.1:
     find-up "^1.0.0"
     read-pkg "^1.0.0"
 
+read-pkg-up@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/read-pkg-up/-/read-pkg-up-2.0.0.tgz#6b72a8048984e0c41e79510fd5e9fa99b3b549be"
+  dependencies:
+    find-up "^2.0.0"
+    read-pkg "^2.0.0"
+
 read-pkg@^1.0.0, read-pkg@^1.1.0:
   version "1.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/read-pkg/-/read-pkg-1.1.0.tgz#f5ffaa5ecd29cb31c0474bca7d756b6bb29e3f28"
@@ -5022,14 +4667,14 @@ read@1.0.x:
     mute-stream "~0.0.4"
 
 readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.5, readable-stream@^2.0.6, readable-stream@^2.1.4, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.2.6:
-  version "2.2.9"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/readable-stream/-/readable-stream-2.2.9.tgz#cf78ec6f4a6d1eb43d26488cac97f042e74b7fc8"
+  version "2.2.10"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/readable-stream/-/readable-stream-2.2.10.tgz#effe72bb7c884c0dd335e2379d526196d9d011ee"
   dependencies:
-    buffer-shims "~1.0.0"
     core-util-is "~1.0.0"
     inherits "~2.0.1"
     isarray "~1.0.0"
     process-nextick-args "~1.0.6"
+    safe-buffer "^5.0.1"
     string_decoder "~1.0.0"
     util-deprecate "~1.0.1"
 
@@ -5062,12 +4707,6 @@ redent@^1.0.0:
   dependencies:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
-
-redeyed@~1.0.0:
-  version "1.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/redeyed/-/redeyed-1.0.1.tgz#e96c193b40c0816b00aec842698e61185e55498a"
-  dependencies:
-    esprima "~3.0.0"
 
 regenerate@^1.2.1:
   version "1.3.2"
@@ -5182,11 +4821,11 @@ resolve-url@~0.2.1:
   version "0.2.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
 
-resolve@1.1.7, resolve@1.1.x:
+resolve@1.1.7:
   version "1.1.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
-resolve@^1.1.6, resolve@^1.1.7, resolve@^1.3.2:
+resolve@^1.1.6, resolve@^1.3.2:
   version "1.3.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/resolve/-/resolve-1.3.3.tgz#655907c3469a8680dc2de3a275a8fdd69691f0e5"
   dependencies:
@@ -5244,23 +4883,6 @@ rollup-plugin-babel@^2.7.1:
     object-assign "^4.1.0"
     rollup-pluginutils "^1.5.0"
 
-rollup-plugin-commonjs@^3.3.1:
-  version "3.3.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-commonjs/-/rollup-plugin-commonjs-3.3.1.tgz#da824e93615c0c56157d1f743849dc0074fabbfb"
-  dependencies:
-    acorn "^3.2.0"
-    estree-walker "^0.2.1"
-    magic-string "^0.15.2"
-    resolve "^1.1.7"
-    rollup-pluginutils "^1.5.1"
-
-rollup-plugin-flow@^v1.1.0:
-  version "1.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-flow/-/rollup-plugin-flow-1.1.1.tgz#6ce568f1dd559666b77ab76b4bae251407528db6"
-  dependencies:
-    flow-remove-types "^1.1.0"
-    rollup-pluginutils "^1.5.1"
-
 rollup-plugin-inject@^1.4.1:
   version "1.4.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-inject/-/rollup-plugin-inject-1.4.1.tgz#14825236259485981f6b8118404408acd22b1d54"
@@ -5270,30 +4892,24 @@ rollup-plugin-inject@^1.4.1:
     magic-string "^0.10.0"
     rollup-pluginutils "^1.2.0"
 
-rollup-plugin-node-resolve@^2.0.0:
-  version "2.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-2.1.1.tgz#cbb783b0d15b02794d58915350b2f0d902b8ddc8"
-  dependencies:
-    browser-resolve "^1.11.0"
-    builtin-modules "^1.1.0"
-    resolve "^1.1.6"
-
-rollup-plugin-replace@^1.1.1:
+rollup-plugin-strip-caridy-patched@^1.1.1:
   version "1.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-replace/-/rollup-plugin-replace-1.1.1.tgz#396315ded050a6ce43b9518a886a3f60efb1ea33"
-  dependencies:
-    magic-string "^0.15.2"
-    minimatch "^3.0.2"
-    rollup-pluginutils "^1.5.0"
-
-rollup-plugin-strip@^1.1.1:
-  version "1.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-strip/-/rollup-plugin-strip-1.1.1.tgz#b965d9caa5971d626ed1b703ee73d3421e3fefd1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-strip-caridy-patched/-/rollup-plugin-strip-caridy-patched-1.1.1.tgz#de95416f41a1c78cd8ba682e40dde3d2a153bf1b"
   dependencies:
     acorn "^3.1.0"
     estree-walker "^0.2.1"
     magic-string "^0.15.0"
     rollup-pluginutils "^1.3.1"
+
+rollup-plugin-typescript@^0.8.1:
+  version "0.8.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-typescript/-/rollup-plugin-typescript-0.8.1.tgz#2ff7eecc21cf6bb2b43fc27e5b688952ce71924a"
+  dependencies:
+    compare-versions "2.0.1"
+    object-assign "^4.0.1"
+    rollup-pluginutils "^1.3.1"
+    tippex "^2.1.1"
+    typescript "^1.8.9"
 
 rollup-plugin-uglify@^1.0.1:
   version "1.0.2"
@@ -5301,7 +4917,7 @@ rollup-plugin-uglify@^1.0.1:
   dependencies:
     uglify-js "^2.6.1"
 
-rollup-pluginutils@^1.2.0, rollup-pluginutils@^1.3.1, rollup-pluginutils@^1.5.0, rollup-pluginutils@^1.5.1:
+rollup-pluginutils@^1.2.0, rollup-pluginutils@^1.3.1, rollup-pluginutils@^1.5.0:
   version "1.5.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
   dependencies:
@@ -5348,23 +4964,12 @@ rx@^4.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
 safe-buffer@^5.0.1:
-  version "5.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/safe-buffer/-/safe-buffer-5.0.1.tgz#d263ca54696cd8a306b5ca6551e92de57918fbe7"
+  version "5.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/safe-buffer/-/safe-buffer-5.1.0.tgz#fe4c8460397f9eaaaa58e73be46273408a45e223"
 
 samsam@1.1.2, samsam@~1.1:
   version "1.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/samsam/-/samsam-1.1.2.tgz#bec11fdc83a9fda063401210e40176c3024d1567"
-
-sane@~1.4.1:
-  version "1.4.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/sane/-/sane-1.4.1.tgz#88f763d74040f5f0c256b6163db399bf110ac715"
-  dependencies:
-    exec-sh "^0.2.0"
-    fb-watchman "^1.8.0"
-    minimatch "^3.0.2"
-    minimist "^1.1.1"
-    walker "~1.0.5"
-    watch "~0.10.0"
 
 sane@~1.6.0:
   version "1.6.0"
@@ -5652,10 +5257,6 @@ string-width@^2.0.0:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^3.0.0"
 
-string.prototype.codepointat@^0.2.0:
-  version "0.2.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/string.prototype.codepointat/-/string.prototype.codepointat-0.2.0.tgz#6b26e9bd3afcaa7be3b4269b526de1b82000ac78"
-
 string_decoder@^0.10.25:
   version "0.10.31"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/string_decoder/-/string_decoder-0.10.31.tgz#62e203bc41766c6c28c9fc84301dab1c5310fa94"
@@ -5793,7 +5394,7 @@ temp-dir@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/temp-dir/-/temp-dir-1.0.0.tgz#0a7c0ea26d3a39afa7e0ebea9c1fc0bc4daa011d"
 
-temp-write@^3.2.0:
+temp-write@^3.3.0:
   version "3.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/temp-write/-/temp-write-3.3.0.tgz#c1a96de2b36061342eae81f44ff001aec8f615a9"
   dependencies:
@@ -5810,16 +5411,6 @@ tempfile@^1.1.1:
   dependencies:
     os-tmpdir "^1.0.0"
     uuid "^2.0.1"
-
-test-exclude@^2.1.1:
-  version "2.1.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/test-exclude/-/test-exclude-2.1.3.tgz#a8d8968e1da83266f9864f2852c55e220f06434a"
-  dependencies:
-    arrify "^1.0.1"
-    micromatch "^2.3.11"
-    object-assign "^4.1.0"
-    read-pkg-up "^1.0.1"
-    require-main-filename "^1.0.1"
 
 test-exclude@^4.1.1:
   version "4.1.1"
@@ -5839,21 +5430,11 @@ text-table@~0.2.0:
   version "0.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
 
-thenify-all@^1.0.0, thenify-all@^1.6.0:
-  version "1.6.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/thenify-all/-/thenify-all-1.6.0.tgz#1a1918d402d8fc3f98fbf234db0bcc8cc10e9726"
-  dependencies:
-    thenify ">= 3.1.0 < 4"
-
-"thenify@>= 3.1.0 < 4":
-  version "3.3.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/thenify/-/thenify-3.3.0.tgz#e69e38a1babe969b0108207978b9f62b88604839"
-  dependencies:
-    any-promise "^1.0.0"
-
 throat@^3.0.0:
-  version "3.0.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/throat/-/throat-3.0.0.tgz#e7c64c867cbb3845f10877642f7b60055b8ec0d6"
+  version "3.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/throat/-/throat-3.1.0.tgz#ef22d8855963b3fdc626d043508f24c4cdf7d3c3"
+  dependencies:
+    double-ended-queue "^2.1.0-0"
 
 through2@^2.0.0, through2@^2.0.2:
   version "2.0.3"
@@ -5875,6 +5456,10 @@ timers-browserify@^2.0.2:
 timespan@~2.3.0:
   version "2.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/timespan/-/timespan-2.3.0.tgz#4902ce040bd13d845c8f59b27e9d59bad6f39929"
+
+tippex@^2.1.1:
+  version "2.3.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tippex/-/tippex-2.3.1.tgz#a2fd5b7087d7cbfb20c9806a6c16108c2c0fafda"
 
 tmatch@^2.0.1:
   version "2.0.1"
@@ -5928,25 +5513,26 @@ tryit@^1.0.1:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tryit/-/tryit-1.0.3.tgz#393be730a9446fd1ead6da59a014308f36c289cb"
 
-tslib@^1.6.0:
+tslib@^1.7.1:
   version "1.7.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
 
 tslint@^5.2.0:
-  version "5.3.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tslint/-/tslint-5.3.2.tgz#e56459fb095a7307f103b84052174f5e3bbef6ed"
+  version "5.4.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tslint/-/tslint-5.4.2.tgz#609b6640cc0424f4a395a9adf68c375563c549c7"
   dependencies:
     babel-code-frame "^6.22.0"
     colors "^1.1.2"
+    commander "^2.9.0"
     diff "^3.2.0"
     glob "^7.1.1"
-    optimist "~0.6.0"
+    minimatch "^3.0.4"
     resolve "^1.3.2"
     semver "^5.3.0"
-    tslib "^1.6.0"
-    tsutils "^2.0.0"
+    tslib "^1.7.1"
+    tsutils "^2.3.0"
 
-tsutils@^2.0.0:
+tsutils@^2.3.0:
   version "2.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tsutils/-/tsutils-2.3.0.tgz#96e661d7c2363f31adc8992ac67bbe7b7fc175e5"
 
@@ -5992,13 +5578,17 @@ typescript-eslint-parser@^3.0.0:
     lodash.unescape "4.0.1"
     semver "5.3.0"
 
-typescript@^2.3.2:
+typescript@^1.8.9:
+  version "1.8.10"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/typescript/-/typescript-1.8.10.tgz#b475d6e0dff0bf50f296e5ca6ef9fbb5c7320f1e"
+
+typescript@^2.3.4:
   version "2.3.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/typescript/-/typescript-2.3.4.tgz#3d38321828231e434f287514959c37a82b629f42"
 
-uglify-js@^2.6, uglify-js@^2.6.1, uglify-js@^2.8.5:
-  version "2.8.27"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/uglify-js/-/uglify-js-2.8.27.tgz#47787f912b0f242e5b984343be8e35e95f694c9c"
+uglify-js@^2.6, uglify-js@^2.6.1, uglify-js@^2.8.27:
+  version "2.8.28"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/uglify-js/-/uglify-js-2.8.28.tgz#e335032df9bb20dcb918f164589d5af47f38834a"
   dependencies:
     source-map "~0.5.1"
     yargs "~3.10.0"
@@ -6020,6 +5610,10 @@ universal-deep-strict-equal@^1.2.1:
     array-filter "^1.0.0"
     indexof "0.0.1"
     object-keys "^1.0.0"
+
+universalify@^0.1.0:
+  version "0.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/universalify/-/universalify-0.1.0.tgz#9eb1c4651debcc670cc94f1a75762332bb967778"
 
 unpipe@~1.0.0:
   version "1.0.0"
@@ -6159,8 +5753,8 @@ webpack-sources@^0.2.3:
     source-map "~0.5.3"
 
 webpack@^2.3.3:
-  version "2.5.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/webpack/-/webpack-2.5.1.tgz#61742f0cf8af555b87460a9cd8bba2f1e3ee2fce"
+  version "2.6.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/webpack/-/webpack-2.6.1.tgz#2e0457f0abb1ac5df3ab106c69c672f236785f07"
   dependencies:
     acorn "^5.0.0"
     acorn-dynamic-import "^2.0.0"
@@ -6179,7 +5773,7 @@ webpack@^2.3.3:
     source-map "^0.5.3"
     supports-color "^3.1.0"
     tapable "~0.2.5"
-    uglify-js "^2.8.5"
+    uglify-js "^2.8.27"
     watchpack "^1.3.1"
     webpack-sources "^0.2.3"
     yargs "^6.0.0"
@@ -6201,7 +5795,11 @@ which-module@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which-module/-/which-module-1.0.0.tgz#bba63ca861948994ff307736089e3b96026c2a4f"
 
-which@^1.0.5, which@^1.1.1, which@^1.2.12, which@^1.2.9:
+which-module@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
+
+which@^1.2.12, which@^1.2.9:
   version "1.2.14"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
   dependencies:
@@ -6244,7 +5842,7 @@ wordwrap@0.0.2, "wordwrap@>=0.0.1 <0.1.0", wordwrap@~0.0.2:
   version "0.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wordwrap/-/wordwrap-0.0.2.tgz#b79669bb42ecb409f83d583cad52ca17eaa1643f"
 
-wordwrap@^1.0.0, wordwrap@~1.0.0:
+wordwrap@~1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
 
@@ -6266,15 +5864,7 @@ wrappy@1:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
-write-file-atomic@^1.3.3:
-  version "1.3.4"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-file-atomic/-/write-file-atomic-1.3.4.tgz#f807a4f0b1d9e913ae7a48112e6cc3af1991b45f"
-  dependencies:
-    graceful-fs "^4.1.11"
-    imurmurhash "^0.1.4"
-    slide "^1.1.5"
-
-write-file-atomic@^2.0.0:
+write-file-atomic@^2.0.0, write-file-atomic@^2.1.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-file-atomic/-/write-file-atomic-2.1.0.tgz#1769f4b551eedce419f0505deae2e26763542d37"
   dependencies:
@@ -6282,19 +5872,20 @@ write-file-atomic@^2.0.0:
     imurmurhash "^0.1.4"
     slide "^1.1.5"
 
-write-json-file@^2.0.0:
-  version "2.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-json-file/-/write-json-file-2.1.0.tgz#ba1cf3ac7ee89db26c3d528986e48421389046b7"
+write-json-file@^2.0.0, write-json-file@^2.1.0:
+  version "2.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-json-file/-/write-json-file-2.2.0.tgz#51862506bbb3b619eefab7859f1fd6c6d0530876"
   dependencies:
+    detect-indent "^5.0.0"
     graceful-fs "^4.1.2"
     make-dir "^1.0.0"
     pify "^2.0.0"
     sort-keys "^1.1.1"
     write-file-atomic "^2.0.0"
 
-write-pkg@^2.1.0:
-  version "2.1.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-pkg/-/write-pkg-2.1.0.tgz#353aa44c39c48c21440f5c08ce6abd46141c9c08"
+write-pkg@^3.0.1:
+  version "3.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/write-pkg/-/write-pkg-3.0.1.tgz#f95245805be6f6a4eb1d6c31c43b57226815e6e3"
   dependencies:
     sort-keys "^1.1.2"
     write-json-file "^2.0.0"
@@ -6333,7 +5924,13 @@ yargs-parser@^5.0.0:
   dependencies:
     camelcase "^3.0.0"
 
-yargs@^6.0.0, yargs@^6.3.0:
+yargs-parser@^7.0.0:
+  version "7.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/yargs-parser/-/yargs-parser-7.0.0.tgz#8d0ac42f16ea55debd332caf4c4038b3e3f5dfd9"
+  dependencies:
+    camelcase "^4.1.0"
+
+yargs@^6.0.0:
   version "6.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/yargs/-/yargs-6.6.0.tgz#782ec21ef403345f830a808ca3d513af56065208"
   dependencies:
@@ -6351,7 +5948,7 @@ yargs@^6.0.0, yargs@^6.3.0:
     y18n "^3.2.1"
     yargs-parser "^4.2.0"
 
-yargs@^7.0.2, yargs@^7.1.0:
+yargs@^7.0.2:
   version "7.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/yargs/-/yargs-7.1.0.tgz#6ba318eb16961727f5d284f8ea003e8d6154d0c8"
   dependencies:
@@ -6368,6 +5965,24 @@ yargs@^7.0.2, yargs@^7.1.0:
     which-module "^1.0.0"
     y18n "^3.2.1"
     yargs-parser "^5.0.0"
+
+yargs@^8.0.1:
+  version "8.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/yargs/-/yargs-8.0.1.tgz#420ef75e840c1457a80adcca9bc6fa3849de51aa"
+  dependencies:
+    camelcase "^4.1.0"
+    cliui "^3.2.0"
+    decamelize "^1.1.1"
+    get-caller-file "^1.0.1"
+    os-locale "^2.0.0"
+    read-pkg-up "^2.0.0"
+    require-directory "^2.1.1"
+    require-main-filename "^1.0.1"
+    set-blocking "^2.0.0"
+    string-width "^2.0.0"
+    which-module "^2.0.0"
+    y18n "^3.2.1"
+    yargs-parser "^7.0.0"
 
 yargs@~3.10.0:
   version "3.10.0"

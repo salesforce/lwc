@@ -2,13 +2,6 @@
   "compilerOptions": {
     "target": "es5",
     "module": "es2015",
-    "lib": [
-      "dom",
-      "es2015"
-    ],
-    "noEmit": true,
-    "allowJs": true,
-    "checkJs": true,
-    "strict": true
+    "noEmit": true
   }
 }
