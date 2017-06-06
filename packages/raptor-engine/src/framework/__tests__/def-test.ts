@@ -46,17 +46,6 @@ describe('def', () => {
             });
         });
 
-        it('should match WC semantic to ignore observedAttributes if no callback is provided', () => {
-            class MyComponent extends Element  {}
-            MyComponent.observedAttributes = ['foo', 'x-bar'];
-            assert.deepEqual(target.getComponentDef(MyComponent), {
-                name: 'MyComponent',
-                props: {},
-                methods: {},
-                observedAttrs: {},
-            });
-        });
-
         it('should understand static publicMethods', () => {
             class MyComponent extends Element  {
                 foo() {}

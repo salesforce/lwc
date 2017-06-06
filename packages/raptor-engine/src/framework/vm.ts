@@ -2,7 +2,7 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent } from "./component";
 import { patch } from "./patch";
-import { assign, isArray, toString, ArrayPush } from "./language";
+import { assign, isArray, toString, ArrayPush, isUndefined, keys } from "./language";
 import { addCallbackToNextTick } from "./utils";
 
 let idx: number = 0;
@@ -59,6 +59,12 @@ export function createVM(vnode: ComponentVNode) {
     });
     vnode.vm = vm;
     createComponent(vm, Ctor);
+    assert.block(function devModeCheck() {
+        const { component: { attributeChangedCallback }, def: { observedAttrs } } = vm;
+        if (observedAttrs.length && isUndefined(attributeChangedCallback)) {
+            console.warn(`${vm} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
+        }
+    });
     return vm;
 }
 

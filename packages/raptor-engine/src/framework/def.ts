@@ -118,8 +118,7 @@ function getPublicMethodsHash(target: Object): HashTable<number> {
 }
 
 function getObservedAttributesHash(target: Object): HashTable<number> {
-    // To match WC semantics, only if you have the callback in the prototype, you
-    if (!target.prototype.attributeChangedCallback || !target.observedAttributes || !target.observedAttributes.length) {
+    if (!target.observedAttributes || !target.observedAttributes.length) {
         return EmptyObject;
     }
     return target.observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable => {

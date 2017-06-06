@@ -82,7 +82,10 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
     const { component, context } = vm;
-    assert.isTrue(component.attributeChangedCallback, `invokeComponentAttributeChangedCallback() should not be called if \`component.attributeChangedCallback()\` is not defined.`)
+    const { attributeChangedCallback } = component;
+    if (isUndefined(attributeChangedCallback)) {
+        return;
+    }
     const ctx = currentContext;
     establishContext(context);
     let error;

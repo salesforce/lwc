@@ -251,4 +251,25 @@ describe('html-element', () => {
 
     });
 
+    describe('#data layer', () => {
+
+        it('should allow custom attributeChangedCallback', () => {
+            let a;
+            class MyComponent extends Element  {}
+            MyComponent.publicProps = { foo: true };
+            MyComponent.observedAttributes = ['foo'];
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, { props: { foo: 1 } });
+            const vnode2 = api.c('x-foo', MyComponent, { props: { foo: 2 } });
+            patch(elm, vnode1);
+            vnode1.vm.component.attributeChangedCallback = () => {
+                a = Array.prototype.slice.call(arguments, 0);
+            };
+            patch(vnode1, vnode2);
+            assert.deepEqual(['foo', 1, 2], a);
+        });
+
+    });
+
 });
