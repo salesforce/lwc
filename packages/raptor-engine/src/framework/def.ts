@@ -36,6 +36,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     if (proto === Element) {
         return true;
     }
+    getComponentDef(proto); // ensuring that the prototype chain is already expanded
     ArrayPush.call(protoSet, Ctor);
     return isElementComponent(proto, protoSet);
 }
