@@ -4,6 +4,7 @@ import { createComponent } from "./component";
 import { patch } from "./patch";
 import { assign, isArray, toString, ArrayPush, isUndefined, keys } from "./language";
 import { addCallbackToNextTick } from "./utils";
+import { Membrane } from "./membrane";
 
 let idx: number = 0;
 let uid: number = 0;
@@ -132,4 +133,15 @@ export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
     // TODO: we need to walk the parent path here as well, in case they passed it via slots multiple times
     // @ts-ignore
     return node[OwnerKey] === ownerUid;
+}
+
+export function getMembrane(vm: VM): Membrane {
+    assert.vm(vm);
+    let { membrane } = vm;
+    if (membrane) {
+        return membrane;
+    }
+    membrane = new Membrane(vm);
+    vm.membrane = membrane;
+    return membrane;
 }

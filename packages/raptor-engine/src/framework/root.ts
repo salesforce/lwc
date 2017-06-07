@@ -2,15 +2,13 @@ import assert from "./assert";
 import { ViewModelReflection } from "./html-element";
 import { ArrayFilter, defineProperty } from "./language";
 import { isBeingConstructed } from "./component";
-import { isNodeOwnedByVM } from "./vm";
+import { OwnerKey, isNodeOwnedByVM, getMembrane } from "./vm";
+import { register } from "./services";
+
+const { querySelector, querySelectorAll } = Element.prototype;
 
 function getLinkedElement(root: Root): HTMLElement {
     return root[ViewModelReflection].vnode.elm;
-}
-
-function querySelectorAllFromRoot(root: ShadowRoot, selectors: string): NodeList {
-    const elm = getLinkedElement(root);
-    return elm.querySelectorAll(selectors);
 }
 
 export function Root(vm: VM): ShadowRoot {
@@ -30,37 +28,77 @@ Root.prototype = {
     get host(): Component {
         return this[ViewModelReflection].component;
     },
-    querySelector(selectors: string): Node | undefined {
+    querySelector(selector: string): MembraneObject | undefined {
         const vm = this[ViewModelReflection];
         assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
-        const nodeList = querySelectorAllFromRoot(this, selectors);
-        for (let i = 0, len = nodeList.length; i < len; i += 1) {
-            if (isNodeOwnedByVM(vm, nodeList[i])) {
-                // TODO: locker service might need to return a membrane proxy
-                return nodeList[i];
-            }
-        }
+        const elm = getLinkedElement(this);
+        const node = getMembrane(vm).pierce(elm).querySelector(selector);
         assert.block(() => {
-            if (vm.component.querySelector(selectors)) {
+            if (!node && vm.component.querySelector(selector)) {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         });
+        return node;
     },
-    querySelectorAll(selectors: string): NodeList {
+    querySelectorAll(selector: string): MembraneObject {
         const vm = this[ViewModelReflection];
         assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
-        const nodeList = querySelectorAllFromRoot(this, selectors);
-        // TODO: locker service might need to do something here
-        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
+        const elm = getLinkedElement(this);
+        const nodeList = getMembrane(vm).pierce(elm).querySelectorAll(selector);
         assert.block(() => {
-            if (filteredNodes.length === 0 && vm.component.querySelectorAll(selectors).length) {
+            if (nodeList.length === 0 && vm.component.querySelectorAll(selector).length) {
                 assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
             }
         });
-        return filteredNodes;
+        return nodeList;
     },
     toString(): string {
         const vm = this[ViewModelReflection];
         return `Current ShadowRoot for ${vm.component}`;
     }
 };
+
+function getFirstMatch(vm: VM, elm: Element, selector: string): Node | undefined {
+    const nodeList = querySelectorAll.call(elm, selector);
+    // search for all, and find the first node that is owned by the VM in question.
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        if (isNodeOwnedByVM(vm, nodeList[i])) {
+            return getMembrane(vm).pierce(nodeList[i]);
+        }
+    }
+}
+
+function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
+    const nodeList = querySelectorAll.call(elm, selector);
+    const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
+    return getMembrane(vm).pierce(filteredNodes);
+}
+
+function isParentNodeKeyword(key: string): boolean {
+    return (key === 'parentNode' || key === 'parentElement');
+}
+
+// Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
+register({
+    piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value: any) => void) {
+        if (value === querySelector) {
+            // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
+            // we do in that case? Right now this is essentially a bound function, but the original is not.
+            return callback((selector: string): Node | undefined => getFirstMatch(component[ViewModelReflection], target, selector));
+        }
+        if (value === querySelectorAll) {
+            // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
+            // we do in that case? Right now this is essentially a bound function, but the original is not.
+            return callback((selector: string): Node | undefined => getAllMatches(component[ViewModelReflection], target, selector));
+        }
+        if (value && value.splitText && isParentNodeKeyword(key)) {
+            if (value === component[ViewModelReflection].vnode.elm) {
+                // walking up via parent chain might end up in the shadow root element
+                return callback(component.root);
+            } else if (target[OwnerKey] !== value[OwnerKey]) {
+                // cutting out access to something outside of the shadow of the current target by calling back with undefined
+                return callback();
+            }
+        }
+    }
+});

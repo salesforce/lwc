@@ -1,6 +1,8 @@
 type Template = (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => undefined | Array<VNode>;
 
 declare class Component {
+    classList: DOMTokenList;
+    root: ShadowRoot;
     render(): void | Template;
     connectedCallback(): void;
     disconnectedCallback(): void;
@@ -46,6 +48,7 @@ declare class VM {
     def: ComponentDef;
     context: HashTable<any>;
     component?: Component;
+    membrane?: Membrane;
     vnode?: VNode;
     fragment: Array<VNode>;
     deps: Array<Array<VM>>;
@@ -118,9 +121,11 @@ declare interface RenderAPI {
 }
 
 type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
+type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (newValue?: any) => void) => void;
 
 interface Services {
-  connected?: ServiceCallback;
-  disconnected?: ServiceCallback;
-  rehydrated?: ServiceCallback;
+  connected?: ServiceCallback[];
+  disconnected?: ServiceCallback[];
+  rehydrated?: ServiceCallback[];
+  piercing?: MembranePiercingCallback[];
 }

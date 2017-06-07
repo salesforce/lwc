@@ -8,7 +8,7 @@ import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
-import { wasNodePassedIntoVM } from "./vm";
+import { wasNodePassedIntoVM, getMembrane } from "./vm";
 
 export const ViewModelReflection = Symbol('internal');
 
@@ -146,7 +146,7 @@ ComponentElement.prototype = {
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
                 // TODO: locker service might need to return a membrane proxy
-                return nodeList[i];
+                return getMembrane(vm).pierce(nodeList[i]);
             }
         }
         assert.block(() => {
@@ -166,7 +166,7 @@ ComponentElement.prototype = {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         });
-        return filteredNodes;
+        return  getMembrane(vm).pierce(filteredNodes);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
