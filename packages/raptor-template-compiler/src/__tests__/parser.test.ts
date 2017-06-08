@@ -1,3 +1,5 @@
+/* tslint:disable:max-line-length */
+
 import parse from '../parser';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
@@ -188,6 +190,16 @@ describe('custom component', () => {
         expect(get(root, 'children.0.component')).toBe('x-button');
     });
 
+    it('custom component self closing error', () => {
+        const { warnings } = parse(`<template><x-button/>Some text</template>`);
+        expect(warnings).toContainEqual({
+            level: 'error',
+            message: `Self-closing syntax <x-button/> is not allowed in custom elements, use an explicit closing tag instead <x-button></x-button>.`,
+            start: 10,
+            length: 11,
+        });
+    });
+
     it('custom component via is attribute', () => {
         const { root } = parse(`<template><button is="x-button"></button></template>`);
         expect(get(root, 'children.0.tag')).toBe('button');
@@ -222,7 +234,7 @@ describe('slots', () => {
             <x-card>
                 <h1 slot="title">My title</h1>
                 My content
-                <section slot="footer">My footer</footer>
+                <section slot="footer">My footer</section>
             </x-card>
         </template>`);
         expect(get(root, 'children.0.children')).toHaveLength(0);

@@ -309,6 +309,19 @@ export default function parse(source: string): {
 
         if (tag.includes('-')) {
             component = tag;
+
+            const node = element.__original as parse5.AST.Default.Element;
+            const location = node.__location!;
+
+            // Self closing tags don't have end tag locations
+            // TODO: Remove this once parse5 supports errors from HTML spec
+            if (!location.endTag) {
+                const errorMessage = [
+                    `Self-closing syntax <${tag}/> is not allowed in custom elements,`,
+                    `use an explicit closing tag instead <${tag}></${tag}>.`,
+                ].join(' ');
+                return warnAt(errorMessage, location.startTag);
+            }
         }
 
         const isAttribute = getTemplateAttribute(element, 'is');
