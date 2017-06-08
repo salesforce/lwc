@@ -85,7 +85,7 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
     const len = isArray(items) ? items.length : 0;
     const list: Array<VNode> = [];
     for (let i = 0; i < len; i += 1) {
-        const vnode = factory(items[i], i);
+        const vnode = factory(items[i], i, i === 0, i === len);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
