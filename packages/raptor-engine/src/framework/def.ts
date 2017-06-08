@@ -53,16 +53,19 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         defineProperties(proto, createPublicPropertyDescriptorMap(propName));
     }
+    const wire = getWireHash(Ctor);
     const methods = getPublicMethodsHash(Ctor);
     const observedAttrs = getObservedAttributesHash(Ctor);
     const def: ComponentDef = {
         name,
+        wire,
         props,
         methods,
         observedAttrs,
     };
     assert.block(function devModeCheck() {
         freeze(Ctor.prototype);
+        freeze(wire);
         freeze(props);
         freeze(methods);
         freeze(observedAttrs);
@@ -74,6 +77,14 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         }
     });
     return def;
+}
+
+function getWireHash(target: Object): HashTable<PropDef> {
+    const wire: HashTable = target.wire;
+    assert.block(function devModeCheck() {
+        // TODO: check that anything in `wire` is correctly defined in the prototype
+    });
+    return wire;
 }
 
 function getPublicPropertiesHash(target: Object): HashTable<PropDef> {

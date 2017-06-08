@@ -12,7 +12,7 @@ import { notifyListeners } from "./watcher";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
-import { invokeServiceHook, services } from "./services";
+import { invokeServiceHook, Services } from "./services";
 
 export let vmBeingConstructed: VM | null = null;
 
@@ -23,7 +23,7 @@ export function isBeingConstructed(vm: VM): boolean {
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
-    const { cmpProps, def: { methods: publicMethodsConfig } } = vm;
+    const { cmpProps, def: { wire, methods: publicMethodsConfig } } = vm;
     // expose public methods as props on the Element
     for (let methodName in publicMethodsConfig) {
         cmpProps[methodName] = function (): any {
@@ -39,6 +39,12 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
         extractOwnFields(component);
     });
     assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+    if (wire) {
+        const { wiring } = Services;
+        if (wiring) {
+            invokeServiceHook(vm, wiring);
+        }
+    }
 }
 
 export function clearListeners(vm: VM) {
@@ -231,7 +237,7 @@ export function renderComponent(vm: VM) {
     if (renderedCallback && renderedCallback !== noop) {
         addCallbackToNextTick((): void => invokeComponentMethod(vm, 'renderedCallback'));
     }
-    const { rehydrated } = services;
+    const { rehydrated } = Services;
     if (rehydrated) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));
     }

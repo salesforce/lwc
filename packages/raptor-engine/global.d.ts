@@ -21,8 +21,11 @@ declare interface HashTable<T> {
 
 declare interface PropDef {}
 
+declare interface WireDef {}
+
 declare interface ComponentDef {
     name: string,
+    wire: HashTable<WireDef>,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
     observedAttrs: HashTable<number>,
@@ -118,14 +121,4 @@ declare interface RenderAPI {
     n(children: Array<VNode|null|number|string|Node>): Array<VNode>,
     f(items: Array<any>): Array<any>,
     b(fn: EventListener): EventListener,
-}
-
-type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
-type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (newValue?: any) => void) => void;
-
-interface Services {
-  connected?: ServiceCallback[];
-  disconnected?: ServiceCallback[];
-  rehydrated?: ServiceCallback[];
-  piercing?: MembranePiercingCallback[];
 }

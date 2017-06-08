@@ -1,15 +1,15 @@
 import assert from "./assert";
 import { OwnerKey } from "./vm";
 import { ArrayMap, isArray, toString } from "./language";
-import { services } from "./services";
+import { Services } from "./services";
 
 const GetTarget = Symbol('internal');
 
 type ReplicableFunction = (...args: Array<any>) => any; // eslint-disable-line no-undef
-type Replicable = Object | ReplicableFunction;
+export type Replicable = Object | ReplicableFunction;
 
 type ReplicaFunction = (...args: Array<any>) => Replica | String | Number | Boolean; // eslint-disable-line no-undef
-type Replica = Object | ReplicaFunction;
+export type Replica = Object | ReplicaFunction;
 
 function isReplicable(value: any): boolean {
     const type = typeof value;
@@ -45,7 +45,7 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
 
 function piercingHook(vm: VM, target: Replicable, key: string | Symbol, value: any): any {
     assert.vm(vm);
-    const { piercing } = services;
+    const { piercing } = Services;
     if (piercing) {
         const { component, vnode: { data }, def, context } = vm;
         let result = value;

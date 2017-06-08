@@ -3,7 +3,7 @@ import { invokeComponentMethod } from "./invoker";
 import { clearListeners } from "./component";
 import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm";
 import { addCallbackToNextTick, noop } from "./utils";
-import { invokeServiceHook, services } from "./services";
+import { invokeServiceHook, Services } from "./services";
 
 function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -18,7 +18,7 @@ function insert(vnode: ComponentVNode) {
         // for any children's vnode are not going to be useful.
         rehydrate(vm);
     }
-    const { connected } = services;
+    const { connected } = Services;
     if (connected) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
     }
@@ -36,7 +36,7 @@ function destroy(vnode: ComponentVNode) {
     removeInsertionIndex(vm);
     // just in case it comes back, with this we guarantee re-rendering it
     vm.isDirty = true;
-    const { disconnected } = services;
+    const { disconnected } = Services;
     const { component: { disconnectedCallback } } = vm;
     clearListeners(vm);
     if (disconnected) {

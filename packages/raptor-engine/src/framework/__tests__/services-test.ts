@@ -5,8 +5,8 @@ import { patch } from '../patch';
 import assert from 'power-assert';
 
 function resetServices() {
-    Object.keys(target.services).forEach((name) => {
-        delete target.services[name];
+    Object.keys(target.Services).forEach((name) => {
+        delete target.Services[name];
     });
 }
 
@@ -23,32 +23,32 @@ describe('services', () => {
         });
 
         it('should support single hook', () => {
-            assert.strictEqual(undefined, target.services.rehydrated);
+            assert.strictEqual(undefined, target.Services.rehydrated);
             target.register({
                 rehydrated: function () {},
                 connected: function () {}
             });
-            assert.strictEqual(1, target.services.rehydrated.length);
-            assert.strictEqual(1, target.services.connected.length);
+            assert.strictEqual(1, target.Services.rehydrated.length);
+            assert.strictEqual(1, target.Services.connected.length);
         });
 
         it('should support multiple hooks', () => {
-            assert.strictEqual(undefined, target.services.rehydrated);
+            assert.strictEqual(undefined, target.Services.rehydrated);
             target.register({
                 rehydrated: function () {}
             });
-            assert.strictEqual(1, target.services.rehydrated.length);
+            assert.strictEqual(1, target.Services.rehydrated.length);
         });
 
         it('should allow multiple services to register the same hook', () => {
-            assert.strictEqual(undefined, target.services.rehydrated);
+            assert.strictEqual(undefined, target.Services.rehydrated);
             target.register({
                 rehydrated: function () {}
             });
             target.register({
                 rehydrated: function () {}
             });
-            assert.strictEqual(2, target.services.rehydrated.length);
+            assert.strictEqual(2, target.Services.rehydrated.length);
         });
 
     });
