@@ -5,7 +5,7 @@ const fs = require('fs');
 const argv = require('yargs').argv;
 const raptor = require('rollup-plugin-raptor-compiler');
 const uglify = require('rollup-plugin-uglify');
-const strip = require('rollup-plugin-strip');
+const strip = require('rollup-plugin-strip-caridy-patched');
 const rollup = require('rollup');
 const glob = require("glob");
 
