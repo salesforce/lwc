@@ -9,6 +9,3 @@ export default class Test {
     }
 
 }
-Test.publicProps = {
-    test: 1
-};

@@ -1,5 +1,5 @@
 export default class Test {
-    test = 1;
-    @api
+    @api test = 1;
+
     foo(){}
 }

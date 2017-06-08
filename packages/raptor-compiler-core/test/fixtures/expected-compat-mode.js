@@ -25,10 +25,6 @@ var ClassAndTemplate = function () {
     return ClassAndTemplate;
 }();
 
-ClassAndTemplate.publicProps = {
-    t: 1
-};
-
 return ClassAndTemplate;
 
 });

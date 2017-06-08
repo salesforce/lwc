@@ -17,9 +17,6 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.publicProps = {
-    t: 1
-};
 
 return ClassAndTemplate;
 

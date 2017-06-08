@@ -19,8 +19,5 @@ class ClassAndTemplate {
     }
 
 }
-ClassAndTemplate.publicProps = {
-    t: 1
-};
 
 export default ClassAndTemplate;

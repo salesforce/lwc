@@ -9,7 +9,4 @@ export default class Test {
     }
 
 }
-Test.publicProps = {
-    test: 1
-};
 Test.publicMethods = ["foo"];
