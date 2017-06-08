@@ -161,6 +161,61 @@ describe('root', () => {
             });
         });
 
+        it('should not throw error if querySelector does not match any elements', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('ul', {}, [])]
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            
+            return Promise.resolve().then(() => {
+                expect(() => {
+                    vnode.vm.component.root.querySelector('doesnotexist');
+                }).not.toThrow();
+            });
+        });
+
+        it('should return undefined if querySelector does not match any elements', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('ul', {}, [])]
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            
+            return Promise.resolve().then(() => {
+                assert(vnode.vm.component.root.querySelector('doesnotexist') === undefined);
+            });
+        });
+
+        it('should not throw error if querySelectorAll does not match any elements', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('ul', {}, [])]
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            
+            return Promise.resolve().then(() => {
+                expect(() => {
+                    vnode.vm.component.root.querySelectorAll('doesnotexist');
+                }).not.toThrow();
+            });
+        });
+
     });
 
 });

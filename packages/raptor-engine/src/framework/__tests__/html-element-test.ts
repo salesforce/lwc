@@ -211,6 +211,23 @@ describe('html-element', () => {
             });
         });
 
+        it('should not throw an error if element does not exist', () => {
+            const outerp = api.h('p', {}, []);
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [outerp]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                expect(() => {
+                    vnode.vm.component.querySelector('div');
+                }).not.toThrow();
+            });
+        });
     });
 
     describe('#querySelectorAll()', () => {
@@ -246,6 +263,24 @@ describe('html-element', () => {
             return Promise.resolve().then(() => {
                 const nodes = vnode.vm.component.querySelectorAll('p');
                 assert.strictEqual(0, nodes.length);
+            });
+        });
+
+        it('should not throw an error if no nodes are found', () => {
+            const outerp = api.h('p', {}, []);
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [outerp]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                expect(() => {
+                    vnode.vm.component.querySelectorAll('div');
+                }).not.toThrow();
             });
         });
 

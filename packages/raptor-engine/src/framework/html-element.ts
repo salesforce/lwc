@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ClassList } from "./class-list";
-import { Root } from "./root";
+import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
 import { ArrayFilter, isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language";
 import { getPropertyProxy } from "./properties";
@@ -150,7 +150,7 @@ ComponentElement.prototype = {
             }
         }
         assert.block(() => {
-            if (this.root.querySelector(selectors)) {
+            if (shadowRootQuerySelector(this.root, selectors)) {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
             }
         });
@@ -162,7 +162,7 @@ ComponentElement.prototype = {
         // TODO: locker service might need to do something here
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
         assert.block(() => {
-            if (filteredNodes.length === 0 && this.root.querySelectorAll(selectors).length) {
+            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         });

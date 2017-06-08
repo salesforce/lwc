@@ -11,6 +11,22 @@ function getLinkedElement(root: Root): HTMLElement {
     return root[ViewModelReflection].vnode.elm;
 }
 
+export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | undefined {
+    const vm = shadowRoot[ViewModelReflection];
+    assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+    const elm = getLinkedElement(shadowRoot);
+    
+    return getMembrane(vm).pierce(elm).querySelector(selector);
+}
+
+export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: string): MembraneObject {
+    const vm = shadowRoot[ViewModelReflection];
+    assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+    const elm = getLinkedElement(shadowRoot);
+    
+    return getMembrane(vm).pierce(elm).querySelectorAll(selector);
+}
+
 export function Root(vm: VM): ShadowRoot {
     assert.vm(vm);
     defineProperty(this, ViewModelReflection, {
@@ -29,11 +45,9 @@ Root.prototype = {
         return this[ViewModelReflection].component;
     },
     querySelector(selector: string): MembraneObject | undefined {
-        const vm = this[ViewModelReflection];
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
-        const elm = getLinkedElement(this);
-        const node = getMembrane(vm).pierce(elm).querySelector(selector);
+        const node = shadowRootQuerySelector(this, selector);
         assert.block(() => {
+            const vm = this[ViewModelReflection];
             if (!node && vm.component.querySelector(selector)) {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
@@ -41,11 +55,9 @@ Root.prototype = {
         return node;
     },
     querySelectorAll(selector: string): MembraneObject {
-        const vm = this[ViewModelReflection];
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
-        const elm = getLinkedElement(this);
-        const nodeList = getMembrane(vm).pierce(elm).querySelectorAll(selector);
+        const nodeList = shadowRootQuerySelectorAll(this, selector);
         assert.block(() => {
+            const vm = this[ViewModelReflection];
             if (nodeList.length === 0 && vm.component.querySelectorAll(selector).length) {
                 assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
             }
