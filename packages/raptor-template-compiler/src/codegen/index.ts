@@ -32,7 +32,7 @@ import {
     IRNode,
     IRElement,
     IRText,
-    CompilationMetdata,
+    CompilationMetadata,
     CompilationOutput,
     TemplateExpression,
 } from '../shared/types';
@@ -326,7 +326,7 @@ export function transform(
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-export default function(templateRoot: IRElement, metadata: CompilationMetdata): CompilationOutput {
+export default function(templateRoot: IRElement, metadata: CompilationMetadata): CompilationOutput {
     memorization.reset();
 
     const statement = transform(templateRoot);

@@ -17,21 +17,3 @@ const BABEL_CONFIG = {
 };
 
 babelFixtureTransform(fixturesTransformDir, BABEL_CONFIG);
-
-describe('Class dependency calculation ', () => {
-    it('Test used dependency', () => {
-        const usedDep = path.join(fixturesDir, 'dependencies/used-dependency.js');
-        const { metadata : { classDependencies } } = transform(usedDep, BABEL_CONFIG);
-        const expected = ['external-lib'];
-
-        assert(classDependencies.length === 1, `Expected dependency ${expected}`);
-        assert.deepStrictEqual(classDependencies, expected, `Expected depdendency ${expected}`);
-    });
-
-    it('Test multiple dependencies', () => {
-        const usedDep = path.join(fixturesDir, 'dependencies/multiple-dependencies.js');
-        const { metadata : { classDependencies } } = transform(usedDep, BABEL_CONFIG);
-        const expected = ['external-lib', 'external-lib2', 'external-lib3'];
-        assert.deepStrictEqual(classDependencies, expected, `Expected no dependencies`);
-    });
-});

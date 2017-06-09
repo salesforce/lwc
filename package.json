@@ -24,7 +24,12 @@
   "bin": {
     "raptor-compiler": "bin/raptor-compiler-cli.js"
   },
+  "babel": {
+    "presets": ["env"]
+  },
   "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-env": "^1.5.1",
     "glob": "^7.1.1",
     "lerna": "2.0.0-rc.5",
     "mocha": "^3.2.0",

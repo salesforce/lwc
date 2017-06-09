@@ -67,29 +67,25 @@ export function normalizeOptions(options) {
     options.bundle = options.bundle !== undefined ? options.bundle : true;
     options.mode = options.mode || MODES.DEV;
     options.sources = options.sources || {};
-
     options.$metadata = {};
 
     return options;
 }
 
-export function mergeMetadata (metadata) {
-    const templateUsedIds = [];
-    const templateDependencies = [];
-    const classDependencies = [];
-    const definedSlots = [];
+// Merge dedupe and filter all dependencies we have found
+// Any dependency without
+export function mergeMetadata(metadata) {
+    const dependencies = metadata.rollupDependencies;
     const labels = [];
 
     for (let i in metadata) {
-        templateUsedIds.push(...metadata[i].templateUsedIds || []);
-        templateDependencies.push(...metadata[i].templateDependencies || []);
-        classDependencies.push(...metadata[i].classDependencies || []);
-        definedSlots.push(...metadata[i].definedSlots || []);
+        dependencies.push(...metadata[i].templateDependencies || []);
+        dependencies.push(...metadata[i].classDependencies || []);
         labels.push(...metadata[i].labels || []);
     }
 
     return {
-        bundleDependencies: classDependencies.concat(templateDependencies),
+        bundleDependencies: Array.from(new Set(dependencies)),
         bundleLabels: labels
     };
 }

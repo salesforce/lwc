@@ -2,13 +2,13 @@ import generate from './codegen';
 import parse from './parser';
 
 import {
-    CompilationMetdata,
+    CompilationMetadata,
     CompilationWarning,
 } from './shared/types';
 
 export default function compiler(source: string) {
     let code = '';
-    let metadata: CompilationMetdata | undefined;
+    let metadata: CompilationMetadata | undefined;
     const warnings: CompilationWarning[] = [];
 
     try {

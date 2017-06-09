@@ -2,6 +2,9 @@ import { dirname, join, extname } from './utils';
 
 export default function (options) {
     const sources = options.sources;
+    const meta = options.$metadata;
+    meta.rollupDependencies = [];
+
     return {
         name : 'source-resolver',
 
@@ -9,11 +12,16 @@ export default function (options) {
         // Ex. If entry: 'foo/bar/mycmp.js, all dependencies will be relative like 'foo/bar/other/dep.js'
         resolveId: function (id, importee) {
             //console.log('[]source-resolver:resolveId', '\t>> ' , id, importee);
-            const ext = extname(id);
+            const extension = extname(id);
+            const externalModule = id[0] !== '.';
             const path = importee ? dirname(importee) : '';
             let relativePath = join(path, id);
 
-            if (!ext) {
+            if (externalModule && importee) {
+                meta.rollupDependencies.push(id);
+            }
+
+            if (!extension) {
                 relativePath += '.js';
             }
 

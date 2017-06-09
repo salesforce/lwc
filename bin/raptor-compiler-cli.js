@@ -13,7 +13,7 @@ if (!args.length) {
     process.exit();
 }
 
-const options = { format: 'es6', mode: 'dev' };
+const options = { format: 'es', mode: 'dev' };
 let filePath, arg;
 
 while (arg = args.shift()) {

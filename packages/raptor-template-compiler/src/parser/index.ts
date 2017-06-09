@@ -46,7 +46,7 @@ import {
     IRAttribute,
     CompilationWarning,
     WarningLevel,
-    CompilationMetdata,
+    CompilationMetadata,
 } from '../shared/types';
 
 import {
@@ -61,10 +61,10 @@ import {
 export default function parse(source: string): {
     root?: IRElement | undefined,
     warnings: CompilationWarning[],
-    metadata: CompilationMetdata,
+    metadata: CompilationMetadata,
 } {
     const warnings: CompilationWarning[] = [];
-    const metadata: CompilationMetdata = {
+    const metadata: CompilationMetadata = {
         templateUsedIds: [],
         definedSlots: [],
         templateDependencies: [],

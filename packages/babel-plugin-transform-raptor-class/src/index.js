@@ -87,7 +87,6 @@ module.exports = function ({ types: t }) {
     return {
         name: 'raptor-class-transform',
         pre(file) {
-            file.metadata.classDependencies = [];
             file.metadata.labels = [];
         },
         visitor: {
@@ -112,13 +111,6 @@ module.exports = function ({ types: t }) {
                 const className = path.get('id.name').node;
                 const extraBody = transformClassBody.call(this, className, path.get('body'), state);
                 path.getStatementParent().insertAfter(extraBody);
-            },
-            ImportDeclaration(path, state) {
-                path.skip(); // Skip traversing children
-                const dep = path.node.source.value;
-                if (dep[0] !== '.') { // Filter relative paths
-                    state.file.metadata.classDependencies.push(dep);
-                }
             }
         }
     };

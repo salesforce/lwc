@@ -89,7 +89,7 @@ export interface CompilationWarning {
     level: WarningLevel;
 }
 
-export interface CompilationMetdata {
+export interface CompilationMetadata {
     templateUsedIds: string[];
     definedSlots: string[];
     templateDependencies: string[];
