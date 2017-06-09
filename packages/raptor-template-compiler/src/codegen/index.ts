@@ -41,21 +41,27 @@ import * as memorization from './memorization';
 
 import Stack from '../shared/stack';
 
-function applyInlineIf(element: IRElement, babelNode: t.Expression) {
+function applyInlineIf(
+    element: IRElement,
+    babelNode: t.Expression,
+    testExpression?: t.Expression,
+): t.Expression {
     if (!element.if) {
         return babelNode;
     }
 
-    const modifier = element.ifModifier!;
-    const boundTestExpression = applyExpressionBinding(element.if!, element);
+    if (!testExpression) {
+        testExpression = applyExpressionBinding(element.if!, element);
+    }
 
     let leftExpression: t.Expression;
+    const modifier = element.ifModifier!;
     if (modifier === 'true') {
-        leftExpression = boundTestExpression;
+        leftExpression = testExpression;
     } else if (modifier === 'false') {
-        leftExpression = t.unaryExpression('!', boundTestExpression);
+        leftExpression = t.unaryExpression('!', testExpression);
     } else if (modifier === 'strict-true') {
-        leftExpression = t.binaryExpression('===', boundTestExpression, t.booleanLiteral(true));
+        leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
     } else {
         throw new Error(`Unknown if modifier ${modifier}`);
     }
@@ -93,9 +99,12 @@ function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Exp
     }
 
     if (t.isArrayExpression(fragmentNodes)) {
+        // Bind the expression once for all the template children
+        const testExpression = applyExpressionBinding(element.if!, element);
+
         return t.arrayExpression(
             fragmentNodes.elements.map((child: t.Expression) => (
-                applyInlineIf(element, child)
+                applyInlineIf(element, child, testExpression)
             )),
         );
     } else {
