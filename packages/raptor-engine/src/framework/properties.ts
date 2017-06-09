@@ -7,7 +7,7 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker";
-import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject } from "./language";
+import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject, isNull } from "./language";
 
 const ObjectPropertyToProxyCache: Map<Object, Object> = new WeakMap();
 const ProxyCache: Set<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
@@ -53,7 +53,9 @@ const propertyProxyHandler = {
 
 export function getPropertyProxy(value: Object): any {
     assert.isTrue(isObject(value), "perf-optimization: avoid calling this method for non-object value.");
-    if (value === null) {
+
+    // TODO: Provide a holistic way to deal with built-ins, right now we just care ignore Date
+    if (isNull(value) || value.constructor === Date) {
         return value;
     }
     // TODO: perf opt - we should try to give identity to propertyProxies so we can test
@@ -61,12 +63,12 @@ export function getPropertyProxy(value: Object): any {
     if (ProxyCache.has(value)) {
         return value;
     }
-    // TODO: optimize this check
-    // TODO: and alternative here is to throw a hard error in dev mode so in prod we don't have to do the check
-    if (value instanceof Node) {
-        assert.logWarning(`Do not store references to DOM Nodes. Instead use \`this.querySelector()\` and \`this.querySelectorAll()\` to find the nodes when needed.`);
-        return value;
-    }
+
+    assert.block(function devModeCheck() {
+        const isNode = value instanceof Node;
+        assert.invariant(!isNode, `Do not store references to DOM Nodes. Instead use \`this.querySelector()\` and \`this.querySelectorAll()\` to find the nodes when needed.`);
+    });
+
     let proxy = ObjectPropertyToProxyCache.get(value);
     if (proxy) {
         return proxy;
