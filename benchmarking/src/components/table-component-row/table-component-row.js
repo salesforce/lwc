@@ -1,7 +1,7 @@
 import { Element } from 'raptor-engine';
 
 export default class TableComponentRow extends Element {
-    row;
+    @api row;
 
     handleSelect() {
         this.dispatchEvent(new CustomEvent('select'));

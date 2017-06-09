@@ -1,7 +1,7 @@
 import { Element } from 'raptor-engine';
 
 export default class TableComponent extends Element {
-    rows = [];
+    @api rows = [];
 
     handleSelect() {
         console.log('[handler] selected');
