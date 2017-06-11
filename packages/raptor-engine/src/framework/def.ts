@@ -9,6 +9,7 @@
 
 import assert from "./assert";
 import {
+    assign,
     freeze,
     create,
     ArrayIndexOf,
@@ -18,6 +19,7 @@ import {
     defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
+    getPrototypeOf,
     isString,
     isFunction,
 } from "./language";
@@ -32,7 +34,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
-    const proto = Object.getPrototypeOf(Ctor);
+    const proto = getPrototypeOf(Ctor);
     if (proto === Element) {
         return true;
     }
@@ -46,16 +48,27 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     const name: string = Ctor.name;
     assert.isTrue(name && isString(name), `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
     assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a "constructor" property.`);
-    const props = getPublicPropertiesHash(Ctor);
+    let props = getPublicPropertiesHash(Ctor);
+    let methods = getPublicMethodsHash(Ctor);
+    let observedAttrs = getObservedAttributesHash(Ctor);
+    let wire = getWireHash(Ctor);
+
+    const superProto = getPrototypeOf(Ctor);
+    if (superProto !== Element) {
+        const superDef = getComponentDef(superProto);
+        props = assign({}, superDef.props, props);
+        methods = assign({}, superDef.methods, methods);
+        observedAttrs = assign({}, superDef.observedAttrs, observedAttrs);
+        wire = assign({}, superDef.wire, wire);
+    }
+    
     const proto = Ctor.prototype;
     for (let propName in props) {
         // initializing getters and setters for each public prop on the target prototype
         assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         defineProperties(proto, createPublicPropertyDescriptorMap(propName));
     }
-    const wire = getWireHash(Ctor);
-    const methods = getPublicMethodsHash(Ctor);
-    const observedAttrs = getObservedAttributesHash(Ctor);
+    
     const def: ComponentDef = {
         name,
         wire,
@@ -80,7 +93,11 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
 }
 
 function getWireHash(target: Object): HashTable<PropDef> {
-    const wire: HashTable = target.wire;
+    const wire: HashTable = target.wire || {};
+    if (!wire || !getOwnPropertyNames(wire).length) {
+        return EmptyObject;
+    }
+    
     assert.block(function devModeCheck() {
         // TODO: check that anything in `wire` is correctly defined in the prototype
     });
