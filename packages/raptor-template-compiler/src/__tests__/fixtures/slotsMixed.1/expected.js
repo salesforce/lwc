@@ -17,7 +17,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         function (item, index) {
                             return $api.t("x");
                         }
-                    ) : null])
+                    ) : []])
                 }
             }
         )]

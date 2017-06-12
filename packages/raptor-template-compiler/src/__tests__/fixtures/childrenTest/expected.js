@@ -33,7 +33,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     [$api.t("X2")]
                 )];
             }
-        ) : null ])
+        ) : [] ])
     ), $api.h(
         "section",
         {

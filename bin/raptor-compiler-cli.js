@@ -1,7 +1,9 @@
 #!/usr/bin/env babel-node
 /* eslint-env node */
-import { compile } from '../packages/raptor-compiler-core/src/index.js';
+
 import * as path from 'path';
+import * as prettier from 'prettier';
+import { compile } from '../packages/raptor-compiler-core/src/index.js';
 
 const args = process.argv.slice(2);
 if (!args.length) {
@@ -31,7 +33,7 @@ compile(entry, options)
 .then((result) => {
     console.log('\n>> Code --------------------------------------------------');
     if (result.code) {
-        console.log('\n', result.code);
+        console.log('\n', prettier.format(result.code));
     } else {
         Object.keys(result).map(r => console.log(`Mode: ${r}: `, result[r].code, '------------------------------------------------'));
     }

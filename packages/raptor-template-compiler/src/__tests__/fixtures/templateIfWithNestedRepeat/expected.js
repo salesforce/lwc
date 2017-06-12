@@ -7,5 +7,5 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 [$api.t("Inner")]
             );
         })]
-    ) : null );
+    ) : [] );
 }

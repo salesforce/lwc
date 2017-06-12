@@ -45,6 +45,7 @@ function applyInlineIf(
     element: IRElement,
     babelNode: t.Expression,
     testExpression?: t.Expression,
+    falseValue: t.Expression = t.nullLiteral(),
 ): t.Expression {
     if (!element.if) {
         return babelNode;
@@ -69,7 +70,7 @@ function applyInlineIf(
     return t.conditionalExpression(
         leftExpression,
         babelNode,
-        t.nullLiteral(),
+        falseValue,
     );
 }
 
@@ -108,7 +109,8 @@ function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Exp
             )),
         );
     } else {
-        return applyInlineIf(element, fragmentNodes);
+        // If the template has a single children, make sure the ternary expression returns an array
+        return applyInlineIf(element, fragmentNodes, undefined, t.arrayExpression([]));
     }
 }
 
