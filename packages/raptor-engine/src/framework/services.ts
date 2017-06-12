@@ -6,6 +6,7 @@ const hooks = ['wiring', 'rehydrated', 'connected', 'disconnected', 'piercing'];
 
 export type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void; // eslint-disable-line no-undef
 export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (newValue?: any) => void) => void; // eslint-disable-line no-undef
+export type ServiceDef = { wiring?: ServiceCallback; connected?: ServiceCallback; disconnected?: ServiceCallback; rehydrated?: ServiceCallback; piercing?: MembranePiercingCallback; [key: string]: ServiceCallback | MembranePiercingCallback | undefined; }; // eslint-disable-line no-undef
 
 export const Services: {
   wiring?: ServiceCallback[];
@@ -13,9 +14,10 @@ export const Services: {
   disconnected?: ServiceCallback[];
   rehydrated?: ServiceCallback[];
   piercing?: MembranePiercingCallback[];
+  [key: string]: ServiceCallback[] | MembranePiercingCallback[] | undefined;
 } = create(null);
 
-export function register(service: ServiceCallback) {
+export function register(service: ServiceDef) {
     assert.isTrue(isObject(service), `Invalid service declaration, ${service}: service must be an object`);
     for (let i = 0; i < hooks.length; ++i) {
         const hookName = hooks[i];
@@ -24,6 +26,7 @@ export function register(service: ServiceCallback) {
             if (isUndefined(l)) {
                 Services[hookName] = l = [];
             }
+
             l.push(service[hookName]);
         }
     }

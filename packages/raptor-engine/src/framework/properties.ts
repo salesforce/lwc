@@ -78,35 +78,38 @@ export function getPropertyProxy(value: Object): any {
     ProxyCache.add(proxy);
     return proxy;
 }
-
+const InstanceField = 0;
 const RegularField = 1;
 const ExpandoField = 2;
 const MutatedField = 3;
 const ObjectToFieldsMap = new WeakMap();
 
-export function extractOwnFields(target: Object): HashTable<number> {
-    let fields = ObjectToFieldsMap.get(target);
-    let type = ExpandoField;
+export function extractOwnFields(component: Object, allowInstanceFields: boolean): HashTable<number> {
+    let fields = ObjectToFieldsMap.get(component);
+    let type = allowInstanceFields ? InstanceField : ExpandoField;
     if (isUndefined(fields)) {
         // only the first batch are considered private fields
         type = RegularField;
         fields = {};
-        ObjectToFieldsMap.set(target, fields);
+        ObjectToFieldsMap.set(component, fields);
     }
-    for (let propName in target) {
-        if (hasOwnProperty.call(target, propName) && isUndefined(fields[propName])) {
+    for (let propName in component) {
+        if (hasOwnProperty.call(component, propName) && isUndefined(fields[propName])) {
             fields[propName] = type;
-            let value = target[propName];
-            // replacing the field with a getter and a setter to track the mutations
-            // and provide meaningful errors
-            defineProperty(target, propName, {
-                get: (): any => value,
-                set: (newValue: any) => {
-                    value = newValue;
-                    fields[propName] = MutatedField;
-                },
-                configurable: false,
-            });
+            let value = component[propName];
+
+            if (!allowInstanceFields) {
+                // replacing the field with a getter and a setter to track the mutations
+                // and provide meaningful errors
+                defineProperty(component, propName, {
+                    get: (): any => value,
+                    set: (newValue: any) => {
+                        value = newValue;
+                        fields[propName] = MutatedField;
+                    },
+                    configurable: false,
+                });
+            }
         }
     }
     return fields;

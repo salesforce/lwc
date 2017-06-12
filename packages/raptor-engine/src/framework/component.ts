@@ -43,6 +43,11 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
         const { wiring } = Services;
         if (wiring) {
             invokeServiceHook(vm, wiring);
+            assert.block(function devModeCheck() {
+                // Mark instance properties for services special
+                extractOwnFields(component, true);
+            });
+
         }
     }
 }

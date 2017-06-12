@@ -38,6 +38,7 @@ const cmpProxyHandler = {
             if (hasOwnProperty.call(cmp, key)) {
                 const fields = getOwnFields(cmp);
                 switch (fields[key]) {
+                    case 0: break; // Instance fields that have special privileges can go though
                     case 1:
                         assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(key)}\`.`);
                         break;
