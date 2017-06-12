@@ -14,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         []
                     ): null, $cmp.haveLoadedItems ? $api.i(
                         $cmp.menuItems,
-                        function (item, index) {
+                        function (item) {
                             return $api.t("x");
                         }
                     ) : []])

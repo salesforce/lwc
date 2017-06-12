@@ -1,6 +1,6 @@
 <template>
     <ul>
-        <template for:each="item of items">
+        <template for:each={items} for:item="item">
             <li key={item.key}>{item.value}</li>
         </template>
     </ul>

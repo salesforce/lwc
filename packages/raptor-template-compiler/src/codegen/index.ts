@@ -75,18 +75,22 @@ function applyInlineIf(
 }
 
 function applyInlineFor(element: IRElement, babelNode: t.Expression) {
-    if (!element.for) {
+    if (!element.forEach) {
         return babelNode;
+    }
+
+    const { expression, item, index } = element.forEach;
+    const params  = [item];
+    if (index) {
+        params.push(index);
     }
 
     const iterationFunction = t.functionExpression(
         undefined,
-        [element.forItem!, element.forIterator!],
-        t.blockStatement([
-            t.returnStatement(babelNode),
-        ]),
+        params,
+        t.blockStatement([t.returnStatement(babelNode)]),
     );
-    const iterable = applyExpressionBinding(element.for!, element);
+    const iterable = applyExpressionBinding(expression, element);
 
     return t.callExpression(
         RENDER_PRIMITIVE_API.ITERATOR,
@@ -115,7 +119,7 @@ function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Exp
 }
 
 function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-    if (!element.for) {
+    if (!element.forEach) {
         return fragmentNodes;
     }
 
@@ -191,7 +195,7 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
 function shouldFlatten(element: IRElement): boolean {
     return element.children.some((child) => (
         isElement(child) && (
-            (isSlot(child) || !!child.for) ||
+            (isSlot(child) || !!child.forEach) ||
             isTemplate(child) && shouldFlatten(child)
         )
     ));
@@ -245,13 +249,6 @@ export function transform(
                     }
                 }
 
-                // if (t.isArrayExpression(children)) {
-                //     const elements: t.Expression[] = children.elements.reduce((acc: t.Expression[], child) => (
-                //         t.isArrayExpression(child) ? acc.concat(child.elements as t.Expression) : acc.concat(child)
-                //     ), []);
-                //     children.elements = elements;
-                // }
-
                 if (isTemplate(element)) {
                     transformTemplate(element, children);
                 } else {
@@ -300,7 +297,7 @@ export function transform(
     function transformTemplate(element: IRElement, children: t.Expression) {
         let expression = applyTemplateIf(element, children);
 
-        if (element.for) {
+        if (element.forEach) {
             expression = applyTemplateFor(element, expression);
             (stack.peek() as t.ArrayExpression).elements.push(expression);
         } else if (t.isArrayExpression(expression) && element.if) {

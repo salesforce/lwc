@@ -13,6 +13,17 @@ export type HTMLNode =
     | HTMLElement
     | HTMLText;
 
+export interface ForEach {
+    expression: TemplateExpression;
+    item: TemplateIdentifier;
+    index?: TemplateIdentifier;
+}
+
+export interface ForIterator {
+    expression: TemplateExpression;
+    iterator: TemplateIdentifier;
+}
+
 export interface IRElement {
     type: 'element';
     tag: string;
@@ -39,9 +50,8 @@ export interface IRElement {
     if?: TemplateExpression;
     ifModifier?: string;
 
-    for?: TemplateExpression;
-    forItem?: TemplateIdentifier;
-    forIterator?: TemplateIdentifier;
+    forEach?: ForEach;
+    forOf?: ForIterator;
     forKey?: TemplateExpression;
 
     slotName?: string;

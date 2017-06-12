@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         [$api.h(
             "tbody",
             {},
-            $api.i($cmp.rows, function (row, index) {
+            $api.i($cmp.rows, function (row) {
                 return row.visible ? $api.c(
                     "tr",
                     _nsRow,

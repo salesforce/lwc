@@ -44,6 +44,8 @@ import {
     IRNode,
     IRElement,
     IRAttribute,
+    IRStringAttribute,
+    TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
     CompilationMetadata,
@@ -52,7 +54,6 @@ import {
 import {
     EXPRESSION_RE,
     IF_RE,
-    IF_SEPERATOR,
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
     DEFAULT_SLOT_NAME,
@@ -97,7 +98,9 @@ export default function parse(source: string): {
                     parent.children.push(element);
                 }
 
-                applyFor(element);
+                applyForEach(element);
+                applyIterator(element);
+                applyKey(element);
                 applyIf(element);
                 applyStyle(element);
                 applyHandlers(element);
@@ -247,7 +250,7 @@ export default function parse(source: string): {
                 return warnAt(`If directive should be an expression`, ifAttribute.location);
             }
 
-            const [, modifier] = ifAttribute.name.split(IF_SEPERATOR);
+            const [, modifier] = ifAttribute.name.split(':');
             if (!VALID_IF_MODIFIER.has(modifier)) {
                 return warnAt(`Unexpected if modifier ${modifier}`, ifAttribute.location);
             }
@@ -257,40 +260,120 @@ export default function parse(source: string): {
         }
     }
 
-    function applyFor(element: IRElement) {
-        const forEachAttribute = getTemplateAttribute(element, 'for:each');
-        if (forEachAttribute) {
-            removeAttribute(element, 'for:each');
+    function handleForEachDeprecatedSynax(forEachAttribute: IRStringAttribute) {
+        const { value, location } = forEachAttribute;
 
-            if (forEachAttribute.type !== 'string') {
-                return warnAt(`For:each attribute value should be an expression`, forEachAttribute.location);
-            }
-
-            const rawFor = forEachAttribute.value;
-            const expressionMatch = rawFor.match(/(.*?)\s+(?:in|of)\s+(.*)/);
-            if (!expressionMatch) {
-                return warnAt(`Invalid for syntax "${rawFor}"`, forEachAttribute.location);
-            }
-
-            let alias = expressionMatch[1];
-            let iterator;
-
-            const iteratorMatch = alias.match(/\(([^,]*),([^,]*)(?:,([^,]*))?\)/);
-            if (iteratorMatch) {
-                alias = iteratorMatch[1].trim();
-                iterator = iteratorMatch[2].trim();
-            }
-
-            try {
-                // FIXME: this is a bad way to do expression tranformation
-                element.for = parseTemplateExpression(element, `{${expressionMatch[2]}}`);
-                element.forItem = parseIdentifier(alias);
-                element.forIterator = parseIdentifier(iterator || 'index');
-            } catch (err) {
-                return warnAt(err.message, forEachAttribute.location);
-            }
+        const expressionMatch = value.match(/(.*?)\s+(?:in|of)\s+(.*)/);
+        if (!expressionMatch) {
+            const genericDeprecationError = [
+                `For:each directive has been deprecated.`,
+                `Use instead for:each={[Array]} for:item="[itemIdentifier]"`,
+            ].join(' ');
+            return warnAt(genericDeprecationError, location);
         }
 
+        let alias = expressionMatch[1];
+        const iteratorMatch = alias.match(/\(([^,]*),([^,]*)(?:,([^,]*))?\)/);
+        if (iteratorMatch) {
+            alias = iteratorMatch[1].trim();
+        }
+
+        // Create contextual error on how to transition with the new syntax
+        const validAlias = alias.toLocaleLowerCase();
+        const errorMessage = [
+            `For:each directive has been deprecated.`,
+            `Use instead for:each={${expressionMatch[2]}} for:item="${validAlias}"`,
+        ].join(' ');
+        return warnAt(errorMessage, location);
+    }
+
+    function applyForEach(element: IRElement) {
+        const forEachAttribute = getTemplateAttribute(element, 'for:each');
+        const forItemAttribute = getTemplateAttribute(element, 'for:item');
+        const forIndex = getTemplateAttribute(element, 'for:index');
+
+        if (!forEachAttribute && !forItemAttribute) {
+            return;
+        } else if (forEachAttribute && forItemAttribute) {
+            removeAttribute(element, forEachAttribute.name);
+            removeAttribute(element, forItemAttribute.name);
+
+            if (forEachAttribute.type !== 'expression') {
+                return handleForEachDeprecatedSynax(forEachAttribute);
+            } else if (forItemAttribute.type !== 'string') {
+                return warnAt('for:item directive is expected to be a string.', forItemAttribute.location);
+            }
+
+            let item: TemplateIdentifier;
+            try {
+                item = parseIdentifier(forItemAttribute.value);
+            } catch (error) {
+                return warnAt(`${forItemAttribute.value} is not a valid identifier`, forItemAttribute.location);
+            }
+
+            let index: TemplateIdentifier | undefined;
+            if (forIndex) {
+                removeAttribute(element, forIndex.name);
+                if (forIndex.type !== 'string') {
+                    return warnAt('for:index directive is expected to be a string.', forIndex.location);
+                }
+
+                try {
+                    index = parseIdentifier(forIndex.value);
+                } catch (error) {
+                    return warnAt(`${forIndex.value} is not a valid identifier`, forIndex.location);
+                }
+            }
+
+            element.forEach = {
+                expression: forEachAttribute.value,
+                item,
+                index,
+            };
+        } else {
+            return warnOnElement(
+                `for:each and for:item directives should be associated together.`,
+                element.__original,
+            );
+        }
+    }
+
+    function applyIterator(element: IRElement) {
+        const forOfAttribute = getTemplateAttribute(element, 'for:of');
+        const forIterator = getTemplateAttribute(element, 'for:iterator');
+
+        if (!forOfAttribute && !forIterator) {
+            return;
+        } else if (forOfAttribute && forIterator) {
+            removeAttribute(element, forOfAttribute.name);
+            removeAttribute(element, forIterator.name);
+
+            if (forOfAttribute.type !== 'expression') {
+                return warnAt('for:of directive is expected to be an expression.', forOfAttribute.location);
+            } else if (forIterator.type !== 'string') {
+                return warnAt('for:iterator directive is expected to be a string.', forIterator.location);
+            }
+
+            let iterator: TemplateIdentifier;
+            try {
+                iterator = parseIdentifier(forIterator.value);
+            } catch (error) {
+                return warnAt(`${forIterator.value} is not a valid identifier`, forIterator.location);
+            }
+
+            element.forOf = {
+                expression: forOfAttribute.value,
+                iterator,
+            };
+        } else {
+            return warnOnElement(
+                `for:of and for:iterator directives should be associated together.`,
+                element.__original,
+            );
+        }
+    }
+
+    function applyKey(element: IRElement) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             removeAttribute(element, 'key');
@@ -351,7 +434,7 @@ export default function parse(source: string): {
             return;
         }
 
-        if (element.for || element.if) {
+        if (element.forEach || element.forOf || element.if) {
             return warnOnElement(`Slot tag can't be associated with directives`, element.__original);
         }
 

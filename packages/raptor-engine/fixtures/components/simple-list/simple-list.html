@@ -3,7 +3,7 @@
         <h1 if:true={header}>{header}</h1>
         <ul class="foo">
             <li class="first">header</li>
-            <li for:each="item of state.data" class={state.itemClassName}>
+            <li for:each={state.data} for:item="item" class={state.itemClassName}>
                 Value of X = {item.x}
             </li>
             <li class="last">footer</li>

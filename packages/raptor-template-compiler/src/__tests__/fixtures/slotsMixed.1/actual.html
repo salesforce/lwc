@@ -5,7 +5,7 @@
                 <div></div>
             </template>
             <template if:true={haveLoadedItems}>
-                <template for:each="item of menuItems">
+                <template for:each={menuItems} for:item="item">
                     x
                 </template>
             </template>

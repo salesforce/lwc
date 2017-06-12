@@ -3,7 +3,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [$api.h(
         "ul",
         {},
-        $api.i($cmp.items, function (item, index) {
+        $api.i($cmp.items, function (item) {
             return $api.c(
                 "ns-item",
                 _nsItem,

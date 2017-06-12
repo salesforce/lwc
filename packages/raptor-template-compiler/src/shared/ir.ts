@@ -76,15 +76,31 @@ export function isComponentProp(identifier: TemplateIdentifier, node?: IRNode): 
 
     // Make sure the identifier is not bound to any iteration variable
     if (isElement(node)) {
-        const { forItem, forIterator } = node;
-        const boundToForItem = forItem && forItem.name === identifier.name;
-        const boundToForIterator = forIterator && forIterator.name === identifier.name;
+        const { forEach, forOf } = node;
+        const boundToForItem = forEach && (forEach.item.name === identifier.name);
+        const boundToForIndex = forEach && forEach.index && (forEach.index.name === identifier.name);
+        const boundToForIterator = forOf && forOf.iterator.name === identifier.name;
 
-        if (boundToForItem || boundToForIterator) {
+        if (boundToForItem || boundToForIndex || boundToForIterator) {
             return false;
         }
     }
 
     // Delegate to parent component if no binding is found at this point
     return isComponentProp(identifier, node.parent);
+}
+
+export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode): boolean {
+    if (!node) {
+        return false;
+    }
+
+    // Make sure the identifier is not bound to any iteration variable
+    if (isElement(node)) {
+        const { forOf } = node;
+        return Boolean(forOf && forOf.iterator.name === identifier.name);
+    }
+
+    // Delegate to parent component if no binding is found at this point
+    return isBoundToIterator(identifier, node.parent);
 }

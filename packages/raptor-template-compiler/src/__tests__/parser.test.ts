@@ -108,43 +108,66 @@ describe('event handlers', () => {
     });
 });
 
-describe('for directive', () => {
-    it('for directive', () => {
-        const { root } = parse(`<template><section for:each="item in items"></section></template>`);
-        expect(get(root, 'children.0.for')).toMatchObject({ type: 'Identifier', name: 'items' });
-        expect(get(root, 'children.0.forItem')).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(get(root, 'children.0.forIterator')).toMatchObject({ type: 'Identifier', name: 'index' });
+describe('for:each directives', () => {
+    it('right syntax', () => {
+        const { root } = parse(`<template><section for:each={items} for:item="item"></section></template>`);
+        expect(get(root, 'children.0.forEach.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(get(root, 'children.0.forEach.item')).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(get(root, 'children.0.forEach.index')).toBeUndefined();
     });
 
-    it('for directive with index', () => {
-        const { root } = parse(`<template><section for:each="(item, i) in items"></section></template>`);
-        expect(get(root, 'children.0.for')).toMatchObject({ type: 'Identifier', name: 'items' });
-        expect(get(root, 'children.0.forItem')).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(get(root, 'children.0.forIterator')).toMatchObject({ type: 'Identifier', name: 'i' });
+    it('right syntax with index', () => {
+        const { root } = parse(`<template><section for:each={items} for:item="item" for:index="i"></section></template>`);
+        expect(get(root, 'children.0.forEach.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(get(root, 'children.0.forEach.item')).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(get(root, 'children.0.forEach.index')).toMatchObject({ type: 'Identifier', name: 'i' });
     });
 
-    it('for directive with key', () => {
-        const { root } = parse(`<template><section for:each="item in items" key={item.key}></section></template>`);
-        expect(get(root, 'children.0.forKey')).toMatchObject(TEMPLATE_EXPRESSION);
-    });
-
-    it('for directive invalid syntax errror', () => {
-        const { warnings } = parse(`<template><section for:each="item on items"></section></template>`);
+    it('error missing for:item', () => {
+        const { warnings } = parse(`<template><section for:each={items}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: `Invalid for syntax "item on items"`,
-            start: 19,
-            length: 24,
+            message: `for:each and for:item directives should be associated together.`,
+            start: 10,
+            length: 36,
         });
     });
 
-    it('for directive with key text error', () => {
-        const { warnings } = parse(`<template><section for:each="item in items" key="item.id"></section></template>`);
+    it('error expression value for for:item', () => {
+        const { warnings } = parse(`<template><section for:each={items} for:item={item}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: `Key attribute value should be an expression`,
-            start: 44,
-            length: 13,
+            message: `for:item directive is expected to be a string.`,
+            start: 36,
+            length: 15,
+        });
+    });
+});
+
+describe('for:of directives', () => {
+    it('right syntax', () => {
+        const { root } = parse(`<template><section for:of={items} for:iterator="it"></section></template>`);
+        expect(get(root, 'children.0.forOf.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(get(root, 'children.0.forOf.iterator')).toMatchObject({ type: 'Identifier', name: 'it' });
+    });
+
+    it('error missing for:iterator', () => {
+        const { warnings } = parse(`<template><section for:of={items}></section></template>`);
+        expect(warnings).toContainEqual({
+            level: 'error',
+            message: `for:of and for:iterator directives should be associated together.`,
+            start: 10,
+            length: 34,
+        });
+    });
+
+    it('error expression value for for:iterator', () => {
+        const { warnings } = parse(`<template><section for:of={items} for:iterator={it}></section></template>`);
+        expect(warnings).toContainEqual({
+            level: 'error',
+            message: `for:iterator directive is expected to be a string.`,
+            start: 34,
+            length: 17,
         });
     });
 });
@@ -433,7 +456,7 @@ describe('metadata', () => {
 
     it('usedIds with expression', () => {
         const { metadata } = parse(`<template>
-            <div for:each="item of state.items">
+            <div for:each={state.items} for:item="item">
                 <template if:true={item.visible}>
                     {componentProp} - {item.value}
                 </template>

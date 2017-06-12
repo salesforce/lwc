@@ -1,7 +1,7 @@
 <template>
     <section class="s1">
         Other Child
-        <template for:each="item of items">
+        <template for:each={items} for:item="item">
             X
         </template>
         <p>Last child</p>
@@ -9,14 +9,14 @@
     <section class="s2">
         Other Child
         <template if:true={isTrue}>
-            <template for:each="item of items">
+            <template for:each={items} for:item="item">
                 <p>X1</p><p>X2</p>
             </template>
         </template>
     </section>
     <section class="s3">
         <p>Last child</p>
-        <div for:each="item of items"></div>
+        <div for:each={items} for:item="item"></div>
     </section>
     <section class="s4">
         <p>Other child1</p>

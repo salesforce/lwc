@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 s1: true
             }
         },
-        $api.f([$api.t("Other Child"), $api.i($cmp.items, function (item, index) {
+        $api.f([$api.t("Other Child"), $api.i($cmp.items, function (item) {
             return $api.t("X");
         }), $api.h(
             "p",
@@ -22,7 +22,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         },
         $api.f([$api.t("Other Child"), $cmp.isTrue ? $api.i(
             $cmp.items,
-            function (item, index) {
+            function (item) {
                 return [$api.h(
                     "p",
                     {},
@@ -45,7 +45,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             {},
             [$api.t("Last child")]
-        ), $api.i($cmp.items, function (item, index) {
+        ), $api.i($cmp.items, function (item) {
             return $api.h(
                 "div",
                 {},

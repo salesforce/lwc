@@ -1,7 +1,6 @@
 export const EXPRESSION_RE = /(\{(?:.)+?\})/g;
 
 export const IF_RE = /^if:/;
-export const IF_SEPERATOR = ':';
 export const VALID_IF_MODIFIER = new Set([
     'true',
     'false',

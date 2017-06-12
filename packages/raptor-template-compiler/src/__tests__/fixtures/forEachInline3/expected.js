@@ -6,9 +6,9 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             return $api.h(
                 "li",
                 {
-                    key: item.key
+                    className: item.x
                 },
-                [$api.d(item.value)]
+                [$api.d(item)]
             );
         })
     )];

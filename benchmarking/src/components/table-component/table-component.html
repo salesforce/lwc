@@ -1,7 +1,7 @@
 <template>
     <table>
         <tbody>
-            <template for:each="row of rows">
+            <template for:each={rows} for:item="row">
                 <tr is="benchmark-table-component-row"
                     class={row.className}
                     row={row}
