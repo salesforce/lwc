@@ -61,14 +61,14 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         observedAttrs = assign({}, superDef.observedAttrs, observedAttrs);
         wire = assign({}, superDef.wire, wire);
     }
-    
+
     const proto = Ctor.prototype;
     for (let propName in props) {
         // initializing getters and setters for each public prop on the target prototype
         assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         defineProperties(proto, createPublicPropertyDescriptorMap(propName));
     }
-    
+
     const def: ComponentDef = {
         name,
         wire,
@@ -81,7 +81,7 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         freeze(wire);
         freeze(props);
         freeze(methods);
-        freeze(observedAttrs);
+        //freeze(observedAttrs);
         for (let key in def) {
             defineProperty(def, key, {
                 configurable: false,
@@ -97,7 +97,7 @@ function getWireHash(target: Object): HashTable<PropDef> {
     if (!wire || !getOwnPropertyNames(wire).length) {
         return EmptyObject;
     }
-    
+
     assert.block(function devModeCheck() {
         // TODO: check that anything in `wire` is correctly defined in the prototype
     });
