@@ -9,7 +9,6 @@ import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
 import { wasNodePassedIntoVM, getMembrane } from "./vm";
-import { getTarget } from "./membrane";
 
 export const ViewModelReflection = Symbol('internal');
 
@@ -147,8 +146,7 @@ ComponentElement.prototype = {
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
                 // TODO: locker service might need to return a membrane proxy
-                const membrane = getMembrane(vm);
-                return getTarget(membrane, nodeList[i]);
+                return getMembrane(vm).pierce(nodeList[i]);
             }
         }
         assert.block(() => {
