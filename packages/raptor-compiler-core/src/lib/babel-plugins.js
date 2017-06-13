@@ -31,6 +31,7 @@ import templateLiterals from "babel-plugin-transform-es2015-template-literals";
 import typeofSymbol from "babel-plugin-transform-es2015-typeof-symbol";
 import uniRegex from "babel-plugin-transform-es2015-unicode-regex";
 import regenerator from "babel-plugin-transform-regenerator";
+import transformRuntime from "babel-plugin-transform-runtime";
 
 // We could use a more advance filtering as showed here:
 // https://github.com/babel/babel-preset-env
@@ -77,7 +78,7 @@ export const BABEL_PLUGINS_COMPAT = [
     [asyncGenerator, {}],
     [trailingCommas, {}],
     [blockScoped, {}],
-    ["transform-runtime", {
+    [transformRuntime, {
       helpers: true,
       polyfill: false,
       moduleName: "compat"
