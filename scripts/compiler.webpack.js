@@ -11,7 +11,7 @@ module.exports = function (/*env*/) {
         output: {
             library: 'compiler',
             libraryTarget: 'umd',
-            path: path.resolve(__dirname, '../dist/compiler/umd'),
+            path: path.resolve(__dirname, '../dist/'),
             filename: 'compiler.min.js',
         },
         node: {
