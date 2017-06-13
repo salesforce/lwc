@@ -16,7 +16,7 @@ function isReplicable(value: any): boolean {
     return value && (type === 'object' || type === 'function');
 }
 
-function getTarget(membrane: Membrane, replicaOrAny: Replica | any): Replicable | any {
+export function getTarget(membrane: Membrane, replicaOrAny: Replica | any): Replicable | any {
     assert.isTrue(membrane instanceof Membrane, `getTarget() first argument must be a membrane.`);
     if (isReplicable(replicaOrAny) && membrane.cache.has(replicaOrAny)) {
         return replicaOrAny[GetTarget];

@@ -4,6 +4,7 @@ import { ArrayFilter, defineProperty } from "./language";
 import { isBeingConstructed } from "./component";
 import { OwnerKey, isNodeOwnedByVM, getMembrane } from "./vm";
 import { register } from "./services";
+import { getTarget } from "./membrane";
 
 const { querySelector, querySelectorAll } = Element.prototype;
 
@@ -44,15 +45,17 @@ Root.prototype = {
     get host(): Component {
         return this[ViewModelReflection].component;
     },
-    querySelector(selector: string): MembraneObject | undefined {
+    querySelector(selector: string): Element | undefined {
         const node = shadowRootQuerySelector(this, selector);
+        const vm = this[ViewModelReflection];
+        const membrane = getMembrane(vm);
         assert.block(() => {
             const vm = this[ViewModelReflection];
             if (!node && vm.component.querySelector(selector)) {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         });
-        return node;
+        return getTarget(membrane, node);
     },
     querySelectorAll(selector: string): MembraneObject {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
