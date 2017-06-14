@@ -44,7 +44,7 @@ Root.prototype = {
     get host(): Component {
         return this[ViewModelReflection].component;
     },
-    querySelector(selector: string): Element | undefined {
+    querySelector(selector: string): MembraneObject | undefined {
         const node = shadowRootQuerySelector(this, selector);
         assert.block(() => {
             const vm = this[ViewModelReflection];
@@ -52,7 +52,6 @@ Root.prototype = {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         });
-
         return node;
     },
     querySelectorAll(selector: string): MembraneObject {

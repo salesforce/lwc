@@ -97,6 +97,6 @@ export class Membrane {
         return getReplica(this, value);
     }
     pierce(value: Replicable | any): Replica | any {
-        return value;
+        return getReplica(this, value);
     }
 }
