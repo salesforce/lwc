@@ -116,7 +116,7 @@ describe('def', () => {
             MySubComponent.publicProps = {
                 fizz: 'buzz'
             };
-            
+
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent'
                 props: {
@@ -145,7 +145,7 @@ describe('def', () => {
             }
 
             MySubComponent.publicMethods = ['fizz', 'buzz'];
-            
+
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
                 props: {},
@@ -160,7 +160,7 @@ describe('def', () => {
             });
         });
 
-        it('should inherit observedAttrs correctly', function () {
+        it('should not inherit observedAttrs, it must be a manual process', function () {
             class MyComponent extends Element {}
 
             MyComponent.observedAttributes = ['foo', 'bar'];
@@ -168,13 +168,11 @@ describe('def', () => {
             class MySubComponent extends MyComponent {}
 
             MySubComponent.observedAttributes = ['fizz', 'buzz'];
-            
+
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
                 props: {},
                 observedAttrs: {
-                    foo: 1,
-                    bar: 1,
                     fizz: 1,
                     buzz: 1
                 },
@@ -190,8 +188,8 @@ describe('def', () => {
             MySubComponent.wire = { y: { type: 'record' } };
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
-                wire: { 
-                    x: { 
+                wire: {
+                    x: {
                         type: 'record'
                     },
                     y: {
@@ -211,8 +209,8 @@ describe('def', () => {
             MySubComponent.wire = { x: { type: 'subrecord' } };
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
-                wire: { 
-                    x: { 
+                wire: {
+                    x: {
                         type: 'subrecord'
                     }
                 },

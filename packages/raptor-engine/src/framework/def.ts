@@ -53,20 +53,19 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     let observedAttrs = getObservedAttributesHash(Ctor);
     let wire = getWireHash(Ctor);
 
-    const superProto = getPrototypeOf(Ctor);
-    if (superProto !== Element) {
-        const superDef = getComponentDef(superProto);
-        props = assign({}, superDef.props, props);
-        methods = assign({}, superDef.methods, methods);
-        observedAttrs = assign({}, superDef.observedAttrs, observedAttrs);
-        wire = assign({}, superDef.wire, wire);
-    }
-
     const proto = Ctor.prototype;
     for (let propName in props) {
         // initializing getters and setters for each public prop on the target prototype
         assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         defineProperties(proto, createPublicPropertyDescriptorMap(propName));
+    }
+
+    const superProto = getPrototypeOf(Ctor);
+    if (superProto !== Element) {
+        const superDef = getComponentDef(superProto);
+        props = assign({}, superDef.props, props);
+        methods = assign({}, superDef.methods, methods);
+        wire = assign({}, superDef.wire, wire);
     }
 
     const def: ComponentDef = {
@@ -81,7 +80,7 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         freeze(wire);
         freeze(props);
         freeze(methods);
-        //freeze(observedAttrs);
+        freeze(observedAttrs);
         for (let key in def) {
             defineProperty(def, key, {
                 configurable: false,
@@ -93,7 +92,7 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
 }
 
 function getWireHash(target: Object): HashTable<PropDef> {
-    const wire: HashTable = target.wire || {};
+    const wire: HashTable = target.wire;
     if (!wire || !getOwnPropertyNames(wire).length) {
         return EmptyObject;
     }
@@ -105,7 +104,7 @@ function getWireHash(target: Object): HashTable<PropDef> {
 }
 
 function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
-    const props: HashTable = target.publicProps || {};
+    const props: HashTable = target.publicProps;
     if (!props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
@@ -147,10 +146,11 @@ function getPublicMethodsHash(target: Object): HashTable<number> {
 }
 
 function getObservedAttributesHash(target: Object): HashTable<number> {
-    if (!target.observedAttributes || !target.observedAttributes.length) {
+    const observedAttributes = target.observedAttributes;
+    if (!observedAttributes || !observedAttributes.length) {
         return EmptyObject;
     }
-    return target.observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable => {
+    return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable => {
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));
