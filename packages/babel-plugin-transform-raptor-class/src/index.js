@@ -13,6 +13,14 @@ const KEY_MISSPELLED_METHODS = {
     'connectCallback'    : 'connectedCallback',
     'disconnectCallback' : 'disconnectedCallback'
 };
+// Taken from https://github.com/sindresorhus/decamelize
+function decamelize(str) {
+    const sep = '-';
+    return str
+		.replace(/([a-z\d])([A-Z])/g, '$1' + sep + '$2')
+		.replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + sep + '$2')
+		.toLowerCase();
+}
 
 module.exports = function ({ types: t }) {
     const WireDecoratorVisitor = {
@@ -24,6 +32,7 @@ module.exports = function ({ types: t }) {
                 if (t.isStringLiteral(valueNode) && valueNode.value[0] === '$') {
                     valueNode.value = valueNode.value.substr(1);
                     state[KEYS_DATA_DECORATOR.PARAMS].push(path.node);
+                    state.wiredKeys.push(decamelize(valueNode.value));
                     return;
                 }
 
@@ -43,7 +52,7 @@ module.exports = function ({ types: t }) {
     };
 
     const DecoratorVisitor = {
-        Decorator(path, { wiredData, publicMethods, publicProps, key, isMethod }) {
+        Decorator(path, { wiredData, publicMethods, publicProps, key, isMethod, wiredKeys = [] }) {
             const expr = path.node.expression;
             const fnDecorator = t.isCallExpression(expr);
             const decoratorName = fnDecorator ? expr.callee.name : expr.name;
@@ -62,7 +71,7 @@ module.exports = function ({ types: t }) {
                 const typeNode = expr.arguments[0];
                 t.assertStringLiteral(typeNode);
                 const type = typeNode.value;
-                const props = { [KEYS_DATA_DECORATOR.PARAMS]: [], [KEYS_DATA_DECORATOR.STATIC]: [] };
+                const props = { [KEYS_DATA_DECORATOR.PARAMS]: [], [KEYS_DATA_DECORATOR.STATIC]: [], wiredKeys: wiredKeys };
                 path.traverse(WireDecoratorVisitor, props);
                 const wiredProps = [
                     t.objectProperty(t.identifier(KEYS_DATA_DECORATOR.TYPE), t.stringLiteral(type)),
@@ -134,9 +143,10 @@ module.exports = function ({ types: t }) {
 
     function transformClassBody(className, path, state) {
         const knownStaticKeys = { [KEY_PROPS]: false, [KEY_METHODS]: false, [WIRE_DECORATOR]: false };
-        const publicProps = [], publicMethods = [], wiredData = [], extraBody = [];
+        const publicProps = [], publicMethods = [], wiredData = [], extraBody = [], wiredKeys = [];
         const labels = state.file.metadata.labels;
         const classBody = path.get('body');
+        let observedAttributesProperty;
 
         for (let prop of classBody) {
             let key = prop.node.key.name;
@@ -152,7 +162,7 @@ module.exports = function ({ types: t }) {
 
                     prop.traverse({ ThisExpression() { throw new Error('Reference to the instance is not allowed in class properties'); }});
                     // Parse decorators
-                    prop.traverse(DecoratorVisitor, { publicProps, wiredData, key})
+                    prop.traverse(DecoratorVisitor, { publicProps, wiredData, key, wiredKeys })
 
                 // Static fields
                 } else {
@@ -164,6 +174,10 @@ module.exports = function ({ types: t }) {
                         labels.push.apply(labels, prop.node.value.elements.map(m => m.value));
                     } else {
                         extraBody.push(addClassStaticMember(className, key, prop.node.value));
+                        // We need to save observedAttributes not for later processing for data.
+                        if (key === 'observedAttributes') {
+                            observedAttributesProperty = prop.node;
+                        }
                     }
 
                     prop.remove(); // Remove all static fields since we have moved them already
@@ -195,6 +209,19 @@ module.exports = function ({ types: t }) {
 
         if (!knownStaticKeys[WIRE_DECORATOR] && wiredData.length) {
             extraBody.push(addClassStaticMember(className, WIRE_DECORATOR, t.objectExpression(wiredData)));
+        }
+
+        if (wiredKeys.length) {
+            // If we a an observedAttributes, we need to augment it
+            if (observedAttributesProperty) {
+                const original = observedAttributesProperty.value.elements.map(p => p.value);
+                const wiredObserved = Array.from(new Set(original.concat(wiredKeys)));
+                observedAttributesProperty.value.elements = wiredObserved.map(p => t.stringLiteral(p));
+                extraBody.push(addClassStaticMember(className, 'originalObservedAttributes', t.valueToNode(original)));
+            // We just create a new observedAttributes
+            } else {
+                extraBody.push(addClassStaticMember(className, 'observedAttributes', t.valueToNode(wiredKeys)));
+            }
         }
 
         if (!knownStaticKeys[KEY_RENDER]) {

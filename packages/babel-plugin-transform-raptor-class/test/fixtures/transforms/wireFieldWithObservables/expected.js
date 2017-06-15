@@ -7,6 +7,7 @@ export default class Foo {
   }
 
 }
+Foo.observedAttributes = ["foo", "record-id"];
 Foo.wire = {
   innerRecord: {
     type: "record",
@@ -14,4 +15,4 @@ Foo.wire = {
     static: { fields: ["Account", 'Rate'] }
   }
 };
-Foo.observedAttributes = ["record-id"];
+Foo.originalObservedAttributes = ["foo"];
