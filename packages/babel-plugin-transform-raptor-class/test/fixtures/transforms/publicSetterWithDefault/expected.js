@@ -1,9 +1,9 @@
 import _tmpl from "./actual.html";
 export default class Test {
-    test = 1;
-    string = "some value";
-
-    foo() {}
+    publicSetter = "some value";
+    set publicSetter(value) {
+        this.thing = value;
+    }
 
     render() {
         return _tmpl;
@@ -11,12 +11,8 @@ export default class Test {
 
 }
 Test.publicProps = {
-    test: {
-        config: 3,
-        type: "number"
-    },
-    string: {
-        config: 3,
+    publicSetter: {
+        config: 2,
         type: "string"
     }
 };

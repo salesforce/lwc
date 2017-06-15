@@ -56,7 +56,9 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     const proto = Ctor.prototype;
     for (let propName in props) {
         // initializing getters and setters for each public prop on the target prototype
-        assert.invariant(!getOwnPropertyDescriptor(proto, propName), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+        const descriptor = getOwnPropertyDescriptor(proto, propName);
+        const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
+        assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         defineProperties(proto, createPublicPropertyDescriptorMap(propName));
     }
 
