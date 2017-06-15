@@ -15,7 +15,7 @@ export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: strin
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-    
+
     return getMembrane(vm).pierce(elm).querySelector(selector);
 }
 
@@ -23,7 +23,7 @@ export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: st
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-    
+
     return getMembrane(vm).pierce(elm).querySelectorAll(selector);
 }
 
@@ -78,6 +78,8 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Node | undefined
             return getMembrane(vm).pierce(nodeList[i]);
         }
     }
+
+    return null;
 }
 
 function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {

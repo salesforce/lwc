@@ -154,6 +154,8 @@ ComponentElement.prototype = {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
             }
         });
+
+        return null;
     },
     querySelectorAll(selectors: string): NodeList {
         const vm = this[ViewModelReflection];

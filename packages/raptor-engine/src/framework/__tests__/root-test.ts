@@ -95,7 +95,7 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const node = vnode.vm.component.root.querySelector('p');
-                assert.strictEqual(undefined, node);
+                assert.strictEqual(null, node);
             });
         });
 
@@ -157,7 +157,7 @@ describe('root', () => {
                 const li1 = ul.querySelectorAll('li')[0];
                 assert(li1 === undefined, `querySelectorAll is not ignoring extraneous`);
                 const li2 = ul.querySelector('li');
-                assert(li2 === undefined, `querySelector is not ignoring extraneous`);
+                assert(li2 === null, `querySelector is not ignoring extraneous`);
             });
         });
 
@@ -172,7 +172,7 @@ describe('root', () => {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            
+
             return Promise.resolve().then(() => {
                 expect(() => {
                     vnode.vm.component.root.querySelector('doesnotexist');
@@ -180,7 +180,7 @@ describe('root', () => {
             });
         });
 
-        it('should return undefined if querySelector does not match any elements', () => {
+        it('should return null if querySelector does not match any elements', () => {
             const def = class MyComponent extends Element {
                 render() {
                     return () => [api.h('ul', {}, [])]
@@ -191,9 +191,9 @@ describe('root', () => {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            
+
             return Promise.resolve().then(() => {
-                assert(vnode.vm.component.root.querySelector('doesnotexist') === undefined);
+                assert.strictEqual(vnode.vm.component.root.querySelector('doesnotexist'), null);
             });
         });
 
@@ -208,7 +208,7 @@ describe('root', () => {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            
+
             return Promise.resolve().then(() => {
                 expect(() => {
                     vnode.vm.component.root.querySelectorAll('doesnotexist');

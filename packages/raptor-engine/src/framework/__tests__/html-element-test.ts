@@ -207,7 +207,7 @@ describe('html-element', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const node = vnode.vm.component.querySelector('p');
-                assert.strictEqual(undefined, node);
+                assert.strictEqual(null, node);
             });
         });
 
@@ -227,6 +227,20 @@ describe('html-element', () => {
                     vnode.vm.component.querySelector('div');
                 }).not.toThrow();
             });
+        });
+
+        it('should return null if element does not exist', function () {
+            const outerp = api.h('p', {}, []);
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [outerp]
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+            assert.strictEqual(vnode.vm.component.querySelector('div'), null);
         });
     });
 
