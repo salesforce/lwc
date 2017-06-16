@@ -67,6 +67,13 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
 
 // [c]ustom element node
 export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
+    // The compiler produce AMD modules that do not support circular dependencies
+    // We need to create an indirection to circumvent those cases.
+    // We could potentially move this check to the definition
+    if (Ctor.__circular__) {
+        Ctor = Ctor();
+    }
+
     assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
     assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);

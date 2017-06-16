@@ -26,6 +26,14 @@ describe('api', () => {
                 });
             }, /className/);
         });
+
+         it('should call the Ctor factory for circular dependencies', () => {
+            class Foo extends Element {}
+            const factory = function () { return Foo };
+            factory.__circular__ = true;
+            const vnode = target.c('x-foo', factory, { className: 'foo' });
+            assert.deepEqual(vnode.data.class, { foo: true });
+        });
     });
 
     describe('#h()', () => {
