@@ -8,7 +8,8 @@ import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
-import { wasNodePassedIntoVM, getMembrane } from "./vm";
+import { wasNodePassedIntoVM } from "./vm";
+import { pierce } from "./piercing";
 
 export const ViewModelReflection = Symbol('internal');
 
@@ -139,14 +140,14 @@ ComponentElement.prototype = {
         assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         return elm.getBoundingClientRect();
     },
-    querySelector(selectors: string): Node {
+    querySelector(selectors: string): Node | null {
         const vm = this[ViewModelReflection];
         assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         const nodeList = querySelectorAllFromComponent(this, selectors);
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
                 // TODO: locker service might need to return a membrane proxy
-                return getMembrane(vm).pierce(nodeList[i]);
+                return pierce(vm, nodeList[i]);
             }
         }
         assert.block(() => {
@@ -168,7 +169,7 @@ ComponentElement.prototype = {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         });
-        return  getMembrane(vm).pierce(filteredNodes);
+        return pierce(vm, filteredNodes);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);

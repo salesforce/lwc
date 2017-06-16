@@ -2,8 +2,9 @@ import assert from "./assert";
 import { ViewModelReflection } from "./html-element";
 import { ArrayFilter, defineProperty } from "./language";
 import { isBeingConstructed } from "./component";
-import { OwnerKey, isNodeOwnedByVM, getMembrane } from "./vm";
+import { OwnerKey, isNodeOwnedByVM } from "./vm";
 import { register } from "./services";
+import { pierce } from "./piercing";
 
 const { querySelector, querySelectorAll } = Element.prototype;
 
@@ -11,20 +12,18 @@ function getLinkedElement(root: Root): HTMLElement {
     return root[ViewModelReflection].vnode.elm;
 }
 
-export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | undefined {
+export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | null {
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-
-    return getMembrane(vm).pierce(elm).querySelector(selector);
+    return pierce(vm, elm).querySelector(selector);
 }
 
 export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: string): MembraneObject {
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-
-    return getMembrane(vm).pierce(elm).querySelectorAll(selector);
+    return pierce(vm, elm).querySelectorAll(selector);
 }
 
 export function Root(vm: VM): ShadowRoot {
@@ -44,7 +43,7 @@ Root.prototype = {
     get host(): Component {
         return this[ViewModelReflection].component;
     },
-    querySelector(selector: string): MembraneObject | undefined {
+    querySelector(selector: string): MembraneObject | null {
         const node = shadowRootQuerySelector(this, selector);
         assert.block(() => {
             const vm = this[ViewModelReflection];
@@ -70,22 +69,21 @@ Root.prototype = {
     }
 };
 
-function getFirstMatch(vm: VM, elm: Element, selector: string): Node | undefined {
+function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     const nodeList = querySelectorAll.call(elm, selector);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return getMembrane(vm).pierce(nodeList[i]);
+            return pierce(vm, nodeList[i]);
         }
     }
-
     return null;
 }
 
 function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
     const nodeList = querySelectorAll.call(elm, selector);
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
-    return getMembrane(vm).pierce(filteredNodes);
+    return pierce(vm , filteredNodes);
 }
 
 function isParentNodeKeyword(key: string): boolean {
@@ -98,12 +96,12 @@ register({
         if (value === querySelector) {
             // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
             // we do in that case? Right now this is essentially a bound function, but the original is not.
-            return callback((selector: string): Node | undefined => getFirstMatch(component[ViewModelReflection], target, selector));
+            return callback((selector: string): Node | null => getFirstMatch(component[ViewModelReflection], target, selector));
         }
         if (value === querySelectorAll) {
             // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
             // we do in that case? Right now this is essentially a bound function, but the original is not.
-            return callback((selector: string): Node | undefined => getAllMatches(component[ViewModelReflection], target, selector));
+            return callback((selector: string): Node | null => getAllMatches(component[ViewModelReflection], target, selector));
         }
         if (value && value.splitText && isParentNodeKeyword(key)) {
             if (value === component[ViewModelReflection].vnode.elm) {

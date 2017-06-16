@@ -1,27 +1,27 @@
 import assert from "./assert";
-import { OwnerKey } from "./vm";
-import { ArrayMap, isArray, toString } from "./language";
-import { Services } from "./services";
+import { ArrayMap, isArray } from "./language";
 
-const GetTarget = Symbol('internal');
-
-type ReplicableFunction = (...args: Array<any>) => any; // eslint-disable-line no-undef
+/*eslint-disable*/
+export type ReplicableFunction = (...args: Array<any>) => any;
 export type Replicable = Object | ReplicableFunction;
 
-type ReplicaFunction = (...args: Array<any>) => Replica | String | Number | Boolean; // eslint-disable-line no-undef
+export type ReplicaFunction = (...args: Array<any>) => Replica | String | Number | Boolean | null | undefined;
 export type Replica = Object | ReplicaFunction;
+
+export interface MembraneHandler {
+    get(target: Replicable, key: string | Symbol): any;
+    set(target: Replicable, key: string | Symbol, newValue: any): boolean;
+    deleteProperty(target: Replicable, key: string | Symbol): boolean;
+    apply(targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any;
+    construct(targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any;
+}
+/*eslint-enable*/
+
+const TargetSlot = Symbol();
 
 function isReplicable(value: any): boolean {
     const type = typeof value;
     return value && (type === 'object' || type === 'function');
-}
-
-function getTarget(membrane: Membrane, replicaOrAny: Replica | any): Replicable | any {
-    assert.isTrue(membrane instanceof Membrane, `getTarget() first argument must be a membrane.`);
-    if (isReplicable(replicaOrAny) && membrane.cache.has(replicaOrAny)) {
-        return replicaOrAny[GetTarget];
-    }
-    return replicaOrAny;
 }
 
 export function getReplica(membrane: Membrane, value: Replicable | any): Replica | any {
@@ -43,60 +43,50 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
     return replica;
 }
 
-function piercingHook(vm: VM, target: Replicable, key: string | Symbol, value: any): any {
-    assert.vm(vm);
-    const { piercing } = Services;
-    if (piercing) {
-        const { component, vnode: { data }, def, context } = vm;
-        let result = value;
-        let next = true;
-        const callback = (newValue?: any) => {
-            next = false;
-            result = newValue;
-        };
-        for (let i = 0, len = piercing.length; next && i < len; ++i) {
-            piercing[i].call(undefined, component, data, def, context, target, key, value, callback);
-        }
-        return result;
-    }
-}
-
 export class Membrane {
-    vm: VM; // eslint-disable-line no-undef
+    handler: MembraneHandler; // eslint-disable-line no-undef
     cells: WeakMap<Replicable, Replica>; // eslint-disable-line no-undef
     cache: WeakSet<Replica>; // eslint-disable-line no-undef
-    constructor(vm: VM) {
-        assert.vm(vm);
-        this.vm = vm;
+    constructor(handler: MembraneHandler) {
+        this.handler = handler;
         this.cells = new WeakMap();
         this.cache = new WeakSet();
     }
     get(target: Replicable, key: string | Symbol): any {
-        if (key === OwnerKey) {
-            return undefined;
-        }
-        if (key === GetTarget) {
+        if (key === TargetSlot) {
             return target;
         }
-        let value = target[key];
-        value = piercingHook(this.vm, target, key, value);
+        const value = this.handler.get(target, key);
         return getReplica(this, value);
     }
-    set(target: Replicable, key: string, newValue: any): boolean {
-        assert.logError(`A protective membrane is preventing mutations to ${key} member property of ${toString(target)} to the value of ${toString(newValue)}.`);
-        return false;
+    set(target: Replicable, key: string | Symbol, newValue: any): boolean {
+        return this.handler.set(target, key, newValue);
     }
-    apply(targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
-        // TODO: argumentsList should be unwrap as well
-        thisArg = getTarget(this, thisArg);
-        argumentsList = getTarget(this, argumentsList);
-        if (isArray(argumentsList)) {
-            argumentsList = ArrayMap.call(argumentsList, (value: any): any => getTarget(this, value));
+    deleteProperty(target: Replicable, key: string | Symbol): boolean {
+        if (key === TargetSlot) {
+            return false;
         }
-        const value = targetFn.apply(thisArg, argumentsList);
+        return this.handler.deleteProperty(target, key);
+    }
+    apply(target: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
+        thisArg = unwrap(thisArg);
+        argumentsList = unwrap(argumentsList);
+        if (isArray(argumentsList)) {
+            argumentsList = ArrayMap.call(argumentsList, unwrap);
+        }
+        const value = this.handler.apply(target, thisArg, argumentsList);
         return getReplica(this, value);
     }
-    pierce(value: Replicable | any): Replica | any {
+    construct(target: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
+        argumentsList = unwrap(argumentsList);
+        if (isArray(argumentsList)) {
+            argumentsList = ArrayMap.call(argumentsList, unwrap);
+        }
+        const value = this.handler.construct(target, argumentsList, newTarget);
         return getReplica(this, value);
     }
+}
+
+export function unwrap(replicaOrAny: Replica | any): Replicable | any {
+    return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
 }
