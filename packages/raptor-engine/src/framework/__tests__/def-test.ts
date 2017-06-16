@@ -9,7 +9,7 @@ describe('def', () => {
             const def = class MyComponent extends Element {}
             assert.deepEqual(target.getComponentDef(def), {
                 name: 'MyComponent',
-                wire: {},
+                wire: undefined,
                 props: {},
                 methods: {},
                 observedAttrs: {},
@@ -38,7 +38,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['foo', 'x-bar'];
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                wire: {},
+                wire: undefined,
                 props: {},
                 methods: {},
                 observedAttrs: {
@@ -56,7 +56,7 @@ describe('def', () => {
             MyComponent.publicMethods = ['foo', 'bar'];
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                wire: {},
+                wire: undefined,
                 props: {},
                 methods: {
                     foo: 1,
@@ -87,7 +87,7 @@ describe('def', () => {
             };
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
-                wire: {},
+                wire: undefined,
                 props: {
                     foo: 1,
                     xBar: 1,
@@ -118,7 +118,7 @@ describe('def', () => {
             };
 
             assert.deepEqual(target.getComponentDef(MySubComponent), {
-                name: 'MySubComponent'
+                name: 'MySubComponent',
                 props: {
                     foo: 1,
                     xBar: 1,
@@ -127,7 +127,7 @@ describe('def', () => {
                 },
                 observedAttrs: {},
                 methods: {},
-                wire: {}
+                wire: undefined,
             });
         });
 
@@ -156,7 +156,7 @@ describe('def', () => {
                     buzz: 1
                 },
                 observedAttrs: {},
-                wire: {}
+                wire: undefined,
             });
         });
 
@@ -177,7 +177,7 @@ describe('def', () => {
                     buzz: 1
                 },
                 methods: {},
-                wire: {}
+                wire: undefined,
             });
         });
 

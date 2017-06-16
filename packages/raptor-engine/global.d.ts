@@ -25,7 +25,7 @@ declare interface WireDef {}
 
 declare interface ComponentDef {
     name: string,
-    wire: HashTable<WireDef>,
+    wire: HashTable<WireDef> | undefined,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
     observedAttrs: HashTable<number>,

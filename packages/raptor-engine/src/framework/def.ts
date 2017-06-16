@@ -65,9 +65,9 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     const superProto = getPrototypeOf(Ctor);
     if (superProto !== Element) {
         const superDef = getComponentDef(superProto);
-        props = assign({}, superDef.props, props);
-        methods = assign({}, superDef.methods, methods);
-        wire = assign({}, superDef.wire, wire);
+        props = assign(create(null), superDef.props, props);
+        methods = assign(create(null), superDef.methods, methods);
+        wire = (superDef.wire || wire) ? assign(create(null), superDef.wire, wire) : undefined;
     }
 
     const def: ComponentDef = {
@@ -93,16 +93,16 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     return def;
 }
 
-function getWireHash(target: Object): HashTable<PropDef> {
+function getWireHash(target: Object): HashTable<PropDef> | undefined {
     const wire: HashTable = target.wire;
     if (!wire || !getOwnPropertyNames(wire).length) {
-        return EmptyObject;
+        return;
     }
 
     assert.block(function devModeCheck() {
         // TODO: check that anything in `wire` is correctly defined in the prototype
     });
-    return wire;
+    return assign(create(null), wire);
 }
 
 function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
