@@ -106,7 +106,9 @@ export function getAttribute(el: IRElement, pattern: string | RegExp): parse5.AS
 
 export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
     el.attrsList = el.attrsList.filter((attr) => (
-        !attributeName(attr).match(pattern)
+        typeof pattern === 'string' ?
+            attributeName(attr) !== pattern :
+            !attributeName(attr).match(pattern)
     ));
 }
 
