@@ -32,7 +32,7 @@ describe('api', () => {
             const factory = function () { return Foo };
             factory.__circular__ = true;
             const vnode = target.c('x-foo', factory, { className: 'foo' });
-            assert.deepEqual(vnode.data.class, { foo: true });
+            assert.strictEqual(Foo, vnode.Ctor));
         });
     });
 
