@@ -1,0 +1,19 @@
+{
+  "name": "babel-helpers-raptor",
+  "version": "0.11.4",
+  "description": "Babel helpers for raptor",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "mkdirp": "^0.5.1",
+    "uglify-js": "^3.0.18",
+    "rimraf": "^2.6.1"
+  },
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "node scripts/build"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  }
+}

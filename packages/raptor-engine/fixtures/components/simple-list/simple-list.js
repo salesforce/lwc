@@ -32,9 +32,7 @@ export default class SimpleList extends Element {
         this.counter = 0;
     }
 
-    static get observedAttributes() {
-        return ['min', 'max'];
-    }
+    static observedAttributes = ['min', 'max'];
 
     attributeChangedCallback() {
         this.state.data = produceNewData(this.state.data, this.min, this.max);
