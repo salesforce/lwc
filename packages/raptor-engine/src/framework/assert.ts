@@ -17,8 +17,8 @@ const assert = {
             throw new Error(`Assert Violation: ${msg}`);
         }
     },
-    block(fn: Object) {
-        fn.call();
+    block(fn: () => void) {
+        fn();
     },
     vnode(vnode: VNode) {
         assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode, `${vnode} is not a vnode.`);

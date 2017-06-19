@@ -1,5 +1,6 @@
 import assert from "./assert";
 import { ArrayMap, isArray } from "./language";
+import compat from "./compat";
 
 /*eslint-disable*/
 export type ReplicableFunction = (...args: Array<any>) => any;
@@ -18,6 +19,7 @@ export interface MembraneHandler {
 /*eslint-enable*/
 
 const TargetSlot = Symbol();
+const MembraneSlot = Symbol();
 
 function isReplicable(value: any): boolean {
     const type = typeof value;
@@ -55,6 +57,8 @@ export class Membrane {
     get(target: Replicable, key: string | Symbol): any {
         if (key === TargetSlot) {
             return target;
+        } else if (key === MembraneSlot) {
+            return this;
         }
         const value = this.handler.get(target, key);
         return getReplica(this, value);
@@ -89,4 +93,31 @@ export class Membrane {
 
 export function unwrap(replicaOrAny: Replica | any): Replicable | any {
     return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
+}
+
+export function setKey(replicaOrAny: Replica | any, key: string | Symbol, newValue: any): any {
+    let shouldReturn = false;
+    compat.block(() => {
+        shouldReturn = true;
+        const target = unwrap(replicaOrAny);
+        if (target === replicaOrAny) {
+            // non-proxified assignment
+            target[key] = newValue;
+        } else {
+            replicaOrAny[MembraneSlot].set(target, key, newValue);
+        }
+    });
+    return shouldReturn ? newValue : undefined;
+}
+
+export function deleteKey(replicaOrAny: Replica | any, key: string | Symbol) {
+    compat.block(() => {
+        const target = unwrap(replicaOrAny);
+        if (target === replicaOrAny) {
+            // non-profixied delete
+            delete target[key];
+        } else {
+            replicaOrAny[MembraneSlot].deleteProperty(target, key);
+        }
+    });
 }
