@@ -319,6 +319,53 @@ describe('html-element', () => {
             assert.deepEqual(['foo', 1, 2], a);
         });
 
+        it('should support wired properties', () => {
+            class MyComponent extends Element  {}
+            MyComponent.wire = { foo: {} };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            assert('foo' in vnode1.vm.component, 'wired property should be defined on component');
+            const o = { x: 1 };
+            vnode1.vm.component.foo = o;
+            assert.deepEqual(o, vnode1.vm.component.foo, 'assignment on wired property should work as expected');
+            assert(o !== vnode1.vm.component, 'wired property was not profixied');
+        });
+
+        it('should make wired properties reactive', () => {
+            let counter = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.foo = { x: 1 };
+                }
+                render() {
+                    counter++;
+                    this.foo.x;
+                }
+            }
+            MyComponent.wire = { foo: {} };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            vnode1.vm.component.foo.x = 2;
+            return Promise.resolve().then(() => {
+                assert.strictEqual(2, counter);
+            });
+        });
+
+        it('should ignore wired methods', () => {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: { method: 1 } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            assert(("foo" in vnode1.vm.component) === false);
+        });
+
     });
 
 });

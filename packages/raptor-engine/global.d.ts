@@ -21,7 +21,10 @@ declare interface HashTable<T> {
 
 declare interface PropDef {}
 
-declare interface WireDef {}
+declare interface WireDef {
+    method?: number,
+    [key: string]: any,
+}
 
 declare interface ComponentDef {
     name: string,
@@ -40,6 +43,7 @@ declare class VM {
     idx: number;
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
+    cmpWired?: HashTable<any>;
     cmpSlots?: HashTable<Array<VNode>>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;

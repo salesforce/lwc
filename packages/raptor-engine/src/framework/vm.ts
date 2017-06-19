@@ -37,6 +37,7 @@ export function createVM(vnode: ComponentVNode) {
         def,
         context: {},
         cmpProps: {},
+        cmpWired: undefined,
         cmpState: undefined,
         cmpSlots: undefined,
         cmpEvents: undefined,

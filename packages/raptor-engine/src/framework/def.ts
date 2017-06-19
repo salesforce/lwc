@@ -16,15 +16,15 @@ import {
     toString,
     ArrayPush,
     defineProperty,
-    defineProperties,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getPrototypeOf,
     isString,
     isFunction,
+    isUndefined,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
-import { Element, createPublicPropertyDescriptorMap } from "./html-element";
+import { Element, createPublicPropertyDescriptor, createWiredPropertyDescriptor } from "./html-element";
 import { EmptyObject } from "./utils";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
@@ -59,7 +59,20 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         const descriptor = getOwnPropertyDescriptor(proto, propName);
         const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
         assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-        defineProperties(proto, createPublicPropertyDescriptorMap(propName));
+        defineProperty(proto, propName, createPublicPropertyDescriptor(propName));
+    }
+
+    if (wire) {
+        for (let propName in wire) {
+            const descriptor = getOwnPropertyDescriptor(proto, propName);
+            // for decorated methods we need to do nothing
+            if (isUndefined(wire[propName].method)) {
+                // initializing getters and setters for each public prop on the target prototype
+                const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
+                assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a property decorated with the @wire decorator.`);
+                defineProperty(proto, propName, createWiredPropertyDescriptor(propName));
+            }
+        }
     }
 
     const superProto = getPrototypeOf(Ctor);
@@ -93,7 +106,7 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     return def;
 }
 
-function getWireHash(target: Object): HashTable<PropDef> | undefined {
+function getWireHash(target: Object): HashTable<WireDef> | undefined {
     const wire: HashTable = target.wire;
     if (!wire || !getOwnPropertyNames(wire).length) {
         return;

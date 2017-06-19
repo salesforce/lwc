@@ -7,7 +7,7 @@ import { getPropertyProxy } from "./properties";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
-import { subscribeToSetHook } from "./watcher";
+import { subscribeToSetHook, notifyListeners } from "./watcher";
 import { wasNodePassedIntoVM } from "./vm";
 import { pierce } from "./piercing";
 
@@ -22,10 +22,9 @@ function querySelectorAllFromComponent(cmp: ComponentElement, selectors: string)
     return elm.querySelectorAll(selectors);
 }
 
-export function createPublicPropertyDescriptorMap(propName: string): PropertyDescriptorMap {
-    const descriptors = {};
+export function createPublicPropertyDescriptor(propName: string): PropertyDescriptor {
     function getter(): any {
-        const vm = this[ViewModelReflection];
+        const vm: VM = this[ViewModelReflection];
         assert.vm(vm);
         if (isBeingConstructed(vm)) {
             assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
@@ -50,13 +49,53 @@ export function createPublicPropertyDescriptorMap(propName: string): PropertyDes
         // proxifying before storing it is a must for public props
         cmpProps[propName] = isObject(value) ? getPropertyProxy(value) : value;
     }
-    descriptors[propName] = {
+    const descriptor: PropertyDescriptor = {
         get: getter,
         set: setter,
         enumerable: true,
         configurable: true,
     };
-    return descriptors;
+    return descriptor;
+}
+
+
+export function createWiredPropertyDescriptor(propName: string): PropertyDescriptor {
+    function getter(): HashTable<any> {
+        const vm: VM = this[ViewModelReflection];
+        assert.vm(vm);
+        let { cmpWired } = vm;
+        if (isUndefined(cmpWired)) {
+            cmpWired = vm.cmpWired = getPropertyProxy(create(null)); // lazy creation of the value
+        }
+        let value = cmpWired[propName];
+        if (isRendering) {
+            // this is needed because the proxy used by template is not sufficient
+            // for public props accessed from within a getter in the component.
+            subscribeToSetHook(vmBeingRendered, cmpWired, propName);
+        }
+        return value;
+    }
+    function setter(value: any) {
+        const vm = this[ViewModelReflection];
+        assert.vm(vm);
+        if (!value || !isObject(value)) {
+            assert.logError(`${vm} failed to set new value into property "${propName}". It can only be set to an object.`);
+            return;
+        }
+        let { cmpWired } = vm;
+        if (isUndefined(cmpWired)) {
+            cmpWired = vm.cmpWired = getPropertyProxy(create(null)); // lazy creation of the value
+        }
+        cmpWired[propName] = isObject(value) ? getPropertyProxy(value) : value;
+        notifyListeners(cmpWired, propName);
+    }
+    const descriptor: PropertyDescriptor = {
+        get: getter,
+        set: setter,
+        enumerable: true,
+        configurable: true,
+    };
+    return descriptor;
 }
 
 // This should be as performant as possible, while any initialization should be done lazily
