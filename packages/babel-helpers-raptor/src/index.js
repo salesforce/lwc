@@ -27,7 +27,7 @@ const whitelist = [
     'objectDestructuringEmpty',
     'objectWithoutProperties',
     'possibleConstructorReturn',
-    // 'selfGlobal',
+    // 'selfGlobal', // <- Not needed
     'set',
     'slicedToArray', // One of this two needs to go...
     'slicedToArrayLoose',
@@ -62,24 +62,25 @@ function build(namespace, globalVar = "global", builder) {
             t.assignmentExpression('=', namespace,
                 t.assignmentExpression("=", t.memberExpression(
                     t.identifier(globalVar), namespace),
-                    t.objectExpression([])
+                    t.objectExpression([t.objectProperty(t.identifier('helpers'), t.objectExpression([]))])
                 )
             )
-        )
+        ),
+        t.variableDeclarator(t.identifier('helpers'), t.memberExpression(namespace, t.identifier('helpers')))
     ]));
 
     builder(body);
     return tree;
 }
 
-function buildHelpers(body, namespace, whitelist) {
+function buildHelpers(body, whitelist) {
     helpers.list.forEach(function (name) {
         if (whitelist && whitelist.indexOf(name) < 0) return;
 
         const key = t.identifier(name);
 
         // AST tree for: objectMember.helperName = function () { ... }
-        body.push(t.expressionStatement(t.assignmentExpression("=", t.memberExpression(namespace, key), helpers.get(name))));
+        body.push(t.expressionStatement(t.assignmentExpression("=", t.memberExpression(t.identifier('helpers'), key), helpers.get(name))));
     });
 }
 // Regenerator is a special dependency that we want to include
@@ -90,16 +91,16 @@ function buildRegenerator(body) {
     body.push(test());
 }
 
-function buildAll(body, namespace, whitelist) {
-    buildHelpers(body, namespace, whitelist);
-    buildRegenerator(body, namespace);
+function buildAll(body, whitelist) {
+    buildHelpers(body, whitelist);
+    buildRegenerator(body);
 }
 
 // -- Public API ----
 
 exports.build = function(ns, globalVar) {
     const namespace = t.identifier(ns);
-    const builderFactory = (body) => buildAll(body, namespace, whitelist);
+    const builderFactory = (body) => buildAll(body, whitelist);
 
     const tree = build(namespace, globalVar, builderFactory);
     const result = generate(tree).code;

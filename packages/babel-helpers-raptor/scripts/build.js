@@ -1,5 +1,5 @@
 const GLOBAL_VAR = 'Engine';
-const GLOBAL_MEMBER = 'compatHelpers';
+const GLOBAL_MEMBER = 'compat';
 
 const mkdirp = require('mkdirp');
 const fs = require('fs');
