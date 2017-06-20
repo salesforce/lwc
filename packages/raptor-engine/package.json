@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -18,7 +18,6 @@
     "build:engine:compat": "cross-env NODE_ENV=development MODE=compat rollup -c scripts/rollup.config.engine.js",
     "build:engine:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.engine.js",
     "build:engine:prod_compat": "cross-env NODE_ENV=production MODE=compat rollup -c scripts/rollup.config.engine.js",
-
     "build:dist": "yarn run build:engine:dev && yarn run build:engine:compat && yarn run build:engine:prod && yarn run build:engine:prod_compat",
     "build:fixtures": "node scripts/build-fixtures.js",
     "build:all": "yarn run build:fixtures --production && yarn run build:dist && yarn run build:lib",
@@ -41,7 +40,7 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.41.6",
     "rollup-plugin-inject": "^1.4.1",
-    "rollup-plugin-raptor-compiler": "0.11.4",
+    "rollup-plugin-raptor-compiler": "0.11.5",
     "rollup-plugin-strip-caridy-patched": "^1.1.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
