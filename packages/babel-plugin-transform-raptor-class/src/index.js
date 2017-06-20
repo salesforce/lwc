@@ -156,13 +156,13 @@ module.exports = function ({ types: t }) {
         ));
     }
 
-    function getPropertyGroups (prop, classBody, key) {
+    function getPropertyGroups(prop, classBody, key) {
         return classBody.reduce((grouped, prop) => {
             const isGetter = prop.isClassMethod({ kind: 'get' });
             const isSetter = prop.isClassMethod({ kind: 'set' });
             const isProperty = prop.isClassProperty();
 
-            if (prop.node.key.name === key && (isGetter || isSetter || isProperty)) {
+            if (prop.node && prop.node.key.name === key && (isGetter || isSetter || isProperty)) {
                 if (isGetter) {
                     grouped.getters.push(prop);
                 } else if (isSetter) {
@@ -233,11 +233,7 @@ module.exports = function ({ types: t }) {
                     }
 
                     const expanded = [];
-                    const {
-                        getters,
-                        setters,
-                        defaults
-                    } = getPropertyGroups(prop, classBody, key);
+                    const { getters, setters, defaults } = getPropertyGroups(prop, classBody, key);
 
                     const propertyMask = getPropertyMask(getters, setters, defaults);
                     const propWithValue = defaults.find((prop) => {
@@ -253,23 +249,25 @@ module.exports = function ({ types: t }) {
                         publicProps.push(expanded.pop());
                     }
 
-                // Static fields
-                } else {
+                // Static fields (ignore getters and setters)
+                } else if (prop.node.kind !== 'get' && prop.node.kind !== 'set') {
                     knownStaticKeys[key] = key in knownStaticKeys; // If defined, do not override it
 
                     // This is a temporal workaround to prefetch labels until we implement i18n properly
                     // https://git.soma.salesforce.com/raptor/raptor/issues/196
                     if (key === KEY_LABELS && prop.node.value.elements) {
                         labels.push.apply(labels, prop.node.value.elements.map(m => m.value));
-                    } else {
-                        extraBody.push(addClassStaticMember(className, key, prop.node.value));
-                        // We need to save observedAttributes not for later processing for data.
-                        if (key === 'observedAttributes') {
-                            observedAttributesProperty = prop.node;
-                        }
+                        prop.remove();
+                        continue;
                     }
 
-                    prop.remove(); // Remove all static fields since we have moved them already
+                    extraBody.push(addClassStaticMember(className, key, prop.node.value));
+                    // We need to save observedAttributes not for later processing for data.
+                    if (key === 'observedAttributes') {
+                        observedAttributesProperty = prop.node;
+                    }
+
+                    prop.remove();
                 }
 
             // Methods

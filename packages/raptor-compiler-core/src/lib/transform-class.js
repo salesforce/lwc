@@ -22,7 +22,7 @@ export default function (code, options) {
             /* See babel-plugins.js*/
             // The following plugins are so we can avoid one extra parsing later
             // for the current browser support
-            publicFieldsPlugin,
+            [publicFieldsPlugin, { spec: false }],
             exponentiator,
             functionName,
         ],
