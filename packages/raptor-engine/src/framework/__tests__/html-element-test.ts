@@ -300,6 +300,79 @@ describe('html-element', () => {
 
     });
 
+    describe('public getters', () => {
+        it('should allow public getters', function () {
+            class MyComponent extends Element  {
+                get breakfast () {
+                    return 'pancakes';
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 1
+                }
+            };
+
+            class Parent extends Element {
+                get parentGetter () {
+                    return 'parentgetter';
+                }
+
+                render () {
+                    return () => [api.c('x-component', MyComponent, {})];
+                }
+            }
+
+            Parent.publicProps = {
+                parentGetter: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Parent, {});
+            patch(elm, vnode);
+            assert.deepEqual(elm.parentGetter, 'parentgetter');
+            assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
+        });
+
+        it('should be render reactive', function () {
+            class MyComponent extends Element  {
+                constructor () {
+                    super();
+                    this.state.value = 0;
+                }
+
+                get validity () {
+                    return this.state.value > 5;
+                }
+
+                render () {
+                    return ($api, $cmp, $slotset, $ctx) => {
+                        return [$api.h('div', {}, [$api.d($cmp.validity)])];
+                    }
+                }
+            }
+
+            MyComponent.publicProps = {
+                validity: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            vnode.vm.component.state.value = 10;
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.textContent, 'true');
+            });
+        });
+    })
+
     describe('#data layer', () => {
 
         it('should allow custom attributeChangedCallback', () => {

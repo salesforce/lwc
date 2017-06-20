@@ -59,7 +59,7 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         const descriptor = getOwnPropertyDescriptor(proto, propName);
         const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
         assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-        defineProperty(proto, propName, createPublicPropertyDescriptor(propName));
+        defineProperty(proto, propName, createPublicPropertyDescriptor(propName, descriptor));
     }
 
     if (wire) {
@@ -140,7 +140,8 @@ function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
                 console.error(msg.join('\n'));
             }
         });
-        propsHash[propName] = 1;
+
+        propsHash[propName] = assign({ config: 0 }, props[propName]);
         return propsHash;
     }, create(null));
 }

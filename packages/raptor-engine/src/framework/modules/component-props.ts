@@ -1,6 +1,7 @@
 import {
     resetComponentProp,
     updateComponentProp,
+    createComponentComputedValues,
 } from "../component";
 import { assign, isUndefined } from "../language";
 import { EmptyObject } from "../utils";
@@ -35,8 +36,12 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         }
     }
 
+    if (vm.idx === 0) {
+        createComponentComputedValues(vm);
+    }
+
     // TODO: opt out if cmpProps is empty (right now it is never empty)
-    vnode.data.props = assign({}, vm.cmpProps);
+    (vnode.data as VNodeData).props = assign({}, vm.cmpProps, vm.cmpComputed);
 }
 
 export default {

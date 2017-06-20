@@ -22,7 +22,7 @@ function querySelectorAllFromComponent(cmp: ComponentElement, selectors: string)
     return elm.querySelectorAll(selectors);
 }
 
-export function createPublicPropertyDescriptor(propName: string): PropertyDescriptor {
+export function createPublicPropertyDescriptor(propName: string, originalPropertyDescriptor?: PropertyDescriptor): PropertyDescriptor {
     function getter(): any {
         const vm: VM = this[ViewModelReflection];
         assert.vm(vm);
@@ -36,8 +36,18 @@ export function createPublicPropertyDescriptor(propName: string): PropertyDescri
             // for public props accessed from within a getter in the component.
             subscribeToSetHook(vmBeingRendered, cmpProps, propName);
         }
+
+        if (getter.descriptorGet) {
+            return getter.descriptorGet.call(vm.component);
+        }
+
         return cmpProps[propName];
     }
+
+    if (originalPropertyDescriptor && originalPropertyDescriptor.get) {
+        getter.descriptorGet = originalPropertyDescriptor.get;
+    }
+
     function setter(value: any) {
         const vm = this[ViewModelReflection];
         assert.vm(vm);

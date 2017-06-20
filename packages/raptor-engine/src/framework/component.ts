@@ -14,6 +14,8 @@ import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
 
+const COMPUTED_GETTER_MASK = 1;
+
 export let vmBeingConstructed: VM | null = null;
 
 export function isBeingConstructed(vm: VM): boolean {
@@ -253,4 +255,28 @@ export function markComponentAsDirty(vm: VM) {
     assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
     assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     vm.isDirty = true;
+}
+
+function isComputedGetter(vm: VM, propName: string): boolean {
+      assert.vm(vm);
+      const { def: { props: publicProps } } = vm;
+      const { config } = publicProps[propName];
+      return !!((config as number) & COMPUTED_GETTER_MASK);
+}
+
+export function createComponentComputedValues(vm: VM) {
+    assert.vm(vm);
+    const { def: { props: publicProps }, component } = vm;
+    assert.invariant(component, `assignCmpComputed() for ${vm} should be called with a valid component instead of ${component}`);
+    let { cmpComputed } = vm;
+
+    for (let prop in publicProps) {
+        if (isComputedGetter(vm, prop)) {
+            if (isUndefined(cmpComputed)) {
+                cmpComputed = vm.cmpComputed = create(null);
+            }
+
+            (cmpComputed as HashTable<any>)[prop] = (component as Component)[prop]; // eslint-disable-line no-undef
+        }
+    }
 }

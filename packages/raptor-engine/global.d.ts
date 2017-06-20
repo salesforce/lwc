@@ -13,13 +13,17 @@ declare class Component {
     templateUsedProps: Array<string>;
     observedAttributes: Array<string>;
     labels: Array<string>;
+    [key: string]: any;
 }
 
 declare interface HashTable<T> {
     [key: string]: T,
 }
 
-declare interface PropDef {}
+declare interface PropDef {
+    config?: number,
+    type?: string
+}
 
 declare interface WireDef {
     method?: number,
@@ -44,6 +48,7 @@ declare class VM {
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpWired?: HashTable<any>;
+    cmpComputed?: HashTable<any>;
     cmpSlots?: HashTable<Array<VNode>>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;

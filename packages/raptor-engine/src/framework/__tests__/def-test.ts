@@ -82,15 +82,23 @@ describe('def', () => {
         it('should infer attribute name from public props', () => {
             class MyComponent extends Element  {}
             MyComponent.publicProps = {
-                foo: true,
-                xBar: {},
+                foo: {
+                    config: 1
+                },
+                xBar: {
+                    config: 0
+                },
             };
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 wire: undefined,
                 props: {
-                    foo: 1,
-                    xBar: 1,
+                    foo: {
+                        config: 1
+                    },
+                    xBar: {
+                        config: 0
+                    }
                 },
                 methods: {},
                 observedAttrs: {},
@@ -101,29 +109,45 @@ describe('def', () => {
             class MySuperComponent extends Element {}
 
             MySuperComponent.publicProps = {
-                super: true
+                super: {
+                    config: 1
+                }
             };
 
             class MyComponent extends MySuperComponent {}
 
             MyComponent.publicProps = {
-                foo: true,
-                xBar: {},
+                foo: {
+                    config: 2
+                },
+                xBar: {
+                    config: 3
+                },
             };
 
             class MySubComponent extends MyComponent {}
 
             MySubComponent.publicProps = {
-                fizz: 'buzz'
+                fizz: {
+                    config: 0
+                }
             };
 
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
                 props: {
-                    foo: 1,
-                    xBar: 1,
-                    fizz: 1,
-                    super: 1
+                    foo: {
+                        config: 2
+                    },
+                    xBar: {
+                        config: 3
+                    },
+                    fizz: {
+                        config: 0
+                    },
+                    super: {
+                        config: 1
+                    }
                 },
                 observedAttrs: {},
                 methods: {},
@@ -215,6 +239,24 @@ describe('def', () => {
                     }
                 },
                 props: {},
+                methods: {},
+                observedAttrs: {},
+            });
+        });
+
+        it('should handle publicProps with empty object', function () {
+            class MyComponent extends Element  {}
+            MyComponent.publicProps = {
+                foo: {}
+            };
+            assert.deepEqual(target.getComponentDef(MyComponent), {
+                name: 'MyComponent',
+                wire: undefined,
+                props: {
+                    foo: {
+                        config: 0
+                    }
+                },
                 methods: {},
                 observedAttrs: {},
             });

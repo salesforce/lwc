@@ -57,16 +57,16 @@ const cmpProxyHandler = {
 
         // slow path to access component's properties from template
         let value;
-        const { cmpState, cmpProps, def: { props: publicPropsConfig } } = vmBeingRendered;
+        const { cmpState, cmpProps, def: { props: publicPropsConfig } } = (vmBeingRendered as VM); // eslint-disable-line no-undef
         if (key === 'state' && cmpState) {
             value = cmpState;
-        } else if (key in publicPropsConfig) {
-            subscribeToSetHook(vmBeingRendered, cmpProps, key);
+        } else if (key in publicPropsConfig && key in cmpProps) {
+            subscribeToSetHook(vmBeingRendered as VM, cmpProps, key); // eslint-disable-line no-undef
             value = cmpProps[key];
         } else {
             value = cmp[key];
         }
-        currentMemoized[key] = value;
+        (currentMemoized as HashTable<any>)[key] = value; // eslint-disable-line no-undef
         return value;
     },
     set: (cmp: Object, key: string | Symbol): boolean => {
