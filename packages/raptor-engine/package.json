@@ -15,8 +15,11 @@
     "stop": "forever stopall",
     "build:lib": "rollup -c scripts/rollup.config.lib.js",
     "build:engine:dev": "cross-env NODE_ENV=development rollup -c scripts/rollup.config.engine.js",
+    "build:engine:compat": "cross-env NODE_ENV=development MODE=compat rollup -c scripts/rollup.config.engine.js",
     "build:engine:prod": "cross-env NODE_ENV=production rollup -c scripts/rollup.config.engine.js",
-    "build:dist": "yarn run build:engine:dev && yarn run build:engine:prod",
+    "build:engine:prod_compat": "cross-env NODE_ENV=production MODE=compat rollup -c scripts/rollup.config.engine.js",
+
+    "build:dist": "yarn run build:engine:dev && yarn run build:engine:compat && yarn run build:engine:prod && yarn run build:engine:prod_compat",
     "build:fixtures": "node scripts/build-fixtures.js",
     "build:all": "yarn run build:fixtures --production && yarn run build:dist && yarn run build:lib",
     "prepublish": "yarn run build"

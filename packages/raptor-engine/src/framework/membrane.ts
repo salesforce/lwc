@@ -97,7 +97,7 @@ export function unwrap(replicaOrAny: Replica | any): Replicable | any {
 
 export function setKey(replicaOrAny: Replica | any, key: string | Symbol, newValue: any): any {
     let shouldReturn = false;
-    compat.block(() => {
+    compat(() => {
         shouldReturn = true;
         const target = unwrap(replicaOrAny);
         if (target === replicaOrAny) {
@@ -111,7 +111,7 @@ export function setKey(replicaOrAny: Replica | any, key: string | Symbol, newVal
 }
 
 export function deleteKey(replicaOrAny: Replica | any, key: string | Symbol) {
-    compat.block(() => {
+    compat(() => {
         const target = unwrap(replicaOrAny);
         if (target === replicaOrAny) {
             // non-profixied delete
