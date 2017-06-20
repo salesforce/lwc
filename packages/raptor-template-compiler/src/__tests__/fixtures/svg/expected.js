@@ -6,6 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 "slds-button__icon": true
             },
             attrs: {
+                viewBox: "0 0 5 5",
                 "aria-hidden": "true"
             }
         },

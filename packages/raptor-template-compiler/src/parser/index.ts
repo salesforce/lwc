@@ -555,7 +555,10 @@ export default function parse(source: string): {
         }
 
         const name = matching.prefix ? `${matching.prefix}:${matching.name}` : matching.name;
-        const location = nodeLocation.attrs[name];
+
+        // Convert attribute name to lowercase because the location map keys follow the algorithm defined in the spec
+        // https://wicg.github.io/controls-list/html-output/multipage/syntax.html#attribute-name-state
+        const location = nodeLocation.attrs[name.toLowerCase()];
         const rawAttribute = getSource(source, location);
 
         // parse5 do automatically the convertion from camelcase to all lowercase. If the attributes names
