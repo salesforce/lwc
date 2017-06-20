@@ -15,16 +15,21 @@ describe('snapshots ', () => {
         const caseFolder = path.dirname(caseEntry);
         const caseName = path.relative(FIXTURE_DIR, caseFolder);
 
-        const readFixtureFile = (fileName) => (
-            fs.readFileSync(path.join(caseFolder, fileName), 'utf-8')
-        );
+        const readFixtureFile = (fileName, defaultContent) => {
+            const filePath = path.join(caseFolder, fileName);
+            return fs.existsSync(filePath) ?
+                fs.readFileSync(filePath, 'utf-8') :
+                defaultContent;
+        };
 
         it(`${caseName}`, () => {
             const src = readFixtureFile('actual.html');
-            const expectedCode = readFixtureFile('expected.js');
-            const expetedMetaData = JSON.parse(readFixtureFile('metadata.json'));
 
-            const actual = compiler(src);
+            const config = JSON.parse(readFixtureFile('config.json', '{}'));
+            const expectedCode = readFixtureFile('expected.js', '');
+            const expetedMetaData = JSON.parse(readFixtureFile('metadata.json', '{}'));
+
+            const actual = compiler(src, config);
 
             if (expectedCode && expectedCode.length) {
                 expect(

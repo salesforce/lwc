@@ -24,7 +24,6 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
-    getRootIdentifier,
 } from './expression';
 
 import {
@@ -37,7 +36,6 @@ import {
     isElement,
     isCustomElement,
     createText,
-    isComponentProp,
 } from '../shared/ir';
 
 import {
@@ -50,6 +48,10 @@ import {
     WarningLevel,
     CompilationMetadata,
 } from '../shared/types';
+
+import {
+    bindExpression,
+} from '../shared/scope';
 
 import {
     EXPRESSION_RE,
@@ -528,10 +530,12 @@ export default function parse(source: string): {
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
         const expression = parseExpression(sourceExpression);
-        const identifier = getRootIdentifier(expression);
+        const { bounded } = bindExpression(expression, node, false);
 
-        if (isComponentProp(identifier, node) && !metadata.templateUsedIds.includes(identifier.name)) {
-            metadata.templateUsedIds.push(identifier.name);
+        for (const boundedIdentifier of bounded) {
+            if (!metadata.templateUsedIds.includes(boundedIdentifier)) {
+                metadata.templateUsedIds.push(boundedIdentifier);
+            }
         }
 
         return expression;
@@ -582,6 +586,9 @@ export default function parse(source: string): {
                 };
             }
         } catch (error) {
+            // Removes the attribute, if impossible to parse it value.
+            removeAttribute(el, name);
+
             warnAt(error.message, location);
             return;
         }

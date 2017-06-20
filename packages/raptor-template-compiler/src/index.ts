@@ -2,11 +2,23 @@ import generate from './codegen';
 import parse from './parser';
 
 import {
+    CompilationOptions,
     CompilationMetadata,
     CompilationWarning,
 } from './shared/types';
 
-export default function compiler(source: string) {
+const DEFAULT_CONFIG = {
+    computedMemberExpression: false,
+};
+
+export let config: CompilationOptions = DEFAULT_CONFIG;
+
+export default function compiler(source: string, compilationOptions: CompilationOptions = {}) {
+    config = {
+        ...DEFAULT_CONFIG,
+        ...compilationOptions,
+    };
+
     let code = '';
     let metadata: CompilationMetadata | undefined;
     const warnings: CompilationWarning[] = [];

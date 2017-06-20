@@ -4,7 +4,7 @@ import * as toCamelCase from 'camelcase';
 import {
     TEMPLATE_PARAMS,
     RENDER_PRIMITIVES,
-} from './constants';
+} from '../shared/constants';
 
 export const RENDER_PRIMITIVE_API: { [key: string]: t.MemberExpression } = {};
 

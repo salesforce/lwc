@@ -5,11 +5,11 @@ import template = require('babel-template');
 
 import {
     TEMPLATE_PARAMS,
-} from './constants';
+} from '../shared/constants';
 
 import {
-    applyExpressionBinding,
-} from './scope';
+    bindExpression,
+} from '../shared/scope';
 
 import {
     RENDER_PRIMITIVE_API,
@@ -52,7 +52,7 @@ function applyInlineIf(
     }
 
     if (!testExpression) {
-        testExpression = applyExpressionBinding(element.if!, element);
+        testExpression = bindExpression(element.if!, element).expression;
     }
 
     let leftExpression: t.Expression;
@@ -90,7 +90,8 @@ function applyInlineFor(element: IRElement, babelNode: t.Expression) {
         params,
         t.blockStatement([t.returnStatement(babelNode)]),
     );
-    const iterable = applyExpressionBinding(expression, element);
+
+    const { expression: iterable } = bindExpression(expression, element);
 
     return t.callExpression(
         RENDER_PRIMITIVE_API.ITERATOR,
@@ -105,7 +106,7 @@ function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Exp
 
     if (t.isArrayExpression(fragmentNodes)) {
         // Bind the expression once for all the template children
-        const testExpression = applyExpressionBinding(element.if!, element);
+        const { expression: testExpression } = bindExpression(element.if!, element);
 
         return t.arrayExpression(
             fragmentNodes.elements.map((child: t.Expression) => (
@@ -139,7 +140,8 @@ function computeAttrValue(attrValue: TemplateExpression | string, element: IREle
             return t.booleanLiteral(true);
         }
     } else {
-        return applyExpressionBinding(attrValue, element);
+        const { expression } = bindExpression(attrValue, element);
+        return expression;
     }
 }
 
@@ -148,8 +150,9 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
     const data: t.ObjectProperty[] = [];
 
     if (className) {
+        const { expression: classExpression } = bindExpression(className, element);
         data.push(
-            t.objectProperty(t.identifier('className'), applyExpressionBinding(className, element)),
+            t.objectProperty(t.identifier('className'), classExpression),
         );
     }
 
@@ -183,7 +186,7 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
 
     if (on) {
         const onObj = objectToAST(on, (key) => {
-            const handler = applyExpressionBinding(on[key], element);
+            const { expression: handler } =  bindExpression(on[key], element);
             return memorization.memorize(handler);
         });
         data.push(t.objectProperty(t.identifier('on'), onObj));
@@ -224,7 +227,7 @@ export function transform(
             exit(textNode: IRText) {
                 let { value }  = textNode;
                 if (typeof value !== 'string') {
-                    value = applyExpressionBinding(value, textNode);
+                    value = bindExpression(value, textNode).expression as t.MemberExpression;
                 }
 
                 const babelTextNode = createText(value);

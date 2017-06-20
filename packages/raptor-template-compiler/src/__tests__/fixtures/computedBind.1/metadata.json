@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Invalid expression {val[state.foo]} - Template expression doens't allow computed property access",
+    "start": 10,
+    "length": 22
+  }]
+}

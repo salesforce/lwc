@@ -1,0 +1,9 @@
+<template>
+    {val}
+    {val[state.foo]}
+    {val[state.foo][state.bar]}
+    <template for:each={arr} for:item="item" for:index="index">
+        {arr[index]}
+        {arr[state.val]}
+    </template>
+</template>

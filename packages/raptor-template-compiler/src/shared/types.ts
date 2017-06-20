@@ -99,6 +99,10 @@ export interface CompilationWarning {
     level: WarningLevel;
 }
 
+export interface CompilationOptions {
+    computedMemberExpression?: boolean;
+}
+
 export interface CompilationMetadata {
     templateUsedIds: string[];
     definedSlots: string[];

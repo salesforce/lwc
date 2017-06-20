@@ -6,7 +6,7 @@ import {
 
 import {
     TEMPLATE_PARAMS,
-} from './constants';
+} from '../shared/constants';
 
 // FIXME: Need proper id generation support
 // For now, reset the id at the beginning of each code generation

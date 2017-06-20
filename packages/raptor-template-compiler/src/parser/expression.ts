@@ -3,6 +3,10 @@ import * as types from 'babel-types';
 import * as babylon from 'babylon';
 
 import {
+    config as compilerConfig,
+} from '../index';
+
+import {
     TemplateExpression,
     TemplateIdentifier,
 } from '../shared/types';
@@ -31,7 +35,7 @@ export function parseExpression(source: string): TemplateExpression {
         traverse(parsed, {
             enter(path) {
                 const isValidNode = path.isProgram() || path.isBlockStatement() || path.isExpressionStatement() ||
-                                    path.isLiteral() || path.isIdentifier() || path.isMemberExpression();
+                                    path.isIdentifier() || path.isMemberExpression();
                 if (!isValidNode) {
                     throw new Error(`Template expression doens't allow ${path.type}`);
                 }
@@ -47,6 +51,17 @@ export function parseExpression(source: string): TemplateExpression {
                     expression = (path.node as types.ExpressionStatement).expression;
                 }
             },
+
+            MemberExpression: {
+                exit(path) {
+                    const shouldReportComputed = !compilerConfig.computedMemberExpression
+                        && (path.node as types.MemberExpression).computed;
+
+                    if (shouldReportComputed) {
+                        throw new Error(`Template expression doens't allow computed property access`);
+                    }
+                },
+            },
         });
 
         return expression;
@@ -54,29 +69,6 @@ export function parseExpression(source: string): TemplateExpression {
         err.message = `Invalid expression ${source} - ${err.message}`;
         throw err;
     }
-}
-
-export function getRootIdentifier(epxression: types.Expression): types.Identifier {
-    let identifier: any;
-
-    // Wrapper is useful when the expression is a single identifier
-    const wrapper = types.expressionStatement(epxression);
-
-    let isVisited = false;
-    traverse(wrapper, {
-        noScope: true,
-        Identifier(path) {
-            // Should run the visitor only once
-            if (isVisited) {
-                return;
-            }
-            isVisited = true;
-
-            identifier = path.node;
-        },
-    });
-
-    return identifier;
 }
 
 export function parseIdentifier(source: string): TemplateIdentifier {
