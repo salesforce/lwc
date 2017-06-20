@@ -44,8 +44,8 @@ export interface IRElement {
 
     style?: { [name: string]: string | number };
 
-    attrs?: { [name: string]: TemplateExpression | string };
-    props?: { [name: string]: TemplateExpression | string };
+    attrs?: { [name: string]: IRAttribute };
+    props?: { [name: string]: IRAttribute };
 
     if?: TemplateExpression;
     ifModifier?: string;
@@ -71,24 +71,37 @@ export type IRNode =
     | IRElement
     | IRText;
 
+export enum IRAttributeType {
+    Expression,
+    String,
+    Boolean,
+}
+
 export interface IRBaseAttribute {
     name: string;
     location: parse5.MarkupData.Location;
-}
-
-export interface IRStringAttribute extends IRBaseAttribute {
-    type: 'string';
-    value: string;
+    type: IRAttributeType;
 }
 
 export interface IRExpressionAttribute extends IRBaseAttribute {
-    type: 'expression';
+    type: IRAttributeType.Expression;
     value: TemplateExpression;
+}
+
+export interface IRStringAttribute extends IRBaseAttribute {
+    type: IRAttributeType.String;
+    value: string;
+}
+
+export interface IRBooleanAttribute extends IRBaseAttribute {
+    type: IRAttributeType.Boolean;
+    value: true;
 }
 
 export type IRAttribute =
     | IRStringAttribute
-    | IRExpressionAttribute;
+    | IRExpressionAttribute
+    | IRBooleanAttribute;
 
 export type WarningLevel = 'info' | 'warning' | 'error';
 

@@ -42,6 +42,7 @@ import {
     IRNode,
     IRElement,
     IRAttribute,
+    IRAttributeType,
     IRStringAttribute,
     TemplateIdentifier,
     CompilationWarning,
@@ -206,9 +207,9 @@ export default function parse(source: string): {
         if (classAttribute) {
             removeAttribute(element, 'class');
 
-            if (classAttribute.type === 'string') {
+            if (classAttribute.type === IRAttributeType.String) {
                 element.classMap = toClassMap(classAttribute.value);
-            } else {
+            } else if (classAttribute.type === IRAttributeType.Expression) {
                 element.className = classAttribute.value;
             }
         }
@@ -217,7 +218,7 @@ export default function parse(source: string): {
         if (styleAttribute) {
             removeAttribute(element, 'style');
 
-            if (styleAttribute.type === 'expression') {
+            if (styleAttribute.type !== IRAttributeType.String) {
                 return warnAt(`Dynamic style attribute is not (yet) supported`, styleAttribute.location);
             }
 
@@ -230,7 +231,7 @@ export default function parse(source: string): {
         while (eventHandlerAttribute) {
             removeAttribute(element, eventHandlerAttribute.name);
 
-            if (eventHandlerAttribute.type === 'string') {
+            if (eventHandlerAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`Event handler should be an expression`, eventHandlerAttribute.location);
             }
 
@@ -248,7 +249,7 @@ export default function parse(source: string): {
         if (ifAttribute) {
             removeAttribute(element, IF_RE);
 
-            if (ifAttribute.type !== 'expression') {
+            if (ifAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`If directive should be an expression`, ifAttribute.location);
             }
 
@@ -300,9 +301,11 @@ export default function parse(source: string): {
             removeAttribute(element, forEachAttribute.name);
             removeAttribute(element, forItemAttribute.name);
 
-            if (forEachAttribute.type !== 'expression') {
-                return handleForEachDeprecatedSynax(forEachAttribute);
-            } else if (forItemAttribute.type !== 'string') {
+            if (forEachAttribute.type !== IRAttributeType.Expression) {
+                return forEachAttribute.type === IRAttributeType.String ?
+                    handleForEachDeprecatedSynax(forEachAttribute) :
+                    warnAt('for:each directive is expected to be a expression.', forEachAttribute.location);
+            } else if (forItemAttribute.type !== IRAttributeType.String) {
                 return warnAt('for:item directive is expected to be a string.', forItemAttribute.location);
             }
 
@@ -316,7 +319,7 @@ export default function parse(source: string): {
             let index: TemplateIdentifier | undefined;
             if (forIndex) {
                 removeAttribute(element, forIndex.name);
-                if (forIndex.type !== 'string') {
+                if (forIndex.type !== IRAttributeType.String) {
                     return warnAt('for:index directive is expected to be a string.', forIndex.location);
                 }
 
@@ -350,9 +353,9 @@ export default function parse(source: string): {
             removeAttribute(element, forOfAttribute.name);
             removeAttribute(element, forIterator.name);
 
-            if (forOfAttribute.type !== 'expression') {
+            if (forOfAttribute.type !== IRAttributeType.Expression) {
                 return warnAt('for:of directive is expected to be an expression.', forOfAttribute.location);
-            } else if (forIterator.type !== 'string') {
+            } else if (forIterator.type !== IRAttributeType.String) {
                 return warnAt('for:iterator directive is expected to be a string.', forIterator.location);
             }
 
@@ -380,7 +383,7 @@ export default function parse(source: string): {
         if (keyAttribute) {
             removeAttribute(element, 'key');
 
-            if (keyAttribute.type !== 'expression') {
+            if (keyAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
             }
 
@@ -411,7 +414,7 @@ export default function parse(source: string): {
 
         const isAttribute = getTemplateAttribute(element, 'is');
         if (isAttribute) {
-            if (isAttribute.type !== 'string') {
+            if (isAttribute.type !== IRAttributeType.String) {
                 return warnAt(`Is attribute value can't be an expression`, isAttribute.location);
             }
 
@@ -447,10 +450,11 @@ export default function parse(source: string): {
         if (nameAttribute) {
             removeAttribute(element, 'name');
 
-            if (nameAttribute.type !== 'string') {
+            if (nameAttribute.type === IRAttributeType.Expression) {
                 return warnAt(`Name attribute value can't be an expression.`, nameAttribute.location);
+            } else if (nameAttribute.type === IRAttributeType.String) {
+                name = nameAttribute.value;
             }
-            name = nameAttribute.value;
         }
 
         element.slotName = name;
@@ -476,14 +480,14 @@ export default function parse(source: string): {
             if (isElement(child)) {
                 const slotAttribute = getTemplateAttribute(child, 'slot');
                 if (slotAttribute) {
-                    if (slotAttribute.type !== 'string') {
+                    if (slotAttribute.type === IRAttributeType.Expression) {
                         return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
                     }
 
                     removeAttribute(child, 'slot');
 
                     // Use default node name, if the slot attribute is set without value
-                    if (slotAttribute.value.length) {
+                    if (slotAttribute.type === IRAttributeType.String && slotAttribute.value.length) {
                         slotName = slotAttribute.value;
                     }
                 }
@@ -506,10 +510,10 @@ export default function parse(source: string): {
                 return;
             }
 
-            const { name, value, location } = attr;
+            const { name, location } = attr;
             if (isProp(element, name)) {
                 const props = element.props || (element.props = {});
-                props[attributeToPropertyName(element, name)] = value;
+                props[attributeToPropertyName(element, name)] = attr;
 
                 removeAttribute(element, name);
             } else if (!isValidHTMLAttribute(tag, name)) {
@@ -523,7 +527,7 @@ export default function parse(source: string): {
                 return;
             } else {
                 const attrs = element.attrs || (element.attrs = {});
-                attrs[name] = value;
+                attrs[name] = attr;
             }
         });
     }
@@ -569,19 +573,27 @@ export default function parse(source: string): {
         try {
             let parsed: IRAttribute;
 
+            const isBooleanAttribute = !rawAttribute.includes('=');
             const value = normalizeAttributeValue(matching, rawAttribute);
             if (isExpression(value)) {
                 return parsed = {
                     name,
                     location,
-                    type: 'expression',
+                    type: IRAttributeType.Expression,
                     value: parseTemplateExpression(el, value),
+                };
+            } else if (isBooleanAttribute) {
+                return parsed = {
+                    name,
+                    location,
+                    type: IRAttributeType.Boolean,
+                    value: true,
                 };
             } else {
                 return parsed = {
                     name,
                     location,
-                    type: 'string',
+                    type: IRAttributeType.String,
                     value,
                 };
             }

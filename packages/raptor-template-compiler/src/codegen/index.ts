@@ -32,9 +32,10 @@ import {
     IRNode,
     IRElement,
     IRText,
+    IRAttribute,
+    IRAttributeType,
     CompilationMetadata,
     CompilationOutput,
-    TemplateExpression,
 } from '../shared/types';
 
 import * as memorization from './memorization';
@@ -132,16 +133,17 @@ function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression): t.Ex
     return applyInlineFor(element, expression);
 }
 
-function computeAttrValue(attrValue: TemplateExpression | string, element: IRElement): t.Expression {
-    if (typeof attrValue === 'string') {
-        if (attrValue.length) {
-            return t.stringLiteral(attrValue);
-        } else {
-            return t.booleanLiteral(true);
-        }
-    } else {
-        const { expression } = bindExpression(attrValue, element);
-        return expression;
+function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
+    switch (attr.type) {
+        case IRAttributeType.Expression:
+            const { expression } = bindExpression(attr.value, element);
+            return expression;
+
+        case IRAttributeType.String:
+            return t.stringLiteral(attr.value);
+
+        case IRAttributeType.Boolean:
+            return t.booleanLiteral(attr.value);
     }
 }
 

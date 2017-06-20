@@ -361,7 +361,7 @@ describe('expression', () => {
 
     it('autofix unquoted value next to unary tag', () => {
         const { root } = parse(`<template><input title={myValue}/></template>`);
-        expect(get(root, 'children.0.attrs.title')).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(get(root, 'children.0.attrs.title')).toMatchObject({ value: TEMPLATE_IDENTIFIER });
     });
 
     // FIXME
@@ -392,23 +392,23 @@ describe('props and attributes', () => {
 
     it('element specific attribute validation', () => {
         const { root } = parse(`<template><textarea minlength="1" maxlength="5"></textarea></template>`);
-        expect(get(root, 'children.0.attrs')).toEqual({
-            minlength: '1',
-            maxlength: '5',
+        expect(get(root, 'children.0.attrs')).toMatchObject({
+            minlength: { value: '1' },
+            maxlength: { value: '5' },
         });
     });
 
     it('global attribute validation', () => {
         const { root } = parse(`<template><p title="title" aria-hidden="true"></p></template>`);
-        expect(get(root, 'children.0.attrs')).toEqual({
-            'title': 'title',
-            'aria-hidden': 'true',
+        expect(get(root, 'children.0.attrs')).toMatchObject({
+            'title': { value: 'title' },
+            'aria-hidden': { value: 'true' },
         });
     });
 
     it('custom element props', () => {
         const { root } = parse(`<template><x-button prop={state.prop}></x-button></template>`);
-        expect(get(root, 'children.0.props.prop')).toMatchObject(TEMPLATE_EXPRESSION);
+        expect(get(root, 'children.0.props.prop')).toMatchObject({ value: TEMPLATE_EXPRESSION });
     });
 
     it('custom element attribute / props mix', () => {
@@ -420,14 +420,14 @@ describe('props and attributes', () => {
                 foo="bar"
                 role="xx"></x-button>
         </template>`);
-        expect(get(root, 'children.0.props')).toEqual({
-            fooBar: 'x',
-            foo: 'bar',
+        expect(get(root, 'children.0.props')).toMatchObject({
+            fooBar: { value: 'x' },
+            foo: { value: 'bar' },
         });
-        expect(get(root, 'children.0.attrs')).toEqual({
-            'data-xx': 'foo',
-            'aria-hidden': 'hidden',
-            'role': 'xx',
+        expect(get(root, 'children.0.attrs')).toMatchObject({
+            'data-xx': { value: 'foo' },
+            'aria-hidden': { value: 'hidden' },
+            'role': { value: 'xx' },
         });
     });
 
@@ -436,14 +436,14 @@ describe('props and attributes', () => {
             <table bgcolor="x" is="x-table" tabindex="2" bar="test" min="3"></table>
         </template>`);
 
-        expect(get(root, 'children.0.props')).toEqual({
-            bar: 'test',
-            min: '3',
+        expect(get(root, 'children.0.props')).toMatchObject({
+            bar: { value: 'test' },
+            min: { value: '3' },
         });
-        expect(get(root, 'children.0.attrs')).toEqual({
-            bgcolor: 'x',
-            is: 'x-table',
-            tabindex: '2',
+        expect(get(root, 'children.0.attrs')).toMatchObject({
+            bgcolor: { value: 'x' },
+            is: { value: 'x-table' },
+            tabindex: { value: '2' },
         });
     });
 });
