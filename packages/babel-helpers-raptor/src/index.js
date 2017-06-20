@@ -21,8 +21,8 @@ const whitelist = [
     'get',
     'inherits',
     'instanceof',
-    'interopRequireDefault', // This is really needed?
-    'interopRequireWildcard', // This is really needed?
+    // 'interopRequireDefault', // <- Not needed, we resolve our own modules
+    // 'interopRequireWildcard', // <- Not needed, we resolve our own modules
     'newArrowCheck',
     'objectDestructuringEmpty',
     'objectWithoutProperties',
@@ -30,13 +30,13 @@ const whitelist = [
     // 'selfGlobal', // <- Not needed
     'set',
     'slicedToArray', // One of this two needs to go...
-    'slicedToArrayLoose',
+    // 'slicedToArrayLoose',  // <- Seems that is not used anywhere (or only when loose is enabled for the transform)
     'taggedTemplateLiteral', // One of this two needs to go...
-    'taggedTemplateLiteralLoose',
+    // 'taggedTemplateLiteralLoose', // <- Seems that is not used anywhere (or only when loose is enabled for the transform)
     'temporalRef',
     'temporalUndefined',
-    'toArray',
-    'toConsumableArray'
+    'toArray', // Parameter destructuring
+    'toConsumableArray' // We need this for array spread operator
 ];
 
 function build(namespace, globalVar = "global", builder) {
