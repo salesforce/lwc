@@ -188,14 +188,6 @@ module.exports = function ({ types: t }) {
         return undefined;
     }
 
-    function getPropertyMask (getters, setters, defaults) {
-        if (setters.length || getters.length) {
-            return (setters.length && PUBLIC_PROPERTY_SETTER_BIT_MASK) | (getters.length && PUBLIC_PROPERTY_GETTER_BIT_MASK);
-        }
-
-        return PUBLIC_PROPERTY_SETTER_BIT_MASK | PUBLIC_PROPERTY_GETTER_BIT_MASK;
-    }
-
     function transformClassBody(className, path, state) {
         const knownStaticKeys = { [KEY_PROPS]: false, [KEY_METHODS]: false, [WIRE_DECORATOR]: false };
         const publicProps = [], publicMethods = [], wiredData = [], extraBody = [], wiredKeys = [], expandedProperties = {};
@@ -235,7 +227,7 @@ module.exports = function ({ types: t }) {
                     const expanded = [];
                     const { getters, setters, defaults } = getPropertyGroups(prop, classBody, key);
 
-                    const propertyMask = getPropertyMask(getters, setters, defaults);
+                    const propertyMask = (setters.length && PUBLIC_PROPERTY_SETTER_BIT_MASK) | (getters.length && PUBLIC_PROPERTY_GETTER_BIT_MASK);
                     const propWithValue = defaults.find((prop) => {
                         return prop.node.value !== undefined;
                     });

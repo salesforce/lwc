@@ -21,7 +21,7 @@ export default class Text {
 Text.ctor = "ctor";
 Text.publicProps = {
     publicProp: {
-        config: 3
+        config: 0
     },
     aloneGet: {
         config: 1

@@ -12,11 +12,11 @@ export default class Test {
 }
 Test.publicProps = {
     test: {
-        config: 3,
+        config: 0,
         type: "number"
     },
     string: {
-        config: 3,
+        config: 0,
         type: "string"
     }
 };
