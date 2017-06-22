@@ -6,20 +6,17 @@
     "outDir": "dist",
     "declaration": true,
 
-    "noImplicitAny": false,
-    "strictNullChecks": true,
-    "importHelpers": true,
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
 
     "lib": [
       "es2016"
     ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "typings/*.d.ts"
   ],
   "exclude": [
     "*/__tests__/"

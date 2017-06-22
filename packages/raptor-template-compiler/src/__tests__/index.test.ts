@@ -15,7 +15,7 @@ describe('snapshots ', () => {
         const caseFolder = path.dirname(caseEntry);
         const caseName = path.relative(FIXTURE_DIR, caseFolder);
 
-        const readFixtureFile = (fileName, defaultContent) => {
+        const readFixtureFile = (fileName, defaultContent = '') => {
             const filePath = path.join(caseFolder, fileName);
             return fs.existsSync(filePath) ?
                 fs.readFileSync(filePath, 'utf-8') :

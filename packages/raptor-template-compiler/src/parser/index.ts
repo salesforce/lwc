@@ -27,8 +27,8 @@ import {
 } from './expression';
 
 import {
-    toClassMap,
-    toStyleMap,
+    parseStyle,
+    parseClassNames,
 } from './style';
 
 import {
@@ -44,6 +44,7 @@ import {
     IRAttribute,
     IRAttributeType,
     IRStringAttribute,
+    SlotDefinition,
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
@@ -208,7 +209,7 @@ export default function parse(source: string): {
             removeAttribute(element, 'class');
 
             if (classAttribute.type === IRAttributeType.String) {
-                element.classMap = toClassMap(classAttribute.value);
+                element.classMap = parseClassNames(classAttribute.value);
             } else if (classAttribute.type === IRAttributeType.Expression) {
                 element.className = classAttribute.value;
             }
@@ -222,7 +223,7 @@ export default function parse(source: string): {
                 return warnAt(`Dynamic style attribute is not (yet) supported`, styleAttribute.location);
             }
 
-            element.style = toStyleMap(styleAttribute.value);
+            element.style = parseStyle(styleAttribute.value);
         }
     }
 
@@ -472,7 +473,7 @@ export default function parse(source: string): {
             return;
         }
 
-        const slotSet = {};
+        const slotSet: SlotDefinition = {};
 
         for (const child of children) {
             let slotName = DEFAULT_SLOT_NAME;

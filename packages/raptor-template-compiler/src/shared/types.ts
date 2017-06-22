@@ -13,6 +13,10 @@ export type HTMLNode =
     | HTMLElement
     | HTMLText;
 
+export interface SlotDefinition {
+    [key: string]: IRNode[];
+}
+
 export interface ForEach {
     expression: TemplateExpression;
     item: TemplateIdentifier;
@@ -55,7 +59,7 @@ export interface IRElement {
     forKey?: TemplateExpression;
 
     slotName?: string;
-    slotSet?: { [key: string]: IRNode[] };
+    slotSet?: SlotDefinition;
 }
 
 export interface IRText {

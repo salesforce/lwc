@@ -1,11 +1,11 @@
-export const TEMPLATE_PARAMS = {
+export const TEMPLATE_PARAMS: { [label: string]: string } = {
     INSTANCE    : '$cmp',
     API         : '$api',
     SLOT_SET    : '$slotset',
     CONTEXT     : '$ctx',
 };
 
-export const RENDER_PRIMITIVES = {
+export const RENDER_PRIMITIVES: { [label: string]: string } = {
     ITERATOR        : 'i',
     FLATTENING      : 'f',
     ELEMENT         : 'h',

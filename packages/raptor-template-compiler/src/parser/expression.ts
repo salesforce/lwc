@@ -30,7 +30,7 @@ export function parseExpression(source: string): TemplateExpression {
     try {
         const parsed = babylon.parse(source);
 
-        let expression;
+        let expression: any;
 
         traverse(parsed, {
             enter(path) {

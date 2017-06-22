@@ -5,69 +5,65 @@ import parse from '../parser';
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
 
-// Helper function to get a nest property. To avoid insanity type casting:
-// expect((((res[0] as ASTElement).children[0] as ASTElement).children[0] as ASTElement)
-//          .parent).toBe((res[0] as ASTElement).children[0]);
-function get(obj: any, path: string): any {
-    const [next, ...res] = path.split('.');
-    return next.length ? get(obj[next], res.join('.')) : obj;
+function parseTemplate(src: string): any {
+    return parse(src);
 }
 
 describe('parsing', () => {
     it('simple parsing', () => {
-        const { root } = parse(`<template><h1>hello</h1></template>`);
-        expect(get(root, 'tag')).toBe('template');
-        expect(get(root, 'children.0.tag')).toBe('h1');
-        expect(get(root, 'children.0.children.0.value')).toBe('hello');
+        const { root } = parseTemplate(`<template><h1>hello</h1></template>`);
+        expect(root.tag).toBe('template');
+        expect(root.children[0].tag).toBe('h1');
+        expect(root.children[0].children[0].value).toBe('hello');
     });
 
     it('html entities', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <p>foo&amp;bar</p>
             <p>const &#123; foo &#125; = bar;</p>
         </template>`);
-        expect(get(root, 'children.0.children.0.value')).toBe('foo&bar');
-        expect(get(root, 'children.1.children.0.value')).toBe('const { foo } = bar;');
+        expect(root.children[0].children[0].value).toBe('foo&bar');
+        expect(root.children[1].children[0].value).toBe('const { foo } = bar;');
     });
 
     it('text identifier', () => {
-        const { root } = parse(`<template>{msg}</template>`);
-        expect(get(root, 'children.0.value')).toBeDefined();
+        const { root } = parseTemplate(`<template>{msg}</template>`);
+        expect(root.children[0].value).toBeDefined();
     });
 
     it('text identifier in text block', () => {
-        const { root } = parse(`<template>Hello {name}, from {location}</template>`);
-        expect(get(root, 'children.0.value')).toBe('Hello ');
-        expect(get(root, 'children.1.value')).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(get(root, 'children.2.value')).toBe(', from ');
-        expect(get(root, 'children.3.value')).toMatchObject(TEMPLATE_IDENTIFIER);
+        const { root } = parseTemplate(`<template>Hello {name}, from {location}</template>`);
+        expect(root.children[0].value).toBe('Hello ');
+        expect(root.children[1].value).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[2].value).toBe(', from ');
+        expect(root.children[3].value).toMatchObject(TEMPLATE_IDENTIFIER);
     });
 
     it('child elements', () => {
-        const { root } = parse(`<template><ul><li>hello</li></ul></template>`);
-        expect(get(root, 'children.0.tag')).toBe('ul');
-        expect(get(root, 'children.0.children.0.tag')).toBe('li');
-        expect(get(root, 'children.0.children.0.children.0.value')).toBe('hello');
-        expect(get(root, 'children.0.parent')).toBe(root);
+        const { root } = parseTemplate(`<template><ul><li>hello</li></ul></template>`);
+        expect(root.children[0].tag).toBe('ul');
+        expect(root.children[0].children[0].tag).toBe('li');
+        expect(root.children[0].children[0].children[0].value).toBe('hello');
+        expect(root.children[0].parent).toBe(root);
     });
 });
 
 describe('class and style', () => {
     it('class attribute', () => {
-        const { root } = parse(`<template><section class="foo bar   baz-fiz"></section></template>`);
-        expect(get(root, 'children.0.classMap')).toMatchObject({ 'bar': true, 'foo': true, 'baz-fiz': true });
+        const { root } = parseTemplate(`<template><section class="foo bar   baz-fiz"></section></template>`);
+        expect(root.children[0].classMap).toMatchObject({ 'bar': true, 'foo': true, 'baz-fiz': true });
     });
 
     it('dynamic class attribute', () => {
-        const { root } = parse(`<template><section class={dynamicClass}></section></template>`);
-        expect(get(root, 'children.0.className')).toMatchObject({ type: 'Identifier', name: 'dynamicClass' });
+        const { root } = parseTemplate(`<template><section class={dynamicClass}></section></template>`);
+        expect(root.children[0].className).toMatchObject({ type: 'Identifier', name: 'dynamicClass' });
     });
 
     it('style attribute', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <section style="font-size: 12px; color: red; margin: 10px 5px 10px"></section>
         </template>`);
-        expect(get(root, 'children.0.style')).toEqual({
+        expect(root.children[0].style).toEqual({
             fontSize: '12px',
             color: 'red',
             marginLeft: '5px',
@@ -78,7 +74,7 @@ describe('class and style', () => {
     });
 
     it('dynamic style attribute', () => {
-        const { warnings } = parse(`<template><section style={dynamicStyle}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section style={dynamicStyle}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Dynamic style attribute is not (yet) supported`,
@@ -90,15 +86,15 @@ describe('class and style', () => {
 
 describe('event handlers', () => {
     it('event handler attribute', () => {
-        const { root } = parse(`<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`);
-        expect(get(root, 'children.0.on')).toMatchObject({
+        const { root } = parseTemplate(`<template><h1 onclick={handleClick} onmousemove={handleMouseMove}></h1></template>`);
+        expect(root.children[0].on).toMatchObject({
             click: { type: 'Identifier', name: 'handleClick' },
             mousemove: { type: 'Identifier', name: 'handleMouseMove' },
         });
     });
 
     it('event handler attribute', () => {
-        const { warnings } = parse(`<template><h1 onclick="handleClick"></h1></template>`);
+        const { warnings } = parseTemplate(`<template><h1 onclick="handleClick"></h1></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Event handler should be an expression`,
@@ -110,21 +106,21 @@ describe('event handlers', () => {
 
 describe('for:each directives', () => {
     it('right syntax', () => {
-        const { root } = parse(`<template><section for:each={items} for:item="item"></section></template>`);
-        expect(get(root, 'children.0.forEach.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
-        expect(get(root, 'children.0.forEach.item')).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(get(root, 'children.0.forEach.index')).toBeUndefined();
+        const { root } = parseTemplate(`<template><section for:each={items} for:item="item"></section></template>`);
+        expect(root.children[0].forEach.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(root.children[0].forEach.index).toBeUndefined();
     });
 
     it('right syntax with index', () => {
-        const { root } = parse(`<template><section for:each={items} for:item="item" for:index="i"></section></template>`);
-        expect(get(root, 'children.0.forEach.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
-        expect(get(root, 'children.0.forEach.item')).toMatchObject({ type: 'Identifier', name: 'item' });
-        expect(get(root, 'children.0.forEach.index')).toMatchObject({ type: 'Identifier', name: 'i' });
+        const { root } = parseTemplate(`<template><section for:each={items} for:item="item" for:index="i"></section></template>`);
+        expect(root.children[0].forEach.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(root.children[0].forEach.item).toMatchObject({ type: 'Identifier', name: 'item' });
+        expect(root.children[0].forEach.index).toMatchObject({ type: 'Identifier', name: 'i' });
     });
 
     it('error missing for:item', () => {
-        const { warnings } = parse(`<template><section for:each={items}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section for:each={items}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `for:each and for:item directives should be associated together.`,
@@ -134,7 +130,7 @@ describe('for:each directives', () => {
     });
 
     it('error expression value for for:item', () => {
-        const { warnings } = parse(`<template><section for:each={items} for:item={item}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section for:each={items} for:item={item}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `for:item directive is expected to be a string.`,
@@ -146,13 +142,13 @@ describe('for:each directives', () => {
 
 describe('for:of directives', () => {
     it('right syntax', () => {
-        const { root } = parse(`<template><section for:of={items} for:iterator="it"></section></template>`);
-        expect(get(root, 'children.0.forOf.expression')).toMatchObject({ type: 'Identifier', name: 'items' });
-        expect(get(root, 'children.0.forOf.iterator')).toMatchObject({ type: 'Identifier', name: 'it' });
+        const { root } = parseTemplate(`<template><section for:of={items} for:iterator="it"></section></template>`);
+        expect(root.children[0].forOf.expression).toMatchObject({ type: 'Identifier', name: 'items' });
+        expect(root.children[0].forOf.iterator).toMatchObject({ type: 'Identifier', name: 'it' });
     });
 
     it('error missing for:iterator', () => {
-        const { warnings } = parse(`<template><section for:of={items}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section for:of={items}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `for:of and for:iterator directives should be associated together.`,
@@ -162,7 +158,7 @@ describe('for:of directives', () => {
     });
 
     it('error expression value for for:iterator', () => {
-        const { warnings } = parse(`<template><section for:of={items} for:iterator={it}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section for:of={items} for:iterator={it}></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `for:iterator directive is expected to be a string.`,
@@ -174,19 +170,19 @@ describe('for:of directives', () => {
 
 describe('if directive', () => {
     it('if directive', () => {
-        const { root } = parse(`<template><h1 if:true={visible}></h1></template>`);
-        expect(get(root, 'children.0.if')).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(get(root, 'children.0.ifModifier')).toBe('true');
+        const { root } = parseTemplate(`<template><h1 if:true={visible}></h1></template>`);
+        expect(root.children[0].if).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].ifModifier).toBe('true');
     });
 
     it('if directive with false modifier', () => {
-        const { root } = parse(`<template><h1 if:false={visible}></h1></template>`);
-        expect(get(root, 'children.0.if')).toMatchObject(TEMPLATE_IDENTIFIER);
-        expect(get(root, 'children.0.ifModifier')).toBe('false');
+        const { root } = parseTemplate(`<template><h1 if:false={visible}></h1></template>`);
+        expect(root.children[0].if).toMatchObject(TEMPLATE_IDENTIFIER);
+        expect(root.children[0].ifModifier).toBe('false');
     });
 
     it('if directive with unexpecteed mofidier', () => {
-        const { warnings } = parse(`<template><h1 if:is-true={visible}></h1></template>`);
+        const { warnings } = parseTemplate(`<template><h1 if:is-true={visible}></h1></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Unexpected if modifier is-true`,
@@ -196,7 +192,7 @@ describe('if directive', () => {
     });
 
     it('if directive with with string value', () => {
-        const { warnings } = parse(`<template><h1 if:is-true="visible"></h1></template>`);
+        const { warnings } = parseTemplate(`<template><h1 if:is-true="visible"></h1></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `If directive should be an expression`,
@@ -208,13 +204,13 @@ describe('if directive', () => {
 
 describe('custom component', () => {
     it('custom component', () => {
-        const { root } = parse(`<template><x-button></x-button></template>`);
-        expect(get(root, 'children.0.tag')).toBe('x-button');
-        expect(get(root, 'children.0.component')).toBe('x-button');
+        const { root } = parseTemplate(`<template><x-button></x-button></template>`);
+        expect(root.children[0].tag).toBe('x-button');
+        expect(root.children[0].component).toBe('x-button');
     });
 
     it('custom component self closing error', () => {
-        const { warnings } = parse(`<template><x-button/>Some text</template>`);
+        const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Self-closing syntax <x-button/> is not allowed in custom elements, use an explicit closing tag instead <x-button></x-button>.`,
@@ -224,13 +220,13 @@ describe('custom component', () => {
     });
 
     it('custom component via is attribute', () => {
-        const { root } = parse(`<template><button is="x-button"></button></template>`);
-        expect(get(root, 'children.0.tag')).toBe('button');
-        expect(get(root, 'children.0.component')).toBe('x-button');
+        const { root } = parseTemplate(`<template><button is="x-button"></button></template>`);
+        expect(root.children[0].tag).toBe('button');
+        expect(root.children[0].component).toBe('x-button');
     });
 
     it('is dynamic attribute error', () => {
-        const { warnings } = parse(`<template><button is={dynamicCmp}></button></template>`);
+        const { warnings } = parseTemplate(`<template><button is={dynamicCmp}></button></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Is attribute value can't be an expression`,
@@ -242,44 +238,44 @@ describe('custom component', () => {
 
 describe('slots', () => {
     it('default slotset', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <x-card>
                 <h1>My title</h1>
                 My content
             </x-card>
         </template>`);
-        expect(get(root, 'children.0.children')).toHaveLength(0);
-        expect(get(root, 'children.0.slotSet.$default$')).toHaveLength(2);
+        expect(root.children[0].children).toHaveLength(0);
+        expect(root.children[0].slotSet.$default$).toHaveLength(2);
     });
 
     it('mix default and named slots', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <x-card>
                 <h1 slot="title">My title</h1>
                 My content
                 <section slot="footer">My footer</section>
             </x-card>
         </template>`);
-        expect(get(root, 'children.0.children')).toHaveLength(0);
-        expect(get(root, 'children.0.slotSet.title')).toHaveLength(1);
-        expect(get(root, 'children.0.slotSet.$default$')).toHaveLength(1);
-        expect(get(root, 'children.0.slotSet.footer')).toHaveLength(1);
+        expect(root.children[0].children).toHaveLength(0);
+        expect(root.children[0].slotSet.title).toHaveLength(1);
+        expect(root.children[0].slotSet.$default$).toHaveLength(1);
+        expect(root.children[0].slotSet.footer).toHaveLength(1);
     });
 
     it('default slot', () => {
-        const { root } = parse(`<template><slot></slot></template>`);
-        expect(get(root, 'children.0.slotName')).toBe('$default$');
+        const { root } = parseTemplate(`<template><slot></slot></template>`);
+        expect(root.children[0].slotName).toBe('$default$');
     });
 
     it('named slot', () => {
-        const { root } = parse(`<template><slot name="title"></slot></button></template>`);
-        expect(get(root, 'children.0.slotName')).toBe('title');
+        const { root } = parseTemplate(`<template><slot name="title"></slot></button></template>`);
+        expect(root.children[0].slotName).toBe('title');
     });
 });
 
 describe('root errors', () => {
     it('empty template error', () => {
-        const { warnings } = parse('');
+        const { warnings } = parseTemplate('');
         expect(warnings).toContainEqual({
             level: 'error',
             message: 'Missing root template tag',
@@ -289,7 +285,7 @@ describe('root errors', () => {
     });
 
     it('multi-roots error', () => {
-        const { warnings } = parse(`<template>Root1</template><template>Root2</template>`);
+        const { warnings } = parseTemplate(`<template>Root1</template><template>Root2</template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: 'Multiple roots found',
@@ -299,7 +295,7 @@ describe('root errors', () => {
     });
 
     it('missing root error', () => {
-        const { warnings } = parse(`<section>Root1</section>`);
+        const { warnings } = parseTemplate(`<section>Root1</section>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: 'Missing root template tag',
@@ -309,7 +305,7 @@ describe('root errors', () => {
     });
 
     it('template root with attributes error', () => {
-        const { warnings } = parse(`<template if:true={show}>visible</template>`);
+        const { warnings } = parseTemplate(`<template if:true={show}>visible</template>`);
         expect(warnings).toContainEqual({
             level: 'error',
             message: `Root template doesn't allow attributes`,
@@ -321,7 +317,7 @@ describe('root errors', () => {
 
 describe('expression', () => {
     it('forbid reference to this', () => {
-        const { warnings } = parse(`<template><input title={this.title} /></template>`);
+        const { warnings } = parseTemplate(`<template><input title={this.title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
             message: `Invalid expression {this.title} - Template expression doens't allow ThisExpression`,
@@ -331,7 +327,7 @@ describe('expression', () => {
     });
 
     it('forbid function calls', () => {
-        const { warnings } = parse(`<template><input title={getTitle()} /></template>`);
+        const { warnings } = parseTemplate(`<template><input title={getTitle()} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
             message: `Invalid expression {getTitle()} - Template expression doens't allow CallExpression`,
@@ -341,7 +337,7 @@ describe('expression', () => {
     });
 
     it('forbid multiple expressions', () => {
-        const { warnings } = parse(`<template><input title={foo;title} /></template>`);
+        const { warnings } = parseTemplate(`<template><input title={foo;title} /></template>`);
         expect(warnings[0]).toMatchObject({
             level: 'error',
             message: `Invalid expression {foo;title} - Multiple expressions found`,
@@ -351,7 +347,7 @@ describe('expression', () => {
     });
 
     it('quoted expression ambiguity error', () => {
-        const { warnings } = parse(`<template><input title="{myValue}" /></template>`);
+        const { warnings } = parseTemplate(`<template><input title="{myValue}" /></template>`);
         expect(warnings[0].message).toMatch(`Ambiguous attribute value title="{myValue}"`);
         expect(warnings[0]).toMatchObject({
             start: 17,
@@ -360,18 +356,18 @@ describe('expression', () => {
     });
 
     it('autofix unquoted value next to unary tag', () => {
-        const { root } = parse(`<template><input title={myValue}/></template>`);
-        expect(get(root, 'children.0.attrs.title')).toMatchObject({ value: TEMPLATE_IDENTIFIER });
+        const { root } = parseTemplate(`<template><input title={myValue}/></template>`);
+        expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
     });
 
     // FIXME
     it.skip('escaped attribute with curly braces', () => {
-        const { root } = parse(`<template><input title="\\{myValue}"/></template>`);
-        expect(get(root, 'children.0.attrs.title')).toBe('{myValue}');
+        const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
+        expect(root.children[0].attrs.title).toBe('{myValue}');
     });
 
     it('potential expression error', () => {
-        const { warnings } = parse(`<template><input title={myValue}checked /></template>`);
+        const { warnings } = parseTemplate(`<template><input title={myValue}checked /></template>`);
         expect(warnings[0].message).toMatch(`Ambiguous attribute value title={myValue}checked`);
         expect(warnings[0]).toMatchObject({
             start: 17,
@@ -382,7 +378,7 @@ describe('expression', () => {
 
 describe('props and attributes', () => {
     it('invalid html attribute error', () => {
-        const { warnings } = parse(`<template><div minlength="1" maxlength="5"></div></template>`);
+        const { warnings } = parseTemplate(`<template><div minlength="1" maxlength="5"></div></template>`);
         expect(warnings[0].message).toMatch(`minlength is not valid attribute for div`);
         expect(warnings[0]).toMatchObject({
             start: 15,
@@ -391,28 +387,28 @@ describe('props and attributes', () => {
     });
 
     it('element specific attribute validation', () => {
-        const { root } = parse(`<template><textarea minlength="1" maxlength="5"></textarea></template>`);
-        expect(get(root, 'children.0.attrs')).toMatchObject({
+        const { root } = parseTemplate(`<template><textarea minlength="1" maxlength="5"></textarea></template>`);
+        expect(root.children[0].attrs).toMatchObject({
             minlength: { value: '1' },
             maxlength: { value: '5' },
         });
     });
 
     it('global attribute validation', () => {
-        const { root } = parse(`<template><p title="title" aria-hidden="true"></p></template>`);
-        expect(get(root, 'children.0.attrs')).toMatchObject({
+        const { root } = parseTemplate(`<template><p title="title" aria-hidden="true"></p></template>`);
+        expect(root.children[0].attrs).toMatchObject({
             'title': { value: 'title' },
             'aria-hidden': { value: 'true' },
         });
     });
 
     it('custom element props', () => {
-        const { root } = parse(`<template><x-button prop={state.prop}></x-button></template>`);
-        expect(get(root, 'children.0.props.prop')).toMatchObject({ value: TEMPLATE_EXPRESSION });
+        const { root } = parseTemplate(`<template><x-button prop={state.prop}></x-button></template>`);
+        expect(root.children[0].props.prop).toMatchObject({ value: TEMPLATE_EXPRESSION });
     });
 
     it('custom element attribute / props mix', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <x-button class="r"
                 data-xx="foo"
                 aria-hidden="hidden"
@@ -420,11 +416,11 @@ describe('props and attributes', () => {
                 foo="bar"
                 role="xx"></x-button>
         </template>`);
-        expect(get(root, 'children.0.props')).toMatchObject({
+        expect(root.children[0].props).toMatchObject({
             fooBar: { value: 'x' },
             foo: { value: 'bar' },
         });
-        expect(get(root, 'children.0.attrs')).toMatchObject({
+        expect(root.children[0].attrs).toMatchObject({
             'data-xx': { value: 'foo' },
             'aria-hidden': { value: 'hidden' },
             'role': { value: 'xx' },
@@ -432,15 +428,15 @@ describe('props and attributes', () => {
     });
 
     it('custom element using is with attribute / prop mix', () => {
-        const { root } = parse(`<template>
+        const { root } = parseTemplate(`<template>
             <table bgcolor="x" is="x-table" tabindex="2" bar="test" min="3"></table>
         </template>`);
 
-        expect(get(root, 'children.0.props')).toMatchObject({
+        expect(root.children[0].props).toMatchObject({
             bar: { value: 'test' },
             min: { value: '3' },
         });
-        expect(get(root, 'children.0.attrs')).toMatchObject({
+        expect(root.children[0].attrs).toMatchObject({
             bgcolor: { value: 'x' },
             is: { value: 'x-table' },
             tabindex: { value: '2' },
@@ -450,12 +446,12 @@ describe('props and attributes', () => {
 
 describe('metadata', () => {
     it('usedIds simple', () => {
-        const { metadata } = parse(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
+        const { metadata } = parseTemplate(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
         expect(Array.from(metadata.templateUsedIds)).toEqual(['visible', 'titleClass', 'text']);
     });
 
     it('usedIds with expression', () => {
-        const { metadata } = parse(`<template>
+        const { metadata } = parseTemplate(`<template>
             <div for:each={state.items} for:item="item">
                 <template if:true={item.visible}>
                     {componentProp} - {item.value}
@@ -466,7 +462,7 @@ describe('metadata', () => {
     });
 
     it('dependent component', () => {
-        const { metadata } = parse(`<template>
+        const { metadata } = parseTemplate(`<template>
             <x-menu></x-menu>
             <button is="x-button"></button>
         </template>`);
@@ -475,7 +471,7 @@ describe('metadata', () => {
     });
 
     it('slots', () => {
-        const { metadata } = parse(`<template>
+        const { metadata } = parseTemplate(`<template>
             <slot></slot>
             <slot name="foo"></slot>
         </template>`);

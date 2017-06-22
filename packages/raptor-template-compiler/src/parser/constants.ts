@@ -31,7 +31,7 @@ export const GLOBAL_ATTRIBUTE_SET = new Set([
 
 export const BLACKLISTED_ATTRIBUTE_SET = new Set(['slot']);
 
-export const ATTRS_PROPS_TRANFORMS = {
+export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',
     readonly: 'readOnly',
     tabindex: 'tabIndex',

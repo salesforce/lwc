@@ -1,64 +1,65 @@
 import * as parseCSS from 'css-parse';
 import * as toCamelCase from 'camelcase';
 
+const NOT_SUPPORTED = ['display'];
+
+const DIRECTIONS = ['top', 'right', 'bottom', 'left'];
+const CHANGE_ARR = ['margin', 'padding', 'border-width', 'border-radius'];
+
+const NUMBERIZE = ['width', 'height', 'font-size', 'line-height'].concat(DIRECTIONS);
+DIRECTIONS.forEach((dir) => {
+    NUMBERIZE.push(`border-${dir}-width`);
+    CHANGE_ARR.forEach((prop) => {
+        NUMBERIZE.push(`${prop}-${dir}`);
+    });
+});
+
+// Special properties and shorthands that need to be broken down separately
+const SPECIAL_PROPS: { [name: string]: { regex: RegExp, map: { [key: number]: string | null } } } = {};
+['border', 'border-top', 'border-right', 'border-bottom', 'border-left'].forEach((name) => {
+    SPECIAL_PROPS[name] = {
+        /* uncomment to remove `px` */
+        // regex: /^\s*([0-9]+)(px)?\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
+        regex: /^\s*([0-9]+px?)\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
+        map: {
+            1: `${name}-width`,
+            3: name === 'border' ? `${name}-style` : null,
+            4: `${name}-color`,
+        },
+    };
+});
+
+// Map of properties that when expanded use different directions than the default Top,Right,Bottom,Left.
+const DIRECTION_MAPS: { [name: string]: { [direction: string]: string } } = {
+    'border-radius': {
+        Top: 'top-left',
+        Right: 'top-right',
+        Bottom: 'bottom-right',
+        Left: 'bottom-left',
+    },
+};
+
 function clean(value: string): string {
     return value.replace(/\r?\n|\r/g, '');
+}
+
+// Convert the shorthand property to the individual directions, handles edge cases.
+// i.e. border-width and border-radius
+function directionToPropertyName(property: string, direction: string): string {
+    const names = property.split('-');
+    names.splice(1, 0, DIRECTION_MAPS[property] ? DIRECTION_MAPS[property][direction] : direction);
+    return toCamelCase(names.join('-'));
 }
 
 // FIXME: This function is crap and need to be better tested
 function parse(styleString: string): any {
     const stylesheetString = `body { ${styleString} }`;
-    const directions = ['top', 'right', 'bottom', 'left'];
-    const changeArr = ['margin', 'padding', 'border-width', 'border-radius'];
-    const numberize = ['width', 'height', 'font-size', 'line-height'].concat(directions);
 
-    // Special properties and shorthands that need to be broken down separately
-    const specialProperties = {};
-    ['border', 'border-top', 'border-right', 'border-bottom', 'border-left'].forEach((name) => {
-        specialProperties[name] = {
-            /* uncomment to remove `px` */
-            // regex: /^\s*([0-9]+)(px)?\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
-            regex: /^\s*([0-9]+px?)\s+(solid|dotted|dashed)?\s*([a-z0-9#,\(\)\.\s]+)\s*$/i,
-            map: {
-                1: `${name}-width`,
-                3: name === 'border' ? `${name}-style` : null,
-                4: `${name}-color`,
-            },
-        };
-    });
-
-    directions.forEach((dir) => {
-        numberize.push(`border-${dir}-width`);
-        changeArr.forEach((prop) => {
-            numberize.push(`${prop}-${dir}`);
-        });
-    });
-
-    // Map of properties that when expanded use different directions than the default Top,Right,Bottom,Left.
-    const directionMaps = {
-        'border-radius': {
-            Top: 'top-left',
-            Right: 'top-right',
-            Bottom: 'bottom-right',
-            Left: 'bottom-left',
-        },
-    };
-
-    // Convert the shorthand property to the individual directions, handles edge cases.
-    // i.e. border-width and border-radius
-    function directionToPropertyName(property, direction) {
-        const names = property.split('-');
-        names.splice(1, 0, directionMaps[property] ? directionMaps[property][direction] : direction);
-        return toCamelCase(names.join('-'));
-    }
-
-    const unsupported = ['display'];
     const { stylesheet } = parseCSS(clean(stylesheetString));
 
     const JSONResult: any = {};
 
     for (const rule of stylesheet.rules) {
-
         if (rule.type !== 'rule') {
             continue;
         }
@@ -68,17 +69,15 @@ function parse(styleString: string): any {
             const styles = (JSONResult[selector] = JSONResult[selector] || {});
 
             for (const declaration of rule.declarations) {
-
                 if (declaration.type !== 'declaration') {
                     continue;
                 }
 
-                const value = declaration.value;
-                const property = declaration.property;
+                const { value, property } = declaration;
 
-                if (specialProperties[property]) {
-                    const special = specialProperties[property];
-                    const matches = special.regex.exec(value);
+                if (SPECIAL_PROPS[property]) {
+                    const special = SPECIAL_PROPS[property];
+                    const matches = special.regex.exec(value as string);
                     if (matches) {
                         if (typeof special.map === 'function') {
                             special.map(matches, styles, rule.declarations);
@@ -86,7 +85,9 @@ function parse(styleString: string): any {
                             for (const key in special.map) {
                                 if (matches[key] && special.map[key]) {
                                     rule.declarations.push({
-                                        property: special.map[key],
+                                        position: declaration.position,
+                                        parent: rule,
+                                        property: special.map[key] || '',
                                         value: matches[key],
                                         type: 'declaration',
                                     });
@@ -97,16 +98,16 @@ function parse(styleString: string): any {
                     }
                 }
 
-                if (unsupported.includes(property)) {
+                if (NOT_SUPPORTED.includes(property)) {
                     continue;
                 }
 
-                if (numberize.includes(property)) {
+                if (NUMBERIZE.includes(property)) {
                     // uncomment to remove `px`
                     // value = value.replace(/px|\s*/g, '');
                     styles[toCamelCase(property)] = /*parseFloat(value);*/ value; /* uncomment to remove `px` */
-                } else if (changeArr.includes(property)) {
-                    const values = value/*.replace(/px/g, '')*/.split(/[\s,]+/);
+                } else if (CHANGE_ARR.includes(property)) {
+                    const values = (value as string)/*.replace(/px/g, '')*/.split(/[\s,]+/);
 
                     /* uncomment to remove `px` */
                     // values.forEach((value, index, arr) => {
@@ -145,8 +146,10 @@ function parse(styleString: string): any {
                         });
                     }
                 } else {
-                    if (!isNaN(declaration.value) && property !== 'font-weight') {
-                        declaration.value = parseFloat(declaration.value);
+                    const shouldParseFloat = (typeof declaration.value === 'number' && !isNaN(declaration.value))
+                        && property !== 'font-weight';
+                    if (shouldParseFloat) {
+                        declaration.value = parseFloat(declaration.value as string);
                     }
 
                     styles[toCamelCase(property)] = declaration.value;
@@ -158,14 +161,18 @@ function parse(styleString: string): any {
     return JSONResult.body;
 }
 
-export function toStyleMap(style: string): { [name: string]: string } {
+export function parseStyle(style: string): { [name: string]: string } {
     return parse(style);
 }
 
-export function toClassMap(classNames: string): { [name: string]: true } {
-    const splitted = classNames.trim().split(/\s+/);
-    return splitted.reduce((acc, k) => {
-        acc[k] = true;
-        return acc;
-    }, {});
+export function parseClassNames(classNames: string): { [name: string]: true } {
+    const splitted = classNames.trim()
+        .split(/\s+/)
+        .filter((className) => className.length);
+
+    const classObj: { [name: string]: true } = {};
+    for (const className of splitted) {
+        classObj[className] = true;
+    }
+    return classObj;
 }
