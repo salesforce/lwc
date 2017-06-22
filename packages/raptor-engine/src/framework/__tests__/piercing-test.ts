@@ -32,7 +32,7 @@ describe('pierce', function () {
         class MyComponent extends Element  {
             render () {
                 return ($api, $cmp, $slotset, $ctx) => {
-                    return [$api.h('div', {}, [];
+                    return [$api.h('div', {}, [])];
                 }
             }
         }
