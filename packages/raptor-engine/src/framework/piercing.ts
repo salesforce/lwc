@@ -1,6 +1,5 @@
 import assert from "./assert";
 import { OwnerKey } from "./vm";
-import { toString } from "./language";
 import { Services } from "./services";
 import { getReplica, Membrane } from "./membrane";
 
@@ -40,12 +39,12 @@ export class PiercingMembraneHandler implements MembraneHandler {
         return piercingHook(this.vm, target, key, value);
     }
     set(target: Replicable, key: string, newValue: any): boolean {
-        assert.logError(`A protective membrane is preventing mutations to ${key} member property of ${toString(target)} to the value of ${toString(newValue)}.`);
-        return false;
+        target[key] = newValue;
+        return true;
     }
     deleteProperty(target: Replicable, key: string | Symbol): boolean {
-        assert.logError(`A protective membrane is preventing deletion of ${key} member property of ${toString(target)}.`);
-        return false;
+        delete target[key];
+        return true;
     }
     apply(targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
         return targetFn.apply(thisArg, argumentsList);
