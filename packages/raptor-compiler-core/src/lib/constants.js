@@ -1,4 +1,5 @@
 import babili from 'babel-preset-babili';
+import raptorCompatTransformPlugin from "babel-plugin-transform-raptor-compat";
 import { BABEL_PLUGINS_LATEST, BABEL_PLUGINS_COMPAT } from './babel-plugins';
 
 export const MODES = {
@@ -32,13 +33,13 @@ export const PROD_BABEL_CONFIG = Object.assign(
 
 export const COMPAT_BABEL_CONFIG = Object.assign(
     {},
-    { plugins: BABEL_PLUGINS_COMPAT },
+    { plugins: [...BABEL_PLUGINS_COMPAT, raptorCompatTransformPlugin] },
     BASE_BABEL_CONFIG
 );
 
 export const PROD_COMPAT_BABEL_CONFIG = Object.assign(
     {},
-    { plugins: BABEL_PLUGINS_COMPAT },
+    { plugins: [...BABEL_PLUGINS_COMPAT, raptorCompatTransformPlugin] },
     BASE_BABEL_CONFIG
 );
 
