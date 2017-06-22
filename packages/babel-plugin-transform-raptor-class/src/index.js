@@ -123,7 +123,7 @@ module.exports = function ({ types: t }) {
 
                     // If there is not default class export no transformation will happen
                     if (!isNamedClass) {
-                        path.stop();
+                        state._skip = true;
                         return;
                     }
 
@@ -132,9 +132,11 @@ module.exports = function ({ types: t }) {
                 }
             },
             ClassDeclaration(path, state) {
-                const className = path.get('id.name').node;
-                const extraBody = transformClassBody.call(this, className, path.get('body'), state);
-                path.getStatementParent().insertAfter(extraBody);
+                if (!state._skip) {
+                    const className = path.get('id.name').node;
+                    const extraBody = transformClassBody.call(this, className, path.get('body'), state);
+                    path.getStatementParent().insertAfter(extraBody);
+                }
             }
         }
     };

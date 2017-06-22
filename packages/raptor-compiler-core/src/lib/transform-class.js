@@ -1,5 +1,5 @@
 import functionName from "babel-plugin-transform-es2015-function-name";
-import exponentiator from "babel-plugin-transform-exponentiation-operator";
+import objectRestSpread from "babel-plugin-transform-object-rest-spread";
 import publicFieldsPlugin from "babel-plugin-transform-class-properties";
 import raptorClassTransformPlugin from "babel-plugin-transform-raptor-class";
 import { transform } from "babel-core";
@@ -23,7 +23,7 @@ export default function (code, options) {
             // The following plugins are so we can avoid one extra parsing later
             // for the current browser support
             [publicFieldsPlugin, { spec: false }],
-            exponentiator,
+            [objectRestSpread, { useBuiltIns: true }],
             functionName,
         ],
         parserOpts: { plugins: ['*'] },
