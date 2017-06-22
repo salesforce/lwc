@@ -213,7 +213,7 @@ describe('custom component', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: `Self-closing syntax <x-button/> is not allowed in custom elements, use an explicit closing tag instead <x-button></x-button>.`,
+            message: `Invalid HTML syntax: non-void-html-element-start-tag-with-trailing-solidus. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-non-void-html-element-start-tag-with-trailing-solidus`,
             start: 10,
             length: 11,
         });

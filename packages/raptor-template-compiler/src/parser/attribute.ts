@@ -1,4 +1,4 @@
-import * as parse5 from 'parse5';
+import * as parse5 from 'parse5-with-errors';
 import * as camelcase from 'camelcase';
 
 import {

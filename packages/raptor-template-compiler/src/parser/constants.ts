@@ -29,6 +29,11 @@ export const GLOBAL_ATTRIBUTE_SET = new Set([
     'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
 ]);
 
+export const VOID_ELEMENT_SET = new Set( [
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param',
+    'source', 'track', 'wbr',
+]);
+
 export const BLACKLISTED_ATTRIBUTE_SET = new Set(['slot']);
 
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {

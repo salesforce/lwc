@@ -1,5 +1,5 @@
 import * as babelTypes from 'babel-types';
-import * as parse5 from 'parse5';
+import * as parse5 from 'parse5-with-errors';
 
 export type TemplateIdentifier = babelTypes.Identifier;
 export type TemplateExpression =

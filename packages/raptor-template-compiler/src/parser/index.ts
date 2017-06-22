@@ -1,4 +1,4 @@
-import * as parse5 from 'parse5';
+import * as parse5 from 'parse5-with-errors';
 
 import {
     treeAdapter,
@@ -75,9 +75,12 @@ export default function parse(source: string): {
         templateDependencies: [],
     };
 
-    const fragment = parseHTML(source);
-    const templateRoot = getTemplateRoot(fragment);
+    const { fragment, errors: parsingErrors } = parseHTML(source);
+    if (parsingErrors.length) {
+        return { warnings: parsingErrors, metadata };
+    }
 
+    const templateRoot = getTemplateRoot(fragment);
     if (!templateRoot) {
         return { warnings, metadata };
     }
