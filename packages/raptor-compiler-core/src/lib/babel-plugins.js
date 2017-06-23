@@ -32,6 +32,7 @@ import typeofSymbol from "babel-plugin-transform-es2015-typeof-symbol";
 import uniRegex from "babel-plugin-transform-es2015-unicode-regex";
 import regenerator from "babel-plugin-transform-regenerator";
 import transformRuntime from "babel-plugin-transform-runtime";
+import expOperator from "babel-plugin-transform-exponentiation-operator";
 
 // We could use a more advance filtering as showed here:
 // https://github.com/babel/babel-preset-env
@@ -57,6 +58,7 @@ import transformRuntime from "babel-plugin-transform-runtime";
 
 // IE11 and above
 export const BABEL_PLUGINS_COMPAT = [
+    [expOperator, {}],
     [arrowFunctions, {}],
     [blockScoping, {}],
     [esClasses, {}],

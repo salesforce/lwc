@@ -31,6 +31,10 @@
   dependencies:
     "@types/babel-types" "*"
 
+"@types/he@^0.5.29":
+  version "0.5.29"
+  resolved "https://registry.npmjs.org/@types/he/-/he-0.5.29.tgz#67f9392287b05558013d1cabc96801a5185adbea"
+
 "@types/jest@^19.2.3":
   version "19.2.4"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-19.2.4.tgz#543651712535962b7dc615e18e4a381fc2687442"

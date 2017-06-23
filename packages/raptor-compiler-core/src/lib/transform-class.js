@@ -4,25 +4,15 @@ import publicFieldsPlugin from "babel-plugin-transform-class-properties";
 import raptorClassTransformPlugin from "babel-plugin-transform-raptor-class";
 import { transform } from "babel-core";
 
-export default function (code, options) {
-    options = options || {};
-    const filename = options.filename;
-    const componentName = options.componentName;
+export default function (code, { filename, componentName, componentNamespace, babelConfig } = {}) {
 
     let localBabelConfig = {
         babelrc: false,
         sourceMaps: true,
         plugins: [
-            [
-                raptorClassTransformPlugin, {
-                    componentNamespace: options.componentNamespace,
-                    componentName : componentName
-                }
-            ],
-            /* See babel-plugins.js*/
-            // The following plugins are so we can avoid one extra parsing later
-            // for the current browser support
-            [publicFieldsPlugin, { spec: false }],
+            /* See babel-plugins.js */
+            [raptorClassTransformPlugin, {componentNamespace, componentName }],
+            [ publicFieldsPlugin, { spec: false }],
             [objectRestSpread, { useBuiltIns: true }],
             functionName,
         ],
@@ -30,7 +20,7 @@ export default function (code, options) {
         filename
     };
 
-    localBabelConfig = Object.assign({}, options.babelConfig, localBabelConfig);
+    localBabelConfig = Object.assign({}, babelConfig, localBabelConfig);
     const transformed = transform(code, localBabelConfig);
 
     return { code: transformed.code, map: transformed.map, metadata: transformed.metadata };
