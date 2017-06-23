@@ -80,21 +80,24 @@ describe('def', () => {
         });
 
         it('should infer attribute name from public props', () => {
+            function foo() {}
             class MyComponent extends Element  {}
+            Object.defineProperties(MyComponent.prototype, {
+                foo: { get: foo, configurable: true }
+            });
             MyComponent.publicProps = {
                 foo: {
                     config: 1
                 },
-                xBar: {
-                    config: 0
-                },
+                xBar: {},
             };
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 wire: undefined,
                 props: {
                     foo: {
-                        config: 1
+                        config: 1,
+                        getter: foo,
                     },
                     xBar: {
                         config: 0
@@ -106,15 +109,26 @@ describe('def', () => {
         });
 
         it('should inherit props correctly', function () {
+            function x() {}
             class MySuperComponent extends Element {}
+            Object.defineProperties(MySuperComponent.prototype, {
+                x: { get: x, configurable: true }
+            });
 
             MySuperComponent.publicProps = {
-                super: {
+                x: {
                     config: 1
                 }
             };
 
+            function foo() {}
+            function xBarGet() {}
+            function xBarSet() {}
             class MyComponent extends MySuperComponent {}
+            Object.defineProperties(MyComponent.prototype, {
+                foo: { set: foo, configurable: true },
+                xBar: { get: xBarGet, set: xBarSet, configurable: true },
+            });
 
             MyComponent.publicProps = {
                 foo: {
@@ -128,25 +142,27 @@ describe('def', () => {
             class MySubComponent extends MyComponent {}
 
             MySubComponent.publicProps = {
-                fizz: {
-                    config: 0
-                }
+                fizz: {}
             };
 
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
                 props: {
                     foo: {
-                        config: 2
+                        config: 2,
+                        setter: foo,
                     },
                     xBar: {
-                        config: 3
+                        config: 3,
+                        getter: xBarGet,
+                        setter: xBarSet,
                     },
                     fizz: {
                         config: 0
                     },
-                    super: {
-                        config: 1
+                    x: {
+                        config: 1,
+                        getter: x,
                     }
                 },
                 observedAttrs: {},

@@ -3,6 +3,7 @@ import assert from 'power-assert';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
+import { createElement } from "../upgrade";
 
 describe('component', function () {
 
@@ -63,6 +64,302 @@ describe('component', function () {
                 assert.strictEqual(1, oldValue);
                 assert.strictEqual(2, newValue);
             });
+        });
+    });
+
+    describe('public computed props', () => {
+        it('should allow public getters', function () {
+            class MyComponent extends Element  {
+                value = 'pancakes';
+                get breakfast () {
+                    return this.value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 1
+                }
+            };
+
+            class Parent extends Element {
+                value = 'salad';
+                get lunch () {
+                    return this.value;
+                }
+
+                render () {
+                    return () => [api.c('x-component', MyComponent, {})];
+                }
+            }
+
+            Parent.publicProps = {
+                lunch: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Parent, {});
+            patch(elm, vnode);
+            assert.deepEqual(elm.lunch, 'salad');
+            assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
+        });
+
+        it('should not allow public getters to be set by owner', function () {
+            class MyComponent extends Element  {
+                get x () {
+                    return 1;
+                }
+            }
+
+            MyComponent.publicProps = {
+                x: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, { props: { x: 2 } });
+            // x can't be set via props, only read via getter
+            assert.throws(() => patch(elm, vnode));
+        });
+
+        it('should be render reactive', function () {
+            class MyComponent extends Element  {
+                constructor () {
+                    super();
+                    this.state.value = 0;
+                }
+
+                get validity () {
+                    return this.state.value > 5;
+                }
+
+                render () {
+                    return ($api, $cmp, $slotset, $ctx) => {
+                        return [$api.h('div', {}, [$api.d($cmp.validity)])];
+                    }
+                }
+            }
+
+            MyComponent.publicProps = {
+                validity: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            vnode.vm.component.state.value = 10;
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.textContent, 'true');
+            });
+        });
+
+        it('should call public getter with correct context', function () {
+            let context;
+
+            class MyComponent extends Element  {
+                value = 'pancakes';
+                get breakfast () {
+                    context = this;
+                    return this.value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            vnode.vm.component.breakfast;
+            assert.deepEqual(context, vnode.vm.component);
+        });
+
+        it('should not execute setter function when used directly from DOM', function () {
+            let callCount = 0;
+
+            class MyComponent extends Element  {
+                value = 'pancakes';
+                get breakfast () {
+                    return this.value;
+                }
+
+                set breakfast (value) {
+                    callCount += 1;
+                    this.value = value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 3
+                }
+            };
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            elm.breakfast = 'hey';
+            assert.deepEqual(callCount, 0);
+        });
+
+        it('should execute setter function with correct context when component is root', function () {
+            let callCount = 0;
+            let context;
+            let component;
+
+            class MyComponent extends Element  {
+                constructor () {
+                    super();
+                    component = this;
+                }
+
+                value = 'pancakes';
+                get breakfast () {
+                    return this.value;
+                }
+
+                set breakfast (value) {
+                    context = this;
+                    callCount += 1;
+                    this.value = value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 3
+                }
+            };
+
+            const elm = createElement('x-foo', { is: MyComponent });
+
+            elm.breakfast = 'eggs';
+            assert.deepEqual(callCount, 1);
+            assert.deepEqual(component, context);
+        });
+
+        it('should call setter with correct context when template value is updated', function () {
+            let callCount = 0;
+            let context;
+
+            class MyComponent extends Element  {
+                value = 'pancakes';
+                get breakfast () {
+                    return this.value;
+                }
+
+                set breakfast (value) {
+                    callCount += 1;
+                    context = this;
+                    this.value = value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 3
+                }
+            };
+
+            const elm = document.createElement('div');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            const nextVNode = api.c('x-foo', MyComponent, { props: { breakfast: 'eggs' } });
+            patch(elm, vnode);
+            patch(vnode, nextVNode);
+            assert.deepEqual(callCount, 1);
+            assert.deepEqual(context, nextVNode.vm.component);
+        });
+
+        it('should call setter when default value is provided', function () {
+            let callCount = 0;
+            let context;
+
+            class MyComponent extends Element  {
+                value;
+                breakfast = 'pancakes';
+                get breakfast () {
+                    return this.value;
+                }
+
+                set breakfast (value) {
+                    callCount += 1;
+                    context = this;
+                    this.value = value;
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 3
+                }
+            };
+
+            const elm = document.createElement('div');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            assert.deepEqual(callCount, 1);
+            assert.deepEqual(context, vnode.vm.component);
+        });
+
+        it('should throw when configured prop is missing getter', function () {
+            let callCount = 0;
+            let context;
+
+            class MyComponent extends Element  {
+                set breakfast (value) {
+
+                }
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 1
+                }
+            };
+
+            const elm = document.createElement('div');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            expect(() => {
+                patch(elm, vnode);
+            }).toThrow();
+        });
+
+        it('should throw when configured prop is missing setter', function () {
+            let callCount = 0;
+            let context;
+
+            class MyComponent extends Element  {
+
+            }
+
+            MyComponent.publicProps = {
+                breakfast: {
+                    config: 2
+                }
+            };
+
+            const elm = document.createElement('div');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            expect(() => {
+                patch(elm, vnode);
+            }).toThrow();
         });
     });
 

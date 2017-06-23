@@ -9,12 +9,10 @@ import {
     invokeComponentCallback,
 } from "./invoker";
 import { notifyListeners } from "./watcher";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject } from "./language";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, ArraySlice, defineProperties } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
-
-const COMPUTED_GETTER_MASK = 1;
 
 export let vmBeingConstructed: VM | null = null;
 
@@ -25,13 +23,6 @@ export function isBeingConstructed(vm: VM): boolean {
 
 export function createComponent(vm: VM, Ctor: Class<Component>) {
     assert.vm(vm);
-    const { cmpProps, def: { wire, methods: publicMethodsConfig } } = vm;
-    // expose public methods as props on the Element
-    for (let methodName in publicMethodsConfig) {
-        cmpProps[methodName] = function (): any {
-            return invokeComponentMethod(vm, methodName, arguments)
-        };
-    }
     // create the component instance
     const vmBeingConstructedInception = vmBeingConstructed;
     vmBeingConstructed = vm;
@@ -41,6 +32,59 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
         extractOwnFields(component);
     });
     assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+}
+
+export function linkComponent(vm: VM) {
+    assert.vm(vm);
+    const {
+        vnode: { elm },
+        component,
+        def: { methods: publicMethodsConfig, props: publicProps }
+    } = vm;
+    const descriptors: PropertyDescriptorMap = {};
+    // expose public methods as props on the Element
+    for (let key in publicMethodsConfig) {
+        const getter = function (component: Component, key: string): any {
+            return component[key].apply(component, ArraySlice.call(arguments, 2));
+        }
+        descriptors[key] = {
+            get: getter.bind(undefined, component, key),
+        };
+    }
+    for (let key in publicProps) {
+        let {
+            getter,
+        } = publicProps[key];
+        if (isUndefined(getter)) {
+            // default getter
+            getter = (function runGetter(vm: VM, key: string): any {
+                return this[key];
+            }).bind(component, vm, key);
+        } else {
+            // original getter
+            getter = getter.bind(component);
+        }
+
+        const setter = (function runSetter(vm: VM, key: string, value: any): any {
+            if (vm.vnode.isRoot) {
+                // logic for setting new properties of the element directly from the DOM
+                // will only be allowed for root elements created via createElement()
+                // proxifying before storing it is a must for public props
+                value = isObject(value) ? getPropertyProxy(value) : value;
+                updateComponentProp(vm, key, value);
+            } else {
+                assert.logError(`Invalid attempt to set property ${key} from ${vm} to a new value. This property was decorated with @api, and can only be changed via the template.`);
+            }
+        }).bind(component, vm, key);
+
+        descriptors[key] = {
+            get: getter,
+            set: setter,
+        };
+    }
+    defineProperties(elm, descriptors);
+    // wiring service
+    const { def: { wire } } = vm;
     if (wire) {
         const { wiring } = Services;
         if (wiring) {
@@ -71,12 +115,18 @@ export function clearListeners(vm: VM) {
 
 export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     assert.vm(vm);
-    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
+    const { cmpProps, def: { props: publicProps, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config: PropDef = publicPropsConfig[propName];
-    if (isUndefined(config)) {
+    const propDef: PropDef = publicProps[propName];
+    if (isUndefined(propDef)) {
         // TODO: this should never really happen because the compiler should always validate
         console.warn(`Ignoring unknown public property ${propName} of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
+        return;
+    }
+    assert.isFalse(propDef.getter && !propDef.setter, `Invalid attempt to set a new value for property ${propName} of ${vm} that does not has a setter.`);
+    const { setter } = propDef;
+    if (setter) {
+        setter.call(vm.component, newValue);
         return;
     }
     let oldValue = cmpProps[propName];
@@ -99,13 +149,18 @@ export function resetComponentProp(vm: VM, propName: string) {
     assert.vm(vm);
     const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
     assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-    const config: PropDef = publicPropsConfig[propName];
-    if (isUndefined(config)) {
+    const propDef: PropDef = publicPropsConfig[propName];
+    if (isUndefined(propDef)) {
         // not need to log the error here because we will do it on updateComponentProp()
         return;
     }
-    let oldValue = cmpProps[propName];
     let newValue = undefined;
+    const { setter } = propDef;
+    if (setter) {
+        setter.call(vm.component, newValue);
+        return;
+    }
+    let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         cmpProps[propName] = newValue;
         const attrName = getAttrNameFromPropName(propName);
@@ -255,28 +310,4 @@ export function markComponentAsDirty(vm: VM) {
     assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
     assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     vm.isDirty = true;
-}
-
-function isComputedGetter(vm: VM, propName: string): boolean {
-      assert.vm(vm);
-      const { def: { props: publicProps } } = vm;
-      const { config } = publicProps[propName];
-      return !!((config as number) & COMPUTED_GETTER_MASK);
-}
-
-export function createComponentComputedValues(vm: VM) {
-    assert.vm(vm);
-    const { def: { props: publicProps }, component } = vm;
-    assert.invariant(component, `assignCmpComputed() for ${vm} should be called with a valid component instead of ${component}`);
-    let { cmpComputed } = vm;
-
-    for (let prop in publicProps) {
-        if (isComputedGetter(vm, prop)) {
-            if (isUndefined(cmpComputed)) {
-                cmpComputed = vm.cmpComputed = create(null);
-            }
-
-            (cmpComputed as HashTable<any>)[prop] = (component as Component)[prop]; // eslint-disable-line no-undef
-        }
-    }
 }

@@ -3,10 +3,9 @@ import { patch } from "./patch";
 import { scheduleRehydration } from "./vm";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { updateComponentProp } from "./component";
-import { getPropertyProxy } from "./properties";
 import { getComponentDef } from "./def";
 import { c } from "./api";
-import { defineProperties, isUndefined, isObject, isFunction } from "./language";
+import { isUndefined, isFunction } from "./language";
 import { getPropNameFromAttrName } from "./utils";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
@@ -65,41 +64,6 @@ function linkAttributes(element: HTMLElement, vm: VM) {
     };
 }
 
-function linkProperties(element: HTMLElement, vm: VM) {
-    assert.vm(vm);
-    const { component, def: { props: propsConfig, methods } } = vm;
-    const descriptors: PropertyDescriptorMap = {};
-    // linking public methods
-    for (let methodName in methods) {
-        descriptors[methodName] = {
-            value: function (): any {
-                return component[methodName].apply(component, arguments);
-            },
-            configurable: false,
-            writable: false,
-            enumerable: false,
-        };
-    }
-    // linking reflective properties
-    for (let propName in propsConfig) {
-        descriptors[propName] = {
-            get: (): any => component[propName],
-            set: (value: any) => {
-                // proxifying before storing it is a must for public props
-                value = isObject(value) ? getPropertyProxy(value) : value;
-                updateComponentProp(vm, propName, value);
-                if (vm.isDirty) {
-                    console.log(`Scheduling ${vm} for rehydration.`);
-                    scheduleRehydration(vm);
-                }
-            },
-            configurable: false,
-            enumerable: true,
-        };
-    }
-    defineProperties(element, descriptors);
-}
-
 function getInitialProps(element: HTMLElement, Ctor: Class<Component>): HashTable<any> {
     const { props: config } = getComponentDef(Ctor);
     const props = {};
@@ -138,8 +102,6 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
     // current state.
     const { vm } = patch(element, vnode);
     linkAttributes(element, vm);
-    // TODO: for vnode with element we might not need to do any of these.
-    linkProperties(element, vm);
 }
 
 /**

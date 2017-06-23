@@ -22,7 +22,9 @@ declare interface HashTable<T> {
 
 declare interface PropDef {
     config?: number,
-    type?: string
+    type?: string,
+    getter?: () => any,
+    setter?: (value: any) => void,
 }
 
 declare interface WireDef {
@@ -48,7 +50,6 @@ declare class VM {
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpWired?: HashTable<any>;
-    cmpComputed?: HashTable<any>;
     cmpSlots?: HashTable<Array<VNode>>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;
@@ -114,7 +115,7 @@ interface VNodeData {
 
 declare class VNode  {
     sel: string | undefined;
-    data: VNodeData | undefined;
+    data: VNodeData;
     children: Array<VNode | string> | undefined;
     elm: Node | undefined;
     text: string | undefined;

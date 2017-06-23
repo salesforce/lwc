@@ -1,7 +1,6 @@
 import {
     resetComponentProp,
     updateComponentProp,
-    createComponentComputedValues,
 } from "../component";
 import { assign, isUndefined } from "../language";
 import { EmptyObject } from "../utils";
@@ -36,12 +35,9 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         }
     }
 
-    if (vm.idx === 0) {
-        createComponentComputedValues(vm);
-    }
-
-    // TODO: opt out if cmpProps is empty (right now it is never empty)
-    (vnode.data as VNodeData).props = assign({}, vm.cmpProps, vm.cmpComputed);
+    // Note: _props, which comes from api.c()'s data.props, is only used to populate
+    //       public props, and any other alien key added to it by the compiler will be
+    //       ignored, and a warning is shown.
 }
 
 export default {

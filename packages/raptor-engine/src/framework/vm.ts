@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent } from "./component";
+import { createComponent, linkComponent } from "./component";
 import { patch } from "./patch";
 import { assign, isArray, toString, ArrayPush, isUndefined, keys } from "./language";
 import { addCallbackToNextTick } from "./utils";
@@ -37,7 +37,6 @@ export function createVM(vnode: ComponentVNode) {
         def,
         context: {},
         cmpProps: {},
-        cmpComputed: undefined,
         cmpWired: undefined,
         cmpState: undefined,
         cmpSlots: undefined,
@@ -61,6 +60,7 @@ export function createVM(vnode: ComponentVNode) {
     });
     vnode.vm = vm;
     createComponent(vm, Ctor);
+    linkComponent(vm);
     assert.block(function devModeCheck() {
         const { component: { attributeChangedCallback }, def: { observedAttrs } } = vm;
         if (observedAttrs.length && isUndefined(attributeChangedCallback)) {

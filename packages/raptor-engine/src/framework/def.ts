@@ -22,12 +22,16 @@ import {
     isString,
     isFunction,
     isUndefined,
+    isObject,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { Element, createPublicPropertyDescriptor, createWiredPropertyDescriptor } from "./html-element";
 import { EmptyObject } from "./utils";
 
 const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
+
+const COMPUTED_GETTER_MASK = 1;
+const COMPUTED_SETTER_MASK = 2;
 
 function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     protoSet = protoSet || [];
@@ -55,10 +59,20 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
 
     const proto = Ctor.prototype;
     for (let propName in props) {
+        const propDef = props[propName];
         // initializing getters and setters for each public prop on the target prototype
         const descriptor = getOwnPropertyDescriptor(proto, propName);
         const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
         assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+        const { config } = propDef;
+        if (COMPUTED_GETTER_MASK & config) {
+            assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${name}`);
+            propDef.getter = descriptor.get;
+        }
+        if (COMPUTED_SETTER_MASK & config) {
+            assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
+            propDef.setter = descriptor.set;
+        }
         defineProperty(proto, propName, createPublicPropertyDescriptor(propName, descriptor));
     }
 

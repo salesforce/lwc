@@ -26,9 +26,13 @@ export function createPublicPropertyDescriptor(propName: string, originalPropert
     function getter(): any {
         const vm: VM = this[ViewModelReflection];
         assert.vm(vm);
+        const { propName, origGetter } = getter;
         if (isBeingConstructed(vm)) {
             assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
             return;
+        }
+        if (origGetter) {
+            return origGetter.call(vm.component);
         }
         const { cmpProps } = vm;
         if (isRendering) {
@@ -36,29 +40,30 @@ export function createPublicPropertyDescriptor(propName: string, originalPropert
             // for public props accessed from within a getter in the component.
             subscribeToSetHook(vmBeingRendered, cmpProps, propName);
         }
-
-        if (getter.descriptorGet) {
-            return getter.descriptorGet.call(vm.component);
-        }
-
         return cmpProps[propName];
     }
-
-    if (originalPropertyDescriptor && originalPropertyDescriptor.get) {
-        getter.descriptorGet = originalPropertyDescriptor.get;
-    }
+    getter.propName = propName;
+    getter.origGetter = originalPropertyDescriptor && originalPropertyDescriptor.get;
 
     function setter(value: any) {
         const vm = this[ViewModelReflection];
         assert.vm(vm);
+        const { propName, origSetter } = setter;
         if (!isBeingConstructed(vm)) {
             assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
+            return;
+        }
+        if (origSetter) {
+            origSetter.call(vm.component, value);
             return;
         }
         const { cmpProps } = vm;
         // proxifying before storing it is a must for public props
         cmpProps[propName] = isObject(value) ? getPropertyProxy(value) : value;
     }
+    setter.propName = propName;
+    setter.origSetter = originalPropertyDescriptor && originalPropertyDescriptor.set;
+
     const descriptor: PropertyDescriptor = {
         get: getter,
         set: setter,

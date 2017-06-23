@@ -15,6 +15,7 @@ function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
      */
     assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
     if (oldVnode.vm && oldVnode.Ctor === Ctor) {
+        assert.invariant(vnode.elm === oldVnode.elm, `${vnode}.elm should always match the oldVnode's   element.`);
         relinkVM(oldVnode.vm, vnode);
     } else {
         createVM(vnode);
