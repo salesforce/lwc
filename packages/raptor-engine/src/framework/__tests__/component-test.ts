@@ -363,4 +363,46 @@ describe('component', function () {
         });
     });
 
+    describe('public methods', () => {
+        it('access method does not invoke it', function () {
+            let callCount = 0;
+
+            class MyComponent extends Element  {
+                m() {
+                    callCount += 1;
+                }
+            }
+            MyComponent.publicMethods = ['m'];
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+
+            elm.m;
+            assert.deepEqual(callCount, 0);
+        });
+
+        it('invoke method invokes it', function () {
+            let callCount = 0;
+
+            class MyComponent extends Element  {
+                m() {
+                    callCount += 1;
+                }
+            }
+            MyComponent.publicMethods = ['m'];
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+
+            const m = elm.m;
+            m();
+            assert.deepEqual(callCount, 1);
+        });
+    });
+
+
 });

@@ -9,7 +9,7 @@ import {
     invokeComponentCallback,
 } from "./invoker";
 import { notifyListeners } from "./watcher";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, ArraySlice, defineProperties } from "./language";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, defineProperties } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
@@ -45,7 +45,7 @@ export function linkComponent(vm: VM) {
     // expose public methods as props on the Element
     for (let key in publicMethodsConfig) {
         const getter = function (component: Component, key: string): any {
-            return component[key].apply(component, ArraySlice.call(arguments, 2));
+            return component[key];
         }
         descriptors[key] = {
             get: getter.bind(undefined, component, key),
