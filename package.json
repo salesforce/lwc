@@ -7,7 +7,7 @@
     "lint": "lerna run lint",
     "test": "lerna exec -- npm test",
     "build": "lerna run build",
-    "build:artifacts": "npm run build && npm run build:engine && npm run build:helpers && npm run build:compiler",
+    "build:artifacts": "npm run clean:dist && npm run build && npm run build:engine && npm run build:helpers && npm run build:compiler",
     "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
     "build:engine": "lerna exec --scope raptor-engine  -- 'npm run build:dist' && cp ./packages/raptor-engine/dist/* ./dist/",
     "build:helpers": "lerna exec --scope babel-helpers-raptor  -- 'npm run build' && cp ./packages/babel-helpers-raptor/dist/* ./dist/",
