@@ -441,4 +441,149 @@ describe('html-element', () => {
 
     });
 
+    describe('#tabIndex', function () {
+        it('should have a valid value during connectedCallback', function () {
+            let tabIndex;
+            class MyComponent extends Element {
+                connectedCallback() {
+                    tabIndex = this.tabIndex;
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
+            patch(elm, vnode);
+
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(tabIndex, 3);
+            });
+        });
+
+        it('should have a valid value after initial render', function () {
+            class MyComponent extends Element {}
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
+            patch(elm, vnode);
+
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(vnode.vm.component.tabIndex, 3);
+            });
+        });
+
+        it('should set tabindex correctly', function () {
+            class MyComponent extends Element {
+                connectedCallback () {
+                    this.tabIndex = 2;
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.tabIndex, 2);
+                assert.deepEqual(vnode.vm.component.tabIndex, 2);
+            });
+        });
+
+        it('should not trigger attribute changed callback', function () {
+            let callCount = 0;
+            class MyComponent extends Element {
+                attributeChangedCallback() {
+                    callCount += 1;
+                }
+                connectedCallback () {
+                    this.tabIndex = 2;
+                }
+            }
+
+            MyComponent.observedAttributes = ['tabindex'];
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: {  tabindex: 3 } });
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(callCount, 0);
+            });
+        });
+
+        it('should not trigger render cycle', function () {
+            let callCount = 0;
+            class MyComponent extends Element {
+                connectedCallback () {
+                    this.tabIndex = 2;
+                }
+                render () {
+                    callCount += 1;
+                    return () => [];
+                }
+            }
+
+            MyComponent.observedAttributes = ['tabindex'];
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(callCount, 1);
+            });
+        });
+
+
+        it('should allow parent component to overwrite internally set tabIndex', function () {
+            class MyComponent extends Element {
+                connectedCallback () {
+                    this.tabIndex = 2;
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
+            const vnode2 = api.c('x-foo', MyComponent, { attrs: { tabindex: 4 } });
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                patch(vnode, vnode2);
+
+                return Promise.resolve();
+            })
+            .then(() => {
+                assert.deepEqual(elm.tabIndex, 4);
+                assert.deepEqual(vnode.vm.component.tabIndex, 4);
+            });
+        });
+
+        it('should throw if setting tabIndex during render', function () {
+            class MyComponent extends Element {
+                render () {
+                    this.tabIndex = 2;
+                    return () => [];
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+
+        it('should throw if setting tabIndex during construction', function () {
+            class MyComponent extends Element {
+                constructor () {
+                    super();
+                    this.tabIndex = 2;
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+    });
+
 });
