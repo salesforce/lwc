@@ -48,7 +48,7 @@ describe('template', () => {
             // assert.throws(() => $slotset.foo, 'unknown slot name'); // compat mode prevents this
         });
 
-        it('should prevent a getter to be accessed twice in the same render phase xyz', () => {
+        it('should prevent a getter to be accessed twice in the same render phase', () => {
             let counter = 0;
             let vnode;
             class MyComponent extends Element {

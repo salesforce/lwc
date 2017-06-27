@@ -13,6 +13,7 @@ import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArrayS
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
 import { extractOwnFields, getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
+import { pierce } from "./piercing";
 
 export let vmBeingConstructed: VM | null = null;
 
@@ -238,9 +239,10 @@ export function dispatchComponentEvent(vm: VM, event: Event): boolean {
         uninterrupted = false;
         stopImmediatePropagation.call(this);
     }
+    const e = pierce(vm, event);
     for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
         // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(vm, handlers[i], component, [event]);
+        invokeComponentCallback(vm, handlers[i], component, [e]);
     }
     // restoring original methods
     event.stopImmediatePropagation = stopImmediatePropagation;

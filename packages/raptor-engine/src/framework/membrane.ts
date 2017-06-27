@@ -10,11 +10,11 @@ export type ReplicaFunction = (...args: Array<any>) => Replica | String | Number
 export type Replica = Object | ReplicaFunction;
 
 export interface MembraneHandler {
-    get(target: Replicable, key: string | Symbol): any;
-    set(target: Replicable, key: string | Symbol, newValue: any): boolean;
-    deleteProperty(target: Replicable, key: string | Symbol): boolean;
-    apply(targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any;
-    construct(targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any;
+    get(membrane: Membrane, target: Replicable, key: string | Symbol): any;
+    set(membrane: Membrane, target: Replicable, key: string | Symbol, newValue: any): boolean;
+    deleteProperty(membrane: Membrane, target: Replicable, key: string | Symbol): boolean;
+    apply(membrane: Membrane, targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any;
+    construct(membrane: Membrane, targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any;
 }
 /*eslint-enable*/
 
@@ -60,17 +60,16 @@ export class Membrane {
         } else if (key === MembraneSlot) {
             return this;
         }
-        const value = this.handler.get(target, key);
-        return getReplica(this, value);
+        return this.handler.get(this, target, key);
     }
     set(target: Replicable, key: string | Symbol, newValue: any): boolean {
-        return this.handler.set(target, key, newValue);
+        return this.handler.set(this, target, key, newValue);
     }
     deleteProperty(target: Replicable, key: string | Symbol): boolean {
         if (key === TargetSlot) {
             return false;
         }
-        return this.handler.deleteProperty(target, key);
+        return this.handler.deleteProperty(this, target, key);
     }
     apply(target: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
         thisArg = unwrap(thisArg);
@@ -78,16 +77,14 @@ export class Membrane {
         if (isArray(argumentsList)) {
             argumentsList = ArrayMap.call(argumentsList, unwrap);
         }
-        const value = this.handler.apply(target, thisArg, argumentsList);
-        return getReplica(this, value);
+        return this.handler.apply(this, target, thisArg, argumentsList);
     }
     construct(target: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
         argumentsList = unwrap(argumentsList);
         if (isArray(argumentsList)) {
             argumentsList = ArrayMap.call(argumentsList, unwrap);
         }
-        const value = this.handler.construct(target, argumentsList, newTarget);
-        return getReplica(this, value);
+        return this.handler.construct(this, target, argumentsList, newTarget);
     }
 }
 

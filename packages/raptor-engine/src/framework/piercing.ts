@@ -7,7 +7,8 @@ import { getReplica, Membrane } from "./membrane";
 import { Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
 /* eslint-enable */
 
-function piercingHook(vm: VM, target: Replicable, key: string | Symbol, value: any): any {
+function piercingHook(membrane: Membrane, target: Replicable, key: string | Symbol, value: any): any {
+    const { handler: { vm } } = membrane;
     assert.vm(vm);
     const { piercing } = Services;
     if (piercing) {
@@ -21,7 +22,7 @@ function piercingHook(vm: VM, target: Replicable, key: string | Symbol, value: a
         for (let i = 0, len = piercing.length; next && i < len; ++i) {
             piercing[i].call(undefined, component, data, def, context, target, key, value, callback);
         }
-        return result;
+        return result === value ? getReplica(membrane, result) : result;
     }
 }
 
@@ -31,27 +32,27 @@ export class PiercingMembraneHandler implements MembraneHandler {
         assert.vm(vm);
         this.vm = vm;
     }
-    get(target: Replicable, key: string | Symbol): any {
+    get(membrane: Membrane, target: Replicable, key: string | Symbol): any {
         if (key === OwnerKey) {
             return undefined;
         }
         let value = target[key];
-        return piercingHook(this.vm, target, key, value);
+        return piercingHook(membrane, target, key, value);
     }
-    set(target: Replicable, key: string, newValue: any): boolean {
+    set(membrane: Membrane, target: Replicable, key: string, newValue: any): boolean {
         target[key] = newValue;
         return true;
     }
-    deleteProperty(target: Replicable, key: string | Symbol): boolean {
+    deleteProperty(membrane: Membrane, target: Replicable, key: string | Symbol): boolean {
         delete target[key];
         return true;
     }
-    apply(targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
-        return targetFn.apply(thisArg, argumentsList);
+    apply(membrane: Membrane, targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
+        return getReplica(membrane, targetFn.apply(thisArg, argumentsList));
     }
-    construct(targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
+    construct(membrane: Membrane, targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
         assert.isTrue(newTarget, `construct handler expects a 3rd argument with a newly created object that will be ignored in favor of the wrapped constructor.`);
-        return new targetFn(...argumentsList);
+        return getReplica(membrane, new targetFn(...argumentsList));
     }
 }
 

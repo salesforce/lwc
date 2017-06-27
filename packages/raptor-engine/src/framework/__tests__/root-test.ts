@@ -216,6 +216,24 @@ describe('root', () => {
             });
         });
 
+        it('should allow walking back to the shadow root', () => {
+            const def = class MyComponent extends Element {
+                render() {
+                    return () => [api.h('div', {}, [])]
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', def, {});
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                const root = vnode.vm.component.root;
+                assert.strictEqual(root.querySelector('div').parentNode, root);
+            });
+        });
+
     });
 
 });

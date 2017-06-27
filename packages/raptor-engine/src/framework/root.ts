@@ -86,30 +86,38 @@ function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
     return pierce(vm , filteredNodes);
 }
 
-function isParentNodeKeyword(key: string): boolean {
+function isParentNodeKeyword(key: string | Symbol): boolean {
     return (key === 'parentNode' || key === 'parentElement');
 }
 
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
-    piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value: any) => void) {
-        if (value === querySelector) {
-            // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
-            // we do in that case? Right now this is essentially a bound function, but the original is not.
-            return callback((selector: string): Node | null => getFirstMatch(component[ViewModelReflection], target, selector));
-        }
-        if (value === querySelectorAll) {
-            // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
-            // we do in that case? Right now this is essentially a bound function, but the original is not.
-            return callback((selector: string): Node | null => getAllMatches(component[ViewModelReflection], target, selector));
-        }
-        if (value && value.splitText && isParentNodeKeyword(key)) {
-            if (value === component[ViewModelReflection].vnode.elm) {
-                // walking up via parent chain might end up in the shadow root element
-                return callback(component.root);
-            } else if (target[OwnerKey] !== value[OwnerKey]) {
-                // cutting out access to something outside of the shadow of the current target by calling back with undefined
-                return callback();
+    piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value?: any) => void) {
+        const vm: VM = component[ViewModelReflection];
+        const { elm } = (vm.vnode as ComponentVNode); // eslint-disable-line no-undef
+        if (value) {
+            if (value === querySelector) {
+                // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
+                // we do in that case? Right now this is essentially a bound function, but the original is not.
+                return callback((selector: string): Node | null => getFirstMatch(vm, target, selector));
+            }
+            if (value === querySelectorAll) {
+                // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
+                // we do in that case? Right now this is essentially a bound function, but the original is not.
+                return callback((selector: string): NodeList => getAllMatches(vm, target, selector));
+            }
+            if (isParentNodeKeyword(key)) {
+                if (value === elm) {
+                    // walking up via parent chain might end up in the shadow root element
+                    return callback(component.root);
+                } else if (target[OwnerKey] !== value[OwnerKey]) {
+                    // cutting out access to something outside of the shadow of the current target (usually slots)
+                    return callback();
+                }
+            }
+            if (value === elm) {
+                // prevent access to the original Host element
+                return callback(component);
             }
         }
     }

@@ -110,6 +110,22 @@ describe('module/component-events', () => {
             assert.equal(true, result[1] instanceof Event);
         });
 
+        it('should not expose the host element via event.target', function() {
+            var event = [];
+            function clicked(e) { event = e; }
+            class Foo extends Element {
+                constructor() {
+                    super();
+                    this.addEventListener('click', clicked);
+                }
+            }
+            var vnode1 = c('x-foo', Foo, {});
+            elm = patch(vnode0, vnode1).elm;
+            elm.click();
+            assert(event, 'event should have been triggered');
+            assert.equal(vnode1.vm.component, event.target);
+        });
+
     });
 
 });
