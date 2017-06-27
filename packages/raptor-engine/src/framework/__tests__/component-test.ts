@@ -364,7 +364,7 @@ describe('component', function () {
     });
 
     describe('public methods', () => {
-        it('access method does not invoke it', function () {
+        it('should not invoke function when accessing public method', function () {
             let callCount = 0;
 
             class MyComponent extends Element  {
@@ -383,7 +383,7 @@ describe('component', function () {
             assert.deepEqual(callCount, 0);
         });
 
-        it('invoke method invokes it', function () {
+        it('should invoke function only once', function () {
             let callCount = 0;
 
             class MyComponent extends Element  {
@@ -398,11 +398,43 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
 
-            const m = elm.m;
-            m();
+            elm.m();
             assert.deepEqual(callCount, 1);
         });
-    });
 
+        it('should call function with correct context', function () {
+            let context;
 
+            class MyComponent extends Element  {
+                m() {
+                    context = this;
+                }
+            }
+            MyComponent.publicMethods = ['m'];
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+
+            const m = elm.m;
+            m();
+            assert.deepEqual(context, vnode.vm.component);
+        });
+
+        it('should express function identity with strict equality', function () {
+            class MyComponent extends Element  {
+                m() {
+                }
+            }
+            MyComponent.publicMethods = ['m'];
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+
+            assert.strictEqual(elm.m, elm.m);
+        });
+     });
 });

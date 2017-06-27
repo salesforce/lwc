@@ -44,11 +44,11 @@ export function linkComponent(vm: VM) {
     const descriptors: PropertyDescriptorMap = {};
     // expose public methods as props on the Element
     for (let key in publicMethodsConfig) {
-        const getter = function (component: Component, key: string): any {
-            return component[key];
-        }
+        const getter = (function (component: Component, key: string, ...args: any[]): any {
+            return component[key].apply(component, args);
+        }).bind(undefined, component, key);
         descriptors[key] = {
-            get: getter.bind(undefined, component, key),
+            get: () => getter
         };
     }
     for (let key in publicProps) {
