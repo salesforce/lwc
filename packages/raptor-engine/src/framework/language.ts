@@ -12,6 +12,8 @@ const {
     defineProperties,
     getOwnPropertySymbols,
     hasOwnProperty,
+    preventExtensions,
+    isExtensible,
 } = Object;
 const isArray = Array.isArray;
 const {
@@ -38,6 +40,8 @@ export {
     getOwnPropertyNames,
     getOwnPropertySymbols,
     hasOwnProperty,
+    preventExtensions,
+    isExtensible,
     ArraySlice,
     ArraySplice,
     ArrayFilter,

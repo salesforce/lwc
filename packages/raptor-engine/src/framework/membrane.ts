@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ArrayMap, isArray } from "./language";
-import compat from "./compat";
+import { XProxy } from "./xproxy";
 
 /*eslint-disable*/
 export type ReplicableFunction = (...args: Array<any>) => any;
@@ -18,8 +18,8 @@ export interface MembraneHandler {
 }
 /*eslint-enable*/
 
-const TargetSlot = Symbol();
-const MembraneSlot = Symbol();
+export const TargetSlot = Symbol();
+export const MembraneSlot = Symbol();
 
 function isReplicable(value: any): boolean {
     const type = typeof value;
@@ -39,7 +39,7 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
     if (r) {
         return r;
     }
-    const replica: Replica = new Proxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
+    const replica: Replica = new XProxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
     cells.set(value, replica);
     cache.add(replica);
     return replica;
@@ -93,31 +93,4 @@ export class Membrane {
 
 export function unwrap(replicaOrAny: Replica | any): Replicable | any {
     return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
-}
-
-export function setKey(replicaOrAny: Replica | any, key: string | Symbol, newValue: any): any {
-    let shouldReturn = false;
-    compat(() => {
-        shouldReturn = true;
-        const target = unwrap(replicaOrAny);
-        if (target === replicaOrAny) {
-            // non-proxified assignment
-            target[key] = newValue;
-        } else {
-            replicaOrAny[MembraneSlot].set(target, key, newValue);
-        }
-    });
-    return shouldReturn ? newValue : undefined;
-}
-
-export function deleteKey(replicaOrAny: Replica | any, key: string | Symbol) {
-    compat(() => {
-        const target = unwrap(replicaOrAny);
-        if (target === replicaOrAny) {
-            // non-profixied delete
-            delete target[key];
-        } else {
-            replicaOrAny[MembraneSlot].deleteProperty(target, key);
-        }
-    });
 }

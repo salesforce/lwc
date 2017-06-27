@@ -103,6 +103,7 @@ describe('watcher', () => {
             let counter = 0;
             let state;
             const def = class MyComponent6 extends Element {
+                state = { x: 0 };
                 constructor() {
                     super();
                     state = this.state;
@@ -129,6 +130,7 @@ describe('watcher', () => {
             let counter = 0;
             let state;
             const def = class MyComponent7 extends Element {
+                state = { x: 0 };
                 constructor() {
                     super();
                     state = this.state;
@@ -149,9 +151,10 @@ describe('watcher', () => {
 
         it('should prevent any mutation during the rendering phase', () => {
             const def = class MyComponent8 extends Element {
+                state = { x: 0 };
                 render() {
                     return function html($api, $cmp) {
-                        $cmp.state.y = 2;
+                        $cmp.state.x = 1;
                     };
                 }
             }
@@ -164,6 +167,7 @@ describe('watcher', () => {
             let counter = 0;
             let state;
             const def = class MyComponent9 extends Element {
+                state = { x: 0 };
                 constructor() {
                     super();
                     state = this.state;
@@ -248,10 +252,7 @@ describe('watcher', () => {
         it('should react when a reactive array invokes Array.prototype.push()', () => {
             let counter = 0;
             class MyComponent1 extends Element {
-                constructor() {
-                    super();
-                    this.state.list = [1, 2];
-                }
+                state = { list: [1, 2] };
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
@@ -269,10 +270,7 @@ describe('watcher', () => {
         it('should react when a reactive array invokes Array.prototype.pop()', () => {
             let counter = 0;
             class MyComponent1 extends Element {
-                constructor() {
-                    super();
-                    this.state.list = [1, 2];
-                }
+                state = { list: [1, 2] };
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
@@ -290,10 +288,7 @@ describe('watcher', () => {
         it('should react when a reactive array invokes Array.prototype.unshift()', () => {
             let counter = 0;
             class MyComponent1 extends Element {
-                constructor() {
-                    super();
-                    this.state.list = [1, 2];
-                }
+                state = { list: [1, 2] };
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);

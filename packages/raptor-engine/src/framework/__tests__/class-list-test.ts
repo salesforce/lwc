@@ -157,9 +157,9 @@ describe('class-list', () => {
 
         it('should update on the next tick when dirty', () => {
             class MyComponent extends Element {
+                state = { x: 1 };
                 constructor() {
                     super();
-                    this.state.x = 1;
                     this.classList.add('foo');
                 }
                 addAnotherClass() {

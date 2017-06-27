@@ -4,13 +4,14 @@ import * as api from "../api";
 import { Element } from "../html-element";
 import { patch } from '../patch';
 import { pierce } from '../piercing';
+import { deleteKey } from '../xproxy';
 
-describe('pierce', function () {
+describe('piercing', function () {
     it('should set property on pierced object successfully', function () {
         class MyComponent extends Element  {
             render () {
                 return ($api, $cmp, $slotset, $ctx) => {
-                    return [$api.h('div', {}, [];
+                    return [$api.h('div', {}, [])];
                 }
             }
         }
@@ -47,8 +48,12 @@ describe('pierce', function () {
 
         const replica = pierce(vnode.vm, piercedObject);
         expect(() => {
-            delete replica.deleteMe;
-            assert.deepEqual('deleteMe' in piercedObject, false);
+            // compat mode fork
+            if (deleteKey) {
+                deleteKey(replica, 'deleteMe');
+            } else {
+                delete replica.deleteMe;
+            }
         }).not.toThrow();
     });
 });

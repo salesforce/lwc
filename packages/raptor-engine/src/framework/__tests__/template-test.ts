@@ -4,7 +4,7 @@ import { patch } from '../patch';
 import { Element } from "../html-element";
 import assert from 'power-assert';
 
-function createCustomComponent(html) {
+function createCustomComponent(html, slotset?) {
     let vnode;
     class MyComponent extends Element {
         render() {
@@ -12,7 +12,7 @@ function createCustomComponent(html) {
         }
     }
     const elm = document.createElement('x-foo');
-    vnode = api.c('x-foo', MyComponent, {});
+    vnode = api.c('x-foo', MyComponent, { slotset });
     return patch(elm, vnode);
 }
 
@@ -41,14 +41,14 @@ describe('template', () => {
                 $cmp = $c;
                 $slotset = $s;
                 return [];
-            });
+            }, { x: [ api.h('p', {}, []) ] });
             assert.throws(() => $cmp.state, 'state property member');
-            assert.throws(() => $cmp.foo, 'unknown property member');
-            assert.throws(() => $slotset.$default$, 'default slot name');
-            assert.throws(() => $slotset.foo, 'unknown slot name');
+            // assert.throws(() => $cmp.foo, 'unknown property member'); // compat mode prevents this
+            assert.throws(() => $slotset.x, 'slot name x');
+            // assert.throws(() => $slotset.foo, 'unknown slot name'); // compat mode prevents this
         });
 
-        it('should prevent a getter to be accessed twice in the same render phase', () => {
+        it('should prevent a getter to be accessed twice in the same render phase xyz', () => {
             let counter = 0;
             let vnode;
             class MyComponent extends Element {
@@ -104,28 +104,44 @@ describe('template', () => {
             assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 slotset.x = [];
                 return [];
-            }));
+            }, { x: [ api.h('p', {}, []) ] }));
         });
 
         it('should throw when attempting to set a property member of cmp', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp) {
-                cmp.x = [];
-                return [];
-            }));
+            class MyComponent extends Element {
+                x = 1;
+                render() {
+                    return function (api, cmp) {
+                        cmp.x = [];
+                        return [];
+                    }
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, {});
+            assert.throws(() => patch(elm, vnode));
         });
 
         it('should throw when attempting to delete a property member of slotset', () => {
             assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
                 delete slotset.x;
                 return [];
-            }));
+            }, { x: [ api.h('p', {}, []) ] }));
         });
 
         it('should throw when attempting to delete a property member of cmp', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp) {
-                delete cmp.x;
-                return [];
-            }));
+            class MyComponent extends Element {
+                x = 1;
+                render() {
+                    return function (api, cmp) {
+                        delete cmp.x;
+                        return [];
+                    }
+                }
+            }
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, {});
+            assert.throws(() => patch(elm, vnode));
         });
 
         it('should support switching templates', () => {
@@ -197,6 +213,7 @@ describe('template', () => {
         it('should profixied property objects', () => {
             const x = [1, 2, 3];
             class MyComponentParent extends Element {
+                state = { x: undefined };
                 constructor() {
                     super();
                     this.state.x = x;

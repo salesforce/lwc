@@ -268,20 +268,7 @@ ComponentElement.prototype = {
             assert.logError(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an object.`);
             return;
         }
-        let { cmpState } = vm;
-        if (isUndefined(cmpState)) {
-            cmpState = vm.cmpState = getPropertyProxy(create(null)); // lazy creation of the cmpState
-        }
-        if (cmpState !== newState) {
-            for (let key in cmpState) {
-                if (!(key in newState)) {
-                    cmpState[key] = undefined; // prefer setting to undefined over deleting for perf reasons
-                }
-            }
-            for (let key in newState) {
-                cmpState[key] = newState[key];
-            }
-        }
+        vm.cmpState = getPropertyProxy(newState); // lazy creation of the cmpState
     },
     toString(): string {
         const vm = this[ViewModelReflection];

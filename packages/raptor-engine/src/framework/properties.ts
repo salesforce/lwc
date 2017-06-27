@@ -8,6 +8,7 @@ import {
     vmBeingRendered,
 } from "./invoker";
 import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject, isNull } from "./language";
+import { XProxy } from "./xproxy";
 
 const ObjectPropertyToProxyCache: WeakMap<Object, Object> = new WeakMap();
 const ProxyCache: WeakSet<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
@@ -49,6 +50,12 @@ const propertyProxyHandler = {
     get: propertyGetter,
     set: propertySetter,
     deleteProperty: propertyDelete,
+    apply(target: any/*, thisArg: any, argArray?: any*/) {
+        assert.fail(`invalid call invocation for property proxy ${target}`);
+    },
+    construct(target: any/*, argArray: any, newTarget?: any*/) {
+        assert.fail(`invalid construction invocation for property proxy ${target}`);
+    },
 };
 
 export function getPropertyProxy(value: Object): any {
@@ -73,7 +80,7 @@ export function getPropertyProxy(value: Object): any {
     if (proxy) {
         return proxy;
     }
-    proxy = new Proxy(value, propertyProxyHandler);
+    proxy = new XProxy(value, propertyProxyHandler);
     ObjectPropertyToProxyCache.set(value, proxy);
     ProxyCache.add(proxy);
     return proxy;

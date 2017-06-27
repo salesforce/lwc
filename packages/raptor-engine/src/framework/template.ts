@@ -4,6 +4,7 @@ import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnPr
 import { getOwnFields, extractOwnFields } from "./properties";
 import { vmBeingRendered } from "./invoker";
 import { subscribeToSetHook } from "./watcher";
+import { XProxy } from "./xproxy";
 
 const EmptySlots = create(null);
 
@@ -16,12 +17,18 @@ function getSlotsetValue(slotset: HashTable<Array<VNodes>>, slotName: string): A
 const slotsetProxyHandler = {
     get: (slotset: Object, key: string | Symbol): any => getSlotsetValue(slotset, key),
     set: (): boolean => {
-        assert.invariant(false, `$slotset object cannot be mutated from template.`);
+        assert.logError(`$slotset object cannot be mutated from template.`);
         return false;
     },
     deleteProperty: (): boolean => {
-        assert.invariant(false, `$slotset object cannot be mutated from template.`);
+        assert.logError(`$slotset object cannot be mutated from template.`);
         return false;
+    },
+    apply(/*target: any, thisArg: any, argArray?: any*/) {
+        assert.fail(`invalid call invocation from slotset`);
+    },
+    construct(/*target: any, argArray: any, newTarget?: any*/) {
+        assert.fail(`invalid construction invocation from slotset`);
     },
 };
 
@@ -30,7 +37,7 @@ let currentMemoized: HashTable<any> | null = null;
 
 const cmpProxyHandler = {
     get: (cmp: Object, key: string | Symbol): any => {
-        assert.invariant(currentMemoized !== null && vmBeingRendered !== null && vmBeingRendered.component === cmp, ` getFieldValue() should only be accessible during rendering phase.`);
+        assert.invariant(currentMemoized !== null && vmBeingRendered !== null && (vmBeingRendered as VM).component === cmp, ` getFieldValue() should only be accessible during rendering phase.`); // eslint-disable-line no-undef
         if (key in currentMemoized) {
             return currentMemoized[key];
         }
@@ -77,6 +84,12 @@ const cmpProxyHandler = {
         assert.logError(`Invalid delete statement: ${cmp} cannot delete property ${key} during the rendering phase.`);
         return false;
     },
+    apply(/*target: any, thisArg: any, argArray?: any*/) {
+        assert.fail(`invalid call invocation from template`);
+    },
+    construct(/*target: any, argArray: any, newTarget?: any*/) {
+        assert.fail(`invalid construction invocation from template`);
+    },
 };
 
 export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
@@ -114,8 +127,8 @@ export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
         });
 
     });
-    const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
-    const { proxy: cmp, revoke: componentRevoke } = Proxy.revocable(component, cmpProxyHandler);
+    const { proxy: slotset, revoke: slotsetRevoke } = XProxy.revocable(cmpSlots, slotsetProxyHandler);
+    const { proxy: cmp, revoke: componentRevoke } = XProxy.revocable(component, cmpProxyHandler);
     const outerMemoized = currentMemoized;
     currentMemoized = create(null);
     let vnodes = html.call(undefined, api, cmp, slotset, context.tplCache);

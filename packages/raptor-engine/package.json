@@ -63,6 +63,7 @@
     "transform": {
       "^.+\\.(ts|js)$": "<rootDir>/scripts/jest-preprocessor.js"
     },
+    "setupTestFrameworkScriptFile": "./scripts/jest-env-setup.js",
     "collectCoverageFrom": [
       "src/framework/*.ts"
     ],

@@ -65,6 +65,7 @@ describe('invoker', () => {
 
         it('should invoke disconnectedCallback() after all child are removed from the dom', () => {
             let counter = 0;
+            let rcounter = 0;
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
             const def = class MyComponent2 extends Element {
@@ -73,6 +74,7 @@ describe('invoker', () => {
                     assert.strictEqual(elm.childNodes.length, 0, 'the child element is not removed from the dom yet');
                 }
                 render() {
+                    rcounter++;
                     return () => [child];
                 }
             }
@@ -82,9 +84,10 @@ describe('invoker', () => {
             patch(vnode1, vnode2); // replace it with a `div`
             assert.strictEqual(counter, 0, 'disconnectedCallback should be invoked async');
             return Promise.resolve().then(() => {
-                assert.strictEqual(document.body.childNodes.length, 1);
+                assert.strictEqual(counter, 1, 'it should have disconnected once');
+                assert.strictEqual(rcounter, 1, 'it should have rendered once');
+                assert.strictEqual(document.body.childNodes.length, 1, 'it should have a single children');
                 assert.strictEqual(document.body.childNodes[0].tagName, 'DIV');
-                assert.strictEqual(counter, 1);
             });
         });
 

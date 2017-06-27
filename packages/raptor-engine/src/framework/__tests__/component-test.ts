@@ -129,10 +129,7 @@ describe('component', function () {
 
         it('should be render reactive', function () {
             class MyComponent extends Element  {
-                constructor () {
-                    super();
-                    this.state.value = 0;
-                }
+                state = { value: 0 };
 
                 get validity () {
                     return this.state.value > 5;
