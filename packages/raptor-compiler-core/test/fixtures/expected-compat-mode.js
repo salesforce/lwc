@@ -1,7 +1,7 @@
 define('x-class_and_template', ['engine', 'compat/helpers/classCallCheck', 'compat/helpers/createClass'], function (engine, _classCallCheck, _createClass) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [engine.getKey($api, "h")("section", {}, [])];
+    return [engine.callKey($api, "h", "section", {}, [])];
 }
 
 var Test = 1;

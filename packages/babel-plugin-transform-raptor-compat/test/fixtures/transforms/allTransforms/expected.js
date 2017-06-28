@@ -2,6 +2,7 @@ import { inKey as _inKey } from "engine";
 import { iteratorKey as _iteratorKey } from "engine";
 import { deleteKey as _deleteKey } from "engine";
 import { getKey as _getKey } from "engine";
+import { callKey as _callKey } from "engine";
 import { setKey as _setKey } from "engine";
 // var a = 1;
 var a = 1;
@@ -12,13 +13,19 @@ var b,
     c = 1;
 
 // var d = { e: 1 };
-var obj = { x: {}, e: 1 };
+var obj = { x: {}, e: 1, foo: { bar: (...args) => args } };
 
 // obj.f = 1;
 _setKey(obj, "f", 1);
 
-// console.log('x');
-_getKey(console, "log")('x');
+// console.log("x");
+_callKey(console, "log", "x");
+
+// console.log("x", "foo");
+_callKey(console, "log", "x", "foo");
+
+// obj.foo.bar(1, 2, 3)
+_callKey(_getKey(obj, "foo"), "bar", 1, 2, 3);
 
 // obj.x.y = 1;
 _setKey(_getKey(obj, "x"), "y", 1);
@@ -41,7 +48,7 @@ _setKey(obj, "y", function () {
 });
 
 // obj.y().z = 1;
-_setKey(_getKey(obj, "y")(), "z", 1);
+_setKey(_callKey(obj, "y"), "z", 1);
 
 // var x = obj.r || (obj.r = { m: 5 });
 var x = _getKey(obj, "r") || _setKey(obj, "r", { m: 5 });
@@ -50,7 +57,7 @@ var x = _getKey(obj, "r") || _setKey(obj, "r", { m: 5 });
 for (var i = _getKey(_getKey(obj, "x"), "y"); i < _getKey(obj, "f"); i--) {}
 
 // while (a = n.pop()) {}
-while (a = _getKey(n, "pop")()) {}
+while (a = _callKey(n, "pop")) {}
 
 // ++a;
 ++a;
@@ -62,10 +69,10 @@ _setKey(_getKey(obj, "r"), "m", _getKey(_getKey(obj, "r"), "m") + 3);
 _setKey(obj, "f", _getKey(obj, "f") | 1);
 
 // ++obj.f
-_setKey(obj, "f", _getKey(obj, "f") + 1, _getKey(obj, "f"));
+_setKey(obj, "f", _getKey(obj, "f") + 1);
 
 // obj.e++;
-_setKey(obj, "e", _getKey(obj, "e") + 1);
+_setKey(obj, "e", _getKey(obj, "e") + 1, _getKey(obj, "e"));
 
 // delete obj.u;
 _deleteKey(obj, "u");

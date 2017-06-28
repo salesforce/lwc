@@ -6,13 +6,19 @@ var n = [0, 1];
 var b, c = 1;
 
 // var d = { e: 1 };
-var obj = { x: {}, e: 1 };
+var obj = { x: {}, e: 1, foo: { bar: (...args) => args } };
 
 // obj.f = 1;
 obj.f = 1;
 
-// console.log('x');
-console.log('x');
+// console.log("x");
+console.log("x");
+
+// console.log("x", "foo");
+console.log("x", "foo");
+
+// obj.foo.bar(1, 2, 3)
+obj.foo.bar(1, 2, 3);
 
 // obj.x.y = 1;
 obj.x.y = 1;

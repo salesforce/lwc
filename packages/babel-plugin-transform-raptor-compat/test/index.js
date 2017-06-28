@@ -3,7 +3,7 @@
 const path = require('path');
 const fixturesDir = path.join(__dirname, 'fixtures');
 const fixturesTransformDir = path.join(fixturesDir, 'transforms');
-const { transform, babelFixtureTransform } = require('raptor-helper-fixture');
+const { babelFixtureTransform } = require('raptor-helper-fixture');
 const transfromRaptorCompat = require('../src/index');
 
 const BABEL_CONFIG = {
