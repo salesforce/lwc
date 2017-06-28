@@ -15,6 +15,13 @@ global.describe = function (name, fn) {
     describeOriginal(name, fn);
 }
 
+global.describe.only = function (name, fn) {
+    lastBeforeEachFn = undefined;
+    describeOriginal.only(name, fn);
+}
+
+global.describe.skip = describeOriginal.skip;
+
 global.beforeEach = function (fn) {
     lastBeforeEachFn = fn;
     beforeEachOriginal(fn);
@@ -38,38 +45,45 @@ global.itCompat = function (name, fn) {
     });
 };
 
-global.it = function (name, fn) {
-    const reset = lastBeforeEachFn;
-    itOriginal(name, function () {
-        const thisValue = this, args = arguments;
-        return new Promise((resolve, reject) => {
-            queue.push(() => {
-                return new Promise((resolve) => {
-                    // runs the beforeEach right before the test runs
-                    reset && reset();
-                    disableCompatMode();
-                    resolve(fn.apply(thisValue, args));
-                }).then(resolve, reject);
+function wrapJestFunctionWithCompat (jestFunction) {
+    return function wrapped (name, fn) {
+        const reset = lastBeforeEachFn;
+        jestFunction(name, function () {
+            const thisValue = this, args = arguments;
+            return new Promise((resolve, reject) => {
+                queue.push(() => {
+                    return new Promise((resolve) => {
+                        // runs the beforeEach right before the test runs
+                        reset && reset();
+                        disableCompatMode();
+                        resolve(fn.apply(thisValue, args));
+                    }).then(resolve, reject);
+                });
+                run();
             });
-            run();
         });
-    });
-    itOriginal('[Compat] ' + name, function () {
-        const thisValue = this, args = arguments;
-        return new Promise((resolve, reject) => {
-            queue.push(() => {
-                return new Promise((resolve) => {
-                    // runs the beforeEach right before the test runs
-                    resetDOM();
-                    reset && reset();
-                    enableCompatMode();
-                    resolve(fn.apply(thisValue, args));
-                }).then(resolve, reject);
+        jestFunction('[Compat] ' + name, function () {
+            const thisValue = this, args = arguments;
+            return new Promise((resolve, reject) => {
+                queue.push(() => {
+                    return new Promise((resolve) => {
+                        // runs the beforeEach right before the test runs
+                        resetDOM();
+                        reset && reset();
+                        enableCompatMode();
+                        resolve(fn.apply(thisValue, args));
+                    }).then(resolve, reject);
+                });
+                run();
             });
-            run();
         });
-    });
-};
+    };
+}
+
+global.it = wrapJestFunctionWithCompat(itOriginal);
+global.it.only = wrapJestFunctionWithCompat(itOriginal.only);
+global.it.skip = itOriginal.skip;
+
 
 function resetDOM() {
     while (document.body.firstChild) {
