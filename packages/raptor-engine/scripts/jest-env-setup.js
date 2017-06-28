@@ -27,24 +27,6 @@ global.beforeEach = function (fn) {
     beforeEachOriginal(fn);
 }
 
-global.itCompat = function (name, fn) {
-    const reset = lastBeforeEachFn;
-    itOriginal('[Compat Only] ' + name, function () {
-        const thisValue = this, args = arguments;
-        return new Promise((resolve, reject) => {
-            queue.push(() => {
-                return new Promise((resolve) => {
-                    // runs the beforeEach right before the test runs
-                    reset && reset();
-                    enableCompatMode();
-                    resolve(fn.apply(thisValue, args));
-                }).then(resolve, reject);
-            });
-            run();
-        });
-    });
-};
-
 function wrapJestFunctionWithCompat (jestFunction) {
     return function wrapped (name, fn) {
         const reset = lastBeforeEachFn;
@@ -83,7 +65,23 @@ function wrapJestFunctionWithCompat (jestFunction) {
 global.it = wrapJestFunctionWithCompat(itOriginal);
 global.it.only = wrapJestFunctionWithCompat(itOriginal.only);
 global.it.skip = itOriginal.skip;
-
+global.it.compat = function (name, fn) {
+    const reset = lastBeforeEachFn;
+    itOriginal('[Compat Only] ' + name, function () {
+        const thisValue = this, args = arguments;
+        return new Promise((resolve, reject) => {
+            queue.push(() => {
+                return new Promise((resolve) => {
+                    // runs the beforeEach right before the test runs
+                    reset && reset();
+                    enableCompatMode();
+                    resolve(fn.apply(thisValue, args));
+                }).then(resolve, reject);
+            });
+            run();
+        });
+    });
+};
 
 function resetDOM() {
     while (document.body.firstChild) {

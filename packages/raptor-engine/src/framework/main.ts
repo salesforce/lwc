@@ -3,4 +3,4 @@ export { getComponentDef } from "./def";
 export { Element } from "./html-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
-export { getKey, setKey, deleteKey, inKey, iterableKey } from "./xproxy";
+export { getKey, callKey, setKey, deleteKey, inKey, iterableKey } from "./xproxy";

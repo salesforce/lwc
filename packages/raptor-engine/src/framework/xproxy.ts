@@ -124,6 +124,13 @@ function getKeyCompat(replicaOrAny: Replica | any, key: any): any {
     return membrane ? membrane.get(unwrap(replicaOrAny), key) : replicaOrAny[key];
 }
 
+function callKeyCompat(replicaOrAny: Replica | any, key: any, ...args: any[]): any {
+    const membrane = getLinkedMembrane(replicaOrAny);
+    const context = membrane ? unwrap(replicaOrAny) : replicaOrAny;
+    const fn = membrane ? membrane.get(context, key) : replicaOrAny[key];
+    return fn.apply(context, args);
+}
+
 function setKeyCompat(replicaOrAny: Replica | any, key: string | Symbol, newValue: any, originalReturnValue?: any): any {
     const membrane = getLinkedMembrane(replicaOrAny);
     if (membrane) {
@@ -207,6 +214,7 @@ function iterableKeyCompat(replicaOrAny: Replica | any): any[] {
 
 export let XProxy: CompatProxyConstructor = Proxy;
 export let getKey;
+export let callKey;
 export let setKey;
 export let deleteKey;
 export let inKey;
@@ -216,6 +224,7 @@ export let iterableKey;
 export function enableCompatMode() {
     XProxy = ProxyCompat;
     getKey = getKeyCompat;
+    callKey = callKeyCompat;
     setKey = setKeyCompat;
     deleteKey = deleteKeyCompat;
     inKey = inKeyCompat;
