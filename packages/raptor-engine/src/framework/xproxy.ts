@@ -128,7 +128,7 @@ function callKeyCompat(replicaOrAny: Replica | any, key: any, ...args: any[]): a
     const membrane = getLinkedMembrane(replicaOrAny);
     const context = membrane ? unwrap(replicaOrAny) : replicaOrAny;
     const fn = membrane ? membrane.get(context, key) : replicaOrAny[key];
-    return fn.apply(context, args);
+    return fn.apply(replicaOrAny, args);
 }
 
 function setKeyCompat(replicaOrAny: Replica | any, key: string | Symbol, newValue: any, originalReturnValue?: any): any {

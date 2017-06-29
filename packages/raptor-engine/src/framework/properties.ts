@@ -9,11 +9,17 @@ import {
 } from "./invoker";
 import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject, isNull } from "./language";
 import { XProxy } from "./xproxy";
+import { TargetSlot, MembraneSlot } from "./membrane";
 
 const ObjectPropertyToProxyCache: WeakMap<Object, Object> = new WeakMap();
 const ProxyCache: WeakSet<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
 
 function propertyGetter(target: Object, key: string | Symbol): any {
+    if (key === TargetSlot) {
+        return target;
+    } else if (key === MembraneSlot) {
+        return propertyProxyHandler;
+    }
     const value = target[key];
     if (isRendering && vmBeingRendered) {
         subscribeToSetHook(vmBeingRendered, target, key);
