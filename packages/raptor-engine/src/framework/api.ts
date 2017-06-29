@@ -90,9 +90,10 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
 // [i]terable node
 export function i(items: Array<any>, factory: Function): Array<VNode> {
     const len = isArray(items) ? items.length : 0;
+    const last = len ? (len - 1) : 0;
     const list: Array<VNode> = [];
     for (let i = 0; i < len; i += 1) {
-        const vnode = factory(items[i], i, i === 0, i === len);
+        const vnode = factory(items[i], i, i === 0, i === last);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {

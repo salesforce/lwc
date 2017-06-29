@@ -91,6 +91,23 @@ describe('api', () => {
                 return { index, item };
             }), [{ index: 0, item: o }]);
         });
+
+        it('should provide correct last value', () => {
+            const o = [
+                {x: 1},
+                {x: 2},
+                {x: 3}
+            ];
+
+            const expected = [
+                false,
+                false,
+                true
+            ];
+            assert.deepEqual(target.i(o, (item, index, first, last) => {
+                return last;
+            }), expected);
+        });
     });
 
     describe('#f()', () => {
