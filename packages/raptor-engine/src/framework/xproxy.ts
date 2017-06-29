@@ -175,7 +175,7 @@ function iterableKeyCompat(replicaOrAny: Replica | any): any[] {
 // 2. assignment of member expressions e.g.: `obj.x.y.z = 1;` => `setKey(getKey(obj, 'x', 'y'), 'z', 1)`
 // 3. delete operator e.g.: `delete obj.x.y.z` => `deleteKey(getKey(obj, 'x', 'y'), 'z')`
 // 4. in operator e.g.: `"z" in obj.x.y` => `inKey(getKey(obj, 'x', 'y'), 'z')`
-// 5. for in operator `for (let i in obj)` => `for (let i in iteratorKey(obj))`
+// 5. for in operator `for (let i in obj)` => `for (let i in iterableKey(obj))`
 
 // patches
 // Object.hasOwnProperty should be patched as a general rule

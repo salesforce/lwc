@@ -1,5 +1,5 @@
 import { inKey as _inKey } from "engine";
-import { iteratorKey as _iteratorKey } from "engine";
+import { iterableKey as _iterableKey } from "engine";
 import { deleteKey as _deleteKey } from "engine";
 import { getKey as _getKey } from "engine";
 import { callKey as _callKey } from "engine";
@@ -84,10 +84,10 @@ _deleteKey(_getKey(obj, "r"), "m");
 _deleteKey(_getKey(obj, "r"), "m");
 
 // for (let k in obj) {}
-for (let k in _iteratorKey(obj)) {}
+for (let k in _iterableKey(obj)) {}
 
 // for (let k in obj.x) {}
-for (let k in _iteratorKey(_getKey(obj, "x"))) {}
+for (let k in _iterableKey(_getKey(obj, "x"))) {}
 
 // if ("x" in obj) {}
 if (_inKey(obj, "x")) {}

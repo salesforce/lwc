@@ -130,12 +130,12 @@ module.exports = function({ types: t }) {
 
             /**
              * Transforms:
-             *      for (let k in obj) {}   =>   for (let k in _iteratorKey(obj)) {}
+             *      for (let k in obj) {}   =>   for (let k in _iterableKey(obj)) {}
              */
             ForInStatement(path, state) {
                 const { node } = path;
 
-                const id = state.addImport('engine', 'iteratorKey');
+                const id = state.addImport('engine', 'iterableKey');
                 const wrappedIterator = t.callExpression(id, [node.right]);
                 node.right = wrappedIterator;
             },
