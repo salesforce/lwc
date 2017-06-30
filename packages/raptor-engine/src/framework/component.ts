@@ -11,7 +11,7 @@ import {
 import { notifyListeners } from "./watcher";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, defineProperties } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
-import { extractOwnFields, getPropertyProxy } from "./properties";
+import { getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
@@ -29,9 +29,6 @@ export function createComponent(vm: VM, Ctor: Class<Component>) {
     vmBeingConstructed = vm;
     const component = invokeComponentConstructor(vm, Ctor);
     vmBeingConstructed = vmBeingConstructedInception;
-    assert.block(function devModeCheck() {
-        extractOwnFields(component);
-    });
     assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
 }
 
@@ -90,11 +87,6 @@ export function linkComponent(vm: VM) {
         const { wiring } = Services;
         if (wiring) {
             invokeServiceHook(vm, wiring);
-            assert.block(function devModeCheck() {
-                // Mark instance properties for services special
-                extractOwnFields(component, true);
-            });
-
         }
     }
 }

@@ -7,7 +7,7 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker";
-import { isUndefined, defineProperty, hasOwnProperty, toString, isArray, isObject, isNull } from "./language";
+import { toString, isArray, isObject, isNull } from "./language";
 import { XProxy } from "./xproxy";
 import { TargetSlot, MembraneSlot } from "./membrane";
 
@@ -90,48 +90,4 @@ export function getPropertyProxy(value: Object): any {
     ObjectPropertyToProxyCache.set(value, proxy);
     ProxyCache.add(proxy);
     return proxy;
-}
-const InstanceField = 0;
-const RegularField = 1;
-const ExpandoField = 2;
-const MutatedField = 3;
-const ObjectToFieldsMap = new WeakMap();
-
-export function extractOwnFields(component: Object, allowInstanceFields: boolean): HashTable<number> {
-    let fields = ObjectToFieldsMap.get(component);
-    let type = allowInstanceFields ? InstanceField : ExpandoField;
-    if (isUndefined(fields)) {
-        // only the first batch are considered private fields
-        type = RegularField;
-        fields = {};
-        ObjectToFieldsMap.set(component, fields);
-    }
-    for (let propName in component) {
-        if (hasOwnProperty.call(component, propName) && isUndefined(fields[propName])) {
-            fields[propName] = type;
-            let value = component[propName];
-
-            if (!allowInstanceFields) {
-                // replacing the field with a getter and a setter to track the mutations
-                // and provide meaningful errors
-                defineProperty(component, propName, {
-                    get: (): any => value,
-                    set: (newValue: any) => {
-                        value = newValue;
-                        fields[propName] = MutatedField;
-                    },
-                    configurable: false,
-                });
-            }
-        }
-    }
-    return fields;
-}
-
-export function getOwnFields(target: Object): HashTable<number> {
-    let fields = ObjectToFieldsMap.get(target);
-    if (isUndefined(fields)) {
-        fields = {};
-    }
-    return fields;
 }

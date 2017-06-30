@@ -1,4 +1,4 @@
-type Template = (api: RenderAPI, cmp: Component, slotset: HashTable<Array<VNode>>) => undefined | Array<VNode>;
+type Template = (api: RenderAPI, cmp: Component, slotset: Slotset) => undefined | Array<VNode>;
 
 declare class Component {
     classList: DOMTokenList;
@@ -14,6 +14,10 @@ declare class Component {
     observedAttributes: Array<string>;
     labels: Array<string>;
     [key: string]: any;
+}
+
+declare interface Slotset {
+    [key: string]: Array<VNode>,
 }
 
 declare interface HashTable<T> {
@@ -50,7 +54,7 @@ declare class VM {
     cmpState?: HashTable<any>;
     cmpProps: HashTable<any>;
     cmpWired?: HashTable<any>;
-    cmpSlots?: HashTable<Array<VNode>>;
+    cmpSlots?: Slotset;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;
     cmpClasses?: HashTable<Boolean>;

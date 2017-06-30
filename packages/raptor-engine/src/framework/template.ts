@@ -1,21 +1,18 @@
 import assert from "./assert";
 import * as api from "./api";
 import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
-import { getOwnFields, extractOwnFields } from "./properties";
-import { vmBeingRendered } from "./invoker";
-import { subscribeToSetHook } from "./watcher";
 import { XProxy } from "./xproxy";
 
-const EmptySlots = create(null);
+const EmptySlots: Slotset = create(null);
 
-function getSlotsetValue(slotset: HashTable<Array<VNodes>>, slotName: string): Array<VNodes> {
+function getSlotsetValue(slotset: Slotset, slotName: string): Array<VNode> {
     assert.isTrue(isObject(slotset), `Invalid slotset value ${toString(slotset)}`);
     // TODO: mark slotName as reactive
     return slotset && slotset[slotName];
 }
 
-const slotsetProxyHandler = {
-    get: (slotset: Object, key: string | Symbol): any => getSlotsetValue(slotset, key),
+const slotsetProxyHandler: ProxyHandler<Slotset> = {
+    get: (slotset: Slotset, key: string): any => getSlotsetValue(slotset, key),
     set: (): boolean => {
         assert.logError(`$slotset object cannot be mutated from template.`);
         return false;
@@ -32,65 +29,35 @@ const slotsetProxyHandler = {
     },
 };
 
-// we use inception to track down the memoized object for each value used in a template from a component
-let currentMemoized: HashTable<any> | null = null;
-
-const cmpProxyHandler = {
-    get: (cmp: Object, key: string | Symbol): any => {
-        assert.invariant(currentMemoized !== null && vmBeingRendered !== null && (vmBeingRendered as VM).component === cmp, ` getFieldValue() should only be accessible during rendering phase.`); // eslint-disable-line no-undef
-        if (key in currentMemoized) {
-            return currentMemoized[key];
+function validateSlots(vm: VM, html: any) {
+    let { cmpSlots = EmptySlots } = vm;
+    const { slots = [] } = html;
+    for (let slotName in cmpSlots) {
+        if (ArrayIndexOf.call(slots, slotName) === -1) {
+            // TODO: this should never really happen because the compiler should always validate
+            console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
         }
-        assert.block(function devModeCheck() {
-            if (hasOwnProperty.call(cmp, key)) {
-                const fields = getOwnFields(cmp);
-                switch (fields[key]) {
-                    case 0: break; // Instance fields that have special privileges can go though
-                    case 1:
-                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\` directly, which is declared in the constructor and considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(key)}\`.`);
-                        break;
-                    case 2:
-                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\` directly, which is added as an expando property of the component and considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(key)}\`.`);
-                        break;
-                    case 3:
-                        assert.logError(`${cmp}'s template is accessing \`this.${toString(key)}\`, which is considered a mutable private field but mutations cannot be observed. Instead move it to \`this.state.${toString(key)}\`.`);
-                        break;
-                    default:
-                        // TODO: this should never really happen because the compiler should always validate
-                        console.warn(`${cmp}'s template is accessing \`this.${toString(key)}\`, which is not declared by the component. This is likely a typo in the template.`);
-                }
-            }
-        });
+    }
+}
 
-        // slow path to access component's properties from template
-        let value;
-        const { cmpState, cmpProps, def: { props: publicPropsConfig } } = (vmBeingRendered as VM); // eslint-disable-line no-undef
-        if (key === 'state' && cmpState) {
-            value = cmpState;
-        } else if (key in publicPropsConfig && key in cmpProps) {
-            subscribeToSetHook(vmBeingRendered as VM, cmpProps, key); // eslint-disable-line no-undef
-            value = cmpProps[key];
-        } else {
-            value = cmp[key];
+function validateFields(vm: VM, html: any) {
+    let { component } = vm;
+    // validating identifiers used by template that should be provided by the component
+    const { ids = [] } = html;
+    ids.forEach((propName: string) => {
+        if (!(propName in component)) {
+            console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
+        } else if (hasOwnProperty.call(component, propName)) {
+            assert.fail(`${component}'s template is accessing \`this.${toString(propName)}\` directly, which is considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(propName)}\`.`);
         }
-        (currentMemoized as HashTable<any>)[key] = value; // eslint-disable-line no-undef
-        return value;
-    },
-    set: (cmp: Object, key: string | Symbol): boolean => {
-        assert.logError(`Invalid assignment: ${cmp} cannot set a new value for property ${key} during the rendering phase.`);
-        return false;
-    },
-    deleteProperty: (cmp: Object, key: string | Symbol): boolean => {
-        assert.logError(`Invalid delete statement: ${cmp} cannot delete property ${key} during the rendering phase.`);
-        return false;
-    },
-    apply(/*target: any, thisArg: any, argArray?: any*/) {
-        assert.fail(`invalid call invocation from template`);
-    },
-    construct(/*target: any, argArray: any, newTarget?: any*/) {
-        assert.fail(`invalid construction invocation from template`);
-    },
-};
+    });
+}
+
+
+function validateTemplate(vm: VM, html: any) {
+    validateSlots(vm, html);
+    validateFields(vm, html);
+}
 
 export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
     assert.vm(vm);
@@ -101,40 +68,14 @@ export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
     if (html !== cmpTemplate) {
         context.tplCache = create(null);
         vm.cmpTemplate = html;
+        assert.block(function devModeCheck() {
+            validateTemplate(vm, html);
+        });
     }
     assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
-    assert.block(function devModeCheck() {
-        // before every render, in dev-mode, we will like to know all expandos and
-        // all private-fields-like properties, so we can give meaningful errors.
-        extractOwnFields(component);
-
-        // validating slot names
-        const { slots = [] } = html;
-        for (let slotName in cmpSlots) {
-            if (ArrayIndexOf.call(slots, slotName) === -1) {
-                // TODO: this should never really happen because the compiler should always validate
-                console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
-            }
-        }
-
-        // validating identifiers used by template that should be provided by the component
-        const { ids = [] } = html;
-        ids.forEach((propName: string) => {
-            if (!(propName in component)) {
-                // TODO: this should never really happen because the compiler should always validate
-                console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
-            }
-        });
-
-    });
     const { proxy: slotset, revoke: slotsetRevoke } = XProxy.revocable(cmpSlots, slotsetProxyHandler);
-    const { proxy: cmp, revoke: componentRevoke } = XProxy.revocable(component, cmpProxyHandler);
-    const outerMemoized = currentMemoized;
-    currentMemoized = create(null);
-    let vnodes = html.call(undefined, api, cmp, slotset, context.tplCache);
+    let vnodes = html.call(undefined, api, component, slotset, context.tplCache);
     assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
-    currentMemoized = outerMemoized; // inception to memoize the accessing of keys from cmp for every render cycle
     slotsetRevoke();
-    componentRevoke();
     return vnodes;
 }

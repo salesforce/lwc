@@ -35,44 +35,42 @@ describe('template', () => {
             assert.deepEqual({}, $memoizer, 'memoizer should be provided');
         });
 
-        it('should revoke cmp and slotset proxies', () => {
-            let $cmp, $slotset;
+        it('should revoke slotset proxy', () => {
+            let $slotset;
             createCustomComponent(function ($a, $c, $s) {
-                $cmp = $c;
                 $slotset = $s;
                 return [];
             }, { x: [ api.h('p', {}, []) ] });
-            assert.throws(() => $cmp.state, 'state property member');
-            // assert.throws(() => $cmp.foo, 'unknown property member'); // compat mode prevents this
             assert.throws(() => $slotset.x, 'slot name x');
             // assert.throws(() => $slotset.foo, 'unknown slot name'); // compat mode prevents this
         });
 
-        it('should prevent a getter to be accessed twice in the same render phase', () => {
-            let counter = 0;
-            let vnode;
-            class MyComponent extends Element {
-                get x() {
-                    counter += 1;
-                }
-                get y() {
-                    counter += 1;
-                }
-                render() {
-                    return function (api, cmp) {
-                        cmp.x;
-                        cmp.y;
-                        cmp.x;
-                        cmp.y;
-                        return [];
-                    };
-                }
-            }
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            assert.strictEqual(counter, 2);
-        });
+        // this test depends on the memoization
+        // it('should prevent a getter to be accessed twice in the same render phase', () => {
+        //     let counter = 0;
+        //     let vnode;
+        //     class MyComponent extends Element {
+        //         get x() {
+        //             counter += 1;
+        //         }
+        //         get y() {
+        //             counter += 1;
+        //         }
+        //         render() {
+        //             return function (api, cmp) {
+        //                 cmp.x;
+        //                 cmp.y;
+        //                 cmp.x;
+        //                 cmp.y;
+        //                 return [];
+        //             };
+        //         }
+        //     }
+        //     const elm = document.createElement('x-foo');
+        //     vnode = api.c('x-foo', MyComponent, {});
+        //     patch(elm, vnode);
+        //     assert.strictEqual(counter, 2);
+        // });
 
         it('should not prevent or cache a getter calling another getter', () => {
             let counter = 0;
@@ -108,13 +106,15 @@ describe('template', () => {
         });
 
         it('should throw when attempting to set a property member of cmp', () => {
+            function template(api, cmp) {
+                cmp.x = [];
+                return [];
+            }
+            template.ids = ['x'];
             class MyComponent extends Element {
                 x = 1;
                 render() {
-                    return function (api, cmp) {
-                        cmp.x = [];
-                        return [];
-                    }
+                    return template;
                 }
             }
             const elm = document.createElement('x-foo');
@@ -127,21 +127,6 @@ describe('template', () => {
                 delete slotset.x;
                 return [];
             }, { x: [ api.h('p', {}, []) ] }));
-        });
-
-        it('should throw when attempting to delete a property member of cmp', () => {
-            class MyComponent extends Element {
-                x = 1;
-                render() {
-                    return function (api, cmp) {
-                        delete cmp.x;
-                        return [];
-                    }
-                }
-            }
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, {});
-            assert.throws(() => patch(elm, vnode));
         });
 
         it('should support switching templates', () => {
