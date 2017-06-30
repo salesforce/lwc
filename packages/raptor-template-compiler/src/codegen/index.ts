@@ -19,6 +19,7 @@ import {
     identifierFromComponentName,
     importFromComponentName,
     objectToAST,
+    getMemberExpressionRoot,
 } from './helpers';
 
 import {
@@ -26,6 +27,7 @@ import {
     traverse,
     isElement,
     isCustomElement,
+    isComponentProp,
 } from '../shared/ir';
 
 import {
@@ -189,7 +191,13 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
     if (on) {
         const onObj = objectToAST(on, (key) => {
             const { expression: handler } =  bindExpression(on[key], element);
-            return memorization.memorize(handler);
+            const boundHandler = t.callExpression(RENDER_PRIMITIVE_API.BIND, [ handler ]);
+
+            // #439 - The handler can only be memorized if it is bound to component instance
+            const id = getMemberExpressionRoot(handler as t.MemberExpression);
+            const shouldBeMemorized = isComponentProp(id, element);
+
+            return shouldBeMemorized ? memorization.memorize(boundHandler) : boundHandler;
         });
         data.push(t.objectProperty(t.identifier('on'), onObj));
     }

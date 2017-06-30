@@ -1,0 +1,11 @@
+<template>
+    <button onclick={create}>New</button>
+    <ul>
+        <template for:each={list} for:item="task">
+            <li>
+                {task.title}
+                <button onclick={task.delete}>[X]</button>
+            </li>
+        </template>
+    </ul>
+</template>

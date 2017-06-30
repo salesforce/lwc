@@ -55,6 +55,15 @@ export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
 }
 
+export function getMemberExpressionRoot(expression: t.MemberExpression): t.Identifier {
+    let current: t.Expression | t.Identifier = expression;
+    while (t.isMemberExpression(current)) {
+        current = current.object;
+    }
+
+    return current as t.Identifier;
+}
+
 export function importFromComponentName(name: string): t.ImportDeclaration {
     const localComponentIdentifier = identifierFromComponentName(name);
     return t.importDeclaration(

@@ -1,10 +1,6 @@
 import * as t from 'babel-types';
 
 import {
-    RENDER_PRIMITIVE_API,
-} from './helpers';
-
-import {
     TEMPLATE_PARAMS,
 } from '../shared/constants';
 
@@ -19,12 +15,7 @@ export function memorize(expression: t.Expression): t.Expression {
         t.identifier(`_m${id++}`),
     );
 
-    const rightExpression = t.assignmentExpression(
-        '=',
-        memorized,
-        t.callExpression(RENDER_PRIMITIVE_API.BIND, [expression]),
-    );
-
+    const rightExpression = t.assignmentExpression('=', memorized, expression);
     return t.logicalExpression('||', memorized, rightExpression);
 }
 
