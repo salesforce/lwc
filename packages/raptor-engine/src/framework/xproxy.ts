@@ -1,7 +1,7 @@
 import compat from "./compat";
 import assert from "./assert";
 import { unwrap, MembraneSlot, TargetSlot } from "./membrane";
-import { isObject, isFunction, ArraySlice, create, getPrototypeOf, setPrototypeOf, isArray } from "./language";
+import { isObject, isFunction, ArraySlice, create, getPrototypeOf, setPrototypeOf, isArray, keys, getOwnPropertyNames, assign, hasOwnProperty } from "./language";
 
 /*eslint-disable*/
 import { ReplicableFunction, Replicable, Replica, Membrane } from "./membrane";
@@ -53,8 +53,8 @@ const ProxyCompat: CompatProxyConstructor = function Proxy(target: Replicable, h
         };
     };
 
-    // Define proxy as this, or a Function (if either it's callable, or apply is set).
-    let proxy = this;
+    // Define proxy as Object, or Function (if either it's callable, or apply is set).
+    let proxy = this; // reusing the already created object, eventually the prototype will be resetted
     if (targetIsFunction) {
         proxy = function Proxy() {
             const usingNew = (this && this.constructor === proxy);
@@ -178,39 +178,80 @@ function iterableKeyCompat(replicaOrAny: Replica | any): any[] {
 // 5. for in operator `for (let i in obj)` => `for (let i in iterableKey(obj))`
 
 // patches
-// Object.hasOwnProperty should be patched as a general rule
-// Object.propertyIsEnumerable should be patched
+// [*] Object.prototype.hasOwnProperty should be patched as a general rule
+// [ ] Object.propertyIsEnumerable should be patched
+// [*] Array.isArray
+
+function compatIsArray(replicaOrAny: Replica | any): boolean {
+    return isArray(unwrap(replicaOrAny));
+}
+
+function compatKeys(replicaOrAny: Replica | any): Array<string | Symbol> {
+    return keys(unwrap(replicaOrAny));
+}
+
+function compatGetOwnPropertyNames(replicaOrAny: Replica | any): Array<string> {
+    return getOwnPropertyNames(unwrap(replicaOrAny));
+}
+
+function compatHasOwnProperty(key: string | Symbol): boolean {
+    const replicaOrAny: Replica | any = this;
+    return hasOwnProperty.call(unwrap(replicaOrAny), key);
+}
+
+function compatAssign(replicaOrAny: Replica | any): Replica | any {
+    if (replicaOrAny == null) { // TypeError if undefined or null
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    const to = Object(unwrap(replicaOrAny));
+
+    for (var index = 1; index < arguments.length; index++) {
+        const nextSource = arguments[index];
+
+        if (nextSource != null) { // Skip over if undefined or null
+            const iterator = unwrap(nextSource);
+            for (let nextKey in iterator) {
+                // Avoid bugs when hasOwnProperty is shadowed
+                if (hasOwnProperty.call(iterator, nextKey)) {
+                    setKey(to, nextKey, getKey(nextSource, nextKey));
+                }
+            }
+        }
+    }
+    return to;
+}
 
 // trap `preventExtensions` can be covered by a patched version of:
-// Object.preventExtensions()
-// Reflect.preventExtensions()
+// [ ] Object.preventExtensions()
+// [ ] Reflect.preventExtensions()
 
 // trap `getOwnPropertyDescriptor` can be covered by a patched version of:
-// Object.getOwnPropertyDescriptor()
-// Reflect.getOwnPropertyDescriptor()
+// [ ] Object.getOwnPropertyDescriptor()
+// [ ] Reflect.getOwnPropertyDescriptor()
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/defineProperty
 // trap `defineProperty` can be covered by a patched version of:
-// Object.defineProperty()
-// Reflect.defineProperty()
+// [ ] Object.defineProperty()
+// [ ] Reflect.defineProperty()
 
 
 // trap `deleteProperty` can be covered by the transpilation and the patched version of:
-// Reflect.deleteProperty()
+// [ ] Reflect.deleteProperty()
 
 // trap `ownKeys` can be covered by a patched version of:
-// Object.getOwnPropertyNames()
-// Object.getOwnPropertySymbols()
-// Object.keys()
-// Reflect.ownKeys()
+// [*] Object.getOwnPropertyNames()
+// [ ] Object.getOwnPropertySymbols()
+// [*] Object.keys()
+// [ ] Reflect.ownKeys()
 
 // trap `isExtensible` can be covered by a patched version of:
-// Object.isExtensible()
-// Reflect.isExtensible()
+// [ ] Object.isExtensible()
+// [ ] Reflect.isExtensible()
 
 // trap `setPrototypeOf` can be covered by a patched version of:
-// Object.setPrototypeOf()
-// Reflect.setPrototypeOf()
+// [ ] Object.setPrototypeOf()
+// [ ] Reflect.setPrototypeOf()
 
 export let XProxy: CompatProxyConstructor = Proxy;
 export let getKey;
@@ -229,11 +270,29 @@ export function enableCompatMode() {
     deleteKey = deleteKeyCompat;
     inKey = inKeyCompat;
     iterableKey = iterableKeyCompat;
+    Array.isArray = compatIsArray;
+    assign(Object, {
+        keys: compatKeys,
+        getOwnPropertyNames: compatGetOwnPropertyNames,
+        assign: compatAssign,
+    })
+    assign(Object.prototype, {
+        hasOwnProperty: compatHasOwnProperty,
+    })
 }
 
 export function disableCompatMode() {
     XProxy = Proxy;
     getKey = setKey = deleteKey = inKey = iterableKey = undefined;
+    Array.isArray = isArray;
+    assign(Object, {
+        keys,
+        getOwnPropertyNames,
+        assign,
+    });
+    assign(Object.prototype, {
+        hasOwnProperty,
+    })
 }
 
 // initialization

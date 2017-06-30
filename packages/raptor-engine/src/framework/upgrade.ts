@@ -27,7 +27,7 @@ function linkAttributes(element: HTMLElement, vm: VM) {
         attrName = attrName.toLocaleLowerCase();
         const propName = getPropNameFromAttrName(attrName);
         if (propsConfig[propName]) {
-            assert.error(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
             return;
         }
         const oldValue = getAttribute.call(element, attrName);

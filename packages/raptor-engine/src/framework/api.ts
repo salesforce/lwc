@@ -89,7 +89,7 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
 
 // [i]terable node
 export function i(items: Array<any>, factory: Function): Array<VNode> {
-    const len = isArray(items) ? items.length : 0;
+    const len = (items && items.length) || 0; // supporting arrays and objects alike
     const last = len ? (len - 1) : 0;
     const list: Array<VNode> = [];
     for (let i = 0; i < len; i += 1) {
