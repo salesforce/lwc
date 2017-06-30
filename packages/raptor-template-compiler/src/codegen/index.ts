@@ -5,6 +5,7 @@ import template = require('babel-template');
 
 import {
     TEMPLATE_PARAMS,
+    TEMPLATE_FUNCTION_NAME,
 } from '../shared/constants';
 
 import {
@@ -215,7 +216,7 @@ function shouldFlatten(element: IRElement): boolean {
 }
 
 const TEMPLATE_FUNCTION = template(
-    `export default function tmpl(API, CMP, SLOT_SET, CONTEXT) {
+    `export default function NAME(API, CMP, SLOT_SET, CONTEXT) {
         return STATEMENT;
     }`,
     { sourceType: 'module' },
@@ -347,26 +348,58 @@ export function transform(
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
+/**
+ * Generate metadata that will be attached to the template function
+ */
+function generateTemplateMetadata(metadata: CompilationMetadata): t.ExpressionStatement[] {
+    const { definedSlots } = metadata;
+    const metadataExpressions: t.ExpressionStatement[] = [];
+
+    // Generate the slots property on template function if slots are defined in the template
+    // tmpl.slots = ['$default$', 'x']
+    if (definedSlots.length) {
+        const slotsProperty = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier('slots'),
+        );
+
+        const slotsArray = t.arrayExpression(
+            metadata.definedSlots.map((slot) => t.stringLiteral(slot)),
+        );
+
+        const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
+        metadataExpressions.push(
+            t.expressionStatement(slotsMetadata),
+        );
+    }
+
+    return metadataExpressions;
+}
+
 export default function(templateRoot: IRElement, metadata: CompilationMetadata): CompilationOutput {
     memorization.reset();
 
     const statement = transform(templateRoot);
 
+    const imports = metadata.templateDependencies.map((cmpClassName) => (
+        importFromComponentName(cmpClassName)
+    ));
+
     const content = TEMPLATE_FUNCTION({
+        NAME: t.identifier(TEMPLATE_FUNCTION_NAME),
         API: t.identifier(TEMPLATE_PARAMS.API),
         CMP: t.identifier(TEMPLATE_PARAMS.INSTANCE),
         SLOT_SET: t.identifier(TEMPLATE_PARAMS.SLOT_SET),
         CONTEXT: t.identifier(TEMPLATE_PARAMS.CONTEXT),
         STATEMENT:  statement,
-    }) as t.Statement;
+    }) as t.ExportDefaultDeclaration;
 
-    const imports = metadata.templateDependencies.map((cmpClassName) => (
-        importFromComponentName(cmpClassName)
-    ));
+    const templateMetadata = generateTemplateMetadata(metadata);
 
     const program = t.program([
         ...imports,
         content,
+        ...templateMetadata,
     ]);
 
     const { code } = generate(program);

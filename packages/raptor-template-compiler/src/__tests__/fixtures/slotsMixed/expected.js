@@ -25,3 +25,4 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         )]])
     )];
 }
+tmpl.slots = ["header", "$default$", "footer"];
