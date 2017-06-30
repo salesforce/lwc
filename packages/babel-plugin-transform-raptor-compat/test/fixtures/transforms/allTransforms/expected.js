@@ -33,6 +33,9 @@ _setKey(_getKey(obj, "x"), "y", 1);
 // obj["x"].y = 2;
 _setKey(_getKey(obj, "x"), "y", 2);
 
+// obj[b] = 1;
+_setKey(obj, b, 1);
+
 // obj[2] = {};
 _setKey(obj, 2, {});
 

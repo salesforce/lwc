@@ -27,7 +27,7 @@ module.exports = function({ types: t }) {
              *      obj.f = 1;   =>   setKey(obj, "f", 1);
              */
             AssignmentExpression(path, state) {
-                let { left, right, operator, computed } = path.node;
+                let { left, right, operator } = path.node;
                 let assignment, args;
 
                 // Skip assigments such as var a = 1;
@@ -37,7 +37,7 @@ module.exports = function({ types: t }) {
 
                 args = [
                     left.object,
-                    convertProperty(left.property, computed),
+                    convertProperty(left.property, left.computed),
                     right
                 ];
                 if (operator !== '=') {
