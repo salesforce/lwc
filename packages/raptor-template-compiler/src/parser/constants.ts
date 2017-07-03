@@ -86,6 +86,12 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
     'thead',
     'tr',
   ],
+  'allowfullscreen': [
+      'iframe',
+  ],
+  'allowtransparency': [
+      'iframe', // Non standard
+  ],
   'alt': [
     'applet',
     'area',
@@ -448,6 +454,9 @@ export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   ],
   'scoped': [
     'style',
+  ],
+  'scrolling': [
+      'iframe', // Not supported in HTML5
   ],
   'seamless': [
     'iframe',
