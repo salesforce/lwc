@@ -30,14 +30,19 @@ function isQuotedAttribute(rawAttribute: string) {
     return value && value.startsWith('"') && value.endsWith('"');
 }
 
+function isEscapedAttribute(rawAttribute: string) {
+    const [, value] = rawAttribute.split('=');
+    return !value || !(value.includes('{') && value.includes('}'));
+}
+
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,
 ): string {
     const { value } = attr;
     const isQuoted = isQuotedAttribute(raw);
-
-    if (isExpression(value)) {
+    const isEscaped = isEscapedAttribute(raw);
+    if (!isEscaped && isExpression(value)) {
         if (isQuoted) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
@@ -57,7 +62,7 @@ export function normalizeAttributeValue(
         // <input value={myValue} />
         // -> Valid identifier.
         return value;
-    } else if (isPotentialExpression(value)) {
+    } else if (!isEscaped && isPotentialExpression(value)) {
 
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
         const isExpressionNextToSelfClosing = value.startsWith(EXPRESSION_SYMBOL_START)
