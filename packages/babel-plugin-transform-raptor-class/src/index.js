@@ -267,7 +267,7 @@ module.exports = function ({ types: t }) {
             // Methods
             } else if (prop.isClassMethod({ kind: 'method' })) {
                 // Push to public method
-                prop.traverse(DecoratorVisitor, { wiredData, publicMethods, key, isMethod: true })
+                prop.traverse(DecoratorVisitor, { wiredData, wiredKeys, publicMethods, key, isMethod: true })
 
                 if (key in KEY_MISSPELLED_METHODS) {
                     throw path.buildCodeFrameError(`Wrong lifecycle method name ${key}. You probably meant ${KEY_MISSPELLED_METHODS[key]}`);
