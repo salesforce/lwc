@@ -46,7 +46,8 @@ export interface IRElement {
 
     on?: { [name: string]: TemplateExpression };
 
-    style?: { [name: string]: string | number };
+    style?: TemplateExpression;
+    styleMap?: { [name: string]: string | number };
 
     attrs?: { [name: string]: IRAttribute };
     props?: { [name: string]: IRAttribute };

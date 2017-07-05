@@ -2,7 +2,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [$api.h(
         "section",
         {
-            style: {
+            styleMap: {
                 fontSize: "12px",
                 color: "red",
                 marginLeft: "5px",

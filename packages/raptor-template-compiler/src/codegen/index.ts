@@ -204,7 +204,7 @@ function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
 }
 
 function elementDataBag(element: IRElement): t.ObjectExpression {
-    const { classMap, className, style, attrs, props, on, forKey } = element;
+    const { classMap, className, style, styleMap, attrs, props, on, forKey } = element;
     const data: t.ObjectProperty[] = [];
 
     if (className) {
@@ -219,13 +219,19 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
         data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
     }
 
-    if (style) {
-        const styleObj = objectToAST(style, (key) => (
-            typeof style[key] === 'number' ?
-                t.numericLiteral(style[key] as number) :
-                t.stringLiteral(style[key] as string)
+    if (styleMap) {
+        const styleObj = objectToAST(styleMap, (key) => (
+            typeof styleMap[key] === 'number' ?
+                t.numericLiteral(styleMap[key] as number) :
+                t.stringLiteral(styleMap[key] as string)
         ));
-        data.push(t.objectProperty(t.identifier('style'), styleObj));
+
+        data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
+    }
+
+    if (style) {
+        const { expression: styleExpression } = bindExpression(style, element);
+        data.push(t.objectProperty(t.identifier('style'), styleExpression));
     }
 
     if (attrs) {

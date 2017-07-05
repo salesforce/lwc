@@ -63,7 +63,7 @@ describe('class and style', () => {
         const { root } = parseTemplate(`<template>
             <section style="font-size: 12px; color: red; margin: 10px 5px 10px"></section>
         </template>`);
-        expect(root.children[0].style).toEqual({
+        expect(root.children[0].styleMap).toEqual({
             fontSize: '12px',
             color: 'red',
             marginLeft: '5px',
@@ -74,12 +74,10 @@ describe('class and style', () => {
     });
 
     it('dynamic style attribute', () => {
-        const { warnings } = parseTemplate(`<template><section style={dynamicStyle}></section></template>`);
-        expect(warnings).toContainEqual({
-            level: 'error',
-            message: `Dynamic style attribute is not (yet) supported`,
-            start: 19,
-            length: 20,
+        const { root } = parseTemplate(`<template><section style={dynamicStyle}></section></template>`);
+        expect(root.children[0].style).toMatchObject({
+            type: 'Identifier',
+            name: 'dynamicStyle',
         });
     });
 });

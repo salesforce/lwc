@@ -1,10 +1,4 @@
 {
-  "warnings": [{
-    "level": "error",
-    "message": "Dynamic style attribute is not (yet) supported",
-    "start": 24,
-    "length": 19
-  }],
   "metadata": {
     "templateUsedIds": ["customStyle"]
   }

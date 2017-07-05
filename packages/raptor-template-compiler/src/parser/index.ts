@@ -223,11 +223,11 @@ export default function parse(source: string): {
         if (styleAttribute) {
             removeAttribute(element, 'style');
 
-            if (styleAttribute.type !== IRAttributeType.String) {
-                return warnAt(`Dynamic style attribute is not (yet) supported`, styleAttribute.location);
+            if (styleAttribute.type === IRAttributeType.Expression) {
+                element.style = styleAttribute.value;
+            } else if (styleAttribute.type === IRAttributeType.String) {
+                element.styleMap = parseStyle(styleAttribute.value);
             }
-
-            element.style = parseStyle(styleAttribute.value);
         }
     }
 

@@ -48,9 +48,16 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
     assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     // checking reserved internal data properties
     assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
-    const { classMap, className } = data;
+    const { classMap, className, style, styleMap } = data;
     assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));
+    assert.isFalse(styleMap && style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+    assert.block(function devModeCheck () {
+        if (style && !isString(style)) {
+            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
+        }
+    });
+    data.style = styleMap || (style + '');
     assert.block(function devModeCheck() {
         children.forEach((vnode) => {
             if (vnode === null) {
@@ -79,11 +86,18 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         // checking reserved internal data properties
     assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
-    const { key, slotset, attrs, on, className, classMap, props: _props } = data;
+    const { key, slotset, styleMap, style, attrs, on, className, classMap, props: _props } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
     data = { hook, key, slotset, attrs, on, _props };
     assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));
+    assert.isFalse(styleMap && style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+    assert.block(function devModeCheck () {
+        if (style && !isString(style)) {
+            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
+        }
+    });
+    data.style = styleMap || (style + '');
     return v(sel, data, [], undefined, undefined, Ctor);
 }
 

@@ -360,6 +360,136 @@ describe('component', function () {
         });
     });
 
+    describe('styles', function () {
+        it('should handle string styles', function () {
+            class MyComponent extends Element  {
+                state = {
+                    customStyle: 'color: red'
+                }
+
+                render () {
+                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                        return [$api.h(
+                            "section",
+                            {
+                                style: $cmp.state.customStyle
+                            },
+                            []
+                        )];
+                    }
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.querySelector('section').getAttribute('style'), 'color: red;');
+            });
+        });
+
+        it('should handle undefined properly', function () {
+            let styleString;
+            class MyComponent extends Element  {
+                state = {
+                    customStyle: undefined
+                }
+
+                render () {
+                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                        return [$api.h(
+                            "section",
+                            {
+                                style: $cmp.state.customStyle
+                            },
+                            []
+                        )];
+                    }
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.getAttribute('style'), '');
+            });
+        });
+
+        it('should handle null properly', function () {
+            let styleString;
+            class MyComponent extends Element  {
+                state = {
+                    customStyle: null
+                }
+
+                render () {
+                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                        return [$api.h(
+                            "section",
+                            {
+                                style: $cmp.state.customStyle
+                            },
+                            []
+                        )];
+                    }
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+
+            patch(elm, vnode);
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(elm.getAttribute('style'), '');
+            });
+        });
+
+        it('should diff between style objects and strings correctly', function () {
+            let called = false;
+            class MyComponent extends Element  {
+                state = {
+                    customStyle: {
+                        color: 'red'
+                    }
+                }
+
+                render () {
+                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                        return [$api.h(
+                            "section",
+                            {
+                                style: $cmp.state.customStyle
+                            },
+                            []
+                        )];
+                    }
+                }
+            }
+
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode);
+            const section = elm.querySelector('section');
+            section.style.removeProperty = function () {
+                called = true;
+            };
+            vnode.vm.component.state.customStyle = 'color:green';
+
+            return Promise.resolve().then(() => {
+                assert.deepEqual(called, false);
+            });
+        });
+    });
+
     describe('public methods', () => {
         it('should not invoke function when accessing public method', function () {
             let callCount = 0;

@@ -27,12 +27,45 @@ describe('api', () => {
             }, /className/);
         });
 
-         it('should call the Ctor factory for circular dependencies', () => {
+        it('should call the Ctor factory for circular dependencies', () => {
             class Foo extends Element {}
             const factory = function () { return Foo };
             factory.__circular__ = true;
             const vnode = target.c('x-foo', factory, { className: 'foo' });
-            assert.strictEqual(Foo, vnode.Ctor));
+            assert.strictEqual(Foo, vnode.Ctor);
+        });
+
+        it('assign correct style value when styleMap is present', () => {
+            const styleMap = {
+                color: 'red'
+            };
+            class Foo extends Element {}
+            const factory = function () { return Foo };
+            const vnode = target.c('x-foo', Foo, { styleMap });
+
+            assert.deepEqual(vnode.data.style, {
+                color: 'red'
+            });
+        });
+
+        it('assign correct style value when style is present', () => {
+            const style = 'color:red';
+            class Foo extends Element {}
+            const factory = function () { return Foo };
+            const vnode = target.c('x-foo', factory, { style });
+
+            assert.deepEqual(vnode.data.style, 'color:red');
+        });
+
+        it('should coerce style to string when is object', () => {
+            const style = {
+                color: 'red'
+            };
+            class Foo extends Element {}
+            const factory = function () { return Foo };
+            const vnode = target.c('x-foo', factory, { style });
+
+            assert.deepEqual(vnode.data.style, '[object Object]');
         });
     });
 
@@ -68,6 +101,33 @@ describe('api', () => {
             assert.throws(() => {
                 target.h('p', {}, [undefined]);
             });
+        });
+
+        it('assign correct style value when styleMap is present', () => {
+            const styleMap = {
+                color: 'red'
+            };
+            const vnode = target.h('p', { styleMap }, []);
+
+            assert.deepEqual(vnode.data.style, {
+                color: 'red'
+            });
+        });
+
+        it('assign correct style value when style is present', () => {
+            const style = 'color:red';
+            const vnode = target.h('p', { style }, []);
+
+            assert.deepEqual(vnode.data.style, 'color:red');
+        });
+
+        it('should coerce style to string when is object', () => {
+            const style = {
+                color: 'red'
+            };
+            const vnode = target.h('p', { style }, []);
+
+            assert.deepEqual(vnode.data.style, '[object Object]');
         });
     });
 
