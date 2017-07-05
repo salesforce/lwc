@@ -56,24 +56,28 @@ import expOperator from "babel-plugin-transform-exponentiation-operator";
 //     modules: false,
 // };
 
+const looseOpts = {
+    loose: false,
+};
+
 // IE11 and above
 export const BABEL_PLUGINS_COMPAT = [
     [expOperator, {}],
     [arrowFunctions, {}],
     [blockScoping, {}],
-    [esClasses, {}],
-    [computedProps, {}],
+    [esClasses, looseOpts],
+    [computedProps, looseOpts],
     [constants, {}],
-    [destructuring, {}],
+    [destructuring, looseOpts],
     [duplicatedKeys, {}],
-    [forOf, {}],
+    [forOf, looseOpts],
     [strLiterals, {}],
     [objSuper, {}],
     [parameters, {}],
     [shorthand, {}],
-    [spread, {}],
+    [spread, looseOpts],
     [stickyRegex, {}],
-    [templateLiterals, {}],
+    [templateLiterals, looseOpts],
     [typeofSymbol, {}],
     [uniRegex, {}],
     [regenerator, {}],
