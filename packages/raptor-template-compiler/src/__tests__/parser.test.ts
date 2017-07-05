@@ -142,28 +142,18 @@ describe('for:each directives', () => {
 
 describe('for:of directives', () => {
     it('right syntax', () => {
-        const { root } = parseTemplate(`<template><section for:of={items} for:iterator="it"></section></template>`);
+        const { root } = parseTemplate(`<template><section iterator:it={items}></section></template>`);
         expect(root.children[0].forOf.expression).toMatchObject({ type: 'Identifier', name: 'items' });
         expect(root.children[0].forOf.iterator).toMatchObject({ type: 'Identifier', name: 'it' });
     });
 
-    it('error missing for:iterator', () => {
-        const { warnings } = parseTemplate(`<template><section for:of={items}></section></template>`);
-        expect(warnings).toContainEqual({
-            level: 'error',
-            message: `for:of and for:iterator directives should be associated together.`,
-            start: 10,
-            length: 34,
-        });
-    });
-
     it('error expression value for for:iterator', () => {
-        const { warnings } = parseTemplate(`<template><section for:of={items} for:iterator={it}></section></template>`);
+        const { warnings } = parseTemplate(`<template><section iterator:it="items"></section></template>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: `for:iterator directive is expected to be a string.`,
-            start: 34,
-            length: 17,
+            message: `iterator:it directive is expected to be an expression.`,
+            start: 19,
+            length: 19,
         });
     });
 });

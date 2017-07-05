@@ -7,6 +7,8 @@ export const VALID_IF_MODIFIER = new Set([
     'strict-true',
 ]);
 
+export const ITERATOR_RE = /iterator\:([a-z]+)/;
+
 export const EVENT_HANDLER_RE = /^on/;
 
 export const DEFAULT_SLOT_NAME = '$default$';

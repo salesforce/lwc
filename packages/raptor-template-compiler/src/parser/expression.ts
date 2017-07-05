@@ -9,13 +9,20 @@ import {
 import {
     TemplateExpression,
     TemplateIdentifier,
+    IRNode,
 } from '../shared/types';
+
+import {
+    isBoundToIterator,
+} from '../shared/ir';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';
 
 const VALID_EXPRESSION_RE = /^{.+}$/;
 const POTENTIAL_EXPRESSION_RE = /^.?{.+}.*$/;
+
+const ITERATOR_NEXT_KEY = 'next';
 
 export function isExpression(source: string): boolean {
     return !!source.match(VALID_EXPRESSION_RE);
@@ -26,7 +33,7 @@ export function isPotentialExpression(source: string): boolean {
 }
 
 // FIXME: Avoid throwing errors and return it properly
-export function parseExpression(source: string): TemplateExpression {
+export function parseExpression(source: string, element?: IRNode): TemplateExpression {
     try {
         const parsed = babylon.parse(source);
 
@@ -59,6 +66,13 @@ export function parseExpression(source: string): TemplateExpression {
 
                     if (shouldReportComputed) {
                         throw new Error(`Template expression doens't allow computed property access`);
+                    }
+
+                    const memberExpression = path.node as types.MemberExpression;
+                    const propertyIdentifier = memberExpression.property as TemplateIdentifier;
+                    const objectIdentifier = memberExpression.object as TemplateIdentifier;
+                    if (isBoundToIterator(objectIdentifier, element) && propertyIdentifier.name === ITERATOR_NEXT_KEY) {
+                        throw new Error(`Template expression doesn't allow to modify iterators`);
                     }
                 },
             },

@@ -61,6 +61,7 @@ import {
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
     DEFAULT_SLOT_NAME,
+    ITERATOR_RE,
 } from './constants';
 
 export default function parse(source: string): {
@@ -324,7 +325,7 @@ export default function parse(source: string): {
             if (forIndex) {
                 removeAttribute(element, forIndex.name);
                 if (forIndex.type !== IRAttributeType.String) {
-                    return warnAt('for:index directive is expected to be a string.', forIndex.location);
+                    return warnAt(`for:index directive is expected to be a string.`, forIndex.location);
                 }
 
                 try {
@@ -348,38 +349,44 @@ export default function parse(source: string): {
     }
 
     function applyIterator(element: IRElement) {
-        const forOfAttribute = getTemplateAttribute(element, 'for:of');
-        const forIterator = getTemplateAttribute(element, 'for:iterator');
+        const iteratorExpression = getTemplateAttribute(element, ITERATOR_RE);
 
-        if (!forOfAttribute && !forIterator) {
+        if (!iteratorExpression) {
             return;
-        } else if (forOfAttribute && forIterator) {
-            removeAttribute(element, forOfAttribute.name);
-            removeAttribute(element, forIterator.name);
+        }
 
-            if (forOfAttribute.type !== IRAttributeType.Expression) {
-                return warnAt('for:of directive is expected to be an expression.', forOfAttribute.location);
-            } else if (forIterator.type !== IRAttributeType.String) {
-                return warnAt('for:iterator directive is expected to be a string.', forIterator.location);
-            }
+        removeAttribute(element, iteratorExpression.name);
+        const iteratorAttributeName = iteratorExpression.name;
 
-            let iterator: TemplateIdentifier;
-            try {
-                iterator = parseIdentifier(forIterator.value);
-            } catch (error) {
-                return warnAt(`${forIterator.value} is not a valid identifier`, forIterator.location);
-            }
+        let iteratorName;
+        if (iteratorAttributeName) {
+            iteratorName = iteratorAttributeName.split(':')[1];
+        }
 
-            element.forOf = {
-                expression: forOfAttribute.value,
-                iterator,
-            };
-        } else {
+        if (!iteratorName) {
             return warnOnElement(
-                `for:of and for:iterator directives should be associated together.`,
+                `iterator directives should have associated identifier.`,
                 element.__original,
             );
         }
+
+        if (iteratorExpression.type !== IRAttributeType.Expression) {
+            const message = `${iteratorExpression.name} directive is expected to be an expression.`;
+            return warnAt(message, iteratorExpression.location);
+        }
+
+        let iterator: TemplateIdentifier;
+        try {
+            iterator = parseIdentifier(iteratorName);
+        } catch (error) {
+            return warnAt(`${iteratorExpression.value} is not a valid identifier`, iteratorExpression.location);
+        }
+
+        element.forOf = {
+            expression: iteratorExpression.value,
+            iterator,
+        };
+
     }
 
     function applyKey(element: IRElement) {
@@ -537,7 +544,7 @@ export default function parse(source: string): {
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
-        const expression = parseExpression(sourceExpression);
+        const expression = parseExpression(sourceExpression, node);
         const { bounded } = bindExpression(expression, node, false);
 
         for (const boundedIdentifier of bounded) {

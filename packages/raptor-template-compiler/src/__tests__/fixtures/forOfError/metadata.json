@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Invalid expression {x.next} - Template expression doesn't allow to modify iterators",
+    "start": 80,
+    "length": 14
+  }],
+  "metadata": {
+    "templateUsedIds": ["items"]
+  }
+}

@@ -10,6 +10,7 @@ import {
 
 import {
     bindExpression,
+    rewriteIteratorToArguments,
 } from '../shared/scope';
 
 import {
@@ -101,6 +102,58 @@ function applyInlineFor(element: IRElement, babelNode: t.Expression) {
         RENDER_PRIMITIVE_API.ITERATOR,
         [ iterable, iterationFunction ],
     );
+}
+
+function applyInlineForOf(element: IRElement, babelNode: t.Expression): t.Expression {
+    if (!element.forOf) {
+        return babelNode;
+    }
+
+    const stack = new Stack<t.Expression >();
+    stack.push(
+        t.arrayExpression([]),
+    );
+
+    const { expression, iterator } = element.forOf;
+    const { name: iteratorName } = iterator;
+
+    const argNames: { [key: string]: t.Identifier } = {
+        value: t.identifier(`${iteratorName}Value`),
+        index: t.identifier(`${iteratorName}Index`),
+        first: t.identifier(`${iteratorName}First`),
+        last: t.identifier(`${iteratorName}Last`),
+    };
+
+    const functionParams = Object.keys(argNames).map((key) => (argNames[key]));
+    const iterationFunction = t.functionExpression(
+        undefined,
+        functionParams,
+        t.blockStatement([
+            t.returnStatement(babelNode),
+        ]),
+    );
+
+    const { expression: mappedIterationFunction } = rewriteIteratorToArguments(iterationFunction, iterator, argNames);
+
+    const { expression: iterable } = bindExpression(expression, element);
+
+    return t.callExpression(
+        RENDER_PRIMITIVE_API.ITERATOR,
+        [ iterable, mappedIterationFunction ],
+    );
+}
+
+function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
+    if (!element.forOf) {
+        return fragmentNodes;
+    }
+
+    let expression = fragmentNodes;
+    if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+        expression = expression.elements[0] as t.Expression;
+    }
+
+    return applyInlineForOf(element, expression);
 }
 
 function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
@@ -209,7 +262,7 @@ function elementDataBag(element: IRElement): t.ObjectExpression {
 function shouldFlatten(element: IRElement): boolean {
     return element.children.some((child) => (
         isElement(child) && (
-            (isSlot(child) || !!child.forEach) ||
+            (isSlot(child) || !!child.forEach || !!child.forOf) ||
             isTemplate(child) && shouldFlatten(child)
         )
     ));
@@ -313,6 +366,9 @@ export function transform(
 
         if (element.forEach) {
             expression = applyTemplateFor(element, expression);
+            (stack.peek() as t.ArrayExpression).elements.push(expression);
+        } else if (element.forOf) {
+            expression = applyTemplateForOf(element, expression);
             (stack.peek() as t.ArrayExpression).elements.push(expression);
         } else if (t.isArrayExpression(expression) && element.if) {
             // Inject inlined if elements directly

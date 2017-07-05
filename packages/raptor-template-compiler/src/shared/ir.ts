@@ -98,7 +98,9 @@ export function isBoundToIterator(identifier: TemplateIdentifier, node?: IRNode)
     // Make sure the identifier is not bound to any iteration variable
     if (isElement(node)) {
         const { forOf } = node;
-        return Boolean(forOf && forOf.iterator.name === identifier.name);
+        if (forOf) {
+            return Boolean(forOf.iterator.name === identifier.name);
+        }
     }
 
     // Delegate to parent component if no binding is found at this point
