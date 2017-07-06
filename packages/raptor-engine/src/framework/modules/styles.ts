@@ -21,10 +21,10 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
     const { elm } = vnode;
 
     if (isString(style)) {
-        elm.style = style;
+        elm.style.cssText = style;
     } else {
         if (isString(oldStyle)) {
-            elm.style = '';
+            elm.style.cssText = '';
         } else {
             for (name in oldStyle) {
                 if (!(name in style)) {

@@ -362,6 +362,7 @@ describe('component', function () {
 
     describe('styles', function () {
         it('should handle string styles', function () {
+            let calledCSSText = false;
             class MyComponent extends Element  {
                 state = {
                     customStyle: 'color: red'
@@ -383,15 +384,28 @@ describe('component', function () {
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', MyComponent, {});
+
+            const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
+            Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
+                get: function () {
+                    return cssTextPropDef.get.call(this);
+                },
+                set: function (value) {
+                    calledCSSText = true;
+                    return cssTextPropDef.set.call(this, value);
+                }
+            });
+
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.querySelector('section').getAttribute('style'), 'color: red;');
+                assert.deepEqual(elm.querySelector('section').style.cssText, 'color: red;');
+                assert.deepEqual(calledCSSText, true);
             });
         });
 
         it('should handle undefined properly', function () {
-            let styleString;
+            let calledCSSTextWithUndefined = false;
             class MyComponent extends Element  {
                 state = {
                     customStyle: undefined
@@ -414,10 +428,24 @@ describe('component', function () {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', MyComponent, {});
 
+            const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
+            Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
+                get: function () {
+                    return cssTextPropDef.get.call(this);
+                },
+                set: function (value) {
+                    if (value === 'undefined') {
+                        calledCSSTextWithUndefined = true;
+                    }
+                    return cssTextPropDef.set.call(this, value);
+                }
+            });
+
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.getAttribute('style'), '');
+                assert.deepEqual(elm.style.cssText, '');
+                assert.deepEqual(calledCSSTextWithUndefined, false);
             });
         });
 
@@ -448,7 +476,7 @@ describe('component', function () {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.getAttribute('style'), '');
+                assert.deepEqual(elm.style.cssText, '');
             });
         });
 

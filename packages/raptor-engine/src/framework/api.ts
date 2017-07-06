@@ -57,7 +57,7 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
     });
-    data.style = styleMap || (style + '');
+    data.style = styleMap || (style && style + '');
     assert.block(function devModeCheck() {
         children.forEach((vnode) => {
             if (vnode === null) {
@@ -97,7 +97,7 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
     });
-    data.style = styleMap || (style + '');
+    data.style = styleMap || (style && style + '');
     return v(sel, data, [], undefined, undefined, Ctor);
 }
 
