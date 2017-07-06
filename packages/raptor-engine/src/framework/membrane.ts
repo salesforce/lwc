@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { ArrayMap, isArray } from "./language";
+import { ArrayMap, isArray, isNull } from "./language";
 import { XProxy } from "./xproxy";
 
 /*eslint-disable*/
@@ -27,32 +27,30 @@ function isReplicable(value: any): boolean {
 }
 
 export function getReplica(membrane: Membrane, value: Replicable | any): Replica | any {
-    if (value === null || !isReplicable(value)) {
+    if (isNull(value)) {
+        return value;
+    }
+    value = unwrap(value);
+    if (!isReplicable(value)) {
         return value;
     }
     assert.isTrue(membrane instanceof Membrane, `getReplica() first argument must be a membrane.`);
-    let { cells, cache } = membrane;
-    if (cache.has(value)) {
-        return value;
-    }
+    let { cells } = membrane;
     const r = cells.get(value);
     if (r) {
         return r;
     }
     const replica: Replica = new XProxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
     cells.set(value, replica);
-    cache.add(replica);
     return replica;
 }
 
 export class Membrane {
     handler: MembraneHandler; // eslint-disable-line no-undef
     cells: WeakMap<Replicable, Replica>; // eslint-disable-line no-undef
-    cache: WeakSet<Replica>; // eslint-disable-line no-undef
     constructor(handler: MembraneHandler) {
         this.handler = handler;
         this.cells = new WeakMap();
-        this.cache = new WeakSet();
     }
     get(target: Replicable, key: string | Symbol): any {
         if (key === TargetSlot) {

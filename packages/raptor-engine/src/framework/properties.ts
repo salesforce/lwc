@@ -9,10 +9,13 @@ import {
 } from "./invoker";
 import { toString, isArray, isObject, isNull } from "./language";
 import { XProxy } from "./xproxy";
-import { TargetSlot, MembraneSlot } from "./membrane";
+import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 
-const ObjectPropertyToProxyCache: WeakMap<Object, Object> = new WeakMap();
-const ProxyCache: WeakSet<Object> = new WeakSet(); // used to identify any proxy created by this piece of logic.
+/*eslint-disable*/
+import { Replicable, Replica } from "./membrane";
+/*eslint-enable*/
+
+const ReplicableToReplicaMap: WeakMap<Replicable, Replica> = new WeakMap();
 
 function propertyGetter(target: Object, key: string | Symbol): any {
     if (key === TargetSlot) {
@@ -52,7 +55,7 @@ function propertyDelete(target: Object, key: string | Symbol): boolean {
     return true;
 }
 
-const propertyProxyHandler = {
+const propertyProxyHandler: ProxyHandler<Replicable> = {
     get: propertyGetter,
     set: propertySetter,
     deleteProperty: propertyDelete,
@@ -64,30 +67,26 @@ const propertyProxyHandler = {
     },
 };
 
-export function getPropertyProxy(value: Object): any {
+export function getPropertyProxy(value: Replicable | any): Replica | any {
     assert.isTrue(isObject(value), "perf-optimization: avoid calling this method for non-object value.");
 
     // TODO: Provide a holistic way to deal with built-ins, right now we just care ignore Date
     if (isNull(value) || value.constructor === Date) {
         return value;
     }
-    // TODO: perf opt - we should try to give identity to propertyProxies so we can test
-    // them faster than a weakmap lookup.
-    if (ProxyCache.has(value)) {
-        return value;
-    }
+
+    value = unwrap(value);
 
     assert.block(function devModeCheck() {
         const isNode = value instanceof Node;
         assert.invariant(!isNode, `Do not store references to DOM Nodes. Instead use \`this.querySelector()\` and \`this.querySelectorAll()\` to find the nodes when needed.`);
     });
 
-    let proxy = ObjectPropertyToProxyCache.get(value);
+    let proxy = ReplicableToReplicaMap.get(value);
     if (proxy) {
         return proxy;
     }
     proxy = new XProxy(value, propertyProxyHandler);
-    ObjectPropertyToProxyCache.set(value, proxy);
-    ProxyCache.add(proxy);
+    ReplicableToReplicaMap.set(value, proxy);
     return proxy;
 }
