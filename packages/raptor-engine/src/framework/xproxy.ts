@@ -253,7 +253,7 @@ function compatAssign(replicaOrAny: Replica | any): Replica | any {
 // [ ] Object.setPrototypeOf()
 // [ ] Reflect.setPrototypeOf()
 
-export let XProxy: CompatProxyConstructor = Proxy;
+export let XProxy: CompatProxyConstructor = typeof Proxy !== "undefined" ? Proxy : undefined;
 export let getKey;
 export let callKey;
 export let setKey;
