@@ -1,6 +1,7 @@
 /* eslint-env node */
 const pathLib = require('path');
 
+const ENGINE_IMPORT = 'engine';
 const API_DECORATOR = 'api';
 const WIRE_DECORATOR = 'wire';
 const KEYS_DATA_DECORATOR = { PARAMS: 'params', STATIC: 'static', TYPE: 'type', METHOD: 'method' };
@@ -20,6 +21,16 @@ function decamelize(str) {
 		.replace(/([a-z\d])([A-Z])/g, '$1' + sep + '$2')
 		.replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + sep + '$2')
 		.toLowerCase();
+}
+
+function isEngineElementBinding(binding) {
+    if (!binding || binding.kind !== 'module') {
+        return false;
+    }
+
+    const importDeclaration = binding.path.find(p => p.isImportDeclaration());
+    const source = importDeclaration &&  importDeclaration.node.source.value;
+    return source === ENGINE_IMPORT;
 }
 
 const PUBLIC_PROPERTY_GETTER_BIT_MASK = 1;
@@ -120,13 +131,15 @@ module.exports = function ({ types: t }) {
                     const defaultExport = body.find(n => t.isExportDefaultDeclaration(n));
                     const declaration = defaultExport && defaultExport.declaration;
                     const isNamedClass = declaration && t.isClassDeclaration(declaration) && declaration.id;
+                    const extendsEngineElement = isNamedClass && declaration.superClass && isEngineElementBinding(path.scope.getBinding(declaration.superClass.name));
+                    const isComponent = isNamedClass && extendsEngineElement;
 
-                    // If there is not default class export no transformation will happen
-                    if (!isNamedClass) {
+                    // If there is not default class export that extends from Element no transformation will happen
+                    if (!isComponent) {
                         state._skip = true;
                         return;
                     }
-
+                    state.file.metadata.isComponent = true;
                     state.opts.className = declaration.id.name;
                     state.opts.componentNamespace = state.opts.componentNamespace;
                 }
@@ -137,7 +150,17 @@ module.exports = function ({ types: t }) {
                     const extraBody = transformClassBody.call(this, className, path.get('body'), state);
                     path.getStatementParent().insertAfter(extraBody);
                 }
-            }
+            },
+            ClassMethod(path, state) {
+                if (!state._skip && path.node.kind === 'constructor') {
+                    let superCall = false;
+                    path.traverse({ Super() { superCall = true }});
+
+                    if (!superCall) {
+                        throw path.buildCodeFrameError('Missing super call in class contructor');
+                    }
+                }
+            },
         }
     };
 

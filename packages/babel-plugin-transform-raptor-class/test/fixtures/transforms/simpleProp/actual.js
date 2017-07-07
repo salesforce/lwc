@@ -1,5 +1,8 @@
-export default class Test {
+import { Element } from "engine";
+export default class Test extends Element {
     test = 1;
-    constructor() {}
+    constructor() {
+        super();
+    }
     test() {}
 }

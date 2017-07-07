@@ -1,5 +1,6 @@
 import _tmpl from "./actual.html";
-export default class Test {
+import { Element } from "engine";
+export default class Test extends Element {
     something = "custom prop";
     get something() {
         return this.s;

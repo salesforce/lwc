@@ -1,4 +1,5 @@
-export default class Text {
+import { Element } from "engine";
+export default class Text extends Element {
     @api publicProp;
     privateProp;
 

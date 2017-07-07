@@ -1,5 +1,5 @@
 {
   "message": "Unknown decorator @foo. Only @api and @wire decorators are allowed",
-  "line": 2,
+  "line": 3,
   "column": 4
 }

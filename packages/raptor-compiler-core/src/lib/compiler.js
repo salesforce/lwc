@@ -1,5 +1,5 @@
 import { extname } from 'path';
-import { getSource, mergeMetadata } from './utils';
+import { getSource, mergeMetadata, rollupWarningOverride } from './utils';
 import transformClass from './transform-class';
 import transformTemplate from './transform-template';
 import transformBundle from './transform-bundle';
@@ -30,7 +30,7 @@ export function compileBundle(entry, options) {
     ];
 
     return new Promise((resolve, reject) => {
-        rollup({ entry, plugins })
+        rollup({ entry, plugins, onwarn: rollupWarningOverride })
         .then((bundle) => {
             const devBundleOptions = {
                 moduleId: options.normalizedModuleName,

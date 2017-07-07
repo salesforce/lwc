@@ -34,8 +34,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     )];
 }
 
-class App {
+class App extends Element {
     constructor() {
+        super();
         this.list = [];
     }
     render() {

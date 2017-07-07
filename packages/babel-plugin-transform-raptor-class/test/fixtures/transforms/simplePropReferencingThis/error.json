@@ -1,5 +1,5 @@
 {
   "message": "Reference to the instance is not allowed in class properties",
-  "line": 2,
+  "line": 3,
   "column": 4
 }

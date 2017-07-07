@@ -1,1 +1,2 @@
-export default class FooBar {}
+import { Element } from "engine";
+export default class FooBar extends Element {}

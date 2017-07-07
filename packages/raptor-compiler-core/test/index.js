@@ -19,7 +19,7 @@ const fixturesDir = path.join(__dirname, 'fixtures');
 describe('compile individual resources: ', () => {
     it('compile with no options - no namespace', () => {
         const actualFile = path.join(fixturesDir, 'class_and_template/class_and_template.html');
-        const expectedFile = path.join(fixturesDir, 'expected-template.js');
+        const expectedFile = path.join(fixturesDir, 'expected-compile-individual-resources.js');
 
         const expected = fs.readFileSync(expectedFile, 'utf-8');
         const actual = compileResource(actualFile, {});
@@ -29,7 +29,7 @@ describe('compile individual resources: ', () => {
 
 describe('emit asserts for namespaced_folder: ', () => {
     const nsFolder = 'namespaced_folder';
-    it('Compile with no options - no namespace', () => {
+    it('Compile with no options and no namespace', () => {
         const ns1 = '/custom';
         const cmp1 = '/foo-bar.js';
         const fixtureCmpDir = path.join(fixturesDir, nsFolder, ns1, cmp1);
@@ -37,12 +37,12 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir)
         .then((result) => {
             const actual = result.code;
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options.js'), 'utf-8');
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compile-with-no-options-and-no-namespace.js'), 'utf-8');
             assert.equal(pretty(expected), pretty(actual));
         })
     });
 
-    it('Compile with no options - default namespace', () => {
+    it('Compile with no options and default namespace', () => {
         const ns1 = '/default';
         const cmp1 = '/default.js';
         const fixtureCmpDir = path.join(fixturesDir, nsFolder, ns1, cmp1);
@@ -50,7 +50,7 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir)
         .then((result) => {
             const actual = result.code;
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-no-options-unknown-ns.js'), 'utf-8');
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-compile-with-no-options-and-default-namespace.js'), 'utf-8');
             assert.equal(pretty(expected), pretty(actual));
         })
     });
@@ -63,14 +63,14 @@ describe('emit asserts for namespaced_folder: ', () => {
         return runCompile(fixtureCmpDir, { mapNamespaceFromPath: true })
         .then((result) => {
             const actual = result.code;
-            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-mapped-ns1.js'), 'utf-8');
+            const expected = fs.readFileSync(path.join(fixturesDir, 'expected-mapping-namespace-from-path.js'), 'utf-8');
             assert.equal(pretty(expected), pretty(actual));
         })
     });
 });
 
 describe('emit asserts for embedded sources: ', () => {
-    it('Compile using sources', () => {
+    it('Compile sources namespaced', () => {
         const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html'), 'utf-8');
         const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js'), 'utf-8');
         const entry = '/customNs/class_and_template/class_and_template.js';
@@ -91,7 +91,7 @@ describe('emit asserts for embedded sources: ', () => {
         })
     });
 
-    it('Compile using sources and format', () => {
+    it('Compile using sources namespaced and format', () => {
         const html = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.html'), 'utf-8');
         const js = fs.readFileSync(path.join(fixturesDir, 'class_and_template/class_and_template.js'), 'utf-8');
         const entry = 'myns/class_and_template/class_and_template.js';
@@ -113,7 +113,7 @@ describe('emit asserts for embedded sources: ', () => {
         })
     });
 
-    it('Compile using folder sources and format', () => {
+    it('Compile relative imports', () => {
         const html = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.html'), 'utf-8');
         const js = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative_import.js'), 'utf-8');
         const rel = fs.readFileSync(path.join(fixturesDir, 'relative_import/relative.js'), 'utf-8');

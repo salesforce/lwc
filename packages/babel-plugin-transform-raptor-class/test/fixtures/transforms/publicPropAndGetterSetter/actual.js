@@ -1,4 +1,5 @@
-export default class Test {
+import { Element } from "engine";
+export default class Test extends Element {
     @api something = "custom prop";
     @api get something() {
         return this.s;

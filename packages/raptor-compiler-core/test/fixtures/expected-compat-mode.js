@@ -1,4 +1,4 @@
-define('x-class_and_template', ['engine', 'compat/helpers/classCallCheck', 'compat/helpers/createClass'], function (engine, _classCallCheck, _createClass) {
+define('x-class_and_template', ['engine', 'compat/helpers/classCallCheck', 'compat/helpers/createClass', 'compat/helpers/possibleConstructorReturn', 'compat/helpers/inherits'], function (engine, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
     return [engine.callKey($api, "h", "section", {}, [])];
@@ -6,13 +6,17 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 
 var Test = 1;
 
-var ClassAndTemplate = function () {
+var ClassAndTemplate = function (_Element) {
+    _inherits(ClassAndTemplate, _Element);
+
     function ClassAndTemplate() {
         _classCallCheck(this, ClassAndTemplate);
 
-        engine.setKey(this, "t", Test);
+        var _this = _possibleConstructorReturn(this, engine.callKey(engine.getKey(ClassAndTemplate, "__proto__") || engine.callKey(Object, "getPrototypeOf", ClassAndTemplate), "call", this));
 
-        engine.setKey(this, "counter", 0);
+        engine.setKey(_this, "t", Test);
+        engine.setKey(_this, "counter", 0);
+        return _this;
     }
 
     _createClass(ClassAndTemplate, [{
@@ -23,7 +27,7 @@ var ClassAndTemplate = function () {
     }]);
 
     return ClassAndTemplate;
-}();
+}(engine.Element);
 
 return ClassAndTemplate;
 

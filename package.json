@@ -27,7 +27,9 @@
     "raptor-compiler": "bin/raptor-compiler-cli.js"
   },
   "babel": {
-    "presets": ["env"]
+    "presets": [
+      "env"
+    ]
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",

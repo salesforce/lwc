@@ -30,6 +30,14 @@ export function getSource(path, sources) {
     return fs.readFileSync(path, 'utf8').toString();
 }
 
+export function rollupWarningOverride(warning) {
+    if (warning.code && warning.code === 'UNRESOLVED_IMPORT') {
+        return;
+    }
+
+    console.warn(warning.message);
+}
+
 /*
 * Names and namespace mapping:
 * 'foo.js' => ns: default, name: foo
@@ -77,15 +85,18 @@ export function normalizeOptions(options) {
 export function mergeMetadata(metadata) {
     const dependencies = metadata.rollupDependencies;
     const labels = [];
+    let isComponent = false;
 
     for (let i in metadata) {
         dependencies.push(...metadata[i].templateDependencies || []);
         dependencies.push(...metadata[i].classDependencies || []);
         labels.push(...metadata[i].labels || []);
+        isComponent = isComponent || metadata[i].isComponent;
     }
 
     return {
         bundleDependencies: Array.from(new Set(dependencies)),
-        bundleLabels: labels
+        bundleLabels: labels,
+        isComponent,
     };
 }

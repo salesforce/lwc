@@ -1,14 +1,14 @@
-define('myns-class_and_template', function () {
+define('myns-class_and_template', ['engine'], function (engine) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [$api.h("section", {}, [])];
 }
 
 const Test = 1;
-class ClassAndTemplate {
+class ClassAndTemplate extends engine.Element {
     constructor() {
+        super();
         this.t = Test;
-
         this.counter = 0;
     }
 

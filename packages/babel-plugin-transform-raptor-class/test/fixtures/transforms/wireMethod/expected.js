@@ -1,5 +1,6 @@
 import _tmpl from "./actual.html";
-export default class Foo {
+import { Element } from "engine";
+export default class Test extends Element {
   innerRecordMethod() {}
 
   render() {
@@ -7,7 +8,7 @@ export default class Foo {
   }
 
 }
-Foo.wire = {
+Test.wire = {
   innerRecordMethod: {
     method: 1,
     type: "record",
@@ -15,4 +16,4 @@ Foo.wire = {
     static: { fields: ["Account", 'Rate'] }
   }
 };
-Foo.observedAttributes = ["record-id"];
+Test.observedAttributes = ["record-id"];

@@ -1,4 +1,4 @@
-define('myns-relative_import', function () {
+define('myns-relative_import', ['engine'], function (engine) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [$api.h("section", {}, [])];
@@ -12,8 +12,9 @@ function inner() {
     return sibling();
 }
 
-class RelativeImport {
+class RelativeImport extends engine.Element {
     constructor() {
+        super();
         this.x = test();
         this.y = inner();
     }

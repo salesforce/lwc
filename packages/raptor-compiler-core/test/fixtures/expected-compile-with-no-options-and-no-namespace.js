@@ -1,12 +1,14 @@
+import { Element } from 'engine';
+
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [$api.h("section", {}, [])];
 }
 
-class Default {
+class FooBar extends Element {
   render() {
     return tmpl;
   }
 
 }
 
-export default Default;
+export default FooBar;
