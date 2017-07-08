@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Raptor Engine",
   "main": "./lib/raptor.js",
   "module": "./lib/raptor.es.js",
@@ -41,7 +41,7 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.41.6",
     "rollup-plugin-inject": "^1.4.1",
-    "rollup-plugin-raptor-compiler": "0.12.2",
+    "rollup-plugin-raptor-compiler": "0.12.3",
     "rollup-plugin-strip-caridy-patched": "^1.1.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
