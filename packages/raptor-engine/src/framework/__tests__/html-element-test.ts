@@ -490,7 +490,7 @@ describe('html-element', () => {
             });
         });
 
-        it('should not trigger attribute changed callback', function () {
+        it('should not trigger attribute changed callback when changed from within', function () {
             let callCount = 0;
             class MyComponent extends Element {
                 attributeChangedCallback() {
@@ -508,7 +508,8 @@ describe('html-element', () => {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(callCount, 0);
+                assert.deepEqual(1, callCount); // one because of the attribute value from outside
+                assert.deepEqual(2, elm.tabIndex);
             });
         });
 

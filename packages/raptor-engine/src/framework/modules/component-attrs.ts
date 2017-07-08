@@ -15,7 +15,7 @@ function observeAttributes(oldVnode: VNode, vnode: ComponentVNode) {
     let { data: { attrs: oldAttrs } } = oldVnode;
     let { data: { attrs: newAttrs } } = vnode;
 
-    if (oldAttrs === newAttrs || (isUndefined(oldAttrs) && isUndefined(oldAttrs))) {
+    if (oldAttrs === newAttrs || (isUndefined(oldAttrs) && isUndefined(newAttrs))) {
         return;
     }
 
