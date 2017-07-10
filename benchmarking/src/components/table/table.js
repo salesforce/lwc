@@ -1,4 +1,4 @@
-import { Element } from 'raptor-engine';
+import { Element } from 'engine';
 
 export default class Table extends Element {
     @api rows = [];

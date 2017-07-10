@@ -1,4 +1,4 @@
-import { createElement } from 'raptor-engine';
+import { createElement } from 'engine';
 import { benchmark } from 'runner';
 
 import Table from 'benchmark-table';

@@ -8,7 +8,6 @@ const minimist = require('minimist');
 const webpack = require('webpack');
 const rollup = require('rollup');
 const babelPlugin = require('rollup-plugin-babel');
-const nodeResolvePlugin = require('rollup-plugin-node-resolve');
 const stripPlugin = require('rollup-plugin-strip');
 const raptorPlugin = require('rollup-plugin-raptor-compiler');
 
@@ -94,15 +93,6 @@ rollup.rollup({
     plugins: [
         raptorPlugin({
             componentNamespace: 'benchmark'
-        }),
-        nodeResolvePlugin({
-            module: true
-        }),
-        babelPlugin({
-            babelrc: false,
-            presets: [
-                ['es2015', { "modules": false }]
-            ],
         }),
         stripPlugin({
             debugger: true,
