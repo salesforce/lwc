@@ -26,9 +26,26 @@ import {
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { Element, createPublicPropertyDescriptor, createWiredPropertyDescriptor } from "./html-element";
-import { EmptyObject } from "./utils";
+import { EmptyObject, getAttrNameFromPropName, getPropNameFromAttrName } from "./utils";
+/*eslint-disable*/
+import {
+    ComponentClass
+ } from './component';
+ /*eslint-enable*/
 
-const CtorToDefMap: Map<any, ComponentDef> = new WeakMap();
+ let observableHTMLAttrs: HashTable<boolean>;
+
+ assert.block(function devModeCheck () {
+    observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
+        const globalProperty = GlobalHTMLProperties[key];
+        if (globalProperty && globalProperty.attribute) {
+            acc[globalProperty.attribute] = true;
+        }
+        return acc;
+    }, create(null));
+ });
+
+const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
@@ -47,7 +64,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     return isElementComponent(proto, protoSet);
 }
 
-function createComponentDef(Ctor: Class<Component>): ComponentDef {
+function createComponentDef(Ctor: ComponentClass): ComponentDef {
     assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
     const name: string = Ctor.name;
     assert.isTrue(name && isString(name), `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
@@ -104,7 +121,27 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
         methods,
         observedAttrs,
     };
+
     assert.block(function devModeCheck() {
+        getOwnPropertyNames(observedAttrs).forEach((observedAttributeName) => {
+            const camelName = getPropNameFromAttrName(observedAttributeName);
+            const propDef = props[camelName];
+
+            if (propDef) { // User defined prop
+                if (propDef.setter) { // Ensure user has not defined setter
+                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Use existing "${camelName}" setter to track changes.`);
+                } else if (observedAttributeName !== getAttrNameFromPropName(camelName)) { // Ensure observed attribute is kebab case
+                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Did you mean "${getAttrNameFromPropName(camelName)}"?`);
+                }
+            } else if (!observableHTMLAttrs[camelName]) { // Check if observed attribute is observable HTML Attribute
+                if (GlobalHTMLProperties[camelName] && GlobalHTMLProperties[camelName].attribute) { // Check for misspellings
+                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. "${observedAttributeName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[camelName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
+                } else { // Attribute is not valid observable HTML Attribute
+                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. "${observedAttributeName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
+                }
+            }
+        });
+
         freeze(Ctor.prototype);
         freeze(wire);
         freeze(props);
@@ -120,8 +157,8 @@ function createComponentDef(Ctor: Class<Component>): ComponentDef {
     return def;
 }
 
-function getWireHash(target: Object): HashTable<WireDef> | undefined {
-    const wire: HashTable = target.wire;
+function getWireHash(target: ComponentClass): HashTable<WireDef> | undefined {
+    const wire = target.wire;
     if (!wire || !getOwnPropertyNames(wire).length) {
         return;
     }
@@ -132,8 +169,8 @@ function getWireHash(target: Object): HashTable<WireDef> | undefined {
     return assign(create(null), wire);
 }
 
-function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
-    const props: HashTable = target.publicProps;
+function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
+    const props = target.publicProps;
     if (!props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
@@ -160,12 +197,12 @@ function getPublicPropertiesHash(target: Object): HashTable<PropDef> {
     }, create(null));
 }
 
-function getPublicMethodsHash(target: Object): HashTable<number> {
+function getPublicMethodsHash(target: ComponentClass): HashTable<number> {
     const publicMethods = target.publicMethods;
     if (!publicMethods || !publicMethods.length) {
         return EmptyObject;
     }
-    return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable => {
+    return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable<number> => {
         methodsHash[methodName] = 1;
         assert.block(function devModeCheck() {
             assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
@@ -175,18 +212,18 @@ function getPublicMethodsHash(target: Object): HashTable<number> {
     }, create(null));
 }
 
-function getObservedAttributesHash(target: Object): HashTable<number> {
+function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
     const observedAttributes = target.observedAttributes;
     if (!observedAttributes || !observedAttributes.length) {
         return EmptyObject;
     }
-    return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable => {
+    return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable<number> => {
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));
 }
 
-export function getComponentDef(Ctor: Class<Component>): ComponentDef {
+export function getComponentDef(Ctor: ComponentClass): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
         return def;

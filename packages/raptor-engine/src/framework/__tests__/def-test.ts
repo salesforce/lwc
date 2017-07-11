@@ -36,16 +36,134 @@ describe('def', () => {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['foo', 'x-bar'];
+            MyComponent.publicProps = {
+                foo: {
+                    config: 0
+                },
+                xBar: {
+                    config: 0
+                }
+            };
             assert.deepEqual(target.getComponentDef(MyComponent), {
                 name: 'MyComponent',
                 wire: undefined,
-                props: {},
+                props: {
+                    foo: {
+                        config: 0
+                    },
+                    xBar: {
+                        config: 0
+                    }
+                },
                 methods: {},
                 observedAttrs: {
                     foo: 1,
-                    "x-bar": 1,
+                    'x-bar': 1,
                 },
             });
+        });
+
+        it('should not throw error when observedAttribute is kebab case and is public prop', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['is-record-detail'];
+            MyComponent.publicProps = {
+                isRecordDetail: {
+                    config: 0
+                }
+            };
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).not.toThrow();
+        });
+
+        it('should throw error when observedAttribute is misspelled global attribute', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['contentEditable'];
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. "contentEditable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+        });
+
+        it('should throw error when observedAttribute is kebab case global attribute', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['content-editable'];
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. "content-editable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+        });
+
+        it('should throw error when observedAttribute is camelCased and is public prop', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['isRecordDetail'];
+            MyComponent.publicProps = {
+                isRecordDetail: {
+                    config: 0
+                }
+            };
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. Did you mean "is-record-detail"?');
+        });
+
+        it('should throw error when observedAttribute references setter', () => {
+            class MyComponent extends Element  {
+                set isRecordDetail () {}
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['is-record-detail'];
+            MyComponent.publicProps = {
+                isRecordDetail: {
+                    config: 2
+                }
+            };
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "is-record-detail" in component MyComponent observedAttributes. Use existing "isRecordDetail" setter to track changes.');
+        });
+
+        it('should throw error when observedAttribute references computed prop', () => {
+            class MyComponent extends Element  {
+                get isRecordDetail () {}
+                set isRecordDetail () {}
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['is-record-detail'];
+            MyComponent.publicProps = {
+                isRecordDetail: {
+                    config: 3
+                }
+            };
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "is-record-detail" in component MyComponent observedAttributes. Use existing "isRecordDetail" setter to track changes.');
+        });
+
+        it('should throw error when observedAttribute is not a valid global HTML attribute', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['isRecordDetail'];
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. "isRecordDetail" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+        });
+
+        it('should not throw error when observedAttribute is a valid global HTML attribute', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['contenteditable'];
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).not.toThrow();
         });
 
         it('should understand static publicMethods', () => {
@@ -202,16 +320,46 @@ describe('def', () => {
 
         it('should not inherit observedAttrs, it must be a manual process', function () {
             class MyComponent extends Element {}
+            MyComponent.publicProps = {
+                foo: {
+                    config: 0
+                },
+                bar: {
+                    config: 0
+                }
+            }
 
             MyComponent.observedAttributes = ['foo', 'bar'];
 
             class MySubComponent extends MyComponent {}
 
+            MySubComponent.publicProps = {
+                fizz: {
+                    config: 0
+                },
+                buzz: {
+                    config: 0
+                }
+            }
+
             MySubComponent.observedAttributes = ['fizz', 'buzz'];
 
             assert.deepEqual(target.getComponentDef(MySubComponent), {
                 name: 'MySubComponent',
-                props: {},
+                props: {
+                    foo: {
+                        config: 0
+                    },
+                    bar: {
+                        config: 0
+                    },
+                    fizz: {
+                        config: 0
+                    },
+                    buzz: {
+                        config: 0
+                    }
+                },
                 observedAttrs: {
                     fizz: 1,
                     buzz: 1

@@ -15,6 +15,17 @@ import { getPropertyProxy } from "./properties";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
+/*eslint-disable*/
+export interface ComponentClass {
+    publicMethods?: Array<string>;
+    observedAttributes?: Array<string>;
+    prototype: any;
+    name: string;
+    publicProps?: HashTable<PropDef>;
+    wire?: HashTable<WireDef>;
+}
+/*eslint-enable*/
+
 export let vmBeingConstructed: VM | null = null;
 
 export function isBeingConstructed(vm: VM): boolean {
@@ -22,7 +33,7 @@ export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
 
-export function createComponent(vm: VM, Ctor: Class<Component>) {
+export function createComponent(vm: VM, Ctor: ComponentClass) {
     assert.vm(vm);
     // create the component instance
     const vmBeingConstructedInception = vmBeingConstructed;
