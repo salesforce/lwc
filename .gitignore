@@ -3,6 +3,8 @@
 .DS_Store
 dist
 node_modules
+packages/**/.DS_Store
+packages/**/yarn.lock
 packages/raptor-engine/fake-cdn/**/*.js
 packages/raptor-engine/fake-cdn/**/*.map
 packages/raptor-engine/fake-html/**/*.html

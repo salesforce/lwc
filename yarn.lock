@@ -150,7 +150,7 @@ ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
 
-ansi-styles@^3.0.0:
+ansi-styles@^3.0.0, ansi-styles@^3.1.0:
   version "3.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-styles/-/ansi-styles-3.1.0.tgz#09c202d5c917ec23188caa5c9cb9179cd9547750"
   dependencies:
@@ -920,7 +920,7 @@ babel-preset-babili@^0.1.2:
     babel-plugin-transform-undefined-to-void "^6.8.2"
     lodash.isplainobject "^4.0.6"
 
-babel-preset-env@^1.5.1:
+babel-preset-env@^1.6.0:
   version "1.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-env/-/babel-preset-env-1.6.0.tgz#2de1c782a780a0a5d605d199c957596da43c44e4"
   dependencies:
@@ -1240,8 +1240,8 @@ camelcase@^4.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
 caniuse-lite@^1.0.30000684:
-  version "1.0.30000697"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000697.tgz#125fb00604b63fbb188db96a667ce2922dcd6cdd"
+  version "1.0.30000698"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000698.tgz#8102e8978b1f36962f2a102432e4bf4eac7b6cbe"
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -1264,6 +1264,14 @@ chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
+chalk@^2.0.0:
+  version "2.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/chalk/-/chalk-2.0.1.tgz#dbec49436d2ae15f536114e76d14656cdbc0f44d"
+  dependencies:
+    ansi-styles "^3.1.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^4.0.0"
+
 chokidar@^1.0.1, chokidar@^1.4.3, chokidar@^1.6.1:
   version "1.7.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
@@ -1284,10 +1292,11 @@ ci-info@^1.0.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ci-info/-/ci-info-1.0.0.tgz#dc5285f2b4e251821683681c381c3388f46ec534"
 
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
-  version "1.0.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cipher-base/-/cipher-base-1.0.3.tgz#eeabf194419ce900da3018c207d212f2a6df0a07"
+  version "1.0.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cipher-base/-/cipher-base-1.0.4.tgz#8760e4ecc272f4c363532f926d874aae2c1397de"
   dependencies:
     inherits "^2.0.1"
+    safe-buffer "^5.0.1"
 
 circular-json@^0.3.1:
   version "0.3.1"
@@ -2838,6 +2847,10 @@ has-flag@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/has-flag/-/has-flag-1.0.0.tgz#9d9e793165ce017a00f00418c43f942a7b1d11fa"
 
+has-flag@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/has-flag/-/has-flag-2.0.0.tgz#e8207af1cc7b30d446cc70b734b5e8be18f88d51"
+
 has-gulplog@^0.1.0:
   version "0.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/has-gulplog/-/has-gulplog-0.1.0.tgz#6414c82913697da51590397dafb12f22967811ce"
@@ -3002,11 +3015,11 @@ inquirer@^0.12.0:
     through "^2.3.6"
 
 inquirer@^3.0.6:
-  version "3.1.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/inquirer/-/inquirer-3.1.1.tgz#87621c4fba4072f48a8dd71c9f9df6f100b2d534"
+  version "3.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/inquirer/-/inquirer-3.2.0.tgz#45b44c2160c729d7578c54060b3eed94487bb42b"
   dependencies:
     ansi-escapes "^2.0.0"
-    chalk "^1.0.0"
+    chalk "^2.0.0"
     cli-cursor "^2.1.0"
     cli-width "^2.0.0"
     external-editor "^2.0.4"
@@ -3016,8 +3029,8 @@ inquirer@^3.0.6:
     run-async "^2.2.0"
     rx-lite "^4.0.8"
     rx-lite-aggregates "^4.0.8"
-    string-width "^2.0.0"
-    strip-ansi "^3.0.0"
+    string-width "^2.1.0"
+    strip-ansi "^4.0.0"
     through "^2.3.6"
 
 interpret@^1.0.0:
@@ -5426,7 +5439,7 @@ string-width@^1.0.1, string-width@^1.0.2:
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
 
-string-width@^2.0.0:
+string-width@^2.0.0, string-width@^2.1.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/string-width/-/string-width-2.1.0.tgz#030664561fc146c9423ec7d978fe2457437fe6d0"
   dependencies:
@@ -5526,6 +5539,12 @@ supports-color@^3.1.0, supports-color@^3.1.2:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/supports-color/-/supports-color-3.2.3.tgz#65ac0504b3954171d8a64946b2ae3cbb8a5f54f6"
   dependencies:
     has-flag "^1.0.0"
+
+supports-color@^4.0.0:
+  version "4.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/supports-color/-/supports-color-4.2.0.tgz#ad986dc7eb2315d009b4d77c8169c2231a684037"
+  dependencies:
+    has-flag "^2.0.0"
 
 symbol-tree@^3.2.1:
   version "3.2.2"
