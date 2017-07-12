@@ -121,26 +121,31 @@ export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
     return attrName === 'role' || attrName === 'is' || attrName === 'key' || !!attrName.match(DATA_ARIA_RE);
 }
 
-// TODO: We will be adding more whitelisting here as we find bugs...
-function isInputSpecialCase({ tag }: IRElement, attrName: string) {
-    return tag === 'input' && attrName !== 'type';
+function isInputStateAttribute(element: IRElement, attrName: string) {
+    return element.tag === 'input' && (attrName === 'value' || attrName === 'checked');
 }
 
-/*
-* Attribute vs. Prop
-* We consider is an attribute if any of the conditions apply:
-* 1) Is a special attribute (role, aria, key, is, data-)
-* 2) Is a global attr (commong to all tags)
-* 3) Is an html with no `is` and its not an input tag (input is special)
-* 4) If has an is attr and is a valid HTMl for the current tagName
-*/
 export function isAttribute(element: IRElement, attrName: string): boolean {
-    const hasIsAttr = !!getAttribute(element, 'is');
+    // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
+    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
+        return true;
+    }
 
-    return GLOBAL_ATTRIBUTE_SET.has(attrName) ||
-           isAriaOrDataOrFmkAttribute(attrName) ||
-           (!isCustomElement(element) && !hasIsAttr && !isInputSpecialCase(element, attrName)) ||
-           (hasIsAttr && isValidHTMLAttribute(element.tag, attrName));
+    // Handle input tag value="" and checked attributes that are only used for state initialization.
+    // Because .setAttribute() won't update the value, those attributes should be considered as props.
+    if (isInputStateAttribute(element, attrName)) {
+        return false;
+    }
+
+    // Handle attributes applied to a subclassed element via the is="" attribute.
+    // Returns true only attributes that are valid attribute for the base element.
+    const hasIsAttr = !!getAttribute(element, 'is');
+    if (hasIsAttr) {
+        return isValidHTMLAttribute(element.tag, attrName);
+    }
+
+    // Handle general case where only standard element have attribute value.
+    return !isCustomElement(element);
 }
 
 export function isProp(element: IRElement, attrName: string) {
@@ -148,7 +153,7 @@ export function isProp(element: IRElement, attrName: string) {
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
-    if (isAriaOrDataOrFmkAttribute(attrName) || SVG_TAG_SET.has(tagName)) {
+    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName) || SVG_TAG_SET.has(tagName)) {
         return true;
     }
 

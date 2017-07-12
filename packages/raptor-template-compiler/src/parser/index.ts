@@ -10,7 +10,7 @@ import {
 } from './html';
 
 import {
-    isProp,
+    isAttribute,
     getAttribute,
     removeAttribute,
     attributeName,
@@ -423,14 +423,14 @@ export default function parse(source: string): {
             }
         }
 
-        const isAttribute = getTemplateAttribute(element, 'is');
-        if (isAttribute) {
-            if (isAttribute.type !== IRAttributeType.String) {
-                return warnAt(`Is attribute value can't be an expression`, isAttribute.location);
+        const isAttr = getTemplateAttribute(element, 'is');
+        if (isAttr) {
+            if (isAttr.type !== IRAttributeType.String) {
+                return warnAt(`Is attribute value can't be an expression`, isAttr.location);
             }
 
             // Don't remove the is, because passed as attribute
-            component = isAttribute.value;
+            component = isAttr.value;
         }
 
         if (component) {
@@ -522,23 +522,25 @@ export default function parse(source: string): {
             }
 
             const { name, location } = attr;
-            if (isProp(element, name)) {
+            if (isBlacklistedAttribute(name)) {
+                return;
+            } else if (isAttribute(element, name)) {
+                if (!isValidHTMLAttribute(element.tag, name)) {
+                    const msg = [
+                        `${name} is not valid attribute for ${tag}. For more information refer to`,
+                        `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
+                    ].join(' ');
+
+                    warnAt(msg, location);
+                } else {
+                    const attrs = element.attrs || (element.attrs = {});
+                    attrs[name] = attr;
+                }
+            } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;
 
                 removeAttribute(element, name);
-            } else if (!isValidHTMLAttribute(tag, name)) {
-                const msg = [
-                    `${name} is not valid attribute for ${tag}.`,
-                    `For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
-                ].join(' ');
-
-                warnAt(msg, location);
-            } else if (isBlacklistedAttribute(name)) {
-                return;
-            } else {
-                const attrs = element.attrs || (element.attrs = {});
-                attrs[name] = attr;
             }
         });
     }
