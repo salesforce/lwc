@@ -4,6 +4,7 @@ import { OwnerKey } from "../vm";
 import * as api from "../api";
 import { patch } from '../patch';
 import assert from 'power-assert';
+import assertLogger from './../assert';
 
 describe('html-element', () => {
 
@@ -83,6 +84,56 @@ describe('html-element', () => {
             assert(attributeValueForFooBarBaz === null);
         });
 
+    });
+
+    describe('#dispatchEvent', function () {
+        it('should throw when event is dispatched during construction', function () {
+            class Foo extends Element {
+                constructor () {
+                    super();
+                    this.dispatchEvent(new CustomEvent('constructorevent'));
+                }
+            }
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            expect(() => {
+                patch(elm, vnode);
+            }).toThrow('this.dispatchEvent() should not be called during the construction of the custom element for <x-foo> because no one is listening for the event "constructorevent" just yet.');
+        });
+
+        it('should log warning when element is not connected', function () {
+            class Foo extends Element {}
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            const vnode2 = api.h('div', {}, []);
+            patch(elm, vnode);
+            patch(vnode, vnode2);
+            jest.spyOn(assertLogger, 'logWarning')
+
+            return Promise.resolve().then(() => {
+                vnode.vm.component.dispatchEvent(new CustomEvent('warning'));
+                expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected(via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
+                assertLogger.logWarning.mockRestore();
+            });
+        });
+
+        it('should not log warning when element is connected', function () {
+            class Foo extends Element {}
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            const vnode2 = api.h('div', {}, []);
+            patch(elm, vnode);
+            jest.spyOn(assertLogger, 'logWarning')
+
+            return Promise.resolve().then(() => {
+                vnode.vm.component.dispatchEvent(new CustomEvent('warning'));
+                expect(assertLogger.logWarning).not.toBeCalled();
+                assertLogger.logWarning.mockRestore();
+            });
+        });
     });
 
     describe('#tagName', () => {

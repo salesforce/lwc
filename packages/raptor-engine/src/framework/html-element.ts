@@ -135,7 +135,13 @@ ComponentElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: Event): boolean {
         const elm = getLinkedElement(this);
-        assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event ${event} just yet.`);
+        assert.block(() => {
+            const vm = this[ViewModelReflection];
+            assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${event.type}" just yet.`);
+            if (vm.idx === 0) {
+                assert.logWarning(`Unreachable event "${event.type}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected(via connectedCallback) and before the element is disconnected(via disconnectedCallback).`);
+            }
+        });
         // custom elements will rely on the DOM dispatchEvent mechanism
         return elm.dispatchEvent(event);
     },
