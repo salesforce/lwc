@@ -37,6 +37,8 @@ export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol)
     if (isUndefined(value)) {
         value = [];
         reactiveRecord[key] = value;
+    } else if (value[0] === vm) {
+        return; // perf optimization considering that most subscriptions will come from the same vm
     }
     if (ArrayIndexOf.call(value, vm) === -1) {
         ArrayPush.call(value, vm);
