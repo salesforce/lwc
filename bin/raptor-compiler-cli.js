@@ -3,7 +3,7 @@
 
 import * as path from 'path';
 import * as prettier from 'prettier';
-import { compile } from '../packages/raptor-compiler-core/src/index.js';
+import { compile } from '../packages/raptor-compiler/src/index.js';
 
 const args = process.argv.slice(2);
 if (!args.length) {
