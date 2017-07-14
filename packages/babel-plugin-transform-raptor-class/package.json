@@ -7,7 +7,7 @@
   "devDependencies": {
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
-    "raptor-helper-fixture": "0.10.5"
+    "raptor-helper-fixture": "^0.17.0"
   },
   "scripts": {
     "test": "mocha"

@@ -3,7 +3,7 @@
     "clean": "rimraf dist/",
     "build": "yarn run link:engine && yarn run link:compiler && node scripts/build",
     "link:engine": "(cd ../packages/raptor-engine && yarn unlink; yarn link) && yarn link raptor-engine",
-    "link:compiler": "(cd ../packages/rollup-plugin-raptor-compiler && yarn unlink; yarn link) && yarn link rollup-plugin-raptor-compiler",
+    "link:compiler": "(cd ../packages/raptor-compiler-core && yarn unlink; yarn link) && yarn link raptor-compiler-core",
     "build:runner": "webpack --config scripts/webpack.config.js",
     "cli": "babel-node ./runner/cli",
     "serve": "cd dist && python -m SimpleHTTPServer 8000"
@@ -25,6 +25,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-strip": "^1.1.1",
+    "rollup-plugin-raptor-compiler": "^0.17.0",
     "webpack": "^2.3.2"
   },
   "dependencies": {
