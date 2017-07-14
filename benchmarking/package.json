@@ -25,7 +25,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-strip": "^1.1.1",
-    "rollup-plugin-raptor-compiler": "^0.17.0",
+    "rollup-plugin-raptor-compiler": "^0.18.0",
     "webpack": "^2.3.2"
   },
   "dependencies": {
