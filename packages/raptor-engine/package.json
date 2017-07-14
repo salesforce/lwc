@@ -41,7 +41,7 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.41.6",
     "rollup-plugin-inject": "^1.4.1",
-    "rollup-plugin-raptor-compiler": "^0.17.0",
+    "rollup-plugin-raptor-compiler": "^0.12.4",
     "rollup-plugin-strip-caridy-patched": "^1.1.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",

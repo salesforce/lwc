@@ -4746,9 +4746,9 @@ range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
-raptor-helper-fixture@^0.17.0:
-  version "0.17.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-helper-fixture/-/raptor-helper-fixture-0.17.0.tgz#c3ddc5d99aa96b8363e32d1d5633b312e377018e"
+raptor-helper-fixture@^0.12.4:
+  version "0.12.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-helper-fixture/-/raptor-helper-fixture-0.12.4.tgz#6f46dca7c39b4f6f78a63103757431aa0c044a95"
 
 rc@^1.1.7:
   version "1.2.1"
@@ -5044,9 +5044,9 @@ rollup-plugin-inject@^1.4.1:
     magic-string "^0.10.0"
     rollup-pluginutils "^1.2.0"
 
-rollup-plugin-raptor-compiler@^0.17.0:
-  version "0.17.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-raptor-compiler/-/rollup-plugin-raptor-compiler-0.17.0.tgz#6399bd0480fd4fcc53d3180e1d9b9710d5009d9b"
+rollup-plugin-raptor-compiler@^0.12.4:
+  version "0.12.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-raptor-compiler/-/rollup-plugin-raptor-compiler-0.12.4.tgz#15218bb6e5b135f3f235a937807f32ddd5b0dc03"
   dependencies:
     glob "^7.1.2"
     rollup-pluginutils "^2.0.1"
