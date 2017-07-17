@@ -1,5 +1,6 @@
 <template>
     <div class="foo">
+        <button onclick={handleClick}>{label}</button>
         <h1 if:true={header}>{header}</h1>
         <ul class="foo">
             <li class="first">header</li>
@@ -8,6 +9,5 @@
             </li>
             <li class="last">footer</li>
         </ul>
-        <button onclick={handleClick}>{label}</button>
     </div>
 </template>

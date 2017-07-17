@@ -1,3 +1,5 @@
+import { Element } from 'engine';
+
 const DefaultMinValue = 5;
 const DefaultMaxValue = 35;
 
@@ -13,8 +15,6 @@ function produceNewData(oldData, min, max) {
     }
     return data;
 }
-
-import { Element } from "engine";
 
 export default class SimpleList extends Element {
     @api min = DefaultMinValue;

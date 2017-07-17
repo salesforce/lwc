@@ -22,41 +22,41 @@ export function compileFile(entry, options) {
     }
 }
 
-export function compileBundle(entry, options) {
-    options = options || {};
+export function compileBundle(entry, options = {}) {
+    const isDevMode = options.mode === MODES.DEV;
     const plugins = [
         sourceResolver(options),
         rollupTransform(options)
     ];
 
-    return new Promise((resolve, reject) => {
-        rollup({ entry, plugins, onwarn: rollupWarningOverride })
-        .then((bundle) => {
-            const devBundleOptions = {
-                moduleId: options.normalizedModuleName,
-                interop: false,
-                useStrict: false,
-                format: options.format
+    return rollup({
+        entry,
+        plugins,
+        onwarn: rollupWarningOverride
+    }).then(bundle => {
+        const devBundleOptions = {
+            moduleId: options.normalizedModuleName,
+            interop: false,
+            useStrict: false,
+            format: options.format
+        };
+
+        const bundleOptions = isDevMode ?  devBundleOptions : { format: 'es' };
+        return bundle.generate(bundleOptions);
+    }).then(result => {
+        result.metadata = mergeMetadata(options.$metadata);
+
+        // In dev mode we don't need to do any more transforms, return early
+        if (isDevMode) {
+            return {
+                code: result.code,
+                map: result.map,
+                metadata: result.metadata
             };
-
-            const isDevMode = options.mode === MODES.DEV;
-            const bundleOptions = isDevMode ?  devBundleOptions : { format: 'es' };
-            const bundleResult = bundle.generate(bundleOptions);
-            bundleResult.metadata = mergeMetadata(options.$metadata);
-
-            // In dev mode we don't need to do any more transforms, return early
-            if (isDevMode) {
-                resolve({
-                    code: bundleResult.code,
-                    map: bundleResult.map,
-                    metadata: bundleResult.metadata
-                });
-            } else {
-                // For any other mode, we need to do more transformations
-                resolve(transformBundle(entry, bundleResult, options));
-            }
-        })
-        .catch(reject);
+        } else {
+            // For any other mode, we need to do more transformations
+            return transformBundle(entry, result, options);
+        }
     });
 }
 

@@ -50,16 +50,15 @@ function transformBundle(entry, bundle, babelConfig, options, minify) {
                 return { code : result.code, map  : result.map };
             }
         }],
-    }).then(bundleResult => {
-        const result = bundleResult.generate({
+    }).then(bundleResult => (
+        bundleResult.generate({
             format: options.format,
             moduleId: options.normalizedModuleName,
             interop: false,
             useStrict: false
-        });
-
+        })
+    )).then(result => {
         result.metadata = bundle.metadata;
         return result;
     });
-
 }

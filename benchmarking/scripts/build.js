@@ -7,7 +7,6 @@ const minimist = require('minimist');
 
 const webpack = require('webpack');
 const rollup = require('rollup');
-const babelPlugin = require('rollup-plugin-babel');
 const stripPlugin = require('rollup-plugin-strip');
 const raptorPlugin = require('rollup-plugin-raptor-compiler');
 
@@ -91,21 +90,29 @@ rollup.rollup({
 
     external: [ 'runner' ],
     plugins: [
+        {
+            resolveId(id) {
+                if (id === 'engine') {
+                    return require.resolve('raptor-engine').replace('common', 'es');
+                }
+            }
+        },
         raptorPlugin({
-            componentNamespace: 'benchmark'
+            componentNamespace: 'benchmark',
+            resolveFromPackages: false,
         }),
         stripPlugin({
             debugger: true,
             functions: [ 'console.*', 'assert.*' ],
         }),
     ],
-}).then(bundle => {
-    var { code } = bundle.generate({
+}).then(bundle => (
+    bundle.generate({
         format: 'umd',
         moduleName: 'bundle',
         globals: { runner: 'runner' }
-    });
-
+    })
+)).then(({ code }) => {
     console.log(`Storing bundle to ${bundlePath}`);
     mkdirp.sync(bundlePath);
 

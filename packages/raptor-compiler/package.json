@@ -47,7 +47,7 @@
     "babel-preset-babili": "^0.1.2",
     "babel-preset-env": "^1.6.0",
     "raptor-template-compiler": "0.12.4",
-    "rollup": "^0.41.6",
+    "rollup": "^0.45.1",
     "rollup-plugin-babel": "^2.7.1"
   },
   "scripts": {

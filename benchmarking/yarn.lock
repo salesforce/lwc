@@ -183,7 +183,7 @@ babel-code-frame@^6.22.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-babel-core@6, babel-core@^6.24.1:
+babel-core@^6.24.1:
   version "6.25.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-core/-/babel-core-6.25.0.tgz#7dd42b0463c742e9d5296deb3ec67a9322dad729"
   dependencies:
@@ -375,7 +375,7 @@ babel-plugin-transform-es2015-block-scoping@^6.23.0, babel-plugin-transform-es20
     babel-types "^6.24.1"
     lodash "^4.2.0"
 
-babel-plugin-transform-es2015-classes@^6.23.0, babel-plugin-transform-es2015-classes@^6.24.1, babel-plugin-transform-es2015-classes@^6.9.0:
+babel-plugin-transform-es2015-classes@^6.23.0, babel-plugin-transform-es2015-classes@^6.24.1:
   version "6.24.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-es2015-classes/-/babel-plugin-transform-es2015-classes-6.24.1.tgz#5a4c58a50c9c9461e564b4b2a3bfabc97a2584db"
   dependencies:
@@ -2618,24 +2618,15 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-babel@^2.7.1:
-  version "2.7.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-babel/-/rollup-plugin-babel-2.7.1.tgz#16528197b0f938a1536f44683c7a93d573182f57"
-  dependencies:
-    babel-core "6"
-    babel-plugin-transform-es2015-classes "^6.9.0"
-    object-assign "^4.1.0"
-    rollup-pluginutils "^1.5.0"
-
 rollup-plugin-multi-entry@^2.0.1:
   version "2.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-multi-entry/-/rollup-plugin-multi-entry-2.0.1.tgz#4b3aea8ddc5afc9b7f9ffbfb1441c04ef39071b4"
   dependencies:
     matched "^0.4.3"
 
-rollup-plugin-raptor-compiler@^0.17.0:
-  version "0.17.0"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-raptor-compiler/-/rollup-plugin-raptor-compiler-0.17.0.tgz#6399bd0480fd4fcc53d3180e1d9b9710d5009d9b"
+rollup-plugin-raptor-compiler@^0.12.4:
+  version "0.12.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-raptor-compiler/-/rollup-plugin-raptor-compiler-0.12.4.tgz#15218bb6e5b135f3f235a937807f32ddd5b0dc03"
   dependencies:
     glob "^7.1.2"
     rollup-pluginutils "^2.0.1"
@@ -2649,7 +2640,7 @@ rollup-plugin-strip@^1.1.1:
     magic-string "^0.15.0"
     rollup-pluginutils "^1.3.1"
 
-rollup-pluginutils@^1.3.1, rollup-pluginutils@^1.5.0:
+rollup-pluginutils@^1.3.1:
   version "1.5.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
   dependencies:
@@ -2663,9 +2654,9 @@ rollup-pluginutils@^2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@^0.41.6:
-  version "0.41.6"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.41.6.tgz#e0d05497877a398c104d816d2733a718a7a94e2a"
+rollup@^0.45.1:
+  version "0.45.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.45.2.tgz#63a284c2b31234656f24e9e9717fabb6a7f0fa43"
   dependencies:
     source-map-support "^0.4.0"
 

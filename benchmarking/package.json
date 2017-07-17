@@ -21,11 +21,10 @@
     "mkdirp": "^0.5.1",
     "pem": "^1.9.4",
     "rimraf": "^2.6.1",
-    "rollup": "^0.41.6",
-    "rollup-plugin-babel": "^2.7.1",
+    "rollup": "^0.45.1",
     "rollup-plugin-multi-entry": "^2.0.1",
-    "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-raptor-compiler": "^0.12.4",
+    "rollup-plugin-strip": "^1.1.1",
     "webpack": "^2.3.2"
   },
   "dependencies": {
