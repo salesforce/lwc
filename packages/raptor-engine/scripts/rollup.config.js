@@ -38,7 +38,7 @@ const baseRollupConfig = {
     footer,
 };
 
-function rollupConfig({ formats, prod, compat }) {
+function rollupConfig({ formats, prod, compat, proddebug }) {
     const plugins = [];
 
     plugins.push(typescript({
@@ -50,7 +50,7 @@ function rollupConfig({ formats, prod, compat }) {
     if (!compat) {
         functionsToStrip.push('compat');
     }
-    if (prod) {
+    if (prod || proddebug) {
         functionsToStrip.push('console.*', 'assert.*');
     }
 
@@ -79,6 +79,7 @@ function rollupConfig({ formats, prod, compat }) {
             'engine',
             compat ? '_compat' : '',
             formatSuffix,
+            proddebug ? '_debug' : '',
             prod ? '.min' : '',
             '.js'
         ].join('');
@@ -96,8 +97,16 @@ function rollupConfig({ formats, prod, compat }) {
 }
 
 module.exports = [
-    rollupConfig({ formats: ['umd', 'cjs', 'es'], prod: false, compat: false }),
-    rollupConfig({ formats: ['umd', 'cjs', 'es'], prod: false, compat: true }),
+
+    // DEV mode
+    rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: false }),
+    rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: true }),
+
+    // PRODDEBUG mode
+    rollupConfig({ formats: ['umd'], proddebug: true, compat: false }),
+    rollupConfig({ formats: ['umd'], proddebug: true, compat: true }),
+
+    // PROD mode
     rollupConfig({ formats: ['umd'], prod: true, compat: false }),
     rollupConfig({ formats: ['umd'], prod: true, compat: true }),
 ];
