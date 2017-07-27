@@ -1,6 +1,3 @@
-import { Element } from "engine";
-export default class Test extends Element {
-    test = 1;
-    @api
-    foo(){}
+export default class Test {
+    @api foo() {}
 }

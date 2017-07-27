@@ -1,8 +1,4 @@
-import { Element } from "engine";
-export default class Text extends Element {
-    publicProp;
-    privateProp;
-
+export default class Text {
     get aloneGet() {}
 
     get myget() {}
@@ -16,8 +12,6 @@ export default class Text extends Element {
     static get ctorGet() {
         return 1;
     }
-
-    render() {}
 }
 Text.ctor = "ctor";
 Text.publicProps = {

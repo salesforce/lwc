@@ -1,19 +1,12 @@
-import _tmpl from "./actual.html";
-import { Element } from "engine";
-export default class Test extends Element {
-  innerRecordMethod() {}
-
-  render() {
-    return _tmpl;
-  }
-
+export default class Test {
+    innerRecordMethod() {}
 }
 Test.wire = {
-  innerRecordMethod: {
-    method: 1,
-    type: "record",
-    params: { recordId: "recordId" },
-    static: { fields: ["Account", 'Rate'] }
-  }
+    innerRecordMethod: {
+        type: "record",
+        params: { recordId: "recordId" },
+        static: { fields: ["Account", 'Rate'] },
+        method: 1
+    }
 };
 Test.observedAttributes = ["record-id"];

@@ -1,6 +1,4 @@
-import _tmpl from "./actual.html";
-import { Element } from "engine";
-export default class Test extends Element {
+export default class Test {
     get something() {
         return this.s;
     }
@@ -8,11 +6,6 @@ export default class Test extends Element {
     set something(value) {
         this.s = value;
     }
-
-    render() {
-        return _tmpl;
-    }
-
 }
 Test.publicProps = {
     something: {

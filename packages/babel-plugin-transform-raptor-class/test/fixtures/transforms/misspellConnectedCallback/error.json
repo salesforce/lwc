@@ -1,5 +1,5 @@
 {
   "message": "Wrong lifecycle method name connectCallback. You probably meant connectedCallback",
-  "line": 2,
-  "column": 42
+  "line": 3,
+  "column": 4
 }

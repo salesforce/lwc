@@ -14,5 +14,8 @@
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  },
+  "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1"
   }
 }

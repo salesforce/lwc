@@ -1,5 +1,4 @@
-import { Element } from "engine";
-export default class Text extends Element {
+export default class Text {
     @api publicProp;
     privateProp;
 
@@ -13,6 +12,4 @@ export default class Text extends Element {
 
     static ctor = "ctor";
     static get ctorGet () { return 1}
-
-    render () {}
 }

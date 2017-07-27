@@ -1,0 +1,5 @@
+{
+    "message": "@wire expects a configuration object expression as second parameter.",
+    "line": 2,
+    "column": 20
+}

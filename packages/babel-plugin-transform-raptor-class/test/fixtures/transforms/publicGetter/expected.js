@@ -1,14 +1,7 @@
-import _tmpl from "./actual.html";
-import { Element } from "engine";
-export default class Test extends Element {
+export default class Test {
     get publicGetter() {
         return 1;
     }
-
-    render() {
-        return _tmpl;
-    }
-
 }
 Test.publicProps = {
     publicGetter: {

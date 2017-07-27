@@ -1,0 +1,5 @@
+{
+    "message": "Label is expected to a be string, but found BooleanLiteral",
+    "line": 4,
+    "column": 28
+}

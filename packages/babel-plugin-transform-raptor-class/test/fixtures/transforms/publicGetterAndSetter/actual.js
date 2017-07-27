@@ -1,5 +1,4 @@
-import { Element } from "engine";
-export default class Test extends Element {
+export default class Test {
     @api get something() {
         return this.s;
     }
