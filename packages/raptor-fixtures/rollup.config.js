@@ -20,6 +20,7 @@ const fixtureApps = [
     { entry: 'app-hello-world.js', dest: 'hello-world.js' },
     { entry: 'app-custom-input.js', dest: 'custom-input.js' },
     { entry: 'app-list.js', dest: 'list.js' },
+    { entry: 'app-record-layout.js', dest: 'record-layout.js' },
 ];
 
 module.exports = fixtureApps.reduce((acc, app) => {

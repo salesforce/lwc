@@ -3,6 +3,8 @@ var RAPTOR_PATHS = {
     COMPAT: '/node_modules/raptor-engine/dist/engine_compat.js',
     PROD: '/node_modules/raptor-engine/dist/engine.min.js',
     PROD_COMPAT: '/node_modules/raptor-engine/dist/engine_compat.min.js',
+    PROD_DEBUG: '/node_modules/raptor-engine/dist/engine_debug.js',
+    PROD_DEBUG_COMPAT: '/node_modules/raptor-engine/dist/engine_compat_debug.js',
 }
 
 function parseQuery(queryString) {
@@ -28,7 +30,7 @@ if (!modeUrl) {
 }
 
 const help = document.createElement('div');
-help.style = `position: absolute; bottom: 0; padding: 10px; background: #ddd; width: 100%; left: 0;`;
+help.style = `position: fixed; bottom: 0; padding: 10px; background: #ddd; width: 100%; left: 0;`;
 help.innerHTML = helpMessage;
 document.body.appendChild(help);
 

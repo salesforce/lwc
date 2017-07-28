@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset=utf-8>
+    <title>Raptor Fixtures - Record Layout</title>
+</head>
+
+<body>
+    <script>
+        window.before = performance.now();
+    </script>
+    <script id="raptor-app" data-src="/dist/record-layout.js"></script>
+    <script src="/public/raptor-loader.js"></script>
+    <script>
+        const now = performance.now();
+        document.body.insertBefore(
+            document.createTextNode(`Evaluation and render time : ${parseInt(now - window.before)}ms`),
+            document.body.firstChild
+        )
+    </script>
+</body>
+
+</html>
