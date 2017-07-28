@@ -5,7 +5,7 @@ import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm";
 import { addCallbackToNextTick, noop } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 
-function insert(vnode: ComponentVNode) {
+export function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
@@ -28,7 +28,7 @@ function insert(vnode: ComponentVNode) {
     console.log(`"${vm}" was inserted.`);
 }
 
-function destroy(vnode: ComponentVNode) {
+export function destroy(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
@@ -49,9 +49,11 @@ function destroy(vnode: ComponentVNode) {
 }
 
 function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
+    // TODO: we don't really need this anymore, but it will require changes
+    // on many tests that are just patching the element directly.
     assert.vnode(vnode);
     assert.vm(vnode.vm);
-    if (vnode.vm.idx === 0) {
+    if (vnode.vm.idx === 0 && !vnode.isRoot) {
         // when inserting a root element, or when reusing a DOM element for a new
         // component instance, the insert() hook is never called because the element
         // was already in the DOM before creating the instance, and diffing the

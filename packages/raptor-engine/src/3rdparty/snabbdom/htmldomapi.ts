@@ -1,24 +1,14 @@
-function createElement(tagName) {
-    return document.createElement(tagName);
-}
-function createElementNS(namespaceURI, qualifiedName) {
-    return document.createElementNS(namespaceURI, qualifiedName);
-}
-function createTextNode(text) {
-    return document.createTextNode(text);
-}
-function createComment(text) {
-    return document.createComment(text);
-}
-function insertBefore(parentNode, newNode, referenceNode) {
-    parentNode.insertBefore(newNode, referenceNode);
-}
-function removeChild(node, child) {
-    node.removeChild(child);
-}
-function appendChild(node, child) {
-    node.appendChild(child);
-}
+const {
+    createElement,
+    createElementNS,
+    createTextNode,
+    createComment,
+} = document;
+const {
+    insertBefore,
+    removeChild,
+    appendChild,
+} = Node.prototype;
 function parentNode(node) {
     return node.parentNode;
 }
@@ -45,13 +35,27 @@ function isComment(node) {
     return node.nodeType === 8;
 }
 export var htmlDomApi = {
-    createElement: createElement,
-    createElementNS: createElementNS,
-    createTextNode: createTextNode,
-    createComment: createComment,
-    insertBefore: insertBefore,
-    removeChild: removeChild,
-    appendChild: appendChild,
+    createElement(tagName) {
+        return createElement.call(document, tagName);
+    },
+    createElementNS(namespaceURI, qualifiedName) {
+        return createElementNS.call(document, namespaceURI, qualifiedName);
+    },
+    createTextNode(text) {
+        return createTextNode.call(document, text);
+    },
+    createComment(text) {
+        return createComment.call(document, text);
+    },
+    insertBefore(parentNode, newNode, referenceNode) {
+        insertBefore.call(parentNode, newNode, referenceNode);
+    },
+    removeChild(node, child) {
+        removeChild.call(node, child);
+    },
+    appendChild(node, child) {
+        appendChild.call(node, child);
+    },
     parentNode: parentNode,
     nextSibling: nextSibling,
     tagName: tagName,

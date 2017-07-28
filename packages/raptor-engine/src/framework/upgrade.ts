@@ -5,10 +5,43 @@ import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { updateComponentProp } from "./component";
 import { getComponentDef } from "./def";
 import { c } from "./api";
-import { isUndefined, isFunction } from "./language";
+import { isUndefined, isFunction, assign } from "./language";
 import { getPropNameFromAttrName } from "./utils";
+import { destroy, insert } from "./hook";
 
 const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
+const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
+const ConnectingSlot = Symbol();
+const DisconnectingSlot = Symbol();
+
+function callNodeSlot(node: Node, slot: symbol): Node {
+    if (node[slot]) {
+        node[slot]();
+    }
+    return node;
+}
+
+// monkey patching Node methods to be able to detect the insertions and removal of
+// root elements created via createElement.
+assign(Node.prototype, {
+    appendChild(newChild: Node): Node {
+        const appendedNode = appendChild.call(this, newChild);
+        return callNodeSlot(appendedNode, ConnectingSlot);
+    },
+    insertBefore(newChild: Node, referenceNode: Node): Node {
+        const insertedNode = insertBefore.call(this, newChild, referenceNode);
+        return callNodeSlot(insertedNode, ConnectingSlot);
+    },
+    removeChild(oldChild: Node): Node {
+        const removedNode = removeChild.call(this, oldChild);
+        return callNodeSlot(removedNode, DisconnectingSlot);
+    },
+    replaceChild(newChild: Node, oldChild: Node): Node {
+        const replacedNode = replaceChild.call(this, newChild, oldChild);
+        callNodeSlot(newChild, ConnectingSlot);
+        return callNodeSlot(replacedNode, DisconnectingSlot);
+    }
+});
 
 function linkAttributes(element: HTMLElement, vm: VM) {
     assert.vm(vm);
@@ -102,6 +135,13 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
     // current state.
     const { vm } = patch(element, vnode);
     linkAttributes(element, vm);
+    // providing the hook to detect insertion and removal
+    element[ConnectingSlot] = () => {
+        insert(vnode);
+    };
+    element[DisconnectingSlot] = () => {
+        destroy(vnode);
+    };
 }
 
 /**
