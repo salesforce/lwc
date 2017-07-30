@@ -93,7 +93,7 @@ module.exports = function apiVisitor ({ types: t }) {
                 const publicPropsConfig = computePublicPropsConfig(publicProps);
                 classBody.pushContainer('body', staticClassProperty(
                     PUBLIC_PROPS_CLASS_PROPERTY,
-                    t.valueToNode(publicPropsConfig),
+                    t.valueToNode(publicPropsConfig)
                 ));
             }
 
@@ -101,7 +101,7 @@ module.exports = function apiVisitor ({ types: t }) {
                 const publicMethodsConfig = computePublicMethodsConfig(publicMethods);
                 classBody.pushContainer('body', staticClassProperty(
                     PUBLIC_METHODS_CLASS_PROPERTY,
-                    t.valueToNode(publicMethodsConfig),
+                    t.valueToNode(publicMethodsConfig)
                 ));
             }
         },

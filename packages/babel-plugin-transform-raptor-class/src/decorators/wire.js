@@ -52,30 +52,30 @@ module.exports = function wireVisitor ({ types: t }) {
             const wireConfig = [
                 t.objectProperty(
                     t.identifier('type'),
-                    t.stringLiteral(wiredValue.type),
+                    t.stringLiteral(wiredValue.type)
                 ),
                 t.objectProperty(
                     t.identifier('params'),
-                    t.objectExpression(wiredValue.params),
+                    t.objectExpression(wiredValue.params)
                 ),
                 t.objectProperty(
                     t.identifier('static'),
-                    t.objectExpression(wiredValue.static),
-                ),
+                    t.objectExpression(wiredValue.static)
+                )
             ];
 
             if (wiredValue.isClassMethod) {
                 wireConfig.push(
                     t.objectProperty(
                         t.identifier('method'),
-                        t.numericLiteral(1),
+                        t.numericLiteral(1)
                     )
                 );
             }
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),
-                t.objectExpression(wireConfig),
+                t.objectExpression(wireConfig)
             );
         }));
     }
@@ -92,8 +92,9 @@ module.exports = function wireVisitor ({ types: t }) {
         } else {
             observedAttribute = staticClassProperty(
                 OBSERVED_ATTRIBUTES_CLASS_PROPERTY,
-                t.arrayExpression([]),
+                t.arrayExpression([])
             );
+
             classBody.pushContainer('body', observedAttribute);
         }
 
@@ -161,14 +162,12 @@ module.exports = function wireVisitor ({ types: t }) {
             const classBody = path.get('body');
             const wiredValues = [];
 
-            path.traverse(decoratorVisitor, {
-                wiredValues,
-            });
+            path.traverse(decoratorVisitor, { wiredValues });
 
             if (wiredValues.length) {
                 classBody.pushContainer('body', staticClassProperty(
                     WIRE_CLASS_PROPERTY,
-                    buildWireConfigValue(wiredValues),
+                    buildWireConfigValue(wiredValues)
                 ));
 
                 const observedAttributes = getObservedAttributeProperty(classBody);
