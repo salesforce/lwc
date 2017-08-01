@@ -5,6 +5,7 @@ import { isObject, isFunction, ArraySlice, create, getPrototypeOf, setPrototypeO
 
 /*eslint-disable*/
 import { ReplicableFunction, Replicable, Replica, Membrane } from "./membrane";
+import { ShadowTarget, ReactiveProxyHandler } from './reactive';
 
 type RevokeFn = () => void;
 
@@ -26,16 +27,17 @@ interface CompatProxyConstructor {
 }
 /*eslint-enable*/
 
-function getLinkedMembrane(replicaOrAny: Replica | any): Membrane | undefined {
+function getLinkedMembrane(replicaOrAny: Replica | any): (Membrane & ReactiveProxyHandler) | undefined {
     const target = unwrap(replicaOrAny);
     if (target !== replicaOrAny) {
-        return (replicaOrAny as Replica)[MembraneSlot];
+        return (replicaOrAny as Replica)[MembraneSlot] as any;
     }
 }
 
 let lastRevokeFn: RevokeFn;
 
-const ProxyCompat: CompatProxyConstructor = function Proxy(target: Replicable, handler: CompatProxyHandler<Replicable>): Replica {
+const ProxyCompat: CompatProxyConstructor = function Proxy(shadowTarget: ShadowTarget | any, handler: CompatProxyHandler<Replicable> & ReactiveProxyHandler): Replica {
+    const target = handler.originalTarget || shadowTarget;
     const targetIsFunction = isFunction(target);
     const targetIsArray = isArray(target);
     assert.invariant(isObject(target) || targetIsFunction, `Cannot create proxy with a non-object as target`);
@@ -62,14 +64,14 @@ const ProxyCompat: CompatProxyConstructor = function Proxy(target: Replicable, h
             throwRevoked(usingNew ? 'construct' : 'apply');
 
             if (usingNew) {
-                return construct.call(handler, target, args, this);
+                return construct.call(handler, shadowTarget, args, this);
             } else {
-                return apply.call(handler, target, this, args);
+                return apply.call(handler, shadowTarget, this, args);
             }
         };
     }
 
-    function linkProperty(target: Replicable, handler: CompatProxyHandler<Replicable>, key: string | Symbol, enumerable: boolean) {
+    function linkProperty(target: Replicable, handler: CompatProxyHandler<Replicable>, key: string | symbol, enumerable: boolean) {
         // arrays are usually mutable, but objects are not... normally, in compat mode they will use the accessor keys
         // instead of interacting with the object directly, but if they bypass that for some reason, having the right
         // value for configurable helps to detect those early errors.
@@ -79,11 +81,11 @@ const ProxyCompat: CompatProxyConstructor = function Proxy(target: Replicable, h
             configurable,
             get: () => {
                 throwRevoked('get');
-                return get.call(handler, target, key);
+                return get.call(handler, shadowTarget, key);
             },
             set: (value: any): any => {
                 throwRevoked('set');
-                const result = set.call(handler, target, key, value);
+                const result = set.call(handler, shadowTarget, key, value);
                 if (result === false) {
                     throw new TypeError(`'set' on proxy: trap returned falsish for property '${key}'`);
                 }
@@ -119,22 +121,39 @@ ProxyCompat.revocable = function (target: Replicable, handler: CompatProxyHandle
     };
 };
 
+function getHandlerShadowTargetTarget (membrane: Membrane & ReactiveProxyHandler, object: any): ShadowTarget | any {
+    if ('originalTarget' in membrane) {
+        return membrane.originalTarget;
+    }
+    return object;
+}
+
 function getKeyCompat(replicaOrAny: Replica | any, key: any): any {
     const membrane = getLinkedMembrane(replicaOrAny);
-    return membrane ? membrane.get(unwrap(replicaOrAny), key) : replicaOrAny[key];
+    if (!membrane) {
+        return replicaOrAny[key];
+    }
+    return membrane.get(getHandlerShadowTargetTarget(membrane, unwrap(replicaOrAny)), key);
 }
 
 function callKeyCompat(replicaOrAny: Replica | any, key: any, ...args: any[]): any {
     const membrane = getLinkedMembrane(replicaOrAny);
-    const context = membrane ? unwrap(replicaOrAny) : replicaOrAny;
-    const fn = membrane ? membrane.get(context, key) : replicaOrAny[key];
+    let fn;
+    if (!membrane) {
+        fn = replicaOrAny[key];
+        return fn.apply(replicaOrAny, args);
+    }
+
+    const handlerTarget = getHandlerShadowTargetTarget(membrane, unwrap(replicaOrAny));
+    fn = membrane.get(handlerTarget, key);
     return fn.apply(replicaOrAny, args);
 }
 
-function setKeyCompat(replicaOrAny: Replica | any, key: string | Symbol, newValue: any, originalReturnValue?: any): any {
-    const membrane = getLinkedMembrane(replicaOrAny);
-    if (membrane) {
-        membrane.set(unwrap(replicaOrAny), key, newValue);
+function setKeyCompat(replicaOrAny: Replica | any, key: string | symbol, newValue: any, originalReturnValue?: any): any {
+    const handler = getLinkedMembrane(replicaOrAny);
+    if (handler) {
+        const handlerTarget = getHandlerShadowTargetTarget(handler, unwrap(replicaOrAny));
+        handler.set(handlerTarget, key, newValue);
     } else {
         // non-proxified assignment
         replicaOrAny[key] = newValue;
@@ -142,20 +161,22 @@ function setKeyCompat(replicaOrAny: Replica | any, key: string | Symbol, newValu
     return arguments.length === 4 ? originalReturnValue : newValue;
 }
 
-function deleteKeyCompat(replicaOrAny: Replica | any, key: string | Symbol) {
+function deleteKeyCompat(replicaOrAny: Replica | any, key: string | symbol) {
     const membrane = getLinkedMembrane(replicaOrAny);
     if (membrane) {
-        membrane.deleteProperty(unwrap(replicaOrAny), key);
+        const handlerTarget = getHandlerShadowTargetTarget(membrane, unwrap(replicaOrAny));
+        membrane.deleteProperty(handlerTarget, key);
         return;
     }
     // non-profixied delete
     delete replicaOrAny[key];
 }
 
-function inKeyCompat(replicaOrAny: Replica | any, key: string | Symbol): boolean {
+function inKeyCompat(replicaOrAny: Replica | any, key: string | symbol): boolean {
     const membrane = getLinkedMembrane(replicaOrAny);
     if (membrane) {
-        return membrane.has(unwrap(replicaOrAny), key);
+        const handlerTarget = getHandlerShadowTargetTarget(membrane, unwrap(replicaOrAny));
+        return membrane.has(handlerTarget, key);
     }
     return key in replicaOrAny;
 }

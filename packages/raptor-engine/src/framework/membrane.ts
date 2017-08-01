@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ArrayMap, isArray, isNull } from "./language";
-import { XProxy } from "./xproxy";
+import { XProxy } from './xproxy';
 
 /*eslint-disable*/
 export type ReplicableFunction = (...args: Array<any>) => any;
@@ -21,7 +21,7 @@ export interface MembraneHandler {
 export const TargetSlot = Symbol();
 export const MembraneSlot = Symbol();
 
-function isReplicable(value: any): boolean {
+export function isReplicable(value: any): boolean {
     const type = typeof value;
     return value && (type === 'object' || type === 'function');
 }

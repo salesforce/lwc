@@ -1,6 +1,6 @@
 import { callKey, setKey, getKey } from '../xproxy';
 import assert from 'power-assert';
-import { getPropertyProxy } from '../properties';
+import { getReactiveProxy } from '../reactive';
 
 describe('xproxy', () => {
 
@@ -25,8 +25,8 @@ describe('xproxy', () => {
 
         it.compat('should preserve context on membranes', () => {
             let context, args;
-            const o = getPropertyProxy({
-                foo: getPropertyProxy({
+            const o = getReactiveProxy({
+                foo: getReactiveProxy({
                     bar: function () {
                         context = this;
                         args = arguments;
@@ -95,7 +95,7 @@ describe('xproxy', () => {
 
         it.compat('should support Arrays', () => {
             let context, args;
-            const o = getPropertyProxy([1, 2]);
+            const o = getReactiveProxy([1, 2]);
             assert.strictEqual(Array.isArray(o), true);
             assert.strictEqual(o.length, 2);
             assert.strictEqual(o[0], 1);
@@ -107,28 +107,28 @@ describe('xproxy', () => {
 
         it.compat('should support Object.keys()', () => {
             let context, args;
-            const o = getPropertyProxy({ x: 1, y: 2 });
+            const o = getReactiveProxy({ x: 1, y: 2 });
             setKey(o, 'z', 3); // expando
             assert.deepEqual(Object.keys(o), ['x', 'y', 'z']);
         });
 
         it.compat('should support Object.getOwnPropertyNames()', () => {
             let context, args;
-            const o = getPropertyProxy({ x: 1, y: 2 });
+            const o = getReactiveProxy({ x: 1, y: 2 });
             setKey(o, 'z', 3); // expando
             assert.deepEqual(Object.getOwnPropertyNames(o), ['x', 'y', 'z']);
         });
 
         it.compat('should support Object.assign()', () => {
             let context, args;
-            const o = getPropertyProxy({ x: 1, y: 2 });
+            const o = getReactiveProxy({ x: 1, y: 2 });
             setKey(o, 'z', 3); // expando
             assert.deepEqual(Object.assign({}, o), { x: 1, y: 2, z: 3 });
         });
 
         it.compat('should support Object.prototype.hasOwnProperty()', () => {
             let context, args;
-            const o = getPropertyProxy({ x: 1, y: 2 });
+            const o = getReactiveProxy({ x: 1, y: 2 });
             assert.strictEqual(o.hasOwnProperty('x'), true);
             setKey(o, 'z', 3); // expando
             assert.strictEqual(o.hasOwnProperty('z'), true);

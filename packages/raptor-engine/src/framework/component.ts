@@ -11,7 +11,7 @@ import {
 import { notifyListeners } from "./watcher";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, defineProperties } from "./language";
 import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
-import { getPropertyProxy } from "./properties";
+import { getReactiveProxy, isObservable } from "./reactive";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
@@ -79,7 +79,13 @@ export function linkComponent(vm: VM) {
                 // logic for setting new properties of the element directly from the DOM
                 // will only be allowed for root elements created via createElement()
                 // proxifying before storing it is a must for public props
-                value = isObject(value) ? getPropertyProxy(value) : value;
+                const observable = isObservable(value);
+                assert.block(function devModeCheck () {
+                    if (!observable && isObject(value)) {
+                        assert.logWarning(`Assigning a non-reactive value ${value} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+                    }
+                });
+                value = observable ? getReactiveProxy(value) : value;
                 updateComponentProp(vm, key, value);
             } else {
                 assert.logError(`Invalid attempt to set property ${key} from ${vm} to a new value. This property was decorated with @api, and can only be changed via the template.`);
@@ -136,8 +142,8 @@ export function updateComponentProp(vm: VM, propName: string, newValue: any) {
     let oldValue = cmpProps[propName];
     if (oldValue !== newValue) {
         assert.block(function devModeCheck() {
-            if (isObject(newValue)) {
-                assert.invariant(getPropertyProxy(newValue) === newValue, `updateComponentProp() should always received proxified object values instead of ${newValue} in ${vm}.`);
+            if (isObservable(newValue)) {
+                assert.invariant(getReactiveProxy(newValue) === newValue, `updateComponentProp() should always received proxified object values instead of ${newValue} in ${vm}.`);
             }
         });
         cmpProps[propName] = newValue;

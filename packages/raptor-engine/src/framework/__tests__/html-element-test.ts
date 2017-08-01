@@ -201,6 +201,66 @@ describe('html-element', () => {
             assert.deepEqual(state, { x: 1, y: o }, 'deep structure');
             assert.notEqual(state.y, o, 'proxified object');
         });
+        it('should throw an error when assigning arrays', function () {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = [1, 2];
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+        it('should throw an error when assigning primitive', function () {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = 1;
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+        it('should throw an error when assigning non-observable object', function () {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = Object.create({});
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+        it('should throw an error when assigning exotic object', function () {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = Date.now();
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
+        });
+        it('should not throw an error when assigning observable object', function () {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.state = {};
+                }
+            }
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).not.toThrow();
+        });
     });
 
     describe('global HTML Properties', () => {
@@ -488,6 +548,66 @@ describe('html-element', () => {
             const vnode1 = api.c('x-foo', MyComponent, {});
             patch(elm, vnode1);
             assert(("foo" in vnode1.vm.component) === false);
+        });
+
+        it('should throw an error if wire is primitive', function () {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: {  } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            expect(() => {
+                vnode1.vm.component.foo = 1;
+            }).toThrow();
+        });
+
+        it('should throw an error if wire is array', function () {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: {  } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            expect(() => {
+                vnode1.vm.component.foo = [];
+            }).toThrow();
+        });
+
+        it('should throw an error if wire is exotic', function () {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: {  } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            expect(() => {
+                vnode1.vm.component.foo = Date.now();
+            }).toThrow();
+        });
+
+        it('should throw an error if wire is non-observable object', function () {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: {  } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            expect(() => {
+                vnode1.vm.component.foo = Object.create({});
+            }).toThrow();
+        });
+
+        it('should not throw an error if wire is observable object', function () {
+            class MyComponent extends Element {}
+            MyComponent.wire = { foo: {  } };
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, {});
+            patch(elm, vnode1);
+            expect(() => {
+                vnode1.vm.component.foo = {};
+            }).not.toThrow();
         });
 
     });
