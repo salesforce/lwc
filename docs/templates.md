@@ -90,7 +90,7 @@ If you have a group of elements that should be displayed conditionally, you can 
 </template>
 ```
 
-As a result, the `<template>` will be removed from the DOM in favor of its content when `{this.tagline}` is not falsy.
+As a result, the `<template>` will be removed from the DOM in favor of its content when `{this.name}` is not falsy.
 
 ## Iterations
 

@@ -11,7 +11,7 @@ class PlasticButton extends HTMLButtonElement {
 customElements.define("plastic-button", PlasticButton, { extends: "button" });
 ```
 
-The assumption here is that we might just way until after v1 to add support for this. More details about this WC feature [here](
+The assumption here is that we might just wait until after v1 to add support for this. More details about this WC feature [here](
 https://w3c.github.io/webcomponents/spec/custom/#custom-elements-customized-builtin-example).
 
 This has implications when it comes to elements that should have certain behavior, from the interation and accessibility point of view. You can read more about this here: https://w3c.github.io/webcomponents/spec/custom/#custom-elements-autonomous-drawbacks
@@ -20,7 +20,7 @@ In the link above, you can see an example of thow to implement a custom element 
 
 ## Life-cycle hooks
 
-Life-cycle hooks in web components are executed sync, although done before returning control to user-code, so the other is not deterministic with respect to other operations in the same tick. In raptor, we explicitly decided to __diverge__ and do it async in the next microtask.
+Life-cycle hooks in web components are executed sync, although done before returning control to user-code, so the order is not deterministic with respect to other operations in the same tick. In raptor, we explicitly decided to __diverge__ and do it async in the next microtask.
 
 ## Construction
 
