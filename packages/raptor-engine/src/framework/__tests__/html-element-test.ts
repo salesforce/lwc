@@ -732,6 +732,36 @@ describe('html-element', () => {
                 assert.deepEqual(rendered, 1);
             });
         });
+
+        it('should observe moving the element thru the DOM tree', function () {
+            let rendered = 0;
+            let connected = 0;
+            let disconnected = 0;
+            class MyComponent extends Element {
+                render () {
+                    rendered++;
+                    return () => [];
+                }
+                connectedCallback() {
+                    connected++;
+                }
+                disconnectedCallback() {
+                    disconnected++;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
+            assert.deepEqual(rendered, 0);
+            document.body.appendChild(elm);
+            assert.deepEqual(rendered, 1);
+            var div = document.createElement('div');
+            document.body.appendChild(div);
+            div.appendChild(elm);
+            assert.deepEqual(rendered, 2);
+            return Promise.resolve().then(() => {
+                assert.deepEqual(connected, 2);
+                assert.deepEqual(disconnected, 1);
+            });
+        });
     });
 
 });

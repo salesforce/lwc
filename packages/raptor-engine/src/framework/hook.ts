@@ -9,7 +9,10 @@ export function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
-    assert.isFalse(vm.idx, `${vm} is already inserted.`);
+    if (vm.idx > 0) {
+        assert.isTrue(vnode.isRoot, `${vm} is already inserted.`);
+        destroy(vnode); // moving the element from one place to another is observable via life-cycle hooks
+    }
     addInsertionIndex(vm);
     const { isDirty, component: { connectedCallback } } = vm;
     if (isDirty) {

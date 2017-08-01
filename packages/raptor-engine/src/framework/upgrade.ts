@@ -15,7 +15,7 @@ const ConnectingSlot = Symbol();
 const DisconnectingSlot = Symbol();
 
 function callNodeSlot(node: Node, slot: symbol): Node {
-    if (node[slot]) {
+    if (slot in node) {
         node[slot]();
     }
     return node;
@@ -38,8 +38,9 @@ assign(Node.prototype, {
     },
     replaceChild(newChild: Node, oldChild: Node): Node {
         const replacedNode = replaceChild.call(this, newChild, oldChild);
+        callNodeSlot(replacedNode, DisconnectingSlot);
         callNodeSlot(newChild, ConnectingSlot);
-        return callNodeSlot(replacedNode, DisconnectingSlot);
+        return replacedNode;
     }
 });
 
