@@ -38,7 +38,7 @@ const baseRollupConfig = {
     footer,
 };
 
-function rollupConfig({ formats, prod, compat, proddebug }) {
+function rollupConfig({ formats, prod, compat, proddebug, test }) {
     const plugins = [];
 
     plugins.push(typescript({
@@ -47,11 +47,19 @@ function rollupConfig({ formats, prod, compat, proddebug }) {
     }));
 
     const functionsToStrip = [];
+
     if (!compat) {
         functionsToStrip.push('compat');
     }
+
+    if (prod || proddebug || test) {
+        // Strip only console.log and not the entire console, because some assert APIs
+        // relies on console.warn and console.error
+        functionsToStrip.push('console.log');
+    }
+
     if (prod || proddebug) {
-        functionsToStrip.push('console.*', 'assert.*');
+        functionsToStrip.push('assert.*');
     }
 
     plugins.push(strip({
@@ -78,6 +86,7 @@ function rollupConfig({ formats, prod, compat, proddebug }) {
         const targetName = [
             'engine',
             compat ? '_compat' : '',
+            test ? '_test' : '',
             formatSuffix,
             proddebug ? '_debug' : '',
             prod ? '.min' : '',
@@ -97,7 +106,6 @@ function rollupConfig({ formats, prod, compat, proddebug }) {
 }
 
 module.exports = [
-
     // DEV mode
     rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: false }),
     rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: true }),
@@ -109,4 +117,9 @@ module.exports = [
     // PROD mode
     rollupConfig({ formats: ['umd'], prod: true, compat: false }),
     rollupConfig({ formats: ['umd'], prod: true, compat: true }),
+
+    // TEST mode
+    // TODO: Remove this mode once the engine is less chatty by deafault. (W-3908810)
+    rollupConfig({ formats: ['cjs'], test: true, compat: false }),
+    rollupConfig({ formats: ['cjs'], test: true, compat: true }),
 ];
