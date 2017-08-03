@@ -1,5 +1,13 @@
 # Two-ways bindings
 
+## Status
+
+_Drafted_
+
+## Goals
+
+* Provide a simple, yet robust way to declarate two ways data bound attributes via template.
+
 ## Two-ways Attributes
 
 In some edge cases, an attribute must be set to a value, but also allow the receiver of the attribute to mutate the source property from the provider, to conform with a two-ways binding mechanism. For that, the template offers the `model:` annotation:
