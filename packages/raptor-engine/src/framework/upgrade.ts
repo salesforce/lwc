@@ -15,7 +15,7 @@ const ConnectingSlot = Symbol();
 const DisconnectingSlot = Symbol();
 
 function callNodeSlot(node: Node, slot: symbol): Node {
-    if (slot in node) {
+    if (!isUndefined(node[slot])) {
         node[slot]();
     }
     return node;
