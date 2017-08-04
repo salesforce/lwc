@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "es2015",
+    "noEmit": true,
+    "lib": [
+      "es2015"
+    ],
+    "strict": true
+  }
+}

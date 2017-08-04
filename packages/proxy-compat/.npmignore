@@ -1,0 +1,7 @@
+coverage/
+scripts/
+test/
+src/
+tsconfig.json
+yarn.lock
+.*
