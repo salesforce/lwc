@@ -109,3 +109,50 @@ The following are a series of flow diagrams describing the internal behavior of 
  * 1 - Is mutated key marked as reactive?
  * 2 - Is there any component watching for changes in the mutated key?
  * 3 - Is selected dependency component marked as dirty?
+
+## Reactivity Model
+
+```
+                          Λ
+  .─.                    ╱ ╲
+ (   )─────────────────▶▕ 1 ▏◀────────────────|
+  `─'                    ╲ ╱                  |
+                          V                   |
+                          │yes                |
+                          │                   |
+                          ▼                   |
+            ┌───────────────────────────┐     |
+            │   Create reactive proxy   │     |
+            └───────────────────────────┘     |
+                     |        │               |
+                     ▼        ▼               |
+                     Λ        Λ               |
+                    ╱ ╲      ╱ ╲              |
+ ┌────────────────▶▕ 3 ▏    ▕ 2 ▏─────────────|
+ │                  ╲ ╱      ╲ ╱
+ │                   V        V
+ │                   │ yes
+ │                   ▼
+ │                   Λ
+ │             yes  ╱ ╲
+ ├─────────────────▕ 4 ▏
+ │                  ╲ ╱
+ │                   V
+ │                   │
+ │                   ▼
+ │      ┌──────────────────────────┐
+ │      │ mark dependency as dirty │
+ │      └──────────────────────────┘
+ │                   │
+ │                   ▼
+ │    ┌─────────────────────────────────┐
+ └────│ schedule dependency hydration   │
+      └─────────────────────────────────┘
+```
+
+*Conditions*:
+
+ * 1 - Is value an Array or an object whose prototype is Object.prototype?
+ * 2 - Was a property accessed?
+ * 3 - Was a property mutated?
+ * 4 - Is selected dependency component marked as dirty?
