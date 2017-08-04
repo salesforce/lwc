@@ -1,7 +1,7 @@
 import compat from "./compat";
 import assert from "./assert";
 import { unwrap, MembraneSlot, TargetSlot } from "./membrane";
-import { isObject, isFunction, ArraySlice, create, getPrototypeOf, setPrototypeOf, isArray, keys, getOwnPropertyNames, assign, hasOwnProperty } from "./language";
+import { getOwnPropertySymbols, isObject, isFunction, ArraySlice, create, getPrototypeOf, setPrototypeOf, isArray, keys, getOwnPropertyNames, assign, hasOwnProperty } from "./language";
 
 /*eslint-disable*/
 import { ReplicableFunction, Replicable, Replica, Membrane } from "./membrane";
@@ -172,13 +172,32 @@ function deleteKeyCompat(replicaOrAny: Replica | any, key: string | symbol) {
     delete replicaOrAny[key];
 }
 
+const inOperator = typeof Symbol() === 'object' ? function inOperatorCompat(obj: any, key: string | symbol): boolean {
+    // proto chain check because this is using a broken polyfill
+    // https://github.com/Financial-Times/polyfill-service/blob/master/polyfills/Symbol/
+    // In this case, because this polyfill is assing all the stuff to Object.prototype to keep
+    // all the other invariants of Symbols, we need to do some manual checks here for the slow patch.
+    if (key && key.constructor === Symbol) {
+        while (obj) {
+            if (getOwnPropertySymbols(obj).indexOf(key as symbol) !== -1) {
+                return true;
+            }
+            obj = getPrototypeOf(obj);
+        }
+        return false;
+    }
+    return key in obj;
+} : function inOperator(obj: any, key: string | symbol): boolean {
+    return key in obj;
+}
+
 function inKeyCompat(replicaOrAny: Replica | any, key: string | symbol): boolean {
     const membrane = getLinkedMembrane(replicaOrAny);
     if (membrane) {
         const handlerTarget = getHandlerShadowTargetTarget(membrane, unwrap(replicaOrAny));
         return membrane.has(handlerTarget, key);
     }
-    return key in replicaOrAny;
+    return inOperator(replicaOrAny, key);
 }
 
 function iterableKeyCompat(replicaOrAny: Replica | any): any[] {

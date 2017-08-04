@@ -17,6 +17,7 @@ import {
     defineProperty,
     preventExtensions,
     getPrototypeOf,
+    hasOwnProperty,
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 import { XProxy } from './xproxy';
@@ -176,7 +177,7 @@ export class ReactiveProxyHandler {
         if (!desc) {
             return desc;
         }
-        if (!desc.configurable && !(key in shadowTarget)) {
+        if (!desc.configurable && !hasOwnProperty.call(shadowTarget, key)) {
             // If descriptor from original target is not configurable,
             // We must copy the wrapped descriptor over to the shadow target.
             // Otherwise, proxy will throw an invariant error.
