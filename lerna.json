@@ -8,6 +8,7 @@
   },
   "exact": true,
   "npmClient": "yarn",
+  "useWorkspaces" : true,
   "registry": "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/",
   "packages": [
     "packages/*"

@@ -29,7 +29,7 @@ module.exports = function (/*env*/) {
                     language_out: 'ES5',
                     compilation_level: 'SIMPLE'
                 },
-                concurrency: 4,
+                concurrency: 8,
             })
         ],
         module: {

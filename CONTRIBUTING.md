@@ -6,9 +6,9 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 
 ## Requirements
 
- * Node 6.x
- * NPM 3.x
- * Yarn >= 0.23.0
+ * Node 8.x
+ * NPM 5.x
+ * Yarn >= 0.27.0
 
 ## Installation
 
