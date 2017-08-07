@@ -56,10 +56,6 @@ module.exports = function ({ types: t, }) {
                 state.metadata.labels.push(...labels);
 
                 const isExportClass = exportDafaultNode(path);
-                if (isExportClass) {
-                    state.metadata.isComponent = true;
-                }
-
                 const hasRenderMethod = !!findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME);
                 if(!hasRenderMethod && isExportClass) {
                     classBody.pushContainer('body', [

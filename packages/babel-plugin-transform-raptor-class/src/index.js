@@ -9,12 +9,10 @@ module.exports = function ({ types, traverse }) {
     const baseVisitor = {
         Program: {
             enter(_, state) {
-                state.metadata = {
-                    labels: [],
-                    isComponent: false,
-                };
-            },
-        },
+                const meta = { labels: [] };
+                state.file.metadata = state.metadata = meta;
+            }
+        }
     };
 
     return {
@@ -25,6 +23,6 @@ module.exports = function ({ types, traverse }) {
             wireDecorator({ types }),
             component({ types }),
             classProperties({ types }),
-        ]),
+        ])
     }
 }
