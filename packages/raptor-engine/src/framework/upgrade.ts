@@ -15,10 +15,11 @@ const ConnectingSlot = Symbol();
 const DisconnectingSlot = Symbol();
 
 function callNodeSlot(node: Node, slot: symbol): Node {
+    assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     if (!isUndefined(node[slot])) {
         node[slot]();
     }
-    return node;
+    return node; // for convenience
 }
 
 // monkey patching Node methods to be able to detect the insertions and removal of

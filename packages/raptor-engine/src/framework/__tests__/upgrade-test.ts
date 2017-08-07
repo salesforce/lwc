@@ -35,4 +35,42 @@ describe('upgrade', () => {
 
     });
 
+    describe('patches for Node.', () => {
+
+        beforeEach(() => {
+            document.body.innerHTML = '';
+        });
+
+        it('appendChild()', () => {
+            const el = document.createElement('div');
+            assert.strictEqual(document.body.appendChild(el), el);
+            assert.strictEqual(el.parentNode, document.body);
+        });
+
+        it('insertBefore()', () => {
+            const el = document.createElement('div');
+            const anchor = document.createElement('p');
+            document.body.appendChild(anchor);
+            assert.strictEqual(document.body.insertBefore(el, anchor), el);
+            assert.strictEqual(el, document.body.firstChild);
+        });
+
+        it('removeChild()', () => {
+            const el = document.createElement('div');
+            document.body.appendChild(el);
+            assert.strictEqual(document.body.removeChild(el), el);
+            assert.strictEqual(null, el.parentNode);
+        });
+
+        it('replaceChild()', () => {
+            const el = document.createElement('div');
+            const anchor = document.createElement('p');
+            document.body.appendChild(anchor);
+            assert.strictEqual(document.body.replaceChild(el, anchor), anchor);
+            assert.strictEqual(el, document.body.childNodes[0]);
+            assert.strictEqual(1, document.body.childNodes.length);
+        });
+
+    });
+
 });
