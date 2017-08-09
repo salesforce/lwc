@@ -79,10 +79,6 @@ export function isNumber(obj: any): boolean {
     return typeof obj === 'number';
 }
 
-export function isPromise(obj: any): boolean {
-    return typeof obj === 'object' && obj === Promise.resolve(obj);
-}
-
 const OtS = {}.toString;
 export function toString(obj: any): string {
     if (obj && typeof obj === 'object' && !obj.toString) {
