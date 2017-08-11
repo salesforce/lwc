@@ -79,10 +79,6 @@ export function traverseHTML(
 ): void {
     let nodeVisitor: NodeVisitor;
     switch (node.nodeName) {
-        case '#documentType':
-            nodeVisitor = visitor.DocumentType;
-            break;
-
         case '#comment':
             nodeVisitor = visitor.Comment;
             break;

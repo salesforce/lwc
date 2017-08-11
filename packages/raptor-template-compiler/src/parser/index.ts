@@ -43,7 +43,6 @@ import {
     IRElement,
     IRAttribute,
     IRAttributeType,
-    IRStringAttribute,
     SlotDefinition,
     TemplateIdentifier,
     CompilationWarning,
@@ -187,7 +186,7 @@ export default function parse(source: string): {
         }
 
         const templateTag = documentFragment.childNodes.find((child) => (
-            treeAdapter.isElementNode(child) && treeAdapter.getTagName(child) === 'template'
+            treeAdapter.isElementNode(child)
         ));
 
         if (!templateTag) {
@@ -199,7 +198,7 @@ export default function parse(source: string): {
 
     function validateRoot(element: IRElement) {
         if (element.tag !== 'template') {
-            return warnOnElement(`Expected root tag to be template, found ${element.tag}`, element);
+            return warnOnElement(`Expected root tag to be template, found ${element.tag}`, element.__original);
         }
 
         if (element.attrsList.length) {
@@ -268,33 +267,6 @@ export default function parse(source: string): {
         }
     }
 
-    function handleForEachDeprecatedSynax(forEachAttribute: IRStringAttribute) {
-        const { value, location } = forEachAttribute;
-
-        const expressionMatch = value.match(/(.*?)\s+(?:in|of)\s+(.*)/);
-        if (!expressionMatch) {
-            const genericDeprecationError = [
-                `For:each directive has been deprecated.`,
-                `Use instead for:each={[Array]} for:item="[itemIdentifier]"`,
-            ].join(' ');
-            return warnAt(genericDeprecationError, location);
-        }
-
-        let alias = expressionMatch[1];
-        const iteratorMatch = alias.match(/\(([^,]*),([^,]*)(?:,([^,]*))?\)/);
-        if (iteratorMatch) {
-            alias = iteratorMatch[1].trim();
-        }
-
-        // Create contextual error on how to transition with the new syntax
-        const validAlias = alias.toLocaleLowerCase();
-        const errorMessage = [
-            `For:each directive has been deprecated.`,
-            `Use instead for:each={${expressionMatch[2]}} for:item="${validAlias}"`,
-        ].join(' ');
-        return warnAt(errorMessage, location);
-    }
-
     function applyForEach(element: IRElement) {
         const forEachAttribute = getTemplateAttribute(element, 'for:each');
         const forItemAttribute = getTemplateAttribute(element, 'for:item');
@@ -307,9 +279,7 @@ export default function parse(source: string): {
             removeAttribute(element, forItemAttribute.name);
 
             if (forEachAttribute.type !== IRAttributeType.Expression) {
-                return forEachAttribute.type === IRAttributeType.String ?
-                    handleForEachDeprecatedSynax(forEachAttribute) :
-                    warnAt('for:each directive is expected to be a expression.', forEachAttribute.location);
+                return warnAt('for:each directive is expected to be a expression.', forEachAttribute.location);
             } else if (forItemAttribute.type !== IRAttributeType.String) {
                 return warnAt('for:item directive is expected to be a string.', forItemAttribute.location);
             }
@@ -357,18 +327,7 @@ export default function parse(source: string): {
 
         removeAttribute(element, iteratorExpression.name);
         const iteratorAttributeName = iteratorExpression.name;
-
-        let iteratorName;
-        if (iteratorAttributeName) {
-            iteratorName = iteratorAttributeName.split(':')[1];
-        }
-
-        if (!iteratorName) {
-            return warnOnElement(
-                `iterator directives should have associated identifier.`,
-                element.__original,
-            );
-        }
+        const [, iteratorName] = iteratorAttributeName.split(':');
 
         if (iteratorExpression.type !== IRAttributeType.Expression) {
             const message = `${iteratorExpression.name} directive is expected to be an expression.`;
@@ -379,7 +338,7 @@ export default function parse(source: string): {
         try {
             iterator = parseIdentifier(iteratorName);
         } catch (error) {
-            return warnAt(`${iteratorExpression.value} is not a valid identifier`, iteratorExpression.location);
+            return warnAt(`${iteratorName} is not a valid identifier`, iteratorExpression.location);
         }
 
         element.forOf = {
@@ -408,19 +367,6 @@ export default function parse(source: string): {
 
         if (tag.includes('-')) {
             component = tag;
-
-            const node = element.__original as parse5.AST.Default.Element;
-            const location = node.__location!;
-
-            // Self closing tags don't have end tag locations
-            // TODO: Remove this once parse5 supports errors from HTML spec
-            if (!location.endTag) {
-                const errorMessage = [
-                    `Self-closing syntax <${tag}/> is not allowed in custom elements,`,
-                    `use an explicit closing tag instead <${tag}></${tag}>.`,
-                ].join(' ');
-                return warnAt(errorMessage, location.startTag);
-            }
         }
 
         const isAttr = getTemplateAttribute(element, 'is');
@@ -462,7 +408,7 @@ export default function parse(source: string): {
             removeAttribute(element, 'name');
 
             if (nameAttribute.type === IRAttributeType.Expression) {
-                return warnAt(`Name attribute value can't be an expression.`, nameAttribute.location);
+                return warnAt(`Name attribute on slot tag can't be an expression.`, nameAttribute.location);
             } else if (nameAttribute.type === IRAttributeType.String) {
                 name = nameAttribute.value;
             }
@@ -590,8 +536,8 @@ export default function parse(source: string): {
             let parsed: IRAttribute;
 
             const isBooleanAttribute = !rawAttribute.includes('=');
-            const value = normalizeAttributeValue(matching, rawAttribute);
-            if (isExpression(value)) {
+            const { value, escapedExpression } = normalizeAttributeValue(matching, rawAttribute);
+            if (isExpression(value) && !escapedExpression) {
                 return parsed = {
                     name,
                     location,

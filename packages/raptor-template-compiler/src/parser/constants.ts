@@ -7,7 +7,7 @@ export const VALID_IF_MODIFIER = new Set([
     'strict-true',
 ]);
 
-export const ITERATOR_RE = /iterator\:([a-z]+)/;
+export const ITERATOR_RE = /^iterator\:.*$/;
 
 export const EVENT_HANDLER_RE = /^on/;
 

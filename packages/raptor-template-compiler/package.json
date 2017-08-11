@@ -23,10 +23,12 @@
     "@types/he": "^0.5.29",
     "@types/jest": "^19.2.3",
     "ast-pretty-print": "^1.1.5",
+    "esutils": "^2.0.2",
     "glob": "^7.1.1",
     "jest": "^20.0.4",
     "prettier": "^1.5.2",
     "rimraf": "^2.6.1",
+    "ts-jest": "20.0.7",
     "tslint": "^5.2.0",
     "typescript": "^2.3.4"
   },

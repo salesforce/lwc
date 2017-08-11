@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "length": 11,
+    "level": "error",
+    "message": "Key attribute value should be an expression",
+    "start": 83
+  }],
+  "metadata": {
+    "templateUsedIds": ["items"]
+  }
+}

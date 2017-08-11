@@ -1,0 +1,16 @@
+{
+  "warnings": [{
+    "length": 18,
+    "level": "error",
+    "message": "my-item is not a valid identifier",
+    "start": 36
+  }, {
+    "length": 20,
+    "level": "error",
+    "message": "my-index is not a valid identifier",
+    "start": 103
+  }],
+  "metadata": {
+    "templateUsedIds": ["items"]
+  }
+}

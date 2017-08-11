@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Expected root tag to be template, found section",
+    "start": 0,
+    "length": 42
+  }]
+}

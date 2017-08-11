@@ -282,13 +282,13 @@ describe('root errors', () => {
         });
     });
 
-    it('missing root error', () => {
+    it('missnamed root error', () => {
         const { warnings } = parseTemplate(`<section>Root1</section>`);
         expect(warnings).toContainEqual({
             level: 'error',
-            message: 'Missing root template tag',
+            message: 'Expected root tag to be template, found section',
             start: 0,
-            length: 0,
+            length: 24,
         });
     });
 
@@ -348,10 +348,9 @@ describe('expression', () => {
         expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
     });
 
-    // FIXME
-    it.skip('escaped attribute with curly braces', () => {
+    it('escaped attribute with curly braces', () => {
         const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
-        expect(root.children[0].attrs.title).toBe('{myValue}');
+        expect(root.children[0].attrs.title.value).toBe('{myValue}');
     });
 
     it('potential expression error', () => {

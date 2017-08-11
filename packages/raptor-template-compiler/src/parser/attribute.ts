@@ -38,7 +38,10 @@ function isEscapedAttribute(rawAttribute: string) {
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,
-): string {
+): {
+    value: string,
+    escapedExpression: boolean,
+} {
     const { value } = attr;
     const isQuoted = isQuotedAttribute(raw);
     const isEscaped = isEscapedAttribute(raw);
@@ -61,7 +64,7 @@ export function normalizeAttributeValue(
 
         // <input value={myValue} />
         // -> Valid identifier.
-        return value;
+        return { value, escapedExpression: false };
     } else if (!isEscaped && isPotentialExpression(value)) {
 
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
@@ -74,12 +77,12 @@ export function normalizeAttributeValue(
             // -> By design the html parser consider the / as the last character of the attribute value.
             //    Make sure to remove strip the trailing / for self closing elements.
 
-            return value.slice(0, -1);
+            return { value: value.slice(0, -1), escapedExpression: false };
         } else if (isExpressionEscaped) {
             // <input value="\{myValue}"/>
             // -> Valid escaped string literal
 
-            return value.slice(1);
+            return { value: value.slice(1), escapedExpression: true };
         }
 
         let escaped = raw.replace(/="?/, '="\\');
@@ -93,7 +96,7 @@ export function normalizeAttributeValue(
 
     // <input value="myValue"/>
     // -> Valid string literal.
-    return value;
+    return { value, escapedExpression: false };
 }
 
 export function attributeName(attr: parse5.AST.Default.Attribute): string {
@@ -146,10 +149,6 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 
     // Handle general case where only standard element have attribute value.
     return !isCustomElement(element);
-}
-
-export function isProp(element: IRElement, attrName: string) {
-    return !isAttribute(element, attrName);
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {

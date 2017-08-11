@@ -1,0 +1,12 @@
+{
+  "warnings": [{
+    "length": 13,
+    "level": "error",
+    "message": "Slot attribute value can't be an expression.",
+    "start": 35
+  }],
+  "metadata": {
+    "templateUsedIds": ["mySlot"],
+    "templateDependencies": ["ns-cmp"]
+  }
+}

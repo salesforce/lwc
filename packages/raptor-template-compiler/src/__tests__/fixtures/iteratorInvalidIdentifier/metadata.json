@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "length": 28,
+    "level": "error",
+    "message": "my-iterator is not a valid identifier",
+    "start": 19
+  }],
+  "metadata": {
+    "templateUsedIds": ["items"]
+  }
+}

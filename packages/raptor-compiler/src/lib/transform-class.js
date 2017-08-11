@@ -11,7 +11,7 @@ export default function (code, { filename, componentName, componentNamespace, ba
         sourceMaps: true,
         plugins: [
             /* See babel-plugins.js */
-            [raptorClassTransformPlugin, {componentNamespace, componentName }],
+            [raptorClassTransformPlugin, { componentNamespace, componentName }],
             [ publicFieldsPlugin, { spec: false }],
             [objectRestSpread, { useBuiltIns: true }],
             functionName,

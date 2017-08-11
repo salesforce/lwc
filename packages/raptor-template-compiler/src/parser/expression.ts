@@ -1,6 +1,7 @@
 import traverse from 'babel-traverse';
 import * as types from 'babel-types';
 import * as babylon from 'babylon';
+import * as esutils from 'esutils';
 
 import {
     config as compilerConfig,
@@ -86,6 +87,9 @@ export function parseExpression(source: string, element?: IRNode): TemplateExpre
 }
 
 export function parseIdentifier(source: string): TemplateIdentifier {
-    // FIXME: make sure the source is a valid identifier
-    return types.identifier(source);
+    if (esutils.keyword.isIdentifierES6(source)) {
+        return types.identifier(source);
+    } else {
+        throw new Error(`Invalid indentifier`);
+    }
 }

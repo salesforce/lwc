@@ -85,18 +85,15 @@ export function normalizeOptions(options) {
 export function mergeMetadata(metadata) {
     const dependencies = metadata.rollupDependencies;
     const labels = [];
-    let isComponent = false;
 
     for (let i in metadata) {
         dependencies.push(...metadata[i].templateDependencies || []);
         dependencies.push(...metadata[i].classDependencies || []);
         labels.push(...metadata[i].labels || []);
-        isComponent = isComponent || metadata[i].isComponent;
     }
 
     return {
         bundleDependencies: Array.from(new Set(dependencies)),
-        bundleLabels: labels,
-        isComponent,
+        bundleLabels: labels
     };
 }

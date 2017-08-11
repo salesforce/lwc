@@ -1,0 +1,11 @@
+{
+  "warnings": [{
+    "length": 15,
+    "level": "error",
+    "message": "Name attribute on slot tag can't be an expression.",
+    "start": 21
+  }],
+  "metadata": {
+    "templateUsedIds": ["slotName"]
+  }
+}
