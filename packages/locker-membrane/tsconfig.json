@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "es2015",
+    "noEmit": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ]
+  },
+  "files": [
+    "./src/main.ts"
+  ]
+}

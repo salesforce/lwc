@@ -10,6 +10,7 @@ coverage
 /lib/
 packages/raptor-engine/lib
 packages/proxy-compat/lib
+packages/locker-membrane/lib
 playground/*
 packages/**/dist
 benchmarking/dist
