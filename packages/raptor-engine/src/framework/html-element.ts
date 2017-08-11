@@ -2,16 +2,14 @@ import assert from "./assert";
 import { ClassList } from "./class-list";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
-import { ArrayFilter, isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, isObject, create } from "./language";
+import { ArrayFilter, isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, create } from "./language";
 import { getReactiveProxy, isObservable } from "./reactive";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
-import { subscribeToSetHook, notifyListeners } from "./watcher";
 import { wasNodePassedIntoVM } from "./vm";
 import { pierce } from "./piercing";
-
-export const ViewModelReflection = Symbol('internal');
+import { ViewModelReflection } from "./def";
 
 function getLinkedElement(cmp: ComponentElement): HTMLElement {
     return cmp[ViewModelReflection].vnode.elm;
@@ -22,113 +20,10 @@ function querySelectorAllFromComponent(cmp: ComponentElement, selectors: string)
     return elm.querySelectorAll(selectors);
 }
 
-export function createPublicPropertyDescriptor(propName: string, originalPropertyDescriptor?: PropertyDescriptor): PropertyDescriptor {
-    function getter(): any {
-        const vm: VM = this[ViewModelReflection];
-        assert.vm(vm);
-        const { propName, origGetter } = getter;
-        if (isBeingConstructed(vm)) {
-            assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
-            return;
-        }
-        if (origGetter) {
-            return origGetter.call(vm.component);
-        }
-        const { cmpProps } = vm;
-        if (isRendering) {
-            // this is needed because the proxy used by template is not sufficient
-            // for public props accessed from within a getter in the component.
-            subscribeToSetHook(vmBeingRendered, cmpProps, propName);
-        }
-        return cmpProps[propName];
-    }
-    getter.propName = propName;
-    getter.origGetter = originalPropertyDescriptor && originalPropertyDescriptor.get;
-
-    function setter(value: any) {
-        const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        const { propName, origSetter } = setter;
-        if (!isBeingConstructed(vm)) {
-            assert.logError(`${vm} can only set a new value for property "${propName}" during construction.`);
-            return;
-        }
-        if (origSetter) {
-            origSetter.call(vm.component, value);
-            return;
-        }
-        const { cmpProps } = vm;
-
-        // proxifying before storing it is a must for public props
-        const observable = isObservable(value);
-        assert.block(function devModeCheck () {
-            if (!observable && isObject(value)) {
-                assert.logWarning(`Assigning a non-reactive value ${value} to member property ${propName} of ${vm} is not common because mutations on that value cannot be observed.`);
-            }
-        });
-        cmpProps[propName] = observable ? getReactiveProxy(value) : value;
-    }
-    setter.propName = propName;
-    setter.origSetter = originalPropertyDescriptor && originalPropertyDescriptor.set;
-
-    const descriptor: PropertyDescriptor = {
-        get: getter,
-        set: setter,
-        enumerable: true,
-        configurable: true,
-    };
-    return descriptor;
-}
-
-
-export function createWiredPropertyDescriptor(propName: string): PropertyDescriptor {
-    function getter(): HashTable<any> {
-        const vm: VM = this[ViewModelReflection];
-        assert.vm(vm);
-        let { cmpWired } = vm;
-        if (isUndefined(cmpWired)) {
-            cmpWired = vm.cmpWired = getReactiveProxy(create(null)); // lazy creation of the value
-        }
-        const { propName } = getter;
-        let value = cmpWired[propName];
-        if (isRendering) {
-            // this is needed because the proxy used by template is not sufficient
-            // for public props accessed from within a getter in the component.
-            subscribeToSetHook(vmBeingRendered, cmpWired, propName);
-        }
-        return value;
-    }
-    getter.propName = propName;
-    function setter(value: any) {
-        const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        const observable = isObservable(value);
-        const { propName } = setter;
-        if (isArray(value) || !observable) {
-            assert.fail(`${vm} failed to set new value into property "${propName}". It can only be set to an observable object.`);
-            return;
-        }
-        let { cmpWired } = vm;
-        if (isUndefined(cmpWired)) {
-            cmpWired = vm.cmpWired = getReactiveProxy(create(null)); // lazy creation of the value
-        }
-        cmpWired[propName] = observable ? getReactiveProxy(value) : value;
-        notifyListeners(cmpWired, propName);
-    }
-    setter.propName = propName;
-    const descriptor: PropertyDescriptor = {
-        get: getter,
-        set: setter,
-        enumerable: true,
-        configurable: true,
-    };
-    return descriptor;
-}
-
 // This should be as performant as possible, while any initialization should be done lazily
 function ComponentElement(): ComponentElement {
-    assert.vm(vmBeingConstructed, `Invalid construction.`);
-    assert.vnode(vmBeingConstructed.vnode, `Invalid construction.`);
+    assert.vm(vmBeingConstructed);
+    assert.vnode(vmBeingConstructed.vnode);
     const vnode = vmBeingConstructed.vnode;
     assert.invariant(vnode.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vnode}.`);
     vmBeingConstructed.component = this;

@@ -6,7 +6,7 @@ import {
     forEach,
 } from "./language";
 
-import { ViewModelReflection } from "./html-element";
+import { ViewModelReflection } from "./def";
 
 function getLinkedElement(classList: ClassList): HTMLElement {
     return classList[ViewModelReflection].vnode.elm;

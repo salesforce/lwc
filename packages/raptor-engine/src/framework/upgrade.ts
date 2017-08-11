@@ -1,8 +1,6 @@
 import assert from "./assert";
 import { patch } from "./patch";
-import { scheduleRehydration } from "./vm";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
-import { updateComponentProp } from "./component";
 import { getComponentDef } from "./def";
 import { c } from "./api";
 import { isUndefined, isFunction, assign } from "./language";
@@ -79,17 +77,6 @@ function linkAttributes(element: HTMLElement, vm: VM) {
             assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = undefined;\`.`);
             return;
         }
-
-        assert.block(function devModeCheck() {
-            const propName = getPropNameFromAttrName(attrName);
-            if (propsConfig[propName]) {
-                updateComponentProp(vm, propName, newValue);
-                if (vm.isDirty) {
-                    console.log(`Scheduling ${vm} for rehydration.`);
-                    scheduleRehydration(vm);
-                }
-            }
-        });
         const oldValue = getAttribute.call(element, attrName);
         removeAttribute.call(element, attrName);
         const newValue = getAttribute.call(element, attrName);

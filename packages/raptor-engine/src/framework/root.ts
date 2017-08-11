@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { ViewModelReflection } from "./html-element";
+import { ViewModelReflection } from "./def";
 import { ArrayFilter, defineProperty } from "./language";
 import { isBeingConstructed } from "./component";
 import { OwnerKey, isNodeOwnedByVM } from "./vm";

@@ -21,21 +21,28 @@ import {
     getPrototypeOf,
     isString,
     isFunction,
-    isUndefined,
     isObject,
+    ArraySlice,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
-import { Element, createPublicPropertyDescriptor, createWiredPropertyDescriptor } from "./html-element";
+import { createWiredPropertyDescriptor } from "./decorators/wire";
+import { createTrackedPropertyDescriptor } from "./decorators/track";
+import { createPublicPropertyDescriptor, createPublicAccessorDescriptor, prepareForPropUpdate } from "./decorators/api";
+import { Element } from "./html-element";
 import { EmptyObject, getAttrNameFromPropName, getPropNameFromAttrName } from "./utils";
+import { getReactiveProxy, isObservable } from "./reactive";
+
 /*eslint-disable*/
 import {
     ComponentClass
  } from './component';
  /*eslint-enable*/
 
- let observableHTMLAttrs: HashTable<boolean>;
+export const ViewModelReflection = Symbol('internal');
 
- assert.block(function devModeCheck () {
+let observableHTMLAttrs: HashTable<boolean>;
+
+assert.block(function devModeCheck () {
     observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
         const globalProperty = GlobalHTMLProperties[key];
         if (globalProperty && globalProperty.attribute) {
@@ -43,7 +50,7 @@ import {
         }
         return acc;
     }, create(null));
- });
+});
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -73,36 +80,62 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
     let methods = getPublicMethodsHash(Ctor);
     let observedAttrs = getObservedAttributesHash(Ctor);
     let wire = getWireHash(Ctor);
+    let track = getTrackHash(Ctor);
 
     const proto = Ctor.prototype;
     for (let propName in props) {
         const propDef = props[propName];
         // initializing getters and setters for each public prop on the target prototype
         const descriptor = getOwnPropertyDescriptor(proto, propName);
-        const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
-        assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+        assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         const { config } = propDef;
-        if (COMPUTED_GETTER_MASK & config) {
-            assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${name}`);
-            propDef.getter = descriptor.get;
+        if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
+            assert.block(function devModeCheck() {
+                const mustHaveGetter = COMPUTED_GETTER_MASK & config;
+                const mustHaveSetter = COMPUTED_SETTER_MASK & config;
+                if (mustHaveGetter) {
+                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${name}`);
+                }
+                if (mustHaveSetter) {
+                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
+                    assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
+                }
+            });
+            createPublicAccessorDescriptor(proto, propName, descriptor);
+        } else {
+            createPublicPropertyDescriptor(proto, propName, descriptor);
         }
-        if (COMPUTED_SETTER_MASK & config) {
-            assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
-            propDef.setter = descriptor.set;
-        }
-        defineProperty(proto, propName, createPublicPropertyDescriptor(propName, descriptor));
     }
-
     if (wire) {
         for (let propName in wire) {
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // for decorated methods we need to do nothing
-            if (isUndefined(wire[propName].method)) {
-                // initializing getters and setters for each public prop on the target prototype
-                const isComputed = descriptor && (isFunction(descriptor.get) || isFunction(descriptor.set));
-                assert.invariant(!descriptor || isComputed, `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a property decorated with the @wire decorator.`);
-                defineProperty(proto, propName, createWiredPropertyDescriptor(propName));
+            if (wire[propName].method) {
+                // for decorated methods we need to do nothing
+                continue;
             }
+            const descriptor = getOwnPropertyDescriptor(proto, propName);
+            // TODO: maybe these conditions should be always applied.
+            assert.block(function devModeCheck() {
+                const { get, set, configurable, writable } = descriptor || EmptyObject;
+                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
+                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
+                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
+            });
+            // initializing getters and setters for each public prop on the target prototype
+            createWiredPropertyDescriptor(proto, propName, descriptor);
+        }
+    }
+    if (track) {
+        for (let propName in track) {
+            const descriptor = getOwnPropertyDescriptor(proto, propName);
+            // TODO: maybe these conditions should be always applied.
+            assert.block(function devModeCheck() {
+                const { get, set, configurable, writable } = descriptor || EmptyObject;
+                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
+                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
+                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
+            });
+            // initializing getters and setters for each public prop on the target prototype
+            createTrackedPropertyDescriptor(proto, propName, descriptor);
         }
     }
 
@@ -114,12 +147,16 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         wire = (superDef.wire || wire) ? assign(create(null), superDef.wire, wire) : undefined;
     }
 
+    const descriptors = createDescriptorMap(props, methods);
+
     const def: ComponentDef = {
         name,
         wire,
+        track,
         props,
         methods,
         observedAttrs,
+        descriptors,
     };
 
     assert.block(function devModeCheck() {
@@ -128,7 +165,8 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
             const propDef = props[camelName];
 
             if (propDef) { // User defined prop
-                if (propDef.setter) { // Ensure user has not defined setter
+                const { config } = propDef;
+                if (COMPUTED_SETTER_MASK & config) { // Ensure user has not defined setter
                     assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Use existing "${camelName}" setter to track changes.`);
                 } else if (observedAttributeName !== getAttrNameFromPropName(camelName)) { // Ensure observed attribute is kebab case
                     assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Did you mean "${getAttrNameFromPropName(camelName)}"?`);
@@ -155,6 +193,70 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         }
     });
     return def;
+}
+
+function createGetter(key: string) {
+    return function (): any {
+        const vm = this[ViewModelReflection];
+        return vm.component[key];
+    }
+}
+
+function createSetter(key: string) {
+    return function (newValue: any): any {
+        const vm = this[ViewModelReflection];
+        // logic for setting new properties of the element directly from the DOM
+        // will only be allowed for root elements created via createElement()
+        if (!vm.vnode.isRoot) {
+            assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
+            return;
+        }
+        const observable = isObservable(newValue);
+        newValue = observable ? getReactiveProxy(newValue) : newValue;
+        assert.block(function devModeCheck () {
+            if (!observable && isObject(newValue)) {
+                assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+            }
+        });
+        prepareForPropUpdate(vm);
+        vm.component[key] = newValue;
+    }
+}
+
+function createMethodCaller(key: string) {
+    return function (): any {
+        const vm = this[ViewModelReflection];
+        return vm.component[key].apply(vm.component, ArraySlice.call(arguments));
+    }
+}
+
+function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfig: HashTable<number>): PropertyDescriptorMap {
+    const descriptors: PropertyDescriptorMap = {};
+    // expose getters and setters for each public props on the Element
+    for (let key in publicProps) {
+        descriptors[key] = {
+            get: createGetter(key),
+            set: createSetter(key),
+        };
+    }
+    // expose public methods as props on the Element
+    for (let key in publicMethodsConfig) {
+        descriptors[key] = {
+            value: createMethodCaller(key),
+        };
+    }
+    return descriptors;
+}
+
+function getTrackHash(target: ComponentClass): HashTable<WireDef> | undefined {
+    const track = target.track;
+    if (!track || !getOwnPropertyNames(track).length) {
+        return;
+    }
+    assert.block(function devModeCheck() {
+        // TODO: check that anything in `track` is correctly defined in the prototype
+    });
+    return assign(create(null), track);
 }
 
 function getWireHash(target: ComponentClass): HashTable<WireDef> | undefined {

@@ -1,9 +1,7 @@
-import {
-    resetComponentProp,
-    updateComponentProp,
-} from "../component";
-import { assign, isUndefined } from "../language";
-import { EmptyObject } from "../utils";
+import assert from "../assert";
+import { prepareForPropUpdate } from "../decorators/api";
+import { isUndefined } from "../language";
+import { EmptyObject, getAttrNameFromPropName } from "../utils";
 
 function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
     const { vm } = vnode;
@@ -11,6 +9,7 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         return;
     }
 
+    const { component, def: { props: publicProps } } = vm;
     let { data: { _props: oldProps } } = oldVnode;
     let { data: { _props: newProps } } = vnode;
 
@@ -22,7 +21,8 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         // removed props should be reset in component's props
         for (key in oldProps) {
             if (!(key in newProps)) {
-                resetComponentProp(vm, key);
+                prepareForPropUpdate(vm);
+                component[key] = undefined;
             }
         }
 
@@ -30,7 +30,13 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
         for (key in newProps) {
             cur = newProps[key];
             if (!(key in oldProps) || oldProps[key] != cur) {
-                updateComponentProp(vm, key, cur);
+                if (isUndefined(publicProps[key])) {
+                    // TODO: this should never really happen because the compiler should always validate
+                    assert.fail(`Ignoring unknown public property ${key} of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                    return;
+                }
+                prepareForPropUpdate(vm);
+                component[key] = cur;
             }
         }
     }

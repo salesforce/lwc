@@ -558,11 +558,12 @@ describe('component', function () {
         });
 
         it('should call function with correct context', function () {
-            let context;
+            let context, args;
 
             class MyComponent extends Element  {
                 m() {
                     context = this;
+                    args = Array.prototype.slice.call(arguments);
                 }
             }
             MyComponent.publicMethods = ['m'];
@@ -572,9 +573,9 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
 
-            const m = elm.m;
-            m();
+            elm.m(1, 2);
             assert.deepEqual(context, vnode.vm.component);
+            assert.deepEqual(args, [1, 2]);
         });
 
         it('should express function identity with strict equality', function () {

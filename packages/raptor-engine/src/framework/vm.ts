@@ -2,8 +2,9 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent } from "./component";
 import { patch } from "./patch";
-import { assign, isArray, toString, ArrayPush, isUndefined, keys } from "./language";
+import { assign, isArray, toString, ArrayPush, isUndefined, keys, defineProperties } from "./language";
 import { addCallbackToNextTick } from "./utils";
+import { ViewModelReflection } from "./def";
 
 let idx: number = 0;
 let uid: number = 0;
@@ -24,8 +25,8 @@ export function removeInsertionIndex(vm: VM) {
 
 export function createVM(vnode: ComponentVNode) {
     assert.vnode(vnode);
-    assert.invariant(vnode.elm instanceof HTMLElement, `VM creation requires a DOM element to be associated to vnode ${vnode}.`);
-    const { Ctor } = vnode;
+    const { elm, Ctor } = vnode;
+    assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element to be associated to vnode ${vnode}.`);
     const def = getComponentDef(Ctor);
     console.log(`[object:vm ${def.name}] is being initialized.`);
     uid += 1;
@@ -36,8 +37,6 @@ export function createVM(vnode: ComponentVNode) {
         isDirty: true,
         def,
         context: {},
-        cmpProps: {},
-        cmpWired: undefined,
         cmpState: undefined,
         cmpSlots: undefined,
         cmpEvents: undefined,
@@ -59,6 +58,9 @@ export function createVM(vnode: ComponentVNode) {
         };
     });
     vnode.vm = vm;
+    // linking elm with VM before creating the instance
+    elm[ViewModelReflection] = vm;
+    defineProperties(elm, def.descriptors);
     createComponent(vm, Ctor);
     linkComponent(vm);
     assert.block(function devModeCheck() {

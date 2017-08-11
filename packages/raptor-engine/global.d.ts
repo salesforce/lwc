@@ -27,8 +27,6 @@ declare interface HashTable<T> {
 declare interface PropDef {
     config?: number,
     type?: string,
-    getter?: () => any,
-    setter?: (value: any) => void,
 }
 
 declare interface WireDef {
@@ -39,9 +37,11 @@ declare interface WireDef {
 declare interface ComponentDef {
     name: string,
     wire: HashTable<WireDef> | undefined,
+    track: HashTable<number>,
     props: HashTable<PropDef>,
     methods: HashTable<number>,
     observedAttrs: HashTable<number>,
+    descriptors: PropertyDescriptorMap,
 }
 
 declare class ComponentElement extends Component {
@@ -52,8 +52,6 @@ declare class VM {
     uid: number;
     idx: number;
     cmpState?: HashTable<any>;
-    cmpProps: HashTable<any>;
-    cmpWired?: HashTable<any>;
     cmpSlots?: Slotset;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;

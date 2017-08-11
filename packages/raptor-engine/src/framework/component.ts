@@ -4,14 +4,11 @@ import {
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
-    invokeComponentAttributeChangedCallback,
     invokeComponentMethod,
     invokeComponentCallback,
 } from "./invoker";
-import { notifyListeners } from "./watcher";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice, isObject, defineProperties } from "./language";
-import { addCallbackToNextTick, getAttrNameFromPropName, noop } from "./utils";
-import { getReactiveProxy, isObservable } from "./reactive";
+import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { addCallbackToNextTick, noop } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
@@ -27,7 +24,6 @@ export interface ComponentClass {
 /*eslint-enable*/
 
 export let vmBeingConstructed: VM | null = null;
-
 export function isBeingConstructed(vm: VM): boolean {
     assert.vm(vm);
     return vmBeingConstructed === vm;
@@ -45,59 +41,6 @@ export function createComponent(vm: VM, Ctor: ComponentClass) {
 
 export function linkComponent(vm: VM) {
     assert.vm(vm);
-    const {
-        vnode: { elm },
-        component,
-        def: { methods: publicMethodsConfig, props: publicProps }
-    } = vm;
-    const descriptors: PropertyDescriptorMap = {};
-    // expose public methods as props on the Element
-    for (let key in publicMethodsConfig) {
-        const getter = (function (component: Component, key: string, ...args: any[]): any {
-            return component[key].apply(component, args);
-        }).bind(undefined, component, key);
-        descriptors[key] = {
-            get: () => getter
-        };
-    }
-    for (let key in publicProps) {
-        let {
-            getter,
-        } = publicProps[key];
-        if (isUndefined(getter)) {
-            // default getter
-            getter = (function runGetter(vm: VM, key: string): any {
-                return this[key];
-            }).bind(component, vm, key);
-        } else {
-            // original getter
-            getter = getter.bind(component);
-        }
-
-        const setter = (function runSetter(vm: VM, key: string, value: any): any {
-            if (vm.vnode.isRoot) {
-                // logic for setting new properties of the element directly from the DOM
-                // will only be allowed for root elements created via createElement()
-                // proxifying before storing it is a must for public props
-                const observable = isObservable(value);
-                assert.block(function devModeCheck () {
-                    if (!observable && isObject(value)) {
-                        assert.logWarning(`Assigning a non-reactive value ${value} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
-                    }
-                });
-                value = observable ? getReactiveProxy(value) : value;
-                updateComponentProp(vm, key, value);
-            } else {
-                assert.logError(`Invalid attempt to set property ${key} from ${vm} to a new value. This property was decorated with @api, and can only be changed via the template.`);
-            }
-        }).bind(component, vm, key);
-
-        descriptors[key] = {
-            get: getter,
-            set: setter,
-        };
-    }
-    defineProperties(elm, descriptors);
     // wiring service
     const { def: { wire } } = vm;
     if (wire) {
@@ -120,64 +63,6 @@ export function clearListeners(vm: VM) {
             ArraySplice.call(set, pos, 1);
         }
         deps.length = 0;
-    }
-}
-
-export function updateComponentProp(vm: VM, propName: string, newValue: any) {
-    assert.vm(vm);
-    const { cmpProps, def: { props: publicProps, observedAttrs } } = vm;
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-    const propDef: PropDef = publicProps[propName];
-    if (isUndefined(propDef)) {
-        // TODO: this should never really happen because the compiler should always validate
-        console.warn(`Ignoring unknown public property ${propName} of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(propName)}".`);
-        return;
-    }
-    assert.isFalse(propDef.getter && !propDef.setter, `Invalid attempt to set a new value for property ${propName} of ${vm} that does not has a setter.`);
-    const { setter } = propDef;
-    if (setter) {
-        setter.call(vm.component, newValue);
-        return;
-    }
-    let oldValue = cmpProps[propName];
-    if (oldValue !== newValue) {
-        assert.block(function devModeCheck() {
-            if (isObservable(newValue)) {
-                assert.invariant(getReactiveProxy(newValue) === newValue, `updateComponentProp() should always received proxified object values instead of ${newValue} in ${vm}.`);
-            }
-        });
-        cmpProps[propName] = newValue;
-        const attrName = getAttrNameFromPropName(propName);
-        if (attrName in observedAttrs) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-        notifyListeners(cmpProps, propName);
-    }
-}
-
-export function resetComponentProp(vm: VM, propName: string) {
-    assert.vm(vm);
-    const { cmpProps, def: { props: publicPropsConfig, observedAttrs } } = vm;
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-    const propDef: PropDef = publicPropsConfig[propName];
-    if (isUndefined(propDef)) {
-        // not need to log the error here because we will do it on updateComponentProp()
-        return;
-    }
-    let newValue = undefined;
-    const { setter } = propDef;
-    if (setter) {
-        setter.call(vm.component, newValue);
-        return;
-    }
-    let oldValue = cmpProps[propName];
-    if (oldValue !== newValue) {
-        cmpProps[propName] = newValue;
-        const attrName = getAttrNameFromPropName(propName);
-        if (attrName in observedAttrs) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-        notifyListeners(cmpProps, propName);
     }
 }
 
