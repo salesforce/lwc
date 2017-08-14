@@ -1,5 +1,0 @@
-{
-    "message": "@wire(<adapterId>, <adapterConfig>) expects 2 parameters.",
-    "line": 2,
-    "column": 4
-}

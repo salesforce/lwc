@@ -4,18 +4,20 @@
   "version": "0.13.1",
   "main": "src/index.js",
   "license": "MIT",
-  "devDependencies": {
-    "mocha": "^3.2.0",
-    "power-assert": "^1.4.2",
-    "raptor-helper-fixture": "^0.12.4"
-  },
   "scripts": {
-    "test": "mocha"
+    "test": "jest"
+  },
+  "dependencies": {
+    "babel-core": "^6.24.1",
+    "babel-plugin-transform-class-properties": "^6.24.1"
+  },
+  "devDependencies": {
+    "jest": "^20.0.4"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   },
-  "dependencies": {
-    "babel-plugin-transform-class-properties": "^6.24.1"
+  "jest": {
+    "testRegex":  "/__tests__/.*test\\.js$"
   }
 }

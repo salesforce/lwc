@@ -34,6 +34,20 @@ function computePublicPropsConfig(publicProps) {
     return decorateProperties.reduce((config, property) => {
         const propertyName = property.get('key.name').node;
 
+        // Ensure all public setters are associated with a getter
+        if (isSetterClassMethod(property)) {
+            const associatedGetter = decorateProperties.find(property => (
+                isGetterClassMethod(property) &&
+                property.get('key.name').node === propertyName
+            ));
+
+            if (!associatedGetter) {
+                throw property.buildCodeFrameError(
+                    `@api set ${propertyName} setter has not associated setter.`
+                )
+            }
+        }
+
         if (!(propertyName in config)) {
             config[propertyName] = {};
         }
