@@ -1,4 +1,8 @@
 // RFC4122 version 4 uuid
+type XProxyConstructor = ProxyConstructor & {
+    reify: (proxy: XProxyConstructor, descriptorMap: PropertyDescriptorMap) => void
+};
+
 export const ProxySlot = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
@@ -8,6 +12,7 @@ export const ProxyIdentifier = function ProxyCompat() {};
 const {
     create,
     defineProperty,
+    defineProperties,
     isExtensible,
     getPrototypeOf,
     setPrototypeOf,
@@ -79,7 +84,7 @@ const defaultHandlerTraps: ProxyHandler<object> = {
 
 let lastRevokeFn: () => void;
 
-export const XProxy: ProxyConstructor = function Proxy(target: object, handler: ProxyHandler<object>) {
+export const XProxy: XProxyConstructor = function Proxy(target: object, handler: ProxyHandler<object>) {
     const targetIsFunction = typeof target === 'function';
     const targetIsArray = isArray(target);
     if (typeof target !== 'object' && !targetIsFunction) {
@@ -163,10 +168,17 @@ export const XProxy: ProxyConstructor = function Proxy(target: object, handler: 
     return proxy;
 };
 
-XProxy.revocable = function (target, handler) {
+XProxy.revocable = function (target: object, handler: ProxyHandler<object>) {
     const p = new XProxy(target, handler);
     return {
         proxy: p,
         revoke: lastRevokeFn,
     };
 };
+
+XProxy.reify = function (proxy: XProxyConstructor, descriptorMap: PropertyDescriptorMap) {
+    if (proxy[ProxySlot] !== ProxyIdentifier) {
+        throw new Error(`Cannot reify ${proxy}. ${proxy} is not a valid compat Proxy instance.`);
+    }
+    defineProperties(proxy, descriptorMap);
+}
