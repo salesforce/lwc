@@ -1,4 +1,4 @@
-const { decamelize, findClassProperty } = require('../utils');
+const { decamelize, findClassProperty, staticClassProperty } = require('../utils');
 
 const WIRE_DECORATOR = 'wire';
 const WIRE_CLASS_PROPERTY = 'wire';
@@ -39,12 +39,6 @@ module.exports = function wireVisitor ({ types: t }) {
 
                 return clonedProperty;
             });
-    }
-
-    function staticClassProperty(name, expression) {
-        const classProperty = t.classProperty(t.identifier(name), expression);
-        classProperty.static = true;
-        return classProperty;
     }
 
     function buildWireConfigValue(wiredValues) {
@@ -91,6 +85,7 @@ module.exports = function wireVisitor ({ types: t }) {
             classBody.pushContainer('body', clonedObservedProperty);
         } else {
             observedAttribute = staticClassProperty(
+                t,
                 OBSERVED_ATTRIBUTES_CLASS_PROPERTY,
                 t.arrayExpression([])
             );
@@ -166,6 +161,7 @@ module.exports = function wireVisitor ({ types: t }) {
 
             if (wiredValues.length) {
                 classBody.pushContainer('body', staticClassProperty(
+                    t,
                     WIRE_CLASS_PROPERTY,
                     buildWireConfigValue(wiredValues)
                 ));

@@ -1,6 +1,7 @@
 const component = require('./component');
 const apiDecorator = require('./decorators/api');
 const wireDecorator = require('./decorators/wire');
+const trackDecorator = require('./decorators/track');
 const classProperties = require('./class-properties');
 
 module.exports = function ({ types, traverse }) {
@@ -21,6 +22,7 @@ module.exports = function ({ types, traverse }) {
             baseVisitor,
             apiDecorator({ types }),
             wireDecorator({ types }),
+            trackDecorator({ types }),
             component({ types }),
             classProperties({ types }),
         ])

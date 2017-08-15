@@ -1,4 +1,4 @@
-const { isClassMethod, isGetterClassMethod, isSetterClassMethod } = require('../utils');
+const { isClassMethod, isGetterClassMethod, isSetterClassMethod, staticClassProperty } = require('../utils');
 
 const API_DECORATOR = 'api';
 const PUBLIC_PROPS_CLASS_PROPERTY = 'publicProps';
@@ -86,12 +86,6 @@ module.exports = function apiVisitor ({ types: t }) {
         }
     };
 
-    function staticClassProperty(name, expression) {
-        const classProperty = t.classProperty(t.identifier(name), expression);
-        classProperty.static = true;
-        return classProperty;
-    }
-
     return {
         Class(path) {
             const classBody = path.get('body');
@@ -106,6 +100,7 @@ module.exports = function apiVisitor ({ types: t }) {
             if (publicProps.length) {
                 const publicPropsConfig = computePublicPropsConfig(publicProps);
                 classBody.pushContainer('body', staticClassProperty(
+                    t,
                     PUBLIC_PROPS_CLASS_PROPERTY,
                     t.valueToNode(publicPropsConfig)
                 ));
@@ -114,6 +109,7 @@ module.exports = function apiVisitor ({ types: t }) {
             if (publicMethods.length) {
                 const publicMethodsConfig = computePublicMethodsConfig(publicMethods);
                 classBody.pushContainer('body', staticClassProperty(
+                    t,
                     PUBLIC_METHODS_CLASS_PROPERTY,
                     t.valueToNode(publicMethodsConfig)
                 ));

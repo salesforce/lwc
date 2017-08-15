@@ -54,6 +54,12 @@ function isSetterClassMethod(classMethod, properties = {}) {
     });
 }
 
+function staticClassProperty(types, name, expression) {
+    const classProperty = types.classProperty(types.identifier(name), expression);
+    classProperty.static = true;
+    return classProperty;
+}
+
 module.exports = {
     decamelize,
     findClassMethod,
@@ -61,4 +67,5 @@ module.exports = {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
+    staticClassProperty,
 };
