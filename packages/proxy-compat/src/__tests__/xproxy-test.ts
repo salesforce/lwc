@@ -77,7 +77,23 @@ describe('Proxy', () => {
             expect(() => {
                 Proxy.reify(proxy);
             }).toThrow();
-        })
+        });
+    });
+
+    describe('revokable', function () {
+        it('should throw error when getting key', function () {
+            const obj = {};
+            const { proxy, revoke } = Proxy.revocable(obj, {
+                get: function () {
+
+                }
+            });
+
+            revoke();
+            expect(() => {
+                Proxy.getKey(proxy, 'foo');
+            }).toThrow("Cannot perform 'get' on a proxy that has been revoked");
+        });
     });
 
 });

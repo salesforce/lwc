@@ -6,10 +6,16 @@ const {
     keys: _keys,
     getOwnPropertyNames: _getOwnPropertyNames,
     hasOwnProperty: _hasOwnProperty,
+    getOwnPropertyDescriptor: _getOwnPropertyDescriptor,
+    preventExtensions: _preventExtensions,
+    defineProperty: _defineProperty,
+    isExtensible: _isExtensible,
+    getPrototypeOf: _getPrototypeOf,
+    setPrototypeOf: _setPrototypeOf
 } = Object;
 const _isArray = Array.isArray;
 
-function isCompatProxy(replicaOrAny: any) {
+export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxy {
     return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
 }
 
@@ -35,6 +41,20 @@ function keys(replicaOrAny: any): Array<string> {
     return _keys(replicaOrAny);
 }
 
+function getPrototypeOf(replicaOrAny: object): object | null {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.getPrototypeOf();
+    }
+    return _getPrototypeOf(replicaOrAny);
+}
+
+function setPrototypeOf(replicaOrAny: object, proto: object): boolean {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.setPrototypeOf(proto);
+    }
+    return _setPrototypeOf(replicaOrAny, proto);
+}
+
 function getOwnPropertyNames(replicaOrAny: object): Array<string> {
     if (isCompatProxy(replicaOrAny)) {
         return replicaOrAny.ownKeys(); // TODO: only strings
@@ -42,7 +62,35 @@ function getOwnPropertyNames(replicaOrAny: object): Array<string> {
     return _getOwnPropertyNames(replicaOrAny);
 }
 
-function hasOwnProperty(key: string | symbol): boolean {
+function getOwnPropertyDescriptor(replicaOrAny: object, key: PropertyKey) {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.getOwnPropertyDescriptor(key);
+    }
+    return _getOwnPropertyDescriptor(replicaOrAny, key);
+}
+
+function preventExtensions(replicaOrAny: object): object {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.preventExtensions();
+    }
+    return _preventExtensions(replicaOrAny);
+}
+
+function isExtensible(replicaOrAny: object) {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.isExtensible();
+    }
+    return _isExtensible(replicaOrAny);
+}
+
+function defineProperty(replicaOrAny: object, key: PropertyKey, descriptor: PropertyDescriptor) {
+    if (isCompatProxy(replicaOrAny)) {
+        return replicaOrAny.defineProperty(key, descriptor);
+    }
+    return _defineProperty(replicaOrAny, key, descriptor);
+}
+
+function hasOwnProperty(this: any, key: string | symbol): boolean {
     if (isCompatProxy(this)) {
         return !!this.getOwnPropertyDescriptor(key);
     }
@@ -86,16 +134,16 @@ Object.prototype.hasOwnProperty = hasOwnProperty;
 Array.isArray = isArray;
 
 // trap `preventExtensions` can be covered by a patched version of:
-// [ ] Object.preventExtensions()
+// [*] Object.preventExtensions()
 // [ ] Reflect.preventExtensions()
 
 // trap `getOwnPropertyDescriptor` can be covered by a patched version of:
-// [ ] Object.getOwnPropertyDescriptor()
+// [*] Object.getOwnPropertyDescriptor()
 // [ ] Reflect.getOwnPropertyDescriptor()
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/defineProperty
 // trap `defineProperty` can be covered by a patched version of:
-// [ ] Object.defineProperty()
+// [*] Object.defineProperty()
 // [ ] Reflect.defineProperty()
 
 
@@ -107,16 +155,21 @@ Array.isArray = isArray;
 // [ ] Object.getOwnPropertySymbols()
 // [*] Object.keys()
 // [ ] Reflect.ownKeys()
+Object.defineProperty = defineProperty;
+Object.preventExtensions = preventExtensions;
+Object.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
 Object.getOwnPropertyNames = getOwnPropertyNames;
 Object.keys = keys;
-
-// trap `isExtensible` can be covered by a patched version of:
-// [ ] Object.isExtensible()
-// [ ] Reflect.isExtensible()
-
-// trap `setPrototypeOf` can be covered by a patched version of:
-// [ ] Object.setPrototypeOf()
+Object.isExtensible = isExtensible;
+// trap `getPrototypeOf` can be covered by a patched version of:
+// [x] Object.setPrototypeOf()
 // [ ] Reflect.setPrototypeOf()
+
+// trap `getPrototypeOf` can be covered by a patched version of:
+// [x] Object.getPrototypeOf()
+// [ ] Reflect.getPrototypeOf()
+Object.setPrototypeOf = setPrototypeOf;
+Object.getPrototypeOf = getPrototypeOf;
 
 // Other necessary patches:
 // [*] Object.assign

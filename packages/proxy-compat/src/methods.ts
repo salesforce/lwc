@@ -4,18 +4,18 @@ import {
     inOperator,
 } from "./xproxy";
 
-function isCompatProxy(replicaOrAny: any) {
-    return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
-}
+import {
+    isCompatProxy
+} from './main';
 
-export function getKey(replicaOrAny: any, key: any): any {
+export function getKey(replicaOrAny: any, key: PropertyKey): any {
     if (isCompatProxy(replicaOrAny)) {
         return replicaOrAny.get(key);
     }
     return replicaOrAny[key];
 }
 
-export function callKey(replicaOrAny: any, key: any, ...args: any[]): any {
+export function callKey(replicaOrAny: any, key: PropertyKey, ...args: Array<any>): any {
     const fn = getKey(replicaOrAny, key);
     return fn.apply(replicaOrAny, args);
 }

@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf dist/ lib/",
     "test": "jest --coverage",
-    "types": "tsc src/**/*.ts --noEmit",
+    "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c scripts/rollup.config.js",
     "prepublish": "yarn run build"
