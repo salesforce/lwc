@@ -61,8 +61,52 @@ describe('component', function () {
             return Promise.resolve().then(() => {
                 assert.strictEqual(1, counter);
                 assert.strictEqual('x', keyValue);
-                assert.strictEqual(1, oldValue);
-                assert.strictEqual(2, newValue);
+                assert.strictEqual('1', oldValue);
+                assert.strictEqual('2', newValue);
+            });
+        });
+
+        it('should invoke attributeChangeCallback() for data-* attributes', () => {
+            let keyValue, oldValue, newValue, counter = 0;
+            class MyComponent extends Element {
+                attributeChangedCallback(k, o, n) {
+                    oldValue = o;
+                    newValue = n;
+                    keyValue = k;
+                    counter++;
+                }
+            }
+            MyComponent.observedAttributes = ['data-xyz'];
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { 'data-xyz': 2 } });
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                assert.strictEqual(1, counter);
+                assert.strictEqual('data-xyz', keyValue);
+                assert.strictEqual(null, oldValue);
+                assert.strictEqual('2', newValue);
+            });
+        });
+
+        it('should invoke attributeChangeCallback() for aria-* attributes', () => {
+            let keyValue, oldValue, newValue, counter = 0;
+            class MyComponent extends Element {
+                attributeChangedCallback(k, o, n) {
+                    oldValue = o;
+                    newValue = n;
+                    keyValue = k;
+                    counter++;
+                }
+            }
+            MyComponent.observedAttributes = ['aria-describedby'];
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', MyComponent, { attrs: { 'aria-describedby': 'xyz' } });
+            patch(elm, vnode);
+            return Promise.resolve().then(() => {
+                assert.strictEqual(1, counter);
+                assert.strictEqual('aria-describedby', keyValue);
+                assert.strictEqual(null, oldValue);
+                assert.strictEqual('xyz', newValue);
             });
         });
     });

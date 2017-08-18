@@ -28,9 +28,10 @@ import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor, prepareForPropUpdate } from "./decorators/api";
-import { Element } from "./html-element";
+import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getAttrNameFromPropName, getPropNameFromAttrName } from "./utils";
 import { getReactiveProxy, isObservable } from "./reactive";
+import { invokeComponentAttributeChangedCallback } from "./invoker";
 
 /*eslint-disable*/
 import {
@@ -63,7 +64,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getPrototypeOf(Ctor);
-    if (proto === Element) {
+    if (proto === BaseElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -140,7 +141,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
     }
 
     const superProto = getPrototypeOf(Ctor);
-    if (superProto !== Element) {
+    if (superProto !== BaseElement) {
         const superDef = getComponentDef(superProto);
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -161,6 +162,9 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
 
     assert.block(function devModeCheck() {
         getOwnPropertyNames(observedAttrs).forEach((observedAttributeName) => {
+            if (observedAttributeName.indexOf('data-') === 0 || observedAttributeName.indexOf('aria-') === 0) {
+                return;
+            }
             const camelName = getPropNameFromAttrName(observedAttributeName);
             const propDef = props[camelName];
 
@@ -230,8 +234,79 @@ function createMethodCaller(key: string) {
     }
 }
 
+const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
+
+function getAttributePatched(attrName: string): string | null {
+    const vm: VM = this[ViewModelReflection];
+    assert.vm(vm);
+    assert.block(function devModeCheck() {
+        const { def: { props: propsConfig } } = vm;
+        attrName = attrName.toLocaleLowerCase();
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+        }
+    });
+    return getAttribute.call(this, attrName);
+}
+
+function setAttributePatched(attrName: string, newValue: any) {
+    const vm = this[ViewModelReflection];
+    assert.vm(vm);
+    const { def: { props: propsConfig, observedAttrs } } = vm;
+    attrName = attrName.toLocaleLowerCase();
+    assert.block(function devModeCheck() {
+        if (!vm.vnode.isRoot) {
+            assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+        }
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = value;\`.`);
+        }
+    });
+    const oldValue = getAttribute.call(this, attrName);
+    setAttribute.call(this, attrName, newValue);
+    newValue = getAttribute.call(this, attrName);
+    if (attrName in observedAttrs && oldValue !== newValue) {
+        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+    }
+}
+
+function removeAttributePatched(attrName: string) {
+    const vm = this[ViewModelReflection];
+    assert.vm(vm);
+    const { def: { props: propsConfig, observedAttrs } } = vm;
+    attrName = attrName.toLocaleLowerCase();
+    assert.block(function devModeCheck() {
+        if (!vm.vnode.isRoot) {
+            assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to remove attribute "${attrName}" from this element, you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+        }
+        const propName = getPropNameFromAttrName(attrName);
+        if (propsConfig[propName]) {
+            assert.logError(`Invalid attribute "${attrName}" for ${vm}. Instead update the public property with \`element.${propName} = undefined;\`.`);
+        }
+    });
+    const oldValue = getAttribute.call(this, attrName);
+    removeAttribute.call(this, attrName);
+    const newValue = getAttribute.call(this, attrName);
+    if (attrName in observedAttrs && oldValue !== newValue) {
+        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+    }
+}
+
 function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfig: HashTable<number>): PropertyDescriptorMap {
-    const descriptors: PropertyDescriptorMap = {};
+    // replacing mutators and accessors on the element itself to catch any mutation
+    const descriptors: PropertyDescriptorMap = {
+        getAttribute: {
+            value: getAttributePatched,
+        },
+        setAttribute: {
+            value: setAttributePatched,
+        },
+        removeAttribute: {
+            value: removeAttributePatched,
+        },
+    };
     // expose getters and setters for each public props on the Element
     for (let key in publicProps) {
         descriptors[key] = {

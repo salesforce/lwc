@@ -71,7 +71,7 @@ export function toAttributeValue(raw: any): string | null {
     } else if (raw === false) {
         raw = null;
     }
-    return raw !== null ? raw + '' : null;
+    return raw != null ? raw + '' : null; // null and undefined should always produce null
 }
 
 export function noop() {}

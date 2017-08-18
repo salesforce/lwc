@@ -2,6 +2,7 @@ const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 const XCharCode = 120;
+const { setAttribute, removeAttribute, setAttributeNS } = Element.prototype;
 
 function updateAttrs(oldVnode: VNode, vnode: VNode) {
     let { data: { attrs: oldAttrs } } = oldVnode;
@@ -24,20 +25,20 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         const old = oldAttrs[key];
         if (old !== cur) {
             if (cur === true) {
-                elm.setAttribute(key, "");
+                setAttribute.call(elm, key, "");
             } else if (cur === false) {
-                elm.removeAttribute(key);
+                removeAttribute.call(elm, key);
             } else {
                 if (key.charCodeAt(0) !== XCharCode) {
-                    elm.setAttribute(key, cur);
+                    setAttribute.call(elm, key, cur);
                 } else if (key.charCodeAt(3) === ColonCharCode) {
                     // Assume xml namespace
-                    elm.setAttributeNS(xmlNS, key, cur);
+                    setAttributeNS.call(elm, xmlNS, key, cur);
                 } else if (key.charCodeAt(5) === ColonCharCode) {
                     // Assume xlink namespace
-                    elm.setAttributeNS(xlinkNS, key, cur);
+                    setAttributeNS.call(elm, xlinkNS, key, cur);
                 } else {
-                    elm.setAttribute(key, cur);
+                    setAttribute.call(elm, key, cur);
                 }
             }
         }
@@ -45,7 +46,7 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
     // remove removed attributes
     for (key in oldAttrs) {
         if (!(key in attrs)) {
-            elm.removeAttribute(key);
+            removeAttribute.call(elm, key);
         }
     }
 }

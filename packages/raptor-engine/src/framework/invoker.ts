@@ -5,6 +5,7 @@ import {
 } from "./context";
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
+import { toAttributeValue } from "./utils";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -87,7 +88,7 @@ export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string
     establishContext(context);
     let error;
     try {
-        component.attributeChangedCallback(attrName, oldValue, newValue);
+        component.attributeChangedCallback(attrName, toAttributeValue(oldValue), toAttributeValue(newValue));
     } catch (e) {
         error = e;
     }
