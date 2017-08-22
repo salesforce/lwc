@@ -21,6 +21,9 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 export const GlobalHTMLProperties = {
+    id: {
+        attribute: 'id',
+    },
     accessKey: {
         attribute: 'accesskey',
     },

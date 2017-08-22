@@ -224,24 +224,26 @@ describe('watcher', () => {
             assert.strictEqual(counter, 2);
         });
 
-        it('should allow observing public prop via static observedAttributes', () => {
+        it('should allow observing public prop via setter', () => {
             let counter = 0;
             let newValue, oldValue;
-            const def = class MyComponent2 extends Element {
-                attributeChangedCallback(attrName, ov, nv) {
+            class MyComponent2 extends Element {
+                set x(value) {
                     counter++;
-                    newValue = nv;
-                    oldValue = ov;
+                    oldValue = newValue;
+                    newValue = value;
+                }
+                get x() {
+                    return newValue;
                 }
             }
-            def.publicProps = { x: 1 };
-            def.observedAttributes = ['x'];
+            MyComponent2.publicProps = { x: { config: 3 } };
             const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, { props: { x: 2 } });
+            const vnode1 = api.c('x-foo', MyComponent2, { props: { x: 2 } });
             patch(elm, vnode1);
             assert.strictEqual(counter, 1);
-            assert.strictEqual(newValue, '2');
-            assert.strictEqual(oldValue, null);
+            assert.strictEqual(newValue, 2);
+            assert.strictEqual(oldValue, undefined);
         });
 
     });

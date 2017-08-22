@@ -86,19 +86,4 @@ describe('module/props', () => {
         assert(newVnode.elm.foo === undefined);
     });
 
-    it('should not attempt to delete property from a root element', () => {
-        const elm = document.createElement('div');
-        Object.defineProperty(elm, 'foo', {
-            value: 1,
-            configurable: false,
-            writable: true,
-            enumerable: true
-        });
-        const oldVnode = { data: { props: { foo: 1 } } };
-        const newVnode = { data: { props: {} }, elm, isRoot: true };
-
-        target.update(oldVnode, newVnode);
-        assert.equal(newVnode.elm.foo, undefined);
-    });
-
 });

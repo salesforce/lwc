@@ -29,7 +29,7 @@ import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor, prepareForPropUpdate } from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
-import { EmptyObject, getAttrNameFromPropName, getPropNameFromAttrName } from "./utils";
+import { EmptyObject, getPropNameFromAttrName } from "./utils";
 import { getReactiveProxy, isObservable } from "./reactive";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
 
@@ -161,29 +161,6 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
     };
 
     assert.block(function devModeCheck() {
-        getOwnPropertyNames(observedAttrs).forEach((observedAttributeName) => {
-            if (observedAttributeName.indexOf('data-') === 0 || observedAttributeName.indexOf('aria-') === 0) {
-                return;
-            }
-            const camelName = getPropNameFromAttrName(observedAttributeName);
-            const propDef = props[camelName];
-
-            if (propDef) { // User defined prop
-                const { config } = propDef;
-                if (COMPUTED_SETTER_MASK & config) { // Ensure user has not defined setter
-                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Use existing "${camelName}" setter to track changes.`);
-                } else if (observedAttributeName !== getAttrNameFromPropName(camelName)) { // Ensure observed attribute is kebab case
-                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. Did you mean "${getAttrNameFromPropName(camelName)}"?`);
-                }
-            } else if (!observableHTMLAttrs[camelName]) { // Check if observed attribute is observable HTML Attribute
-                if (GlobalHTMLProperties[camelName] && GlobalHTMLProperties[camelName].attribute) { // Check for misspellings
-                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. "${observedAttributeName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[camelName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-                } else { // Attribute is not valid observable HTML Attribute
-                    assert.fail(`Invalid entry "${observedAttributeName}" in component ${name} observedAttributes. "${observedAttributeName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-                }
-            }
-        });
-
         freeze(Ctor.prototype);
         freeze(wire);
         freeze(props);
@@ -359,7 +336,7 @@ function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {
-                    msg.push(`"${propName}" is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`);
+                    msg.push(`"${propName}" is an experimental property that is not standardized or supported by all browsers. You should not use "${propName}" and attribute "${attribute}" in your component.`);
                 } else {
                     msg.push(`"${propName}" is a global HTML property. Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
                     msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
@@ -395,6 +372,28 @@ function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
         return EmptyObject;
     }
     return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable<number> => {
+        assert.block(function devModeCheck() {
+            // Check if it is a regular data or aria attribute
+            if (attrName.indexOf('data-') === 0 || attrName.indexOf('aria-') === 0) {
+                return;
+            }
+            // Check if observed attribute is observable HTML Attribute
+            if (observableHTMLAttrs[attrName]) {
+                return;
+            }
+            // TODO: all these checks should be done in the compiler
+            const propName = getPropNameFromAttrName(attrName);
+            // Check if it is a user defined public property
+            if (target.publicProps && target.publicProps[propName]) { // User defined prop
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. To observe mutations of the public property "${propName}" you can define a public getter and setter decorated with @api in component ${target.name}.`);
+            } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
+                // Check for misspellings
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[propName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
+            } else {
+                // Attribute is not valid observable HTML Attribute
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
+            }
+        });
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));

@@ -19,32 +19,11 @@ describe('component', function () {
 
 
     describe('attribute-change-life-cycle', () => {
-        it('should not invoke attributeChangeCallback() when initializing props', () => {
-            let counter = 0;
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    this.x = 1;
-                }
-                attributeChangedCallback() {
-                    counter++;
-                }
-            }
-            MyComponent.publicProps = {x: true}
-            MyComponent.observedAttributes = ['x'];
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                assert.strictEqual(0, counter);
-            });
-        });
-        it('should invoke attributeChangeCallback() with previous value from constructor', () => {
+        it('should invoke attributeChangeCallback() with old value as null the first time', () => {
             let keyValue, oldValue, newValue, counter = 0;
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    this.x = 1;
                 }
                 attributeChangedCallback(k, o, n) {
                     oldValue = o;
@@ -53,15 +32,14 @@ describe('component', function () {
                     counter++;
                 }
             }
-            MyComponent.publicProps = {x: true}
-            MyComponent.observedAttributes = ['x'];
+            MyComponent.observedAttributes = ['title'];
             const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { props: { x: 2 } });
+            const vnode = api.c('x-foo', MyComponent, { attrs: { title: 2 } });
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 assert.strictEqual(1, counter);
-                assert.strictEqual('x', keyValue);
-                assert.strictEqual('1', oldValue);
+                assert.strictEqual('title', keyValue);
+                assert.strictEqual(null, oldValue);
                 assert.strictEqual('2', newValue);
             });
         });

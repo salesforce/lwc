@@ -1,7 +1,7 @@
 import assert from "../assert";
 import { isArray, isUndefined, create, getOwnPropertyDescriptor, defineProperty, isObject } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
-import { isRendering, vmBeingRendered, invokeComponentAttributeChangedCallback } from "../invoker";
+import { isRendering, vmBeingRendered } from "../invoker";
 import { subscribeToSetHook, notifyListeners } from "../watcher";
 import { EmptyObject, getAttrNameFromPropName } from "../utils";
 import { ViewModelReflection } from "../def";
@@ -38,14 +38,8 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
-                const oldValue = value;
                 value = newValue;
-                const attrName = getAttrNameFromPropName(key);
-                const { def: { observedAttrs } } = vm;
                 // avoid notification of observability while constructing the instance
-                if (attrName in observedAttrs) {
-                    invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-                }
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyListeners(this, key);

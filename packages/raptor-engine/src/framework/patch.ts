@@ -19,9 +19,10 @@ export const patch = init([
     componentSlotset,
     componentProps,
     componentAttrs,
+    componentChildren,
+    // from this point on, we do a series of DOM mutations
     componentEvents,
     componentClasses,
-    componentChildren,
     props,
     attrs,
     classes,

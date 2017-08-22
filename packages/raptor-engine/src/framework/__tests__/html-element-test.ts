@@ -421,18 +421,37 @@ describe('html-element', () => {
         it('should allow custom attributeChangedCallback', () => {
             let a;
             class MyComponent extends Element  {}
+            MyComponent.observedAttributes = ['title'];
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode1 = api.c('x-foo', MyComponent, { attrs: { title: 1 } });
+            const vnode2 = api.c('x-foo', MyComponent, { attrs: { title: 2 } });
+            patch(elm, vnode1);
+            vnode1.vm.component.attributeChangedCallback = function() {
+                a = Array.prototype.slice.call(arguments, 0);
+            };
+            patch(vnode1, vnode2);
+            assert.deepEqual(['title', '1', '2'], a);
+        });
+
+        it('should allow custom instance getter and setter', () => {
+            let a, ctx;
+            class MyComponent extends Element  {}
             MyComponent.publicProps = { foo: true };
-            MyComponent.observedAttributes = ['foo'];
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
             const vnode1 = api.c('x-foo', MyComponent, { props: { foo: 1 } });
             const vnode2 = api.c('x-foo', MyComponent, { props: { foo: 2 } });
             patch(elm, vnode1);
-            vnode1.vm.component.attributeChangedCallback = () => {
-                a = Array.prototype.slice.call(arguments, 0);
-            };
+            Object.defineProperty(vnode1.vm.component, 'foo', {
+                set: function (value) {
+                    ctx = this;
+                    a = value;
+                }
+            })
             patch(vnode1, vnode2);
-            assert.deepEqual(['foo', 1, 2], a);
+            assert.strictEqual(2, a);
+            assert.strictEqual(ctx, vnode1.vm.component);
         });
 
     });

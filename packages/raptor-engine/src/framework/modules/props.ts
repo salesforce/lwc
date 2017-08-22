@@ -22,15 +22,7 @@ function update(oldVnode: VNode, vnode: VNode) {
 
     for (key in oldProps) {
         if (!(key in props)) {
-            if (vnode.isRoot) {
-                // custom elements created programatically prevent you from
-                // deleting the property because it has a set/get to update
-                // the corresponding component, in this case, we just set it
-                // to undefined, which has the same effect.
-                elm[key] = undefined;
-            } else {
-                delete elm[key];
-            }
+            delete elm[key];
         }
     }
     for (key in props) {
@@ -41,7 +33,7 @@ function update(oldVnode: VNode, vnode: VNode) {
             if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
                 // only touching the dom if the prop really changes.
                 assert.block(function devModeCheck() {
-                    if (elm[key] === cur && old !== undefined && !vnode.isRoot) {
+                    if (elm[key] === cur && old !== undefined) {
                         console.warn(`Unneccessary update of property "${key}" in ${elm}, it has the same value in ${vnode.vm || vnode}.`);
                     }
                 });

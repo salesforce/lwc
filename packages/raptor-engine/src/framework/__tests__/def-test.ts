@@ -31,22 +31,14 @@ describe('def', () => {
             class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
-            MyComponent.observedAttributes = ['foo', 'x-bar'];
-            MyComponent.publicProps = {
-                foo: {
-                    config: 0
-                },
-                xBar: {
-                    config: 0
-                }
-            };
+            MyComponent.observedAttributes = ['title', 'tabindex'];
             assert.deepEqual(target.getComponentDef(MyComponent).observedAttrs, {
-                foo: 1,
-                'x-bar': 1,
+                title: 1,
+                tabindex: 1,
             });
         });
 
-        it('should not throw error when observedAttribute is kebab case and is public prop', () => {
+        it('should throw error when observedAttribute is kebab case and is public prop', () => {
             class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
@@ -58,7 +50,7 @@ describe('def', () => {
             };
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).not.toThrow();
+            }).toThrow();
         });
 
         it('should throw error when observedAttribute is misspelled global attribute', () => {
@@ -93,7 +85,7 @@ describe('def', () => {
             };
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. Did you mean "is-record-detail"?');
+            }).toThrow();
         });
 
         it('should throw error when observedAttribute references setter', () => {
@@ -110,7 +102,7 @@ describe('def', () => {
             };
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "is-record-detail" in component MyComponent observedAttributes. Use existing "isRecordDetail" setter to track changes.');
+            }).toThrow();
         });
 
         it('should throw error when observedAttribute references computed prop', () => {
@@ -127,7 +119,7 @@ describe('def', () => {
             };
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "is-record-detail" in component MyComponent observedAttributes. Use existing "isRecordDetail" setter to track changes.');
+            }).toThrow();
         });
 
         it('should throw error when observedAttribute is not a valid global HTML attribute', () => {
@@ -287,33 +279,14 @@ describe('def', () => {
 
         it('should not inherit observedAttrs, it must be a manual process', function () {
             class MyComponent extends Element {}
-            MyComponent.publicProps = {
-                foo: {
-                    config: 0
-                },
-                bar: {
-                    config: 0
-                }
-            }
-
-            MyComponent.observedAttributes = ['foo', 'bar'];
+            MyComponent.observedAttributes = ['title', 'tabindex'];
 
             class MySubComponent extends MyComponent {}
-
-            MySubComponent.publicProps = {
-                fizz: {
-                    config: 0
-                },
-                buzz: {
-                    config: 0
-                }
-            }
-
-            MySubComponent.observedAttributes = ['fizz', 'buzz'];
+            MySubComponent.observedAttributes = ['title', 'id'];
 
             assert.deepEqual(target.getComponentDef(MySubComponent).observedAttrs, {
-                fizz: 1,
-                buzz: 1
+                title: 1,
+                id: 1
             });
         });
 
