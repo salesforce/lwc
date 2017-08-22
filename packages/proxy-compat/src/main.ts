@@ -1,5 +1,5 @@
 import { getKey, callKey, setKey, deleteKey, inKey, iterableKey } from "./methods";
-import { XProxy, ProxySlot, ProxyIdentifier } from "./xproxy";
+import { XProxy, ProxySlot, ProxyIdentifier, ArraySlot } from "./xproxy";
 
 const {
     assign: _assign,
@@ -15,14 +15,12 @@ const {
 } = Object;
 const _isArray = Array.isArray;
 
-export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxy {
-    return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
-}
+import { isCompatProxy } from './methods';
 
 // Patched Functions:
 function isArray(replicaOrAny: any): replicaOrAny is any[] {
     if (isCompatProxy(replicaOrAny)) {
-        return replicaOrAny.length === ProxyIdentifier;
+        return replicaOrAny[ArraySlot] === ProxyIdentifier;
     }
     return _isArray(replicaOrAny);
 }

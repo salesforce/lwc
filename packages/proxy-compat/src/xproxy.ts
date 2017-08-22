@@ -18,6 +18,10 @@ export const ProxySlot = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
 });
+export const ArraySlot = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+});
 export const ProxyIdentifier = function ProxyCompat() {};
 
 const {
@@ -98,6 +102,27 @@ const defaultHandlerTraps: XProxyHandler<object> = {
 
 let lastRevokeFn: () => void;
 
+type ProxyTrapFalsyErrorsMap = {
+    [key: string]: (...args: any[]) => void
+}
+const proxyTrapFalsyErrors: ProxyTrapFalsyErrorsMap = {
+    set(target: XProxyTarget, key: PropertyKey) {
+        throw new TypeError(`'set' on proxy: trap returned falsish for property '${key}'`);
+    },
+    deleteProperty(target: XProxyTarget, key: PropertyKey) {
+        throw new TypeError(`'deleteProperty' on proxy: trap returned falsish for property '${key}'`);
+    },
+    setPrototypeOf(target: XProxyTarget, proto: any) {
+        throw new TypeError(`'setPrototypeOf' on proxy: trap returned falsish`);
+    },
+    preventExtensions(target: XProxyTarget, proto: any) {
+        throw new TypeError(`'preventExtensions' on proxy: trap returned falsish`);
+    },
+    defineProperty(target: XProxyTarget, key: PropertyKey, descriptor: PropertyDescriptor) {
+        throw new TypeError(`'defineProperty' on proxy: trap returned falsish for property '${key}'`);
+    }
+}
+
 export class XProxy implements XProxyInstance {
     constructor (target: XProxyTarget, handler: XProxyHandler<object>) {
         const targetIsFunction = typeof target === 'function';
@@ -135,11 +160,22 @@ export class XProxy implements XProxyInstance {
         setPrototypeOf(proxy, getPrototypeOf(target));
 
         if (targetIsArray) {
-            defineProperty(proxy, 'length', {
+            defineProperty(proxy, ArraySlot, {
                 value: ProxyIdentifier, // mark to identify Array
                 writable: true,
                 enumerable: false,
                 configurable: false,
+            });
+
+            defineProperty(proxy, 'length', {
+                enumerable: false,
+                configurable: true,
+                get: () => {
+                    return proxy.get(target, 'length');
+                },
+                set: (value: any): any => {
+                    return proxy.set(target, 'length', value);
+                },
             });
         }
 
@@ -152,7 +188,11 @@ export class XProxy implements XProxyInstance {
                     const args = ArraySlice.call(arguments);
                     args.unshift(target);
                     const h = handler[trapName] ? handler : defaultHandlerTraps;
-                    return h[trapName].apply(h, args);
+                    const value = h[trapName].apply(h, args);
+                    if (proxyTrapFalsyErrors[trapName] && value === false) {
+                        proxyTrapFalsyErrors[trapName].apply(proxyTrapFalsyErrors, args);
+                    }
+                    return value;
                 },
                 writable: false,
                 enumerable: false,

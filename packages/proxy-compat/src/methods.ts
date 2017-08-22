@@ -4,9 +4,10 @@ import {
     inOperator,
 } from "./xproxy";
 
-import {
-    isCompatProxy
-} from './main';
+export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxy {
+    return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
+}
+
 
 export function getKey(replicaOrAny: any, key: PropertyKey): any {
     if (isCompatProxy(replicaOrAny)) {

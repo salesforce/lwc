@@ -6,7 +6,8 @@ describe('EcmaScript', () => {
     describe('intrinsics', () => {
 
         it('should support Arrays', () => {
-            const o = new Proxy([1, 2], {});
+            const array = [1, 2];
+            const o = new Proxy(array, {});
             assert.strictEqual(Array.isArray(o), true);
             assert.strictEqual(Proxy.getKey(o, 'length'), 2);
             assert.strictEqual(Proxy.getKey(o, 0), 1);
@@ -14,6 +15,9 @@ describe('EcmaScript', () => {
             Proxy.setKey(o, '2', 3);
             assert.strictEqual(Proxy.getKey(o, 'length'), 3);
             assert.strictEqual(Proxy.getKey(o, 2), 3, 'expandos are not supported'); // expando
+            Proxy.callKey(array, 'push', 3);
+            expect(array.length).toBe(4);
+            expect(Proxy.getKey(o, 'length')).toBe(4);
         });
 
         it('should support Object.keys()', () => {
@@ -72,6 +76,69 @@ describe('EcmaScript', () => {
             assert(functionReturn, rv);
         });
 
+        it('should not throw if get trap returns false', function () {
+            const proxy = new Proxy({}, {
+                get: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Proxy.getKey(proxy, 'foo');
+            }).not.toThrow();
+        });
+
+        it('should throw if set trap returns false', function () {
+            const proxy = new Proxy({}, {
+                set: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Proxy.setKey(proxy, 'foo');
+            }).toThrow("'set' on proxy: trap returned falsish for property 'foo'");
+        });
+
+        it('should support delete', function () {
+            let count = 0;
+            let callKey;
+            let callTarget;
+            const proxyTarget = {};
+            const proxy = new Proxy(proxyTarget, {
+                deleteProperty: function (target, key) {
+                    count += 1;
+                    callKey = key;
+                    callTarget = target;
+                    return true;
+                }
+            });
+            Proxy.deleteKey(proxy, 'foo');
+            expect(callKey).toBe('foo');
+            expect(callTarget).toBe(proxyTarget);
+            expect(count).toBe(1);
+        });
+
+        it('should throw if delete trap returns false', function () {
+            const proxy = new Proxy({}, {
+                deleteProperty: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Proxy.deleteKey(proxy, 'foo');
+            }).toThrow("'deleteProperty' on proxy: trap returned falsish for property 'foo'");
+        });
+
+        it('should throw if defineProperty trap returns false', function () {
+            const proxy = new Proxy({}, {
+                defineProperty: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Object.defineProperty(proxy, 'foo', {});
+            }).toThrow("'defineProperty' on proxy: trap returned falsish for property 'foo'");
+        });
+
         it('should support getOwnPropertyDescriptor with XProxy objects', () => {
             let count = 0;
             const obj = { x: 1, y : 2 };
@@ -103,6 +170,17 @@ describe('EcmaScript', () => {
             Object.preventExtensions(o);
             assert(count === 1);
             assert(Object.isExtensible(o) === false);
+        });
+
+        it('should throw if preventExtensions trap returns false', function () {
+            const proxy = new Proxy({}, {
+                preventExtensions: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Object.preventExtensions(proxy);
+            }).toThrow("'preventExtensions' on proxy: trap returned falsish");
         });
 
         it('should support preventExtensions with vanilla objects', () => {
@@ -140,6 +218,17 @@ describe('EcmaScript', () => {
             assert(Object.getPrototypeOf(proxy) === proto);
             assert(Object.getPrototypeOf(obj) === proto);
             assert(count === 1);
+        });
+
+        it('should throw if setPrototypeOf trap returns false', function () {
+            const proxy = new Proxy({}, {
+                setPrototypeOf: function () {
+                    return false;
+                }
+            });
+            expect(() => {
+                Object.setPrototypeOf(proxy, {});
+            }).toThrow("'setPrototypeOf' on proxy: trap returned falsish");
         });
 
         it('should support Object.prototype.hasOwnProperty()', () => {
