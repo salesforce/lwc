@@ -1,9 +1,11 @@
-import { inKey as _inKey } from "engine";
-import { iterableKey as _iterableKey } from "engine";
-import { deleteKey as _deleteKey } from "engine";
-import { getKey as _getKey } from "engine";
-import { callKey as _callKey } from "engine";
-import { setKey as _setKey } from "engine";
+const {
+    setKey: _setKey,
+    callKey: _callKey,
+    getKey: _getKey,
+    deleteKey: _deleteKey,
+    iterableKey: _iterableKey,
+    inKey: _inKey
+} = window.Proxy;
 // var a = 1;
 var a = 1;
 var n = [0, 1];

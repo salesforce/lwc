@@ -1,13 +1,75 @@
 /* eslint-env node */
+const defaultResolveOptions = {
+    module: 'proxy-compat'
+};
+
 module.exports = function({ types: t }) {
+    let keysSeen = Object.create(null);
+
     function convertProperty(property, isComputed = false) {
         return t.isIdentifier(property) && !isComputed
             ? t.stringLiteral(property.name)
             : property;
     }
 
+    function getResolveOptions (state) {
+        const { resolveProxyCompat } = state.opts;
+        return resolveProxyCompat || defaultResolveOptions;
+    }
+
+    function resolveCompatProxyImport(memberName, path, state) {
+        const { module: moduleName, global: globalPropertyName } = getResolveOptions(state);
+        if (moduleName) {
+            return state.addImport(moduleName, memberName);
+        } else if (globalPropertyName) {
+            const localName = `_${memberName}`;
+            if (!keysSeen[memberName]) {
+                keysSeen[memberName] = {
+                    localName
+                };
+            }
+            return t.identifier(localName);
+        }
+    }
+
     return {
         visitor: {
+            Program: {
+                /**
+                 * Inserts to top of module:
+                 *     const {
+                 *          setKey: _setKey,
+                 *          callKey: _callKey,
+                 *          getKey: _getKey,
+                 *          deleteKey: _deleteKey,
+                 *          iterableKey: _iterableKey,
+                 *          inKey: _inKey
+                 *     } = GLOBAL_VARIABLE;
+                 */
+                exit: function (path, state) {
+                    const { global: globalPropertyName } = getResolveOptions(state);
+                    if (globalPropertyName) {
+                        const objectProperties = Object.keys(keysSeen).map((memberName) => {
+                            const { localName } = keysSeen[memberName];
+                            return t.objectProperty(
+                                t.identifier(memberName),
+                                t.identifier(localName)
+                            );
+                        });
+                        const assignment = t.variableDeclaration(
+                            'const',
+                            [
+                                t.VariableDeclarator(
+                                    t.objectPattern(objectProperties),
+                                    t.identifier(globalPropertyName)
+                                )
+                            ]
+                        );
+                        path.unshiftContainer('body', [assignment]);
+                    }
+                }
+            },
+
             /**
              * Transforms:
              *      a.b    => getKey(a, "b")
@@ -16,8 +78,7 @@ module.exports = function({ types: t }) {
              */
             MemberExpression(path, state) {
                 const { property, object, computed } = path.node;
-
-                const id = state.addImport('engine', 'getKey');
+                const id = resolveCompatProxyImport('getKey', path, state);
                 const args = [object, convertProperty(property, computed)];
                 path.replaceWith(t.callExpression(id, args));
             },
@@ -48,7 +109,7 @@ module.exports = function({ types: t }) {
                     );
                 }
 
-                const id = state.addImport('engine', 'setKey');
+                const id = resolveCompatProxyImport('setKey', path, state);
                 assignment = t.callExpression(id, args);
 
                 if (assignment) {
@@ -70,7 +131,7 @@ module.exports = function({ types: t }) {
                         ...args
                     ];
 
-                    const id = state.addImport('engine', 'callKey');
+                    const id = resolveCompatProxyImport('callKey', path, state);
                     const call = t.callExpression(id, callArguments);
                     path.replaceWith(call);
                 }
@@ -88,7 +149,7 @@ module.exports = function({ types: t }) {
                         convertProperty(argument.property, argument.computed)
                     ];
 
-                    const id = state.addImport('engine', 'deleteKey');
+                    const id = resolveCompatProxyImport('deleteKey', path, state);
                     const deletion = t.callExpression(id, args);
                     path.replaceWith(deletion);
                 }
@@ -123,7 +184,7 @@ module.exports = function({ types: t }) {
                     args.push(argument);
                 }
 
-                const id = state.addImport('engine', 'setKey');
+                const id = resolveCompatProxyImport('setKey', path, state);
                 const assignment = t.callExpression(id, args);
                 path.replaceWith(assignment);
             },
@@ -135,7 +196,7 @@ module.exports = function({ types: t }) {
             ForInStatement(path, state) {
                 const { node } = path;
 
-                const id = state.addImport('engine', 'iterableKey');
+                const id = resolveCompatProxyImport('iterableKey', path, state);
                 const wrappedIterator = t.callExpression(id, [node.right]);
                 node.right = wrappedIterator;
             },
@@ -150,7 +211,7 @@ module.exports = function({ types: t }) {
                     return;
                 }
 
-                const id = state.addImport('engine', 'inKey');
+                const id = resolveCompatProxyImport('inKey', path, state);
                 const warppedInOperator = t.callExpression(id, [right, left]);
                 path.replaceWith(warppedInOperator);
             }

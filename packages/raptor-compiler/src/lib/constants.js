@@ -33,13 +33,21 @@ export const PROD_BABEL_CONFIG = Object.assign(
 
 export const COMPAT_BABEL_CONFIG = Object.assign(
     {},
-    { plugins: [...BABEL_PLUGINS_COMPAT, raptorCompatTransformPlugin] },
+    { plugins: [...BABEL_PLUGINS_COMPAT, [raptorCompatTransformPlugin, {
+        resolveProxyCompat: {
+            module: 'engine'
+        }
+    }]] },
     BASE_BABEL_CONFIG
 );
 
 export const PROD_COMPAT_BABEL_CONFIG = Object.assign(
     {},
-    { plugins: [...BABEL_PLUGINS_COMPAT, raptorCompatTransformPlugin] },
+    { plugins: [...BABEL_PLUGINS_COMPAT, [raptorCompatTransformPlugin, {
+        resolveProxyCompat: {
+            module: 'engine'
+        }
+    }]] },
     BASE_BABEL_CONFIG
 );
 
