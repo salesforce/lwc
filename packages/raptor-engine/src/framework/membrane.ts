@@ -1,6 +1,5 @@
 import assert from "./assert";
 import { ArrayMap, isArray, isNull } from "./language";
-import { XProxy } from './xproxy';
 
 /*eslint-disable*/
 export type ReplicableFunction = (...args: Array<any>) => any;
@@ -40,7 +39,23 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
     if (r) {
         return r;
     }
-    const replica: Replica = new XProxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
+    const replica: Replica = new Proxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
+    if (Proxy.reify) {
+        Proxy.reify(replica, {
+            [TargetSlot]: {
+                value: value,
+                enumerable: false,
+                writeable: false,
+                configurable: false
+            },
+            [MembraneSlot]: {
+                value: membrane,
+                enumerable: false,
+                writeable: false,
+                configurable: false
+            }
+        });
+    }
     cells.set(value, replica);
     return replica;
 }

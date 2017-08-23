@@ -4,7 +4,6 @@ import * as api from "../api";
 import { Element } from "../html-element";
 import { patch } from '../patch';
 import { pierce } from '../piercing';
-import { deleteKey } from '../xproxy';
 
 describe('piercing', function () {
     it('should set property on pierced object successfully', function () {
@@ -48,12 +47,7 @@ describe('piercing', function () {
 
         const replica = pierce(vnode.vm, piercedObject);
         expect(() => {
-            // compat mode fork
-            if (deleteKey) {
-                deleteKey(replica, 'deleteMe');
-            } else {
-                delete replica.deleteMe;
-            }
+            delete replica.deleteMe;
         }).not.toThrow();
     });
 });

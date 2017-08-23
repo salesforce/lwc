@@ -4,7 +4,7 @@ import { ArrayFilter, defineProperty } from "./language";
 import { isBeingConstructed } from "./component";
 import { OwnerKey, isNodeOwnedByVM } from "./vm";
 import { register } from "./services";
-import { pierce } from "./piercing";
+import { pierce, piercingHook } from "./piercing";
 
 const { querySelector, querySelectorAll } = Element.prototype;
 
@@ -16,14 +16,18 @@ export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: strin
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-    return pierce(vm, elm).querySelector(selector);
+    pierce(vm, elm);
+    const querySelector = piercingHook(vm.membrane, elm, 'querySelector', elm.querySelector);
+    return querySelector.call(elm, selector);
 }
 
 export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: string): MembraneObject {
     const vm = shadowRoot[ViewModelReflection];
     assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
     const elm = getLinkedElement(shadowRoot);
-    return pierce(vm, elm).querySelectorAll(selector);
+    pierce(vm, elm);
+    const querySelectorAll = piercingHook(vm.membrane, elm, 'querySelectorAll', elm.querySelectorAll);
+    return querySelectorAll.call(elm, selector);
 }
 
 export function Root(vm: VM): ShadowRoot {

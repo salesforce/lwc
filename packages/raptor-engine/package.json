@@ -7,7 +7,9 @@
   "jsnext:main": "lib/engine.es.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage",
+    "test": "jest --no-cache",
+    "test:compat": "jest --projects ./scripts/jest/compat.config.json",
+    "test:standard": "jest --projects ./scripts/jest/standard.config.json",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c scripts/rollup.config.js",
@@ -21,7 +23,7 @@
     "eslint": "^3.19.0",
     "eslint-plugin-typescript": "^0.1.0",
     "expect": "^1.20.2",
-    "jest": "^20.0.4",
+    "jest": "20.1.0-delta.1",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",
     "rollup": "^0.45.1",
@@ -35,15 +37,6 @@
     "uglify-es": "^3.0.24"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "testRegex": "/__tests__/",
-    "transform": {
-      "^.+\\.(ts|js)$": "<rootDir>/scripts/jest-preprocessor.js"
-    },
-    "setupTestFrameworkScriptFile": "./scripts/jest-env-setup.js",
     "collectCoverageFrom": [
       "src/framework/*.ts"
     ],
@@ -60,6 +53,10 @@
         "lines": 85,
         "statements": 85
       }
-    }
+    },
+    "projects": [
+      "<rootDir>/scripts/jest/standard.config.json",
+      "<rootDir>/scripts/jest/compat.config.json"
+    ]
   }
 }

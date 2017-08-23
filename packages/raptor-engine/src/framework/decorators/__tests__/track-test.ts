@@ -20,7 +20,7 @@ describe('track.ts', () => {
             MyComponent.track = { foo: 1 };
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(o, foo, 'assignment on tracked property should work as expected');
+            expect(o).toDeepEqualProxy(foo);
             assert(o !== foo, 'tracked property was not profixied');
         });
 
@@ -38,7 +38,7 @@ describe('track.ts', () => {
             document.body.appendChild(elm);
             const o = { x: 1 };
             elm.injectFoo(o);
-            assert.deepEqual(o, foo, 'assignment on tracked property should work as expected');
+            expect(o).toDeepEqualProxy(foo);
             assert(o !== foo, 'tracked property was not profixied');
         });
 

@@ -123,10 +123,12 @@ describe('template', () => {
         });
 
         it('should throw when attempting to delete a property member of slotset', () => {
-            assert.throws(() => createCustomComponent(function (api, cmp, slotset) {
-                delete slotset.x;
-                return [];
-            }, { x: [ api.h('p', {}, []) ] }));
+            expect(() => {
+                createCustomComponent(function (api, cmp, slotset) {
+                    delete slotset.x;
+                    return [];
+                }, { x: [ api.h('p', {}, []) ] });
+            }).toThrow();
         });
 
         it('should support switching templates', () => {
@@ -192,7 +194,7 @@ describe('template', () => {
             patch(elm, vnode);
             assert(elm.x === vnode.vm.component.x, 'default property x should be accesible');
             assert(elm.x !== x, 'property x should be profixied');
-            assert.deepEqual(elm.x, x, 'property x should match the original object x');
+            expect(elm.x).toDeepEqualProxy(x);
         });
 
         it('should profixied property objects', () => {
@@ -218,7 +220,7 @@ describe('template', () => {
             patch(elm2, vnode2);
             assert(elm2.x !== x, 'property x should be profixied');
             assert.strictEqual(vnode1.vm.component.state.x, vnode2.vm.component.x, 'proxified objects retain identity');
-            assert.deepEqual(elm2.x, x, 'property x should match the passed property x');
+            expect(x).toDeepEqualProxy(elm2.x);
         });
 
         it('should not profixied or bound methods', () => {

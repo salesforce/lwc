@@ -10,7 +10,7 @@
     "build": "lerna run build",
     "build:artifacts": "npm run build && npm run build:engine && npm run build:helpers && npm run build:compiler",
     "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
-    "build:engine": "lerna run build --scope raptor-engine && cp ./packages/raptor-engine/dist/* ./dist/",
+    "build:engine": "lerna run build --scope raptor-engine && cp ./packages/raptor-engine/dist/* ./dist/ && node ./scripts/engine-concat-compat-proxy.js",
     "build:helpers": "lerna run build --scope babel-helpers-raptor && cp ./packages/babel-helpers-raptor/dist/* ./dist/",
     "start": "lerna run start --scope raptor-fixtures",
     "release": "yarn run prepublish && lerna publish --force-publish=*",

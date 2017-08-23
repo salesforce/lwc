@@ -198,7 +198,7 @@ describe('html-element', () => {
                 }
             }
             createElement('x-foo', { is: def });
-            assert.deepEqual(state, { x: 1, y: o }, 'deep structure');
+            expect({ x: 1, y: o }).toDeepEqualProxy(state);
             assert.notEqual(state.y, o, 'proxified object');
         });
         it('should throw an error when assigning arrays', function () {

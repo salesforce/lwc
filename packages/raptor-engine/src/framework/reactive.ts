@@ -20,7 +20,6 @@ import {
     hasOwnProperty,
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
-import { XProxy } from './xproxy';
 
 /*eslint-disable*/
 export type ShadowTarget = (Object | Array<any>);
@@ -92,7 +91,6 @@ export class ReactiveProxyHandler {
             return originalTarget;
         }
         const value = originalTarget[key];
-
         if (isRendering && vmBeingRendered) {
             subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
         }
@@ -109,7 +107,7 @@ export class ReactiveProxyHandler {
         });
         return observable ? getReactiveProxy(value) : value;
     }
-    set(shadowTarget: ShadowTarget, key: string | symbol, value: any): boolean {
+    set(shadowTarget: ShadowTarget, key: PropertyKey, value: any): boolean {
         const { originalTarget } = this;
         if (isRendering) {
             assert.logError(`Setting property "${toString(key)}" of ${toString(shadowTarget)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
@@ -128,7 +126,7 @@ export class ReactiveProxyHandler {
         }
         return true;
     }
-    deleteProperty(shadowTarget: ShadowTarget, key: string | symbol): boolean {
+    deleteProperty(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
         delete originalTarget[key];
         notifyListeners(originalTarget, key);
@@ -140,7 +138,7 @@ export class ReactiveProxyHandler {
     construct(target: any, argArray: any, newTarget?: any): any { // eslint-disable-line no-unused-vars
         assert.fail(`invalid construction invocation for property proxy ${target}`);
     }
-    has(shadowTarget: ShadowTarget, key: string | symbol): boolean {
+    has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
         return key in originalTarget;
     }
@@ -164,14 +162,14 @@ export class ReactiveProxyHandler {
 
         return targetIsExtensible;
     }
-    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any) { // eslint-disable-line no-unused-vars
+    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any { // eslint-disable-line no-unused-vars
         assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${this.originalTarget}. Prototype of reactive objects cannot be changed.`);
     }
     getPrototypeOf(shadowTarget: ShadowTarget): Object { // eslint-disable-line no-unused-vars
         const { originalTarget } = this;
         return getPrototypeOf(originalTarget);
     }
-    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: string | symbol): PropertyDescriptor {
+    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor {
         const { originalTarget } = this;
         let desc = getOwnPropertyDescriptor(originalTarget, key);
         if (!desc) {
@@ -215,7 +213,23 @@ export function getReactiveProxy(value: any): any {
     }
     const handler = new ReactiveProxyHandler(value);
     const shadowTarget = isArray(value) ? [] : {};
-    proxy = new XProxy(shadowTarget, handler);
+    proxy = new Proxy(shadowTarget, handler);
+    if (Proxy.reify) {
+        Proxy.reify(proxy, {
+            [TargetSlot]: {
+                value: value,
+                enumerable: false,
+                writeable: false,
+                configurable: false
+            },
+            [MembraneSlot]: {
+                value: handler,
+                enumerable: false,
+                writeable: false,
+                configurable: false
+            }
+        });
+    }
     ReactiveMap.set(value, proxy as Reactive);
     return proxy;
 }

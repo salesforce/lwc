@@ -1,7 +1,6 @@
 import assert from "./assert";
 import * as api from "./api";
 import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
-import { XProxy } from "./xproxy";
 
 const EmptySlots: Slotset = create(null);
 
@@ -73,7 +72,7 @@ export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
         });
     }
     assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
-    const { proxy: slotset, revoke: slotsetRevoke } = XProxy.revocable(cmpSlots, slotsetProxyHandler);
+    const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
     let vnodes = html.call(undefined, api, component, slotset, context.tplCache);
     assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
     slotsetRevoke();

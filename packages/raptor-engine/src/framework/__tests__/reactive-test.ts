@@ -103,7 +103,6 @@ describe('reactive', function () {
             const o = { x: 1 };
             const first = new Proxy(o, {});
             const second = target.getReactiveProxy(first);
-            assert(first.x === second.x);
             assert(first !== second);
         });
         it('should handle frozen objects correctly', () => {

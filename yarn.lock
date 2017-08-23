@@ -496,6 +496,14 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
+babel-jest@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-jest/-/babel-jest-20.1.0-delta.1.tgz#ad82547f552ebf5ec1bf84df9b0d093ac0ea4c62"
+  dependencies:
+    babel-core "^6.0.0"
+    babel-plugin-istanbul "^4.0.0"
+    babel-preset-jest "20.1.0-delta.1"
+
 babel-jest@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-jest/-/babel-jest-20.0.3.tgz#e4a03b13dc10389e140fc645d09ffc4ced301671"
@@ -523,6 +531,10 @@ babel-plugin-istanbul@^4.0.0, babel-plugin-istanbul@^4.1.4:
     find-up "^2.1.0"
     istanbul-lib-instrument "^1.7.2"
     test-exclude "^4.1.1"
+
+babel-plugin-jest-hoist@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-20.1.0-delta.1.tgz#f0e6ac6cc7fb894b2584be74674435a4eefa1ed8"
 
 babel-plugin-jest-hoist@^20.0.3:
   version "20.0.3"
@@ -948,6 +960,12 @@ babel-preset-env@^1.6.0:
     invariant "^2.2.2"
     semver "^5.3.0"
 
+babel-preset-jest@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-jest/-/babel-preset-jest-20.1.0-delta.1.tgz#312d2ec79097f9bc940f008c5d650ca47ba6c7f1"
+  dependencies:
+    babel-plugin-jest-hoist "20.1.0-delta.1"
+
 babel-preset-jest@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-jest/-/babel-preset-jest-20.0.3.tgz#cbacaadecb5d689ca1e1de1360ebfc66862c178a"
@@ -1241,7 +1259,7 @@ chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.0.0:
+chalk@^2.0.0, chalk@^2.0.1:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/chalk/-/chalk-2.1.0.tgz#ac5becf14fa21b99c6c92ca7a7d7cfd5b17e743e"
   dependencies:
@@ -2386,7 +2404,7 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
 
-fsevents@^1.0.0:
+fsevents@^1.0.0, fsevents@^1.1.1:
   version "1.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fsevents/-/fsevents-1.1.2.tgz#3282b713fb3ad80ede0e9fcf4611b5aa6fc033f4"
   dependencies:
@@ -3168,9 +3186,51 @@ istanbul-reports@^1.1.1:
   dependencies:
     handlebars "^4.0.3"
 
+jest-changed-files@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-changed-files/-/jest-changed-files-20.1.0-delta.1.tgz#912f8eff09c79b28fc7b66513f0ad505f1b378d5"
+  dependencies:
+    throat "^4.0.0"
+
 jest-changed-files@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-changed-files/-/jest-changed-files-20.0.3.tgz#9394d5cc65c438406149bef1bf4d52b68e03e3f8"
+
+jest-cli@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-cli/-/jest-cli-20.1.0-delta.1.tgz#57cd3ce04cc5e208601cef571b40f122f456c02c"
+  dependencies:
+    ansi-escapes "^2.0.0"
+    callsites "^2.0.0"
+    chalk "^2.0.1"
+    graceful-fs "^4.1.11"
+    is-ci "^1.0.10"
+    istanbul-api "^1.1.1"
+    istanbul-lib-coverage "^1.0.1"
+    istanbul-lib-instrument "^1.4.2"
+    istanbul-lib-source-maps "^1.1.0"
+    jest-changed-files "20.1.0-delta.1"
+    jest-config "20.1.0-delta.1"
+    jest-docblock "20.1.0-delta.1"
+    jest-environment-jsdom "20.1.0-delta.1"
+    jest-haste-map "20.1.0-delta.1"
+    jest-jasmine2 "20.1.0-delta.1"
+    jest-message-util "20.1.0-delta.1"
+    jest-regex-util "20.1.0-delta.1"
+    jest-resolve-dependencies "20.1.0-delta.1"
+    jest-runtime "20.1.0-delta.1"
+    jest-snapshot "20.1.0-delta.1"
+    jest-util "20.1.0-delta.1"
+    micromatch "^2.3.11"
+    node-notifier "^5.0.2"
+    pify "^2.3.0"
+    slash "^1.0.0"
+    string-length "^1.0.1"
+    strip-ansi "^4.0.0"
+    throat "^3.0.0"
+    which "^1.2.12"
+    worker-farm "^1.3.1"
+    yargs "^7.0.2"
 
 jest-cli@^20.0.4:
   version "20.0.4"
@@ -3207,6 +3267,22 @@ jest-cli@^20.0.4:
     worker-farm "^1.3.1"
     yargs "^7.0.2"
 
+jest-config@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-20.1.0-delta.1.tgz#8383f624997326b00fb4ddee442a068195294065"
+  dependencies:
+    chalk "^2.0.1"
+    glob "^7.1.1"
+    jest-environment-jsdom "20.1.0-delta.1"
+    jest-environment-node "20.1.0-delta.1"
+    jest-get-type "20.1.0-delta.1"
+    jest-jasmine2 "20.1.0-delta.1"
+    jest-matcher-utils "20.1.0-delta.1"
+    jest-regex-util "20.1.0-delta.1"
+    jest-resolve "20.1.0-delta.1"
+    jest-validate "20.1.0-delta.1"
+    pretty-format "20.1.0-delta.1"
+
 jest-config@^20.0.0, jest-config@^20.0.4:
   version "20.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-config/-/jest-config-20.0.4.tgz#e37930ab2217c913605eff13e7bd763ec48faeea"
@@ -3222,6 +3298,16 @@ jest-config@^20.0.0, jest-config@^20.0.4:
     jest-validate "^20.0.3"
     pretty-format "^20.0.3"
 
+jest-diff@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-diff/-/jest-diff-20.1.0-delta.1.tgz#d64d9fcfff4bdfca87dd53f66e3db91ea8faa280"
+  dependencies:
+    chalk "^2.0.1"
+    diff "^3.2.0"
+    jest-get-type "20.1.0-delta.1"
+    jest-matcher-utils "20.1.0-delta.1"
+    pretty-format "20.1.0-delta.1"
+
 jest-diff@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-diff/-/jest-diff-20.0.3.tgz#81f288fd9e675f0fb23c75f1c2b19445fe586617"
@@ -3231,9 +3317,21 @@ jest-diff@^20.0.3:
     jest-matcher-utils "^20.0.3"
     pretty-format "^20.0.3"
 
+jest-docblock@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-docblock/-/jest-docblock-20.1.0-delta.1.tgz#6789873ddf3f7e90480dbcaab18386a5f17bde6c"
+
 jest-docblock@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-docblock/-/jest-docblock-20.0.3.tgz#17bea984342cc33d83c50fbe1545ea0efaa44712"
+
+jest-environment-jsdom@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-jsdom/-/jest-environment-jsdom-20.1.0-delta.1.tgz#c42acf1f7f0d3c69d0e9fd0cb1414d2e7f24c382"
+  dependencies:
+    jest-mock "20.1.0-delta.1"
+    jest-util "20.1.0-delta.1"
+    jsdom "^9.12.0"
 
 jest-environment-jsdom@^20.0.3:
   version "20.0.3"
@@ -3243,12 +3341,34 @@ jest-environment-jsdom@^20.0.3:
     jest-util "^20.0.3"
     jsdom "^9.12.0"
 
+jest-environment-node@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-node/-/jest-environment-node-20.1.0-delta.1.tgz#e2553b9e07a560ae55cfe1c9594072b00808a664"
+  dependencies:
+    jest-mock "20.1.0-delta.1"
+    jest-util "20.1.0-delta.1"
+
 jest-environment-node@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-environment-node/-/jest-environment-node-20.0.3.tgz#d488bc4612af2c246e986e8ae7671a099163d403"
   dependencies:
     jest-mock "^20.0.3"
     jest-util "^20.0.3"
+
+jest-get-type@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-get-type/-/jest-get-type-20.1.0-delta.1.tgz#f441f9e9b5305657dccf5e1c035b3c91bb166aec"
+
+jest-haste-map@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-haste-map/-/jest-haste-map-20.1.0-delta.1.tgz#fd9ee6801f32a75a0363b5fff6e014492ee4138c"
+  dependencies:
+    fb-watchman "^2.0.0"
+    graceful-fs "^4.1.11"
+    jest-docblock "20.1.0-delta.1"
+    micromatch "^2.3.11"
+    sane "^2.0.0"
+    worker-farm "^1.3.1"
 
 jest-haste-map@^20.0.4:
   version "20.0.5"
@@ -3260,6 +3380,18 @@ jest-haste-map@^20.0.4:
     micromatch "^2.3.11"
     sane "~1.6.0"
     worker-farm "^1.3.1"
+
+jest-jasmine2@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-jasmine2/-/jest-jasmine2-20.1.0-delta.1.tgz#58aa27c5b460a933887e1343cb77626b159445a1"
+  dependencies:
+    chalk "^2.0.1"
+    graceful-fs "^4.1.11"
+    jest-diff "20.1.0-delta.1"
+    jest-matcher-utils "20.1.0-delta.1"
+    jest-matchers "20.1.0-delta.1"
+    jest-message-util "20.1.0-delta.1"
+    jest-snapshot "20.1.0-delta.1"
 
 jest-jasmine2@^20.0.4:
   version "20.0.4"
@@ -3275,12 +3407,30 @@ jest-jasmine2@^20.0.4:
     once "^1.4.0"
     p-map "^1.1.1"
 
+jest-matcher-utils@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matcher-utils/-/jest-matcher-utils-20.1.0-delta.1.tgz#e8c1153d5009d3df851641723b85bbfcec8fed37"
+  dependencies:
+    chalk "^2.0.1"
+    jest-get-type "20.1.0-delta.1"
+    pretty-format "20.1.0-delta.1"
+
 jest-matcher-utils@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matcher-utils/-/jest-matcher-utils-20.0.3.tgz#b3a6b8e37ca577803b0832a98b164f44b7815612"
   dependencies:
     chalk "^1.1.3"
     pretty-format "^20.0.3"
+
+jest-matchers@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-matchers/-/jest-matchers-20.1.0-delta.1.tgz#ef4d9fdd0ecd520000eae1a6e7c7df892d9d3653"
+  dependencies:
+    jest-diff "20.1.0-delta.1"
+    jest-get-type "20.1.0-delta.1"
+    jest-matcher-utils "20.1.0-delta.1"
+    jest-message-util "20.1.0-delta.1"
+    jest-regex-util "20.1.0-delta.1"
 
 jest-matchers@^20.0.3:
   version "20.0.3"
@@ -3291,6 +3441,14 @@ jest-matchers@^20.0.3:
     jest-message-util "^20.0.3"
     jest-regex-util "^20.0.3"
 
+jest-message-util@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-message-util/-/jest-message-util-20.1.0-delta.1.tgz#078ae8df88daf1f26cce34c718e7f37234e7e8b3"
+  dependencies:
+    chalk "^2.0.1"
+    micromatch "^2.3.11"
+    slash "^1.0.0"
+
 jest-message-util@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-message-util/-/jest-message-util-20.0.3.tgz#6aec2844306fcb0e6e74d5796c1006d96fdd831c"
@@ -3299,19 +3457,42 @@ jest-message-util@^20.0.3:
     micromatch "^2.3.11"
     slash "^1.0.0"
 
+jest-mock@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-mock/-/jest-mock-20.1.0-delta.1.tgz#15dab3e9d8429ad91aff27a8bea237ea4fe7f24e"
+
 jest-mock@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-mock/-/jest-mock-20.0.3.tgz#8bc070e90414aa155c11a8d64c869a0d5c71da59"
 
+jest-regex-util@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-regex-util/-/jest-regex-util-20.1.0-delta.1.tgz#0aaea967cdfc6cfe8fa828a11235679cf0eb2312"
+
 jest-regex-util@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-regex-util/-/jest-regex-util-20.0.3.tgz#85bbab5d133e44625b19faf8c6aa5122d085d762"
+
+jest-resolve-dependencies@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve-dependencies/-/jest-resolve-dependencies-20.1.0-delta.1.tgz#b53117306afa64da477697b2a9a845004efb3fef"
+  dependencies:
+    jest-regex-util "20.1.0-delta.1"
 
 jest-resolve-dependencies@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve-dependencies/-/jest-resolve-dependencies-20.0.3.tgz#6e14a7b717af0f2cb3667c549de40af017b1723a"
   dependencies:
     jest-regex-util "^20.0.3"
+
+jest-resolve@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-resolve/-/jest-resolve-20.1.0-delta.1.tgz#e7c7220d567213886c19514b18b368852933ad42"
+  dependencies:
+    browser-resolve "^1.11.2"
+    chalk "^2.0.1"
+    is-builtin-module "^1.0.0"
+    resolve "^1.3.2"
 
 jest-resolve@^20.0.4:
   version "20.0.4"
@@ -3320,6 +3501,26 @@ jest-resolve@^20.0.4:
     browser-resolve "^1.11.2"
     is-builtin-module "^1.0.0"
     resolve "^1.3.2"
+
+jest-runtime@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-runtime/-/jest-runtime-20.1.0-delta.1.tgz#53db81fb1a347fe8b71e2285749e320003f90048"
+  dependencies:
+    babel-core "^6.0.0"
+    babel-jest "20.1.0-delta.1"
+    babel-plugin-istanbul "^4.0.0"
+    chalk "^2.0.1"
+    convert-source-map "^1.4.0"
+    graceful-fs "^4.1.11"
+    jest-config "20.1.0-delta.1"
+    jest-haste-map "20.1.0-delta.1"
+    jest-regex-util "20.1.0-delta.1"
+    jest-resolve "20.1.0-delta.1"
+    jest-util "20.1.0-delta.1"
+    json-stable-stringify "^1.0.1"
+    micromatch "^2.3.11"
+    strip-bom "3.0.0"
+    yargs "^7.0.2"
 
 jest-runtime@^20.0.4:
   version "20.0.4"
@@ -3341,6 +3542,17 @@ jest-runtime@^20.0.4:
     strip-bom "3.0.0"
     yargs "^7.0.2"
 
+jest-snapshot@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-snapshot/-/jest-snapshot-20.1.0-delta.1.tgz#91cee74af1e2f892a22978a63803823ebcca433f"
+  dependencies:
+    chalk "^2.0.1"
+    jest-diff "20.1.0-delta.1"
+    jest-matcher-utils "20.1.0-delta.1"
+    jest-util "20.1.0-delta.1"
+    natural-compare "^1.4.0"
+    pretty-format "20.1.0-delta.1"
+
 jest-snapshot@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-snapshot/-/jest-snapshot-20.0.3.tgz#5b847e1adb1a4d90852a7f9f125086e187c76566"
@@ -3351,6 +3563,18 @@ jest-snapshot@^20.0.3:
     jest-util "^20.0.3"
     natural-compare "^1.4.0"
     pretty-format "^20.0.3"
+
+jest-util@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-util/-/jest-util-20.1.0-delta.1.tgz#029fd38e66a6d408ec286a53bc319e18894bcccc"
+  dependencies:
+    chalk "^2.0.1"
+    graceful-fs "^4.1.11"
+    jest-message-util "20.1.0-delta.1"
+    jest-mock "20.1.0-delta.1"
+    jest-validate "20.1.0-delta.1"
+    leven "^2.1.0"
+    mkdirp "^0.5.1"
 
 jest-util@^20.0.0, jest-util@^20.0.3:
   version "20.0.3"
@@ -3364,6 +3588,15 @@ jest-util@^20.0.0, jest-util@^20.0.3:
     leven "^2.1.0"
     mkdirp "^0.5.1"
 
+jest-validate@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-validate/-/jest-validate-20.1.0-delta.1.tgz#7204fd181c14380454249fec9e02e5d474360af8"
+  dependencies:
+    chalk "^2.0.1"
+    jest-get-type "20.1.0-delta.1"
+    leven "^2.1.0"
+    pretty-format "20.1.0-delta.1"
+
 jest-validate@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest-validate/-/jest-validate-20.0.3.tgz#d0cfd1de4f579f298484925c280f8f1d94ec3cab"
@@ -3372,6 +3605,12 @@ jest-validate@^20.0.3:
     jest-matcher-utils "^20.0.3"
     leven "^2.1.0"
     pretty-format "^20.0.3"
+
+jest@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest/-/jest-20.1.0-delta.1.tgz#1a99fafeee15bf6c9973217779fe15eb6ea8b6c6"
+  dependencies:
+    jest-cli "20.1.0-delta.1"
 
 jest@^20.0.4:
   version "20.0.4"
@@ -4405,6 +4644,13 @@ prettier@^1.5.2:
   version "1.5.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/prettier/-/prettier-1.5.3.tgz#59dadc683345ec6b88f88b94ed4ae7e1da394bfe"
 
+pretty-format@20.1.0-delta.1:
+  version "20.1.0-delta.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pretty-format/-/pretty-format-20.1.0-delta.1.tgz#f1d31d80b5bd8724b33f3065acb1457710213d0d"
+  dependencies:
+    ansi-regex "^3.0.0"
+    ansi-styles "^3.0.0"
+
 pretty-format@^20.0.3:
   version "20.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pretty-format/-/pretty-format-20.0.3.tgz#020e350a560a1fe1a98dc3beb6ccffb386de8b14"
@@ -4859,6 +5105,20 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 
+sane@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/sane/-/sane-2.0.0.tgz#99cb79f21f4a53a69d4d0cd957c2db04024b8eb2"
+  dependencies:
+    anymatch "^1.3.0"
+    exec-sh "^0.2.0"
+    fb-watchman "^2.0.0"
+    minimatch "^3.0.2"
+    minimist "^1.1.1"
+    walker "~1.0.5"
+    watch "~0.10.0"
+  optionalDependencies:
+    fsevents "^1.1.1"
+
 sane@~1.6.0:
   version "1.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/sane/-/sane-1.6.0.tgz#9610c452307a135d29c1fdfe2547034180c46775"
@@ -5293,6 +5553,10 @@ text-table@~0.2.0:
 throat@^3.0.0:
   version "3.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/throat/-/throat-3.2.0.tgz#50cb0670edbc40237b9e347d7e1f88e4620af836"
+
+throat@^4.0.0:
+  version "4.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/throat/-/throat-4.1.0.tgz#89037cbc92c56ab18926e6ba4cbb200e15672a6a"
 
 through2@^2.0.0, through2@^2.0.1, through2@^2.0.2:
   version "2.0.3"

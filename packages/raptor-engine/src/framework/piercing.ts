@@ -7,7 +7,7 @@ import { getReplica, Membrane } from "./membrane";
 import { Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
 /* eslint-enable */
 
-function piercingHook(membrane: Membrane, target: Replicable, key: string | Symbol, value: any): any {
+export function piercingHook(membrane: Membrane, target: Replicable, key: string | Symbol, value: any): any {
     const { handler: { vm } } = membrane;
     assert.vm(vm);
     const { piercing } = Services;

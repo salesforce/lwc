@@ -8,17 +8,27 @@ describe('upgrade', () => {
 
         it('should allow access to profixied default values for public props', () => {
             const x = [1, 2, 3], y = { foo: 1 };
+            type MyComponentElement = HTMLElement & {
+                x: any,
+                y: any;
+            }
             const def = class MyComponent extends Element {
+                x: any;
+                y: any;
                 constructor() {
                     super();
                     this.x = x;
                     this.y = y;
                 }
+
+                static publicProps = {
+                    x: true,
+                    y: true
+                }
             }
-            def.publicProps = { x: true, y: true };
-            const elm = createElement('x-foo', { is: def });
-            assert.deepEqual(elm.x, x);
-            assert.deepEqual(elm.y, y);
+            const elm: MyComponentElement = createElement('x-foo', { is: def }) as MyComponentElement;
+            expect(x).toDeepEqualProxy(elm.x);
+            expect(y).toDeepEqualProxy(elm.y);
             assert(elm.x !== x, 'property x should be profixied');
             assert(elm.y !== y, 'property y should be profixied');
         });
@@ -29,7 +39,7 @@ describe('upgrade', () => {
             const elm = createElement('x-foo', { is: def });
             const o = { foo: 1 };
             elm.x = o;
-            assert.deepEqual(elm.x, o);
+            expect(o).toDeepEqualProxy(elm.x);
             assert(elm.x !== o, 'property x should be profixied');
         });
 
