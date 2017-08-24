@@ -33,9 +33,11 @@ Raptor already support interpolation in the body of the tags by using `{identifi
 
 Additionally, interpolation of text and HTML markup is supported. e.g.:
 
+```html
 <template intl:id="bundle1">
     <p>Age: <b>{state.userAge}</b></p>
 </template>
+```
 
 #### Built-in Functions
 
