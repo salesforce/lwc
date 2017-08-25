@@ -8,7 +8,7 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 
  * Node 8.x
  * NPM 5.x
- * Yarn >= 0.27.0
+ * Yarn >= 0.27.5
 
 ## Installation
 
