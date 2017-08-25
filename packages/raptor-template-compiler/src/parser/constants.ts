@@ -31,7 +31,7 @@ export const GLOBAL_ATTRIBUTE_SET = new Set([
     'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
 ]);
 
-export const VOID_ELEMENT_SET = new Set( [
+export const VOID_ELEMENT_SET = new Set([
     'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param',
     'source', 'track', 'wbr',
 ]);

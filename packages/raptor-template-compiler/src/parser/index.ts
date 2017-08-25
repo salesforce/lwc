@@ -504,7 +504,7 @@ export default function parse(source: string): {
                 }
             }
 
-            const slot = slotSet[slotName] || ( slotSet[slotName] = [] );
+            const slot = slotSet[slotName] || (slotSet[slotName] = []);
             slot.push(child);
         }
 
