@@ -1,6 +1,6 @@
 {
   "name": "babel-helpers-raptor",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "description": "Babel helpers for raptor",
   "license": "MIT",
   "devDependencies": {
