@@ -40,7 +40,7 @@ yarn start
 
 ### 5) View examples
 
-Load the examples in a browser: [http://localhost:8181/](http://localhost:8181/)
+Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 
 
 ## Building Raptor
