@@ -39,7 +39,7 @@ ClassList.prototype = {
                 // this is not only an optimization, it is also needed to avoid adding the same
                 // class twice when the initial diffing algo kicks in without an old vm to track
                 // what was already added to the DOM.
-                if (vm.idx) {
+                if (vm.idx || vm.vnode.isRoot) {
                     // we intentionally make a sync mutation here and also keep track of the mutation
                     // for a possible rehydration later on without having to rehydrate just now.
                     elm.classList.add(className);
@@ -49,7 +49,7 @@ ClassList.prototype = {
     },
     remove() {
         const vm = this[ViewModelReflection];
-        const { cmpClasses } = vm;
+        const { cmpClasses, vnode } = vm;
         const elm = getLinkedElement(this);
         // Remove specified class values.
         forEach.call(arguments, (className: String) => {
@@ -59,10 +59,10 @@ ClassList.prototype = {
                 // this is not only an optimization, it is also needed to avoid removing the same
                 // class twice when the initial diffing algo kicks in without an old vm to track
                 // what was already added to the DOM.
-                if (vm.idx) {
+                if (vm.idx || vnode.isRoot) {
                     // we intentionally make a sync mutation here when needed and also keep track of the mutation
                     // for a possible rehydration later on without having to rehydrate just now.
-                    const ownerClass = vm.vnode.data.class;
+                    const ownerClass = vnode.data.class;
                     // This is only needed if the owner is not forcing that class to be present in case of conflicts.
                     if (isUndefined(ownerClass) || !ownerClass[className]) {
                         elm.classList.remove(className);
