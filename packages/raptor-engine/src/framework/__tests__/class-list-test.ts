@@ -3,6 +3,7 @@ import assert from 'power-assert';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
+import { createElement } from '../upgrade';
 
 describe('class-list', () => {
     describe('#constructor()', () => {
@@ -185,6 +186,129 @@ describe('class-list', () => {
                 assert.strictEqual('foo bar baz', elm.className);
             });
         });
+
+        it('should support adding new values to classList via attributeChangedCallback', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('classFromConstructor');
+                }
+
+                attributeChangedCallback(attributeName, oldValue, newValue) {
+                    this.classList.add('classFromAttibuteChangedCb');
+                }
+            }
+
+            def.observedAttributes = ['title'];
+            const elm = createElement('x-foo', { is: def })
+            elm.setAttribute('title', 'title');
+            expect(elm.className).toBe('classFromConstructor classFromAttibuteChangedCb');
+        })
+
+        it('should support removing values from classList via attributeChangedCallback', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('theOnlyClassThatShouldRemain');
+                    this.classList.add('classToRemoveDuringAttributeChangedCb');
+                }
+
+                attributeChangedCallback(attributeName, oldValue, newValue) {
+                    this.classList.remove('classToRemoveDuringAttributeChangedCb');
+                }
+            }
+
+            def.observedAttributes = ['title'];
+            const elm = createElement('x-foo', { is: def });
+            elm.setAttribute('title', 'title');            
+            expect(elm.className).toBe('theOnlyClassThatShouldRemain');
+        })
+
+        it('should support adding new values to classList via connectedCallback', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('classFromConstructor');
+                }
+
+                connectedCallback() {
+                    this.classList.add('classFromConnectedCallback');
+                }
+            }
+
+            const elm = createElement('x-foo', { is: def });
+            document.body.appendChild(elm);
+            return Promise.resolve().then(() => { expect(elm.className).toBe('classFromConstructor classFromConnectedCallback');})
+
+        })
+
+        it('should support removing values from classList via connectedCallback', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('theOnlyClassThatShouldRemain');
+                    this.classList.add('classToRemoveDuringConnectedCb');
+                }
+
+                connectedCallback() {
+                    this.classList.remove('classToRemoveDuringConnectedCb');
+                }
+            }
+
+            const elm = createElement('x-foo', { is: def });
+            document.body.appendChild(elm);
+            return Promise.resolve().then(() => { expect(elm.className).toBe('theOnlyClassThatShouldRemain');})
+        })
+
+        it('should support adding new values to classList via both attributeChangedCallback and classFromAttibuteChangedCb', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('classFromConstructor');
+                }
+
+                attributeChangedCallback(attributeName, oldValue, newValue) {
+                    this.classList.add('classFromAttibuteChangedCb');
+                }
+
+                connectedCallback() {
+                    this.classList.add('classFromConnectedCallback');
+                }
+            }
+
+            def.observedAttributes = ['title'];
+            const elm = createElement('x-foo', { is: def });
+            elm.setAttribute('title', 'title');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => { expect(elm.className).toBe('classFromConstructor classFromAttibuteChangedCb classFromConnectedCallback');})
+        })
+
+        it('should support removing values from classList via both attributeChangedCallback and classFromAttibuteChangedCb', ()=> {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.classList.add('theOnlyClassThatShouldRemain');
+                    this.classList.add('classToRemoveDuringConnectedCb');
+                    this.classList.add('classToRemoveDuringAttributeChangedCb');
+                }
+
+                attributeChangedCallback(attributeName, oldValue, newValue) {
+                    this.classList.remove('classToRemoveDuringAttributeChangedCb');
+                }
+
+                connectedCallback() {
+                    this.classList.remove('classToRemoveDuringConnectedCb');
+                }
+            }
+
+            def.observedAttributes = ['title'];
+            const elm = createElement('x-foo', { is: def });
+            elm.setAttribute('title', 'title');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then(() => { expect(elm.className).toBe('theOnlyClassThatShouldRemain');})
+        })
 
     });
 
