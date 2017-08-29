@@ -7,11 +7,11 @@ describe('Membrane', function () {
         it('should call distortion handler when piercing', function () {
             const distortion = jest.fn();
             const membrane = new Membrane(distortion);
-            const wet = membrane.inject({});
+            membrane.inject({});
             assert(distortion.mock.calls.length === 1);
         });
         it('should unwrap value when setting', function () {
-            const dry = {};
+            const dry: any = {};
             const bar = {};
             const distortion = (v) => v;
             const membrane = new Membrane(distortion);
@@ -22,7 +22,6 @@ describe('Membrane', function () {
         it('should unwrap has correctly', function () {
             const distortion = (v) => v;
             const membrane = new Membrane(distortion);
-            const bar = {};
             const foo = {
                 bar: {}
             };
@@ -69,7 +68,7 @@ describe('Membrane', function () {
             let mockThisArg;
             const originalObject = {
                 arg: {},
-                foo: jest.fn(function (arg) {
+                foo: jest.fn(function () {
                     mockThisArg = this;
                 })
             };
@@ -99,7 +98,7 @@ describe('Membrane', function () {
         });
         it('should distort constructor return value', function () {
             const mockInstance = {};
-            const distortedArg = {};
+            const arg = {};
             function distortion (v) {
                 if (v instanceof Ctor) {
                     return mockInstance;
@@ -112,13 +111,11 @@ describe('Membrane', function () {
                 return v;
             }
             const membrane = new Membrane(distortion);
-            const instance = {};
             let mockArg;
             function Ctor (arg) {
                 mockArg = arg;
             }
             const WetCtor = membrane.inject(Ctor);
-            const arg = {};
             const wetArg = membrane.inject(arg);
             const value = new WetCtor(wetArg);
             assert(value === membrane.inject(mockInstance));

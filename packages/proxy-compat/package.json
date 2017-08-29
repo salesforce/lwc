@@ -10,7 +10,7 @@
     "test": "jest --coverage",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
-    "build": "rollup -c scripts/rollup.config.js",
+    "build": "rollup -c",
     "prepublish": "yarn run build"
   },
   "publishConfig": {
@@ -25,35 +25,9 @@
     "rollup": "^0.45.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
+    "ts-jest": "^20.0.10",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
     "uglify-es": "^3.0.24"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "testRegex": "/__tests__/",
-    "transform": {
-      "^.+\\.(ts|js)$": "<rootDir>/scripts/jest-preprocessor.js"
-    },
-    "collectCoverageFrom": [
-      "src/*.ts"
-    ],
-    "coverageReporters": [
-      "lcov",
-      "text",
-      "text-summary",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 55,
-        "functions": 55,
-        "lines": 75,
-        "statements": 75
-      }
-    }
   }
 }

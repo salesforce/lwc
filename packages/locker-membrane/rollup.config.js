@@ -1,12 +1,14 @@
+/* eslint-env node */
+
 const path = require('path');
 const typescript = require('rollup-plugin-typescript');
 const uglify = require('rollup-plugin-uglify');
 
-const { version } = require('../package.json');
+const { version } = require('./package.json');
 
-const entry = path.resolve(__dirname, '../src/main.ts');
-const distDirectory = path.resolve(__dirname, '../dist');
-const libDirectory = path.resolve(__dirname, '../lib');
+const entry = path.resolve(__dirname, 'src/main.ts');
+const distDirectory = path.resolve(__dirname, 'dist');
+const libDirectory = path.resolve(__dirname, 'lib');
 
 const moduleName = 'LockerMembrane';
 

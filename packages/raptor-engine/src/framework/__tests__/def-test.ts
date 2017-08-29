@@ -91,7 +91,7 @@ describe('def', () => {
         it('should throw error when observedAttribute references setter', () => {
             class MyComponent extends Element  {
                 get isRecordDetail () {}
-                set isRecordDetail () {}
+                set isRecordDetail (value) {}
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['is-record-detail'];
@@ -108,7 +108,7 @@ describe('def', () => {
         it('should throw error when observedAttribute references computed prop', () => {
             class MyComponent extends Element  {
                 get isRecordDetail () {}
-                set isRecordDetail () {}
+                set isRecordDetail (value) {}
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['is-record-detail'];

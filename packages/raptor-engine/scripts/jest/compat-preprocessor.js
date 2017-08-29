@@ -1,7 +1,7 @@
 const tsc = require('typescript');
 const babel = require('babel-core');
 const plugin = require('babel-plugin-transform-raptor-compat');
-const tscPreprocessor = require('./tsc-preprocessor');
+const tsJest = require('ts-jest/preprocessor.js');
 
 function isTestFile(path) {
     return /__tests__/.test(path) || /expect-compat-extensions/.test(path);
@@ -24,9 +24,9 @@ function transpile(src, path) {
 }
 
 module.exports = {
-    process(src, path) {
+    process(src, path, config, transpileConfig) {
         if (path.endsWith('.js') || path.endsWith('.ts')) {
-            const tsc = tscPreprocessor.process(src, path);;
+            const tsc = tsJest.process(src, path, config, transpileConfig);
             return transpile(tsc, path);
         }
         return src;

@@ -1,10 +1,10 @@
 /* eslint-env node */
 
 module.exports = {
+    moduleFileExtensions: ['ts', 'js', 'json'],
     transform: {
-        '.(ts|tsx)': '<rootDir>../../node_modules/ts-jest/preprocessor.js'
+        '.ts': require.resolve('ts-jest/preprocessor.js')
     },
     testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(ts)$$',
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
     mapCoverage: true,
 };

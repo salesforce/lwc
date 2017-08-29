@@ -7,7 +7,7 @@
   "jsnext:main": "lib/engine.es.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --no-cache",
+    "test": "jest --coverage --no-cache",
     "test:compat": "jest --projects ./scripts/jest/compat.config.json",
     "test:standard": "jest --projects ./scripts/jest/standard.config.json",
     "types": "tsc src/**/*.ts --noEmit",
@@ -32,31 +32,9 @@
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
     "snabbdom": "^0.5.4",
+    "ts-jest": "^20.0.10",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
     "uglify-es": "^3.0.24"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/framework/*.ts"
-    ],
-    "coverageReporters": [
-      "lcov",
-      "text",
-      "text-summary",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 75,
-        "functions": 85,
-        "lines": 85,
-        "statements": 85
-      }
-    },
-    "projects": [
-      "<rootDir>/scripts/jest/standard.config.json",
-      "<rootDir>/scripts/jest/compat.config.json"
-    ]
   }
 }
