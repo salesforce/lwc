@@ -15,7 +15,7 @@ function transpile(src, path) {
         plugins: [
             [plugin, {
                 resolveProxyCompat: {
-                    global: 'window.Proxy'
+                    global: 'window.Proxy = require("proxy-compat")'
                 }
             }]
         ]

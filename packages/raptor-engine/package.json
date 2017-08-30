@@ -7,9 +7,9 @@
   "jsnext:main": "lib/engine.es.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage --no-cache",
-    "test:compat": "jest --projects ./scripts/jest/compat.config.json",
-    "test:standard": "jest --projects ./scripts/jest/standard.config.json",
+    "test": "jest --coverage",
+    "test:compat": "jest --projects ./scripts/jest/compat.config.js",
+    "test:standard": "jest --projects ./scripts/jest/standard.config.js",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c scripts/rollup.config.js",
