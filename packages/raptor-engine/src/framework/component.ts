@@ -4,11 +4,10 @@ import {
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
-    invokeComponentMethod,
     invokeComponentCallback,
 } from "./invoker";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
-import { addCallbackToNextTick, noop } from "./utils";
+import { addCallbackToNextTick } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
@@ -190,11 +189,8 @@ export function renderComponent(vm: VM) {
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     vm.fragment = vnodes;
+    vm.justRendered = true; // flag for the postpatch hook
     assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
-    const { component: { renderedCallback } } = vm;
-    if (renderedCallback && renderedCallback !== noop) {
-        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'renderedCallback'));
-    }
     const { rehydrated } = Services;
     if (rehydrated) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));

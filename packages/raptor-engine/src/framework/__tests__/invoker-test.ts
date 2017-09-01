@@ -1,114 +1,220 @@
 // import * as target from '../invoker';
 import * as api from "../api";
-import { patch } from '../patch';
+import { createElement } from "../main";
 import { Element } from "../html-element";
-import assert from 'power-assert';
 
 describe('invoker', () => {
 
     describe('integration', () => {
 
-        var child;
-
-        beforeEach(function() {
-            child = api.h('p', {}, []);
+        beforeEach(() => {
+            document.body.innerHTML = '';
         });
 
         it('should support undefined result from render()', () => {
             let counter = 0;
-            const elm = document.createElement('x-foo');
             class MyComponent extends Element {
                 render() {
                     counter++;
                     return;
                 }
             }
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode); // insert `x-foo`
-            return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 1);
-            });
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(counter).toBe(1);
         });
 
         it('should throw if render() returns something that is not a function or a promise or undefined', () => {
-            const elm = document.createElement('x-foo');
             class MyComponent extends Element {
                 render() {
                     return 1;
                 }
             }
-            const vnode = api.c('x-foo', MyComponent, {});
-            assert.throws(() => {
-                patch(elm, vnode); // insert `x-foo`
-            });
+            const elm = createElement('x-foo', { is: MyComponent });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrow();
         });
 
         it('should invoke connectedCallback() after all child are inserted into the dom', () => {
             let counter = 0;
-            const elm = document.createElement('x-foo');
-            const def = class MyComponent1 extends Element {
+            const child = api.h('p', {}, []);
+            class MyComponent1 extends Element {
                 connectedCallback() {
                     counter++;
-                    assert.strictEqual(elm.childNodes[0], child.elm, 'the child element is not in the dom yet');
+                    expect(elm.childNodes[0]).toBe(child.elm);
                 }
                 render() {
                     return () => [child];
                 }
             }
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode); // insert `x-foo`
-            assert.strictEqual(counter, 0, 'connectedCallback should be invoked async');
-            return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 1);
-            });
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
+            expect(counter).toBe(1);
+            expect.assertions(2);
         });
 
-        it('should invoke disconnectedCallback() after all child are removed from the dom', () => {
+        it('should invoke connectedCallback() in a child after connectedCallback() on parent', () => {
+            const stack = [];
+            class Child extends Element {
+                connectedCallback() {
+                    stack.push('child');
+                }
+            }
+            const child = api.c('x-child', Child, {});
+            class MyComponent1 extends Element {
+                connectedCallback() {
+                    stack.push('parent');
+                }
+                render() {
+                    return () => [child];
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
+            expect(stack).toEqual(['parent', 'child']);
+        });
+
+        it('should invoke disconnectedCallback() in a child after disconnectedCallback() on parent', () => {
+            const stack = [];
+            class Child extends Element {
+                disconnectedCallback() {
+                    stack.push('child');
+                }
+            }
+            const child = api.c('x-child', Child, {});
+            class MyComponent1 extends Element {
+                disconnectedCallback() {
+                    stack.push('parent');
+                }
+                render() {
+                    return () => [child];
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
+            document.body.removeChild(elm);
+            expect(stack).toEqual(['parent', 'child']);
+        });
+
+        it('should invoke disconnectedCallback() after it was removed from the dom', () => {
             let counter = 0;
             let rcounter = 0;
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const def = class MyComponent2 extends Element {
+            const child = api.h('p', {}, []);
+            class MyComponent2 extends Element {
                 disconnectedCallback() {
                     counter++;
-                    assert.strictEqual(elm.childNodes.length, 0, 'the child element is not removed from the dom yet');
+                    expect(elm.parentNode).toBe(null);
                 }
                 render() {
                     rcounter++;
                     return () => [child];
                 }
             }
-            const vnode1 = api.c('x-foo', def, {});
-            const vnode2 = api.h('div', {}, []);
-            patch(elm, vnode1); // insert `x-foo`
-            patch(vnode1, vnode2); // replace it with a `div`
-            assert.strictEqual(counter, 0, 'disconnectedCallback should be invoked async');
-            return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 1, 'it should have disconnected once');
-                assert.strictEqual(rcounter, 1, 'it should have rendered once');
-                assert.strictEqual(document.body.childNodes.length, 1, 'it should have a single children');
-                assert.strictEqual(document.body.childNodes[0].tagName, 'DIV');
-            });
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            document.body.appendChild(elm);
+            document.body.removeChild(elm);
+            expect(counter).toBe(1);
+            expect(rcounter).toBe(1);
+            expect(document.body.childNodes.length).toBe(0);
+            expect.assertions(4)
         });
 
-        it('should invoke renderedCallback() async after every change after all child are inserted', () => {
+        it('should invoke renderedCallback() sync after every change after all child are inserted', () => {
             let counter = 0;
-            const elm = document.createElement('x-foo');
-            const def = class MyComponent3 extends Element {
+            const child = api.h('p', {}, []);
+            class MyComponent3 extends Element {
                 renderedCallback() {
                     counter++;
-                    assert.strictEqual(elm.childNodes[0], child.elm, 'the child element is not in the dom yet');
+                    expect(elm.childNodes[0]).toBe(child.elm);
                 }
                 render() {
                     return () => [child];
                 }
             }
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode); // insert `x-foo`
-            assert.strictEqual(counter, 0, 'renderedCallback should be invoked async');
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            expect(counter).toBe(1);
+        });
+
+        it('should invoke parent renderedCallback() sync after every change after all child renderedCallback', () => {
+            const cycle = [];
+            class Child extends Element {
+                renderedCallback () {
+                    cycle.push('child');
+                }
+                render () {
+                    return () => []
+                }
+            }
+
+            const child = api.c('x-foo', Child, {});
+            class MyComponent3 extends Element {
+                renderedCallback() {
+                    cycle.push('parent');
+                }
+                render() {
+                    return () => [child];
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            expect(cycle).toEqual(['parent', 'child']);
+        });
+
+        it('should invoke renderedCallback() after render after every change after all child are inserted', () => {
+            let lifecycle: Array<string> = [];
+            class MyComponent3 extends Element {
+                renderedCallback() {
+                    lifecycle.push('rendered');
+                }
+                render() {
+                    lifecycle.push('render');
+                    return ($api: any, $cmp: any) => {
+                        return [
+                            api.h('p', {
+                                attrs: {
+                                    title: $cmp.foo
+                                }
+                            }, [])
+                        ]
+                    };
+                }
+            }
+            MyComponent3.publicProps = {
+                foo: {
+                    config: 0
+                }
+            };
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            lifecycle = [];
+            elm.foo = 'bar';
+
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 1);
+                expect(lifecycle).toEqual(['render', 'rendered']);
             });
+        });
+
+        it('should invoke renderedCallback() sync after connectedCallback and render', () => {
+            const lifecycle: Array<string> = [];
+            const child = api.h('p', {}, []);
+            class MyComponent3 extends Element {
+                renderedCallback() {
+                    lifecycle.push('rendered');
+                    expect(elm.childNodes[0]).toBe(child.elm);
+                }
+                connectedCallback () {
+                    lifecycle.push('connected');
+                }
+                render() {
+                    lifecycle.push('render');
+                    return () => [child];
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            expect(lifecycle).toEqual(['connected', 'render', 'rendered']);
         });
 
     });
