@@ -10,6 +10,7 @@ export const VALID_IF_MODIFIER = new Set([
 export const ITERATOR_RE = /^iterator\:.*$/;
 
 export const EVENT_HANDLER_RE = /^on/;
+export const EVENT_HANDLER_NAME_RE = /^on[a-z]+$/;
 
 export const DEFAULT_SLOT_NAME = '$default$';
 

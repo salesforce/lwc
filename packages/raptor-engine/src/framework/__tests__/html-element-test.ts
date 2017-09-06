@@ -136,6 +136,22 @@ describe('html-element', () => {
                 assertLogger.logWarning.mockRestore();
             });
         });
+
+        it ('should log warning when event name contains any non-alphabetic lowercase characters', function () {
+            class Foo extends Element {}
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            const vnode2 = api.h('div', {}, []);
+            patch(elm, vnode);
+            jest.spyOn(assertLogger, 'logWarning')
+
+            return Promise.resolve().then(() => {
+                vnode.vm.component.dispatchEvent(new CustomEvent('a1-$'));
+                expect(assertLogger.logWarning).toBeCalled();
+                assertLogger.logWarning.mockRestore();
+            });
+        });
     });
 
     describe('#tagName', () => {

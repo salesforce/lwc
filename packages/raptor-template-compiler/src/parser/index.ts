@@ -59,6 +59,7 @@ import {
     IF_RE,
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
+    EVENT_HANDLER_NAME_RE,
     DEFAULT_SLOT_NAME,
     ITERATOR_RE,
 } from './constants';
@@ -239,8 +240,18 @@ export default function parse(source: string): {
                 return warnAt(`Event handler should be an expression`, eventHandlerAttribute.location);
             }
 
+            let eventName = eventHandlerAttribute.name;
+            if (!eventName.match(EVENT_HANDLER_NAME_RE)) {
+                const msg = [
+                    `Invalid event name ${eventName}.`,
+                    `Event name can only contain lower-case alphabetic characters`,
+                ].join(' ');
+                return warnAt(msg, eventHandlerAttribute.location);
+            }
+
             // Strip the `on` prefix from the event handler name
-            const eventName = eventHandlerAttribute.name.slice(2);
+            eventName = eventHandlerAttribute.name.slice(2);
+
             const on = element.on || (element.on = {});
             on[eventName] = eventHandlerAttribute.value;
 

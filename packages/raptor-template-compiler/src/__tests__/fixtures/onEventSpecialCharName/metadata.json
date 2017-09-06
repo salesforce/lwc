@@ -1,0 +1,11 @@
+{
+  "metadata": {
+    "templateUsedIds": ["handleClick"]
+  },
+  "warnings": [{
+    "level": "error",
+    "message": "Invalid event name on!-f. Event name can only contain lower-case alphabetic characters",
+    "start":20,
+    "length": 19
+  }]
+}
