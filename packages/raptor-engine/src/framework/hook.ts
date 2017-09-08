@@ -1,8 +1,9 @@
 import assert from "./assert";
+import { invokeComponentMethod } from "./invoker";
 import { clearListeners } from "./component";
 import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm";
-import { noop } from "./utils";
-import { invokeComponentMethod } from "./invoker";
+import { addCallbackToNextTick, noop } from "./utils";
+import { invokeServiceHook, Services } from "./services";
 
 export function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -13,12 +14,21 @@ export function insert(vnode: ComponentVNode) {
         destroy(vnode); // moving the element from one place to another is observable via life-cycle hooks
     }
     addInsertionIndex(vm);
-    if (vm.isDirty) {
+    const { isDirty, component: { connectedCallback } } = vm;
+    if (isDirty) {
         // this code path guarantess that when patching the custom element for the first time,
         // the body is computed only after the element is in the DOM, otherwise the hooks
         // for any children's vnode are not going to be useful.
         rehydrate(vm);
     }
+    const { connected } = Services;
+    if (connected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
+    }
+    if (connectedCallback && connectedCallback !== noop) {
+        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'connectedCallback'));
+    }
+    console.log(`"${vm}" was inserted.`);
 }
 
 export function destroy(vnode: ComponentVNode) {
@@ -29,23 +39,24 @@ export function destroy(vnode: ComponentVNode) {
     removeInsertionIndex(vm);
     // just in case it comes back, with this we guarantee re-rendering it
     vm.isDirty = true;
+    const { disconnected } = Services;
+    const { component: { disconnectedCallback } } = vm;
     clearListeners(vm);
+    if (disconnected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, disconnected));
+    }
+    if (disconnectedCallback && disconnectedCallback !== noop) {
+        addCallbackToNextTick((): void => invokeComponentMethod(vm, 'disconnectedCallback'));
+    }
+    console.log(`"${vm}" was destroyed.`);
 }
 
 function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
-    assert.vnode(vnode);
-    const { vm } = vnode;
-    assert.vm(vm);
-    if (vm.justRendered) {
-        const { component: { renderedCallback } } = vm;
-        if (renderedCallback && renderedCallback !== noop) {
-            invokeComponentMethod(vm, 'renderedCallback');
-        }
-        vm.justRendered = false;
-    }
-    // TODO: we don't really need this block anymore, but it will require changes
+    // TODO: we don't really need this anymore, but it will require changes
     // on many tests that are just patching the element directly.
-    if (vm.idx === 0 && !vnode.isRoot) {
+    assert.vnode(vnode);
+    assert.vm(vnode.vm);
+    if (vnode.vm.idx === 0 && !vnode.isRoot) {
         // when inserting a root element, or when reusing a DOM element for a new
         // component instance, the insert() hook is never called because the element
         // was already in the DOM before creating the instance, and diffing the

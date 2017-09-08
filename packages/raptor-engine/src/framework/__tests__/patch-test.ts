@@ -1,52 +1,47 @@
 import * as target from '../patch';
 import * as api from "../api";
 import { Element } from "../html-element";
-import { createElement } from "../main";
+import assert from 'power-assert';
 
 describe('patch', () => {
 
     describe('#patch()', () => {
 
-        it('should call connectedCallback syncronously', () => {
+        it('should call connectedCallback asyncronously', () => {
             let flag = false;
-            class MyComponent extends Element {
+            const def = class MyComponent extends Element {
                 connectedCallback() {
                     flag = true;
                 }
             }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(flag).toBeTruthy();
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', def, {});
+            target.patch(elm, vnode);
+            assert(flag === false, 'connectedCallback should not run syncronously');
+            return Promise.resolve().then(() => {
+                assert(flag === true, 'connectedCallback should run asyncronously');
+            });
         });
 
-        it('should call disconnectedCallback syncronously', () => {
+        it('should call renderedCallback asyncronously', () => {
             let flag = false;
-            class MyComponent extends Element {
-                disconnectedCallback() {
-                    flag = true;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            document.body.removeChild(elm);
-            expect(flag).toBeTruthy();
-        });
-
-        it('should call renderedCallback syncronously', () => {
-            let flag = false;
-            class MyComponent extends Element {
+            const def = class MyComponent extends Element {
                 renderedCallback() {
                     flag = true;
                 }
             }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(flag).toBeTruthy();
+            const elm = document.createElement('x-foo');
+            const vnode = api.c('x-foo', def, {});
+            target.patch(elm, vnode);
+            assert(flag === false, 'renderedCallback should not run syncronously');
+            return Promise.resolve().then(() => {
+                assert(flag === true, 'renderedCallback should run asyncronously');
+            });
         });
 
         it('should preserve the creation order and the hook order', () => {
             let chars = '^';
-            class MyComponent1 extends Element {
+            const def1 = class MyComponent extends Element {
                 connectedCallback() {
                     chars += 'connected-1:';
                 }
@@ -54,7 +49,7 @@ describe('patch', () => {
                     chars += 'rendered-1:';
                 }
             }
-            class MyComponent2 extends Element {
+            const def2 = class MyComponent extends Element{
                 connectedCallback() {
                     chars += 'connected-2:';
                 }
@@ -63,34 +58,15 @@ describe('patch', () => {
                 }
             }
             const elm1 = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent1, {});
+            const vnode1 = api.c('x-foo', def1, {});
             target.patch(elm1, vnode1);
             const elm2 = document.createElement('x-bar');
-            const vnode2 = api.c('x-bar', MyComponent2, {});
+            const vnode2 = api.c('x-bar', def2, {});
             target.patch(elm2, vnode2);
-            expect(chars).toBe('^connected-1:rendered-1:connected-2:rendered-2:');
-        });
-
-        it('should disconnect when mounting a different element', () => {
-            let chars = '^';
-            class MyComponent1 extends Element {
-                connectedCallback() {
-                    chars += 'connected:';
-                }
-                disconnectedCallback() {
-                    chars += 'disconnected:';
-                }
-                renderedCallback() {
-                    chars += 'rendered:';
-                }
-            }
-            const elm1 = document.createElement('x-foo');
-            document.body.appendChild(elm1);
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            target.patch(elm1, vnode1);
-            const vnode2 = api.h('div', {}, []);
-            target.patch(vnode1, vnode2);\
-            expect(chars).toBe('^connected:rendered:disconnected:');
+            assert.equal(chars, '^');
+            return Promise.resolve().then(() => {
+                assert.equal(chars, '^rendered-1:connected-1:rendered-2:connected-2:');
+            });
         });
 
     });

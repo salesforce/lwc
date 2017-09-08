@@ -13,13 +13,12 @@ describe('html-element', () => {
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.getBoundingClientRect();
-                    }).toThrow();
+                    this.getBoundingClientRect();
                 }
             }
-            createElement('x-foo', { is: def });
-            expect.assertions(1);
+            assert.throws(() => {
+                createElement('x-foo', { is: def });
+            });
         });
     });
 
@@ -43,22 +42,20 @@ describe('html-element', () => {
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => this.getAttribute()).toThrow();
+                    this.getAttribute();
                 }
             }
-            createElement('x-foo', { is: def });
-            expect.assertions(1);
+            assert.throws(() => createElement('x-foo', { is: def }));
         });
         it('should throw when attribute name matches a declared public property', () => {
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => this.getAttribute('foo')).toThrow();
+                    this.getAttribute('foo');
                 }
             }
             def.publicProps = { foo: "default value" };
-            createElement('x-foo', { is: def });
-            expect.assertions(1);
+            assert.throws(() => createElement('x-foo', { is: def }));
         });
         it('should be null for non-valid attribute names', () => {
             let attributeValueForNull, attributeValueForUndefined, attributeValueForEmpty;
@@ -94,14 +91,15 @@ describe('html-element', () => {
             class Foo extends Element {
                 constructor () {
                     super();
-                    expect(() => {
-                        this.dispatchEvent(new CustomEvent('constructorevent'));
-                    }).toThrow('this.dispatchEvent() should not be called during the construction of the custom element for <x-foo> because no one is listening for the event "constructorevent" just yet.');
+                    this.dispatchEvent(new CustomEvent('constructorevent'));
                 }
             }
-            const elm = createElement('x-foo', { is: Foo });
+            const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
-            expect.assertions(1);
+            const vnode = api.c('x-foo', Foo, {});
+            expect(() => {
+                patch(elm, vnode);
+            }).toThrow('this.dispatchEvent() should not be called during the construction of the custom element for <x-foo> because no one is listening for the event "constructorevent" just yet.');
         });
 
         it('should log warning when element is not connected', function () {
@@ -223,56 +221,61 @@ describe('html-element', () => {
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.state = [1, 2];
-                    }).toThrow();
+                    this.state = [1, 2];
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
         });
         it('should throw an error when assigning primitive', function () {
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.state = 1;
-                    }).toThrow();
+                    this.state = 1;
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
         });
         it('should throw an error when assigning non-observable object', function () {
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.state = Object.create({});
-                    }).toThrow();
+                    this.state = Object.create({});
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
         });
         it('should throw an error when assigning exotic object', function () {
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.state = Date.now();
-                    }).toThrow();
+                    this.state = Date.now();
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
         });
         it('should not throw an error when assigning observable object', function () {
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => {
-                        this.state = {};
-                    }).not.toThrow();
+                    this.state = {};
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).not.toThrow();
         });
     });
 
@@ -591,27 +594,28 @@ describe('html-element', () => {
         it('should throw if setting tabIndex during render', function () {
             class MyComponent extends Element {
                 render () {
-                    expect(() => {
-                        this.tabIndex = 2;
-                    }).toThrow();
+                    this.tabIndex = 2;
                     return () => [];
                 }
             }
 
             const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrow();
         });
 
         it('should throw if setting tabIndex during construction', function () {
             class MyComponent extends Element {
                 constructor () {
                     super();
-                    expect(() => {
-                        this.tabIndex = 2;
-                    }).toThrow();
+                    this.tabIndex = 2;
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow();
         });
     });
 
@@ -626,12 +630,12 @@ describe('html-element', () => {
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(rendered).toBe(0);
+            assert.deepEqual(rendered, 0);
             document.body.appendChild(elm);
-            expect(rendered).toBe(1);
+            assert.deepEqual(rendered, 1);
         });
 
-        it('should guarantee that the connectedCallback is invoked sync after the element is inserted in the DOM', function () {
+        it('should guarantee that the connectedCallback is invoked async after the element is inserted in the DOM', function () {
             let called = 0;
             class MyComponent extends Element {
                 render () {
@@ -642,28 +646,16 @@ describe('html-element', () => {
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(called).toBe(0);
-            document.body.appendChild(elm);
-            expect(called).toBe(1);
+            return Promise.resolve().then(() => {
+                assert.deepEqual(called, 0);
+                document.body.appendChild(elm);
+                return Promise.resolve().then(() => {
+                    assert.deepEqual(called, 1);
+                });
+            });
         });
 
-        it('should guarantee that the connectedCallback is invoked before render after the element is inserted in the DOM', function () {
-            const ops: Array<string> = [];
-            class MyComponent extends Element {
-                render () {
-                    ops.push('render');
-                    return () => [];
-                }
-                connectedCallback() {
-                    ops.push('connected');
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(ops).toEqual(['connected', 'render']);
-        });
-
-        it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function () {
+        it('should guarantee that the disconnectedCallback is invoked async after the element is removed from the DOM', function () {
             let called = 0;
             class MyComponent extends Element {
                 render () {
@@ -675,9 +667,13 @@ describe('html-element', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(called, 0);
-            document.body.removeChild(elm);
-            assert.deepEqual(called, 1);
+            return Promise.resolve().then(() => {
+                assert.deepEqual(called, 0);
+                document.body.removeChild(elm);
+                return Promise.resolve().then(() => {
+                    assert.deepEqual(called, 1);
+                });
+            });
         });
 
         it('should not render even if there is a mutation if the element is not in the DOM yet', function () {
@@ -734,15 +730,17 @@ describe('html-element', () => {
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(rendered).toBe(0);
+            assert.deepEqual(rendered, 0);
             document.body.appendChild(elm);
-            expect(rendered).toBe(1);
+            assert.deepEqual(rendered, 1);
             var div = document.createElement('div');
             document.body.appendChild(div);
             div.appendChild(elm);
-            expect(rendered).toBe(2);
-            expect(connected).toBe(2);
-            expect(disconnected).toBe(1);
+            assert.deepEqual(rendered, 2);
+            return Promise.resolve().then(() => {
+                assert.deepEqual(connected, 2);
+                assert.deepEqual(disconnected, 1);
+            });
         });
     });
 
