@@ -335,4 +335,31 @@ describe('api.ts', () => {
 
     });
 
+    describe('@api regression', () => {
+        test(`#608 - each instance should have it's own version of the property`, () => {
+            const originalValue = 0;
+            const newValue = 100;
+
+            class XFoo extends Element  {
+                constructor() {
+                    super();
+                    this.counter = originalValue;
+                }
+            }
+
+            XFoo.publicProps = {
+                counter: { config: 0 }
+            };
+
+            const elm1 = createElement('x-foo', { is: XFoo });
+            document.body.appendChild(elm1);
+
+            const elm2 = createElement('x-foo', { is: XFoo });
+            document.body.appendChild(elm2);
+
+            elm1.counter = newValue;
+            expect(elm1.counter).toBe(newValue)
+            expect(elm2.counter).toBe(originalValue);
+        });
+    });
 });

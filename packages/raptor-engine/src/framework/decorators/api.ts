@@ -15,7 +15,6 @@ export function prepareForPropUpdate(vm: VM) {
 
 // TODO: how to allow symbols as property keys?
 export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
-    let value: any;
     defineProperty(proto, key, {
         get(): any {
             const vm: VM = this[ViewModelReflection];
@@ -29,7 +28,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 // for public props accessed from within a getter in the component.
                 subscribeToSetHook(vmBeingRendered, this, key);
             }
-            return value;
+            return vm.cmpProps[key];
         },
         set(newValue: any) {
             const vm = this[ViewModelReflection];
@@ -38,7 +37,8 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
-                value = newValue;
+                vm.cmpProps[key] = newValue;
+
                 // avoid notification of observability while constructing the instance
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
@@ -52,7 +52,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 });
-                value = newValue;
+                vm.cmpProps[key] = newValue;
             } else {
                 assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
             }
@@ -62,7 +62,6 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
 }
 
 export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor): PropertyDescriptor {
-    let value: any;
     const { get, set, enumerable } = descriptor || EmptyObject;
     defineProperty(proto, key, {
         get(): any {

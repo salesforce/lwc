@@ -51,6 +51,7 @@ declare class ComponentElement extends Component {
 declare class VM {
     uid: number;
     idx: number;
+    cmpProps: HashTable<any>;
     cmpState?: HashTable<any>;
     cmpSlots?: Slotset;
     cmpEvents?: HashTable<Array<EventListener>>;
