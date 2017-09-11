@@ -3,8 +3,10 @@ import { getComponentDef } from "./def";
 import { createComponent, linkComponent } from "./component";
 import { patch } from "./patch";
 import { assign, isArray, toString, ArrayPush, isUndefined, keys, defineProperties } from "./language";
-import { addCallbackToNextTick } from "./utils";
+import { addCallbackToNextTick, noop } from "./utils";
 import { ViewModelReflection } from "./def";
+import { invokeServiceHook, Services } from "./services";
+import { invokeComponentMethod } from "./invoker";
 
 let idx: number = 0;
 let uid: number = 0;
@@ -15,12 +17,28 @@ export function addInsertionIndex(vm: VM) {
     assert.vm(vm);
     assert.invariant(vm.idx === 0, `${vm} is already locked to a previously generated idx.`);
     vm.idx = ++idx;
+    const { component: { connectedCallback } } = vm;
+    if (connectedCallback && connectedCallback !== noop) {
+        invokeComponentMethod(vm, 'connectedCallback');
+    }
+    const { connected } = Services;
+    if (connected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
+    }
 }
 
 export function removeInsertionIndex(vm: VM) {
     assert.vm(vm);
     assert.invariant(vm.idx > 0, `${vm} is not locked to a previously generated idx.`);
     vm.idx = 0;
+    const { component: { disconnectedCallback } } = vm;
+    if (disconnectedCallback && disconnectedCallback !== noop) {
+        invokeComponentMethod(vm, 'disconnectedCallback');
+    }
+    const { disconnected } = Services;
+    if (disconnected) {
+        addCallbackToNextTick((): void => invokeServiceHook(vm, disconnected));
+    }
 }
 
 export function createVM(vnode: ComponentVNode) {
@@ -35,6 +53,7 @@ export function createVM(vnode: ComponentVNode) {
         idx: 0,
         isScheduled: false,
         isDirty: true,
+        justRendered: false,
         def,
         context: {},
         cmpProps: {},

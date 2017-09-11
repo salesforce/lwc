@@ -2,7 +2,9 @@ import assert from "./assert";
 import { patch } from "./patch";
 import { c } from "./api";
 import { isUndefined, isFunction, assign } from "./language";
-import { destroy, insert } from "./hook";
+import { insert } from "./hook";
+import { removeInsertionIndex } from "./vm";
+import { clearListeners } from "./component";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -56,8 +58,25 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
         insert(vnode);
     };
     element[DisconnectingSlot] = () => {
-        destroy(vnode);
+        forceDisconnection(vnode);
     };
+}
+
+// this could happen for two reasons:
+// * it is a root, and was removed manually
+// * the element was appended to another container which requires disconnection to happen first
+export function forceDisconnection(vnode: ComponentVNode) {
+    assert.vnode(vnode);
+    const { vm } = vnode;
+    assert.vm(vm);
+    // At this point we need to force the removal of all children
+    const oldVnode = assign({}, vnode);
+    vnode.children = [];
+    vm.isDirty = true;
+    vm.fragment = [];
+    removeInsertionIndex(vm);
+    clearListeners(vm);
+    patch(oldVnode, vnode);
 }
 
 /**

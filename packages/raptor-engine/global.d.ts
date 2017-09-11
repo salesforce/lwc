@@ -61,6 +61,7 @@ declare class VM {
     cmpRoot?: ShadowRoot;
     isScheduled: boolean;
     isDirty: boolean;
+    justRendered: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component?: Component;
