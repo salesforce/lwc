@@ -102,7 +102,7 @@ describe('Public Props', () => {
             }
         }
     `, undefined, {
-        message: 'test.js: @api set publicSetter setter has not associated setter.',
+        message: 'test.js: @api set publicSetter setter does not have associated getter.',
         loc: {
             line: 2,
             column: 9

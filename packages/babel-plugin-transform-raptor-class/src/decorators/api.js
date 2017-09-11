@@ -43,7 +43,7 @@ function computePublicPropsConfig(publicProps) {
 
             if (!associatedGetter) {
                 throw property.buildCodeFrameError(
-                    `@api set ${propertyName} setter has not associated setter.`
+                    `@api set ${propertyName} setter does not have associated getter.`
                 )
             }
         }
