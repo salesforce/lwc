@@ -1,7 +1,10 @@
-define('x-class_and_template', ['engine', 'compat/helpers/classCallCheck', 'compat/helpers/createClass', 'compat/helpers/possibleConstructorReturn', 'compat/helpers/inherits'], function (engine, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits) {
+define('x-class_and_template', ['compat/helpers/classCallCheck', 'compat/helpers/createClass', 'compat/helpers/possibleConstructorReturn', 'compat/helpers/inherits', 'engine'], function (_classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
 
+var _callKey = window.Proxy.callKey;
+var _getKey = window.Proxy.getKey;
+var _setKey = window.Proxy.setKey;
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [engine.callKey($api, "h", "section", {}, [])];
+    return [_callKey($api, "h", "section", {}, [])];
 }
 
 var Test = 1;
@@ -12,10 +15,10 @@ var ClassAndTemplate = function (_Element) {
     function ClassAndTemplate() {
         _classCallCheck(this, ClassAndTemplate);
 
-        var _this = _possibleConstructorReturn(this, engine.callKey(engine.getKey(ClassAndTemplate, "__proto__") || engine.callKey(Object, "getPrototypeOf", ClassAndTemplate), "call", this));
+        var _this = _possibleConstructorReturn(this, _callKey(_getKey(ClassAndTemplate, "__proto__") || _callKey(Object, "getPrototypeOf", ClassAndTemplate), "call", this));
 
-        engine.setKey(_this, "t", Test);
-        engine.setKey(_this, "counter", 0);
+        _setKey(_this, "t", Test);
+        _setKey(_this, "counter", 0);
         return _this;
     }
 

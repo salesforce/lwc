@@ -17,18 +17,23 @@ module.exports = function({ types: t }) {
         return resolveProxyCompat || defaultResolveOptions;
     }
 
+    /**
+     * Retrieve the indentifier for a proxy-compat API.
+     * If the transform resolve APIs via:
+     *   an external package, it will add the import and return the local identifer.
+     *   a global, it will create an identifier and returns it. The actual indetifier is added on Program exit.
+     */
     function resolveCompatProxyImport(memberName, path, state) {
         const { module: moduleName, global: globalPropertyName } = getResolveOptions(state);
         if (moduleName) {
             return state.addImport(moduleName, memberName);
         } else if (globalPropertyName) {
-            const localName = `_${memberName}`;
+            // Create a local identifier if non has been created for the compat import
             if (!keysSeen[memberName]) {
-                keysSeen[memberName] = {
-                    localName
-                };
+                keysSeen[memberName] = path.scope.generateUidIdentifier(`_${memberName}`);
             }
-            return t.identifier(localName);
+
+            return keysSeen[memberName];
         }
     }
 
@@ -36,36 +41,33 @@ module.exports = function({ types: t }) {
         visitor: {
             Program: {
                 /**
-                 * Inserts to top of module:
-                 *     const {
-                 *          setKey: _setKey,
-                 *          callKey: _callKey,
-                 *          getKey: _getKey,
-                 *          deleteKey: _deleteKey,
-                 *          iterableKey: _iterableKey,
-                 *          inKey: _inKey
-                 *     } = GLOBAL_VARIABLE;
+                 * Inserts at the top of the file all the API retrieval from the global:
+                 * var _setKey = window.Proxy.setKey;
+                 * var _callKey = window.Proxy.callKey;
+                 * ...
                  */
                 exit: function (path, state) {
                     const { global: globalPropertyName } = getResolveOptions(state);
+
                     if (globalPropertyName) {
-                        const objectProperties = Object.keys(keysSeen).map((memberName) => {
-                            const { localName } = keysSeen[memberName];
-                            return t.objectProperty(
-                                t.identifier(memberName),
-                                t.identifier(localName)
-                            );
-                        });
-                        const assignment = t.variableDeclaration(
-                            'const',
-                            [
-                                t.VariableDeclarator(
-                                    t.objectPattern(objectProperties),
-                                    t.identifier(globalPropertyName)
+                        const apiDeclarations = Object.keys(keysSeen).map(apiName => (
+                            t.variableDeclaration('var', [
+                                t.variableDeclarator(
+                                    keysSeen[apiName],
+                                    t.memberExpression(
+                                        t.identifier(globalPropertyName),
+                                        t.identifier(apiName),
+                                    )
                                 )
-                            ]
-                        );
-                        path.unshiftContainer('body', [assignment]);
+                            ])
+                        ));
+
+                        // We need to make sure babel doesn't visit the newly created variable declaration.
+                        // Otherwise it will apply the proxy transform to the member expression to retrive the proxy APIs.
+                        path.stop();
+
+                        // Finally add to the top of the file the API declarations
+                        path.unshiftContainer('body', apiDeclarations);
                     }
                 }
             },

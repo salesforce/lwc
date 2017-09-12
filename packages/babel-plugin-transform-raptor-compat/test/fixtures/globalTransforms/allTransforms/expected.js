@@ -1,11 +1,9 @@
-const {
-    setKey: _setKey,
-    callKey: _callKey,
-    getKey: _getKey,
-    deleteKey: _deleteKey,
-    iterableKey: _iterableKey,
-    inKey: _inKey
-} = window.Proxy;
+var _setKey = window.Proxy.setKey;
+var _callKey = window.Proxy.callKey;
+var _getKey = window.Proxy.getKey;
+var _deleteKey = window.Proxy.deleteKey;
+var _iterableKey = window.Proxy.iterableKey;
+var _inKey = window.Proxy.inKey;
 // var a = 1;
 var a = 1;
 var n = [0, 1];

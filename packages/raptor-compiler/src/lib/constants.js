@@ -35,7 +35,7 @@ export const COMPAT_BABEL_CONFIG = Object.assign(
     {},
     { plugins: [...BABEL_PLUGINS_COMPAT, [raptorCompatTransformPlugin, {
         resolveProxyCompat: {
-            module: 'engine'
+            global: 'window.Proxy'
         }
     }]] },
     BASE_BABEL_CONFIG
@@ -45,7 +45,7 @@ export const PROD_COMPAT_BABEL_CONFIG = Object.assign(
     {},
     { plugins: [...BABEL_PLUGINS_COMPAT, [raptorCompatTransformPlugin, {
         resolveProxyCompat: {
-            module: 'engine'
+            global: 'window.Proxy'
         }
     }]] },
     BASE_BABEL_CONFIG
