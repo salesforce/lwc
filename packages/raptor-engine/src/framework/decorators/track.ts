@@ -8,7 +8,6 @@ import { isBeingConstructed } from "../component";
 
 // TODO: how to allow symbols as property keys?
 export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
-    let value: HashTable<any>;
     defineProperty(proto, key, {
         get(): HashTable<any> {
             const vm: VM = this[ViewModelReflection];
@@ -18,7 +17,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 // for public props accessed from within a getter in the component.
                 subscribeToSetHook(vmBeingRendered, this, key);
             }
-            return value;
+            return vm.cmpTrack[key];
         },
         set(newValue: any) {
             const vm = this[ViewModelReflection];
@@ -26,13 +25,14 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
             assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             const observable = isObservable(newValue);
             newValue = observable ? getReactiveProxy(newValue) : newValue;
-            if (newValue !== value) {
+
+            if (newValue !== vm.cmpTrack[key]) {
                 assert.block(function devModeCheck() {
                     if (!observable && (isObject(newValue) || isArray(newValue))) {
                         assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 });
-                value = newValue;
+                vm.cmpTrack[key] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyListeners(this, key);

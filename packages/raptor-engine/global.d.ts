@@ -54,6 +54,7 @@ declare class VM {
     cmpProps: HashTable<any>;
     cmpState?: HashTable<any>;
     cmpSlots?: Slotset;
+    cmpTrack: HashTable<any>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;
     cmpClasses?: HashTable<Boolean>;

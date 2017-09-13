@@ -189,4 +189,55 @@ describe('track.ts', () => {
 
     });
 
+    describe('@track regression', () => {
+        test(`#609 - each instance of the same object prototype should have it's own tracked property value`, () => {
+            class XFoo extends Element  {
+                constructor() {
+                    super();
+                    this.counter = 0;
+                }
+            }
+
+            XFoo.track = { counter: 0 };
+
+            const elm1 = createElement('x-foo', { is: XFoo });
+            document.body.appendChild(elm1);
+
+            const elm2 = createElement('x-foo', { is: XFoo });
+            document.body.appendChild(elm2);
+
+            const elm1NewVal = 1;
+            const elm2NewVal = 2;
+
+            elm1.counter = elm1NewVal;
+            elm2.counter = elm2NewVal;
+
+            expect(elm1.counter).toBe(elm1NewVal)
+            expect(elm2.counter).toBe(elm2NewVal);
+        });
+    });
+
+        test(`#609 - instance of the same object prototype should not share values of tracked properties`, () => {
+            class XFoo extends Element  {
+                constructor() {
+                    super();
+                    this.counter = 0;
+                    this.label = 3;
+                }
+            }
+
+            XFoo.track = { counter: 1, label:1 };
+
+            const elm1 = createElement('x-foo', { is: XFoo });
+            document.body.appendChild(elm1);
+
+            const countVal = 1;
+            const labelVal = 4;
+
+            elm1.counter = countVal;
+            elm1.label = labelVal;
+
+            expect(elm1.counter).toBe(countVal);
+        });
+
 });
