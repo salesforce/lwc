@@ -56,7 +56,7 @@ module.exports = function({ types: t }) {
                                     keysSeen[apiName],
                                     t.memberExpression(
                                         t.identifier(globalPropertyName),
-                                        t.identifier(apiName),
+                                        t.identifier(apiName)
                                     )
                                 )
                             ])
