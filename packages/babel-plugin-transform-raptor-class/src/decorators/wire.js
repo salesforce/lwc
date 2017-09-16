@@ -1,26 +1,14 @@
-const { decamelize, findClassProperty, staticClassProperty } = require('../utils');
+const { staticClassProperty } = require('../utils');
 
 const WIRE_DECORATOR = 'wire';
 const WIRE_CLASS_PROPERTY = 'wire';
 const WIRE_PARAM_PREFIX = '$';
-
-const OBSERVED_ATTRIBUTES_CLASS_PROPERTY = 'observedAttributes';
-const RENAMED_OBSERVED_ATTRIBUTES_CLASS_PROPERTY = 'originalObservedAttributes';
 
 module.exports = function wireVisitor ({ types: t }) {
     function isObservedProperty(configProperty) {
         const propertyValue = configProperty.get('value');
         return propertyValue.isStringLiteral() &&
             propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX);
-    }
-
-    function getObservedAttributesFromWiredValues(wiredValues) {
-        return wiredValues.reduce((acc, wiredValue) => {
-            return [
-                ...acc,
-                ...wiredValue.params.map(param => param.value.value),
-            ]
-        }, []);
     }
 
     function getWiredStatic(wireConfig) {
@@ -72,36 +60,6 @@ module.exports = function wireVisitor ({ types: t }) {
                 t.objectExpression(wireConfig)
             );
         }));
-    }
-
-    function getObservedAttributeProperty(classBody) {
-        let observedAttribute = findClassProperty(classBody, OBSERVED_ATTRIBUTES_CLASS_PROPERTY , { static: true });
-
-        if (observedAttribute) {
-            observedAttribute = observedAttribute.node;
-
-            const clonedObservedProperty = t.cloneDeep(observedAttribute);
-            clonedObservedProperty.key.name = RENAMED_OBSERVED_ATTRIBUTES_CLASS_PROPERTY;
-            classBody.pushContainer('body', clonedObservedProperty);
-        } else {
-            observedAttribute = staticClassProperty(
-                t,
-                OBSERVED_ATTRIBUTES_CLASS_PROPERTY,
-                t.arrayExpression([])
-            );
-
-            classBody.pushContainer('body', observedAttribute);
-        }
-
-
-        return observedAttribute;
-    }
-
-    function buildObservedAttributesValue(wiredValues) {
-        const observedAttributes = getObservedAttributesFromWiredValues(wiredValues);
-        return observedAttributes.map(attrName => (
-            t.stringLiteral(decamelize(attrName))
-        ));
     }
 
     const decoratorVisitor = {
@@ -165,11 +123,6 @@ module.exports = function wireVisitor ({ types: t }) {
                     WIRE_CLASS_PROPERTY,
                     buildWireConfigValue(wiredValues)
                 ));
-
-                const observedAttributes = getObservedAttributeProperty(classBody);
-                observedAttributes.value.elements.push(
-                    ...buildObservedAttributesValue(wiredValues)
-                )
             }
         },
     };

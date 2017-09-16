@@ -17,7 +17,6 @@ describe('Wired field', () => {
                 static: { fields: ["Account", 'Rate'] }
             }
         };
-        Test.observedAttributes = ["record-id"];
     `);
 
     test('decorator expects 2 parameters', `
@@ -56,26 +55,6 @@ describe('Wired field', () => {
             column: 20,
         },
     });
-
-    test('merge wired field with observedAttributes', `
-        export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", "Rate"]})
-            innerRecord;
-
-            static observedAttributes = ["foo"];
-        }
-    `, `
-        export default class Test {}
-        Test.observedAttributes = ["foo", "record-id"];
-        Test.wire = {
-            innerRecord: {
-                type: "record",
-                params: { recordId: "recordId" },
-                static: { fields: ["Account", "Rate"] }
-            }
-        };
-        Test.originalObservedAttributes = ["foo"];
-    `);
 });
 
 describe('Wired method', () => {
@@ -96,28 +75,5 @@ describe('Wired method', () => {
                 method: 1
             }
         };
-        Test.observedAttributes = ["record-id"];
     `);
-
-    test(`merge wired field with observedAttributes`, `
-        export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", "Rate"]})
-            innerRecordMethod() {}
-            static observedAttributes = ["foo"];
-        }
-    `, `
-        export default class Test {
-            innerRecordMethod() {}
-        }
-        Test.observedAttributes = ["foo", "record-id"];
-        Test.wire = {
-            innerRecordMethod: {
-                type: "record",
-                params: { recordId: "recordId" },
-                static: { fields: ["Account", "Rate"] },
-                method: 1
-            }
-        };
-        Test.originalObservedAttributes = ["foo"];
-    `)
 });
