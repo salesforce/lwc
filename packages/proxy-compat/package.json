@@ -1,6 +1,6 @@
 {
   "name": "proxy-compat",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "Proxy Compat patches the runtime to enable Proxy in ES5",
   "main": "lib/proxy-compat.common.js",
   "module": "lib/proxy-compat.es.js",
