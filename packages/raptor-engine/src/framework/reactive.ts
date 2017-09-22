@@ -214,22 +214,6 @@ export function getReactiveProxy(value: any): any {
     const handler = new ReactiveProxyHandler(value);
     const shadowTarget = isArray(value) ? [] : {};
     proxy = new Proxy(shadowTarget, handler);
-    if (Proxy.reify) {
-        Proxy.reify(proxy, {
-            [TargetSlot]: {
-                value: value,
-                enumerable: false,
-                writeable: false,
-                configurable: false
-            },
-            [MembraneSlot]: {
-                value: handler,
-                enumerable: false,
-                writeable: false,
-                configurable: false
-            }
-        });
-    }
     ReactiveMap.set(value, proxy as Reactive);
     return proxy;
 }

@@ -168,6 +168,57 @@ describe('api', () => {
                 return last;
             }), expected);
         });
+
+        it('should handle arrays', function () {
+            const o = [1, 2];
+            const expected = ['1a', '2a'];
+            const iterated = target.i(o, (item, index, first, last) => {
+                return item + 'a';
+            });
+            expect(expected).toEqual(iterated);
+        });
+
+        it('should handle Sets', function () {
+            const o = new Set();
+            o.add(1);
+            o.add(2);
+            const expected = ['1a', '2a'];
+            expect(expected).toEqual(target.i(o, (item, index, first, last) => {
+                return item + 'a';
+            }));
+        });
+
+        it('should handle Map', function () {
+            const o = new Map();
+            o.set('foo', 1);
+            o.set('bar', 2);
+            const expected = ['foo,1a', 'bar,2a'];
+            expect(expected).toEqual(target.i(o, (item, index, first, last) => {
+                return item + 'a';
+            }));
+        });
+
+        it('should handle proxies objects', function () {
+            const array = [1, 2];
+            const o = new Proxy(array, {});
+            const expected = ['1a', '2a'];
+            const iterated = target.i(o, (item, index, first, last) => {
+                return item + 'a';
+            });
+            expect(expected).toEqual(iterated);
+        });
+
+        it('should return empty array when undefined is passed', function () {
+            expect(target.i(undefined, (item, index, first, last) => {
+                return item + 'a';
+            })).toEqual([]);
+        });
+
+        it('should return empty array when null is passed', function () {
+            expect(target.i(null, (item, index, first, last) => {
+                return item + 'a';
+            })).toEqual([]);
+        });
     });
 
     describe('#f()', () => {

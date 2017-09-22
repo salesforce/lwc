@@ -20,6 +20,32 @@ describe('EcmaScript', () => {
             expect(Proxy.getKey(o, 'length')).toBe(4);
         });
 
+        it('should support Arrays as iterators', () => {
+            const array = [1, 2];
+            const o = new Proxy(array, {});
+            assert.deepEqual(Array.from(o), [1, 2]);
+        });
+
+        it('should support iterable objects', () => {
+            const iterable = {
+                [Symbol.iterator]: function() {
+                    return { // this is the iterator object, returning a single element, the string "bye"
+                        next: function() {
+                            if (this._first) {
+                                this._first = false;
+                                return { value: 'bye', done: false };
+                            } else {
+                                return { done: true };
+                            }
+                        },
+                        _first: true
+                    };
+                }
+            };
+            const o = new Proxy(iterable, {});
+            assert.deepEqual(Array.from(o), ['bye']);
+        });
+
         it('should support Object.keys()', () => {
             const o = new Proxy({ x: 1, y: 2 }, {});
             Proxy.setKey(o, 'z', 3); // expando

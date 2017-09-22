@@ -45,6 +45,35 @@ describe('template', () => {
             // assert.throws(() => $slotset.foo, 'unknown slot name'); // compat mode prevents this
         });
 
+        it('should render arrays correctly', function () {
+            const vnode = createCustomComponent(function ($api, $cmp) {
+                return [$api.i(['a', 'b'], function (value) {
+                    return $api.h('div', {}, [
+                        $api.t(value)
+                    ])
+                })]
+            });
+            expect(vnode.children[0].length).toBe(2);
+            expect(vnode.children[0][0].children[0].text).toBe('a');
+            expect(vnode.children[0][1].children[0].text).toBe('b');
+        });
+
+        it('should render sets correctly', function () {
+            const set = new Set();
+            set.add('a');
+            set.add('b');
+            const vnode = createCustomComponent(function ($api, $cmp) {
+                return [$api.i(set, function (value) {
+                    return $api.h('div', {}, [
+                        $api.t(value)
+                    ])
+                })]
+            });
+            expect(vnode.children[0].length).toBe(2);
+            expect(vnode.children[0][0].children[0].text).toBe('a');
+            expect(vnode.children[0][1].children[0].text).toBe('b');
+        });
+
         // this test depends on the memoization
         // it('should prevent a getter to be accessed twice in the same render phase', () => {
         //     let counter = 0;

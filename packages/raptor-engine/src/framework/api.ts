@@ -9,6 +9,7 @@ const CHAR_V = 118;
 const CHAR_G = 103;
 const EmptyData = create(null);
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
+const SymbolIterator = Symbol.iterator;
 
 function addNS(data: any, children: Array<VNode> | undefined, sel: string | undefined) {
     data.ns = NamespaceAttributeForSVG;
@@ -102,12 +103,26 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
 }
 
 // [i]terable node
-export function i(items: Array<any>, factory: Function): Array<VNode> {
-    const len = (items && items.length) || 0; // supporting arrays and objects alike
-    const last = len ? (len - 1) : 0;
+export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
     const list: Array<VNode> = [];
-    for (let i = 0; i < len; i += 1) {
-        const vnode = factory(items[i], i, i === 0, i === last);
+    if (isUndefined(iterable) || iterable === null) {
+        assert.logError(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
+        return list;
+    }
+    assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
+    const iterator = iterable[SymbolIterator]();
+    assert.isTrue(iterator && isFunction(iterator.next), `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`);
+
+    let next = iterator.next();
+    let i = 0;
+    let { value, done: last } = next;
+    while (last === false) {
+        // implementing a look-back-approach because we need to know if the element is the last
+        next = iterator.next();
+        last = next.done;
+
+        // template factory logic based on the previous collected value
+        const vnode = factory(value, i, i === 0, last);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
@@ -118,10 +133,14 @@ export function i(items: Array<any>, factory: Function): Array<VNode> {
             vnodes.forEach((vnode: VNode | any) => {
                 if (vnode && isObject(vnode) && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
                     // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "${toString(vnode.Ctor.name)}", index ${i} of ${len}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    assert.logWarning(`Missing "key" attribute in iteration with child "${toString(vnode.Ctor.name)}", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }
             });
         });
+
+        // preparing next value
+        i += 1;
+        value = next.value;
     }
     return list;
 }

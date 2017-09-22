@@ -15,7 +15,7 @@ const {
     preventExtensions,
     isExtensible,
 } = Object;
-const isArray = Array.isArray;
+const { isArray } = Array;
 const {
     filter: ArrayFilter,
     slice: ArraySlice,

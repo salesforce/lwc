@@ -40,46 +40,6 @@ describe('Proxy', () => {
 
     });
 
-    describe('reify', function () {
-        it('should define property correctly', function () {
-            const originalTarget = {};
-            const symbol = Symbol();
-            const proxy = new Proxy({}, {});
-            Proxy.reify(proxy, {
-                [symbol]: {
-                    value: originalTarget
-                },
-                foo: {
-                    value: 'bar'
-                }
-            });
-            assert(proxy[symbol] === originalTarget);
-            assert(proxy.foo === 'bar');
-        });
-
-        it('should fail when first argument is not valid XProxy', function () {
-            const originalTarget = {};
-            const symbol = Symbol();
-            expect(() => {
-                Proxy.reify({}, {
-                    [symbol]: {
-                        value: originalTarget
-                    },
-                    foo: {
-                        value: 'bar'
-                    }
-                });
-            }).toThrow('Cannot reify [object Object]. [object Object] is not a valid compat Proxy instance.');
-        });
-
-        it('should not fail when second argument is undefined', function () {
-            const proxy = new Proxy({}, {});
-            expect(() => {
-                Proxy.reify(proxy);
-            }).toThrow();
-        });
-    });
-
     describe('revokable', function () {
         it('should throw error when getting key', function () {
             const obj = {};
@@ -93,6 +53,33 @@ describe('Proxy', () => {
             expect(() => {
                 Proxy.getKey(proxy, 'foo');
             }).toThrow("Cannot perform 'get' on a proxy that has been revoked");
+        });
+
+        it('should throw error after instantiation', function () {
+            function fn() {
+                this.x = 1;
+            }
+            const { proxy, revoke } = Proxy.revocable(fn, {});
+            revoke();
+            expect(() => {
+                proxy('this will blow up');
+            }).toThrow("Cannot perform 'apply' on a proxy that has been revoked");
+        });
+    });
+
+    it('apply trap', () => {
+        it('should apply with the correct context and arguments', function () {
+            let c;
+            function fn(...args) {
+                c = this;
+                return args;
+            }
+            const proxy = new Proxy(fn, {});
+            const o = {};
+            const result = proxy.call(o, 'a', 'b');
+            expect(c === o);
+            expect(result[0] === 'a');
+            expect(result[1] === 'b');
         });
     });
 
