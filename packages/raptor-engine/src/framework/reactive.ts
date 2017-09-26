@@ -65,7 +65,7 @@ export function isObservable (value: any): boolean {
         return true;
     }
     const proto = getPrototypeOf(value);
-    return (proto === ObjectDotPrototype || proto === null);
+    return (proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null);
 }
 
 // Unwrap property descriptors

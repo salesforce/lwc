@@ -63,6 +63,13 @@ describe('reactive', function () {
             const reactive = target.isObservable(obj);
             assert(!reactive);
         });
+
+        it('should handle cross realm objects', function () {
+            const iframe = document.createElement('iframe');
+            document.body.appendChild(iframe);
+            const obj = iframe.contentWindow.eval('({})');
+            expect(target.isObservable(obj)).toBe(true);
+        });
     });
 
     describe('#getReactiveProxy()', () => {
