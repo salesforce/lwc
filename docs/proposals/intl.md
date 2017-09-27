@@ -11,9 +11,9 @@ Provide best-in-class localization infrastructure for Raptor Components.
 ## Use Cases
 
 * As a developer, I can opt-in to localize my template.
-* As a developer, I can interoplate text, variables and HTML tags.
+* As a developer, I can interpolate text, variables and HTML tags.
 * As a developer, I can format number and dates in my template.
-* As a developer, I can select from different states in my template.
+* As a developer, I can select from different statements in my template.
 * As a developer, I can use grammatically to format nouns based on app configurations.
 * As a developer, I can pluralize sentences based on numeric values.
 
@@ -91,6 +91,7 @@ E.g.:
     ...
     <label>Enable announcements in {NOUN("Chatter")}</label>
     ...
+    <p>You need to specify {NOUN("contact"), article: "a")} on {NOUN("case", article: "the")} first.</p>
 </template>
 ```
 
