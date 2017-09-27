@@ -40,22 +40,6 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
         return r;
     }
     const replica: Replica = new Proxy(value, (membrane as ProxyHandler<Replicable>)); // eslint-disable-line no-undef
-    if (Proxy.reify) {
-        Proxy.reify(replica, {
-            [TargetSlot]: {
-                value: value,
-                enumerable: false,
-                writeable: false,
-                configurable: false
-            },
-            [MembraneSlot]: {
-                value: membrane,
-                enumerable: false,
-                writeable: false,
-                configurable: false
-            }
-        });
-    }
     cells.set(value, replica);
     return replica;
 }
@@ -101,6 +85,10 @@ export class Membrane {
     }
 }
 
-export function unwrap(replicaOrAny: Replica | any): Replicable | any {
-    return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
-}
+// TODO: we are using a funky and leaky abstraction here to try to identify if
+// the proxy is a compat proxy, and define the unwrap method accordingly.
+const { getKey } = Proxy;
+
+export const unwrap = getKey ?
+    (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && getKey(replicaOrAny, TargetSlot)) || replicaOrAny
+    : (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;

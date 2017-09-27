@@ -276,12 +276,15 @@ function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfi
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         },
         setAttribute: {
             value: setAttributePatched,
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         },
         removeAttribute: {
             value: removeAttributePatched,
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         },
     };
     // expose getters and setters for each public props on the Element
@@ -295,6 +298,7 @@ function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfi
     for (let key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(key),
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         };
     }
     return descriptors;

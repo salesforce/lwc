@@ -6,6 +6,7 @@ import template = require('babel-template');
 import {
     TEMPLATE_PARAMS,
     TEMPLATE_FUNCTION_NAME,
+    DEFAULT_SLOT_NAME,
 } from '../shared/constants';
 
 import {
@@ -348,9 +349,21 @@ export function transform(
                 databag,
             );
         } else if (isSlot(element)) {
+            const { slotName } = element;
+
+            const slotIdentifier = DEFAULT_SLOT_NAME === slotName ?
+                t.identifier(DEFAULT_SLOT_NAME) :
+                t.stringLiteral(slotName);
+
+            const isComputedProperty = !t.isIdentifier(slotIdentifier);
+
             babelElement = t.logicalExpression(
                 '||',
-                t.memberExpression(t.identifier(TEMPLATE_PARAMS.SLOT_SET), t.identifier(element.slotName)),
+                t.memberExpression(
+                    t.identifier(TEMPLATE_PARAMS.SLOT_SET),
+                    slotIdentifier,
+                    isComputedProperty,
+                ),
                 children,
             );
         } else {

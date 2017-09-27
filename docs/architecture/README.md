@@ -42,6 +42,25 @@ The following are a series of flow diagrams describing the internal behavior of 
  * 1 - Is component used for the first time?
  * 2 - Is there any public prop pending to be updated?
  * 3 - Is there an observable attribute corresponding to the updated public prop?
+ 
+ ## Component Destroy
+
+```
+   Λ                                                         
+  ╱ ╲  yes         ┌──────────────────────┐             ┌───────────────────────┐        
+ ▕ 1 ▏-──────────▶ │ disconnectedCallback │-──────────▶ │ remove child elements │
+  ╲ ╱              └──────────────────────┘             └───────────────────────┘
+   V    
+   │
+   │
+   │
+  .─.
+ (   )
+  `─'
+```
+*Conditions*:
+
+ * 1 - Was component removed from the DOM?
 
 
 ## Schedule Rehydration

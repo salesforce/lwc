@@ -42,6 +42,8 @@ const {
 } = Array.prototype;
 
 const { isArray } = Array;
+const { iterator } = Symbol;
+const ArrayPrototypeIterator = Array.prototype[iterator];
 
 // Proto chain check might be needed because of usage of a limited polyfill
 // https://github.com/es-shims/get-own-property-symbols
@@ -141,7 +143,6 @@ export class XProxy implements XProxyInstance {
         lastRevokeFn = function () {
             throwRevoked = true;
         };
-        const revocableHandler: ProxyHandler<object> = {};
 
         // Define proxy as Object, or Function (if either it's callable, or apply is set).
         let proxy = this; // reusing the already created object, eventually the prototype will be resetted
@@ -150,9 +151,9 @@ export class XProxy implements XProxyInstance {
                 const usingNew = (this && this.constructor === proxy);
                 const args = ArraySlice.call(arguments);
                 if (usingNew) {
-                    return proxy.construct.call(revocableHandler, args, this);
+                    return proxy.construct(args, this);
                 } else {
-                    return proxy.apply.call(revocableHandler, this, args);
+                    return proxy.apply(this, args);
                 }
             };
         }
@@ -171,10 +172,40 @@ export class XProxy implements XProxyInstance {
                 enumerable: false,
                 configurable: true,
                 get: () => {
-                    return proxy.get(target, 'length');
+                    return proxy.get('length');
                 },
                 set: (value: any): any => {
-                    return proxy.set(target, 'length', value);
+                    proxy.set('length', value);
+                },
+            });
+
+            if (target[iterator] && ArrayPrototypeIterator === target[iterator]) {
+                defineProperty(proxy, iterator, {
+                    enumerable: false,
+                    configurable: true,
+                    get: () => () => {
+                        const len = proxy.get('length');
+                        let pos = 0;
+                        return {
+                            next: function() {
+                                return { value: proxy.get(pos), done: pos++ === len };
+                            },
+                        };
+                    },
+                    set: (value: any): any => {
+                        proxy.set(iterator, value);
+                    },
+                });
+            }
+        } else if (target[iterator]) {
+            defineProperty(proxy, iterator, {
+                enumerable: false,
+                configurable: true,
+                get: () => {
+                    return proxy.get(iterator);
+                },
+                set: (value: any): any => {
+                    proxy.set(iterator, value);
                 },
             });
         }
@@ -229,13 +260,6 @@ export class XProxy implements XProxyInstance {
             proxy: p,
             revoke: lastRevokeFn,
         };
-    }
-
-    static reify (proxy: XProxy, descriptorMap: PropertyDescriptorMap) {
-        if (proxy[ProxySlot] !== ProxyIdentifier) {
-            throw new Error(`Cannot reify ${proxy}. ${proxy} is not a valid compat Proxy instance.`);
-        }
-        defineProperties(proxy, descriptorMap);
     }
 
     [key: string]: any;

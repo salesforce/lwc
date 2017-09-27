@@ -156,6 +156,7 @@ describe('class-list', () => {
             assert.strictEqual(null, b);
         });
 
+        // FLAPPER TODO: Fix it
         it('should update on the next tick when dirty', () => {
             class MyComponent extends Element {
                 state = { x: 1 };
@@ -220,7 +221,7 @@ describe('class-list', () => {
 
             def.observedAttributes = ['title'];
             const elm = createElement('x-foo', { is: def });
-            elm.setAttribute('title', 'title');            
+            elm.setAttribute('title', 'title');
             expect(elm.className).toBe('theOnlyClassThatShouldRemain');
         })
 

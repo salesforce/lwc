@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             {},
             [$api.t("Before header")]
-        ), $slotset.header || [$api.t("Default header")], $api.h(
+        ), $slotset['header'] || [$api.t("Default header")], $api.h(
             "p",
             {},
             [$api.t("In")]
@@ -18,7 +18,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             "p",
             {},
             [$api.t("Default body")]
-        )], $slotset.footer || [$api.h(
+        )], $slotset['footer'] || [$api.h(
             "p",
             {},
             [$api.t("Default footer")]
