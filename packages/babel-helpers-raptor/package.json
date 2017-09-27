@@ -1,6 +1,6 @@
 {
   "name": "babel-helpers-raptor",
-  "version": "0.14.5",
+  "version": "0.14.6",
   "main": "dist/compat-helpers.js",
   "description": "Babel helpers for raptor",
   "license": "MIT",

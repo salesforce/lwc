@@ -1,15 +1,15 @@
 {
   "name": "raptor-fixtures",
   "private": true,
-  "version": "0.14.5",
+  "version": "0.14.6",
   "description": "Internal fixture package used for manual and integration testing",
   "dependencies": {
-    "raptor-engine": "0.14.5"
+    "raptor-engine": "0.14.6"
   },
   "devDependencies": {
-    "babel-plugin-transform-raptor-compat": "0.14.5",
+    "babel-plugin-transform-raptor-compat": "0.14.6",
     "http-server": "^0.10.0",
-    "raptor-compiler": "0.14.5",
+    "raptor-compiler": "0.14.6",
     "rimraf": "^2.6.1",
     "rollup": "^0.45.1",
     "rollup-plugin-babel": "^2.7.1",
