@@ -129,6 +129,37 @@ describe('component', function () {
             assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
         });
 
+        it('should allow calling public getters when element is accessed by querySelector', function () {
+            let count = 0;
+            let value;
+            let propVal = { foo: 'bar' };
+            class MyChild extends Element {
+                m = propVal
+            }
+            MyChild.publicProps = {
+                m: {
+                    config: 0
+                }
+            };
+            class MyComponent extends Element  {
+                callChildM() {
+                    value = this.root.querySelector('x-child').m;
+                }
+                render() {
+                    return function () {
+                        return [api.c('x-child', MyChild, {})]
+                    }
+                }
+            }
+            MyComponent.publicMethods = ['callChildM'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.callChildM();
+            }).not.toThrow();
+        });
+
         it('should not allow public getters to be set by owner', function () {
             class MyComponent extends Element  {
                 get x () {
@@ -613,6 +644,115 @@ describe('component', function () {
             patch(elm, vnode);
 
             assert.strictEqual(elm.m, elm.m);
+        });
+
+        it('should allow calling methods when element is referenced with querySelector', function () {
+            let count = 0;
+            class MyChild extends Element {
+                m() {
+                    count += 1;
+                }
+            }
+            MyChild.publicMethods = ['m'];
+            class MyComponent extends Element  {
+                callChildM() {
+                    this.root.querySelector('x-child').m();
+                }
+                render() {
+                    return function () {
+                        return [api.c('x-child', MyChild, {})]
+                    }
+                }
+            }
+            MyComponent.publicMethods = ['callChildM'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.callChildM();
+            }).not.toThrow();
+            expect(count).toBe(1);
+        });
+
+        it('should allow calling getAttribute on child when referenced with querySelector', function () {
+            let count = 0;
+            class MyChild extends Element {
+                m() {
+                    count += 1;
+                }
+            }
+            MyChild.publicMethods = ['m'];
+            class MyComponent extends Element  {
+                getChildAttribute() {
+                    this.root.querySelector('x-child').getAttribute('title');
+                }
+                render() {
+                    return function () {
+                        return [api.c('x-child', MyChild, {})]
+                    }
+                }
+            }
+            MyComponent.publicMethods = ['getChildAttribute'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.getChildAttribute();
+            }).not.toThrow();
+        });
+
+        it('should allow calling setAttribute on child when referenced with querySelector', function () {
+            let count = 0;
+            class MyChild extends Element {
+                m() {
+                    count += 1;
+                }
+            }
+            MyChild.publicMethods = ['m'];
+            class MyComponent extends Element  {
+                setChildAttribute() {
+                    this.root.querySelector('x-child').setAttribute('title', 'foo');
+                }
+                render() {
+                    return function () {
+                        return [api.c('x-child', MyChild, {})]
+                    }
+                }
+            }
+            MyComponent.publicMethods = ['setChildAttribute'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.setChildAttribute();
+            }).not.toThrow();
+        });
+
+        it('should allow calling removeAttribute on child when referenced with querySelector', function () {
+            let count = 0;
+            class MyChild extends Element {
+                m() {
+                    count += 1;
+                }
+            }
+            MyChild.publicMethods = ['m'];
+            class MyComponent extends Element  {
+                removeChildAttribute() {
+                    this.root.querySelector('x-child').removeAttribute('title');
+                }
+                render() {
+                    return function () {
+                        return [api.c('x-child', MyChild, {})]
+                    }
+                }
+            }
+            MyComponent.publicMethods = ['removeChildAttribute'];
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(() => {
+                elm.removeChildAttribute();
+            }).not.toThrow();
         });
      });
 });
