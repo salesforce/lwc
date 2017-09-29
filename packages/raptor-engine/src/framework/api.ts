@@ -106,7 +106,7 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
 export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
     const list: Array<VNode> = [];
     if (isUndefined(iterable) || iterable === null) {
-        assert.logError(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
+        assert.logWarning(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
         return list;
     }
     assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);

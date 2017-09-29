@@ -28,7 +28,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
 
             if (newValue !== vm.cmpTrack[key]) {
                 assert.block(function devModeCheck() {
-                    if (!observable && (isObject(newValue) || isArray(newValue))) {
+                    if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
                         assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 });
