@@ -1,7 +1,8 @@
 import assert from 'power-assert';
-import { c } from "../../api";
+import { c, h } from "../../api";
 import { patch } from "../../patch";
 import { Element } from "../../html-element";
+import { createElement } from "./../../upgrade";
 
 describe('module/component-events', () => {
 
@@ -124,6 +125,120 @@ describe('module/component-events', () => {
             elm.click();
             assert(event, 'event should have been triggered');
             assert.equal(vnode1.vm.component, event.target);
+        });
+
+        it('should add event listeners in constructor when created via createElement', function () {
+            let count = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.addEventListener('c-event', function () {
+                        count += 1;
+                    })
+                }
+                render() {
+                    return function () {
+                        return [h('div', {}, [])]
+                    }
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            const div = elm.querySelector('div') as HTMLElement;
+            div.dispatchEvent(new CustomEvent('c-event', {bubbles: true}));
+            return Promise.resolve().then(() => {
+                expect(count).toBe(1);
+            });
+        });
+
+        it('should add event listeners in connectedCallback when created via createElement', function () {
+            let count = 0;
+            class MyComponent extends Element {
+                connectedCallback() {
+                    this.addEventListener('c-event', function () {
+                        count += 1;
+                    })
+                }
+                render() {
+                    return function () {
+                        return [h('div', {}, [])]
+                    }
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            const div = elm.querySelector('div') as HTMLElement;
+            div.dispatchEvent(new CustomEvent('c-event', {bubbles: true}));
+            return Promise.resolve().then(() => {
+                expect(count).toBe(1);
+            });
+        });
+
+        it('should add event listeners in connectedCallback when created via render', function () {
+            let count = 0;
+            class MyChild extends Element {
+                connectedCallback() {
+                    this.addEventListener('c-event', function () {
+                        count += 1;
+                    })
+                }
+                render() {
+                    return function () {
+                        return [h('div', {}, [])]
+                    }
+                }
+            }
+
+            class MyComponent extends Element {
+                render() {
+                    return function () {
+                        return [c('x-child', MyChild, {})]
+                    }
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            const div = elm.querySelector('div') as HTMLElement;
+            div.dispatchEvent(new CustomEvent('c-event', {bubbles: true}));
+            return Promise.resolve().then(() => {
+                expect(count).toBe(1);
+            });
+        });
+
+        it('should add event listeners in constructor when created via render', function () {
+            let count = 0;
+            class MyChild extends Element {
+                constructor() {
+                    super();
+                    this.addEventListener('c-event', function () {
+                        count += 1;
+                    })
+                }
+                render() {
+                    return function () {
+                        return [h('div', {}, [])]
+                    }
+                }
+            }
+
+            class MyComponent extends Element {
+                render() {
+                    return function () {
+                        return [c('x-child', MyChild, {})]
+                    }
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            const div = elm.querySelector('div') as HTMLElement;
+            div.dispatchEvent(new CustomEvent('c-event', {bubbles: true}));
+            return Promise.resolve().then(() => {
+                expect(count).toBe(1);
+            });
         });
 
     });

@@ -74,7 +74,7 @@ export function createComponentListener(): EventListener {
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
     assert.vm(vm);
     assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
-    let { cmpEvents, cmpListener } = vm;
+    let { cmpEvents, cmpListener, idx: vmIdx } = vm;
     if (isUndefined(cmpEvents)) {
         // this piece of code must be in sync with modules/component-events
         vm.cmpEvents = cmpEvents = create(null);
@@ -86,7 +86,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         // this is not only an optimization, it is also needed to avoid adding the same
         // listener twice when the initial diffing algo kicks in without an old vm to track
         // what was already added to the DOM.
-        if (!vm.isDirty) {
+        if (!vm.isDirty || vmIdx > 0) {
             // if the element is already in the DOM and rendered, we intentionally make a sync mutation
             // here and also keep track of the mutation for a possible rehydration later on without having
             // to rehydrate just now.
