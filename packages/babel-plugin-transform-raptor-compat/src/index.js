@@ -1,4 +1,5 @@
 /* eslint-env node */
+const KEYS = require('./keys');
 const defaultResolveOptions = {
     module: 'proxy-compat'
 };
@@ -30,7 +31,7 @@ module.exports = function({ types: t }) {
         } else if (globalPropertyName) {
             // Create a local identifier if non has been created for the compat import
             if (!keysSeen[memberName]) {
-                keysSeen[memberName] = path.scope.generateUidIdentifier(`_${memberName}`);
+                keysSeen[memberName] = t.identifier(`__${memberName}`);
             }
 
             return keysSeen[memberName];
@@ -80,7 +81,7 @@ module.exports = function({ types: t }) {
              */
             MemberExpression(path, state) {
                 const { property, object, computed } = path.node;
-                const id = resolveCompatProxyImport('getKey', path, state);
+                const id = resolveCompatProxyImport(KEYS.GET_KEY, path, state);
                 const args = [object, convertProperty(property, computed)];
                 path.replaceWith(t.callExpression(id, args));
             },
@@ -111,7 +112,7 @@ module.exports = function({ types: t }) {
                     );
                 }
 
-                const id = resolveCompatProxyImport('setKey', path, state);
+                const id = resolveCompatProxyImport(KEYS.SET_KEY, path, state);
                 assignment = t.callExpression(id, args);
 
                 if (assignment) {
@@ -133,7 +134,7 @@ module.exports = function({ types: t }) {
                         ...args
                     ];
 
-                    const id = resolveCompatProxyImport('callKey', path, state);
+                    const id = resolveCompatProxyImport(KEYS.CALL_KEY, path, state);
                     const call = t.callExpression(id, callArguments);
                     path.replaceWith(call);
                 }
@@ -151,7 +152,7 @@ module.exports = function({ types: t }) {
                         convertProperty(argument.property, argument.computed)
                     ];
 
-                    const id = resolveCompatProxyImport('deleteKey', path, state);
+                    const id = resolveCompatProxyImport(KEYS.DELETE_KEY, path, state);
                     const deletion = t.callExpression(id, args);
                     path.replaceWith(deletion);
                 }
@@ -186,7 +187,7 @@ module.exports = function({ types: t }) {
                     args.push(argument);
                 }
 
-                const id = resolveCompatProxyImport('setKey', path, state);
+                const id = resolveCompatProxyImport(KEYS.SET_KEY, path, state);
                 const assignment = t.callExpression(id, args);
                 path.replaceWith(assignment);
             },
@@ -198,7 +199,7 @@ module.exports = function({ types: t }) {
             ForInStatement(path, state) {
                 const { node } = path;
 
-                const id = resolveCompatProxyImport('iterableKey', path, state);
+                const id = resolveCompatProxyImport(KEYS.ITERABLE_KEY, path, state);
                 const wrappedIterator = t.callExpression(id, [node.right]);
                 node.right = wrappedIterator;
             },
@@ -213,7 +214,7 @@ module.exports = function({ types: t }) {
                     return;
                 }
 
-                const id = resolveCompatProxyImport('inKey', path, state);
+                const id = resolveCompatProxyImport(KEYS.IN_KEY, path, state);
                 const warppedInOperator = t.callExpression(id, [right, left]);
                 path.replaceWith(warppedInOperator);
             }

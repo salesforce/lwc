@@ -1,7 +1,7 @@
 *.log
 -local-*
 .DS_Store
-dist
+dist/*.js
 node_modules
 packages/**/yarn.lock
 coverage

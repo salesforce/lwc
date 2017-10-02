@@ -173,8 +173,10 @@ Object.getPrototypeOf = getPrototypeOf;
 // [*] Object.assign
 Object.assign = assign;
 
-// Patching Proxy
-_assign(XProxy, {
+// Patching Proxy (might contain some compat expandos already)
+const OriginalProxy = typeof Proxy !== undefined ? Proxy : {};
+
+_assign(XProxy, OriginalProxy, {
     getKey,
     callKey,
     setKey,

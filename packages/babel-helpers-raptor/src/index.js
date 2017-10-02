@@ -60,10 +60,9 @@ function build(namespace, globalVar = "global", builder) {
             t.identifier(namespace.name),
             t.assignmentExpression("=", t.memberExpression(
                     t.identifier(globalVar), namespace),
-                    t.objectExpression([t.objectProperty(t.identifier('helpers'), t.objectExpression([]))])
+                    t.objectExpression([])
             )
-        ),
-        t.variableDeclarator(t.identifier('helpers'), t.memberExpression(namespace, t.identifier('helpers')))
+        )
     ]));
 
     builder(body, namespace, globalVar);
@@ -77,7 +76,7 @@ function buildHelpers(body, whitelist) {
         const key = t.identifier(name);
 
         // AST tree for: objectMember.helperName = function () { ... }
-        body.push(t.expressionStatement(t.assignmentExpression("=", t.memberExpression(t.identifier('helpers'), key), helpers.get(name))));
+        body.push(t.expressionStatement(t.assignmentExpression("=", t.memberExpression(t.identifier('babelHelpers'), key), helpers.get(name))));
     });
 }
 // Regenerator is a special dependency that we want to include

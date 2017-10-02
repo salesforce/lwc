@@ -1,5 +1,5 @@
-const GLOBAL_VAR = 'Engine';
-const GLOBAL_MEMBER = 'compat';
+const GLOBAL_VAR = 'Proxy';
+const GLOBAL_MEMBER = 'babelHelpers';
 
 const mkdirp = require('mkdirp');
 const fs = require('fs');
@@ -21,4 +21,3 @@ mkdirp.sync(relative('../dist'));
 fs.writeFileSync(relative('../dist/compat-helpers.js'), result);
 // Minified version
 fs.writeFileSync(relative('../dist/compat-helpers.min.js'), resultMin);
-

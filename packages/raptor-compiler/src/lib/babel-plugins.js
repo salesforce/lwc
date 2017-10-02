@@ -87,6 +87,6 @@ export const BABEL_PLUGINS_COMPAT = [
     [transformRuntime, {
       helpers: true,
       polyfill: false,
-      moduleName: "compat"
+      moduleName: "babel"
     }]
 ];

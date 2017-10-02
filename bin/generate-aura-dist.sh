@@ -10,6 +10,6 @@ npm run build:artifacts
 # engine versions
 cp  ./dist/engine* $FILEPATH/aura-resources/src/main/resources/aura/resources/engine/
 # compat-helpers
-cp  ./dist/compat-helpers* $FILEPATH/aura-resources/src/main/resources/aura/resources/compat-helpers/
+cp  ./dist/compat* $FILEPATH/aura-resources/src/main/resources/aura/resources/compat-helpers/
 # compiler
 cp  ./dist/compiler.min.js $FILEPATH/aura-modules/src/main/resources/modules/compiler.min.js
