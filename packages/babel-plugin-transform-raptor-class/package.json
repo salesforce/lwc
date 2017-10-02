@@ -5,14 +5,14 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "babel-core": "^6.24.1",
     "babel-plugin-transform-class-properties": "^6.24.1"
   },
   "devDependencies": {
-    "jest": "^20.0.4"
+    "jest": "^21.2.1"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

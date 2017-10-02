@@ -67,7 +67,7 @@ describe('Proxy', () => {
         });
     });
 
-    it('apply trap', () => {
+    describe('apply trap', () => {
         it('should apply with the correct context and arguments', function () {
             let c;
             function fn(...args) {

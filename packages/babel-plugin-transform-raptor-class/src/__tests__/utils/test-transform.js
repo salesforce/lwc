@@ -21,6 +21,18 @@ function transform(plugin, opts = {}) {
     }
 }
 
+function errorFromObject(obj) {
+    const error = new Error(obj.message);
+
+    for (let key in obj) {
+        if (key !== 'message') {
+            error[key] = obj[key];
+        }
+    }
+
+    return error;
+}
+
 function makeTest(plugin, opts = {}) {
     const testTransform = transform(plugin, opts);
 
@@ -41,7 +53,7 @@ function makeTest(plugin, opts = {}) {
                     throw err;
                 }
 
-                expect(err).toMatchObject(expectedError);
+                expect(err).toMatchObject(errorFromObject(expectedError));
             } else {
                 expect(res.code).toBe(unpad(expectedSource));
             }

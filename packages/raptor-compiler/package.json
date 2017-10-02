@@ -5,8 +5,15 @@
   "main": "dist/index.js",
   "author": "",
   "license": "ISC",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "babel src/ --out-dir dist/",
+    "test": "jest --coverage",
+    "prepublish": "yarn run build"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.0",
+    "jest": "^21.2.1",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1"
@@ -49,12 +56,6 @@
     "raptor-template-compiler": "0.14.7",
     "rollup": "^0.45.1",
     "rollup-plugin-babel": "^2.7.1"
-  },
-  "scripts": {
-    "clean": "rimraf dist/",
-    "build": "babel src/ --out-dir dist/",
-    "test": "mocha --compilers js:babel-register",
-    "prepublish": "yarn run build"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

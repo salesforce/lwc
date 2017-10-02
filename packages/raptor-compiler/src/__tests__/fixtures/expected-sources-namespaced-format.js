@@ -1,4 +1,4 @@
-define('myns-class_and_template', ['engine'], function (engine) {
+define('x-foo', ['engine'], function (engine) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   return [$api.h("section", {}, [])];

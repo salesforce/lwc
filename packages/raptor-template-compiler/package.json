@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rimraf coverage dist",
     "lint": "tslint -t stylish src/**/*",
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "tsc",
     "prepublish": "yarn run clean && yarn run build"
   },
@@ -21,14 +21,14 @@
     "@types/babel-traverse": "^6.7.16",
     "@types/babylon": "^6.16.1",
     "@types/he": "^0.5.29",
-    "@types/jest": "^19.2.3",
+    "@types/jest": "^21.1.1",
     "ast-pretty-print": "^1.1.5",
     "esutils": "^2.0.2",
     "glob": "^7.1.1",
-    "jest": "^20.0.4",
+    "jest": "^21.1.1",
     "prettier": "^1.7.3",
     "rimraf": "^2.6.1",
-    "ts-jest": "^20.0.10",
+    "ts-jest": "^21.0.1",
     "tslint": "^5.2.0",
     "typescript": "^2.3.4"
   },

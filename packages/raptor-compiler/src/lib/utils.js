@@ -12,14 +12,6 @@ export function normalizeEntryPath(path) {
     return ext ? path : join(path, path.split(sep).pop() + ext);
 }
 
-export function fileParts(filePath) {
-    const filename = basename(filePath);
-    const rawExt = extname(filename);
-    const ext = rawExt.substring(1);
-    const name = basename(filename, rawExt);
-    return { name: name, ext: ext };
-}
-
 export function getSource(path, sources) {
     sources = sources || {};
     const filename = basename(path);

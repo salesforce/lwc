@@ -19,13 +19,13 @@
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-plugin-typescript": "^0.1.0",
-    "jest": "^20.0.4",
+    "jest": "^21.2.1",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",
     "rollup": "^0.45.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^1.0.1",
-    "ts-jest": "^20.0.10",
+    "ts-jest": "^21.0.1",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
     "uglify-es": "^3.0.24"
