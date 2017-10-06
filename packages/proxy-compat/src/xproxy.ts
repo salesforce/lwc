@@ -125,6 +125,20 @@ const proxyTrapFalsyErrors: ProxyTrapFalsyErrorsMap = {
     }
 }
 
+function proxifyProperty(proxy: XProxy, key: PropertyKey, descriptor: PropertyDescriptor) {
+    const { enumerable, configurable } = descriptor;
+    defineProperty(proxy, key, {
+        enumerable,
+        configurable,
+        get: () => {
+            return proxy.get(key);
+        },
+        set: (value: any): any => {
+            proxy.set(key, value);
+        },
+    });
+}
+
 export class XProxy implements XProxyInstance {
     constructor (target: XProxyTarget, handler: XProxyHandler<object>) {
         const targetIsFunction = typeof target === 'function';
@@ -159,56 +173,6 @@ export class XProxy implements XProxyInstance {
         }
 
         setPrototypeOf(proxy, getPrototypeOf(target));
-
-        if (targetIsArray) {
-            defineProperty(proxy, ArraySlot, {
-                value: ProxyIdentifier, // mark to identify Array
-                writable: true,
-                enumerable: false,
-                configurable: false,
-            });
-
-            defineProperty(proxy, 'length', {
-                enumerable: false,
-                configurable: true,
-                get: () => {
-                    return proxy.get('length');
-                },
-                set: (value: any): any => {
-                    proxy.set('length', value);
-                },
-            });
-
-            if (target[iterator] && ArrayPrototypeIterator === target[iterator]) {
-                defineProperty(proxy, iterator, {
-                    enumerable: false,
-                    configurable: true,
-                    get: () => () => {
-                        const len = proxy.get('length');
-                        let pos = 0;
-                        return {
-                            next: function() {
-                                return { value: proxy.get(pos), done: pos++ === len };
-                            },
-                        };
-                    },
-                    set: (value: any): any => {
-                        proxy.set(iterator, value);
-                    },
-                });
-            }
-        } else if (target[iterator]) {
-            defineProperty(proxy, iterator, {
-                enumerable: false,
-                configurable: true,
-                get: () => {
-                    return proxy.get(iterator);
-                },
-                set: (value: any): any => {
-                    proxy.set(iterator, value);
-                },
-            });
-        }
 
         for (let trapName in defaultHandlerTraps) {
             defineProperty(proxy, trapName, {
@@ -250,6 +214,60 @@ export class XProxy implements XProxyInstance {
             enumerable: false,
             writable: false,
         });
+
+
+        if (targetIsArray) {
+            let trackedLength = 0;
+
+            const adjustArrayIndex = (newLength: number) => {
+                // removing old indexes from proxy when needed
+                while (target.length > newLength) {
+                    delete proxy[target.length - 1];
+                }
+                // add new indexes to proxy when needed
+                for (let i = trackedLength; i < newLength; i += 1) {
+                    proxifyProperty(proxy, i, {
+                        enumerable: true,
+                        configurable: true,
+                    });
+                }
+                trackedLength = newLength;
+            }
+
+            defineProperty(proxy, ArraySlot, {
+                value: ProxyIdentifier, // mark to identify Array
+                writable: true,
+                enumerable: false,
+                configurable: false,
+            });
+
+            defineProperty(proxy, 'length', {
+                enumerable: false,
+                configurable: true,
+                get: () => {
+                    const proxyLength = proxy.get('length');
+                    // check if the trackedLength matches the length of the proxy
+                    if (proxyLength !== trackedLength) {
+                        adjustArrayIndex(proxyLength);
+                    }
+                    return proxyLength;
+                },
+                set: (value: any): any => {
+                    proxy.set('length', value);
+                },
+            });
+
+            // building the initial index. this is observable by the proxy
+            // because we access the length property during the construction
+            // of the proxy, but it should be fine...
+            adjustArrayIndex(proxy.get('length'));
+
+        } else if (target[iterator]) {
+            proxifyProperty(proxy, iterator, {
+                enumerable: false,
+                configurable: true,
+            })
+        }
 
         return proxy;
     }
