@@ -1,6 +1,6 @@
 {
   "name": "raptor-engine",
-  "version": "0.14.8",
+  "version": "0.14.9",
   "description": "Raptor Engine",
   "main": "lib/engine.common.js",
   "module": "lib/engine.es.js",

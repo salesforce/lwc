@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-transform-raptor-compat",
   "description": "Babel plugin to transform code to COMPAT mode",
-  "version": "0.14.8",
+  "version": "0.14.9",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
