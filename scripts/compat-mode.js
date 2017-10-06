@@ -17,6 +17,7 @@ const compatPlugin = require(path.join(__dirname, '../packages/babel-plugin-tran
 const proxyCompatNoop = fs.readFileSync(path.join(__dirname, '../packages/proxy-compat/dist/proxy-compat-noop.js'), 'utf8');
 const proxyCompat = fs.readFileSync(path.join(__dirname, '../packages/proxy-compat/dist/proxy-compat.js'), 'utf8');
 const babelHelpers = fs.readFileSync(path.join(__dirname, '../packages/babel-helpers-raptor/dist/compat-helpers.js'), 'utf8');
+const ie11Polyfills = fs.readFileSync(path.join(__dirname, '/polyfills.js'), 'utf8');
 
 const compatKeys = Object.values(require(path.join(__dirname, '../packages/babel-plugin-transform-raptor-compat/src/keys.js')));
 const compatOverrides = compatKeys.reduce((str, key) => `${str} var __${key} = window.Proxy.${key};`, '');
@@ -52,9 +53,9 @@ require('core-js-builder')({
     library: false, // flag for build without global namespace pollution, by default - false
     umd: false      // use UMD wrapper for export `core` object, by default - true
 })
-.then(rawPolyfills => {
+.then(ecmaPolyfills => {
 
-    const { code : compatPolyfillsAndBabelHelpers } = babel.transform(rawPolyfills + babelHelpers, {
+    const { code : compatPolyfillsAndBabelHelpers } = babel.transform(ie11Polyfills + ecmaPolyfills + babelHelpers, {
         babelrc: false,
         plugins: [[compatPlugin, {
             resolveProxyCompat: {
