@@ -3,7 +3,7 @@ import { patch } from "./patch";
 import { c } from "./api";
 import { isUndefined, isFunction, assign } from "./language";
 import { insert } from "./hook";
-import { removeInsertionIndex } from "./vm";
+import { removeInsertionIndex, patchShadowRoot } from "./vm";
 import { clearListeners } from "./component";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
@@ -65,18 +65,17 @@ function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
 // this could happen for two reasons:
 // * it is a root, and was removed manually
 // * the element was appended to another container which requires disconnection to happen first
-export function forceDisconnection(vnode: ComponentVNode) {
+function forceDisconnection(vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
-    // At this point we need to force the removal of all children
-    const oldVnode = assign({}, vnode);
-    vnode.children = [];
     vm.isDirty = true;
-    vm.fragment = [];
     removeInsertionIndex(vm);
     clearListeners(vm);
-    patch(oldVnode, vnode);
+    // At this point we need to force the removal of all children because
+    // we don't have a way to know that children custom element were removed
+    // from the DOM. Once we move to use realm custom elements, we can remove this.
+    patchShadowRoot(vm, []);
 }
 
 /**

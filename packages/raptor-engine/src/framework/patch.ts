@@ -4,7 +4,6 @@ import componentAttrs from "./modules/component-attrs";
 import componentEvents from "./modules/component-events";
 import componentClasses from "./modules/component-classes";
 import componentSlotset from "./modules/component-slotset";
-import componentChildren from "./modules/component-children";
 import props from "./modules/props";
 
 import { init } from "../3rdparty/snabbdom/snabbdom";
@@ -19,7 +18,6 @@ export const patch = init([
     componentSlotset,
     componentProps,
     componentAttrs,
-    componentChildren,
     // from this point on, we do a series of DOM mutations
     componentEvents,
     componentClasses,

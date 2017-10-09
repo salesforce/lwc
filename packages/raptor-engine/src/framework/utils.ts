@@ -4,7 +4,8 @@ import { create, seal, ArrayPush, freeze, isFunction } from "./language";
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
 
-export let EmptyObject = seal(create(null));
+export const EmptyObject = seal(create(null));
+export const EmptyArray = seal([]);
 
 function flushCallbackQueue() {
     assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);

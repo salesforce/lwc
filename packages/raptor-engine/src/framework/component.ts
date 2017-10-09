@@ -181,20 +181,19 @@ export function removeComponentSlot(vm: VM, slotName: string) {
     }
 }
 
-export function renderComponent(vm: VM) {
+export function renderComponent(vm: VM): VNode[] {
     assert.vm(vm);
     assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     console.log(`${vm} is being updated.`);
     clearListeners(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
-    vm.fragment = vnodes;
-    vm.justRendered = true; // flag for the postpatch hook
     assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
     const { rehydrated } = Services;
     if (rehydrated) {
         addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));
     }
+    return vnodes;
 }
 
 export function markComponentAsDirty(vm: VM) {

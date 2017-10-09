@@ -2,7 +2,7 @@ import assert from "./assert";
 import { lifeCycleHooks as hook } from "./hook";
 import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
-import { getMapFromClassName } from "./utils";
+import { getMapFromClassName, EmptyArray } from "./utils";
 
 const CHAR_S = 115;
 const CHAR_V = 118;
@@ -99,7 +99,7 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
         }
     });
     data.style = styleMap || (style && style + '');
-    return v(sel, data, [], undefined, undefined, Ctor);
+    return v(sel, data, EmptyArray, undefined, undefined, Ctor);
 }
 
 // [i]terable node

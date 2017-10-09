@@ -47,15 +47,15 @@ describe('template', () => {
 
         it('should render arrays correctly', function () {
             const vnode = createCustomComponent(function ($api, $cmp) {
-                return [$api.i(['a', 'b'], function (value) {
+                return $api.i(['a', 'b'], function (value) {
                     return $api.h('div', {}, [
                         $api.t(value)
                     ])
-                })]
+                })
             });
-            expect(vnode.children[0].length).toBe(2);
-            expect(vnode.children[0][0].children[0].text).toBe('a');
-            expect(vnode.children[0][1].children[0].text).toBe('b');
+            expect(vnode.elm.querySelectorAll('div').length).toBe(2);
+            expect(vnode.elm.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(vnode.elm.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         it('should render sets correctly', function () {
@@ -63,15 +63,15 @@ describe('template', () => {
             set.add('a');
             set.add('b');
             const vnode = createCustomComponent(function ($api, $cmp) {
-                return [$api.i(set, function (value) {
+                return $api.i(set, function (value) {
                     return $api.h('div', {}, [
                         $api.t(value)
                     ])
-                })]
+                })
             });
-            expect(vnode.children[0].length).toBe(2);
-            expect(vnode.children[0][0].children[0].text).toBe('a');
-            expect(vnode.children[0][1].children[0].text).toBe('b');
+            expect(vnode.elm.querySelectorAll('div').length).toBe(2);
+            expect(vnode.elm.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(vnode.elm.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         // this test depends on the memoization

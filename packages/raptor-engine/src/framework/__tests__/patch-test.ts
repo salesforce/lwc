@@ -44,6 +44,117 @@ describe('patch', () => {
             expect(flag).toBeTruthy();
         });
 
+        it('should call the lifecycle hooks in the right order at insertion', () => {
+            const calls = [];
+
+            class Root extends Element {
+                constructor() {
+                    super();
+                    calls.push('root:constructor');
+                }
+                connectedCallback() {
+                    calls.push('root:connectedCallback');
+                }
+                render() {
+                    return function($api) {
+                        calls.push('root:render');
+                        return [$api.c('x-child', Child, {})];
+                    };
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
+                }
+            }
+
+            class Child extends Element {
+                constructor() {
+                    super();
+                    calls.push('child:constructor');
+                }
+                connectedCallback() {
+                    calls.push('child:connectedCallback');
+                }
+                render() {
+                    calls.push('child:render');
+                }
+                renderedCallback() {
+                    calls.push('child:renderedCallback');
+                }
+            }
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            expect(calls).toEqual([
+                'root:constructor',
+                'root:connectedCallback',
+                'root:render',
+                'child:constructor',
+                'child:connectedCallback',
+                'child:render',
+                'child:renderedCallback',
+                'root:renderedCallback'
+            ]);
+        });
+
+        it('should call the lifecycle hooks in the right order on update', () => {
+            const calls = [];
+
+            class Root extends Element {
+                state = {
+                    show: false
+                };
+                show() {
+                    this.state.show = true;
+                }
+                render() {
+                    return function($api, $cmp) {
+                        calls.push('root:render');
+                        return $cmp.state.show
+                            ? [$api.c('x-child', Child, {})]
+                            : [];
+                    };
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
+                }
+            }
+            Root.publicMethods = ['show']
+
+            class Child extends Element {
+                constructor() {
+                    super();
+                    calls.push('child:constructor');
+                }
+                connectedCallback() {
+                    calls.push('child:connectedCallback');
+                }
+                render() {
+                    calls.push('child:render');
+                }
+                renderedCallback() {
+                    calls.push('child:renderedCallback');
+                }
+            }
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            calls.length = 0;
+            elm.show();
+
+            return Promise.resolve().then(() => {
+                expect(calls).toEqual([
+                    'root:render',
+                    'child:constructor',
+                    'child:connectedCallback',
+                    'child:render',
+                    'child:renderedCallback',
+                    'root:renderedCallback'
+                ])
+            })
+        });
+
         it('should preserve the creation order and the hook order', () => {
             let chars = '^';
             class MyComponent1 extends Element {

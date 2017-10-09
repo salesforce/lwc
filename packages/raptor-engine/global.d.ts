@@ -62,12 +62,12 @@ declare class VM {
     cmpRoot?: ShadowRoot;
     isScheduled: boolean;
     isDirty: boolean;
-    justRendered: boolean;
     def: ComponentDef;
     context: HashTable<any>;
     component?: Component;
     membrane?: Membrane;
-    vnode?: VNode;
+    vnode: VNode;
+    shadowVNode: VNode;
     fragment: Array<VNode>;
     deps: Array<Array<VM>>;
     classListObj?: DOMTokenList;

@@ -1,9 +1,9 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, linkComponent } from "./component";
+import { createComponent, linkComponent, renderComponent } from "./component";
 import { patch } from "./patch";
-import { assign, isArray, toString, ArrayPush, isUndefined, keys, defineProperties } from "./language";
-import { addCallbackToNextTick, noop } from "./utils";
+import { ArrayPush, isUndefined, keys, defineProperties } from "./language";
+import { addCallbackToNextTick, noop, EmptyObject } from "./utils";
 import { ViewModelReflection } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentMethod } from "./invoker";
@@ -53,7 +53,6 @@ export function createVM(vnode: ComponentVNode) {
         idx: 0,
         isScheduled: false,
         isDirty: true,
-        justRendered: false,
         def,
         context: {},
         cmpProps: {},
@@ -68,8 +67,7 @@ export function createVM(vnode: ComponentVNode) {
         classListObj: undefined,
         component: undefined,
         vnode,
-        // used to store the latest result of the render method
-        fragment: [],
+        shadowVNode: createShadowRootVNode(elm, []),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -106,17 +104,14 @@ export function rehydrate(vm: VM) {
     if (vm.idx && vm.isDirty) {
         const { vnode } = vm;
         assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        assert.invariant(isArray(vnode.children), `Rendered ${vm}.children should always have an array of vnodes instead of ${toString(vnode.children)}`);
-        // when patch() is invoked from within the component life-cycle due to
-        // a dirty state, we create a new VNode (oldVnode) with the exact same data was used
-        // to patch this vnode the last time, mimic what happen when the
-        // owner re-renders, but we do so by keeping the vnode originally used by parent
-        // as the source of true, in case the parent tries to rehydrate against that one.
-        const oldVnode = assign({}, vnode);
-        vnode.children = [];
-        patch(oldVnode, vnode);
+        const children = renderComponent(vm);
+        vm.isScheduled = false;
+        patchShadowRoot(vm, children);
+        const { component: { renderedCallback } } = vm;
+        if (renderedCallback && renderedCallback !== noop) {
+            invokeComponentMethod(vm, 'renderedCallback');
+        }
     }
-    vm.isScheduled = false;
 }
 
 let rehydrateQueue: Array<VM> = [];
@@ -157,4 +152,24 @@ export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
     // TODO: we need to walk the parent path here as well, in case they passed it via slots multiple times
     // @ts-ignore
     return node[OwnerKey] === ownerUid;
+}
+
+function createShadowRootVNode(elm: Element, children: VNode[]): VNode {
+    const sel = elm.tagName.toLocaleLowerCase();
+    const vnode: VNode = {
+        sel,
+        data: EmptyObject,
+        children,
+        elm,
+        key: undefined,
+        text: undefined,
+    };
+    return vnode;
+}
+
+export function patchShadowRoot(vm: VM, children: VNode[]) {
+    assert.vm(vm);
+    const { shadowVNode: oldShadowVNode } = vm;
+    const shadowVNode = createShadowRootVNode(vm.vnode.elm, children);
+    vm.shadowVNode = patch(oldShadowVNode, shadowVNode);
 }

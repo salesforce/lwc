@@ -159,7 +159,7 @@ describe('invoker', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
-            expect(cycle).toEqual(['parent', 'child']);
+            expect(cycle).toEqual(['child', 'parent']);
         });
 
         it('should invoke renderedCallback() after render after every change after all child are inserted', () => {

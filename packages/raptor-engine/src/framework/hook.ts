@@ -1,8 +1,6 @@
 import assert from "./assert";
 import { clearListeners } from "./component";
-import { rehydrate, addInsertionIndex, removeInsertionIndex } from "./vm";
-import { noop } from "./utils";
-import { invokeComponentMethod } from "./invoker";
+import { rehydrate, addInsertionIndex, removeInsertionIndex, patchShadowRoot } from "./vm";
 
 export function insert(vnode: ComponentVNode) {
     assert.vnode(vnode);
@@ -21,28 +19,10 @@ export function insert(vnode: ComponentVNode) {
     }
 }
 
-export function destroy(vnode: ComponentVNode) {
+export function update(oldVnode: ComponentVNode, vnode: ComponentVNode) {
     assert.vnode(vnode);
     const { vm } = vnode;
     assert.vm(vm);
-    assert.isTrue(vm.idx, `${vm} is not inserted.`);
-    removeInsertionIndex(vm);
-    // just in case it comes back, with this we guarantee re-rendering it
-    vm.isDirty = true;
-    clearListeners(vm);
-}
-
-function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
-    assert.vnode(vnode);
-    const { vm } = vnode;
-    assert.vm(vm);
-    if (vm.justRendered) {
-        const { component: { renderedCallback } } = vm;
-        if (renderedCallback && renderedCallback !== noop) {
-            invokeComponentMethod(vm, 'renderedCallback');
-        }
-        vm.justRendered = false;
-    }
     // TODO: we don't really need this block anymore, but it will require changes
     // on many tests that are just patching the element directly.
     if (vm.idx === 0 && !vnode.isRoot) {
@@ -57,10 +37,29 @@ function postpatch(oldVnode: VNode, vnode: ComponentVNode) {
         // of them is called. In the case of the insert() hook, we use the value of `idx`
         // to dedupe the calls since they both can happen in the same patching process.
     }
+    if (vm.isDirty) {
+        // this code path guarantess that when patching the custom element the body is computed only after the element is in the DOM
+        rehydrate(vm);
+    }
+}
+
+export function destroy(vnode: ComponentVNode) {
+    assert.vnode(vnode);
+    const { vm } = vnode;
+    assert.vm(vm);
+    assert.isTrue(vm.idx, `${vm} is not inserted.`);
+    removeInsertionIndex(vm);
+    // just in case it comes back, with this we guarantee re-rendering it
+    vm.isDirty = true;
+    clearListeners(vm);
+    // At this point we need to force the removal of all children because
+    // we don't have a way to know that children custom element were removed
+    // from the DOM. Once we move to use realm custom elements, we can remove this.
+    patchShadowRoot(vm, []);
 }
 
 export const lifeCycleHooks = {
     insert,
+    update,
     destroy,
-    postpatch,
 }
