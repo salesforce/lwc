@@ -221,8 +221,8 @@ export class XProxy implements XProxyInstance {
 
             const adjustArrayIndex = (newLength: number) => {
                 // removing old indexes from proxy when needed
-                while (target.length > newLength) {
-                    delete proxy[target.length - 1];
+                while (trackedLength > newLength) {
+                    delete proxy[--trackedLength];
                 }
                 // add new indexes to proxy when needed
                 for (let i = trackedLength; i < newLength; i += 1) {

@@ -83,4 +83,104 @@ describe('Proxy', () => {
         });
     });
 
+    describe('Array indexes', function () {
+        it('should allow arbitrary index access without getKey', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            expect(proxy[1]).toBe('b');
+        });
+
+        it('should allow arbitrary index access when length becomes smaller', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            proxy.splice(0, 1);
+            expect(proxy[0]).toBe('b');
+            expect(proxy[1]).toBe(undefined);
+        });
+
+        it('should allow arbitrary index access when length grows', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            proxy.push('c');
+            expect(proxy[0]).toBe('a');
+            expect(proxy[1]).toBe('b');
+            expect(proxy[2]).toBe('c');
+        });
+
+        it('should clear array when length is set directly', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            proxy.length = 0;
+            expect(array).toEqual([]);
+        });
+
+        it('should clear array when length is set with getKey', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            Proxy.setKey(proxy, 'length', 0);
+            expect(array).toEqual([]);
+        });
+
+        it('should correctly loop through proxy array using native functions', function () {
+            const array = ['a', 'b'];
+            const proxy = new Proxy(array, {});
+            const values = [];
+            proxy.forEach((value) => {
+                values.push(value);
+            });
+            expect(values).toEqual([
+                'a',
+                'b'
+            ]);
+        });
+
+        it('should respect array length when trap returns larger value than target', function () {
+            const array = ['a', 'b', 'c'];
+            const proxy = new Proxy(array, {
+                get: function (target, key) {
+                    if (key === 'length') {
+                        return 4;
+                    }
+
+                    if(key === 3) {
+                        return 'd';
+                    }
+                    return target[key];
+                }
+            });
+            const values = [];
+            proxy.forEach((value) => {
+                values.push(value);
+            });
+            expect(values).toEqual([
+                'a',
+                'b',
+                'c',
+                'd'
+            ]);
+        });
+
+        it('should respect array length when trap returns smaller value than target', function () {
+            const array = ['a', 'b', 'c'];
+            const proxy = new Proxy(array, {
+                get: function (target, key) {
+                    if (key === 'length') {
+                        return 2;
+                    }
+                    return target[key];
+                }
+            });
+            const values = [];
+            proxy.forEach((value) => {
+                values.push(value);
+            });
+            expect(values).toEqual([
+                'a',
+                'b'
+            ]);
+            expect(proxy[2]).toBe(undefined);
+            expect(2 in proxy).toBe(false);
+        });
+    });
+
 });
