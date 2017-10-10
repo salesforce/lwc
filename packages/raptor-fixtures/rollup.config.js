@@ -2,14 +2,14 @@
 
 const path = require('path');
 const babel = require('rollup-plugin-babel');
-const compiler = require('raptor-compiler');
 const raptorCompiler = require('rollup-plugin-raptor-compiler');
+const transfromRaptorCompat = require('babel-plugin-transform-raptor-compat');
 
 const baseConfig = {
     format: 'iife',
     external: ['engine'],
     globals: {
-        'engine': 'Engine',
+        'engine': 'Engine'
     },
     plugins: [
         raptorCompiler()
@@ -35,14 +35,17 @@ module.exports = fixtureApps.reduce((acc, app) => {
             ...standard.plugins,
             babel({
                 babelrc: false,
-                exclude: 'node_modules/**',
+                exclude: ['node_modules/**'],
                 plugins: [
-                    'transform-raptor-compat'
-                ],
+                    [transfromRaptorCompat, {
+                        resolveProxyCompat: {
+                            global: 'window.Proxy'
+                        }
+                    }]
+                ]
             })
         ]
     });
-
     return [
         ...acc,
         standard,

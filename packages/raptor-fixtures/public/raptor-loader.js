@@ -1,10 +1,10 @@
 var RAPTOR_PATHS = {
-    DEV: '/node_modules/raptor-engine/dist/engine.js',
-    COMPAT: '/node_modules/raptor-engine/dist/engine_compat.js',
-    PROD: '/node_modules/raptor-engine/dist/engine.min.js',
-    PROD_COMPAT: '/node_modules/raptor-engine/dist/engine_compat.min.js',
-    PROD_DEBUG: '/node_modules/raptor-engine/dist/engine_debug.js',
-    PROD_DEBUG_COMPAT: '/node_modules/raptor-engine/dist/engine_compat_debug.js',
+    DEV: '/public/engine/engine.js',
+    COMPAT: '/public/engine/engine_compat.js',
+    PROD: '/public/engine/engine.min.js',
+    PROD_COMPAT: '/public/engine/engine_compat.min.js',
+    PROD_DEBUG: '/public/engine/engine_debug.js',
+    PROD_DEBUG_COMPAT: '/public/engine/engine_compat_debug.js',
 }
 
 function parseQuery(queryString) {
@@ -23,6 +23,8 @@ var query = parseQuery(window.location.search);
 var mode = query.mode || 'DEV';
 var modeUrl = RAPTOR_PATHS[mode];
 var isCompat = mode.toLowerCase().indexOf('compat') >= 0;
+const compatPath = '/public/engine/compat.js';
+const compatMinPath = '/public/engine/compat.min.js';
 
 let helpMessage = `Raptor mode can be selected via <code>mode</code> query string (available modes: <code>${Object.keys(RAPTOR_PATHS).join('</code>, <code>')}</code>)`;
 if (!modeUrl) {
@@ -34,6 +36,9 @@ help.style = `position: fixed; bottom: 0; padding: 10px; background: #ddd; width
 help.innerHTML = helpMessage;
 document.body.appendChild(help);
 
+if (isCompat) {
+    document.write('<script src="' + compatPath + '"></script>');
+}
 document.write('<script src="' + modeUrl + '"></script>');
 
 const appScript = document.querySelector('#raptor-app');

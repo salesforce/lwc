@@ -17,7 +17,7 @@
     "http-server": "^0.10.0",
     "raptor-compiler": "0.14.10",
     "raptor-engine": "0.14.10",
-    "rollup-plugin-raptor-compiler": "0.12.5",
+    "rollup-plugin-raptor-compiler": "0.14.10",
     "rimraf": "^2.6.1",
     "rollup": "0.45.1",
     "wdio-mocha-framework": "^0.5.10",

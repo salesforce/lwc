@@ -1,13 +1,11 @@
 <template>
-    <div class="foo">
-        <button onclick={handleClick}>{label}</button>
-        <h1 if:true={header}>{header}</h1>
-        <ul class="foo">
+    <div>
+        <ul>
             <li class="first">header</li>
-            <li for:each={state.data} for:item="item" class={state.itemClassName}>
+            <li for:each={data} for:item="item">
                 Value of X = {item.x}
             </li>
-            <li class="last">footer</li>
+             <li class="last">footer</li>
         </ul>
     </div>
 </template>

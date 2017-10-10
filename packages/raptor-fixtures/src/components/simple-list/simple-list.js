@@ -17,36 +17,35 @@ function produceNewData(oldData, min, max) {
 }
 
 export default class SimpleList extends Element {
-    @api min = DefaultMinValue;
-    @api max = DefaultMaxValue;
-    @api label = 'default label';
-    @api header = 'default header';
+    normalizedMin = DefaultMinValue;
+    normalizedMax = DefaultMaxValue;
 
-    state = {
-        itemClassName: 'item',
-        data: [],
-    };
+    @track data = [];
 
     constructor() {
         super();
-        this.counter = 0;
     }
 
-    static observedAttributes = ['min', 'max'];
-
-    attributeChangedCallback() {
-        this.state.data = produceNewData(this.state.data, this.min, this.max);
+    @api get min() {
+        return this.normalizedMin;
     }
 
-    handleClick() {
-        this.counter += 1;
-        const newData = produceNewData(this.state.data, this.min, this.max);
-        this.state.data = newData;
-        console.log('clicked');
+    @api set min(value) {
+        this.normalizedMin = parseInt(value, 10);
+        this.data = produceNewData(this.data, this.min, this.max);
     }
 
-    @api foo() {
-        console.log('foo was called: ', arguments);
-        return 1;
+    @api get max() {
+        return this.normalizedMax;
+    }
+
+    @api set max(value) {
+        this.normalizedMax = parseInt(value, 10);
+        this.data = produceNewData(this.data, this.min, this.max);
+    }
+
+    @api reshuffle() {
+        const newData = produceNewData(this.data, this.min, this.max);
+        this.data = newData;
     }
 }

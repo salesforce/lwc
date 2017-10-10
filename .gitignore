@@ -18,3 +18,4 @@ benchmarking/dist
 packages/raptor-integration/public
 packages/raptor-integration/errorShots
 packages/raptor-integration/.env
+packages/raptor-fixtures/public/engine/*
