@@ -24,7 +24,7 @@
     "@types/jest": "^21.1.1",
     "ast-pretty-print": "^1.1.5",
     "esutils": "^2.0.2",
-    "glob": "^7.1.1",
+    "glob": "^7.1.2",
     "jest": "^21.1.1",
     "prettier": "^1.7.3",
     "rimraf": "^2.6.1",

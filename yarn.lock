@@ -5448,7 +5448,7 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.6.1:
   dependencies:
     glob "^7.0.5"
 
-rimraf@^2.5.4, rimraf@^2.6.2:
+rimraf@^2.5.4:
   version "2.6.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rimraf/-/rimraf-2.6.2.tgz#2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36"
   dependencies:
@@ -5540,6 +5540,12 @@ rollup-pluginutils@^2.0.1:
 rollup@0.45.1:
   version "0.45.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.45.1.tgz#af67ded79974079095b5fede8817b4ec26d610e1"
+  dependencies:
+    source-map-support "^0.4.0"
+
+rollup@^0.41.6:
+  version "0.41.6"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.41.6.tgz#e0d05497877a398c104d816d2733a718a7a94e2a"
   dependencies:
     source-map-support "^0.4.0"
 

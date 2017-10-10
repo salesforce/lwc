@@ -1,0 +1,22 @@
+{
+  "name": "raptor-helper-fixture",
+  "description": "Helper package to run fixture testing",
+  "version": "0.14.10",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-core": "^6.24.0",
+    "babel-preset-env": "^1.6.0",
+    "mocha": "^3.2.0",
+    "power-assert": "^1.4.2"
+  },
+  "scripts": {
+    "build": "babel src/ --out-dir dist/",
+    "prepublish": "yarn run build",
+    "test": "echo 'No tests in raptor-helper-fixture'"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  }
+}
