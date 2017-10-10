@@ -217,6 +217,45 @@ describe('invoker', () => {
             expect(lifecycle).toEqual(['connected', 'render', 'rendered']);
         });
 
-    });
+        it('should decorate error thrown with component stack information', () => {
+            expect.hasAssertions();
+            class MyComponent1 extends Element {
+                connectedCallback() {
+                    (undefined).foo;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            try {
+                document.body.appendChild(elm);
+            } catch (e) {
+                expect(e.wcStack).toBe('<x-foo>');
+            }
+        });
 
+        it('should decorate error thrown with component stack information even when nested', () => {
+            expect.hasAssertions();
+            class MyComponent2 extends Element {
+                connectedCallback() {
+                    (undefined).foo;
+                }
+            }
+
+            class MyComponent1 extends Element {
+                render() {
+                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                        return [$api.h(
+                            "section", {}, [$api.c("x-bar", MyComponent2, {})]
+                        )];
+                    };
+                }
+            }
+
+            try {
+                const elm = createElement('x-foo', { is: MyComponent1 });
+                document.body.appendChild(elm);
+            } catch (e) {
+                expect(e.wcStack).toBe('<x-foo>\n\t<x-bar>');
+            }
+        });
+    });
 });

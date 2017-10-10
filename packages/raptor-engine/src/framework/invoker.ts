@@ -6,6 +6,7 @@ import {
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
 import { toAttributeValue } from "./utils";
+import { ViewModelReflection } from "./def";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -23,6 +24,7 @@ export function invokeComponentCallback(vm: VM, fn: () => any, fnCtx: any, args?
     }
     establishContext(ctx);
     if (error) {
+        error.wcStack = getComponentStack(vm);
         throw error; // rethrowing the original error after restoring the context
     }
     return result;
@@ -45,6 +47,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Comp
     }
     establishContext(ctx);
     if (error) {
+        error.wcStack = getComponentStack(vm);
         throw error; // rethrowing the original error after restoring the context
     }
     return component;
@@ -73,6 +76,7 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     vmBeingRendered = vmBeingRenderedInception;
     establishContext(ctx);
     if (error) {
+        error.wcStack = getComponentStack(vm);
         throw error; // rethrowing the original error after restoring the context
     }
     return result || [];
@@ -94,6 +98,21 @@ export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string
     }
     establishContext(ctx);
     if (error) {
+        error.wcStack = getComponentStack(vm);
         throw error; // rethrowing the original error after restoring the context
     }
+}
+
+function getComponentStack(vm: VM) : string {
+    const wcStack: string[] = [];
+    let elm = vm.vnode.elm;
+    do {
+        const vm = elm[ViewModelReflection];
+        if (!isUndefined(vm)) {
+            wcStack.push(vm.component.toString());
+        }
+
+        elm = elm.parentElement;
+    } while (elm);
+    return wcStack.reverse().join('\n\t');
 }
