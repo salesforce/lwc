@@ -15,3 +15,6 @@ playground/*
 packages/**/dist
 benchmarking/dist
 .idea/
+packages/raptor-integration/public
+packages/raptor-integration/errorShots
+packages/raptor-integration/.env

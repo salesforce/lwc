@@ -1,0 +1,30 @@
+{
+  "name": "raptor-integration",
+  "private": true,
+  "version": "0.0.1",
+  "license": "Beerware",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "test:integration": "yarn build && wdio ./scripts/wdio.conf.js",
+    "test:integration:sauce": "yarn build && wdio ./scripts/wdio.sauce.conf.js",
+    "build": "node scripts/build.js",
+    "start": "http-server -c-1 -p 8080"
+  },
+  "devDependencies": {
+    "deepmerge": "^1.5.2",
+    "dotenv": "^4.0.0",
+    "fs-extra": "^4.0.2",
+    "http-server": "^0.10.0",
+    "raptor-compiler": "0.14.10",
+    "raptor-engine": "0.14.10",
+    "rollup-plugin-raptor-compiler": "0.12.5",
+    "rimraf": "^2.6.1",
+    "rollup": "0.45.1",
+    "wdio-mocha-framework": "^0.5.10",
+    "wdio-sauce-service": "^0.4.0",
+    "wdio-selenium-standalone-service": "0.0.9",
+    "wdio-spec-reporter": "^0.1.0",
+    "wdio-static-server-service": "^1.0.1",
+    "webdriverio": "^4.8.0"
+  }
+}
