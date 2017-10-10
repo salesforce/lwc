@@ -152,7 +152,49 @@ describe('patch', () => {
                     'child:renderedCallback',
                     'root:renderedCallback'
                 ])
+            });
+        });
+
+        it('should rehydrate when state is updated in renderedCallback', function () {
+            class MyComponent extends Element {
+                state = {
+                    foo: 'bar'
+                }
+                renderedCallback() {
+                    if (this.state.foo !== 'second') {
+                        this.state.foo = 'modified';
+                    }
+                }
+
+                triggerRender(text) {
+                    this.state.foo = text;
+                }
+
+                render() {
+                    return function ($api, $cmp) {
+                        return [$api.h('span', {}, [$api.t($cmp.state.foo)])];
+                    }
+                }
+            }
+
+            MyComponent.publicMethods = [
+                'triggerRender'
+            ]
+
+            const element = createElement('x-parent', { is: MyComponent });
+            document.body.appendChild(element);
+
+            return Promise.resolve().then(() => {
+                element.triggerRender('first');
+                return Promise.resolve()
             })
+            .then(() => {
+                element.triggerRender('second');
+                return Promise.resolve();
+            })
+            .then(() => {
+                expect(element.querySelector('span').textContent).toBe('second');
+            });
         });
 
         it('should preserve the creation order and the hook order', () => {
