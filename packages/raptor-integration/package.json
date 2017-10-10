@@ -1,7 +1,7 @@
 {
   "name": "raptor-integration",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.14.10",
   "license": "Beerware",
   "scripts": {
     "clean": "rimraf dist/",

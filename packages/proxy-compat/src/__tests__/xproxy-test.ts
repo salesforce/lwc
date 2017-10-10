@@ -1,4 +1,5 @@
 import Proxy from "../main";
+import { getKey, deleteKey, inKey } from './../methods';
 import assert from 'power-assert';
 
 describe('Proxy', () => {
@@ -180,6 +181,184 @@ describe('Proxy', () => {
             ]);
             expect(proxy[2]).toBe(undefined);
             expect(2 in proxy).toBe(false);
+        });
+    });
+
+    describe('length', function () {
+        it('should add length getter when target is array', function () {
+            const target = [1, 2];
+            const proxy = new Proxy(target, {});
+            expect(proxy.length).toBe(2);
+        });
+
+        it('should add length setter when target is array', function () {
+            const target = [1, 2];
+            const proxy = new Proxy(target, {});
+            proxy.length = 0;
+            expect(getKey(proxy, 0)).toBe(undefined);
+        });
+    });
+
+    describe('construct', function () {
+        it('should create new instance', function () {
+            let count = 0;
+            class Ctor {
+                constructor() {
+                    count += 1;
+                }
+            }
+            const ProxyCtor = new Proxy(Ctor, {});
+            const inst = new ProxyCtor();
+            expect(count).toBe(1);
+            expect(inst instanceof Ctor).toBe(true);
+        });
+
+        it('should call construct trap', function () {
+            let count = 0;
+            class Ctor {}
+            const ProxyCtor = new Proxy(Ctor, {
+                construct() {
+                    count += 1;
+                    return {};
+                }
+            });
+            new ProxyCtor();
+            expect(count).toBe(1);
+        });
+    });
+
+    describe('defineProperty', function () {
+        it('should defineProperty correctly', function () {
+            const obj = {};
+            const proxy = new Proxy(obj, {});
+            Object.defineProperty(proxy, 'foo', {
+                value: 'bar'
+            });
+            expect(obj.foo).toBe('bar');
+        });
+
+        it('should call defineProperty trap', function () {
+            let count = 0;
+            const proxy = new Proxy({}, {
+                defineProperty() {
+                    count += 1;
+                    return true;
+                }
+            });
+            Object.defineProperty(proxy, 'foo', {
+                value: 'bar'
+            });
+            expect(count).toBe(1);
+        });
+    });
+
+    describe('deleteProperty', function () {
+        it('should deleteProperty correctly', function () {
+            const obj = {
+                foo: 'bar'
+            };
+            const proxy = new Proxy(obj, {});
+            deleteKey(proxy, 'foo');
+            expect(obj.foo).toBe(undefined);
+        });
+
+        it('should call deleteProperty trap', function () {
+            let count = 0;
+            const proxy = new Proxy({}, {
+                deleteProperty() {
+                    count += 1;
+                    return true;
+                }
+            });
+            deleteKey(proxy, 'foo');
+            expect(count).toBe(1);
+        });
+    });
+
+    describe('ownKeys', function () {
+        it('should return correct keys', function () {
+            const obj = {
+                foo: 'bar',
+                hello: 'world'
+            };
+            Object.defineProperty(obj, 'hidden', {
+                value: 'hidden',
+                enumerable: false
+            });
+            const proxy = new Proxy(obj, {});
+            expect(Object.getOwnPropertyNames(proxy)).toEqual(['foo', 'hello', 'hidden']);
+        });
+        it('should call ownKeys trap', function () {
+            let count = 0;
+            const proxy = new Proxy({}, {
+                ownKeys() {
+                    count += 1;
+                    return [];
+                }
+            });
+            Object.getOwnPropertyNames(proxy);
+            expect(count).toEqual(1);
+        });
+    });
+
+    describe('has', function () {
+        it('should return true when object has key', function () {
+            const obj = {
+                foo: 'bar',
+                hello: 'world'
+            };
+            const proxy = new Proxy(obj, {});
+            expect(inKey(proxy, 'foo')).toBe(true);
+        });
+
+        it('should return true when object prototype has key', function () {
+            const proto = {
+                foo: 'bar',
+                hello: 'world'
+            };
+            const obj = Object.create(proto);
+            const proxy = new Proxy(obj, {});
+            expect(inKey(proxy, 'foo')).toBe(true);
+        });
+
+        it('should return false when object does not have key', function () {
+            const obj = {
+                foo: 'bar',
+                hello: 'world'
+            };
+            const proxy = new Proxy(obj, {});
+            expect(inKey(proxy, 'missing')).toBe(false);
+        });
+        it('should call hasTrap', function () {
+            let count = 0;
+            const proxy = new Proxy({}, {
+                has() {
+                    count += 1;
+                    return true;
+                }
+            });
+            inKey(proxy, 'foo')
+            expect(count).toBe(1);
+        });
+    });
+
+    describe('preventExtensions', function () {
+        it('should preventExtensions on target', function () {
+            const obj = {};
+            const proxy = new Proxy(obj, {});
+            Object.preventExtensions(proxy)
+            expect(Object.isFrozen(obj)).toBe(true);
+        });
+        it('should call preventExtensions trap', function () {
+            let count = 0;
+            const proxy = new Proxy({}, {
+                preventExtensions() {
+                    count += 1;
+                    return true;
+                }
+            });
+            Object.preventExtensions(proxy)
+            expect(count).toBe(1);
         });
     });
 

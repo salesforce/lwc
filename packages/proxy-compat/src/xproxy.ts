@@ -9,8 +9,16 @@ type XProxyHandler<T extends object> = ProxyHandler<T> & {
     [key: string]: any
 }
 
-interface XProxyInstance {
-
+export interface XProxyInstance {
+    preventExtensions: () => any;
+    getOwnPropertyDescriptor: (key: PropertyKey) => any;
+    ownKeys: () => Array<string>,
+    setPrototypeOf: (proto: any) => any;
+    getPrototypeOf: () => any;
+    forIn: () => any;
+    isExtensible: () => boolean;
+    defineProperty: (key: PropertyKey, descriptor: PropertyDescriptor) => any;
+    [key: string]: any;
 }
 
 // RFC4122 version 4 uuid
@@ -43,7 +51,7 @@ const {
 
 const { isArray } = Array;
 const { iterator } = Symbol;
-const ArrayPrototypeIterator = Array.prototype[iterator];
+const ArrayPrototypeIterator = Array.prototype[iterator as any];
 
 // Proto chain check might be needed because of usage of a limited polyfill
 // https://github.com/es-shims/get-own-property-symbols

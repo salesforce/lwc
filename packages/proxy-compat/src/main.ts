@@ -1,5 +1,18 @@
-import { getKey, callKey, setKey, deleteKey, inKey, iterableKey } from "./methods";
-import { XProxy, ProxySlot, ProxyIdentifier, ArraySlot } from "./xproxy";
+import {
+    getKey,
+    callKey,
+    setKey,
+    deleteKey,
+    inKey,
+    iterableKey,
+    compatGetKey,
+    compatCallKey,
+    compatSetKey,
+    compatDeleteKey,
+    compatInKey,
+    compatIterableKey
+} from "./methods";
+import { XProxy, ProxySlot, ProxyIdentifier, ArraySlot, XProxyInstance } from "./xproxy";
 
 const {
     assign: _assign,
@@ -67,7 +80,7 @@ function getOwnPropertyDescriptor(replicaOrAny: object, key: PropertyKey) {
     return _getOwnPropertyDescriptor(replicaOrAny, key);
 }
 
-function preventExtensions(replicaOrAny: object): object {
+function preventExtensions(replicaOrAny: any): any {
     if (isCompatProxy(replicaOrAny)) {
         return replicaOrAny.preventExtensions();
     }
@@ -185,4 +198,11 @@ _assign(XProxy, OriginalProxy, {
     iterableKey,
 });
 
-export default XProxy;
+export default class CompatProxy extends XProxy {
+    static getKey = getKey;
+    static callKey = callKey;
+    static setKey = setKey;
+    static deleteKey = deleteKey;
+    static inKey = inKey;
+    static iterableKey = iterableKey;
+}
