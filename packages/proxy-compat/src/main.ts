@@ -5,6 +5,7 @@ import {
     deleteKey,
     inKey,
     iterableKey,
+    instanceOfKey,
     compatGetKey,
     compatCallKey,
     compatSetKey,
@@ -196,6 +197,7 @@ _assign(XProxy, OriginalProxy, {
     deleteKey,
     inKey,
     iterableKey,
+    instanceOfKey
 });
 
 export default class CompatProxy extends XProxy {
@@ -205,4 +207,5 @@ export default class CompatProxy extends XProxy {
     static deleteKey = deleteKey;
     static inKey = inKey;
     static iterableKey = iterableKey;
+    static instanceOfKey = instanceOfKey;
 }

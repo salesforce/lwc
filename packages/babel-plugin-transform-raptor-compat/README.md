@@ -15,6 +15,8 @@ This package injects up to 6 functions inside of each module:
   * `'bar' in foo` -> `inKey(foo, 'bar')`
 - iterableKey - for in loops
   * `for (let foo in bar) {}` -> `for (let foo in iterableKey(bar)) {}`
+- instanceOfKey - instanceof checks
+  * `foo instanceof Bar` -> `instanceOfKey(foo, Bar)`
 
 
 ** Resolving injected functions
@@ -29,7 +31,8 @@ const {
     getKey: _getKey,
     deleteKey: _deleteKey,
     iterableKey: _iterableKey,
-    inKey: _inKey
+    inKey: _inKey,
+    instanceOfKey: _instanceOfKey
 } = window.Proxy;
 ```
 
@@ -53,6 +56,7 @@ const {
     getKey: _getKey,
     deleteKey: _deleteKey,
     iterableKey: _iterableKey,
-    inKey: _inKey
+    inKey: _inKey,
+    instanceOfKey: _instanceOfKey
 } = window.COMPAT;
 ```

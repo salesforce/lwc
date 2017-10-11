@@ -1,3 +1,5 @@
+import { defaultHasInstance } from './methods';
+
 type XProxyTargetFunction = (...args: Array<any>) => any;
 type XProxyTargetConstructor = {
     new(...args: Array<any>): object;
@@ -20,6 +22,8 @@ export interface XProxyInstance {
     defineProperty: (key: PropertyKey, descriptor: PropertyDescriptor) => any;
     [key: string]: any;
 }
+
+type HasInstanceFunction = (inst: any) => boolean;
 
 // RFC4122 version 4 uuid
 export const ProxySlot = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -50,8 +54,9 @@ const {
 } = Array.prototype;
 
 const { isArray } = Array;
-const { iterator } = Symbol;
+const { iterator, hasInstance: symbolHasInstance } = Symbol;
 const ArrayPrototypeIterator = Array.prototype[iterator as any];
+const FunctionPrototypeSymbolHasInstance: HasInstanceFunction = (Function.prototype as any)[symbolHasInstance];
 
 // Proto chain check might be needed because of usage of a limited polyfill
 // https://github.com/es-shims/get-own-property-symbols
@@ -180,8 +185,6 @@ export class XProxy implements XProxyInstance {
             };
         }
 
-        setPrototypeOf(proxy, getPrototypeOf(target));
-
         for (let trapName in defaultHandlerTraps) {
             defineProperty(proxy, trapName, {
                 value: function () {
@@ -203,6 +206,28 @@ export class XProxy implements XProxyInstance {
             });
         }
 
+        let proxyDefaultHasInstance: HasInstanceFunction;
+
+        defineProperty(proxy, symbolHasInstance, {
+            get: function () {
+                const hasInstance = proxy.get(symbolHasInstance);
+                // We do not want to deal with any Symbol.hasInstance here
+                // because we need to do special things to check prototypes.
+                // Symbol polyfill adds Symbol.hasInstance to the function prototype
+                // so if we have that here, we need to return our own.
+                // If the value we get from this function is different, that means
+                // user has supplied custom function so we need to respect that.
+                if (hasInstance === FunctionPrototypeSymbolHasInstance) {
+                    return proxyDefaultHasInstance || (proxyDefaultHasInstance = function (inst: any) {
+                        return defaultHasInstance(inst, proxy);
+                    });
+                }
+                return hasInstance;
+            },
+            configurable: false,
+            enumerable: false
+        });
+
         defineProperty(proxy, ProxySlot, {
             value: ProxyIdentifier,
             configurable: false,
@@ -222,7 +247,6 @@ export class XProxy implements XProxyInstance {
             enumerable: false,
             writable: false,
         });
-
 
         if (targetIsArray) {
             let trackedLength = 0;
@@ -270,7 +294,9 @@ export class XProxy implements XProxyInstance {
             // of the proxy, but it should be fine...
             adjustArrayIndex(proxy.get('length'));
 
-        } else if (target[iterator]) {
+        }
+
+        if (target[iterator]) {
             proxifyProperty(proxy, iterator, {
                 enumerable: false,
                 configurable: true,

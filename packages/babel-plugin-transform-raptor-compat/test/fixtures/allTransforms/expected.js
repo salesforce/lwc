@@ -4,6 +4,7 @@ var __getKey = window.Proxy.getKey;
 var __deleteKey = window.Proxy.deleteKey;
 var __iterableKey = window.Proxy.iterableKey;
 var __inKey = window.Proxy.inKey;
+var __instanceOfKey = window.Proxy.instanceOfKey;
 // var a = 1;
 var a = 1;
 var n = [0, 1];
@@ -97,3 +98,6 @@ if (__inKey(obj, "x")) {}
 
 // if ("foo" in obj.x) {}
 if (__inKey(__getKey(obj, "x"), "foo")) {}
+
+// foo instanceof Bar
+__instanceOfKey(foo, Bar);

@@ -12,10 +12,30 @@ export type compatDeleteKey = (replicaOrAny: any, key: PropertyKey) => boolean;
 export type compatInKey = (replicaOrAny: any, key: PropertyKey) => boolean;
 export type compatIterableKey = (replicaOrAny: any) => Array<any>;
 
+const { getPrototypeOf } = Object;
+
+const { hasInstance: symbolHasInstance } = Symbol;
+
+
+export function defaultHasInstance (instance: any, Type: any) {
+    // We have to grab getPrototypeOf here
+    // because caching it at the module level is too early.
+    // We need our shimmed version.
+    const { getPrototypeOf } = Object;
+    let instanceProto = getPrototypeOf(instance);
+    const TypeProto = getKey(Type, 'prototype');
+    while (instanceProto !== null) {
+        if (instanceProto === TypeProto) {
+            return true;
+        }
+        instanceProto = getPrototypeOf(instanceProto)
+    }
+    return false;
+}
+
 export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxyInstance {
     return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
 }
-
 
 export const getKey: compatGetKey = function(replicaOrAny: any, key: PropertyKey): any {
     if (isCompatProxy(replicaOrAny)) {
@@ -57,4 +77,17 @@ export const iterableKey: compatIterableKey = function (replicaOrAny: any): Arra
         return replicaOrAny.forIn();
     }
     return replicaOrAny;
+}
+
+export function instanceOfKey(instance: any, Type: any): boolean {
+    const instanceIsCompatProxy = isCompatProxy(instance);
+    if (!isCompatProxy(Type) && !instanceIsCompatProxy) {
+        return instance instanceof Type;
+    }
+    // TODO: Once polyfills are transpiled to compat
+    // We can probably remove the below check
+    if (instanceIsCompatProxy) {
+        return defaultHasInstance(instance, Type);
+    }
+    return Type[symbolHasInstance](instance);
 }

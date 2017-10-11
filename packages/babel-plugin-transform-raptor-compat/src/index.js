@@ -206,13 +206,15 @@ module.exports = function({ types: t }) {
              */
             BinaryExpression(path, state) {
                 const { operator, left, right } = path.node;
-                if (operator !== 'in') {
-                    return;
+                if (operator === 'instanceof') {
+                    const id = resolveCompatProxyImport(KEYS.INSTANCEOF_KEY, path, state);
+                    const warppedInOperator = t.callExpression(id, [left, right]);
+                    path.replaceWith(warppedInOperator);
+                } else if (operator === 'in') {
+                    const id = resolveCompatProxyImport(KEYS.IN_KEY, path, state);
+                    const warppedInOperator = t.callExpression(id, [right, left]);
+                    path.replaceWith(warppedInOperator);
                 }
-
-                const id = resolveCompatProxyImport(KEYS.IN_KEY, path, state);
-                const warppedInOperator = t.callExpression(id, [right, left]);
-                path.replaceWith(warppedInOperator);
             }
         }
     };

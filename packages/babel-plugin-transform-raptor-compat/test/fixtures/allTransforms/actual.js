@@ -90,3 +90,6 @@ if ("x" in obj) {}
 
 // if ("foo" in obj.x) {}
 if ("foo" in obj.x) {}
+
+// foo instanceof Bar
+foo instanceof Bar

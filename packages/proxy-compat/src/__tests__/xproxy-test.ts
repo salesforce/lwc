@@ -84,6 +84,20 @@ describe('Proxy', () => {
         });
     });
 
+    describe('Iterators', function () {
+        it('should add iterator to Map', function () {
+            const map = new Map();
+            const proxy = new Proxy(map, {});
+            expect(proxy[Symbol.iterator]).toBe(map[Symbol.iterator]);
+        });
+
+        it('should add iterator to Array', function () {
+            const array = [];
+            const proxy = new Proxy(array, {});
+            expect(proxy[Symbol.iterator]).toBe(array[Symbol.iterator]);
+        });
+    });
+
     describe('Array indexes', function () {
         it('should allow arbitrary index access without getKey', function () {
             const array = ['a', 'b'];
@@ -94,7 +108,7 @@ describe('Proxy', () => {
         it('should allow arbitrary index access when length becomes smaller', function () {
             const array = ['a', 'b'];
             const proxy = new Proxy(array, {});
-            proxy.splice(0, 1);
+            Proxy.callKey(proxy, 'splice', 0, 1);
             expect(proxy[0]).toBe('b');
             expect(proxy[1]).toBe(undefined);
         });
@@ -102,7 +116,7 @@ describe('Proxy', () => {
         it('should allow arbitrary index access when length grows', function () {
             const array = ['a', 'b'];
             const proxy = new Proxy(array, {});
-            proxy.push('c');
+            Proxy.callKey(proxy, 'push', 'c');
             expect(proxy[0]).toBe('a');
             expect(proxy[1]).toBe('b');
             expect(proxy[2]).toBe('c');
@@ -126,7 +140,7 @@ describe('Proxy', () => {
             const array = ['a', 'b'];
             const proxy = new Proxy(array, {});
             const values = [];
-            proxy.forEach((value) => {
+            Proxy.callKey(proxy, 'forEach', (value) => {
                 values.push(value);
             });
             expect(values).toEqual([
@@ -150,7 +164,7 @@ describe('Proxy', () => {
                 }
             });
             const values = [];
-            proxy.forEach((value) => {
+            Proxy.callKey(proxy, 'forEach', (value) => {
                 values.push(value);
             });
             expect(values).toEqual([
@@ -172,7 +186,7 @@ describe('Proxy', () => {
                 }
             });
             const values = [];
-            proxy.forEach((value) => {
+            Proxy.callKey(proxy, 'forEach', (value) => {
                 values.push(value);
             });
             expect(values).toEqual([

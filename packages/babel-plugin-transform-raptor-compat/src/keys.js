@@ -4,5 +4,6 @@ module.exports = {
     CALL_KEY: 'callKey',
     ITERABLE_KEY: 'iterableKey',
     IN_KEY:'inKey',
-    DELETE_KEY: 'deleteKey'
+    DELETE_KEY: 'deleteKey',
+    INSTANCEOF_KEY: 'instanceOfKey'
 };
