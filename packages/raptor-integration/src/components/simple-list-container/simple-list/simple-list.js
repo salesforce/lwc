@@ -22,10 +22,6 @@ export default class SimpleList extends Element {
 
     @track data = [];
 
-    constructor() {
-        super();
-    }
-
     @api get min() {
         return this.normalizedMin;
     }

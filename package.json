@@ -13,7 +13,7 @@
     "build:compat": "node scripts/compat-mode.js",
     "build:compiler": "webpack --config scripts/compiler.webpack.js --progress",
     "build:engine": "lerna run build --scope raptor-engine && cp ./packages/raptor-engine/dist/* ./dist/",
-    "start": "yarn build:artifacts && lerna run start --scope raptor-fixtures",
+    "start": "yarn build:artifacts && lerna run build --scope raptor-integration && lerna run start --scope raptor-integration",
     "release": "yarn run prepublish && lerna publish --force-publish=*",
     "release:canary": "yarn run prepublish && lerna publish --force-publish=* --canary --skip-git --yes"
   },
