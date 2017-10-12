@@ -1,23 +1,29 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "svg",
-        {
-            classMap: {
-                "slds-button__icon": true
-            },
-            attrs: {
-                viewBox: "0 0 5 5",
-                "aria-hidden": "true"
-            }
-        },
-        [$api.h(
-            "use",
+    const { h: api_element } = $api;
+
+    return [
+        api_element(
+            'svg',
             {
+                classMap: {
+                    'slds-button__icon': true
+                },
                 attrs: {
-                    "xlink:href": "/x"
+                    viewBox: '0 0 5 5',
+                    'aria-hidden': 'true'
                 }
             },
-            []
-        )]
-    )];
+            [
+                api_element(
+                    'use',
+                    {
+                        attrs: {
+                            'xlink:href': '/x'
+                        }
+                    },
+                    []
+                )
+            ]
+        )
+    ];
 }

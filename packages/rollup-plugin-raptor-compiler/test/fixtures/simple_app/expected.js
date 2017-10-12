@@ -1,10 +1,12 @@
 import { Element, createElement } from 'engine';
 
 function tmpl$1($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
+    const { d: api_dynamic, h: api_element } = $api;
+
+    return [api_element(
         "div",
         {},
-        [$api.d($cmp.x)]
+        [api_dynamic($cmp.x)]
     )];
 }
 
@@ -15,14 +17,16 @@ class Foo extends Element {
 }
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
+    const { c: api_custom_element, h: api_element } = $api;
+
+    return [api_element(
         "div",
         {
             classMap: {
                 container: true
             }
         },
-        [$api.c(
+        [api_custom_element(
             "x-foo",
             Foo,
             {

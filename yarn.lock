@@ -5047,12 +5047,6 @@ raptor-helper-fixture@^0.12.4:
   version "0.12.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-helper-fixture/-/raptor-helper-fixture-0.12.5.tgz#361ba9021e00e76a986fea653fa0bd994da5e9b8"
 
-raptor-npm-resolver@0.12.5:
-  version "0.12.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-npm-resolver/-/raptor-npm-resolver-0.12.5.tgz#30518fb838fcea4cb5a1c3d0cbd801f39fac18d6"
-  dependencies:
-    glob "^7.1.2"
-
 raw-body@2.3.2:
   version "2.3.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raw-body/-/raw-body-2.3.2.tgz#bcd60c77d3eb93cde0050295c3f379389bc88f89"
@@ -5406,14 +5400,6 @@ rollup-plugin-inject@^1.4.1:
     estree-walker "^0.2.0"
     magic-string "^0.10.0"
     rollup-pluginutils "^1.2.0"
-
-rollup-plugin-raptor-compiler@0.12.5:
-  version "0.12.5"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-raptor-compiler/-/rollup-plugin-raptor-compiler-0.12.5.tgz#39226613a0a3f99a0294794f5ff4228b2b74476c"
-  dependencies:
-    glob "^7.1.2"
-    raptor-npm-resolver "0.12.5"
-    rollup-pluginutils "^2.0.1"
 
 rollup-plugin-strip-caridy-patched@^1.1.1:
   version "1.1.1"

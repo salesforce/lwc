@@ -1,3 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.t("foo")];
+    const { t: api_text } = $api;
+
+    return [api_text('foo')];
 }

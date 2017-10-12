@@ -1,7 +1,12 @@
 import { Element } from 'engine';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [$api.h("p", {}, [$api.t("CMP1")])];
+  const {
+    t: api_text,
+    h: api_element
+  } = $api;
+
+  return [api_element("p", {}, [api_text("CMP1")])];
 }
 
 class Cmp1 extends Element {

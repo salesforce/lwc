@@ -2,7 +2,11 @@ import { Element } from 'engine';
 import externalDep from 'another-module';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [$api.h("section", {}, [])];
+  const {
+    h: api_element
+  } = $api;
+
+  return [api_element("section", {}, [])];
 }
 
 class Foo extends Element {

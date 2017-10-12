@@ -1,6 +1,8 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
+    const { h: api_element } = $api;
+
     return [
-        $api.h(
+        api_element(
             'input',
             {
                 props: {

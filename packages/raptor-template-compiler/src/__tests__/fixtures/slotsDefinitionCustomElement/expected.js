@@ -1,13 +1,14 @@
-import _xFoo from "x-foo";
+import _xFoo from 'x-foo';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.c(
-        "x-foo",
-        _xFoo,
-        {
+    const { c: api_custom_element } = $api;
+    const { $default$: slot0 } = $slotset;
+
+    return [
+        api_custom_element('x-foo', _xFoo, {
             slotset: {
-                $default$: $slotset.$default$ || []
+                $default$: slot0 || []
             }
-        }
-    )];
+        })
+    ];
 }
-tmpl.slots = ["$default$"];
+tmpl.slots = ['$default$'];

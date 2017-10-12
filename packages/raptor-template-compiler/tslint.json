@@ -12,6 +12,9 @@
       "ordered-imports": [
         false
       ],
+      "arrow-parens": false,
+      "max-classes-per-file": false,
+      "member-access": false,
       "object-literal-sort-keys": false,
       "interface-name": [
         false

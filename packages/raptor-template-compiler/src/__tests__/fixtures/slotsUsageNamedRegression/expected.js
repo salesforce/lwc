@@ -1,8 +1,7 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return (
-        $slotset['secret-slot'] || [
-            $api.h('p', {}, [$api.t('Test slot content')])
-        ]
-    );
+    const { t: api_text, h: api_element } = $api;
+    const { 'secret-slot': slot0 } = $slotset;
+
+    return slot0 || [api_element('p', {}, [api_text('Test slot content')])];
 }
 tmpl.slots = ['secret-slot'];

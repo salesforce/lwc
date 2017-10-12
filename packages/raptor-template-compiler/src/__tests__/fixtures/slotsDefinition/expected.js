@@ -1,12 +1,13 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "section",
-        {},
-        $slotset.$default$ || [$api.h(
-            "p",
+    const { t: api_text, h: api_element } = $api;
+    const { $default$: slot0 } = $slotset;
+
+    return [
+        api_element(
+            'section',
             {},
-            [$api.t("Default slot content")]
-        )]
-    )];
+            slot0 || [api_element('p', {}, [api_text('Default slot content')])]
+        )
+    ];
 }
-tmpl.slots = ["$default$"];
+tmpl.slots = ['$default$'];

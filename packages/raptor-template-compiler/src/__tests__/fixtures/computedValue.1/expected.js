@@ -1,7 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "p",
-        {},
-        [$api.d($cmp.text)]
-    )];
+    const { d: api_dynamic, h: api_element } = $api;
+
+    return [api_element('p', {}, [api_dynamic($cmp.text)])];
 }

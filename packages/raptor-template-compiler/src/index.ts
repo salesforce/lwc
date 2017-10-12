@@ -13,7 +13,10 @@ const DEFAULT_CONFIG = {
 
 export let config: CompilationOptions = DEFAULT_CONFIG;
 
-export default function compiler(source: string, compilationOptions: CompilationOptions = {}) {
+export default function compiler(
+    source: string,
+    compilationOptions: CompilationOptions = {},
+) {
     config = {
         ...DEFAULT_CONFIG,
         ...compilationOptions,
@@ -28,9 +31,9 @@ export default function compiler(source: string, compilationOptions: Compilation
         metadata = parsingResults.metadata;
         warnings.push(...parsingResults.warnings);
 
-        const hasParsingError = parsingResults.warnings.some((warning) => (
-            warning.level === 'error'
-        ));
+        const hasParsingError = parsingResults.warnings.some(
+            warning => warning.level === 'error',
+        );
 
         if (!hasParsingError && parsingResults.root) {
             const output = generate(parsingResults.root, metadata);

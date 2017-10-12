@@ -1,16 +1,18 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "section",
-        {},
-        [$api.h(
-            "p",
-            {
-                attrs: {
-                    title: "x",
-                    "aria-hidden": "x"
-                }
-            },
-            [$api.t("x")]
-        )]
-    )];
+    const { t: api_text, h: api_element } = $api;
+
+    return [
+        api_element('section', {}, [
+            api_element(
+                'p',
+                {
+                    attrs: {
+                        title: 'x',
+                        'aria-hidden': 'x'
+                    }
+                },
+                [api_text('x')]
+            )
+        ])
+    ];
 }

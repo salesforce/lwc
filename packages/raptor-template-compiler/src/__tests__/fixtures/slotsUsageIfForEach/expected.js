@@ -1,24 +1,24 @@
-import _aB from "a-b";
+import _aB from 'a-b';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.c(
-        "a-b",
-        _aB,
-        {
+    const {
+        t: api_text,
+        h: api_element,
+        i: api_iterator,
+        c: api_custom_element
+    } = $api;
+
+    return [
+        api_custom_element('a-b', _aB, {
             classMap: {
                 s2: true
             },
             slotset: {
-                $default$: $cmp.isTrue ? $api.i(
-                    $cmp.items,
-                    function (item) {
-                        return $api.h(
-                            "p",
-                            {},
-                            [$api.t("X")]
-                        );
-                    }
-                ) : []
+                $default$: $cmp.isTrue
+                    ? api_iterator($cmp.items, function(item) {
+                          return api_element('p', {}, [api_text('X')]);
+                      })
+                    : []
             }
-        }
-    )];
+        })
+    ];
 }

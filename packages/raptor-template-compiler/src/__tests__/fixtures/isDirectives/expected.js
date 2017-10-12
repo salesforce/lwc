@@ -1,22 +1,22 @@
-import _nsRow from "ns-row";
+import _nsRow from 'ns-row';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "table",
-        {},
-        [$api.h(
-            "tbody",
-            {},
-            $api.i($cmp.rows, function (row) {
-                return row.visible ? $api.c(
-                    "tr",
-                    _nsRow,
-                    {
-                        attrs: {
-                            is: "ns-row"
-                        }
-                    }
-                ) : null;
-            })
-        )]
-    )];
+    const { c: api_custom_element, i: api_iterator, h: api_element } = $api;
+
+    return [
+        api_element('table', {}, [
+            api_element(
+                'tbody',
+                {},
+                api_iterator($cmp.rows, function(row) {
+                    return row.visible
+                        ? api_custom_element('tr', _nsRow, {
+                              attrs: {
+                                  is: 'ns-row'
+                              }
+                          })
+                        : null;
+                })
+            )
+        ])
+    ];
 }

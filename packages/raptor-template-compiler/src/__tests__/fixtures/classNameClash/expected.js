@@ -1,12 +1,15 @@
-import _xCmp from "x-cmp";
+import _xCmp from 'x-cmp';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.c("x-cmp", _xCmp, {
+    const { c: api_custom_element } = $api;
+
+    return [
+        api_custom_element('x-cmp', _xCmp, {
             classMap: {
-                foo: true,
+                foo: true
             },
             props: {
-               xClass: "bar"
+                xClass: 'bar'
             }
-        },
-    )];
+        })
+    ];
 }

@@ -1,61 +1,16 @@
 import * as t from 'babel-types';
 import * as toCamelCase from 'camelcase';
 
-import {
-    TEMPLATE_PARAMS,
-    RENDER_PRIMITIVES,
-} from '../shared/constants';
-
-export const RENDER_PRIMITIVE_API: { [key: string]: t.MemberExpression } = {};
-
-Object.keys(RENDER_PRIMITIVES).forEach((primitive) => {
-    RENDER_PRIMITIVE_API[primitive] = t.memberExpression(
-        t.identifier(TEMPLATE_PARAMS.API),
-        t.identifier(RENDER_PRIMITIVES[primitive]),
-    );
-});
-
-export function createElement(
-    tagName: string,
-    data: t.ObjectExpression,
-    children: t.Expression,
-): t.CallExpression {
-    return t.callExpression(
-        RENDER_PRIMITIVE_API.ELEMENT,
-        [
-            t.stringLiteral(tagName),
-            data,
-            children,
-        ],
-    );
-}
-
-export function createCustomElement(
-    tagName: string,
-    componentClass: t.Identifier,
-    data: t.ObjectExpression,
-) {
-    return t.callExpression(
-        RENDER_PRIMITIVE_API.CUSTOM_ELEMENT,
-        [
-            t.stringLiteral(tagName),
-            componentClass,
-            data,
-        ],
-    );
-}
-
-export function createText(value: string | t.Expression): t.Expression {
-    return typeof value === 'string' ?
-        t.callExpression(RENDER_PRIMITIVE_API.TEXT, [ t.stringLiteral(value) ]) :
-        t.callExpression(RENDER_PRIMITIVE_API.DYNAMIC, [ value ]);
-}
+import { isElement } from '../shared/ir';
+import { IRElement } from '../shared/types';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
 }
 
-export function getMemberExpressionRoot(expression: t.MemberExpression): t.Identifier {
+export function getMemberExpressionRoot(
+    expression: t.MemberExpression,
+): t.Identifier {
     let current: t.Expression | t.Identifier = expression;
     while (t.isMemberExpression(current)) {
         current = current.object;
@@ -77,8 +32,49 @@ export function objectToAST(
     valueMapper: (key: string) => t.Expression,
 ): t.ObjectExpression {
     return t.objectExpression(
-        Object.keys(obj).map((key) => (
-            t.objectProperty(t.stringLiteral(key), valueMapper(key))
-        )),
+        Object.keys(obj).map(key =>
+            t.objectProperty(t.stringLiteral(key), valueMapper(key)),
+        ),
     );
+}
+
+/** Returns true if the passed element is a template element */
+export function isTemplate(element: IRElement) {
+    return element.tag === 'template';
+}
+
+/** Returns true if the passed element is a slot element */
+export function isSlot(element: IRElement) {
+    return element.tag === 'slot';
+}
+
+/**
+ * Returns true if the passed element should be flattened
+ * TODO: Move this logic into the optimizing compiler. This kind of
+ *       optimization should be done before the actual code generation.
+ */
+export function shouldFlatten(element: IRElement): boolean {
+    return element.children.some(
+        child =>
+            isElement(child) &&
+            (isSlot(child) ||
+                !!child.forEach ||
+                !!child.forOf ||
+                (isTemplate(child) && shouldFlatten(child))),
+    );
+}
+
+export function destructuringAssignmentFromObject(
+    target: t.Identifier | t.MemberExpression,
+    keys: t.ObjectProperty[],
+    type: string = 'const',
+) {
+    return t.variableDeclaration(type as any, [
+        t.variableDeclarator(
+            t.objectPattern(
+                keys as any,
+            ),
+            target,
+        ),
+    ]);
 }

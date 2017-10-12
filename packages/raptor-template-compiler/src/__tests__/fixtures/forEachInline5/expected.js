@@ -1,13 +1,22 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "ul",
-        {},
-        $api.i($cmp.items, function (item, index) {
-            return $api.h(
-                "li",
-                {},
-                [$api.d(index), $api.t(" - "), $api.d(item)]
-            );
-        })
-    )];
+    const {
+        d: api_dynamic,
+        t: api_text,
+        h: api_element,
+        i: api_iterator
+    } = $api;
+
+    return [
+        api_element(
+            'ul',
+            {},
+            api_iterator($cmp.items, function(item, index) {
+                return api_element('li', {}, [
+                    api_dynamic(index),
+                    api_text(' - '),
+                    api_dynamic(item)
+                ]);
+            })
+        )
+    ];
 }

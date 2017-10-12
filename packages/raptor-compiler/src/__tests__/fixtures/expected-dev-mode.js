@@ -1,7 +1,11 @@
 define('x-class_and_template', ['engine'], function (engine) {
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h("section", {}, [])];
+    const {
+        h: api_element
+    } = $api;
+
+    return [api_element("section", {}, [])];
 }
 
 const Test = 1;

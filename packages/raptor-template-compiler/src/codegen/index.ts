@@ -6,7 +6,6 @@ import template = require('babel-template');
 import {
     TEMPLATE_PARAMS,
     TEMPLATE_FUNCTION_NAME,
-    DEFAULT_SLOT_NAME,
 } from '../shared/constants';
 
 import {
@@ -15,20 +14,8 @@ import {
 } from '../shared/scope';
 
 import {
-    RENDER_PRIMITIVE_API,
-    createText,
-    createElement,
-    createCustomElement,
-    identifierFromComponentName,
-    importFromComponentName,
-    objectToAST,
-    getMemberExpressionRoot,
-} from './helpers';
-
-import {
     createElement as createIRElement,
     traverse,
-    isElement,
     isCustomElement,
     isComponentProp,
 } from '../shared/ir';
@@ -43,252 +30,27 @@ import {
     CompilationOutput,
 } from '../shared/types';
 
-import * as memorization from './memorization';
-
 import Stack from '../shared/stack';
 
-function applyInlineIf(
-    element: IRElement,
-    babelNode: t.Expression,
-    testExpression?: t.Expression,
-    falseValue: t.Expression = t.nullLiteral(),
-): t.Expression {
-    if (!element.if) {
-        return babelNode;
-    }
+import {
+    identifierFromComponentName,
+    importFromComponentName,
+    objectToAST,
+    getMemberExpressionRoot,
+    isTemplate,
+    isSlot,
+    shouldFlatten,
+    destructuringAssignmentFromObject,
+} from './helpers';
 
-    if (!testExpression) {
-        testExpression = bindExpression(element.if!, element).expression;
-    }
+import CodeGen from './codegen';
 
-    let leftExpression: t.Expression;
-    const modifier = element.ifModifier!;
-    if (modifier === 'true') {
-        leftExpression = testExpression;
-    } else if (modifier === 'false') {
-        leftExpression = t.unaryExpression('!', testExpression);
-    } else if (modifier === 'strict-true') {
-        leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
-    } else {
-        throw new Error(`Unknown if modifier ${modifier}`);
-    }
-
-    return t.conditionalExpression(
-        leftExpression,
-        babelNode,
-        falseValue,
-    );
-}
-
-function applyInlineFor(element: IRElement, babelNode: t.Expression) {
-    if (!element.forEach) {
-        return babelNode;
-    }
-
-    const { expression, item, index } = element.forEach;
-    const params  = [item];
-    if (index) {
-        params.push(index);
-    }
-
-    const iterationFunction = t.functionExpression(
-        undefined,
-        params,
-        t.blockStatement([t.returnStatement(babelNode)]),
-    );
-
-    const { expression: iterable } = bindExpression(expression, element);
-
-    return t.callExpression(
-        RENDER_PRIMITIVE_API.ITERATOR,
-        [ iterable, iterationFunction ],
-    );
-}
-
-function applyInlineForOf(element: IRElement, babelNode: t.Expression): t.Expression {
-    if (!element.forOf) {
-        return babelNode;
-    }
-
-    const stack = new Stack<t.Expression >();
-    stack.push(
-        t.arrayExpression([]),
-    );
-
-    const { expression, iterator } = element.forOf;
-    const { name: iteratorName } = iterator;
-
-    const argNames: { [key: string]: t.Identifier } = {
-        value: t.identifier(`${iteratorName}Value`),
-        index: t.identifier(`${iteratorName}Index`),
-        first: t.identifier(`${iteratorName}First`),
-        last: t.identifier(`${iteratorName}Last`),
-    };
-
-    const functionParams = Object.keys(argNames).map((key) => (argNames[key]));
-    const iterationFunction = t.functionExpression(
-        undefined,
-        functionParams,
-        t.blockStatement([
-            t.returnStatement(babelNode),
-        ]),
-    );
-
-    const { expression: mappedIterationFunction } = rewriteIteratorToArguments(iterationFunction, iterator, argNames);
-
-    const { expression: iterable } = bindExpression(expression, element);
-
-    return t.callExpression(
-        RENDER_PRIMITIVE_API.ITERATOR,
-        [ iterable, mappedIterationFunction ],
-    );
-}
-
-function applyTemplateForOf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-    if (!element.forOf) {
-        return fragmentNodes;
-    }
-
-    let expression = fragmentNodes;
-    if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-        expression = expression.elements[0] as t.Expression;
-    }
-
-    return applyInlineForOf(element, expression);
-}
-
-function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-    if (!element.if) {
-        return fragmentNodes;
-    }
-
-    if (t.isArrayExpression(fragmentNodes)) {
-        // Bind the expression once for all the template children
-        const { expression: testExpression } = bindExpression(element.if!, element);
-
-        return t.arrayExpression(
-            fragmentNodes.elements.map((child: t.Expression) => (
-                applyInlineIf(element, child, testExpression)
-            )),
-        );
-    } else {
-        // If the template has a single children, make sure the ternary expression returns an array
-        return applyInlineIf(element, fragmentNodes, undefined, t.arrayExpression([]));
-    }
-}
-
-function applyTemplateFor(element: IRElement, fragmentNodes: t.Expression): t.Expression {
-    if (!element.forEach) {
-        return fragmentNodes;
-    }
-
-    let expression = fragmentNodes;
-    if (t.isArrayExpression(expression) && expression.elements.length === 1) {
-        expression = expression.elements[0] as t.Expression;
-    }
-
-    return applyInlineFor(element, expression);
-}
-
-function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
-    switch (attr.type) {
-        case IRAttributeType.Expression:
-            const { expression } = bindExpression(attr.value, element);
-            return expression;
-
-        case IRAttributeType.String:
-            return t.stringLiteral(attr.value);
-
-        case IRAttributeType.Boolean:
-            return t.booleanLiteral(attr.value);
-    }
-}
-
-function elementDataBag(element: IRElement): t.ObjectExpression {
-    const { classMap, className, style, styleMap, attrs, props, on, forKey } = element;
-    const data: t.ObjectProperty[] = [];
-
-    if (className) {
-        const { expression: classExpression } = bindExpression(className, element);
-        data.push(
-            t.objectProperty(t.identifier('className'), classExpression),
-        );
-    }
-
-    if (classMap) {
-        const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
-        data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
-    }
-
-    if (styleMap) {
-        const styleObj = objectToAST(styleMap, (key) => (
-            typeof styleMap[key] === 'number' ?
-                t.numericLiteral(styleMap[key] as number) :
-                t.stringLiteral(styleMap[key] as string)
-        ));
-
-        data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
-    }
-
-    if (style) {
-        const { expression: styleExpression } = bindExpression(style, element);
-        data.push(t.objectProperty(t.identifier('style'), styleExpression));
-    }
-
-    if (attrs) {
-        const atrsObj = objectToAST(attrs, (key) => computeAttrValue(attrs[key], element));
-        data.push(t.objectProperty(t.identifier('attrs'), atrsObj));
-    }
-
-    if (props) {
-        const propsObj = objectToAST(props, (key) => computeAttrValue(props[key], element));
-        data.push(t.objectProperty(t.identifier('props'), propsObj));
-    }
-
-    if (forKey) {
-        data.push(t.objectProperty(t.identifier('key'), forKey));
-    }
-
-    if (on) {
-        const onObj = objectToAST(on, (key) => {
-            const { expression: handler } =  bindExpression(on[key], element);
-            const boundHandler = t.callExpression(RENDER_PRIMITIVE_API.BIND, [ handler ]);
-
-            // #439 - The handler can only be memorized if it is bound to component instance
-            const id = getMemberExpressionRoot(handler as t.MemberExpression);
-            const shouldBeMemorized = isComponentProp(id, element);
-
-            return shouldBeMemorized ? memorization.memorize(boundHandler) : boundHandler;
-        });
-        data.push(t.objectProperty(t.identifier('on'), onObj));
-    }
-
-    return t.objectExpression(data);
-}
-
-function shouldFlatten(element: IRElement): boolean {
-    return element.children.some((child) => (
-        isElement(child) && (
-            (isSlot(child) || !!child.forEach || !!child.forOf) ||
-            isTemplate(child) && shouldFlatten(child)
-        )
-    ));
-}
-
-const TEMPLATE_FUNCTION = template(
-    `export default function NAME(API, CMP, SLOT_SET, CONTEXT) {
-        return STATEMENT;
-    }`,
-    { sourceType: 'module' },
-);
-
-const isTemplate = (element: IRElement) => element.tag === 'template';
-const isSlot = (element: IRElement) => element.tag === 'slot';
-
-export function transform(
+function transform(
     root: IRNode,
+    codeGen: CodeGen,
 ): t.Expression {
-    const stack = new Stack< t.Expression >();
+
+    const stack = new Stack<t.Expression>();
     stack.push(
         t.arrayExpression([]),
     );
@@ -297,41 +59,44 @@ export function transform(
         text: {
             exit(textNode: IRText) {
                 let { value }  = textNode;
+
                 if (typeof value !== 'string') {
                     value = bindExpression(value, textNode).expression as t.MemberExpression;
                 }
 
-                const babelTextNode = createText(value);
-                (stack.peek() as t.ArrayExpression).elements.push(babelTextNode);
+                (stack.peek() as t.ArrayExpression).elements.push(
+                    codeGen.genText(value),
+                );
             },
         },
 
         element: {
             enter() {
-                const childrenEpression = t.arrayExpression([]);
-                stack.push(childrenEpression);
+                // Create a new frame when visiting a child
+                stack.push(
+                    t.arrayExpression([]),
+                );
             },
 
             exit(element: IRElement) {
                 let children = stack.pop();
 
-                if (shouldFlatten(element)) {
-                    if (t.isArrayExpression(children)) {
-                        children = element.children.length === 1 ?
-                            children.elements[0] as t.Expression :
-                            t.callExpression(RENDER_PRIMITIVE_API.FLATTENING, [children]);
-                    }
+                // Apply children flatening
+                if (shouldFlatten(element) && t.isArrayExpression(children)) {
+                    children = element.children.length === 1 ?
+                        children.elements[0] as t.Expression :
+                        codeGen.genFlatten([ children ]);
                 }
 
-                if (isTemplate(element)) {
-                    transformTemplate(element, children);
-                } else {
+                // Applied the transformation to itself
+                isTemplate(element) ?
+                    transformTemplate(element, children) :
                     transformElement(element, children);
-                }
             },
         },
     });
 
+    /** Transforms IRElement to Javascript AST node and add it at the to of the stack  */
     function transformElement(element: IRElement, children: t.Expression) {
         const databag = elementDataBag(element);
 
@@ -343,31 +108,22 @@ export function transform(
             // Make sure to register the component
             const componentClassName = element.component!;
 
-            babelElement = createCustomElement(
+            babelElement = codeGen.genCustomElement(
                 element.tag,
                 identifierFromComponentName(componentClassName),
                 databag,
             );
         } else if (isSlot(element)) {
-            const { slotName } = element;
-
-            const slotIdentifier = DEFAULT_SLOT_NAME === slotName ?
-                t.identifier(DEFAULT_SLOT_NAME) :
-                t.stringLiteral(slotName);
-
-            const isComputedProperty = !t.isIdentifier(slotIdentifier);
+            const defaultSlot = children;
+            const passedSlot = codeGen.getSlotId(element.slotName!);
 
             babelElement = t.logicalExpression(
                 '||',
-                t.memberExpression(
-                    t.identifier(TEMPLATE_PARAMS.SLOT_SET),
-                    slotIdentifier,
-                    isComputedProperty,
-                ),
-                children,
+                passedSlot,
+                defaultSlot,
             );
         } else {
-            babelElement = createElement(
+            babelElement = codeGen.genElement(
                 element.tag,
                 databag,
                 children,
@@ -380,6 +136,7 @@ export function transform(
         (stack.peek() as t.ArrayExpression).elements.push(babelElement);
     }
 
+    /** Transform template IRElement and add it at the top of the stack */
     function transformTemplate(element: IRElement, children: t.Expression) {
         let expression = applyTemplateIf(element, children);
 
@@ -410,7 +167,7 @@ export function transform(
             slots.push(
                 t.objectProperty(
                     t.stringLiteral(key),
-                    transform(slotRoot),
+                    transform(slotRoot, codeGen),
                 ),
             );
         });
@@ -418,6 +175,266 @@ export function transform(
         databag.properties.push(
             t.objectProperty(t.stringLiteral('slotset'), t.objectExpression(slots)),
         );
+    }
+
+    function applyInlineIf(
+        element: IRElement,
+        babelNode: t.Expression,
+        testExpression?: t.Expression,
+        falseValue: t.Expression = t.nullLiteral(),
+    ): t.Expression {
+        if (!element.if) {
+            return babelNode;
+        }
+
+        if (!testExpression) {
+            testExpression = bindExpression(element.if!, element).expression;
+        }
+
+        let leftExpression: t.Expression;
+        const modifier = element.ifModifier!;
+        if (modifier === 'true') {
+            leftExpression = testExpression;
+        } else if (modifier === 'false') {
+            leftExpression = t.unaryExpression('!', testExpression);
+        } else if (modifier === 'strict-true') {
+            leftExpression = t.binaryExpression('===', testExpression, t.booleanLiteral(true));
+        } else {
+            throw new Error(`Unknown if modifier ${modifier}`);
+        }
+
+        return t.conditionalExpression(
+            leftExpression,
+            babelNode,
+            falseValue,
+        );
+    }
+
+    function applyInlineFor(
+        element: IRElement,
+        babelNode: t.Expression,
+    ) {
+        if (!element.forEach) {
+            return babelNode;
+        }
+
+        const { expression, item, index } = element.forEach;
+        const params  = [item];
+        if (index) {
+            params.push(index);
+        }
+
+        const { expression: iterable } = bindExpression(expression, element);
+        const iterationFunction = t.functionExpression(
+            undefined,
+            params,
+            t.blockStatement([t.returnStatement(babelNode)]),
+        );
+
+        return codeGen.genIterator(iterable, iterationFunction);
+    }
+
+    function applyInlineForOf(
+        element: IRElement,
+        babelNode: t.Expression,
+    ) {
+        if (!element.forOf) {
+            return babelNode;
+        }
+
+        const { expression, iterator } = element.forOf;
+        const { name: iteratorName } = iterator;
+
+        const argNames: { [key: string]: t.Identifier } = {
+            value: t.identifier(`${iteratorName}Value`),
+            index: t.identifier(`${iteratorName}Index`),
+            first: t.identifier(`${iteratorName}First`),
+            last: t.identifier(`${iteratorName}Last`),
+        };
+
+        const functionParams = Object.keys(argNames).map((key) => (argNames[key]));
+        const iterationFunction = t.functionExpression(
+            undefined,
+            functionParams,
+            t.blockStatement([
+                t.returnStatement(babelNode),
+            ]),
+        );
+
+        const { expression: iterable } = bindExpression(expression, element);
+        const { expression: mappedIterationFunction } = rewriteIteratorToArguments(
+            iterationFunction,
+            iterator,
+            argNames,
+        );
+
+        return codeGen.genIterator(iterable, mappedIterationFunction);
+    }
+
+    function applyTemplateForOf(
+        element: IRElement,
+        fragmentNodes: t.Expression,
+    ) {
+        if (!element.forOf) {
+            return fragmentNodes;
+        }
+
+        let expression = fragmentNodes;
+        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+            expression = expression.elements[0] as t.Expression;
+        }
+
+        return applyInlineForOf(element, expression);
+    }
+
+    function applyTemplateFor(
+        element: IRElement,
+        fragmentNodes: t.Expression,
+    ): t.Expression {
+        if (!element.forEach) {
+            return fragmentNodes;
+        }
+
+        let expression = fragmentNodes;
+        if (t.isArrayExpression(expression) && expression.elements.length === 1) {
+            expression = expression.elements[0] as t.Expression;
+        }
+
+        return applyInlineFor(element, expression);
+    }
+
+    function applyTemplateIf(element: IRElement, fragmentNodes: t.Expression): t.Expression {
+        if (!element.if) {
+            return fragmentNodes;
+        }
+
+        if (t.isArrayExpression(fragmentNodes)) {
+            // Bind the expression once for all the template children
+            const { expression: testExpression } = bindExpression(element.if!, element);
+
+            return t.arrayExpression(
+                fragmentNodes.elements.map((child: t.Expression) => (
+                    applyInlineIf(element, child, testExpression)
+                )),
+            );
+        } else {
+            // If the template has a single children, make sure the ternary expression returns an array
+            return applyInlineIf(element, fragmentNodes, undefined, t.arrayExpression([]));
+        }
+    }
+
+    function computeAttrValue(attr: IRAttribute, element: IRElement): t.Expression {
+        switch (attr.type) {
+            case IRAttributeType.Expression:
+                const { expression } = bindExpression(attr.value, element);
+                return expression;
+
+            case IRAttributeType.String:
+                return t.stringLiteral(attr.value);
+
+            case IRAttributeType.Boolean:
+                return t.booleanLiteral(attr.value);
+        }
+    }
+
+    function elementDataBag(
+        element: IRElement,
+    ): t.ObjectExpression {
+        const data: t.ObjectProperty[] = [];
+        const {
+            classMap,
+            className,
+            style,
+            styleMap,
+            attrs,
+            props,
+            on,
+            forKey,
+        } = element;
+
+        if (className) {
+            const { expression: classExpression } = bindExpression(
+                className,
+                element,
+            );
+            data.push(t.objectProperty(t.identifier('className'), classExpression));
+        }
+
+        if (classMap) {
+            const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
+            data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
+        }
+
+        if (styleMap) {
+            const styleObj = objectToAST(
+                styleMap,
+                key =>
+                    typeof styleMap[key] === 'number'
+                        ? t.numericLiteral(styleMap[key] as number)
+                        : t.stringLiteral(styleMap[key] as string),
+            );
+
+            data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
+        }
+
+        if (style) {
+            const { expression: styleExpression } = bindExpression(style, element);
+            data.push(t.objectProperty(t.identifier('style'), styleExpression));
+        }
+
+        if (attrs) {
+            const atrsObj = objectToAST(attrs, key =>
+                computeAttrValue(attrs[key], element),
+            );
+            data.push(t.objectProperty(t.identifier('attrs'), atrsObj));
+        }
+
+        if (props) {
+            const propsObj = objectToAST(props, key =>
+                computeAttrValue(props[key], element),
+            );
+            data.push(t.objectProperty(t.identifier('props'), propsObj));
+        }
+
+        if (forKey) {
+            data.push(t.objectProperty(t.identifier('key'), forKey));
+        }
+
+        if (on) {
+            const onObj = objectToAST(on, key => {
+                const { expression: componentHandler } = bindExpression(on[key], element);
+                let handler: t.Expression = codeGen.genBind(componentHandler);
+
+                // #439 - The handler can only be memorized if it is bound to component instance
+                const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
+                const shouldMemorizeHandler = isComponentProp(id, element);
+
+                // Apply memorization if the handler is memorizable.
+                //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
+                if (shouldMemorizeHandler) {
+                    const memorizedId = codeGen.getMemorizationId();
+                    const memorization = t.assignmentExpression(
+                        '=',
+                        t.memberExpression(
+                            t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                            memorizedId,
+                        ),
+                        handler,
+                    );
+
+                    handler = t.logicalExpression(
+                        '||',
+                        memorizedId,
+                        memorization,
+                    );
+                }
+
+                return handler;
+            });
+            data.push(t.objectProperty(t.identifier('on'), onObj));
+        }
+
+        return t.objectExpression(data);
     }
 
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
@@ -451,24 +468,77 @@ function generateTemplateMetadata(metadata: CompilationMetadata): t.ExpressionSt
     return metadataExpressions;
 }
 
-export default function(templateRoot: IRElement, metadata: CompilationMetadata): CompilationOutput {
-    memorization.reset();
+const TEMPLATE_FUNCTION = template(
+    `export default function ${TEMPLATE_FUNCTION_NAME}(
+        ${TEMPLATE_PARAMS.API},
+        ${TEMPLATE_PARAMS.INSTANCE},
+        ${TEMPLATE_PARAMS.SLOT_SET},
+        ${TEMPLATE_PARAMS.CONTEXT}
+    ) {
+        APIS;
+        SLOTS;
+        CONTEXT;
+        return STATEMENT;
+    }`,
+    { sourceType: 'module' },
+);
 
-    const statement = transform(templateRoot);
+export default function(templateRoot: IRElement, metadata: CompilationMetadata): CompilationOutput {
+    const codeGen = new CodeGen();
+    const statement = transform(templateRoot, codeGen);
+
+    const apis = destructuringAssignmentFromObject(
+        t.identifier(TEMPLATE_PARAMS.API),
+        Object.keys(codeGen.usedApis).map(name => (
+            t.objectProperty(
+                t.identifier(name),
+                codeGen.usedApis[name],
+                false,
+                true,
+            )
+        )),
+    );
+
+    let slots: t.Node = t.noop();
+    if (Object.keys(codeGen.usedSlots).length) {
+        slots = destructuringAssignmentFromObject(
+            t.identifier(TEMPLATE_PARAMS.SLOT_SET),
+            Object.keys(codeGen.usedSlots).map(name => (
+                t.objectProperty(
+                    t.stringLiteral(name),
+                    codeGen.usedSlots[name],
+                    false,
+                    true,
+                )
+            )),
+        );
+    }
+
+    let context: t.Node = t.noop();
+    if (codeGen.memorizedIds.length) {
+        context = destructuringAssignmentFromObject(
+            t.identifier(TEMPLATE_PARAMS.CONTEXT),
+            codeGen.memorizedIds.map(id => (
+                t.objectProperty(
+                    id,
+                    id,
+                    false,
+                    true,
+                )
+            )),
+        );
+    }
+
+    const content = TEMPLATE_FUNCTION({
+        APIS: apis,
+        SLOTS: slots,
+        CONTEXT: context,
+        STATEMENT:  statement,
+    }) as t.ExportDefaultDeclaration;
 
     const imports = metadata.templateDependencies.map((cmpClassName) => (
         importFromComponentName(cmpClassName)
     ));
-
-    const content = TEMPLATE_FUNCTION({
-        NAME: t.identifier(TEMPLATE_FUNCTION_NAME),
-        API: t.identifier(TEMPLATE_PARAMS.API),
-        CMP: t.identifier(TEMPLATE_PARAMS.INSTANCE),
-        SLOT_SET: t.identifier(TEMPLATE_PARAMS.SLOT_SET),
-        CONTEXT: t.identifier(TEMPLATE_PARAMS.CONTEXT),
-        STATEMENT:  statement,
-    }) as t.ExportDefaultDeclaration;
-
     const templateMetadata = generateTemplateMetadata(metadata);
 
     const program = t.program([

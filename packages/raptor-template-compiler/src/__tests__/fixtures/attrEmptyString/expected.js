@@ -1,7 +1,9 @@
 import _fooBar from 'foo-bar';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
+    const { h: api_element, c: api_custom_element } = $api;
+
     return [
-        $api.h(
+        api_element(
             'p',
             {
                 attrs: {
@@ -10,7 +12,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             []
         ),
-        $api.c('foo-bar', _fooBar, {
+        api_custom_element('foo-bar', _fooBar, {
             props: {
                 content: '',
                 visible: true

@@ -1,24 +1,19 @@
-import _nsCmp from "ns-cmp";
+import _nsCmp from 'ns-cmp';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "section",
-        {},
-        [$api.c(
-            "ns-cmp",
-            _nsCmp,
-            {
+    const { t: api_text, h: api_element, c: api_custom_element } = $api;
+
+    return [
+        api_element('section', {}, [
+            api_custom_element('ns-cmp', _nsCmp, {
                 slotset: {
-                    $default$: [$cmp.isTrue ? $api.h(
-                        "p",
-                        {},
-                        [$api.t("S1")]
-                    ) : null, $api.h(
-                        "p",
-                        {},
-                        [$api.t("S2")]
-                    )]
+                    $default$: [
+                        $cmp.isTrue
+                            ? api_element('p', {}, [api_text('S1')])
+                            : null,
+                        api_element('p', {}, [api_text('S2')])
+                    ]
                 }
-            }
-        )]
-    )];
+            })
+        ])
+    ];
 }

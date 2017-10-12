@@ -1,21 +1,21 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "section",
-        {},
-        $api.i($cmp.items, function (item) {
-            return $api.h(
-                "div",
-                {
-                    classMap: {
-                        "my-list": true
-                    }
-                },
-                [$api.h(
-                    "p",
-                    {},
-                    [$api.d(item)]
-                )]
-            );
-        })
-    )];
+    const { d: api_dynamic, h: api_element, i: api_iterator } = $api;
+
+    return [
+        api_element(
+            'section',
+            {},
+            api_iterator($cmp.items, function(item) {
+                return api_element(
+                    'div',
+                    {
+                        classMap: {
+                            'my-list': true
+                        }
+                    },
+                    [api_element('p', {}, [api_dynamic(item)])]
+                );
+            })
+        )
+    ];
 }

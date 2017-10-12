@@ -1,11 +1,9 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    return [$api.h(
-        "section",
-        {},
-        [$api.h(
-            "p",
-            {},
-            [$api.d($cmp.obj.sub)]
-        )]
-    )];
+    const { d: api_dynamic, h: api_element } = $api;
+
+    return [
+        api_element('section', {}, [
+            api_element('p', {}, [api_dynamic($cmp.obj.sub)])
+        ])
+    ];
 }

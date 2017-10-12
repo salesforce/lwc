@@ -1,7 +1,11 @@
 import { Element } from 'engine';
 
 function tmpl($api, $cmp, $slotset, $ctx) {
-  return [$api.h("section", {}, [])];
+  const {
+    h: api_element
+  } = $api;
+
+  return [api_element("section", {}, [])];
 }
 
 const Test = 1;
