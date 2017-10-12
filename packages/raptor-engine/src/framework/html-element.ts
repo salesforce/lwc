@@ -47,11 +47,11 @@ ComponentElement.prototype = {
             const vm = this[ViewModelReflection];
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (vm.idx === 0) {
-                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected(via connectedCallback) and before the element is disconnected(via disconnectedCallback).`);
+                assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`);
             }
-            
-            if (!evtName.match(/^[a-z]+$/)) {
-                assert.logWarning(`Invalid event type:${evtName} dispatched in element ${this}. Event name should only contain lowercase alphabetic characters`);
+
+            if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
+                assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphabetic characters.`);
             }
         });
         // custom elements will rely on the DOM dispatchEvent mechanism

@@ -116,7 +116,7 @@ describe('html-element', () => {
 
             return Promise.resolve().then(() => {
                 vnode.vm.component.dispatchEvent(new CustomEvent('warning'));
-                expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected(via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
+                expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
                 assertLogger.logWarning.mockRestore();
             });
         });
@@ -137,20 +137,47 @@ describe('html-element', () => {
             });
         });
 
-        it ('should log warning when event name contains any non-alphabetic lowercase characters', function () {
+        it ('should log warning when event name contains non-alphanumeric lowercase characters', function () {
             class Foo extends Element {}
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', Foo, {});
-            const vnode2 = api.h('div', {}, []);
             patch(elm, vnode);
             jest.spyOn(assertLogger, 'logWarning')
 
             return Promise.resolve().then(() => {
-                vnode.vm.component.dispatchEvent(new CustomEvent('a1-$'));
+                vnode.vm.component.dispatchEvent(new CustomEvent('foo1-$'));
                 expect(assertLogger.logWarning).toBeCalled();
                 assertLogger.logWarning.mockRestore();
             });
+        });
+
+        it ('should log warning when event name does not start with alphabetic lowercase characters', function () {
+            class Foo extends Element {}
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            patch(elm, vnode);
+            jest.spyOn(assertLogger, 'logWarning')
+            return Promise.resolve().then( ()=> {
+                vnode.vm.component.dispatchEvent(new CustomEvent('123'));
+                expect(assertLogger.logWarning).toBeCalled();
+                assertLogger.logWarning.mockRestore();
+            })
+        });
+
+        it ('should not log warning for alphanumeric lowercase event name', function () {
+            class Foo extends Element {}
+            const elm = document.createElement('x-foo');
+            document.body.appendChild(elm);
+            const vnode = api.c('x-foo', Foo, {});
+            patch(elm, vnode);
+            jest.spyOn(assertLogger, 'logWarning')
+            return Promise.resolve().then( ()=> {
+                vnode.vm.component.dispatchEvent(new CustomEvent('foo1234abc'));
+                expect(assertLogger.logWarning).not.toBeCalled();
+                assertLogger.logWarning.mockRestore();
+            })
         });
     });
 
