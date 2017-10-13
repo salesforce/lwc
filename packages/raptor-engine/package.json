@@ -2,12 +2,12 @@
   "name": "raptor-engine",
   "version": "0.14.10",
   "description": "Raptor Engine",
-  "main": "lib/engine.common.js",
-  "module": "lib/engine.es.js",
-  "jsnext:main": "lib/engine.es.js",
+  "main": "dist/commonjs/engine.js",
+  "module": "dist/modules/engine.js",
+  "jsnext:main": "dist/modules/engine.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage",
+    "test": "yarn test:standard",
     "test:compat": "jest --projects ./scripts/jest/compat.config.js",
     "test:standard": "jest --projects ./scripts/jest/standard.config.js",
     "types": "tsc src/**/*.ts --noEmit",
@@ -30,11 +30,11 @@
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-strip-caridy-patched": "^1.1.1",
     "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-plugin-uglify": "^2.0.1",
     "snabbdom": "^0.5.4",
     "ts-jest": "^21.0.1",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
-    "uglify-es": "^3.0.24"
+    "uglify-es": "^3.1.3"
   }
 }

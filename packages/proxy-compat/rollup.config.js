@@ -9,8 +9,9 @@ const { version } = require('./package.json');
 const mainEntry = path.resolve(__dirname, 'src/main.ts');
 const noopEntry = path.resolve(__dirname, 'src/main-noop.ts');
 
-const distDirectory = path.resolve(__dirname, 'dist');
-const libDirectory = path.resolve(__dirname, 'lib');
+const umdDirectory = path.resolve(__dirname, 'dist/umd');
+const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
+const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
 const moduleName = 'Proxy';
 
@@ -31,11 +32,8 @@ const baseRollupConfig = {
 
 function rollupConfig({ noop, formats, prod }) {
     const plugins = [];
-    const entry = noop ? noopEntry : mainEntry
 
-    plugins.push(typescript({
-        typescript: require('typescript'),
-    }));
+    plugins.push(typescript({ typescript: require('typescript') }));
 
     if (prod) {
         const { minify } = require('uglify-es');
@@ -43,32 +41,20 @@ function rollupConfig({ noop, formats, prod }) {
     }
 
     const targets = formats.map(format => {
-        const isDist = format === 'umd';
-        const targetDirectory = isDist ? distDirectory : libDirectory;
-
-        let formatSuffix = '';
-        if (format === 'cjs') {
-            formatSuffix = '.common'
-        } else if (format === 'es') {
-            formatSuffix = '.es'
-        }
+        const targetDirectory = format === 'umd' ? umdDirectory : format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
             'proxy-compat',
             noop ? '-noop' : '',
-            formatSuffix,
             prod ? '.min' : '',
             '.js'
         ].join('');
 
-        return {
-            format,
-            dest: path.join(targetDirectory, targetName),
-        }
+        return { format, dest: path.join(targetDirectory, targetName) };
     });
 
     return Object.assign({}, baseRollupConfig, {
-        entry,
+        entry: noop ? noopEntry: mainEntry,
         targets,
         plugins
     });
@@ -76,12 +62,8 @@ function rollupConfig({ noop, formats, prod }) {
 
 module.exports = [
 
-    // DEV mode
+    // DEV & PROD mode
     rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
-    rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
-
-    // PROD mode
-    rollupConfig({ formats: ['umd'], prod: true }),
     rollupConfig({ formats: ['umd'], prod: true }),
 
     // NOOP

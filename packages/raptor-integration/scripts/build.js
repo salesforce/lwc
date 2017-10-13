@@ -64,8 +64,8 @@ const baseOutputConfig = {
 
 // -- Build shared artifacts -----------------------------------------------------
 
-const engineModeFile = path.join(distDir, isCompat ? 'engine_compat.js' : 'engine.js');
-const compatPath = path.join(distDir, 'compat.js');
+const engineModeFile = path.join(require.resolve(`raptor-engine/dist/umd/engine${isCompat ? '_compat': ''}.js`));
+const compatPath = path.join(require.resolve('raptor-compat/dist/umd/compat.js'));
 
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile

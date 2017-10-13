@@ -3,15 +3,15 @@ const path = require('path');
 const webpack = require('webpack');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 const ClosureCompilerPlugin = require('webpack-closure-compiler');
-const compilerPkg = require('../packages/raptor-compiler/package.json');
+const version = JSON.stringify(require("./package.json").version);
 
 module.exports = function (/*env*/) {
     return [{
-        entry: path.resolve(__dirname, '../packages/raptor-compiler/src/index.js'),
+        entry: path.resolve(__dirname, 'src/index.js'),
         output: {
             library: 'compiler',
             libraryTarget: 'umd',
-            path: path.resolve(__dirname, '../dist/'),
+            path: path.resolve(__dirname, 'dist/umd/'),
             filename: 'compiler.min.js',
         },
         node: {
@@ -37,11 +37,11 @@ module.exports = function (/*env*/) {
                 test: /index.js$/,
                 loader: StringReplacePlugin.replace({
                     replacements: [{
-                        pattern: /__VERSION__/ig,
-                        replacement: () => compilerPkg.version
+                        pattern: /\"__VERSION__\"/ig,
+                        replacement: () => version
                     }]
                 })
             }]
         }
     }]
-}
+};

@@ -1,4 +1,4 @@
-const GLOBAL_VAR = 'Proxy';
+const GLOBAL_VAR = 'EngineHelpers';
 const GLOBAL_MEMBER = 'babelHelpers';
 
 const mkdirp = require('mkdirp');
@@ -18,6 +18,6 @@ function relative(relPath) {
 mkdirp.sync(relative('../dist'));
 
 // Unminified version
-fs.writeFileSync(relative('../dist/compat-helpers.js'), result);
+fs.writeFileSync(relative('../dist/engine-helpers.js'), result);
 // Minified version
-fs.writeFileSync(relative('../dist/compat-helpers.min.js'), resultMin);
+fs.writeFileSync(relative('../dist/engine-helpers.min.js'), resultMin);

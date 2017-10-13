@@ -7,26 +7,15 @@ const uglify = require('rollup-plugin-uglify');
 const { version } = require('./package.json');
 
 const entry = path.resolve(__dirname, 'src/main.ts');
-const distDirectory = path.resolve(__dirname, 'dist');
-const libDirectory = path.resolve(__dirname, 'lib');
+const umdDirectory = path.resolve(__dirname, 'dist/umd');
+const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
+const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
 const moduleName = 'LockerMembrane';
 
 const banner = (
 `/*
  * Copyright (C) 2017 salesforce.com, inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 `
 );
@@ -53,19 +42,10 @@ function rollupConfig({ formats, prod }) {
     }
 
     const targets = formats.map(format => {
-        const isDist = format === 'umd';
-        const targetDirectory = isDist ? distDirectory : libDirectory;
-
-        let formatSuffix = '';
-        if (format === 'cjs') {
-            formatSuffix = '.common'
-        } else if (format === 'es') {
-            formatSuffix = '.es'
-        }
+        const targetDirectory = format === 'umd' ? umdDirectory :  format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
             'locker-membrane',
-            formatSuffix,
             prod ? '.min' : '',
             '.js'
         ].join('');
@@ -84,12 +64,8 @@ function rollupConfig({ formats, prod }) {
 
 module.exports = [
 
-    // DEV mode
+    // DEV & PROD
     rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
-    rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
-
-    // PROD mode
-    rollupConfig({ formats: ['umd'], prod: true }),
-    rollupConfig({ formats: ['umd'], prod: true }),
+    rollupConfig({ formats: ['umd'], prod: true })
 
 ];

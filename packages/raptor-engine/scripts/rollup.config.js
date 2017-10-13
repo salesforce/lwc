@@ -6,8 +6,9 @@ const uglify = require('rollup-plugin-uglify');
 const { version } = require('../package.json');
 
 const entry = path.resolve(__dirname, '../src/framework/main.ts');
-const distDirectory = path.resolve(__dirname, '../dist');
-const libDirectory = path.resolve(__dirname, '../lib');
+const umdDirectory = path.resolve(__dirname, '../dist/umd');
+const commonJSDirectory = path.resolve(__dirname, '../dist/commonjs');
+const modulesDirectory = path.resolve(__dirname, '../dist/modules');
 
 const moduleName = 'Engine';
 
@@ -38,19 +39,15 @@ const baseRollupConfig = {
     footer,
 };
 
-function rollupConfig({ formats, prod, compat, proddebug, test }) {
+function rollupConfig({ formats, prod, target, proddebug, test }) {
     const plugins = [];
 
     plugins.push(typescript({
-        target: compat ? 'es5' : 'es2015',
+        target: target,
         typescript: require('typescript'),
     }));
 
     const functionsToStrip = [];
-
-    if (!compat) {
-        functionsToStrip.push('compat');
-    }
 
     if (prod || proddebug || test) {
         // Strip only console.log and not the entire console, because some assert APIs
@@ -73,30 +70,18 @@ function rollupConfig({ formats, prod, compat, proddebug, test }) {
     }
 
     const targets = formats.map(format => {
-        const isDist = format === 'umd';
-        const targetDirectory = isDist ? distDirectory : libDirectory;
-
-        let formatSuffix = '';
-        if (format === 'cjs') {
-            formatSuffix = '.common'
-        } else if (format === 'es') {
-            formatSuffix = '.es'
-        }
+        const targetDirectory = format === 'umd' ? umdDirectory : format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
             'engine',
-            compat ? '_compat' : '',
             test ? '_test' : '',
-            formatSuffix,
+            target === 'es5' ? '_compat' : '',
             proddebug ? '_debug' : '',
             prod ? '.min' : '',
             '.js'
         ].join('');
 
-        return {
-            format,
-            dest: path.join(targetDirectory, targetName),
-        }
+        return { format, dest: path.join(targetDirectory,  targetName) }
     });
 
     return Object.assign({}, baseRollupConfig, {
@@ -107,19 +92,19 @@ function rollupConfig({ formats, prod, compat, proddebug, test }) {
 
 module.exports = [
     // DEV mode
-    rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: false }),
-    rollupConfig({ formats: ['umd', 'cjs', 'es'], compat: true }),
+    rollupConfig({ formats: ['umd', 'cjs', 'es'], target: 'es2015' }),
+    rollupConfig({ formats: ['umd'], target: 'es5' }),
 
     // PRODDEBUG mode
-    rollupConfig({ formats: ['umd'], proddebug: true, compat: false }),
-    rollupConfig({ formats: ['umd'], proddebug: true, compat: true }),
+    rollupConfig({ formats: ['umd'], proddebug: true, target: 'es2015' }),
+    rollupConfig({ formats: ['umd'], proddebug: true, target: 'es5' }),
 
     // PROD mode
-    rollupConfig({ formats: ['umd'], prod: true, compat: false }),
-    rollupConfig({ formats: ['umd'], prod: true, compat: true }),
+    rollupConfig({ formats: ['umd'], prod: true, target: 'es2015' }),
+    rollupConfig({ formats: ['umd'], prod: true, target: 'es5' }),
 
     // TEST mode
     // TODO: Remove this mode once the engine is less chatty by deafault. (W-3908810)
-    rollupConfig({ formats: ['cjs'], test: true, compat: false }),
-    rollupConfig({ formats: ['cjs'], test: true, compat: true }),
+    rollupConfig({ formats: ['cjs'], test: true, target: 'es2015' }),
+    rollupConfig({ formats: ['cjs'], test: true, target: 'es5' }),
 ];

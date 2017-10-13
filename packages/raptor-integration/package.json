@@ -5,6 +5,7 @@
   "license": "Beerware",
   "scripts": {
     "clean": "rimraf dist/",
+    "test": "echo 'No unit test in this package'",
     "test:integration": "yarn build && wdio ./scripts/wdio.conf.js",
     "test:integration:sauce": "yarn build && wdio ./scripts/wdio.sauce.conf.js",
     "build": "node scripts/build.js",

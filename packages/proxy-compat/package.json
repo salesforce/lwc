@@ -2,9 +2,9 @@
   "name": "proxy-compat",
   "version": "0.14.10",
   "description": "Proxy Compat patches the runtime to enable Proxy in ES5",
-  "main": "lib/proxy-compat.common.js",
-  "module": "lib/proxy-compat.es.js",
-  "jsnext:main": "lib/proxy-compat.es.js",
+  "main": "dist/commonjs/proxy-compat.js",
+  "module": "dist/modules/proxy-compat.js",
+  "jsnext:main": "dist/modules/proxy-compat.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
     "test": "jest --coverage",
@@ -24,10 +24,10 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.45.1",
     "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-uglify": "^1.0.1",
-    "ts-jest": "^21.0.1",
+    "rollup-plugin-uglify": "^2.0.1",
+    "ts-jest": "^21.1.2",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
-    "uglify-es": "^3.0.24"
+    "uglify-es": "^3.1.3"
   }
 }

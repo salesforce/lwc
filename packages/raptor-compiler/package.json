@@ -2,12 +2,13 @@
   "name": "raptor-compiler",
   "version": "0.14.10",
   "description": "The raptor compiler",
-  "main": "dist/index.js",
+  "main": "dist/commonjs/index.js",
   "author": "",
   "license": "ISC",
   "scripts": {
     "clean": "rimraf dist/",
-    "build": "babel src/ --out-dir dist/",
+    "build": "babel src/ --out-dir dist/commonjs",
+    "build:umd": "webpack --progress",
     "test": "jest --coverage",
     "prepublish": "yarn run build"
   },
@@ -16,7 +17,10 @@
     "jest": "^21.2.1",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "webpack": "^3.7.1",
+    "webpack-closure-compiler":"2.1.5",
+    "string-replace-webpack-plugin":"0.1.3"
   },
   "dependencies": {
     "babel-core": "^6.24.0",

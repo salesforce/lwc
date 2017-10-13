@@ -1,2 +1,6 @@
+coverage
 src
 jest*.js
+.*
+tsconfig.json
+tslint.json

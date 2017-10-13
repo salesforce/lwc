@@ -2,9 +2,9 @@
   "name": "locker-membrane",
   "version": "0.14.10",
   "description": "Membrane implementation for locker service",
-  "main": "lib/locker-membrane.common.js",
-  "module": "lib/locker-membrane.es.js",
-  "jsnext:main": "lib/locker-membrane.es.js",
+  "main": "dist/commonjs/locker-membrane.js",
+  "module": "dist/modules/locker-membrane.js",
+  "jsnext:main": "dist/modules/locker-membrane.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
     "test": "jest --coverage",
@@ -24,10 +24,10 @@
     "rimraf": "^2.6.1",
     "rollup": "^0.45.1",
     "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-plugin-uglify": "^2.0.1",
     "ts-jest": "^21.0.1",
     "typescript": "^2.3.4",
     "typescript-eslint-parser": "^3.0.0",
-    "uglify-es": "^3.0.24"
+    "uglify-es": "^3.1.3"
   }
 }

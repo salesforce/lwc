@@ -2,7 +2,6 @@
 /* eslint-env node */
 
 import * as path from 'path';
-import * as prettier from 'prettier';
 import { compile } from '../packages/raptor-compiler/src/index.js';
 
 const args = process.argv.slice(2);
@@ -33,7 +32,7 @@ compile(entry, options)
 .then((result) => {
     console.log('\n>> Code --------------------------------------------------');
     if (result.code) {
-        console.log('\n', prettier.format(result.code));
+        console.log('\n', result.code);
     } else {
         Object.keys(result).map(r => console.log(`Mode: ${r}: `, result[r].code, '------------------------------------------------'));
     }

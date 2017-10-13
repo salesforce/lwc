@@ -1,5 +1,5 @@
-import { normalizeEntryPath, normalizeOptions } from './lib/utils';
-import { compileFile, compileBundle } from './lib/compiler';
+import { normalizeEntryPath, normalizeOptions } from './utils';
+import { compileFile, compileBundle } from './compiler';
 
 const BASE_OPTIONS = {
     format: 'es',

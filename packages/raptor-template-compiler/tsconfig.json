@@ -3,7 +3,8 @@
     "target": "es6",
     "moduleResolution": "node",
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "dist/commonjs",
+    "declarationDir": "dist/types",
     "declaration": true,
 
     "strict": true,

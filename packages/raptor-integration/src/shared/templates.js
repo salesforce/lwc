@@ -21,7 +21,7 @@ exports.html = function (cmpName, isCompat) {
             ${isCompat ? COMPAT : ''}
             <script src="../shared/engine.js"></script>
             <script>
-                for (let h in Proxy.babelHelpers) { window[h] = Proxy.babelHelpers[h] }
+                for (let h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
             </script>
             <script src="./${cmpName}.js"></script>
         </body>

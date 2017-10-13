@@ -2,8 +2,8 @@
   "name": "raptor-template-compiler",
   "version": "0.14.10",
   "description": "Template compiler package",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/types/index.d.ts",
   "license": "MIT",
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
@@ -21,14 +21,14 @@
     "@types/babel-traverse": "^6.7.16",
     "@types/babylon": "^6.16.1",
     "@types/he": "^0.5.29",
-    "@types/jest": "^21.1.1",
+    "@types/jest": "^21.1.2",
     "ast-pretty-print": "^1.1.5",
     "esutils": "^2.0.2",
     "glob": "^7.1.2",
-    "jest": "^21.1.1",
+    "jest": "^21.2.1",
     "prettier": "^1.7.3",
     "rimraf": "^2.6.1",
-    "ts-jest": "^21.0.1",
+    "ts-jest": "^21.1.2",
     "tslint": "^5.2.0",
     "typescript": "^2.3.4"
   },

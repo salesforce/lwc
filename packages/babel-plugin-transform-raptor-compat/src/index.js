@@ -4,7 +4,7 @@ const defaultResolveOptions = {
     global: 'window.Proxy'
 };
 
-module.exports = function({ types: t }) {
+function compatPlugin({ types: t }) {
     let keysSeen = Object.create(null);
 
     function convertProperty(property, isComputed = false) {
@@ -219,3 +219,6 @@ module.exports = function({ types: t }) {
         }
     };
 };
+
+compatPlugin.keys = KEYS;
+module.exports = compatPlugin;
