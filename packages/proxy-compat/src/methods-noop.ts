@@ -23,3 +23,7 @@ export function inKey(replicaOrAny: any, key: PropertyKey): boolean {
 export function iterableKey(replicaOrAny: any): any[] {
     return replicaOrAny;
 }
+
+export function instanceOfKey(instance: any, Type: any): boolean {
+    return instance instanceof Type;
+}

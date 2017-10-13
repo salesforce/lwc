@@ -1,4 +1,4 @@
-import { getKey, callKey, setKey, deleteKey, inKey, iterableKey } from "./methods-noop";
+import { getKey, callKey, setKey, deleteKey, inKey, iterableKey, instanceOfKey } from "./methods-noop";
 
 export default {
     getKey,
@@ -6,5 +6,6 @@ export default {
     setKey,
     deleteKey,
     inKey,
-    iterableKey
+    iterableKey,
+    instanceOfKey
 };
