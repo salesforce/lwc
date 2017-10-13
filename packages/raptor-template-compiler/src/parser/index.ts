@@ -17,7 +17,6 @@ import {
     normalizeAttributeValue,
     isValidHTMLAttribute,
     attributeToPropertyName,
-    isBlacklistedAttribute,
 } from './attribute';
 
 import {
@@ -452,8 +451,6 @@ export default function parse(source: string): {
                         return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
                     }
 
-                    removeAttribute(child, 'slot');
-
                     // Use default node name, if the slot attribute is set without value
                     if (slotAttribute.type === IRAttributeType.String && slotAttribute.value.length) {
                         slotName = slotAttribute.value;
@@ -479,9 +476,7 @@ export default function parse(source: string): {
             }
 
             const { name, location } = attr;
-            if (isBlacklistedAttribute(name)) {
-                return;
-            } else if (isAttribute(element, name)) {
+            if (isAttribute(element, name)) {
                 if (!isValidHTMLAttribute(element.tag, name)) {
                     const msg = [
                         `${name} is not valid attribute for ${tag}. For more information refer to`,

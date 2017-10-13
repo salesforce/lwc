@@ -37,8 +37,6 @@ export const VOID_ELEMENT_SET = new Set([
     'source', 'track', 'wbr',
 ]);
 
-export const BLACKLISTED_ATTRIBUTE_SET = new Set(['slot']);
-
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     accesskey: 'accessKey',
     readonly: 'readOnly',

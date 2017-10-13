@@ -17,7 +17,6 @@ import {
     DATA_ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
-    BLACKLISTED_ATTRIBUTE_SET,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
 } from './constants';
 
@@ -121,7 +120,13 @@ export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
 }
 
 export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
-    return attrName === 'role' || attrName === 'is' || attrName === 'key' || !!attrName.match(DATA_ARIA_RE);
+    return (
+        attrName === 'role' ||
+        attrName === 'is' ||
+        attrName === 'key' ||
+        attrName === 'slot' ||
+        !!attrName.match(DATA_ARIA_RE)
+    );
 }
 
 function isInputStateAttribute(element: IRElement, attrName: string) {
@@ -169,8 +174,4 @@ export function attributeToPropertyName(element: IRElement, attrName: string): s
     }
 
     return camelcase(propName);
-}
-
-export function isBlacklistedAttribute(attrName: string): boolean {
-    return BLACKLISTED_ATTRIBUTE_SET.has(attrName);
 }

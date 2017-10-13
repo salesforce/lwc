@@ -8,12 +8,28 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 slotset: {
                     $default$: [
                         $cmp.isTrue
-                            ? api_element('p', {}, [api_text('S1')])
+                            ? api_element(
+                                  'p',
+                                  {
+                                      attrs: {
+                                          slot: true,
+                                      },
+                                  },
+                                  [api_text('S1')],
+                              )
                             : null,
-                        api_element('p', {}, [api_text('S2')])
-                    ]
-                }
-            })
-        ])
+                        api_element(
+                            'p',
+                            {
+                                attrs: {
+                                    slot: true,
+                                },
+                            },
+                            [api_text('S2')],
+                        ),
+                    ],
+                },
+            }),
+        ]),
     ];
 }
