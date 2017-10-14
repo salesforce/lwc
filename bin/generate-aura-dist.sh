@@ -8,8 +8,8 @@ fi
 FILEPATH=$1
 npm run build:artifacts
 # engine versions
-cp  ./dist/engine* $FILEPATH/aura-resources/src/main/resources/aura/resources/engine/
+cp  ./packages/raptor-engine/dist/umd/engine* $FILEPATH/aura-resources/src/main/resources/aura/resources/engine/
 # compat-helpers
-cp  ./dist/compat* $FILEPATH/aura-resources/src/main/resources/aura/resources/compat-helpers/
+cp  ./packages/raptor-compat/dist/umd/compat* $FILEPATH/aura-resources/src/main/resources/aura/resources/compat-helpers/
 # compiler
-cp  ./dist/compiler.min.js $FILEPATH/aura-modules/src/main/resources/modules/compiler.min.js
+cp  ./packages/raptor-compiler/dist/umd/compiler.min.js $FILEPATH/aura-modules/src/main/resources/modules/compiler.min.js
