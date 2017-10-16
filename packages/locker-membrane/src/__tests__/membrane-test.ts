@@ -1,57 +1,55 @@
-import assert from 'power-assert';
-import { Membrane } from './../membrane';
-
+import { Membrane, unwrap } from './../membrane';
 
 describe('Membrane', function () {
     describe('distortions', function () {
-        it('should call distortion handler when piercing', function () {
+        it('should not call distortion handler when piercing', function () {
             const distortion = jest.fn();
             const membrane = new Membrane(distortion);
             membrane.inject({});
-            assert(distortion.mock.calls.length === 1);
+            expect(distortion.mock.calls.length).toBe(0);
         });
         it('should unwrap value when setting', function () {
-            const dry: any = {};
+            const dry: { foo?: any } = {};
             const bar = {};
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const wet = membrane.inject(dry);
             wet.foo = bar;
-            assert(dry.foo === bar);
+            expect(dry.foo).toBe(bar);
         });
         it('should unwrap has correctly', function () {
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const foo = {
                 bar: {}
             };
 
             const wet = membrane.inject(foo);
-            expect('foo' in wet);
+            expect('bar' in wet).toBe(true);
         });
         it('should apply distortions when getting value', function () {
             const rv = {};
             const distorted = {};
-            function distortion (value) {
+            function distortion (membrane: Membrane, value: any) {
                 if (value === rv) {
-                    return distorted;
+                    return membrane.inject(distorted);
                 }
-                return value;
+                return membrane.inject(value);
             }
             const membrane = new Membrane(distortion);
             const wet = membrane.inject({
                 foo: rv
             });
-            assert(wet.foo === membrane.inject(distorted));
+            expect(wet.foo).toBe(membrane.inject(distorted));
         });
         it('should apply distortions when invoking function', function () {
             const rv = {};
             const distorted = {};
-            function distortion (value) {
+            function distortion (membrane: Membrane, value: any) {
                 if (value === rv) {
-                    return distorted;
+                    return membrane.inject(distorted);
                 }
-                return value;
+                return membrane.inject(value);
             }
             const membrane = new Membrane(distortion);
             const wet = membrane.inject({
@@ -59,33 +57,34 @@ describe('Membrane', function () {
                     return rv;
                 }
             });
-            assert(wet.foo() === membrane.inject(distorted));
+            expect(wet.foo()).toBe(membrane.inject(distorted));
         });
-
         it('should call function with correct arguments and context', function () {
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => v;
             const membrane = new Membrane(distortion);
-            let mockThisArg;
-            const originalObject = {
-                arg: {},
-                foo: jest.fn(function () {
-                    mockThisArg = this;
-                })
-            };
-
-            const wet = membrane.inject(originalObject);
-            wet.foo(wet.arg);
-            assert(originalObject.foo.mock.calls[0][0] !== wet.arg);
-            assert(originalObject.foo.mock.calls[0][0] === originalObject.arg);
-            assert(mockThisArg !== wet);
-            assert(mockThisArg === originalObject);
+            let calledThis;
+            let calledArg;
+            function foo (this: any, arg: any) {
+                calledArg = arg;
+                calledThis = this;
+            }
+            const dryArg = {};
+            const dryThis = {};
+            const wetThis = membrane.inject(dryThis);
+            const wetArg = membrane.inject(dryArg);
+            const wetFoo = membrane.inject(foo);
+            wetFoo.call(wetThis, wetArg);
+            expect(calledArg).not.toBe(wetArg);
+            expect(calledArg).toBe(dryArg);
+            expect(calledThis).not.toBe(wetThis);
+            expect(calledThis).toBe(dryThis);
         });
         it('should invoke constructor with correct arguments and context', function () {
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const instance = {};
             let mockArg;
-            function Ctor (arg) {
+            function Ctor (arg: any) {
                 mockArg = arg;
                 return instance;
             }
@@ -93,32 +92,24 @@ describe('Membrane', function () {
             const arg = {};
             const wetArg = membrane.inject(arg);
             const value = new WetCtor(wetArg);
-            assert(value === membrane.inject(instance));
-            assert(mockArg === arg);
+            expect(value).toBe(membrane.inject(instance));
+            expect(mockArg).toBe(arg);
         });
         it('should distort constructor return value', function () {
             const mockInstance = {};
             const arg = {};
-            function distortion (v) {
+            function distortion (membrane: Membrane, v: any) {
                 if (v instanceof Ctor) {
-                    return mockInstance;
+                    return membrane.inject(mockInstance);
                 }
-
-                if (v === arg) {
-                    return mockArg;
-                }
-
-                return v;
+                return membrane.inject(v);
             }
             const membrane = new Membrane(distortion);
-            let mockArg;
-            function Ctor (arg) {
-                mockArg = arg;
-            }
+            function Ctor () {}
             const WetCtor = membrane.inject(Ctor);
             const wetArg = membrane.inject(arg);
             const value = new WetCtor(wetArg);
-            assert(value === membrane.inject(mockInstance));
+            expect(value).toBe(membrane.inject(mockInstance));
         });
         it('should handle wrapping getters', function () {
             const obj = {};
@@ -132,13 +123,14 @@ describe('Membrane', function () {
                 configurable: true
             });
 
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const wet = membrane.inject(obj);
             const descriptor = Object.getOwnPropertyDescriptor(wet, 'foo');
-            assert(descriptor.get === membrane.inject(getter));
-            assert(descriptor.get() !== value);
-            assert(descriptor.get() === membrane.inject(value));
+            expect(descriptor.get).toBe(membrane.inject(getter));
+            const getterValue = (descriptor.get as any)();
+            expect(getterValue).not.toBe(value);
+            expect(getterValue).toBe(membrane.inject(value));
         });
 
         it('should handle setting values correctly', function () {
@@ -156,12 +148,12 @@ describe('Membrane', function () {
                 configurable: true
             });
 
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const wet = membrane.inject(obj);
             wet.foo = wet.value;
-            assert(setterArg === obj.value);
-            assert(setterThis === obj);
+            expect(setterArg).toBe(obj.value);
+            expect(setterThis).toBe(obj);
         });
 
         it('should handle wrapping setters', function () {
@@ -175,43 +167,43 @@ describe('Membrane', function () {
                 configurable: true
             });
 
-            const distortion = (v) => v;
+            const distortion = (membrane: Membrane, v: any) => membrane.inject(v);
             const membrane = new Membrane(distortion);
             const wet = membrane.inject(obj);
             const descriptor = Object.getOwnPropertyDescriptor(wet, 'foo');
-            descriptor.set(wet.prop);
-            assert(setMock.mock.calls[0][0] === obj.prop);
-            assert(setMock.mock.calls[0][0] !== wet.prop);
+            (descriptor.set as any)(wet.prop);
+            expect(setMock.mock.calls[0][0]).toBe(obj.prop);
+            expect(setMock.mock.calls[0][0]).not.toBe(wet.prop);
         });
     });
 
     describe('#inject', () => {
-        let membrane;
+        let membrane: Membrane;
 
         beforeEach(() => {
-            membrane = new Membrane((v) => v);
+            membrane = new Membrane((membrane: Membrane, v: any) => membrane.inject(v));
         });
 
         it('should always return the same proxy', () => {
             const o = { x: 1 };
             const first = membrane.inject(o);
             const second = membrane.inject(o);
-            assert(first.x === second.x);
-            assert(first === second);
+            expect(first.x).toBe(second.x);
+            expect(first).toBe(second);
         });
         it('should never rewrap a previously produced proxy', () => {
             const o = { x: 1 };
             const first = membrane.inject(o);
             const second = membrane.inject(first);
-            assert(first.x === second.x);
-            assert(first === second);
+            expect(first.x).toBe(second.x);
+            expect(first).toBe(second);
         });
         it('should rewrap unknown proxy', () => {
             const o = { x: 1 };
             const first = new Proxy(o, {});
             const second = membrane.inject(first);
-            assert(first.x === second.x);
-            assert(first !== second);
+            expect(first).not.toBe(second);
+            expect(unwrap(second)).toBe(first);
         });
         it('should handle frozen objects correctly', () => {
             const o = Object.freeze({
@@ -236,9 +228,9 @@ describe('Membrane', function () {
                 }
             };
 
-            a.foo.self = a;
+            a.foo.self = a as any;
             const property = membrane.inject(a);
-            assert(property.foo.self === property);
+            expect(property.foo.self).toBe(property);
         });
         it('should understand property desc with getter', function () {
             const obj = {
@@ -255,21 +247,21 @@ describe('Membrane', function () {
             });
             const property = membrane.inject(obj);
             const desc = Object.getOwnPropertyDescriptor(property, 'foo');
-            assert(membrane.inject(desc.get()) === property.foo);
+            expect((desc.get as any)()).toBe(property.foo);
         });
         it('should handle has correctly', function () {
             var obj = {
                 foo: 'bar'
             };
             const property = membrane.inject(obj);
-            assert('foo' in property);
+            expect('foo' in property).toBe(true);
         });
         it('should delete writable properties correctly', function () {
             var obj = [{ foo: 'bar' }];
             const property = membrane.inject(obj);
             const result = delete property[0];
-            assert(!(0 in property));
-            assert(result);
+            expect(0 in property).toBe(false);
+            expect(result).toBe(true);
         });
         it('should handle extensible correctly when target is extensible', function () {
             const hello = {
@@ -279,7 +271,7 @@ describe('Membrane', function () {
                 hello
             };
             const wrapped = membrane.inject(obj);
-            assert(Object.isExtensible(wrapped) === true);
+            expect(Object.isExtensible(wrapped)).toBe(true);
         });
         it('should handle preventExtensions correctly', function () {
             const obj = {
@@ -295,7 +287,7 @@ describe('Membrane', function () {
                 property.nextValue = 'newvalue';
             }).toThrow();
 
-            assert(property.foo === 'bar');
+            expect(property.foo).toBe('bar');
         });
         it('should handle defineProperty correctly', function () {
             const obj = {
@@ -305,7 +297,7 @@ describe('Membrane', function () {
             Object.defineProperty(property, 'hello', {
                 value: 'world'
             });
-            assert(property.hello === 'world');
+            expect(property.hello).toBe('world');
         });
         it('should handle defineProperty correctly when descriptor is non-configurable', function () {
             const obj = {
@@ -317,7 +309,7 @@ describe('Membrane', function () {
                 configurable: false
             });
 
-            assert(wet.hello === 'world');
+            expect(wet.hello).toBe('world');
         });
         it('should not allow deleting non-configurable property', function () {
             const obj = {

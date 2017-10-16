@@ -48,5 +48,5 @@ export function isReplicable(value: any): value is Replicable {
     return value && (type === 'object' || type === 'function');
 }
 
-export const TargetSlot = Symbol();
-export const MembraneSlot = Symbol();
+export const OriginalTargetSlot = Symbol();
+export const MembraneHandlerSlot = Symbol();

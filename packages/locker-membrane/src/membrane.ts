@@ -14,9 +14,13 @@ type ReplicaFunction = (...args: Array<any>) => Replica | String | Number | Bool
 type Replica = Object | ReplicaFunction;
 type MembraneShadowTarget = Object | Array<any> | Function;
 
-type DistortionHandler = (value: any) => any;
+type DistortionHandler = (membrane: Membrane, value: any) => any;
+
+interface CompatProxy extends ProxyConstructor {
+    getKey?: (target: any, key: PropertyKey) => any
+}
 /*eslint-enable*/
-import { TargetSlot } from './shared';
+import { OriginalTargetSlot } from './shared';
 
 const MembraneMap: WeakMap<any, any> = new WeakMap();
 
@@ -32,25 +36,26 @@ function createShadowTarget(value: any): MembraneShadowTarget {
     return shadowTarget as MembraneShadowTarget;
 }
 
+const { getKey } = Proxy as CompatProxy;
+
+export const unwrap = getKey ?
+    (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && getKey(replicaOrAny, OriginalTargetSlot)) || replicaOrAny
+    : (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && replicaOrAny[OriginalTargetSlot]) || replicaOrAny;
+
 export function invokeDistortion(membrane: Membrane, value: any): any {
     const { distortion } = membrane;
-    const distorted = distortion(unwrap(value));
-    return isReplicable(distorted) ? wrap(membrane, distorted) : distorted;
+    return distortion(membrane, unwrap(value));
 }
 
-export function unwrap(replicaOrAny: Replica | any): Replicable | any {
-    return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
-}
-
-function wrap(membrane: Membrane, value: Replicable) {
-    let proxy = MembraneMap.get(value);
-    if (proxy) {
+function wrap(membrane: Membrane, originalTarget: Replicable) {
+    let proxy = MembraneMap.get(originalTarget);
+    if (proxy !== undefined) {
         return proxy;
     }
-    const shadowTarget = createShadowTarget(value);
-    const handler = new MembraneHandler(membrane, value);
+    const shadowTarget = createShadowTarget(originalTarget);
+    const handler = new MembraneHandler(membrane, originalTarget);
     proxy = new Proxy(shadowTarget, handler); // eslint-disable-line no-undef
-    MembraneMap.set(value, proxy);
+    MembraneMap.set(originalTarget, proxy);
     return proxy;
 }
 
@@ -60,6 +65,9 @@ export class Membrane {
         this.distortion = distortion;
     }
     inject(value: Replicable): any {
-        return invokeDistortion(this, value);
+        if (isReplicable(value)) {
+            return wrap(this, unwrap(value));
+        }
+        return value;
     }
 }

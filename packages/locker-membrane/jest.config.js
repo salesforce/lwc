@@ -3,9 +3,6 @@
 module.exports = {
     moduleFileExtensions: ['ts', 'js', 'json'],
     testRegex: '/__tests__/',
-    transform: {
-        '.ts': require.resolve('ts-jest/preprocessor.js')
-    },
     mapCoverage: true,
     collectCoverageFrom: ['src/*.ts'],
     coverageReporters: ['lcov', 'text', 'text-summary', 'html'],
@@ -16,5 +13,9 @@ module.exports = {
             lines: 70,
             statements: 75
         }
-    }
+    },
+    projects: [
+        './scripts/jest/standard.config.js',
+        './scripts/jest/compat.config.js'
+    ]
 };

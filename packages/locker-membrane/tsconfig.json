@@ -6,9 +6,7 @@
     "lib": [
       "dom",
       "es2015"
-    ]
-  },
-  "files": [
-    "./src/main.ts"
-  ]
+    ],
+    "strict": true
+  }
 }

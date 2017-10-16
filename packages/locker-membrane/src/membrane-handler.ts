@@ -7,8 +7,8 @@ import {
     ArrayMap,
     isExtensible,
     getPrototypeOf,
-    TargetSlot,
-    MembraneSlot,
+    OriginalTargetSlot,
+    MembraneHandlerSlot,
     setPrototypeOf,
     hasOwnProperty
 } from './shared';
@@ -76,11 +76,11 @@ export class MembraneHandler {
         this.originalTarget = originalTarget;
     }
     get(shadowTarget: MembraneShadowTarget, key: PropertyKey, receiver: any): any { // eslint-disable-line no-unused-vars
-        if (key === MembraneSlot) {
+        if (key === MembraneHandlerSlot) {
             return this;
         }
         const { originalTarget, membrane } = this;
-        if (key === TargetSlot) {
+        if (key === OriginalTargetSlot) {
             return originalTarget;
         }
         const value = originalTarget[key];
@@ -105,14 +105,13 @@ export class MembraneHandler {
     }
     construct(targetFn: MembraneShadowTarget, argumentsList: Array<any>, newTarget: any): any { // eslint-disable-line no-unused-vars
         const { originalTarget: OriginalConstructor, membrane } = this;
-        argumentsList = unwrap(argumentsList);
-        if (isArray(argumentsList)) {
-            argumentsList = ArrayMap.call(argumentsList, unwrap);
-        }
+        argumentsList = ArrayMap.call(argumentsList, unwrap);
         return invokeDistortion(membrane, new OriginalConstructor(...argumentsList));
     }
     has(shadowTarget: MembraneShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
+        // This potentially breaks in IE because of our symbol polyfill
+        // which always returns true if key is a symbol
         return key in originalTarget;
     }
     ownKeys(shadowTarget: MembraneShadowTarget): Array<string> { // eslint-disable-line no-unused-vars
@@ -138,11 +137,13 @@ export class MembraneHandler {
     }
     setPrototypeOf(shadowTarget: MembraneShadowTarget, prototype: any) { // eslint-disable-line no-unused-vars
         const { originalTarget } = this;
+        prototype = unwrap(prototype);
         return setPrototypeOf(originalTarget, prototype);
     }
     getPrototypeOf(shadowTarget: MembraneShadowTarget): Object { // eslint-disable-line no-unused-vars
-        const { originalTarget } = this;
-        return getPrototypeOf(originalTarget);
+        const { originalTarget, membrane } = this;
+        const proto = getPrototypeOf(originalTarget);
+        return invokeDistortion(membrane, proto);
     }
     getOwnPropertyDescriptor(shadowTarget: MembraneShadowTarget, key: PropertyKey): PropertyDescriptor {
         const { originalTarget, membrane } = this;
