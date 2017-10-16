@@ -21,8 +21,8 @@ describe('Testing component: custom-input', () => {
         const h2 = browser.element('h2');
         assert.deepEqual(h2.getText(), '100');
         assert.deepEqual(input.getValue(), '100');
-        browser.execute(() => {
-            const range = document.querySelector('input[type="range"]');
+        browser.execute(function() {
+            var range = document.querySelector('input[type="range"]');
             range.value = 10;
         });
         assert.deepEqual(input.getValue(), '10');
