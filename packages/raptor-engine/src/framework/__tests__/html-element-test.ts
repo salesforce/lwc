@@ -243,7 +243,7 @@ describe('html-element', () => {
                 }
             }
             createElement('x-foo', { is: def });
-            expect({ x: 1, y: o }).toDeepEqualProxy(state);
+            expect({ x: 1, y: o }).toEqual(state);
             assert.notEqual(state.y, o, 'proxified object');
         });
         it('should throw an error when assigning arrays', function () {

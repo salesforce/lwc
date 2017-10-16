@@ -20,7 +20,7 @@ describe('wire.ts', () => {
             MyComponent.wire = { foo: {} };
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(o).toDeepEqualProxy(foo);
+            expect(o).toEqual(foo);
             assert(o !== foo, 'wired property was not profixied');
         });
 
@@ -38,7 +38,7 @@ describe('wire.ts', () => {
             document.body.appendChild(elm);
             const o = { x: 1 };
             elm.injectFoo(o);
-            expect(o).toDeepEqualProxy(foo);
+            expect(o).toEqual(foo);
             assert(o !== foo, 'wired property was not profixied');
         });
 

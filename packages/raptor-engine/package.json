@@ -7,9 +7,7 @@
   "jsnext:main": "dist/modules/engine.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "yarn test:standard",
-    "test:compat": "jest --projects ./scripts/jest/compat.config.js",
-    "test:standard": "jest --projects ./scripts/jest/standard.config.js",
+    "test": "jest --coverage",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c scripts/rollup.config.js",
@@ -19,10 +17,8 @@
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   },
   "devDependencies": {
-    "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
     "eslint-plugin-typescript": "^0.1.0",
-    "expect": "^1.20.2",
     "jest": "^21.2.1",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",

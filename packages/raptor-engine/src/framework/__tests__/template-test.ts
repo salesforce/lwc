@@ -223,7 +223,7 @@ describe('template', () => {
             patch(elm, vnode);
             assert(elm.x === vnode.vm.component.x, 'default property x should be accesible');
             assert(elm.x !== x, 'property x should be profixied');
-            expect(elm.x).toDeepEqualProxy(x);
+            expect(elm.x).toEqual(x);
         });
 
         it('should profixied property objects', () => {
@@ -249,7 +249,7 @@ describe('template', () => {
             patch(elm2, vnode2);
             assert(elm2.x !== x, 'property x should be profixied');
             assert.strictEqual(vnode1.vm.component.state.x, vnode2.vm.component.x, 'proxified objects retain identity');
-            expect(x).toDeepEqualProxy(elm2.x);
+            expect(x).toEqual(elm2.x);
         });
 
         it('should not profixied or bound methods', () => {

@@ -27,8 +27,8 @@ describe('upgrade', () => {
                 }
             }
             const elm: MyComponentElement = createElement('x-foo', { is: def }) as MyComponentElement;
-            expect(x).toDeepEqualProxy(elm.x);
-            expect(y).toDeepEqualProxy(elm.y);
+            expect(x).toEqual(elm.x);
+            expect(y).toEqual(elm.y);
             assert(elm.x !== x, 'property x should be profixied');
             assert(elm.y !== y, 'property y should be profixied');
         });
@@ -39,7 +39,7 @@ describe('upgrade', () => {
             const elm = createElement('x-foo', { is: def });
             const o = { foo: 1 };
             elm.x = o;
-            expect(o).toDeepEqualProxy(elm.x);
+            expect(o).toEqual(elm.x);
             assert(elm.x !== o, 'property x should be profixied');
         });
 
