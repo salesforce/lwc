@@ -1,10 +1,8 @@
 import * as target from "../def";
 import { Element } from "../html-element";
-import assert from 'power-assert';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
-
         it('should understand empty constructors', () => {
             const def = class MyComponent extends Element {}
             expect(() => {
@@ -15,16 +13,17 @@ describe('def', () => {
         it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
             class MyComponent extends Element {}
             const def = target.getComponentDef(MyComponent);
-            assert.throws(() => {
+            expect(() => {
                 def.name = 'something else';
-            });
+            }).toThrow();
+
             def.expando = 1;
-            assert.equal(1, def.expando);
+            expect(def.expando).toBe(1);
         });
 
         it('should throw for stateful components not extending Element', () => {
             const def = class MyComponent {}
-            assert.throws(() => target.getComponentDef(def));
+            expect(() => target.getComponentDef(def)).toThrow();
         });
 
         it('should understand static observedAttributes', () => {
@@ -32,7 +31,8 @@ describe('def', () => {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['title', 'tabindex'];
-            assert.deepEqual(target.getComponentDef(MyComponent).observedAttrs, {
+
+            expect(target.getComponentDef(MyComponent).observedAttrs).toEqual({
                 title: 1,
                 tabindex: 1,
             });
@@ -48,6 +48,7 @@ describe('def', () => {
                     config: 0
                 }
             };
+
             expect(() => {
                 target.getComponentDef(MyComponent);
             }).toThrow();
@@ -148,7 +149,7 @@ describe('def', () => {
                 bar() {}
             }
             MyComponent.publicMethods = ['foo', 'bar'];
-            assert.deepEqual(target.getComponentDef(MyComponent).methods, {
+            expect(target.getComponentDef(MyComponent).methods).toEqual({
                 foo: 1,
                 bar: 1,
             });
@@ -158,7 +159,7 @@ describe('def', () => {
         it('should understand static wire', () => {
             class MyComponent extends Element  {}
             MyComponent.wire = { x: { type: 'record' } };
-            assert.deepEqual(target.getComponentDef(MyComponent).wire, { x: { type: 'record' } });
+            expect(target.getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
         });
 
         it('should infer attribute name from public props', () => {
@@ -173,7 +174,7 @@ describe('def', () => {
                 },
                 xBar: {},
             };
-            assert.deepEqual(target.getComponentDef(MyComponent).props, {
+            expect(target.getComponentDef(MyComponent).props).toEqual({
                 foo: {
                     config: 1,
                 },
@@ -220,7 +221,7 @@ describe('def', () => {
                 fizz: {}
             };
 
-            assert.deepEqual(target.getComponentDef(MySubComponent).props, {
+            expect(target.getComponentDef(MySubComponent).props).toEqual({
                 foo: {
                     config: 1,
                 },
@@ -249,9 +250,9 @@ describe('def', () => {
                 }
             };
 
-            assert.throws(() => {
+            expect(() => {
                 target.getComponentDef(MyComponent);
-            });
+            }).toThrow();
         });
 
         it('should inherit methods correctly', function () {
@@ -269,7 +270,7 @@ describe('def', () => {
 
             MySubComponent.publicMethods = ['fizz', 'buzz'];
 
-            assert.deepEqual(target.getComponentDef(MySubComponent).methods, {
+            expect(target.getComponentDef(MySubComponent).methods).toEqual({
                 foo: 1,
                 bar: 1,
                 fizz: 1,
@@ -284,7 +285,7 @@ describe('def', () => {
             class MySubComponent extends MyComponent {}
             MySubComponent.observedAttributes = ['title', 'id'];
 
-            assert.deepEqual(target.getComponentDef(MySubComponent).observedAttrs, {
+            expect(target.getComponentDef(MySubComponent).observedAttrs).toEqual({
                 title: 1,
                 id: 1
             });
@@ -295,7 +296,7 @@ describe('def', () => {
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { y: { type: 'record' } };
-            assert.deepEqual(target.getComponentDef(MySubComponent).wire, {
+            expect(target.getComponentDef(MySubComponent).wire).toEqual({
                 x: {
                     type: 'record'
                 },
@@ -310,7 +311,7 @@ describe('def', () => {
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { x: { type: 'subrecord' } };
-            assert.deepEqual(target.getComponentDef(MySubComponent).wire, {
+            expect(target.getComponentDef(MySubComponent).wire).toEqual({
                 x: {
                     type: 'subrecord'
                 }
@@ -322,12 +323,11 @@ describe('def', () => {
             MyComponent.publicProps = {
                 foo: {}
             };
-            assert.deepEqual(target.getComponentDef(MyComponent).props, {
+            expect(target.getComponentDef(MyComponent).props).toEqual({
                 foo: {
                     config: 0
                 }
             });
         });
-
     });
 });

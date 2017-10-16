@@ -1,12 +1,9 @@
-import assert from 'power-assert';
 import { h, c, t } from "../../api";
 import { patch } from "../../patch";
 import { Element } from "../../html-element";
 
 describe('module/events', () => {
-
     describe('from snabbdom', () => {
-
         var elm, vnode0;
 
         beforeEach(function() {
@@ -22,7 +19,7 @@ describe('module/events', () => {
             ]);
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('does not attach new listener', function() {
@@ -37,7 +34,7 @@ describe('module/events', () => {
             elm.click();
             elm = patch(vnode1, vnode2).elm;
             elm.click();
-            assert.deepEqual(result, [1, 2]);
+            expect(result).toEqual([1, 2]);
         });
 
         it('detach attached click event handler to element', function() {
@@ -48,13 +45,13 @@ describe('module/events', () => {
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
             var vnode2 = h('div', {on: {}}, [
                 h('a', {}, [t('Click my parent')]),
             ]);
             elm = patch(vnode1, vnode2).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('must not expose the virtual node to the event handler', function() {
@@ -65,9 +62,9 @@ describe('module/events', () => {
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert.equal(2, result.length);
-            assert.equal(undefined, result[0]); // context must be undefined
-            assert.equal(true, result[1] instanceof Event);
+            expect(result).toHaveLength(2);
+            expect(result[0]).toBeUndefined(); // context must be undefined
+            expect(result[1]).toBeInstanceOf(Event);
         });
 
         it('shared handlers in parent and child nodes', function() {
@@ -80,9 +77,9 @@ describe('module/events', () => {
             ]);
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
             elm.firstChild.click();
-            assert.equal(3, result.length);
+            expect(result).toHaveLength(3);
         });
 
         it('rewrite listener on the same node', function() {
@@ -97,13 +94,12 @@ describe('module/events', () => {
             var vnode3 = h('div', {on: {click: onClick2}}, [t('Click')]);
             elm = patch(vnode2, vnode3).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
     });
 
     describe('for vm', () => {
-
         var elm, vnode0;
 
         beforeEach(function() {
@@ -118,7 +114,7 @@ describe('module/events', () => {
             var vnode = c('x-foo', Foo, {on: {click: clicked}});
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('attaches custom event handler to custom element', function() {
@@ -128,7 +124,7 @@ describe('module/events', () => {
             var vnode = c('x-foo', Foo, {on: {test: tested}});
             elm = patch(vnode0, vnode).elm;
             elm.dispatchEvent(new CustomEvent('test', {}));
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('must not expose the vnode, vm or component to the event handler', function() {
@@ -138,9 +134,9 @@ describe('module/events', () => {
             var vnode1 = c('x-foo', Foo, {on: {click: clicked}});
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert.equal(2, result.length);
-            assert.equal(undefined, result[0]); // context must be undefined
-            assert.equal(true, result[1] instanceof Event);
+            expect(result).toHaveLength(2);
+            expect(result[0]).toBeUndefined(); // context must be undefined
+            expect(result[1]).toBeInstanceOf(Event);
         });
 
     });

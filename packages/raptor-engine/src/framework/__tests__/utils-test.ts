@@ -1,15 +1,14 @@
 import * as target from '../utils';
-import assert from 'power-assert';
 
 describe('utils', () => {
     describe('#addCallbackToNextTick()', () => {
 
         it('should throw for non-callable values', () => {
-            assert.throws(() => target.addCallbackToNextTick(undefined), "undefined value");
-            assert.throws(() => target.addCallbackToNextTick(""), "empty string value");
-            assert.throws(() => target.addCallbackToNextTick(NaN), "NaN value");
-            assert.throws(() => target.addCallbackToNextTick({}), "Object");
-            assert.throws(() => target.addCallbackToNextTick(1), "Number value");
+            expect(() => target.addCallbackToNextTick(undefined)).toThrow();
+            expect(() => target.addCallbackToNextTick("")).toThrow();
+            expect(() => target.addCallbackToNextTick(NaN)).toThrow();
+            expect(() => target.addCallbackToNextTick({})).toThrow();
+            expect(() => target.addCallbackToNextTick(1)).toThrow();
         });
 
         it('should call callback asyncronously', () => {
@@ -17,9 +16,9 @@ describe('utils', () => {
             target.addCallbackToNextTick(() => {
                 flag = true;
             });
-            assert(flag === false, 'callback should not run syncronously');
+            expect(flag).toBe(false);
             return Promise.resolve().then(() => {
-                assert(flag === true, 'callback should run asyncronously');
+                expect(flag).toBe(true);
             });
         });
 
@@ -28,11 +27,11 @@ describe('utils', () => {
             target.addCallbackToNextTick(() => {
                 counter += 1;
             });
-            assert(counter === 0, 'callback should not run syncronously');
+            expect(counter).toBe(0);
             return Promise.resolve().then(() => {
                 // wait for another tick
                 return Promise.resolve().then(() => {
-                    assert(counter === 1, 'callback should call the callback only once');
+                    expect(counter).toBe(1);
                 });
             });
         });
@@ -45,9 +44,9 @@ describe('utils', () => {
             target.addCallbackToNextTick(() => {
                 chars += 'c';
             });
-            assert(chars === 'a', 'callback should not run syncronously');
+            expect(chars).toBe('a');
             return Promise.resolve().then(() => {
-                assert(chars === 'abc', 'callback should run asyncronously in the order of addition');
+                expect(chars).toBe('abc');
             });
         });
 
@@ -56,16 +55,14 @@ describe('utils', () => {
             target.addCallbackToNextTick(() => {
                 chars += 'b';
             });
-            assert(chars === 'a', 'callback should not run syncronously');
+            expect(chars).toBe('a');
             return Promise.resolve().then(() => {
-                assert(chars === 'ab', 'callback should run asyncronously in the order of addition');
+                expect(chars).toBe('ab');
                 target.addCallbackToNextTick(() => {
                     chars += 'c';
                 });
-                // wait for another tick
-                return Promise.resolve().then(() => {
-                    assert(chars === 'abc', 'callback should not be called in the second tick');
-                });
+            }).then(() => {
+                expect(chars).toBe('abc');
             });
         });
 

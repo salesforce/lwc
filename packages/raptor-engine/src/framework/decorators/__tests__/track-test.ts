@@ -1,45 +1,45 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
-import assert from 'power-assert';
 
 describe('track.ts', () => {
-
     describe('integration', () => {
-
         it('should support setting a tracked property in constructor', () => {
-            let foo = undefined;
+            expect.assertions(3);
+
             const o = { x: 1 };
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    assert('foo' in this, 'tracked property should be defined on component');
+                    expect('foo' in this).toBe(true);
+
                     this.foo = o;
-                    foo = this.foo;
+                    expect(this.foo).toEqual(o);
+                    expect(this.foo).not.toBe(o);
                 }
             }
             MyComponent.track = { foo: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(o).toEqual(foo);
-            assert(o !== foo, 'tracked property was not profixied');
         });
 
         it('should support tracked properties', () => {
-            let foo = undefined;
+            expect.assertions(2);
+
+            const o = { x: 1 };
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toEqual(o);
+                    expect(this.foo).not.toBe(o);
                 }
             }
             MyComponent.track = { foo: 1 };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const o = { x: 1 };
             elm.injectFoo(o);
-            expect(o).toEqual(foo);
-            assert(o !== foo, 'tracked property was not profixied');
         });
 
         it('should make tracked properties reactive', () => {
@@ -63,7 +63,7 @@ describe('track.ts', () => {
             document.body.appendChild(elm);
             elm.injectFoo({ x: 2 });
             return Promise.resolve().then(() => {
-                assert.strictEqual(2, counter);
+                expect(counter).toBe(2);
             });
         });
 
@@ -88,75 +88,80 @@ describe('track.ts', () => {
             document.body.appendChild(elm);
             elm.injectFooDotX(2);
             return Promise.resolve().then(() => {
-                assert.strictEqual(2, counter);
+                expect(counter).toBe(2);
             });
         });
 
         it('should not proxify primitive value', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(1);
                 }
             }
             MyComponent.track = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.injectFoo(1);
-            assert.strictEqual(foo, 1);
         });
 
         it('should proxify plain arrays', function () {
-            let foo = undefined;
+            expect.assertions(2);
+
+            const a = [];
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toEqual(a);
+                    expect(this.foo).not.toBe(a);
                 }
             }
             MyComponent.track = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const a = [];
             elm.injectFoo(a);
-            assert(foo !== a);
         });
 
         it('should not proxify exotic objects', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
+            const d = new Date();
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(d);
                 }
             }
             MyComponent.track = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const d = Date.now();
             elm.injectFoo(d);
-            assert.strictEqual(foo, d);
         });
 
         it('should not proxify non-observable object', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
+            const o = Object.create({});
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(o);
                 }
             }
             MyComponent.track = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const o = Object.create({});
             elm.injectFoo(o);
-            assert.strictEqual(foo, o);
         });
 
         it('should not throw an error if track is observable object', function () {
@@ -217,27 +222,26 @@ describe('track.ts', () => {
         });
     });
 
-        test(`#609 - instance of the same object prototype should not share values of tracked properties`, () => {
-            class XFoo extends Element  {
-                constructor() {
-                    super();
-                    this.counter = 0;
-                    this.label = 3;
-                }
+    test(`#609 - instance of the same object prototype should not share values of tracked properties`, () => {
+        class XFoo extends Element  {
+            constructor() {
+                super();
+                this.counter = 0;
+                this.label = 3;
             }
+        }
 
-            XFoo.track = { counter: 1, label:1 };
+        XFoo.track = { counter: 1, label:1 };
 
-            const elm1 = createElement('x-foo', { is: XFoo });
-            document.body.appendChild(elm1);
+        const elm1 = createElement('x-foo', { is: XFoo });
+        document.body.appendChild(elm1);
 
-            const countVal = 1;
-            const labelVal = 4;
+        const countVal = 1;
+        const labelVal = 4;
 
-            elm1.counter = countVal;
-            elm1.label = labelVal;
+        elm1.counter = countVal;
+        elm1.label = labelVal;
 
-            expect(elm1.counter).toBe(countVal);
-        });
-
+        expect(elm1.counter).toBe(countVal);
+    });
 });

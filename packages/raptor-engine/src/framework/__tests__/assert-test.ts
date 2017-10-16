@@ -1,57 +1,29 @@
-import target from '../assert';
-import assert from 'power-assert';
+import assert from '../assert';
 
-describe('assert', function () {
-    describe('#isTrue()', function () {
-        it('should throw Error for false', () => {
-            assert.throws(
-                () => {
-                    target.isTrue(false);
-                }
-            );
+describe('assert', () => {
+    describe('#isTrue()', () => {
+        it('should throw error that includes custom message', () => {
+            expect(
+                () => assert.isTrue(false, 'foo bar')
+            ).toThrowError(/foo bar/);
         });
 
-        it('should throw correct default error message', () => {
-            assert.throws(
-                () => {
-                    target.isTrue(false);
-                },
-                /Assert Violation/,
-                "expected error with message 'Assert Violation'"
-            );
-        });
-
-        it('should throw error that includes custom message', function () {
-            assert.throws(
-                () => {
-                    target.isTrue(false, "foo bar");
-                },
-                /foo bar/
-            );
-        });
-
-        it('should not throw error for true', function () {
-            target.isTrue(true);
+        it('should not throw error for true', () => {
+            expect(
+                () => assert.isTrue(true, 'foo bar')
+            ).not.toThrow();
         });
     });
 
-    describe('#vnode()', function () {
-        it('should throw Error for undefined', function () {
-            assert.throws(
-                () => {
-                    target.vnode();
-                }
-            );
+    describe('#vnode()', () => {
+        it('should throw Error for undefined', () => {
+            expect(() => assert.vnode(undefined as any)).toThrow();
         });
     });
 
-    describe('#vm()', function () {
-        it('should throw Error for undefined', function () {
-            assert.throws(
-                () => {
-                    target.vnode();
-                }
-            );
+    describe('#vm()', () => {
+        it('should throw Error for undefined', () => {
+            expect(() => assert.vm(undefined as any)).toThrow();
         });
     });
 });

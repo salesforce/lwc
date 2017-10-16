@@ -1,5 +1,4 @@
 import * as target from '../component';
-import assert from 'power-assert';
 import * as api from "../api";
 import { Element } from "../html-element";
 import { patch } from '../patch';
@@ -23,7 +22,7 @@ describe('piercing', function () {
         const replica = pierce(vnode.vm, elm);
         expect(() => {
             replica.style.position = 'absolute';
-            assert.deepEqual(elm.style.position, 'absolute');
+            expect(elm.style.position).toBe('absolute');
         }).not.toThrow();
 
     });

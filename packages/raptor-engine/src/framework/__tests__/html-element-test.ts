@@ -3,7 +3,6 @@ import { createElement } from "../upgrade";
 import { OwnerKey } from "../vm";
 import * as api from "../api";
 import { patch } from '../patch';
-import assert from 'power-assert';
 import assertLogger from './../assert';
 
 describe('html-element', () => {
@@ -25,21 +24,21 @@ describe('html-element', () => {
 
     describe('#classList()', () => {
         it('should have a valid classList during construction', () => {
-            let containsFoo = false;
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
                     this.classList.add('foo');
-                    containsFoo = this.classList.contains('foo');
+                    expect(this.classList.contains('foo')).toBe(true);
                 }
             }
             createElement('x-foo', { is: def });
-            assert(containsFoo === true, 'classList does not contain "foo"');
         });
     });
 
     describe('#getAttribute()', () => {
         it('should throw when no attribute name is provided', () => {
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
@@ -47,9 +46,9 @@ describe('html-element', () => {
                 }
             }
             createElement('x-foo', { is: def });
-            expect.assertions(1);
         });
         it('should throw when attribute name matches a declared public property', () => {
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
@@ -58,39 +57,35 @@ describe('html-element', () => {
             }
             def.publicProps = { foo: "default value" };
             createElement('x-foo', { is: def });
-            expect.assertions(1);
         });
         it('should be null for non-valid attribute names', () => {
-            let attributeValueForNull, attributeValueForUndefined, attributeValueForEmpty;
+            expect.assertions(3);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    attributeValueForNull = this.getAttribute(null);
-                    attributeValueForUndefined = this.getAttribute(undefined);
-                    attributeValueForEmpty = this.getAttribute("");
+                    expect(this.getAttribute(null)).toBeNull();
+                    expect(this.getAttribute(undefined)).toBeNull();
+                    expect(this.getAttribute("")).toBeNull();
                 }
             }
             createElement('x-foo', { is: def });
-            assert(attributeValueForNull === null, 'null attribute name');
-            assert(attributeValueForUndefined === null, 'undefined attribute name');
-            assert(attributeValueForEmpty === null, 'empty attribute name');
         });
         it('should be null for non-existing attributes', () => {
-            let attributeValueForFooBarBaz;
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    attributeValueForFooBarBaz = this.getAttribute("foo-bar-baz");
+                    expect(this.getAttribute("foo-bar-baz")).toBeNull();
                 }
             }
             createElement('x-foo', { is: def });
-            assert(attributeValueForFooBarBaz === null);
         });
 
     });
 
     describe('#dispatchEvent', function () {
         it('should throw when event is dispatched during construction', function () {
+            expect.assertions(1);
             class Foo extends Element {
                 constructor () {
                     super();
@@ -101,7 +96,6 @@ describe('html-element', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            expect.assertions(1);
         });
 
         it('should log warning when element is not connected', function () {
@@ -183,29 +177,27 @@ describe('html-element', () => {
 
     describe('#tagName', () => {
         it('should have a valid value during construction', () => {
-            let tagName;
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    tagName = this.tagName;
+                    expect(this.tagName).toBe('X-FOO');
                 }
             }
             createElement('x-foo', { is: def });
-            assert.equal(tagName, 'X-FOO');
         });
     });
 
     describe('#state', () => {
         it('should have a valid value during construction', () => {
-            let state;
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    state = this.state;
+                    expect(this.state).toEqual({});
                 }
             }
             createElement('x-foo', { is: def });
-            assert.deepEqual(state, {});
         });
         it('should be mutable during construction', () => {
             let state;
@@ -224,13 +216,13 @@ describe('html-element', () => {
                 }
             }
             createElement('x-foo', { is: def });
-            assert(state.foo === 1);
-            assert(state.bar === 2);
-            assert(state.baz === 3);
-            assert(o.foo === 1);
-            assert(o.bar === 2);
-            assert(o.baz === 3);
-            assert(o !== state);
+            expect(state.foo).toBe(1);
+            expect(state.bar).toBe(2);
+            expect(state.baz).toBe(3);
+            expect(o.foo).toBe(1);
+            expect(o.bar).toBe(2);
+            expect(o.baz).toBe(3);
+            expect(o).not.toBe(state);
         });
         it('should accept member properties', () => {
             let state;
@@ -244,9 +236,10 @@ describe('html-element', () => {
             }
             createElement('x-foo', { is: def });
             expect({ x: 1, y: o }).toEqual(state);
-            assert.notEqual(state.y, o, 'proxified object');
+            expect(state.y).not.toBe(o);
         });
         it('should throw an error when assigning arrays', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -258,6 +251,7 @@ describe('html-element', () => {
             createElement('x-foo', { is: MyComponent });
         });
         it('should throw an error when assigning primitive', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -269,6 +263,7 @@ describe('html-element', () => {
             createElement('x-foo', { is: MyComponent });
         });
         it('should throw an error when assigning non-observable object', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -280,6 +275,7 @@ describe('html-element', () => {
             createElement('x-foo', { is: MyComponent });
         });
         it('should throw an error when assigning exotic object', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -291,6 +287,7 @@ describe('html-element', () => {
             createElement('x-foo', { is: MyComponent });
         });
         it('should not throw an error when assigning observable object', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -304,35 +301,32 @@ describe('html-element', () => {
     });
 
     describe('global HTML Properties', () => {
-        it('should always return undefined', () => {
-            let attrTitle;
+        it('should always return null', () => {
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    attrTitle = this.getAttribute('title');
+                    expect(this.getAttribute('title')).toBeNull();
                 }
             }
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
-            assert.equal(attrTitle, undefined, 'wrong attribute');
         });
     });
 
     describe('#toString()', () => {
         it('should produce a nice tag', () => {
-            let str;
+            expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    str = this.toString();
+                    expect(this.toString()).toBe('<x-foo>');
                 }
             }
             createElement('x-foo', { is: def });
-            assert.equal(str, '<x-foo>');
         });
     });
 
     describe('#querySelector()', () => {
-
         it('should allow searching for the passed element', () => {
             const outerp = api.h('p', {}, []);
             const def = class MyComponent extends Element {
@@ -346,8 +340,8 @@ describe('html-element', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const node = vnode.vm.component.querySelector('p');
-                assert.strictEqual('P', node.tagName);
-                assert(vnode.vm.uid !== node[OwnerKey], 'uid was not propagated');
+                expect(node.tagName).toBe('P');
+                expect(vnode.vm.uid).not.toBe(node[OwnerKey]);
             });
         });
 
@@ -362,8 +356,7 @@ describe('html-element', () => {
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const node = vnode.vm.component.querySelector('p');
-                assert.strictEqual(null, node);
+                expect(vnode.vm.component.querySelector('p')).toBeNull();
             });
         });
 
@@ -396,7 +389,7 @@ describe('html-element', () => {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual(vnode.vm.component.querySelector('div'), null);
+            expect(vnode.vm.component.querySelector('div')).toBeNull();
         });
     });
 
@@ -415,8 +408,8 @@ describe('html-element', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const nodes = vnode.vm.component.querySelectorAll('p');
-                assert.strictEqual(1, nodes.length);
-                assert(vnode.vm.uid !== nodes[0][OwnerKey], 'uid was not propagated');
+                expect(nodes).toHaveLength(1);
+                expect(vnode.vm.uid).not.toBe(nodes[0][OwnerKey]);
             });
         });
 
@@ -431,8 +424,7 @@ describe('html-element', () => {
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const nodes = vnode.vm.component.querySelectorAll('p');
-                assert.strictEqual(0, nodes.length);
+                expect(vnode.vm.component.querySelectorAll('p')).toHaveLength(0);
             });
         });
 
@@ -457,7 +449,6 @@ describe('html-element', () => {
     });
 
     describe('#data layer', () => {
-
         it('should allow custom attributeChangedCallback', () => {
             let a;
             class MyComponent extends Element  {}
@@ -471,7 +462,7 @@ describe('html-element', () => {
                 a = Array.prototype.slice.call(arguments, 0);
             };
             patch(vnode1, vnode2);
-            assert.deepEqual(['title', '1', '2'], a);
+            expect(a).toEqual(['title', '1', '2']);
         });
 
         it('should allow custom instance getter and setter', () => {
@@ -490,29 +481,24 @@ describe('html-element', () => {
                 }
             })
             patch(vnode1, vnode2);
-            assert.strictEqual(2, a);
-            assert.strictEqual(ctx, vnode1.vm.component);
+            expect(a).toBe(2);
+            expect(vnode1.vm.component).toBe(ctx);
         });
-
     });
 
     describe('#tabIndex', function () {
         it('should have a valid value during connectedCallback', function () {
-            let tabIndex;
+            expect.assertions(1);
+
             class MyComponent extends Element {
                 connectedCallback() {
-                    tabIndex = this.tabIndex;
+                    expect(this.tabIndex).toBe(3);
                 }
             }
 
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
             patch(elm, vnode);
-
-
-            return Promise.resolve().then(() => {
-                assert.deepEqual(tabIndex, 3);
-            });
         });
 
         it('should have a valid value after initial render', function () {
@@ -524,7 +510,7 @@ describe('html-element', () => {
 
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(vnode.vm.component.tabIndex, 3);
+                expect(vnode.vm.component.tabIndex).toBe(3);
             });
         });
 
@@ -540,8 +526,8 @@ describe('html-element', () => {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.tabIndex, 2);
-                assert.deepEqual(vnode.vm.component.tabIndex, 2);
+                expect(elm.tabIndex).toBe(2);
+                expect(vnode.vm.component.tabIndex).toBe(2);
             });
         });
 
@@ -563,8 +549,8 @@ describe('html-element', () => {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(1, callCount); // one because of the attribute value from outside
-                assert.deepEqual(2, elm.tabIndex);
+                expect(callCount).toBe(1); // one because of the attribute value from outside
+                expect(elm.tabIndex).toBe(2);
             });
         });
 
@@ -587,7 +573,7 @@ describe('html-element', () => {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(callCount, 1);
+                expect(callCount).toBe(1);
             });
         });
 
@@ -610,12 +596,13 @@ describe('html-element', () => {
                 return Promise.resolve();
             })
             .then(() => {
-                assert.deepEqual(elm.tabIndex, 4);
-                assert.deepEqual(vnode.vm.component.tabIndex, 4);
+                expect(elm.tabIndex).toBe(4);
+                expect(vnode.vm.component.tabIndex).toBe(4);
             });
         });
 
         it('should throw if setting tabIndex during render', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 render () {
                     expect(() => {
@@ -630,6 +617,7 @@ describe('html-element', () => {
         });
 
         it('should throw if setting tabIndex during construction', function () {
+            expect.assertions(1);
             class MyComponent extends Element {
                 constructor () {
                     super();
@@ -702,9 +690,9 @@ describe('html-element', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(called, 0);
+            expect(called).toBe(0);
             document.body.removeChild(elm);
-            assert.deepEqual(called, 1);
+            expect(called).toBe(1);
         });
 
         it('should not render even if there is a mutation if the element is not in the DOM yet', function () {
@@ -720,7 +708,7 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = 2;
             return Promise.resolve().then(() => {
-                assert.deepEqual(rendered, 0);
+                expect(rendered).toBe(0);
             });
         });
 
@@ -737,10 +725,10 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
-            assert.deepEqual(rendered, 1);
+            expect(rendered).toBe(1);
             elm.x = 2;
             return Promise.resolve().then(() => {
-                assert.deepEqual(rendered, 1);
+                expect(rendered).toBe(1);
             });
         });
 

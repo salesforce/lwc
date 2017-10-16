@@ -2,7 +2,6 @@ import * as target from '../services';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
-import assert from 'power-assert';
 
 function resetServices() {
     Object.keys(target.Services).forEach((name) => {
@@ -19,36 +18,36 @@ describe('services', () => {
         });
 
         it('should throw for invalid service', () => {
-            assert.throws(() => target.register());
+            expect(() => target.register()).toThrow();
         });
 
-        it('should support single hook', () => {
-            assert.strictEqual(undefined, target.Services.rehydrated);
+        it('should support single hooks', () => {
+            expect(target.Services.rehydrated).toBeUndefined();
+            target.register({
+                rehydrated: function () {},
+            });
+            expect(target.Services.rehydrated).toHaveLength(1);
+        });
+
+        it('should support multiple hook', () => {
+            expect(target.Services.rehydrated).toBeUndefined();
             target.register({
                 rehydrated: function () {},
                 connected: function () {}
             });
-            assert.strictEqual(1, target.Services.rehydrated.length);
-            assert.strictEqual(1, target.Services.connected.length);
-        });
-
-        it('should support multiple hooks', () => {
-            assert.strictEqual(undefined, target.Services.rehydrated);
-            target.register({
-                rehydrated: function () {}
-            });
-            assert.strictEqual(1, target.Services.rehydrated.length);
+            expect(target.Services.rehydrated).toHaveLength(1);
+            expect(target.Services.connected).toHaveLength(1);
         });
 
         it('should allow multiple services to register the same hook', () => {
-            assert.strictEqual(undefined, target.Services.rehydrated);
+            expect(target.Services.rehydrated).toBeUndefined();
             target.register({
                 rehydrated: function () {}
             });
             target.register({
                 rehydrated: function () {}
             });
-            assert.strictEqual(2, target.Services.rehydrated.length);
+            expect(target.Services.rehydrated).toHaveLength(2);
         });
 
     });
@@ -75,9 +74,9 @@ describe('services', () => {
             // removal
             patch(elm, api.h('div', {}, []));
             return Promise.resolve(() => {
-                assert.strictEqual(1, r, 'rehydrated hook');
-                assert.strictEqual(1, c, 'connected hook');
-                assert.strictEqual(1, d, 'disconnected hook');
+                expect(r).toBe(1)
+                expect(c).toBe(1)
+                expect(d).toBe(1);
             });
         });
     })

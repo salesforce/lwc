@@ -2,7 +2,6 @@
 import * as api from "../api";
 import { patch } from '../patch';
 import { Element } from "../html-element";
-import assert from 'power-assert';
 
 describe('watcher', () => {
 
@@ -20,7 +19,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, {});
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
         });
 
         it('should rerender the component if any reactive prop changes', () => {
@@ -45,7 +44,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 2);
+            expect(counter).toBe(2);
         });
 
         it('should not rerender the component if a non-reactive prop changes', () => {
@@ -61,7 +60,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
         });
 
         it('should rerender the component if any reactive slot changes', () => {
@@ -80,7 +79,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, { slotset: { x: [api.h('p', {}, [])] } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 2);
+            expect(counter).toBe(2);
         });
 
         it('should not rerender the component if a non-reactive slot changes', () => {
@@ -96,7 +95,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, { slotset: { x: [/* new array */] } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
         });
 
         it('should rerender the component if reactive state changes', () => {
@@ -119,10 +118,10 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             state.x = 1;
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
 
@@ -142,10 +141,10 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             state.x = 1; // this is not used in the rendering phase
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 1);
+                expect(counter).toBe(1);
             });
         });
 
@@ -160,7 +159,7 @@ describe('watcher', () => {
             }
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
-            assert.throws(() => patch(elm, vnode));
+            expect(() => patch(elm, vnode)).toThrow();
         });
 
         it('should compute reactive state per rendering', () => {
@@ -185,13 +184,13 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             state.x = 1; // this is marked as reactive
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 2);
+                expect(counter).toBe(2);
                 state.x = 2; // this is not longer reactive and should not trigger the rerendering anymore
                 return Promise.resolve().then(() => {
-                    assert.strictEqual(counter, 2);
+                    expect(counter).toBe(2);
                 });
             });
         });
@@ -221,7 +220,7 @@ describe('watcher', () => {
             const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
             patch(elm, vnode1);
             patch(vnode1, vnode2);
-            assert.strictEqual(counter, 2);
+            expect(counter).toBe(2);
         });
 
         it('should allow observing public prop via setter', () => {
@@ -241,9 +240,9 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode1 = api.c('x-foo', MyComponent2, { props: { x: 2 } });
             patch(elm, vnode1);
-            assert.strictEqual(counter, 1);
-            assert.strictEqual(newValue, 2);
-            assert.strictEqual(oldValue, undefined);
+            expect(counter).toBe(1);
+            expect(newValue).toBe(2);
+            expect(oldValue).toBeUndefined();
         });
 
     });
@@ -261,10 +260,10 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode1 = api.c('x-foo', MyComponent1, {});
             patch(elm, vnode1);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             vnode1.vm.component.state.list.push(3);
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
         it('should react when a reactive array invokes Array.prototype.pop()', () => {
@@ -279,10 +278,10 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode1 = api.c('x-foo', MyComponent1, {});
             patch(elm, vnode1);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             vnode1.vm.component.state.list.pop();
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
         it('should react when a reactive array invokes Array.prototype.unshift()', () => {
@@ -297,10 +296,10 @@ describe('watcher', () => {
             const elm = document.createElement('x-foo');
             const vnode1 = api.c('x-foo', MyComponent1, {});
             patch(elm, vnode1);
-            assert.strictEqual(counter, 1);
+            expect(counter).toBe(1);
             vnode1.vm.component.state.list.unshift(3);
             return Promise.resolve().then(() => {
-                assert.strictEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
     });

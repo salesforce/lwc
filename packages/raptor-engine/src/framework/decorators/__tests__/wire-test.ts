@@ -1,45 +1,45 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
-import assert from 'power-assert';
 
 describe('wire.ts', () => {
-
     describe('integration', () => {
-
         it('should support setting a wired property in constructor', () => {
-            let foo = undefined;
+            expect.assertions(3);
+
             const o = { x: 1 };
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    assert('foo' in this, 'wired property should be defined on component');
+                    expect('foo' in this).toBe(true);
                     this.foo = o;
-                    foo = this.foo;
+
+                    expect(this.foo).toEqual(o);
+                    expect(this.foo).not.toBe(o);
                 }
             }
             MyComponent.wire = { foo: {} };
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(o).toEqual(foo);
-            assert(o !== foo, 'wired property was not profixied');
         });
 
         it('should support wired properties', () => {
-            let foo = undefined;
+            expect.assertions(2);
+
+            const o = { x: 1 };
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toEqual(o);
+                    expect(this.foo).not.toBe(o);
                 }
             }
             MyComponent.wire = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const o = { x: 1 };
             elm.injectFoo(o);
-            expect(o).toEqual(foo);
-            assert(o !== foo, 'wired property was not profixied');
         });
 
         it('should make wired properties reactive', () => {
@@ -59,11 +59,13 @@ describe('wire.ts', () => {
             }
             MyComponent.wire = { foo: {} };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.injectFoo({ x: 2 });
+
             return Promise.resolve().then(() => {
-                assert.strictEqual(2, counter);
+                expect(counter).toBe(2);
             });
         });
 
@@ -84,79 +86,86 @@ describe('wire.ts', () => {
             }
             MyComponent.wire = { foo: {} };
             MyComponent.publicMethods = ['injectFooDotX'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.injectFooDotX(2);
+
             return Promise.resolve().then(() => {
-                assert.strictEqual(2, counter);
+                expect(counter).toBe(2);
             });
         });
 
         it('should not proxify primitive value', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(1);
                 }
             }
             MyComponent.wire = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.injectFoo(1);
-            assert.strictEqual(foo, 1);
         });
 
         it('should proxify plain arrays', function () {
-            let foo = undefined;
+            expect.assertions(2);
+
+            const a = [];
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toEqual(a);
+                    expect(this.foo).not.toBe(a);
                 }
             }
             MyComponent.wire = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const a = [];
             elm.injectFoo(a);
-            assert(foo !== a);
         });
 
         it('should not proxify exotic objects', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
+            const d = new Date();
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(d);
                 }
             }
             MyComponent.wire = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const d = Date.now();
             elm.injectFoo(d);
-            assert.strictEqual(foo, d);
         });
 
         it('should not proxify non-observable object', function () {
-            let foo = undefined;
+            expect.assertions(1);
+
+            const o = Object.create({});
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
-                    foo = this.foo;
+                    expect(this.foo).toBe(o);
                 }
             }
             MyComponent.wire = { foo: {  } };
             MyComponent.publicMethods = ['injectFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const o = Object.create({});
             elm.injectFoo(o);
-            assert.strictEqual(foo, o);
         });
 
         it('should not throw an error if wire is observable object', function () {

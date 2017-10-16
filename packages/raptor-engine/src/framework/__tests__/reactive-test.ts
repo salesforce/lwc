@@ -1,5 +1,4 @@
 import * as target from '../reactive';
-import assert from 'power-assert';
 
 describe('reactive', function () {
 
@@ -10,58 +9,58 @@ describe('reactive', function () {
     describe('#isObservable', function () {
         it('should return true for plain objects', function () {
             const reactive = target.isObservable({});
-            assert(reactive);
+            expect(reactive);
         });
 
         it('should return true for objects with null prototype', function () {
             const reactive = target.isObservable(Object.create(null));
-            assert(reactive);
+            expect(reactive);
         });
 
         it('should return true for arrays', function () {
             const reactive = target.isObservable([]);
-            assert(reactive);
+            expect(reactive);
         });
 
         it('should return false for functions', function () {
             const reactive = target.isObservable(function () {});
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for false', function () {
             const reactive = target.isObservable(false);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for null', function () {
             const reactive = target.isObservable(false);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for undefined', function () {
             const reactive = target.isObservable(false);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for true', function () {
             const reactive = target.isObservable(true);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for number', function () {
             const reactive = target.isObservable(1);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for string', function () {
             const reactive = target.isObservable('foo');
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should return false for extended objects', function () {
             const obj = Object.create({});
             const reactive = target.isObservable(obj);
-            assert(!reactive);
+            expect(!reactive);
         });
 
         it('should handle cross realm objects', function () {
@@ -74,43 +73,43 @@ describe('reactive', function () {
 
     describe('#getReactiveProxy()', () => {
         it('should throw for non-object values', () => {
-            assert.throws(() => target.getReactiveProxy(undefined), "undefined value");
-            assert.throws(() => target.getReactiveProxy(""), "empty string value");
-            assert.throws(() => target.getReactiveProxy(NaN), "NaN value");
-            assert.throws(() => target.getReactiveProxy(function () {}));
-            assert.throws(() => target.getReactiveProxy(1), "Number value");
+            expect(() => target.getReactiveProxy(undefined)).toThrow();
+            expect(() => target.getReactiveProxy("")).toThrow();
+            expect(() => target.getReactiveProxy(NaN)).toThrow();
+            expect(() => target.getReactiveProxy(function () {})).toThrow();
+            expect(() => target.getReactiveProxy(1)).toThrow();
         });
         it('should always return the same proxy', () => {
             const o = { x: 1 };
             const first = target.getReactiveProxy(o);
             const second = target.getReactiveProxy(o);
-            assert(first.x === second.x);
-            assert(first === second);
+            expect(first.x).toBe(second.x);
+            expect(first).toBe(second);
         });
         it('should not try to make date object reactive', function () {
             const date = new Date();
             const state = target.getReactiveProxy({});
             state.date = date;
-            assert(state.date === date);
+            expect(state.date).toBe(date);
         });
         it('should not try to make inherited object reactive', function () {
             const foo = Object.create({});
             const state = target.getReactiveProxy({});
             state.foo = foo;
-            assert(state.foo === foo);
+            expect(state.foo).toBe(foo);
         });
         it('should never rewrap a previously produced proxy', () => {
             const o = { x: 1 };
             const first = target.getReactiveProxy(o);
             const second = target.getReactiveProxy(first);
-            assert(first.x === second.x);
-            assert(first === second);
+            expect(first.x).toBe(second.x);
+            expect(first).toBe(second);
         });
         it('should rewrap unknown proxy', () => {
             const o = { x: 1 };
             const first = new Proxy(o, {});
             const second = target.getReactiveProxy(first);
-            assert(first !== second);
+            expect(first).not.toBe(second);
         });
         it('should handle frozen objects correctly', () => {
             const o = Object.freeze({
@@ -138,7 +137,7 @@ describe('reactive', function () {
             a.foo.self = a;
 
             const property = target.getReactiveProxy(a);
-            assert(property.foo.self === property);
+            expect(property.foo.self).toBe(property);
         });
         it('should understand property desc with getter', function () {
             const obj = {
@@ -156,7 +155,7 @@ describe('reactive', function () {
 
             const property = target.getReactiveProxy(obj);
             const desc = Object.getOwnPropertyDescriptor(property, 'foo');
-            assert(target.getReactiveProxy(desc.get()) === property.foo);
+            expect(target.getReactiveProxy(desc.get())).toBe(property.foo);
         });
         it('should handle has correctly', function () {
             var obj = {
@@ -164,15 +163,15 @@ describe('reactive', function () {
             };
 
             const property = target.getReactiveProxy(obj);
-            assert('foo' in property);
+            expect('foo' in property);
         });
         it('should delete writable properties correctly', function () {
             var obj = [{ foo: 'bar' }];
 
             const property = target.getReactiveProxy(obj);
             const result = delete property[0];
-            assert(!(0 in property));
-            assert(result);
+            expect(!(0 in property));
+            expect(result);
         });
         it('should handle extensible correctly when target is extensible', function () {
             const hello = {
@@ -184,7 +183,7 @@ describe('reactive', function () {
             };
 
             const wrapped = target.getReactiveProxy(obj);
-            assert(Object.isExtensible(wrapped) === true);
+            expect(Object.isExtensible(wrapped));
         });
         it('should handle preventExtensions correctly', function () {
             const obj = {
@@ -200,7 +199,7 @@ describe('reactive', function () {
                 property.nextValue = 'newvalue';
             }).toThrow();
 
-            assert(property.foo === 'bar');
+            expect(property.foo).toBe('bar');
         });
         it('should handle defineProperty correctly', function () {
             const obj = {
@@ -211,7 +210,7 @@ describe('reactive', function () {
             Object.defineProperty(property, 'hello', {
                 value: 'world'
             });
-            assert(property.hello === 'world');
+            expect(property.hello).toBe('world');
         });
         it('should handle defineProperty correctly when descriptor is non-configurable', function () {
             const obj = {
@@ -224,7 +223,7 @@ describe('reactive', function () {
                 configurable: false
             });
 
-            assert(wet.hello === 'world');
+            expect(wet.hello).toBe('world');
         });
         it('should not allow deleting non-configurable property', function () {
             const obj = {
@@ -291,7 +290,7 @@ describe('reactive', function () {
 
             const property = target.getReactiveProxy(obj);
             Object.preventExtensions(property);
-            assert(property.foo.nested === target.getReactiveProxy(nested));
+            expect(property.foo.nested).toBe(target.getReactiveProxy(nested));
         });
     });
 });

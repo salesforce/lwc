@@ -1,4 +1,3 @@
-// import * as target from '../invoker';
 import * as api from "../api";
 import { createElement } from "../main";
 import { Element } from "../html-element";

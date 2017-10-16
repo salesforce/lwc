@@ -1,5 +1,4 @@
 import { Root } from "../root";
-import assert from 'power-assert';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
@@ -8,7 +7,7 @@ describe('root', () => {
     describe('#constructor()', () => {
 
         it('should throw for invalid vm reference', () => {
-            assert.throws(() => new Root(), 'prevent creation of such objects in user-land');
+            expect(() => new Root()).toThrow();
         });
 
     });
@@ -21,7 +20,7 @@ describe('root', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'foo' });
             patch(elm, vnode);
-            assert.equal(vnode.vm.component, vnode.vm.component.root.host);
+            expect(vnode.vm.component).toBe(vnode.vm.component.root.host);
         });
 
         it('should support this.root.mode', () => {
@@ -30,7 +29,7 @@ describe('root', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'foo' });
             patch(elm, vnode);
-            assert.strictEqual('closed', vnode.vm.component.root.mode);
+            expect(vnode.vm.component.root.mode).toBe('closed');
         });
 
         it('should allow searching for elements from template', () => {
@@ -45,7 +44,7 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const nodes = vnode.vm.component.root.querySelectorAll('p');
-                assert.strictEqual(1, nodes.length);
+                expect(nodes).toHaveLength(1);
             });
         });
 
@@ -61,7 +60,7 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const node = vnode.vm.component.root.querySelector('p');
-                assert.strictEqual('P', node.tagName);
+                expect(node.tagName).toBe('P');
             });
         });
 
@@ -78,7 +77,7 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const nodes = vnode.vm.component.root.querySelectorAll('p');
-                assert.strictEqual(0, nodes.length);
+                expect(nodes).toHaveLength(0);
             });
         });
 
@@ -95,7 +94,7 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const node = vnode.vm.component.root.querySelector('p');
-                assert.strictEqual(null, node);
+                expect(node).toBeNull();
             });
         });
 
@@ -116,9 +115,9 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const ul = vnode.vm.component.root.querySelector('ul');
-                assert(ul);
+                expect(ul);
                 const li = ul.querySelector('li');
-                assert(li);
+                expect(li);
             });
         });
 
@@ -134,9 +133,9 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const ul = vnode.vm.component.root.querySelectorAll('ul')[0];
-                assert(ul);
+                expect(ul);
                 const li = ul.querySelectorAll('li')[0];
-                assert(li);
+                expect(li);
             });
         });
 
@@ -152,12 +151,12 @@ describe('root', () => {
             patch(elm, vnode);
             return Promise.resolve().then(() => {
                 const ul = vnode.vm.component.root.querySelector('ul');
-                assert(ul);
+                expect(ul);
                 ul.appendChild(document.createElement('li'));
                 const li1 = ul.querySelectorAll('li')[0];
-                assert(li1 === undefined, `querySelectorAll is not ignoring extraneous`);
+                expect(li1).toBeUndefined();
                 const li2 = ul.querySelector('li');
-                assert(li2 === null, `querySelector is not ignoring extraneous`);
+                expect(li2).toBeNull();
             });
         });
 
@@ -193,7 +192,7 @@ describe('root', () => {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.strictEqual(vnode.vm.component.root.querySelector('doesnotexist'), null);
+                expect(vnode.vm.component.root.querySelector('doesnotexist')).toBeNull();
             });
         });
 
@@ -230,7 +229,7 @@ describe('root', () => {
 
             return Promise.resolve().then(() => {
                 const root = vnode.vm.component.root;
-                assert.strictEqual(root.querySelector('div').parentNode, root);
+                expect(root.querySelector('div').parentNode).toBe(root);
             });
         });
 

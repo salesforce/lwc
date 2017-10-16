@@ -1,5 +1,4 @@
 import target from '../classes';
-import assert from 'power-assert';
 
 describe('module/classes', () => {
     it('should apply data.class', () => {
@@ -7,7 +6,7 @@ describe('module/classes', () => {
         const vnode = { elm, data: { class: { foo: true } } };
 
         target.create({data: {}}, vnode);
-        assert.equal('foo', elm.className);
+        expect(elm.className).toBe('foo');
     });
 
     it('should apply data.class but ignore vm.cmpClasses', () => {
@@ -18,7 +17,7 @@ describe('module/classes', () => {
         };
 
         target.create({data: {}}, vnode);
-        assert.equal('foo bar', elm.className);
+        expect(elm.className).toBe('foo bar');
     });
 
     it('should use data.class but ignore vm.cmpClasses with conflicts', () => {
@@ -29,7 +28,7 @@ describe('module/classes', () => {
         };
 
         target.create({data: {}}, vnode);
-        assert.equal('foo bar', elm.className);
+        expect(elm.className).toBe('foo bar');
     });
 
 
@@ -41,7 +40,7 @@ describe('module/classes', () => {
         };
 
         target.create({data: { class: { baz: true } }}, vnode);
-        assert.equal('manual foo bar', elm.className);
+        expect(elm.className).toBe('manual foo bar');
     });
 
     it('should remove from oldData.class but check vm.cmpClasses with conflicts', () => {
@@ -56,7 +55,7 @@ describe('module/classes', () => {
             vm: { cmpClasses: { foo: false, bar: true } }
         };
         target.create(oldVnode, vnode);
-        assert.equal('foo bar', elm.className);
+        expect(elm.className).toBe('foo bar');
     });
 
 });

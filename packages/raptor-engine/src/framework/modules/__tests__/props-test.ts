@@ -1,5 +1,4 @@
 import target from '../props';
-import assert from 'power-assert';
 
 describe('module/props', () => {
 
@@ -19,8 +18,8 @@ describe('module/props', () => {
         const newVnode = { data: { props: { value: "new value" } }, elm };
 
         target.update(oldVnode, newVnode);
-        assert(read === true, 'input.value was not compared to props.value to avoid setting a new value');
-        assert(elm.value === "new value");
+        expect(read).toBe(true);
+        expect(elm.value).toBe("new value");
     });
 
     it('should set the input element value when the new value does not match (reconcilation)', () => {
@@ -40,8 +39,8 @@ describe('module/props', () => {
         const newVnode = { data: { props: { value: "new value" } }, elm };
 
         target.update(oldVnode, newVnode);
-        assert(v === "new value");
-        assert(elm.value === "new value");
+        expect(v).toBe("new value");
+        expect(elm.value).toBe("new value");
     });
 
     it('should not touch the element when the values are the same', () => {
@@ -56,7 +55,7 @@ describe('module/props', () => {
         const newVnode = { data: { props: { foo: 1 } }, elm };
 
         target.update(oldVnode, newVnode);
-        assert(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo') !== undefined);
+        expect(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo')).not.toBeUndefined();
     });
 
     it('should allow undefined value in props', () => {
@@ -66,7 +65,7 @@ describe('module/props', () => {
         const newVnode = { data: { props: { foo: undefined } }, elm };
 
         target.update(oldVnode, newVnode);
-        assert(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo') !== undefined);
+        expect(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo')).not.toBeUndefined();
     });
 
     it('should prevent deleting element when a falsy value will be added', () => {
@@ -82,8 +81,8 @@ describe('module/props', () => {
         const newVnode = { data: { props: { foo: undefined } }, elm };
 
         target.update(oldVnode, newVnode);
-        assert(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo') !== undefined);
-        assert(newVnode.elm.foo === undefined);
+        expect(Object.getOwnPropertyDescriptor(newVnode.elm, 'foo')).not.toBeUndefined();
+        expect(newVnode.elm.foo).toBeUndefined();
     });
 
 });

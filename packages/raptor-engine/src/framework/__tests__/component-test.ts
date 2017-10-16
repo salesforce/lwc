@@ -1,19 +1,17 @@
 import * as target from '../component';
-import assert from 'power-assert';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
 import { createElement } from "../upgrade";
 
 describe('component', function () {
-
     describe('#createComponent()', () => {
         it('should throw for non-object values', () => {
-            assert.throws(() => target.createComponent(undefined), "undefined value");
-            assert.throws(() => target.createComponent(""), "empty string value");
-            assert.throws(() => target.createComponent(NaN), "NaN value");
-            assert.throws(() => target.createComponent(function () {}));
-            assert.throws(() => target.createComponent(1), "Number value");
+            expect(() => target.createComponent(undefined)).toThrow();
+            expect(() => target.createComponent("")).toThrow();
+            expect(() => target.createComponent(NaN)).toThrow();
+            expect(() => target.createComponent(function () {})).toThrow();
+            expect(() => target.createComponent(1)).toThrow();
         });
     });
 
@@ -37,10 +35,10 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, { attrs: { title: 2 } });
             patch(elm, vnode);
             return Promise.resolve().then(() => {
-                assert.strictEqual(1, counter);
-                assert.strictEqual('title', keyValue);
-                assert.strictEqual(null, oldValue);
-                assert.strictEqual('2', newValue);
+                expect(counter).toBe(1);
+                expect(keyValue).toBe('title');
+                expect(oldValue).toBe(null);
+                expect(newValue).toBe('2');
             });
         });
 
@@ -59,10 +57,10 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, { attrs: { 'data-xyz': 2 } });
             patch(elm, vnode);
             return Promise.resolve().then(() => {
-                assert.strictEqual(1, counter);
-                assert.strictEqual('data-xyz', keyValue);
-                assert.strictEqual(null, oldValue);
-                assert.strictEqual('2', newValue);
+                expect(counter).toBe(1);
+                expect(keyValue).toBe('data-xyz');
+                expect(oldValue).toBe(null);
+                expect(newValue).toBe('2');
             });
         });
 
@@ -81,10 +79,10 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, { attrs: { 'aria-describedby': 'xyz' } });
             patch(elm, vnode);
             return Promise.resolve().then(() => {
-                assert.strictEqual(1, counter);
-                assert.strictEqual('aria-describedby', keyValue);
-                assert.strictEqual(null, oldValue);
-                assert.strictEqual('xyz', newValue);
+                expect(counter).toBe(1);
+                expect(keyValue).toBe('aria-describedby');
+                expect(oldValue).toBe(null);
+                expect(newValue).toBe('xyz');
             });
         });
     });
@@ -125,8 +123,9 @@ describe('component', function () {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', Parent, {});
             patch(elm, vnode);
-            assert.deepEqual(elm.lunch, 'salad');
-            assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
+
+            expect(elm.lunch).toBe('salad');
+            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function () {
@@ -177,7 +176,7 @@ describe('component', function () {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', MyComponent, { props: { x: 2 } });
             // x can't be set via props, only read via getter
-            assert.throws(() => patch(elm, vnode));
+            expect(() => patch(elm, vnode)).toThrow();
         });
 
         it('should be render reactive', function () {
@@ -207,7 +206,7 @@ describe('component', function () {
             patch(elm, vnode);
             vnode.vm.component.state.value = 10;
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.textContent, 'true');
+                expect(elm.textContent).toBe('true');
             });
         });
 
@@ -233,7 +232,8 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
             vnode.vm.component.breakfast;
-            assert.deepEqual(context, vnode.vm.component);
+
+            expect(context).toBe(vnode.vm.component);
         });
 
         it('should not execute setter function when used directly from DOM', function () {
@@ -262,7 +262,8 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
             elm.breakfast = 'hey';
-            assert.deepEqual(callCount, 0);
+
+            expect(callCount).toBe(0);
         });
 
         it('should execute setter function with correct context when component is root', function () {
@@ -297,8 +298,8 @@ describe('component', function () {
             const elm = createElement('x-foo', { is: MyComponent });
 
             elm.breakfast = 'eggs';
-            assert.deepEqual(callCount, 1);
-            assert.deepEqual(component, context);
+            expect(callCount).toBe(1);
+            expect(component).toBe(context);
         });
 
         it('should call setter with correct context when template value is updated', function () {
@@ -330,8 +331,9 @@ describe('component', function () {
             const nextVNode = api.c('x-foo', MyComponent, { props: { breakfast: 'eggs' } });
             patch(elm, vnode);
             patch(vnode, nextVNode);
-            assert.deepEqual(callCount, 1);
-            assert.deepEqual(context, nextVNode.vm.component);
+
+            expect(callCount).toBe(1);
+            expect(context).toBe(nextVNode.vm.component);
         });
 
         it('should call setter when default value is provided', function () {
@@ -362,8 +364,9 @@ describe('component', function () {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
-            assert.deepEqual(callCount, 1);
-            assert.deepEqual(context, vnode.vm.component);
+
+            expect(callCount).toBe(1);
+            expect(context).toBe(vnode.vm.component);
         });
 
         it('should throw when configured prop is missing getter', function () {
@@ -452,8 +455,8 @@ describe('component', function () {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.querySelector('section').style.cssText, 'color: red;');
-                assert.deepEqual(calledCSSText, true);
+                expect(elm.querySelector('section').style.cssText).toBe('color: red;');
+                expect(calledCSSText).toBe(true);
             });
         });
 
@@ -497,8 +500,8 @@ describe('component', function () {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.style.cssText, '');
-                assert.deepEqual(calledCSSTextWithUndefined, false);
+                expect(elm.style.cssText).toBe('');
+                expect(calledCSSTextWithUndefined).toBe(false);
             });
         });
 
@@ -529,7 +532,7 @@ describe('component', function () {
             patch(elm, vnode);
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(elm.style.cssText, '');
+                expect(elm.style.cssText).toBe('');
             });
         });
 
@@ -566,7 +569,7 @@ describe('component', function () {
             vnode.vm.component.state.customStyle = 'color:green';
 
             return Promise.resolve().then(() => {
-                assert.deepEqual(called, false);
+                expect(called).toBe(false);
             });
         });
     });
@@ -588,7 +591,7 @@ describe('component', function () {
             patch(elm, vnode);
 
             elm.m;
-            assert.deepEqual(callCount, 0);
+            expect(callCount).toBe(0);
         });
 
         it('should invoke function only once', function () {
@@ -607,7 +610,7 @@ describe('component', function () {
             patch(elm, vnode);
 
             elm.m();
-            assert.deepEqual(callCount, 1);
+            expect(callCount).toBe(1);
         });
 
         it('should call function with correct context', function () {
@@ -627,8 +630,8 @@ describe('component', function () {
             patch(elm, vnode);
 
             elm.m(1, 2);
-            assert.deepEqual(context, vnode.vm.component);
-            assert.deepEqual(args, [1, 2]);
+            expect(context).toBe(vnode.vm.component);
+            expect(args).toEqual([1, 2]);
         });
 
         it('should express function identity with strict equality', function () {
@@ -643,7 +646,7 @@ describe('component', function () {
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
 
-            assert.strictEqual(elm.m, elm.m);
+            expect(elm.m).toBe(elm.m);
         });
 
         it('should allow calling methods when element is referenced with querySelector', function () {

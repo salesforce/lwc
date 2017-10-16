@@ -1,11 +1,8 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
-import assert from 'power-assert';
 
 describe('api.ts', () => {
-
     describe('@api x', () => {
-
         it('should allow inheriting public props', function () {
             class MyComponent extends Element  {
                 constructor() {
@@ -38,8 +35,8 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.parentGetter, 'parentgetter');
-            assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
+            expect(elm.parentGetter).toBe('parentgetter');
+            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider properties reactive if not used in render', function () {
@@ -58,10 +55,10 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(counter, 1);
+            expect(counter).toBe(1);
             elm.x = 10;
             return Promise.resolve().then(() => {
-                assert.deepEqual(counter, 1);
+                expect(counter).toBe(1);
             });
         });
 
@@ -81,10 +78,10 @@ describe('api.ts', () => {
             };
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(counter, 1);
+            expect(counter).toBe(1);
             elm.x = 10;
             return Promise.resolve().then(() => {
-                assert.deepEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
 
@@ -106,8 +103,8 @@ describe('api.ts', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             elm.x = 'foo';
             document.body.appendChild(elm);
-            assert.deepEqual(elm.x, 'foo');
-            assert.deepEqual(elm.textContent, 'foo');
+            expect(elm.x).toBe('foo');
+            expect(elm.textContent).toBe('foo');
         });
 
     });
@@ -145,8 +142,8 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.parentGetter, 'parentgetter');
-            assert.deepEqual(elm.querySelector('x-component').breakfast, 'pancakes');
+            expect(elm.parentGetter).toBe('parentgetter');
+            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider getter and setters reactive', function () {
@@ -171,10 +168,10 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(counter, 1);
+            expect(counter).toBe(1);
             elm.x = 10;
             return Promise.resolve().then(() => {
-                assert.deepEqual(counter, 1);
+                expect(counter).toBe(1);
             });
         });
 
@@ -205,10 +202,10 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(counter, 1);
+            expect(counter).toBe(1);
             elm.x = 10;
             return Promise.resolve().then(() => {
-                assert.deepEqual(counter, 2);
+                expect(counter).toBe(2);
             });
         });
 
@@ -233,8 +230,8 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.validity, 'foo');
-            assert.deepEqual(elm.textContent, 'foo');
+            expect(elm.validity).toBe('foo');
+            expect(elm.textContent).toBe('foo');
         });
 
         it('should allow calling the getter during construction', function () {
@@ -258,7 +255,7 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.x, 1);
+            expect(elm.x).toBe(1);
         });
 
         it('should allow calling the setter during construction', function () {
@@ -282,13 +279,12 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.x, 1);
+            expect(elm.x).toBe(1);
         });
 
     });
 
     describe('@api foo()', () => {
-
         it('should allow inheriting public methods', function () {
             class MyComponent extends Element  {
                 x() {
@@ -308,8 +304,8 @@ describe('api.ts', () => {
 
             const elm = createElement('x-foo', { is: ChildComponent });
             document.body.appendChild(elm);
-            assert.deepEqual(elm.x(), 1);
-            assert.deepEqual(elm.y(), 2);
+            expect(elm.x()).toBe(1);
+            expect(elm.y()).toBe(2);
         });
 
         it('should preserve the context in public methods', function () {
@@ -329,10 +325,9 @@ describe('api.ts', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.x(10, 20);
-            assert.strictEqual(that, ctx);
-            assert.deepEqual(args, [10, 20]);
+            expect(that).toBe(ctx);
+            expect(args).toEqual([10, 20]);
         });
-
     });
 
     describe('@api regression', () => {

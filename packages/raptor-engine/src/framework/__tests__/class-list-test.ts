@@ -1,5 +1,4 @@
 import { ClassList } from "../class-list";
-import assert from 'power-assert';
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
@@ -7,22 +6,19 @@ import { createElement } from '../upgrade';
 
 describe('class-list', () => {
     describe('#constructor()', () => {
-
         it('should throw for invalid vm reference', () => {
-            assert.throws(() => new ClassList(), 'prevent creation of such objects in user-land');
+            expect(() => new ClassList(undefined as any)).toThrow();
         });
-
     });
 
     describe('integration', () => {
-
         it('should support outer className', () => {
             let vnode;
             const def = class MyComponent extends Element {}
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'foo' });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo');
+            expect(elm.className).toBe('foo');
         });
 
         it('should support outer classMap', () => {
@@ -32,7 +28,7 @@ describe('class-list', () => {
             document.body.appendChild(elm);
             vnode = api.c('x-foo', def, { classMap: { foo: 1 } });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo');
+            expect(elm.className).toBe('foo');
         });
 
         it('should combine inner classes first and then data.className', () => {
@@ -46,7 +42,7 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'bar  baz' });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo bar baz');
+            expect(elm.className).toBe('foo bar baz');
         });
 
         it('should not allow deleting outer classes from within', () => {
@@ -60,7 +56,7 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'foo' });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo');
+            expect(elm.className).toBe('foo');
         });
 
         it('should dedupe all classes', () => {
@@ -74,7 +70,7 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { className: 'foo   foo' });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo');
+            expect(elm.className).toBe('foo');
         });
 
         it('should combine outer classMap and inner classes', () => {
@@ -88,7 +84,7 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, { classMap: { bar: 1 } });
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo bar');
+            expect(elm.className).toBe('foo bar');
         });
 
         it('should support toggle', () => {
@@ -104,7 +100,7 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.equal(elm.className, 'bar');
+            expect(elm.className).toBe('bar');
         });
 
         it('should support toggle with force', () => {
@@ -119,41 +115,43 @@ describe('class-list', () => {
             const elm = document.createElement('x-foo');
             vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.equal(elm.className, 'foo');
+            expect(elm.className).toBe('foo');
         });
 
         it('should support contains', () => {
-            let vnode, a, b;
+            expect.assertions(2);
+
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
                     this.classList.add('foo');
-                    a = this.classList.contains('foo');
-                    b = this.classList.contains('bar');
+
+                    expect(this.classList.contains('foo')).toBe(true);
+                    expect(this.classList.contains('bar')).toBe(false);
                 }
             }
+
             const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def, {});
+            const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual(true, a);
-            assert.strictEqual(false, b);
         });
 
         it('should support item', () => {
-            let vnode, a, b;
+            expect.assertions(2);
+
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
                     this.classList.add('foo');
-                    a = this.classList.item(0);
-                    b = this.classList.item(1);
+
+                    expect(this.classList.item(0)).toBe('foo');
+                    expect(this.classList.item(1)).toBeNull();
                 }
             }
+
             const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def, {});
+            const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
-            assert.strictEqual('foo', a);
-            assert.strictEqual(null, b);
         });
 
         // FLAPPER TODO: Fix it
@@ -175,16 +173,19 @@ describe('class-list', () => {
                 }
             }
             MyComponent.publicProps = { x: true };
+
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', MyComponent, { props: { x: 1 } });
             patch(elm, vnode);
-            assert.strictEqual('foo', elm.className);
+            expect(elm.className).toBe('foo');
+
             vnode.vm.component.addAnotherClass(); // add when not dirty
             vnode.vm.component.state.x = 2; // dirty trigger
             vnode.vm.component.addOtherClass(); // adding after dirty
-            assert.strictEqual(true, vnode.vm.isDirty, 'should be dirty');
+            expect(vnode.vm.isDirty).toBe(true);
+
             return Promise.resolve().then(() => {
-                assert.strictEqual('foo bar baz', elm.className);
+                expect(elm.className).toBe('foo bar baz');
             });
         });
 
@@ -199,8 +200,8 @@ describe('class-list', () => {
                     this.classList.add('classFromAttibuteChangedCb');
                 }
             }
-
             def.observedAttributes = ['title'];
+
             const elm = createElement('x-foo', { is: def })
             elm.setAttribute('title', 'title');
             expect(elm.className).toBe('classFromConstructor classFromAttibuteChangedCb');
@@ -218,8 +219,8 @@ describe('class-list', () => {
                     this.classList.remove('classToRemoveDuringAttributeChangedCb');
                 }
             }
-
             def.observedAttributes = ['title'];
+
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'title');
             expect(elm.className).toBe('theOnlyClassThatShouldRemain');
@@ -239,8 +240,9 @@ describe('class-list', () => {
 
             const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            return Promise.resolve().then(() => { expect(elm.className).toBe('classFromConstructor classFromConnectedCallback');})
-
+            return Promise.resolve().then(() => {
+                expect(elm.className).toBe('classFromConstructor classFromConnectedCallback');
+            });
         })
 
         it('should support removing values from classList via connectedCallback', ()=> {
@@ -258,7 +260,9 @@ describe('class-list', () => {
 
             const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            return Promise.resolve().then(() => { expect(elm.className).toBe('theOnlyClassThatShouldRemain');})
+            return Promise.resolve().then(() => {
+                expect(elm.className).toBe('theOnlyClassThatShouldRemain');
+            });
         })
 
         it('should support adding new values to classList via both attributeChangedCallback and classFromAttibuteChangedCb', ()=> {
@@ -276,13 +280,15 @@ describe('class-list', () => {
                     this.classList.add('classFromConnectedCallback');
                 }
             }
-
             def.observedAttributes = ['title'];
+
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'title');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => { expect(elm.className).toBe('classFromConstructor classFromAttibuteChangedCb classFromConnectedCallback');})
+            return Promise.resolve().then(() => {
+                expect(elm.className).toBe('classFromConstructor classFromAttibuteChangedCb classFromConnectedCallback');
+            });
         })
 
         it('should support removing values from classList via both attributeChangedCallback and classFromAttibuteChangedCb', ()=> {
@@ -302,15 +308,14 @@ describe('class-list', () => {
                     this.classList.remove('classToRemoveDuringConnectedCb');
                 }
             }
-
             def.observedAttributes = ['title'];
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'title');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => { expect(elm.className).toBe('theOnlyClassThatShouldRemain');})
-        })
-
+            return Promise.resolve().then(() => {
+                expect(elm.className).toBe('theOnlyClassThatShouldRemain');
+            });
+        });
     });
-
 });

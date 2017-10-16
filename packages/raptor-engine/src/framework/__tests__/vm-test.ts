@@ -2,12 +2,9 @@
 import * as api from "../api";
 import { patch } from '../patch';
 import { Element } from "../html-element";
-import assert from 'power-assert';
 
 describe('vm', () => {
-
     describe('integration', () => {
-
         var elm, vnode0;
 
         beforeEach(function() {
@@ -25,14 +22,14 @@ describe('vm', () => {
             }
             vnode0 = api.c('x-foo', MyComponent1, {});
             patch(elm, vnode0);
-            assert.strictEqual(idx, 0);
+            expect(idx).toBe(0);
         });
 
         it('should assign idx>0 after insertion', () => {
             class MyComponent2 extends Element {}
             vnode0 = api.c('x-foo', MyComponent2, {});
             patch(elm, vnode0);
-            assert(vnode0.vm.idx > 0);
+            expect(vnode0.vm.idx).toBeGreaterThan(0);
         });
 
         it('should assign idx=0 after removal', () => {
@@ -42,7 +39,7 @@ describe('vm', () => {
             patch(elm, vnode0);
             const vnode1 = api.h('div', {}, []);
             patch(vnode0, vnode1);
-            assert.strictEqual(vnode0.vm.idx, 0);
+            expect(vnode0.vm.idx).toBe(0);
         });
 
         it('should assign bigger idx to children', () => {
@@ -55,8 +52,8 @@ describe('vm', () => {
             }
             vnode0 = api.c('x-foo', MyComponent4, {});
             patch(elm, vnode0);
-            assert(vnode0.vm.idx > 0);
-            assert(vnodeChild.vm.idx > vnode0.vm.idx);
+            expect(vnode0.vm.idx).toBeGreaterThan(0);
+            expect(vnodeChild.vm.idx).toBeGreaterThan(vnode0.vm.idx);
         });
 
         it('should assign bigger idx on reinsertion, including children idx', () => {
@@ -79,12 +76,12 @@ describe('vm', () => {
             const firstIdx = vnode0.vm.idx;
             const vnode1 = api.h('div', {}, []);
             patch(vnode0, vnode1); // removal
-            assert.strictEqual(vnode0.vm.idx, 0);
-            assert.strictEqual(vnodeChild.vm.idx, 0);
+            expect(vnode0.vm.idx).toBe(0);
+            expect(vnodeChild.vm.idx).toBe(0);
             patch(vnode1, vnode0); // re-insertion
-            assert(vnode0.vm.idx > firstIdx);
-            assert(vnodeChild.vm.idx > vnode0.vm.idx);
-            assert.strictEqual(2, counter);
+            expect(vnode0.vm.idx).toBeGreaterThan(firstIdx);
+            expect(vnodeChild.vm.idx).toBeGreaterThan(vnode0.vm.idx);
+            expect(counter).toBe(2);
         });
 
     });

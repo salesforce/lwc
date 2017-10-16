@@ -1,5 +1,4 @@
 import target from '../component-classes';
-import assert from 'power-assert';
 
 describe('module/component-classes', () => {
     it('should apply vm.cmpClasses', () => {
@@ -7,7 +6,7 @@ describe('module/component-classes', () => {
         const vnode = { elm, data: {}, vm: { cmpClasses: { foo: true } } };
 
         target.create({data: {}, vm: {}}, vnode);
-        assert.equal('foo', elm.className);
+        expect(elm.className).toBe('foo');
     });
 
     it('should apply vm.cmpClasses but ignore data.class', () => {
@@ -18,7 +17,7 @@ describe('module/component-classes', () => {
         };
 
         target.create({data: {}, vm: {}}, vnode);
-        assert.equal('baz', elm.className);
+        expect(elm.className).toBe('baz');
     });
 
     it('should apply vm.cmpClasses but ignore data.class with conflicts', () => {
@@ -29,7 +28,7 @@ describe('module/component-classes', () => {
         };
 
         target.create({data: {}, vm: {}}, vnode);
-        assert.equal('foo baz', elm.className);
+        expect(elm.className).toBe('foo baz');
     });
 
 
@@ -43,7 +42,7 @@ describe('module/component-classes', () => {
         };
 
         target.create(oldVnode, vnode);
-        assert.equal('manual baz', elm.className);
+        expect(elm.className).toBe('manual baz');
     });
 
     it('should remove from oldVm.cmpClasses but check data.class with conflicts', () => {
@@ -58,7 +57,7 @@ describe('module/component-classes', () => {
             vm: { cmpClasses: { foo: false, bar: true } }
         };
         target.create(oldVnode, vnode);
-        assert.equal('foo manual bar', elm.className);
+        expect(elm.className).toBe('foo manual bar');
     });
 
 });

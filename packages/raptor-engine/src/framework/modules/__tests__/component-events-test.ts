@@ -1,13 +1,10 @@
-import assert from 'power-assert';
 import { c, h } from "../../api";
 import { patch } from "../../patch";
 import { Element } from "../../html-element";
 import { createElement } from "./../../upgrade";
 
 describe('module/component-events', () => {
-
     describe('for vm with internal event logic', () => {
-
         var elm, vnode0;
 
         beforeEach(function() {
@@ -27,7 +24,7 @@ describe('module/component-events', () => {
             var vnode = c('x-foo', Foo, {});
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('should dispatch internal listeners first', function() {
@@ -43,7 +40,7 @@ describe('module/component-events', () => {
             var vnode = c('x-foo', Foo, {on: {click: clicked2}});
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.deepEqual([1, 2], result);
+            expect(result).toEqual([1, 2]);
         });
 
         it('should preserve behavior of stopimmidiatepropagation() for internal listeners', function() {
@@ -60,7 +57,7 @@ describe('module/component-events', () => {
             var vnode = c('x-foo', Foo, {});
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.deepEqual([1], result);
+            expect(result).toEqual([1]);
         });
 
         it('should preserve behavior of stopimmidiatepropagation() for external listeners', function() {
@@ -76,7 +73,7 @@ describe('module/component-events', () => {
             var vnode = c('x-foo', Foo, {on: {click: clicked2}});
             elm = patch(vnode0, vnode).elm;
             elm.click();
-            assert.deepEqual([1], result);
+            expect(result).toEqual([1]);
         });
 
         it('attaches custom event handler to custom element from within (wc-compat)', function() {
@@ -91,7 +88,7 @@ describe('module/component-events', () => {
             var vnode = c('x-foo', Foo, {});
             elm = patch(vnode0, vnode).elm;
             elm.dispatchEvent(new CustomEvent('test', {}));
-            assert.equal(1, result.length);
+            expect(result).toHaveLength(1);
         });
 
         it('should expose component as context to the event handler when defined from within (wc-compat)', function() {
@@ -106,9 +103,9 @@ describe('module/component-events', () => {
             var vnode1 = c('x-foo', Foo, {});
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert.equal(2, result.length);
-            assert.equal(vnode1.vm.component, result[0]); // context must be the component
-            assert.equal(true, result[1] instanceof Event);
+            expect(result).toHaveLength(2);
+            expect(result[0]).toBe(vnode1.vm.component); // context must be the component
+            expect(result[1]).toBeInstanceOf(Event);
         });
 
         it('should not expose the host element via event.target', function() {
@@ -123,8 +120,8 @@ describe('module/component-events', () => {
             var vnode1 = c('x-foo', Foo, {});
             elm = patch(vnode0, vnode1).elm;
             elm.click();
-            assert(event, 'event should have been triggered');
-            assert.equal(vnode1.vm.component, event.target);
+            expect(event);
+            expect(event.target).toBe(vnode1.vm.component);
         });
 
         it('should add event listeners in constructor when created via createElement', function () {

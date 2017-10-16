@@ -1,105 +1,97 @@
-import * as target from '../api';
-import assert from 'power-assert';
+import * as api from '../api';
 import { Element } from "../html-element";
 
 describe('api', () => {
-
     describe('#c()', () => {
+        class Foo extends Element {}
+
+        it('should call the Ctor factory for circular dependencies', () => {
+            const factory = function () { return Foo };
+            factory.__circular__ = true;
+            const vnode = api.c('x-foo', factory, { className: 'foo' });
+            expect(Foo).toBe(vnode.Ctor);
+        });
+
         it('should convert className to a classMap property', () => {
-            class Foo extends Element {}
-            const vnode = target.c('x-foo', Foo, { className: 'foo' });
-            assert.deepEqual(vnode.data.class, { foo: true });
+            const vnode = api.c('x-foo', Foo, { className: 'foo' });
+            expect(vnode.data.class).toEqual({ foo: true });
         });
 
         it('should split classNames on white spaces', () => {
-            class Foo extends Element {}
-            const vnode = target.c('x-foo', Foo, { className: 'foo bar   baz' });
-            assert.deepEqual(vnode.data.class, { foo: true, bar: true, baz: true });
+            const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' });
+            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
-            class Foo extends Element {}
-            assert.throws(() => {
-                target.c('x-foo', Foo, {
+            expect(() => {
+                api.c('x-foo', Foo, {
                     className: 'foo',
                     classMap: { foo: true }
                 });
-            }, /className/);
-        });
-
-        it('should call the Ctor factory for circular dependencies', () => {
-            class Foo extends Element {}
-            const factory = function () { return Foo };
-            factory.__circular__ = true;
-            const vnode = target.c('x-foo', factory, { className: 'foo' });
-            assert.strictEqual(Foo, vnode.Ctor);
+            }).toThrowError(/className/);
         });
 
         it('assign correct style value when styleMap is present', () => {
-            const styleMap = {
-                color: 'red'
+            const styleMap = { color: 'red' };
+            const factory = function() {
+                return Foo;
             };
-            class Foo extends Element {}
-            const factory = function () { return Foo };
-            const vnode = target.c('x-foo', Foo, { styleMap });
+            const vnode = api.c('x-foo', Foo, { styleMap });
 
-            assert.deepEqual(vnode.data.style, {
-                color: 'red'
-            });
+            expect(vnode.data.style).toEqual({ color: 'red' });
         });
 
         it('assign correct style value when style is present', () => {
             const style = 'color:red';
-            class Foo extends Element {}
             const factory = function () { return Foo };
-            const vnode = target.c('x-foo', factory, { style });
+            const vnode = api.c('x-foo', factory, { style });
 
-            assert.deepEqual(vnode.data.style, 'color:red');
+            expect(vnode.data.style).toBe('color:red');
         });
 
         it('should coerce style to string when is object', () => {
             const style = {
                 color: 'red'
             };
-            class Foo extends Element {}
             const factory = function () { return Foo };
-            const vnode = target.c('x-foo', factory, { style });
+            const vnode = api.c('x-foo', factory, { style });
 
-            assert.deepEqual(vnode.data.style, '[object Object]');
+            expect(vnode.data.style).toBe('[object Object]');
         });
     });
 
     describe('#h()', () => {
         it('should convert className to a classMap property', () => {
-            const vnode = target.h('p', { className: 'foo' }, []);
-            assert.deepEqual(vnode.data.class, { foo: true });
+            const vnode = api.h('p', { className: 'foo' }, []);
+            expect(vnode.data.class).toEqual({ foo: true });
         });
 
         it('should allow null entries in children', () => {
-            const vnode = target.h('p', {}, [null]);
-            assert.deepEqual([null], vnode.children);
+            const vnode = api.h('p', {}, [null]);
+            expect(vnode.children).toEqual([null]);
         });
 
         it('should split classNames on white spaces', () => {
-            const vnode = target.h('p', { className: 'foo bar   baz' }, []);
-            assert.deepEqual(vnode.data.class, { foo: true, bar: true, baz: true });
+            const vnode = api.h('p', { className: 'foo bar   baz' }, []);
+            expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
-            assert.throws(() => {
-                target.h('p', {
+            expect(() => {
+                api.h('p', {
                     className: 'foo',
                     classMap: { foo: true }
                 }, []);
-            }, /className/);
+            }).toThrowError(/className/);
         });
 
         it('should throw for anything other than vnode and null', () => {
-            assert.throws(() => {
-                target.h('p', {}, ['text']);
+            expect(() => {
+                api.h('p', {}, ['text']);
             });
-            assert.throws(() => {
-                target.h('p', {}, [undefined]);
+
+            expect(() => {
+                api.h('p', {}, [undefined]);
             });
         });
 
@@ -107,49 +99,46 @@ describe('api', () => {
             const styleMap = {
                 color: 'red'
             };
-            const vnode = target.h('p', { styleMap }, []);
+            const vnode = api.h('p', { styleMap }, []);
 
-            assert.deepEqual(vnode.data.style, {
+            expect(vnode.data.style).toEqual({
                 color: 'red'
             });
         });
 
         it('assign correct style value when style is present', () => {
             const style = 'color:red';
-            const vnode = target.h('p', { style }, []);
+            const vnode = api.h('p', { style }, []);
 
-            assert.deepEqual(vnode.data.style, 'color:red');
+            expect(vnode.data.style).toBe('color:red');
         });
 
         it('should coerce style to string when is object', () => {
             const style = {
                 color: 'red'
             };
-            const vnode = target.h('p', { style }, []);
+            const vnode = api.h('p', { style }, []);
 
-            assert.deepEqual(vnode.data.style, '[object Object]');
+            expect(vnode.data.style).toBe('[object Object]');
         });
-    });
-
-    describe('#n()', () => {
-        // TBD
     });
 
     describe('#i()', () => {
         it('should support various types', () => {
-            assert.deepEqual(target.i([], () => null), [], 'empty array');
-            assert.deepEqual(target.i(undefined, () => null), [], 'undefined');
-            assert.deepEqual(target.i(null, () => null), [], 'null');
+            expect(api.i([], () => null)).toEqual([]);
+            expect(api.i(undefined as any, () => null)).toEqual([]);
+            expect(api.i(null as any, () => null)).toEqual([]);
         });
+
         it('should support numeric keys', () => {
-            assert.deepEqual(target.i([{key: 0}], () => null), [null], 'numeric key');
-            assert.deepEqual(target.i([{key: 1}], () => null), [null], 'another numeric key');
+            expect(api.i([{key: 0}], () => null)).toEqual([null]);
+            expect(api.i([{key: 1}], () => null)).toEqual([null]);
         });
+
         it('should provide item and index', () => {
             const o = {x: 1};
-            assert.deepEqual(target.i([o], (item, index) => {
-                return { index, item };
-            }), [{ index: 0, item: o }]);
+            const vnodes = api.i([o], (item, index) => ({ index, item }));
+            expect(vnodes).toEqual([{ index: 0, item: o }]);
         });
 
         it('should provide correct last value', () => {
@@ -158,66 +147,37 @@ describe('api', () => {
                 {x: 2},
                 {x: 3}
             ];
-
-            const expected = [
-                false,
-                false,
-                true
-            ];
-            assert.deepEqual(target.i(o, (item, index, first, last) => {
-                return last;
-            }), expected);
+            const vnodes = api.i(o, (item, index, first, last) => last);
+            expect(vnodes).toEqual([false, false, true]);
         });
 
         it('should handle arrays', function () {
             const o = [1, 2];
-            const expected = ['1a', '2a'];
-            const iterated = target.i(o, (item, index, first, last) => {
-                return item + 'a';
-            });
-            expect(expected).toEqual(iterated);
+            const vnodes = api.i(o, (item) => item + 'a');
+            expect(vnodes).toEqual(['1a', '2a']);
         });
 
         it('should handle Sets', function () {
             const o = new Set();
             o.add(1);
             o.add(2);
-            const expected = ['1a', '2a'];
-            expect(expected).toEqual(target.i(o, (item, index, first, last) => {
-                return item + 'a';
-            }));
+            const vnodes = api.i(o, (item) => item + 'a');
+            expect(vnodes).toEqual(['1a', '2a']);
         });
 
         it('should handle Map', function () {
             const o = new Map();
             o.set('foo', 1);
             o.set('bar', 2);
-            const expected = ['foo,1a', 'bar,2a'];
-            expect(expected).toEqual(target.i(o, (item, index, first, last) => {
-                return item + 'a';
-            }));
+            const vnodes = api.i(o, (item) => item + 'a');
+            expect(vnodes).toEqual(['foo,1a', 'bar,2a']);
         });
 
         it('should handle proxies objects', function () {
             const array = [1, 2];
             const o = new Proxy(array, {});
-            const expected = ['1a', '2a'];
-            const iterated = target.i(o, (item, index, first, last) => {
-                return item + 'a';
-            });
-            expect(expected).toEqual(iterated);
-        });
-
-        it('should return empty array when undefined is passed', function () {
-            expect(target.i(undefined, (item, index, first, last) => {
-                return item + 'a';
-            })).toEqual([]);
-        });
-
-        it('should return empty array when null is passed', function () {
-            expect(target.i(null, (item, index, first, last) => {
-                return item + 'a';
-            })).toEqual([]);
+            const vnodes = api.i(o, (item) => item + 'a');
+            expect(vnodes).toEqual(['1a', '2a']);
         });
     });
 
