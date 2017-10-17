@@ -20,7 +20,13 @@ const compatKeys = Object.values(compatPlugin.keys);
 const compatOverrides = compatKeys.reduce((str, key) => `${str} var __${key} = window.Proxy.${key};`, '');
 const dest = path.join(__dirname, '../dist/umd');
 const polyfillConfig = {
-    modules: ['es6', 'core.dict'],
+    modules: [
+        'es6',
+        'core.dict',
+        'es7.array.includes',
+        'es7.object.values',
+        'es7.object.entries'
+    ],
     blacklist: [
         'es6.reflect',
         'es6.math',
