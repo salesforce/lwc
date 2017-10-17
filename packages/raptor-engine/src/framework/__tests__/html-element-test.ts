@@ -759,6 +759,43 @@ describe('html-element', () => {
             expect(connected).toBe(2);
             expect(disconnected).toBe(1);
         });
+
+        it('should not throw error when accessing a non-observable property from state when not rendering', function () {
+            class MyComponent extends Element {
+                set foo(value) {
+                    this.state.foo = value;
+                }
+                get foo() {
+                    return this.state.foo;
+                }
+            }
+
+            MyComponent.publicProps = {
+                foo: {
+                    config: 3
+                }
+            };
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.foo = new Map();
+            expect(() => {
+                elm.foo;
+            }).not.toThrow();
+        });
+
+        it('should not log a warning when setting state value to null', function () {
+            jest.spyOn(assertLogger, 'logWarning');
+            class MyComponent extends Element {
+                connectedCallback() {
+                    this.state.foo = null;
+                    this.state.foo;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(assertLogger.logWarning).not.toBeCalled();
+            assertLogger.logWarning.mockRestore();
+        });
     });
 
 });

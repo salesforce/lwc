@@ -97,11 +97,11 @@ export class ReactiveProxyHandler {
 
         const observable = isObservable(value);
         assert.block(function devModeCheck () {
-            if (!observable && isObject(value)) {
+            if (!observable && value !== null && isObject(value)) {
                 if (isRendering) {
                     assert.logWarning(`Rendering a non-reactive value ${value} from member property ${key} of ${vmBeingRendered} is not common because mutations on that value will not re-render the template.`);
                 } else {
-                    assert.logWarning(`Returning a non-reactive value ${value} to member property ${key} of ${originalTarget} is not common because mutations on that value cannot be observed.`);
+                    assert.logWarning(`Returning a non-reactive value ${value} to member property ${key} of ${toString(originalTarget)} is not common because mutations on that value cannot be observed.`);
                 }
             }
         });
@@ -133,10 +133,10 @@ export class ReactiveProxyHandler {
         return true;
     }
     apply(target: any/*, thisArg: any, argArray?: any*/) {
-        assert.fail(`invalid call invocation for property proxy ${target}`);
+        assert.fail(`invalid call invocation for property proxy ${toString(target)}`);
     }
     construct(target: any, argArray: any, newTarget?: any): any { // eslint-disable-line no-unused-vars
-        assert.fail(`invalid construction invocation for property proxy ${target}`);
+        assert.fail(`invalid construction invocation for property proxy ${toString(target)}`);
     }
     has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
@@ -163,7 +163,7 @@ export class ReactiveProxyHandler {
         return targetIsExtensible;
     }
     setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any { // eslint-disable-line no-unused-vars
-        assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${this.originalTarget}. Prototype of reactive objects cannot be changed.`);
+        assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
     }
     getPrototypeOf(shadowTarget: ShadowTarget): Object { // eslint-disable-line no-unused-vars
         const { originalTarget } = this;
