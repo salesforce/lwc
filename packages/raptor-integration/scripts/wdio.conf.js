@@ -2,6 +2,9 @@
 
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const RaptorIntegrationReporter = require('./reporter');
+const MODE_COMPAT = 'compat';
+const mode = process.env.MODE || MODE_COMPAT;
 
 const config = {
     //
@@ -138,7 +141,12 @@ const config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
-    reporters: ['spec'],
+    reporters: [RaptorIntegrationReporter],
+    reporterOptions: {
+        RaptorIntegrationReporter: {
+            compat: (mode === MODE_COMPAT)
+        }
+    },
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
