@@ -2040,6 +2040,12 @@ dot-prop@^3.0.0:
   dependencies:
     is-obj "^1.0.0"
 
+dot-prop@^4.1.1:
+  version "4.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
+  dependencies:
+    is-obj "^1.0.0"
+
 dotenv@^4.0.0:
   version "4.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
@@ -3129,6 +3135,10 @@ indent-string@^2.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/indent-string/-/indent-string-2.1.0.tgz#8e2d48348742121b4a8218b7a137e9a52049dc80"
   dependencies:
     repeating "^2.0.0"
+
+indexes-of@^1.0.1:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/indexes-of/-/indexes-of-1.0.1.tgz#f30f716c8e2bd346c7b67d3df3915566a7c05607"
 
 indexof@0.0.1:
   version "0.0.1"
@@ -4740,6 +4750,22 @@ portfinder@^1.0.13:
     debug "^2.2.0"
     mkdirp "0.5.x"
 
+postcss-selector-parser@3.0.0-rc.0:
+  version "3.0.0-rc.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/postcss-selector-parser/-/postcss-selector-parser-3.0.0-rc.0.tgz#dfb74f1cf3bc043d5692e37203170ac2da40a150"
+  dependencies:
+    dot-prop "^4.1.1"
+    indexes-of "^1.0.1"
+    uniq "^1.0.1"
+
+postcss@^6.0.13:
+  version "6.0.13"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/postcss/-/postcss-6.0.13.tgz#b9ecab4ee00c89db3ec931145bd9590bbf3f125f"
+  dependencies:
+    chalk "^2.1.0"
+    source-map "^0.6.1"
+    supports-color "^4.4.0"
+
 power-assert-context-formatter@^1.0.7:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/power-assert-context-formatter/-/power-assert-context-formatter-1.1.1.tgz#edba352d3ed8a603114d667265acce60d689ccdf"
@@ -5617,7 +5643,7 @@ source-map@^0.5.1, source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.1, sour
   version "0.5.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.6.0:
+source-map@^0.6.0, source-map@^0.6.1:
   version "0.6.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
@@ -5813,7 +5839,7 @@ supports-color@^3.1.2, supports-color@~3.2.3:
   dependencies:
     has-flag "^1.0.0"
 
-supports-color@^4.0.0, supports-color@^4.2.1:
+supports-color@^4.0.0, supports-color@^4.2.1, supports-color@^4.4.0:
   version "4.4.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/supports-color/-/supports-color-4.4.0.tgz#883f7ddabc165142b2a61427f3352ded195d1a3e"
   dependencies:
@@ -6139,6 +6165,10 @@ union@~0.4.3:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/union/-/union-0.4.6.tgz#198fbdaeba254e788b0efcb630bc11f24a2959e0"
   dependencies:
     qs "~2.3.3"
+
+uniq@^1.0.1:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/uniq/-/uniq-1.0.1.tgz#b31c5ae8254844a3a8281541ce2b04b865a734ff"
 
 universal-deep-strict-equal@^1.2.1:
   version "1.2.2"
