@@ -1,1 +1,1 @@
-window.Proxy = require('proxy-compat');
+window.Proxy = require('proxy-compat').Proxy;

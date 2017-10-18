@@ -200,7 +200,7 @@ _assign(XProxy, OriginalProxy, {
     instanceOfKey
 });
 
-export default class CompatProxy extends XProxy {
+export class Proxy extends XProxy {
     static getKey = getKey;
     static callKey = callKey;
     static setKey = setKey;
@@ -208,4 +208,14 @@ export default class CompatProxy extends XProxy {
     static inKey = inKey;
     static iterableKey = iterableKey;
     static instanceOfKey = instanceOfKey;
+}
+
+export {
+    getKey,
+    callKey,
+    setKey,
+    deleteKey,
+    inKey,
+    iterableKey,
+    instanceOfKey,
 }

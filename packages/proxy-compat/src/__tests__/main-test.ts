@@ -1,4 +1,4 @@
-import Proxy from "../main";
+import { Proxy } from "../main";
 import assert from 'power-assert';
 
 describe('EcmaScript', () => {

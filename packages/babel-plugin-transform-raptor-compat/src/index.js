@@ -1,7 +1,7 @@
 /* eslint-env node */
 const KEYS = require('./keys');
 const defaultResolveOptions = {
-    global: 'window.Proxy'
+    module: 'proxy-compat'
 };
 
 function compatPlugin({ types: t }) {
@@ -25,13 +25,17 @@ function compatPlugin({ types: t }) {
      *   a global, it will create an identifier and returns it. The actual indetifier is added on Program exit.
      */
     function resolveCompatProxyImport(memberName, path, state) {
-        const { global: globalPropertyName } = getResolveOptions(state);
-        // Create a local identifier if non has been created for the compat import
-        if (!keysSeen[memberName]) {
-            keysSeen[memberName] = t.identifier(`__${memberName}`);
-        }
+        const { module: moduleName, global: globalPropertyName } = getResolveOptions(state);
+        if (moduleName) {
+            return state.addImport(moduleName, memberName);
+        } else if (globalPropertyName) {
+            // Create a local identifier if non has been created for the compat import
+            if (!keysSeen[memberName]) {
+                keysSeen[memberName] = t.identifier(`__${memberName}`);
+            }
 
-        return keysSeen[memberName];
+            return keysSeen[memberName];
+        }
     }
 
     return {

@@ -1,4 +1,4 @@
-import Proxy from "../main";
+import { Proxy } from "../main";
 
 describe('Proxy', () => {
     describe('.instanceOfKey', () => {
