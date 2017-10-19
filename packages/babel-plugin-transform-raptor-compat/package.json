@@ -5,12 +5,11 @@
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "^3.2.0",
-    "power-assert": "^1.4.2",
-    "raptor-helper-fixture": "^0.12.4"
+    "babel-core": "^6.26.0",
+    "jest": "^21.2.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "jest --coverage"
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

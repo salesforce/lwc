@@ -1,10 +1,11 @@
-var __setKey = window.Proxy.setKey;
-var __callKey = window.Proxy.callKey;
-var __getKey = window.Proxy.getKey;
-var __deleteKey = window.Proxy.deleteKey;
-var __iterableKey = window.Proxy.iterableKey;
-var __inKey = window.Proxy.inKey;
-var __instanceOfKey = window.Proxy.instanceOfKey;
+import __ProxyCompat from "proxy-compat";
+var __setKey = __ProxyCompat.setKey;
+var __callKey = __ProxyCompat.callKey;
+var __getKey = __ProxyCompat.getKey;
+var __deleteKey = __ProxyCompat.deleteKey;
+var __iterableKey = __ProxyCompat.iterableKey;
+var __inKey = __ProxyCompat.inKey;
+var __instanceOfKey = __ProxyCompat.instanceOfKey;
 // var a = 1;
 var a = 1;
 var n = [0, 1];

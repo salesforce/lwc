@@ -1,4 +1,4 @@
-import { Proxy } from "../main";
+import Proxy from "../main";
 import { getKey, deleteKey, inKey } from './../methods';
 import assert from 'power-assert';
 

@@ -1,12 +1,11 @@
 /* eslint-env node */
 const KEYS = require('./keys');
+
 const defaultResolveOptions = {
     module: 'proxy-compat'
 };
 
 function compatPlugin({ types: t }) {
-    let keysSeen = Object.create(null);
-
     function convertProperty(property, isComputed = false) {
         return t.isIdentifier(property) && !isComputed
             ? t.stringLiteral(property.name)
@@ -20,56 +19,94 @@ function compatPlugin({ types: t }) {
 
     /**
      * Retrieve the indentifier for a proxy-compat API.
-     * If the transform resolve APIs via:
-     *   an external package, it will add the import and return the local identifer.
-     *   a global, it will create an identifier and returns it. The actual indetifier is added on Program exit.
      */
-    function resolveCompatProxyImport(memberName, path, state) {
-        const { module: moduleName, global: globalPropertyName } = getResolveOptions(state);
-        if (moduleName) {
-            return state.addImport(moduleName, memberName);
-        } else if (globalPropertyName) {
-            // Create a local identifier if non has been created for the compat import
-            if (!keysSeen[memberName]) {
-                keysSeen[memberName] = t.identifier(`__${memberName}`);
-            }
-
-            return keysSeen[memberName];
+    function resolveCompatProxyImport(memberName, keysSeen) {
+        // Create a local identifier and register it
+        if (!keysSeen[memberName]) {
+            keysSeen[memberName] = t.identifier(`__${memberName}`);
         }
+
+        return keysSeen[memberName];
     }
 
     return {
+        pre() {
+            // Validate transform config
+            const opts = getResolveOptions(this);
+            const resolveProxyCompat = opts.module || opts.global || opts.independent;
+
+            if (resolveProxyCompat == undefined) {
+                throw new Error(`Unexcepted resolveProxyCompat option, expected property "module", "global" or "independent"`);
+            }
+
+            // Object to record used proxy compat APIs
+            this.keysSeen = Object.create(null);
+        },
+
         visitor: {
             Program: {
                 /**
-                 * Inserts at the top of the file all the API retrieval from the global:
-                 * var _setKey = window.Proxy.setKey;
-                 * var _callKey = window.Proxy.callKey;
-                 * ...
+                 * Retrieve APIs for proxy compat
                  */
                 exit: function (path, state) {
-                    const { global: globalPropertyName } = getResolveOptions(state);
+                    const {
+                        global: globalName,
+                        module: moduleName,
+                        independent: independentPrefix,
+                    } = getResolveOptions(state);
 
-                    if (globalPropertyName) {
-                        const apiDeclarations = Object.keys(keysSeen).map(apiName => (
+                    const statements = [];
+
+                    if (independentPrefix) {
+                        // Generate individual import statements for each API, eg:
+                        //   import __getKey from 'proxy-compat/getKey';
+                        const imports = Object.keys(this.keysSeen).map(apiName => (
+                            t.importDeclaration(
+                                [t.importDefaultSpecifier(this.keysSeen[apiName])],
+                                t.stringLiteral(`${independentPrefix}/${apiName}`),
+                            )
+                        ));
+
+                        statements.push(...imports);
+                    } else if (globalName || moduleName) {
+                        let proxyCompatIdentifier;
+
+                        if (globalName) {
+                            // Get identifier for global
+                            proxyCompatIdentifier = t.identifier(globalName);
+                        } else if (moduleName) {
+                            // Add import statement and get default identifier
+                            proxyCompatIdentifier = t.identifier('__ProxyCompat');
+                            statements.push(
+                                t.importDeclaration(
+                                    [t.importDefaultSpecifier(proxyCompatIdentifier)],
+                                    t.stringLiteral(moduleName),
+                                ),
+                            );
+                        }
+
+                        // Deference apis from the proxyCompat identifier
+                        const apiDereference = Object.keys(this.keysSeen).map(apiName => (
                             t.variableDeclaration('var', [
                                 t.variableDeclarator(
-                                    keysSeen[apiName],
+                                    this.keysSeen[apiName],
                                     t.memberExpression(
-                                        t.identifier(globalPropertyName),
+                                        proxyCompatIdentifier,
                                         t.identifier(apiName)
                                     )
                                 )
                             ])
                         ));
 
-                        // We need to make sure babel doesn't visit the newly created variable declaration.
-                        // Otherwise it will apply the proxy transform to the member expression to retrive the proxy APIs.
-                        path.stop();
-
-                        // Finally add to the top of the file the API declarations
-                        path.unshiftContainer('body', apiDeclarations);
+                        statements.push(...apiDereference);
                     }
+
+                    // We need to make sure babel doesn't visit the newly created variable declaration.
+                    // Otherwise it will apply the proxy transform to the member expression to retrive the proxy APIs.
+                    path.stop();
+
+                    // Finally add to the top of the file the API declarations
+                    path.unshiftContainer('body', statements);
                 }
             },
 
@@ -79,9 +116,9 @@ function compatPlugin({ types: t }) {
              *      a["b"] => getKey(a, "b")
              *      a[b]   => getKey(a, b);
              */
-            MemberExpression(path, state) {
+            MemberExpression(path) {
                 const { property, object, computed } = path.node;
-                const id = resolveCompatProxyImport(KEYS.GET_KEY, path, state);
+                const id = resolveCompatProxyImport(KEYS.GET_KEY, this.keysSeen);
                 const args = [object, convertProperty(property, computed)];
                 path.replaceWith(t.callExpression(id, args));
             },
@@ -90,7 +127,7 @@ function compatPlugin({ types: t }) {
              * Transforms:
              *      obj.f = 1;   =>   setKey(obj, "f", 1);
              */
-            AssignmentExpression(path, state) {
+            AssignmentExpression(path) {
                 let { left, right, operator } = path.node;
                 let assignment, args;
 
@@ -112,7 +149,7 @@ function compatPlugin({ types: t }) {
                     );
                 }
 
-                const id = resolveCompatProxyImport(KEYS.SET_KEY, path, state);
+                const id = resolveCompatProxyImport(KEYS.SET_KEY, this.keysSeen);
                 assignment = t.callExpression(id, args);
 
                 if (assignment) {
@@ -124,7 +161,7 @@ function compatPlugin({ types: t }) {
              * Transforms:
              *     console.log('foo', 'bar');   =>   callKey(console, 'log', 'foo', 'bar');
              */
-            CallExpression(path, state) {
+            CallExpression(path) {
                 const { callee, arguments: args } = path.node;
                 if (t.isMemberExpression(callee)) {
                     const { property, object, computed } = callee;
@@ -134,7 +171,7 @@ function compatPlugin({ types: t }) {
                         ...args
                     ];
 
-                    const id = resolveCompatProxyImport(KEYS.CALL_KEY, path, state);
+                    const id = resolveCompatProxyImport(KEYS.CALL_KEY, this.keysSeen);
                     const call = t.callExpression(id, callArguments);
                     path.replaceWith(call);
                 }
@@ -144,7 +181,7 @@ function compatPlugin({ types: t }) {
              * Transforms:
              *      delete obj.f;   =>   deleteKey(obj, 'f')
              */
-            UnaryExpression(path, state) {
+            UnaryExpression(path) {
                 const { operator, argument } = path.node;
                 if (operator === 'delete' && t.isMemberExpression(argument)) {
                     const args = [
@@ -152,7 +189,7 @@ function compatPlugin({ types: t }) {
                         convertProperty(argument.property, argument.computed)
                     ];
 
-                    const id = resolveCompatProxyImport(KEYS.DELETE_KEY, path, state);
+                    const id = resolveCompatProxyImport(KEYS.DELETE_KEY, this.keysSeen);
                     const deletion = t.callExpression(id, args);
                     path.replaceWith(deletion);
                 }
@@ -163,7 +200,7 @@ function compatPlugin({ types: t }) {
              *      obj.e++;   =>   _setKey(obj, "e", _getKey(obj, "e") + 1, _getKey(obj, "e"));
              *      ++obj.e;   =>    _setKey(obj, "f", _getKey(obj, "f") + 1);
              */
-            UpdateExpression(path, state) {
+            UpdateExpression(path) {
                 const { operator, argument, prefix } = path.node;
 
                 // Do nothing for: i++
@@ -187,7 +224,7 @@ function compatPlugin({ types: t }) {
                     args.push(argument);
                 }
 
-                const id = resolveCompatProxyImport(KEYS.SET_KEY, path, state);
+                const id = resolveCompatProxyImport(KEYS.SET_KEY, this.keysSeen);
                 const assignment = t.callExpression(id, args);
                 path.replaceWith(assignment);
             },
@@ -196,10 +233,10 @@ function compatPlugin({ types: t }) {
              * Transforms:
              *      for (let k in obj) {}   =>   for (let k in _iterableKey(obj)) {}
              */
-            ForInStatement(path, state) {
+            ForInStatement(path) {
                 const { node } = path;
 
-                const id = resolveCompatProxyImport(KEYS.ITERABLE_KEY, path, state);
+                const id = resolveCompatProxyImport(KEYS.ITERABLE_KEY, this.keysSeen);
                 const wrappedIterator = t.callExpression(id, [node.right]);
                 node.right = wrappedIterator;
             },
@@ -208,21 +245,21 @@ function compatPlugin({ types: t }) {
              * Transforms:
              *      if ("x" in obj) {}   =>   if (_inKey(obj, "x")) {}
              */
-            BinaryExpression(path, state) {
+            BinaryExpression(path) {
                 const { operator, left, right } = path.node;
                 if (operator === 'instanceof') {
-                    const id = resolveCompatProxyImport(KEYS.INSTANCEOF_KEY, path, state);
+                    const id = resolveCompatProxyImport(KEYS.INSTANCEOF_KEY, this.keysSeen);
                     const warppedInOperator = t.callExpression(id, [left, right]);
                     path.replaceWith(warppedInOperator);
                 } else if (operator === 'in') {
-                    const id = resolveCompatProxyImport(KEYS.IN_KEY, path, state);
+                    const id = resolveCompatProxyImport(KEYS.IN_KEY, this.keysSeen);
                     const warppedInOperator = t.callExpression(id, [right, left]);
                     path.replaceWith(warppedInOperator);
                 }
             }
         }
     };
-};
+}
 
 compatPlugin.keys = KEYS;
 module.exports = compatPlugin;
