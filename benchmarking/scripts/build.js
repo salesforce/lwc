@@ -93,7 +93,7 @@ rollup.rollup({
         {
             resolveId(id) {
                 if (id === 'engine') {
-                    return require.resolve('raptor-engine/dist/modules/engine.js');
+                    return require.resolve('raptor-engine/dist/modules/es2017/engine.js');
                 }
             }
         },

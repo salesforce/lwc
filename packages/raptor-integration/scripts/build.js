@@ -64,7 +64,7 @@ const baseOutputConfig = {
 
 // -- Build shared artifacts -----------------------------------------------------
 
-const engineModeFile = path.join(require.resolve(`raptor-engine/dist/umd/engine${isCompat ? '_compat': ''}.js`));
+const engineModeFile = path.join(require.resolve(`raptor-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
 const compatPath = path.join(require.resolve('raptor-compat/dist/umd/compat.js'));
 
 if (!fs.existsSync(engineModeFile)) {
