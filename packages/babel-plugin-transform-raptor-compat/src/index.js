@@ -52,7 +52,7 @@ function compatPlugin({ types: t }) {
                     const {
                         global: globalName,
                         module: moduleName,
-                        independent: independentPrefix,
+                        independent: independentPrefix
                     } = getResolveOptions(state);
 
                     const statements = [];
@@ -63,7 +63,7 @@ function compatPlugin({ types: t }) {
                         const imports = Object.keys(this.keysSeen).map(apiName => (
                             t.importDeclaration(
                                 [t.importDefaultSpecifier(this.keysSeen[apiName])],
-                                t.stringLiteral(`${independentPrefix}/${apiName}`),
+                                t.stringLiteral(`${independentPrefix}/${apiName}`)
                             )
                         ));
 
@@ -80,8 +80,8 @@ function compatPlugin({ types: t }) {
                             statements.push(
                                 t.importDeclaration(
                                     [t.importDefaultSpecifier(proxyCompatIdentifier)],
-                                    t.stringLiteral(moduleName),
-                                ),
+                                    t.stringLiteral(moduleName)
+                                )
                             );
                         }
 
@@ -216,7 +216,7 @@ function compatPlugin({ types: t }) {
                 const args = [
                     argument.object,
                     convertProperty(argument.property, argument.computed),
-                    updatedValue,
+                    updatedValue
                 ];
 
                 // return old value and increment: obj.i++

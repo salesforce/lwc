@@ -187,25 +187,23 @@ Object.getPrototypeOf = getPrototypeOf;
 // [*] Object.assign
 Object.assign = assign;
 
-// Patching Proxy (might contain some compat expandos already)
-const OriginalProxy = typeof Proxy !== undefined ? Proxy : {};
-
-_assign(XProxy, OriginalProxy, {
-    getKey,
-    callKey,
-    setKey,
-    deleteKey,
-    inKey,
-    iterableKey,
-    instanceOfKey
-});
-
-export default class Proxy extends XProxy {
-    static getKey = getKey;
-    static callKey = callKey;
-    static setKey = setKey;
-    static deleteKey = deleteKey;
-    static inKey = inKey;
-    static iterableKey = iterableKey;
-    static instanceOfKey = instanceOfKey;
+function overrideProxy() {
+    return Proxy.__COMPAT__;
 }
+
+// At this point Proxy can be the real Proxy (function) a noop-proxy (object with noop-keys) or undefined
+let FinalProxy = typeof Proxy !== undefined ? Proxy : {};
+
+if (typeof FinalProxy !== 'function' || overrideProxy()) {
+    FinalProxy = class Proxy extends XProxy {
+        static getKey = getKey;
+        static callKey = callKey;
+        static setKey = setKey;
+        static deleteKey = deleteKey;
+        static inKey = inKey;
+        static iterableKey = iterableKey;
+        static instanceOfKey = instanceOfKey;
+    }
+}
+
+export default FinalProxy;
