@@ -156,7 +156,7 @@ export class XProxy implements XProxyInstance {
     constructor (target: XProxyTarget, handler: XProxyHandler<object>) {
         const targetIsFunction = typeof target === 'function';
         const targetIsArray = isArray(target);
-        if (typeof target !== 'object' && !targetIsFunction) {
+        if ((typeof target !== 'object' || target === null) && !targetIsFunction) {
             throw new Error(`Cannot create proxy with a non-object as target`);
         }
         if (typeof handler !== 'object' || handler === null) {
@@ -296,13 +296,6 @@ export class XProxy implements XProxyInstance {
 
         }
 
-        if (target[iterator]) {
-            proxifyProperty(proxy, iterator, {
-                enumerable: false,
-                configurable: true,
-            })
-        }
-
         return proxy;
     }
 
@@ -316,3 +309,14 @@ export class XProxy implements XProxyInstance {
 
     [key: string]: any;
 };
+
+defineProperty(XProxy.prototype, iterator, {
+    enumerable: false,
+    configurable: true,
+    get: function (this: XProxy) {
+        return this.get(iterator);
+    },
+    set: function (this: XProxy, value: any): any {
+        this.set(iterator, value);
+    },
+});
