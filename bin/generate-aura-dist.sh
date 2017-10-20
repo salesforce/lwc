@@ -12,4 +12,4 @@ cp  ./packages/raptor-engine/dist/umd/es2017/engine* $FILEPATH/aura-resources/sr
 # compat-helpers
 cp  ./packages/raptor-compat/dist/umd/compat* $FILEPATH/aura-resources/src/main/resources/aura/resources/compat-helpers/
 # compiler
-cp  ./packages/raptor-compiler/dist/umd/compiler.min.js $FILEPATH/aura-modules/src/main/resources/modules/compiler.min.js
+cp  ./packages/raptor-compiler/dist/umd/compiler.js $FILEPATH/aura-modules/src/main/resources/modules/compiler.js
