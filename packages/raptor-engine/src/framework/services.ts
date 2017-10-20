@@ -1,20 +1,20 @@
 import assert from "./assert";
 import { isUndefined, isObject, isArray, create } from "./language";
 
-const hooks = ['wiring', 'rehydrated', 'connected', 'disconnected', 'piercing'];
+const hooks = ['wiring', 'rendered', 'connected', 'disconnected', 'piercing'];
 
 /* eslint-disable */
 import { Replicable } from "./membrane";
 export type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
 export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (newValue?: any) => void) => void;
-export type ServiceDef = { wiring?: ServiceCallback; connected?: ServiceCallback; disconnected?: ServiceCallback; rehydrated?: ServiceCallback; piercing?: MembranePiercingCallback; [key: string]: ServiceCallback | MembranePiercingCallback | undefined; };
+export type ServiceDef = { wiring?: ServiceCallback; connected?: ServiceCallback; disconnected?: ServiceCallback; rendered?: ServiceCallback; piercing?: MembranePiercingCallback; [key: string]: ServiceCallback | MembranePiercingCallback | undefined; };
 /* eslint-enable */
 
 export const Services: {
   wiring?: ServiceCallback[];
   connected?: ServiceCallback[];
   disconnected?: ServiceCallback[];
-  rehydrated?: ServiceCallback[];
+  rendered?: ServiceCallback[];
   piercing?: MembranePiercingCallback[];
   [key: string]: ServiceCallback[] | MembranePiercingCallback[] | undefined;
 } = create(null);

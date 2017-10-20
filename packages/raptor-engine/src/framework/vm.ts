@@ -17,13 +17,13 @@ export function addInsertionIndex(vm: VM) {
     assert.vm(vm);
     assert.invariant(vm.idx === 0, `${vm} is already locked to a previously generated idx.`);
     vm.idx = ++idx;
+    const { connected } = Services;
+    if (connected) {
+        invokeServiceHook(vm, connected);
+    }
     const { component: { connectedCallback } } = vm;
     if (connectedCallback && connectedCallback !== noop) {
         invokeComponentMethod(vm, 'connectedCallback');
-    }
-    const { connected } = Services;
-    if (connected) {
-        addCallbackToNextTick((): void => invokeServiceHook(vm, connected));
     }
 }
 
@@ -31,13 +31,13 @@ export function removeInsertionIndex(vm: VM) {
     assert.vm(vm);
     assert.invariant(vm.idx > 0, `${vm} is not locked to a previously generated idx.`);
     vm.idx = 0;
+    const { disconnected } = Services;
+    if (disconnected) {
+        invokeServiceHook(vm, disconnected);
+    }
     const { component: { disconnectedCallback } } = vm;
     if (disconnectedCallback && disconnectedCallback !== noop) {
         invokeComponentMethod(vm, 'disconnectedCallback');
-    }
-    const { disconnected } = Services;
-    if (disconnected) {
-        addCallbackToNextTick((): void => invokeServiceHook(vm, disconnected));
     }
 }
 
@@ -107,6 +107,10 @@ export function rehydrate(vm: VM) {
         const children = renderComponent(vm);
         vm.isScheduled = false;
         patchShadowRoot(vm, children);
+        const { rendered } = Services;
+        if (rendered) {
+            invokeServiceHook(vm, rendered);
+        }
         const { component: { renderedCallback } } = vm;
         if (renderedCallback && renderedCallback !== noop) {
             invokeComponentMethod(vm, 'renderedCallback');

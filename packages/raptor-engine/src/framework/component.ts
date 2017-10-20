@@ -7,7 +7,6 @@ import {
     invokeComponentCallback,
 } from "./invoker";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
-import { addCallbackToNextTick } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 
@@ -189,10 +188,6 @@ export function renderComponent(vm: VM): VNode[] {
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
     assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
-    const { rehydrated } = Services;
-    if (rehydrated) {
-        addCallbackToNextTick((): void => invokeServiceHook(vm, rehydrated));
-    }
     return vnodes;
 }
 
