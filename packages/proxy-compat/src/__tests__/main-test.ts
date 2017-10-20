@@ -1,3 +1,5 @@
+window.Proxy.__COMPAT__ = true;
+
 import Proxy from "../main";
 import assert from 'power-assert';
 
