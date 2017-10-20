@@ -3,27 +3,65 @@
 const fs = require('fs');
 const path = require('path');
 
-const { compile, compileResource } = require('../index');
+const { compile } = require('../index');
 const { fixturePath, readFixture, pretify } = require('./test-utils');
 
-describe('compileResource', () => {
-    it('template', () => {
-        const actual = compileResource(
-            fixturePath('resources/template/actual.html'),
-        );
+describe('validate options', () => {
+    it('should validate entry type', () => {
+        expect(() => compile()).toThrow(/Expected a string for entry/);
+    });
 
-        expect(pretify(actual.code)).toBe(
-            pretify(readFixture('resources/template/expected.js')),
+    it('should validate mode', () => {
+        expect(() =>
+            compile('/x/foo/foo.js', {
+                mode: 'foo',
+            }),
+        ).toThrow(
+            /Expected a mode in dev, prod, compat, prod_compat, all. Received instead foo/,
         );
     });
 
-    it('javascript', () => {
-        const actual = compileResource(
-            fixturePath('resources/javascript/actual.js'),
+    it('should validate sources option format', () => {
+        expect(() =>
+            compile('/x/foo/foo.js', {
+                sources: {
+                    '/x/foo/foo.js': true,
+                },
+            }),
+        ).toThrow(
+            /in-memory module resolution expects values to be string. Received true for key \/x\/foo\/foo.js/,
         );
+    });
+});
 
-        expect(pretify(actual.code)).toBe(
-            pretify(readFixture('resources/javascript/expected.js')),
+describe('component name and namespace override', () => {
+    it('should be able to override module name', async () => {
+        const { code } = await compile('/x/foo/foo.js', {
+            componentName: 'bar',
+            format: 'amd',
+            mode: 'prod',
+            sources: {
+                '/x/foo/foo.js': `console.log('foo')`,
+            },
+        });
+
+        expect(pretify(code)).toBe(
+            pretify(`define('x-bar',function(){console.log('foo')});`),
+        );
+    });
+
+    it('should be able to override module namespace', async () => {
+        const { code } = await compile('/x/foo/foo.js', {
+            componentNamespace: 'bar',
+            format: 'amd',
+            mode: 'prod',
+            sources: {
+                '/x/foo/foo.js': `console.log('foo')`,
+            },
+        });
+
+        expect(pretify(code)).toBe(
+            pretify(`define('bar-foo',function(){console.log('foo')});`),
         );
     });
 });
@@ -83,7 +121,7 @@ describe('compile from file system', () => {
     });
 });
 
-describe('compile from source', () => {
+describe('compile from in-memory', () => {
     it('add external dependencies and labels to the metadata bag', async () => {
         const { code, metadata } = await compile('/x/external/external.js', {
             mapNamespaceFromPath: true,

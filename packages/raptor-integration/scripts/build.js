@@ -34,7 +34,7 @@ function entryPointResolverPlugin() {
                 const testBundle = getTestName(id);
                 return templates.app(testBundle);
             }
-        }
+        },
     }
 }
 
@@ -47,8 +47,15 @@ const baseInputConfig = {
         }
     },
     plugins: [
-        raptorCompilerPlugin({ bundle: true, mode, resolveFromPackages: false }),
-        entryPointResolverPlugin()
+        entryPointResolverPlugin(),
+        raptorCompilerPlugin({
+            mode,
+            exclude: `**/*${testSufix}` ,
+            resolveFromPackages: false,
+            resolveProxyCompat: {
+                global: 'window.Proxy'
+            }
+        }),
     ]
 };
 const baseOutputConfig = {

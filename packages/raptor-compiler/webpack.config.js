@@ -25,7 +25,7 @@ module.exports = function (/*env*/) {
             new StringReplacePlugin(),
             new ClosureCompilerPlugin({
                 compiler: {
-                    language_in: 'ES6',
+                    language_in: 'ECMASCRIPT_2017',
                     language_out: 'ES5',
                     compilation_level: 'SIMPLE'
                 },
@@ -37,7 +37,7 @@ module.exports = function (/*env*/) {
                 test: /index.js$/,
                 loader: StringReplacePlugin.replace({
                     replacements: [{
-                        pattern: /\"__VERSION__\"/ig,
+                        pattern: /\'__VERSION__\'/ig,
                         replacement: () => version
                     }]
                 })

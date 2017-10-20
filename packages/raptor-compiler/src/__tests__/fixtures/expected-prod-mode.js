@@ -1,7 +1,1 @@
-define('x-class_and_template', ['engine'], function (engine) {
-
-function tmpl(a){const{h:b}=a;return[b("section",{},[])]}const Test=1;class ClassAndTemplate extends engine.Element{constructor(){super(),this.t=Test,this.counter=0;}render(){return tmpl}}
-
-return ClassAndTemplate;
-
-});
+define('x-class_and_template',['engine'],function(a){function b(a){const{h:b}=a;return[b('section',{},[])]}class c extends a.Element{constructor(){super(),this.t=1,this.counter=0}render(){return b}}return c});

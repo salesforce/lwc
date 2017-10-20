@@ -1,12 +1,9 @@
-define('x-class_and_template', ['babel/helpers/classCallCheck', 'babel/helpers/createClass', 'babel/helpers/possibleConstructorReturn', 'babel/helpers/inherits', 'engine'], function (_classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
+define('x-class_and_template', ['proxy-compat/callKey', 'proxy-compat/getKey', 'proxy-compat/setKey', 'babel/helpers/classCallCheck', 'babel/helpers/createClass', 'babel/helpers/possibleConstructorReturn', 'babel/helpers/inherits', 'engine'], function (__callKey, __getKey, __setKey, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
 
-var __getKey = window.Proxy.getKey;
-var __callKey = window.Proxy.callKey;
-var __setKey = window.Proxy.setKey;
 function tmpl($api, $cmp, $slotset, $ctx) {
-    var api_element = __getKey($api, "h");
+  var api_element = __getKey($api, "h");
 
-    return [api_element("section", {}, [])];
+  return [api_element("section", {}, [])];
 }
 
 var Test = 1;

@@ -62,12 +62,7 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
         },
         transform (code, fileName) {
             if (!filter(fileName)) return;
-
-            const compilerConfig = Object.assign({}, options, {
-                sources: { [fileName]: code }
-            });
-
-            return compiler.compile(fileName, compilerConfig);
+            return compiler.compile(fileName, options);
         }
     }
 }

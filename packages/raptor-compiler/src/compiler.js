@@ -1,72 +1,67 @@
-import { extname } from 'path';
-import { getSource, mergeMetadata, rollupWarningOverride } from './utils';
-import transformClass from './transform-class';
-import transformTemplate from './transform-template';
-import transformBundle from './transform-bundle';
-import { MODES } from './constants';
-import sourceResolver from './rollup-plugin-source-resolver';
 import { rollup } from 'rollup';
 
-export function compileFile(entry, options) {
-    const ext = extname(entry);
-    const src = getSource(entry, options.sources);
+import { isCompat, isProd } from './modes';
 
-    options.filename = entry;
+import rollupModuleResolver from './rollup-plugins/module-resolver';
+import rollupTransfrom from './rollup-plugins/transform';
+import rollupCompat from './rollup-plugins/compat';
+import rollupMinify from './rollup-plugins/minify';
 
-    if (ext === '.html') {
-        return transformTemplate(src, options);
-    } else if (ext === '.js' || ext === '.ts') {
-        return transformClass(src, options);
-    } else {
-        throw new Error(`Can't compile extension ${ext}`);
+function rollupWarningOverride(warning) {
+    if (warning.code && warning.code === 'UNRESOLVED_IMPORT') {
+        return;
     }
+
+    console.warn(warning.message);
+}
+
+function mergeMetadata(metadata) {
+    const dependencies = metadata.rollupDependencies;
+    const labels = [];
+
+    for (let i in metadata) {
+        dependencies.push(...(metadata[i].templateDependencies || []));
+        dependencies.push(...(metadata[i].classDependencies || []));
+        labels.push(...(metadata[i].labels || []));
+    }
+
+    return {
+        bundleDependencies: Array.from(new Set(dependencies)),
+        bundleLabels: labels,
+    };
 }
 
 export function compileBundle(entry, options = {}) {
-    const isDevMode = options.mode === MODES.DEV;
-    const plugins = [
-        sourceResolver(options),
-        rollupTransform(options)
-    ];
+    const plugins = [rollupModuleResolver(options), rollupTransfrom(options)];
+
+    if (isCompat(options.mode)) {
+        plugins.push(rollupCompat(options));
+    }
+
+    if (isProd(options.mode)) {
+        plugins.push(rollupMinify(options));
+    }
 
     return rollup({
-        entry,
-        plugins,
-        onwarn: rollupWarningOverride
-    }).then(bundle => {
-        const devBundleOptions = {
-            moduleId: options.normalizedModuleName,
-            interop: false,
-            useStrict: false,
-            format: options.format
-        };
-
-        const bundleOptions = isDevMode ?  devBundleOptions : { format: 'es' };
-        return bundle.generate(bundleOptions);
-    }).then(result => {
-        result.metadata = mergeMetadata(options.$metadata);
-
-        // In dev mode we don't need to do any more transforms, return early
-        if (isDevMode) {
+        input: entry,
+        plugins: plugins,
+        onwarn: rollupWarningOverride,
+    })
+        .then(bundle => {
+            return bundle.generate({
+                amd: {
+                    id: options.normalizedModuleName,
+                },
+                interop: false,
+                strict: false,
+                format: options.format,
+            });
+        })
+        .then(result => {
             return {
                 code: result.code,
                 map: result.map,
-                metadata: result.metadata
+                metadata: mergeMetadata(options.$metadata),
             };
-        } else {
-            // For any other mode, we need to do more transformations
-            return transformBundle(entry, result, options);
-        }
-    });
-}
-
-function rollupTransform(options) {
-    return {
-        name: 'rollup-transform',
-        transform (src, filename) {
-            const result = compileFile(filename, Object.assign({}, { filename }, options));
-            options.$metadata[filename] = result.metadata;
-            return result;
-        }
-    }
+        });
 }

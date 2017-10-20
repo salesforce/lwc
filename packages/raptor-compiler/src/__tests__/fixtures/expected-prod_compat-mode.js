@@ -1,7 +1,1 @@
-define('x-class_and_template', ['babel/helpers/classCallCheck', 'babel/helpers/createClass', 'babel/helpers/possibleConstructorReturn', 'babel/helpers/inherits', 'engine'], function (_classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
-
-var __getKey=window.Proxy.getKey; var __callKey=window.Proxy.callKey; var __setKey=window.Proxy.setKey;function tmpl(a){var b=__getKey(a,"h");return[b("section",{},[])]}var Test=1; var ClassAndTemplate=function(a){function b(){_classCallCheck(this,b);var a=_possibleConstructorReturn(this,__callKey(__getKey(b,"__proto__")||__callKey(Object,"getPrototypeOf",b),"call",this));return __setKey(a,"t",Test),__setKey(a,"counter",0),a}return _inherits(b,a),_createClass(b,[{key:"render",value:function render(){return tmpl}}]),b}(engine.Element);
-
-return ClassAndTemplate;
-
-});
+define('x-class_and_template',['proxy-compat/callKey','proxy-compat/getKey','proxy-compat/setKey','babel/helpers/classCallCheck','babel/helpers/createClass','babel/helpers/possibleConstructorReturn','babel/helpers/inherits','engine'],function(a,b,c,d,e,f,g,h){function i(a){var c=b(a,'h');return[c('section',{},[])]}var j=function(h){function j(){d(this,j);var e=f(this,a(b(j,'__proto__')||a(Object,'getPrototypeOf',j),'call',this));return c(e,'t',1),c(e,'counter',0),e}return g(j,h),e(j,[{key:'render',value:function(){return i}}]),j}(h.Element);return j});
