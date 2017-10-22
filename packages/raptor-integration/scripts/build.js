@@ -52,9 +52,7 @@ const baseInputConfig = {
             mode,
             exclude: `**/*${testSufix}` ,
             resolveFromPackages: false,
-            resolveProxyCompat: {
-                global: 'window.Proxy'
-            }
+            resolveProxyCompat: { global: 'window.Proxy' }
         }),
     ]
 };

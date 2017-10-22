@@ -237,11 +237,10 @@ export class XProxy implements XProxyInstance {
 
         defineProperty(proxy, 'forIn', {
             value: () => {
-                const keyedObj = create(null);
-                for (let i in target) {
-                    keyedObj[i] = void 0;
-                }
-                return keyedObj;
+                return proxy.ownKeys().reduce((o: any, key: string) => {
+                    o[key] = void 0;
+                    return o;
+                }, create(null));
             },
             configurable: false,
             enumerable: false,
