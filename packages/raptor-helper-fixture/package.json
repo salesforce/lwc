@@ -1,7 +1,7 @@
 {
   "name": "raptor-helper-fixture",
   "description": "Helper package to run fixture testing",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {

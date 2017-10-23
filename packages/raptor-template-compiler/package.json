@@ -1,6 +1,6 @@
 {
   "name": "raptor-template-compiler",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "postcss-plugin-raptor",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "main": "src/index.js",
   "description": "Postcss plugin for raptor component style scoping",
   "scripts": {
