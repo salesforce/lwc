@@ -21,6 +21,17 @@ function getTestName(absPpath) {
     return path.basename(absPpath.replace(testSufix, '.js'), '.js');
 }
 
+function testCaseComponentResolverPlugin() {
+    return {
+        name: 'test-case-resolver',
+        resolveId(id, importee) {
+            if (/test-case/.test(id)) {
+                return path.resolve(`./src/shared/${id}.js`);
+            }
+        }
+    };
+}
+
 function entryPointResolverPlugin() {
     return {
         name: 'entry-point-resolver',
@@ -54,6 +65,7 @@ const baseInputConfig = {
             resolveFromPackages: false,
             resolveProxyCompat: { global: 'window.Proxy' }
         }),
+        testCaseComponentResolverPlugin()
     ]
 };
 const baseOutputConfig = {

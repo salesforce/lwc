@@ -1,5 +1,7 @@
 <template>
-    <template for:each={state.items} for:item="item">
-        <compat-item item={item}></compat-item>
-    </template>
+    <test-case issue-title="[proxy-compat] Error: Setting property Symbol(Symbol.iterator) during the rendering" issue-id="702">
+        <template for:each={state.items} for:item="item">
+            <compat-item item={item}></compat-item>
+        </template>
+    </test-case>
 </template>
