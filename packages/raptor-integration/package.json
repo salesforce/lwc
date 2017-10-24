@@ -6,10 +6,22 @@
   "scripts": {
     "clean": "rimraf dist/",
     "test": "echo 'No unit test in this package'",
-    "test:integration": "yarn build && wdio ./scripts/wdio.conf.js",
-    "test:integration:sauce": "yarn build && wdio ./scripts/wdio.sauce.conf.js",
     "build": "node scripts/build.js",
-    "start": "http-server -c-1 -p 8080"
+    "build:dev": "MODE=dev yarn build",
+    "build:prod": "MODE=prod yarn build",
+    "build:compat": "MODE=compat yarn build",
+    "build:prod_compat": "MODE=prod_compat yarn build",
+    "start": "http-server -c-1 -p 8080",
+    "local": "yarn local:prod_compat && yarn local:prod",
+    "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.conf.js",
+    "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.conf.js",
+    "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.conf.js",
+    "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.conf.js",
+    "sauce": "yarn sauce:prod_compat && yarn sauce:prod",
+    "sauce:dev": "MODE=dev yarn build && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:prod": "MODE=prod yarn build && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:compat": "MODE=compat yarn build && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:prod_compat": "MODE=prod_compat yarn build && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
     "deepmerge": "^1.5.2",

@@ -6,10 +6,9 @@ const templates = require('../src/shared/templates.js');
 
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
-const isCompat = mode === 'compat';
+const isCompat = /compat/.test(mode);
 const testSufix = '.test.js';
 const testDir = path.join(__dirname, '../', 'src/components');
-const distDir = path.join(__dirname, '../../../dist');
 const tests = fs.readdirSync(testDir);
 const testEntries = tests.map(test => path.join(testDir, test, `${test}${testSufix}`));
 const testOutput = path.join(__dirname, '../', 'public');
@@ -82,7 +81,7 @@ const baseOutputConfig = {
 // -- Build shared artifacts -----------------------------------------------------
 
 const engineModeFile = path.join(require.resolve(`raptor-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
-const compatPath = path.join(require.resolve('raptor-compat/dist/umd/compat.js'));
+const compatPath = path.join(require.resolve('raptor-compat/dist/umd/compat_downgrade.js'));
 
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile

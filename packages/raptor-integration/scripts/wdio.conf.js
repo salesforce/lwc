@@ -144,7 +144,7 @@ const config = {
     reporters: [RaptorIntegrationReporter],
     reporterOptions: {
         RaptorIntegrationReporter: {
-            compat: (mode === MODE_COMPAT)
+            mode: mode.toUpperCase()
         }
     },
     //

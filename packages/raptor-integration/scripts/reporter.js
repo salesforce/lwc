@@ -1,8 +1,8 @@
 const SpecReporter = require('wdio-spec-reporter');
 
 function decorateCompatPreface(reporter, preface) {
-    const compatPreface = reporter.options.compat ? ' [COMPAT]' : '';
-    return preface + compatPreface;
+    const modePreface = ` [${reporter.options.mode}]`;
+    return preface + modePreface;
 }
 
 class RaptorIntegrationReporter extends SpecReporter {

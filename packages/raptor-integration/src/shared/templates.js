@@ -8,7 +8,12 @@ exports.app = function (cmpName) {
     `;
 }
 
-const COMPAT = '<script src="../shared/compat.js"></script>';
+const COMPAT = `
+    <script src="../shared/compat.js"></script>
+    <script>
+        for (let h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
+    </script>
+`;
 
 exports.html = function (cmpName, isCompat) {
 
@@ -20,9 +25,6 @@ exports.html = function (cmpName, isCompat) {
         <body>
             ${isCompat ? COMPAT : ''}
             <script src="../shared/engine.js"></script>
-            <script>
-                for (let h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
-            </script>
             <script src="./${cmpName}.js"></script>
         </body>
     </html>

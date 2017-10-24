@@ -13,6 +13,7 @@ const proxyCompat = fs.readFileSync(require.resolve('proxy-compat/dist/umd/proxy
 const babelHelpers = fs.readFileSync(require.resolve('babel-helpers-raptor/dist/engine-helpers.js'), 'utf8');
 const polyfillsDir = path.resolve(__dirname, '../src/polyfills');
 const polyfillList = fs.readdirSync(polyfillsDir);
+const downgradeSrc = fs.readFileSync(path.resolve(__dirname, '../src/downgrade.js'));
 const polyfillSources = polyfillList.reduce((src, p) => src + fs.readFileSync(path.join(polyfillsDir, p), 'utf8'), '');
 
 // -- Config -----------------------------
@@ -81,6 +82,16 @@ ecmaPolyfillBuilder(polyfillConfig)
     // Minify version
     const { code } = UglifyJS.minify(compatSrc);
     fs.writeFileSync(path.join(dest, 'compat.min.js'), code);
+
+    // Downgrade script
+    fs.writeFileSync(path.join(dest, 'downgrade.js'), downgradeSrc);
+
+    const forceDowngradeSrc = [
+        downgradeSrc,
+        compatSrc
+    ].join('\n');
+    // Force compat version
+    fs.writeFileSync(path.join(dest, 'compat_downgrade.js'), forceDowngradeSrc);
 
 })
 .catch(err => console.log(err));
