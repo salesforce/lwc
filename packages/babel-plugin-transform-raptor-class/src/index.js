@@ -10,8 +10,7 @@ module.exports = function ({ types, traverse }) {
     const baseVisitor = {
         Program: {
             enter(_, state) {
-                const meta = { labels: [] };
-                state.file.metadata = state.metadata = meta;
+                state.file.metadata.labels = [];
             }
         }
     };

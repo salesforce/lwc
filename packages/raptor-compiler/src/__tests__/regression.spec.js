@@ -1,5 +1,5 @@
 const { compile } = require('../index');
-const { pretify } = require('./test-utils');
+const { fixturePath, readFixture, pretify } = require('./test-utils');
 
 describe('resgression test', () => {
     it('#743 - Object rest spread throwing', async () => {
@@ -13,5 +13,34 @@ describe('resgression test', () => {
         });
 
         expect(pretify(code)).toBe(pretify(expected));
+    });
+});
+
+describe('smoke test for babel transform', () => {
+    it('should transpile none stage-4 syntax features in none-compat', async () => {
+        debugger;
+            const { code } = await compile(
+                fixturePath('namespaced_folder/babel/babel.js'),
+                {
+                    mode: 'dev'
+                }
+            );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-babel.js')),
+        );
+    });
+
+    it('should transpile back to es5 in compat mode', async () => {
+        const { code } = await compile(
+            fixturePath('namespaced_folder/babel/babel.js'),
+            {
+                mode: 'compat'
+            }
+        );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-babel-compat.js')),
+        );
     });
 });

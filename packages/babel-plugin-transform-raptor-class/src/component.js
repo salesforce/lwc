@@ -53,7 +53,7 @@ module.exports = function ({ types: t, }) {
                 checkLifecycleMethodMisspell(classBody);
 
                 const labels = getComponentLabels(classBody);
-                state.metadata.labels.push(...labels);
+                state.file.metadata.labels.push(...labels);
 
                 const isExportClass = exportDafaultNode(path);
                 const hasRenderMethod = !!findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME);
