@@ -7,7 +7,7 @@
     "clean": "lerna run clean && rimraf dist/*.js",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
-    "test:integration": "yarn run build && lerna run test:integration:sauce --scope raptor-integration",
+    "test:integration": "yarn run build && lerna run sauce --scope raptor-integration",
     "build": "lerna run build --ignore raptor-integration",
     "build:artifacts": "npm run build && npm run build:compiler",
     "build:compiler": "lerna exec --scope raptor-compiler yarn build:umd",
