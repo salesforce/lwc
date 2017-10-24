@@ -212,6 +212,31 @@ describe('reactive', function () {
             });
             expect(property.hello).toBe('world');
         });
+        it('should assign correct value on original object with defineProperty correctly', function () {
+            const other = {};
+            const obj = {
+                foo: 'bar',
+                other
+            };
+
+            const reactive = target.getReactiveProxy(obj);
+            Object.defineProperty(reactive, 'nonreactive', {
+                value: reactive.other
+            });
+            expect(obj.nonreactive).toBe(obj.other);
+        });
+        it('should handle defineProperty correctly with undefined non-configurable descriptor', function () {
+            const obj = {
+                foo: 'bar'
+            };
+
+            const property = target.getReactiveProxy(obj);
+            Object.defineProperty(property, 'hello', {
+                value: undefined,
+                configurable: false
+            });
+            expect(property.hello).toBe(undefined);
+        });
         it('should handle defineProperty correctly when descriptor is non-configurable', function () {
             const obj = {
                 foo: 'bar'
@@ -291,6 +316,161 @@ describe('reactive', function () {
             const property = target.getReactiveProxy(obj);
             Object.preventExtensions(property);
             expect(property.foo.nested).toBe(target.getReactiveProxy(nested));
+        });
+        it('should not throw an exception when preventExtensions is called on proxy and property is accessed', function () {
+            const todos = [
+                { text: 'Learn JavaScript' },
+                { text: 'Learn Raptor' },
+                { text: 'Build something awesome' }
+            ];
+            const proxy = target.getReactiveProxy(todos);
+            Object.preventExtensions(proxy);
+            expect(() => {
+                proxy[0]
+            }).not.toThrow();
+        });
+        it('should not throw an exception when array proxy is frozen and property is accessed', function () {
+            const todos = [
+                { text: 'Learn JavaScript' },
+                { text: 'Learn Raptor' },
+                { text: 'Build something awesome' }
+            ];
+            const proxy = target.getReactiveProxy(todos);
+            Object.freeze(proxy);
+            expect(() => {
+                proxy[0]
+            }).not.toThrow();
+        });
+
+        it('should not throw an exception when object proxy is frozen and property is accessed', function () {
+            const todos = {
+                first: { text: 'Learn JavaScript' }
+            };
+            const proxy = target.getReactiveProxy(todos);
+            Object.freeze(proxy);
+            expect(() => {
+                proxy.first;
+            }).not.toThrow();
+            expect(proxy.first).toEqual(todos.first);
+        });
+
+        it('should not throw an exception when object proxy is frozen and property with undefined value is accessed', function () {
+            const todos = {
+                first: undefined
+            };
+            const proxy = target.getReactiveProxy(todos);
+            Object.freeze(proxy);
+            expect(() => {
+                proxy.first;
+            }).not.toThrow();
+            expect(proxy.first).toEqual(todos.first);
+        });
+
+        it('should not throw an exception when object proxy is frozen and property with null value is accessed', function () {
+            const todos = {
+                first: null
+            };
+            const proxy = target.getReactiveProxy(todos);
+            Object.freeze(proxy);
+            expect(() => {
+                proxy.first;
+            }).not.toThrow();
+            expect(proxy.first).toEqual(todos.first);
+        });
+
+        it('should not throw an exception when object proxy is frozen and property with getter is accessed', function () {
+            const todos = {};
+            Object.defineProperty(todos, 'first', {
+                get: function () {
+                    return { text: 'Learn JavaScript' };
+                }
+            })
+            const proxy = target.getReactiveProxy(todos);
+            Object.freeze(proxy);
+            expect(() => {
+                proxy.first;
+            }).not.toThrow();
+            expect(proxy.first).toEqual({ text: 'Learn JavaScript' });
+        });
+        it('should handle defineProperty with writable false and undefined value', function () {
+            const todos = {};
+            Object.defineProperty(todos, 'first', {
+                value: 'foo',
+                configurable: true
+            })
+            const proxy = target.getReactiveProxy(todos);
+            Object.defineProperty(proxy, 'first', {
+                value: undefined,
+                writable: false
+            });
+            expect(proxy.first).toEqual(undefined);
+        });
+        it('should handle defineProperty for getter with writable false and no value', function () {
+            const todos = {};
+            Object.defineProperty(todos, 'first', {
+                get: function () {
+                    return { text: 'Learn JavaScript' };
+                },
+                configurable: true
+            })
+            const proxy = target.getReactiveProxy(todos);
+            Object.defineProperty(proxy, 'first', {
+                writable: false
+            });
+            expect(proxy.first).toEqual(undefined);
+        });
+        it('should freeze objects correctly when object has symbols', function () {
+            const sym = Symbol();
+            const symValue = { sym: 'value' };
+            const obj = {
+                foo: 'bar',
+                [sym]: symValue
+            };
+            const proxy = target.getReactiveProxy(obj);
+            Object.freeze(proxy);
+            expect(proxy[sym]).toEqual(symValue);
+        });
+        it('should handle Object.getOwnPropertyNames correctly', function () {
+            const obj = {
+                a: 'b'
+            };
+            const proxy = target.getReactiveProxy(obj);
+            expect(Object.getOwnPropertyNames(proxy)).toEqual(['a']);
+        });
+        it('should handle Object.getOwnPropertyNames when object has symbol', function () {
+            const sym = Symbol();
+            const obj = {
+                a: 'b',
+                [sym]: 'symbol'
+            };
+            const proxy = target.getReactiveProxy(obj);
+            expect(Object.getOwnPropertyNames(proxy)).toEqual(['a']);
+        });
+        it('should handle Object.getOwnPropertySymbols when object has symbol', function () {
+            const sym = Symbol();
+            const obj = {
+                [sym]: 'symbol'
+            };
+            const proxy = target.getReactiveProxy(obj);
+            expect(Object.getOwnPropertySymbols(proxy)).toEqual([sym]);
+        });
+        it('should handle Object.getOwnPropertySymbols when object has symbol and key', function () {
+            const sym = Symbol();
+            const obj = {
+                a: 'a',
+                [sym]: 'symbol'
+            };
+            const proxy = target.getReactiveProxy(obj);
+            expect(Object.getOwnPropertySymbols(proxy)).toEqual([sym]);
+        });
+        it('should handle Object.keys when object has symbol and key', function () {
+            const sym = Symbol();
+            const obj = {
+                a: 'a',
+                [sym]: 'symbol'
+            };
+            const proxy = target.getReactiveProxy(obj);
+            expect(Object.keys(proxy)).toEqual(['a']);
         });
     });
 });

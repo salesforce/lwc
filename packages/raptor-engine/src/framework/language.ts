@@ -17,6 +17,7 @@ const {
 } = Object;
 const { isArray } = Array;
 const {
+    concat: ArrayConcat,
     filter: ArrayFilter,
     slice: ArraySlice,
     splice: ArraySplice,
@@ -46,6 +47,7 @@ export {
     ArraySplice,
     ArrayFilter,
     ArrayMap,
+    ArrayConcat,
     isArray,
     ArrayIndexOf,
     ArrayPush,

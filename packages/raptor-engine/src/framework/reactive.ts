@@ -18,6 +18,8 @@ import {
     preventExtensions,
     getPrototypeOf,
     hasOwnProperty,
+    getOwnPropertySymbols,
+    ArrayConcat
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 
@@ -31,8 +33,8 @@ const ReactiveMap: WeakMap<Observable, Reactive> = new WeakMap();
 const ObjectDotPrototype = Object.prototype;
 
 function lockShadowTarget (shadowTarget: ShadowTarget, originalTarget: any): void {
-    const targetKeys = getOwnPropertyNames(originalTarget);
-    targetKeys.forEach((key) => {
+    const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
+    targetKeys.forEach((key: PropertyKey) => {
         let descriptor = getOwnPropertyDescriptor(originalTarget, key);
 
         // We do not need to wrap the descriptor if not configurable
@@ -43,7 +45,6 @@ function lockShadowTarget (shadowTarget: ShadowTarget, originalTarget: any): voi
         if (!descriptor.configurable) {
             descriptor = wrapDescriptor(descriptor);
         }
-
         defineProperty(shadowTarget, key, descriptor);
     });
 
@@ -144,7 +145,7 @@ export class ReactiveProxyHandler {
     }
     ownKeys(shadowTarget: ShadowTarget): Array<string> { // eslint-disable-line no-unused-vars
         const { originalTarget } = this;
-        return getOwnPropertyNames(originalTarget);
+        return ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     }
     isExtensible(shadowTarget: ShadowTarget): boolean {
         const shadowIsExtensible = isExtensible(shadowTarget);
@@ -195,11 +196,21 @@ export class ReactiveProxyHandler {
     defineProperty(shadowTarget: ShadowTarget, key: string | symbol, descriptor: PropertyDescriptor): boolean {
         const { originalTarget } = this;
         const { configurable } = descriptor;
-        const unwrappedDescriptor = unwrapDescriptor(descriptor);
-        if (configurable === false) {
-            defineProperty(shadowTarget, key, unwrappedDescriptor);
+        // We have to check for value in descriptor
+        // because Object.freeze(proxy) calls this method
+        // with only { configurable: false, writeable: false }
+        // Additionally, method will only be called with writeable:false
+        // if the descriptor has a value, as opposed to getter/setter
+        // So we can just check if writable is present and then see if
+        // value is present. This eliminates getter and setter descriptors
+        if ('writable' in descriptor && !('value' in descriptor)) {
+            const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key);
+            descriptor.value = originalDescriptor.value;
         }
-        defineProperty(originalTarget, key, unwrappedDescriptor);
+        defineProperty(originalTarget, key, unwrapDescriptor(descriptor));
+        if (configurable === false) {
+            defineProperty(shadowTarget, key, wrapDescriptor(descriptor));
+        }
         return true;
     }
 }
