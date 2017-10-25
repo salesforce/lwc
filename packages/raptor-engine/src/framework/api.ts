@@ -87,8 +87,16 @@ export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
     assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         // checking reserved internal data properties
     assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
-    const { key, slotset, styleMap, style, attrs, on, className, classMap, props: _props } = data;
+    const { key, slotset, styleMap, style, on, className, classMap, props: _props } = data;
+    let { attrs } = data;
     assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
+    // hack to allow component authors to force the usage of the "is" attribute in their components
+    const { forceTagName } = Ctor;
+    if (!isUndefined(forceTagName) && (isUndefined(attrs) || isUndefined(attrs.is))) {
+        attrs = attrs || {};
+        attrs.is = sel;
+        sel = forceTagName;
+    }
     data = { hook, key, slotset, attrs, on, _props };
     assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));

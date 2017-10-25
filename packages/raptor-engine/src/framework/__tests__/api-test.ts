@@ -1,5 +1,6 @@
 import * as api from '../api';
 import { Element } from "../html-element";
+import { createElement } from './../main';
 
 describe('api', () => {
     describe('#c()', () => {
@@ -58,6 +59,52 @@ describe('api', () => {
 
             expect(vnode.data.style).toBe('[object Object]');
         });
+
+        it('should not throw an error when createElement is called without Ctor', function () {
+            expect(() => {
+                createElement('x-foo');
+            }).not.toThrow();
+        });
+
+        it('should support forceTagName static definition to force tagname on root node', () => {
+            class Bar extends Element {
+                static forceTagName = 'div';
+            }
+            const element = createElement('x-foo', { is: Bar });
+            expect(element.tagName).toBe('DIV');
+            expect(element.getAttribute('is')).toBe('x-foo');
+        });
+
+        it('should not include is attribute when Ctor is not present', () => {
+            class Bar extends Element {}
+            const element = createElement('x-foo');
+            expect(element.hasAttribute('is')).toBe(false);
+        });
+
+        it('should not include is attribute when forceTagName is not present on root', () => {
+            class Bar extends Element {}
+            const element = createElement('x-foo', { is: Bar });
+            expect(element.hasAttribute('is')).toBe(false);
+        });
+
+        it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
+            class Foo extends Element {
+                render() {
+                    return function ($api) {
+                        return [$api.c('span', Bar, { attrs: { is: "x-bar" } })]
+                    }
+                }
+            }
+            class Bar extends Element {
+                static forceTagName = 'div';
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            const span = elm.querySelector('span') as Element;
+            expect(span.tagName).toEqual('SPAN');
+            expect(span.getAttribute('is')).toEqual('x-bar');
+        });
+
     });
 
     describe('#h()', () => {

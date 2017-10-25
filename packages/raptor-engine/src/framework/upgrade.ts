@@ -41,27 +41,6 @@ assign(Node.prototype, {
     }
 });
 
-/**
- * This algo mimics 2.5 of web component specification somehow:
- * https://www.w3.org/TR/custom-elements/#upgrades
- */
-function upgradeElement(element: HTMLElement, Ctor: Class<Component>) {
-    if (isUndefined(Ctor)) {
-        throw new TypeError(`Invalid Component Definition: ${Ctor}.`);
-    }
-    const tagName = element.tagName.toLowerCase();
-    const vnode = c(tagName, Ctor, { className: element.className || undefined });
-    vnode.isRoot = true;
-    patch(element, vnode);
-    // providing the hook to detect insertion and removal
-    element[ConnectingSlot] = () => {
-        insert(vnode);
-    };
-    element[DisconnectingSlot] = () => {
-        forceDisconnection(vnode);
-    };
-}
-
 // this could happen for two reasons:
 // * it is a root, and was removed manually
 // * the element was appended to another container which requires disconnection to happen first
@@ -91,10 +70,31 @@ function forceDisconnection(vnode: ComponentVNode) {
  */
 export function createElement(tagName: string, options: any = {}): HTMLElement {
     const Ctor = isFunction(options.is) ? options.is : null;
-    const element = document.createElement(tagName, Ctor ? null : options);
-
-    if (Ctor && element instanceof HTMLElement) {
-        upgradeElement(element, Ctor);
+    let vnode: VNode | undefined = undefined;
+    // If we have a Ctor, create our VNode
+    if (Ctor) {
+        vnode = c(tagName, Ctor, {});
+        vnode.isRoot = true;
+        // If Ctor defines forceTagName
+        // vnode.sel will be the tagname we should use
+        tagName = vnode.sel as string;
     }
+
+    // Create element with correct tagName
+    const element = document.createElement(tagName);
+
+    // If we created a vnode
+    if (vnode) {
+        // patch that guy
+        patch(element, vnode as ComponentVNode); // eslint-disable-line no-undef
+        // Handle insertion and removal from the DOM
+        element[ConnectingSlot] = () => {
+            insert(vnode as ComponentVNode); // eslint-disable-line no-undef
+        };
+        element[DisconnectingSlot] = () => {
+            forceDisconnection(vnode as ComponentVNode); // eslint-disable-line no-undef
+        };
+    }
+
     return element;
 }
