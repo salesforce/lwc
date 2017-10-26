@@ -61,6 +61,7 @@ import {
     EVENT_HANDLER_NAME_RE,
     DEFAULT_SLOT_NAME,
     ITERATOR_RE,
+    DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
 
 export default function parse(source: string): {
@@ -375,7 +376,7 @@ export default function parse(source: string): {
         const { tag } = element;
         let component: string | undefined;
 
-        if (tag.includes('-')) {
+        if (tag.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tag)) {
             component = tag;
         }
 

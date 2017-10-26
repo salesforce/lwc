@@ -18,6 +18,7 @@ import {
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
+    DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
 
 import {
@@ -157,7 +158,10 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName) || SVG_TAG_SET.has(tagName)) {
+    if (GLOBAL_ATTRIBUTE_SET.has(attrName) ||
+        isAriaOrDataOrFmkAttribute(attrName) ||
+        SVG_TAG_SET.has(tagName) ||
+        DASHED_TAGNAME_ELEMENT_SET.has(tagName)) {
         return true;
     }
 

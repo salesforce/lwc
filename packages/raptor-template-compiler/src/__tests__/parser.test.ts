@@ -197,6 +197,12 @@ describe('custom component', () => {
         expect(root.children[0].component).toBe('x-button');
     });
 
+    it('html element with dashed tag name', () => {
+        const { root } = parseTemplate('<template><color-profile></color-profile></template>');
+        expect(root.children[0].tag).toBe('color-profile');
+        expect(root.children[0].component).toBeUndefined();
+    });
+
     it('custom component self closing error', () => {
         const { warnings } = parseTemplate(`<template><x-button/>Some text</template>`);
         expect(warnings).toContainEqual({
