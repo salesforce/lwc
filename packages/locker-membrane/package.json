@@ -21,7 +21,7 @@
     "eslint-plugin-typescript": "^0.1.0",
     "jest": "^21.2.1",
     "rimraf": "^2.6.1",
-    "rollup": "^0.45.1",
+    "rollup": "~0.50.0",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^2.0.1",
     "ts-jest": "^21.0.1",

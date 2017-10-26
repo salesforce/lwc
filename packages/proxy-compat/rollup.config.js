@@ -13,7 +13,7 @@ const umdDirectory = path.resolve(__dirname, 'dist/umd');
 const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
-const moduleName = 'Proxy';
+const name = 'Proxy';
 
 const banner = (
 `/*
@@ -25,7 +25,7 @@ const banner = (
 const footer = `/** version: ${version} */`;
 
 const baseRollupConfig = {
-    moduleName,
+    name,
     banner,
     footer,
 };
@@ -50,12 +50,12 @@ function rollupConfig({ noop, formats, prod }) {
             '.js'
         ].join('');
 
-        return { format, dest: path.join(targetDirectory, targetName) };
+        return { format, file: path.join(targetDirectory, targetName) };
     });
 
     return Object.assign({}, baseRollupConfig, {
-        entry: noop ? noopEntry: mainEntry,
-        targets,
+        input: noop ? noopEntry: mainEntry,
+        output: targets,
         plugins
     });
 }

@@ -5405,12 +5405,6 @@ rollup@^0.41.6:
   dependencies:
     source-map-support "^0.4.0"
 
-rollup@^0.45.1:
-  version "0.45.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.45.2.tgz#63a284c2b31234656f24e9e9717fabb6a7f0fa43"
-  dependencies:
-    source-map-support "^0.4.0"
-
 rollup@~0.50.0:
   version "0.50.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup/-/rollup-0.50.0.tgz#4c158f4e780e6cb33ff0dbfc184a52cc58cd5f3b"

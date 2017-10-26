@@ -6,12 +6,12 @@ const uglify = require('rollup-plugin-uglify');
 
 const { version } = require('./package.json');
 
-const entry = path.resolve(__dirname, 'src/main.ts');
+const input = path.resolve(__dirname, 'src/main.ts');
 const umdDirectory = path.resolve(__dirname, 'dist/umd');
 const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
-const moduleName = 'LockerMembrane';
+const name = 'LockerMembrane';
 
 const banner = (
 `/*
@@ -22,8 +22,8 @@ const banner = (
 const footer = `/** version: ${version} */`;
 
 const baseRollupConfig = {
-    entry,
-    moduleName,
+    input,
+    name,
     banner,
     footer,
 };
@@ -41,7 +41,7 @@ function rollupConfig({ formats, prod }) {
         plugins.push(uglify({}, code => minify(code)));
     }
 
-    const targets = formats.map(format => {
+    const output = formats.map(format => {
         const targetDirectory = format === 'umd' ? umdDirectory :  format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
@@ -52,12 +52,12 @@ function rollupConfig({ formats, prod }) {
 
         return {
             format,
-            dest: path.join(targetDirectory, targetName),
+            file: path.join(targetDirectory, targetName),
         }
     });
 
     return Object.assign({}, baseRollupConfig, {
-        targets,
+        output,
         plugins
     });
 }
