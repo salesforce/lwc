@@ -1,12 +1,13 @@
 import { Element } from 'engine';
 
 export default class ReactiveObjectLog extends Element {
+    @track foo = null;
+    @track errorMessage;
     connectedCallback() {
-        this.state.foo = null;
         try {
-            this.state.foo;
+            this.foo;
         } catch (e) {
-            this.state.errorMessage = e.message;
+            this.errorMessage = e.message;
         }
     }
 }

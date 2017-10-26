@@ -2,8 +2,7 @@ import assert from "./assert";
 import { ClassList } from "./class-list";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
-import { ArrayFilter, isArray, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, create } from "./language";
-import { getReactiveProxy, isObservable } from "./reactive";
+import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -186,24 +185,6 @@ ComponentElement.prototype = {
             vm.cmpRoot = cmpRoot;
         }
         return cmpRoot;
-    },
-    get state(): HashTable<any> {
-        const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        let { cmpState } = vm;
-        if (isUndefined(cmpState)) {
-            cmpState = vm.cmpState = getReactiveProxy(create(null)); // lazy creation of the cmpState
-        }
-        return cmpState;
-    },
-    set state(newState: HashTable<any>) {
-        const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        if (isArray(newState) || !isObservable(newState)) {
-            assert.fail(`${vm} failed to set new state to ${newState}. \`this.state\` can only be set to an observable object.`);
-            return;
-        }
-        vm.cmpState = getReactiveProxy(newState); // lazy creation of the cmpState
     },
     toString(): string {
         const vm = this[ViewModelReflection];

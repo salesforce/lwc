@@ -9,6 +9,7 @@ import {
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
+import { getComponentDef } from './def';
 
 /*eslint-disable*/
 export interface ComponentClass {
@@ -35,6 +36,12 @@ export function createComponent(vm: VM, Ctor: ComponentClass) {
     const component = invokeComponentConstructor(vm, Ctor);
     vmBeingConstructed = vmBeingConstructedInception;
     assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+    assert.block(() => {
+        const { track } = getComponentDef(Ctor);
+        if ('state' in component && (!track || !track.state)) {
+            assert.logWarning(`Non-trackable component state detected in ${component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);
+        }
+    });
 }
 
 export function linkComponent(vm: VM) {

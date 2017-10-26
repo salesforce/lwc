@@ -2,6 +2,7 @@ import * as target from '../template';
 import * as api from "../api";
 import { patch } from '../patch';
 import { Element } from "../html-element";
+import { createElement } from './../main';
 
 function createCustomComponent(html, slotset?) {
     let vnode;
@@ -32,7 +33,7 @@ describe('template', () => {
             expect($memoizer).toEqual({});
         });
 
-        it.skip('should revoke slotset proxy', () => {
+        it('should revoke slotset proxy', () => {
             let $slotset;
             createCustomComponent(
                 function($a, $c, $s) {
@@ -41,8 +42,10 @@ describe('template', () => {
                 },
                 { x: [api.h('p', {}, [])] },
             );
-            expect(() => $slotset.x).toThrow('slot name x');
-            // assert.throws(() => $slotset.foo, 'unknown slot name'); // compat mode prevents this
+            expect(() => $slotset.x).toThrow('Cannot perform \'get\' on a proxy that has been revoked');
+            expect(() => {
+                $slotset.foo
+            }).toThrow();
         });
 
         it('should render arrays correctly', function () {
@@ -239,21 +242,30 @@ describe('template', () => {
                     super();
                     this.state.x = x;
                 }
-            }
-            class MyComponentChild extends Element {
-                constructor() {
-                    super();
+
+                get stateX() {
+                    return this.state.x;
+                }
+
+                render () {
+                    return function ($api, $cmp) {
+                        return [
+                            $api.c('x-child', MyComponentChild, { props: { x: $cmp.state.x }})
+                        ]
+                    }
                 }
             }
+            MyComponentParent.publicProps = { stateX: {
+                config: 1
+            } };
+            MyComponentParent.track = { state: 1 }
+            class MyComponentChild extends Element {}
             MyComponentChild.publicProps = { x: true };
-            const elm1 = document.createElement('x-parent');
-            const elm2 = document.createElement('x-child');
-            const vnode1 = api.c('x-parent', MyComponentParent, {});
-            patch(elm1, vnode1);
-            const vnode2 = api.c('x-child', MyComponentChild, { props: { x: vnode1.vm.component.state.x }});
-            patch(elm2, vnode2);
+            const elm1 = createElement('x-parent', { is: MyComponentParent });
+            document.body.appendChild(elm1);
+            const elm2 = elm1.querySelector('x-child');
             expect(elm2.x).not.toBe(x);
-            expect(vnode1.vm.component.state.x).toBe(vnode2.vm.component.x);
+            expect(elm1.stateX).toBe(elm2.x);
             expect(x).toEqual(elm2.x);
         });
 

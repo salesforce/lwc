@@ -188,16 +188,25 @@ describe('html-element', () => {
         });
     });
 
-    describe('#state', () => {
-        it('should have a valid value during construction', () => {
-            expect.assertions(1);
-            const def = class MyComponent extends Element {
-                constructor() {
-                    super();
-                    expect(this.state).toEqual({});
-                }
+    describe('#tracked', () => {
+        it('should warn if component has untracked state property', function () {
+            jest.spyOn(assertLogger, 'logWarning');
+            class MyComponent extends Element {
+                state = {}
             }
-            createElement('x-foo', { is: def });
+            const element = createElement('x-foo', { is: MyComponent });
+            expect(assertLogger.logWarning).toHaveBeenCalledWith('Non-trackable component state detected in <x-foo>. Updates to state property will not be reactive. To make state reactive, add @track decorator.');
+            assertLogger.logWarning.mockRestore();
+        });
+        it('should not warn if component has tracked state property', function () {
+            jest.spyOn(assertLogger, 'logWarning');
+            class MyComponent extends Element {
+                state = {}
+            }
+            MyComponent.track = { state: 1 };
+            const element = createElement('x-foo', { is: MyComponent });
+            expect(assertLogger.logWarning).not.toHaveBeenCalled();
+            assertLogger.logWarning.mockRestore();
         });
         it('should be mutable during construction', () => {
             let state;
@@ -215,6 +224,7 @@ describe('html-element', () => {
                     state = this.state;
                 }
             }
+            def.track = { state: 1 };
             createElement('x-foo', { is: def });
             expect(state.foo).toBe(1);
             expect(state.bar).toBe(2);
@@ -234,57 +244,10 @@ describe('html-element', () => {
                     state = this.state;
                 }
             }
+            def.track = { state: 1 };
             createElement('x-foo', { is: def });
             expect({ x: 1, y: o }).toEqual(state);
             expect(state.y).not.toBe(o);
-        });
-        it('should throw an error when assigning arrays', function () {
-            expect.assertions(1);
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    expect(() => {
-                        this.state = [1, 2];
-                    }).toThrow();
-                }
-            }
-            createElement('x-foo', { is: MyComponent });
-        });
-        it('should throw an error when assigning primitive', function () {
-            expect.assertions(1);
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    expect(() => {
-                        this.state = 1;
-                    }).toThrow();
-                }
-            }
-            createElement('x-foo', { is: MyComponent });
-        });
-        it('should throw an error when assigning non-observable object', function () {
-            expect.assertions(1);
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    expect(() => {
-                        this.state = Object.create({});
-                    }).toThrow();
-                }
-            }
-            createElement('x-foo', { is: MyComponent });
-        });
-        it('should throw an error when assigning exotic object', function () {
-            expect.assertions(1);
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    expect(() => {
-                        this.state = Date.now();
-                    }).toThrow();
-                }
-            }
-            createElement('x-foo', { is: MyComponent });
         });
         it('should not throw an error when assigning observable object', function () {
             expect.assertions(1);
@@ -296,6 +259,7 @@ describe('html-element', () => {
                     }).not.toThrow();
                 }
             }
+            MyComponent.track = { state: 1 };
             createElement('x-foo', { is: MyComponent });
         });
     });
@@ -760,8 +724,9 @@ describe('html-element', () => {
             expect(disconnected).toBe(1);
         });
 
-        it('should not throw error when accessing a non-observable property from state when not rendering', function () {
+        it('should not throw error when accessing a non-observable property from tracked property when not rendering', function () {
             class MyComponent extends Element {
+                state = {}
                 set foo(value) {
                     this.state.foo = value;
                 }
@@ -776,6 +741,8 @@ describe('html-element', () => {
                 }
             };
 
+            MyComponent.track = { state: 1 };
+
             const elm = createElement('x-foo', { is: MyComponent });
             elm.foo = new Map();
             expect(() => {
@@ -783,14 +750,16 @@ describe('html-element', () => {
             }).not.toThrow();
         });
 
-        it('should not log a warning when setting state value to null', function () {
+        it('should not log a warning when setting tracked value to null', function () {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
+                state = {};
                 connectedCallback() {
                     this.state.foo = null;
                     this.state.foo;
                 }
             }
+            MyComponent.track = { state: 1 };
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(assertLogger.logWarning).not.toBeCalled();

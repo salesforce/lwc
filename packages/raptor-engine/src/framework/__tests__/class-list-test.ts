@@ -154,7 +154,6 @@ describe('class-list', () => {
             patch(elm, vnode);
         });
 
-        // FLAPPER TODO: Fix it
         it('should update on the next tick when dirty', () => {
             class MyComponent extends Element {
                 state = { x: 1 };
@@ -168,21 +167,23 @@ describe('class-list', () => {
                 addOtherClass() {
                     this.classList.add('baz');
                 }
+                updateTracked(value) {
+                    this.state.x = value;
+                }
                 render() {
                     this.state.x;
                 }
             }
+            MyComponent.publicMethods = ['updateTracked', 'addAnotherClass', 'addOtherClass'];
+            MyComponent.track = { state: 1 }
             MyComponent.publicProps = { x: true };
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { props: { x: 1 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
             expect(elm.className).toBe('foo');
-
-            vnode.vm.component.addAnotherClass(); // add when not dirty
-            vnode.vm.component.state.x = 2; // dirty trigger
-            vnode.vm.component.addOtherClass(); // adding after dirty
-            expect(vnode.vm.isDirty).toBe(true);
+            elm.addAnotherClass();
+            elm.updateTracked(2); // dirty trigger
+            elm.addOtherClass();
 
             return Promise.resolve().then(() => {
                 expect(elm.className).toBe('foo bar baz');

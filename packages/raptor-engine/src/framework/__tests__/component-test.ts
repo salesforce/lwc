@@ -187,6 +187,10 @@ describe('component', function () {
                     return this.state.value > 5;
                 }
 
+                updateTrackedValue(value: number) {
+                    this.state.value = value;
+                }
+
                 render () {
                     return ($api, $cmp, $slotset, $ctx) => {
                         return [$api.h('div', {}, [$api.d($cmp.validity)])];
@@ -194,17 +198,17 @@ describe('component', function () {
                 }
             }
 
+            MyComponent.track = { state: 1 }
             MyComponent.publicProps = {
                 validity: {
                     config: 1
                 }
             };
+            MyComponent.publicMethods = ['updateTrackedValue'];
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            vnode.vm.component.state.value = 10;
+            elm.updateTrackedValue(10);
             return Promise.resolve().then(() => {
                 expect(elm.textContent).toBe('true');
             });

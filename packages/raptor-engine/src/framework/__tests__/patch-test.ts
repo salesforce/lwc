@@ -119,7 +119,8 @@ describe('patch', () => {
                     calls.push('root:renderedCallback');
                 }
             }
-            Root.publicMethods = ['show']
+            Root.publicMethods = ['show'];
+            Root.track = { state: 1 };
 
             class Child extends Element {
                 constructor() {
@@ -176,7 +177,7 @@ describe('patch', () => {
                     }
                 }
             }
-
+            MyComponent.track = { state: 1 };
             MyComponent.publicMethods = [
                 'triggerRender'
             ]

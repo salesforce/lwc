@@ -1,12 +1,10 @@
 import { Element } from 'engine';
 
 export default class App extends Element {
-    state = {
-        handledClick: false
-    };
+    @track handledClick = false;
     connectedCallback(){
         this.addEventListener('cstm', () => {
-            this.state.handledClick = true;
+            this.handledClick = true;
         });
     }
 }

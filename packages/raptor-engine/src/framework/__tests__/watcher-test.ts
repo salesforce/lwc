@@ -2,6 +2,7 @@
 import * as api from "../api";
 import { patch } from '../patch';
 import { Element } from "../html-element";
+import { createElement } from './../main';
 
 describe('watcher', () => {
 
@@ -98,7 +99,7 @@ describe('watcher', () => {
             expect(counter).toBe(1);
         });
 
-        it('should rerender the component if reactive state changes', () => {
+        it('should rerender the component if tracked property changes', () => {
             let counter = 0;
             let state;
             const def = class MyComponent6 extends Element {
@@ -115,6 +116,7 @@ describe('watcher', () => {
                     };
                 }
             }
+            def.track = { state: 1 };
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
@@ -181,6 +183,7 @@ describe('watcher', () => {
                     };
                 }
             }
+            def.track = { state: 1 };
             const elm = document.createElement('x-foo');
             const vnode = api.c('x-foo', def, {});
             patch(elm, vnode);
@@ -252,16 +255,22 @@ describe('watcher', () => {
             let counter = 0;
             class MyComponent1 extends Element {
                 state = { list: [1, 2] };
+
+                pushToList(value: number) {
+                    this.state.list.push(value);
+                }
+
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            patch(elm, vnode1);
+            MyComponent1.track = { state: 1 }
+            MyComponent1.publicMethods = ['pushToList'];
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
-            vnode1.vm.component.state.list.push(3);
+            elm.pushToList(3);
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
             });
@@ -270,16 +279,22 @@ describe('watcher', () => {
             let counter = 0;
             class MyComponent1 extends Element {
                 state = { list: [1, 2] };
+
+                popFromList() {
+                    this.state.list.pop();
+                }
+
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            patch(elm, vnode1);
+            MyComponent1.publicMethods = ['popFromList'];
+            MyComponent1.track = { state: 1 };
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
-            vnode1.vm.component.state.list.pop();
+            elm.popFromList();
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
             });
@@ -288,16 +303,20 @@ describe('watcher', () => {
             let counter = 0;
             class MyComponent1 extends Element {
                 state = { list: [1, 2] };
+                unshiftFromList(value: number) {
+                    this.state.list.unshift(value);
+                }
                 render() {
                     counter++;
                     this.state.list.map((v) => v + 1);
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            patch(elm, vnode1);
+            MyComponent1.publicMethods = ['unshiftFromList'];
+            MyComponent1.track = { state: 1 }
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
-            vnode1.vm.component.state.list.unshift(3);
+            elm.unshiftFromList(3);
             return Promise.resolve().then(() => {
                 expect(counter).toBe(2);
             });
