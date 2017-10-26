@@ -1,6 +1,6 @@
 {
   "name": "babel-helpers-raptor",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "main": "dist/engine-helpers.js",
   "description": "Babel helpers + regenerator + other utils for raptor",
   "license": "MIT",

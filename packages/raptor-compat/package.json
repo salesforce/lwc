@@ -1,16 +1,16 @@
 {
   "name": "raptor-compat",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "main": "dist/raptor-compat.js",
   "description": "Compatibility layer for Raptor (IE11 support for Proxys and ES6+ polyfills)",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.24.1",
-    "babel-helpers-raptor": "0.15.2",
-    "babel-plugin-transform-raptor-compat": "0.15.2",
+    "babel-helpers-raptor": "0.15.3",
+    "babel-plugin-transform-raptor-compat": "0.15.3",
     "core-js-builder": "2.5.1",
     "mkdirp": "0.5.1",
-    "proxy-compat": "0.15.2",
+    "proxy-compat": "0.15.3",
     "rimraf": "^2.6.1",
     "uglify-js": "^3.1.3"
   },
