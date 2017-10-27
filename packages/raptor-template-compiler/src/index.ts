@@ -1,34 +1,27 @@
-import generate from './codegen';
+import State from './state';
+import { mergeConfig, Config } from './config';
+
 import parse from './parser';
+import generate from './codegen';
 
-import {
-    CompilationOptions,
-    CompilationMetadata,
-    CompilationWarning,
-} from './shared/types';
-
-const DEFAULT_CONFIG = {
-    computedMemberExpression: false,
-};
-
-export let config: CompilationOptions = DEFAULT_CONFIG;
+import { CompilationMetadata, CompilationWarning } from './shared/types';
 
 export default function compiler(
     source: string,
-    compilationOptions: CompilationOptions = {},
-) {
-    config = {
-        ...DEFAULT_CONFIG,
-        ...compilationOptions,
-    };
+    config: Config,
+): {
+    code: string;
+    warnings: CompilationWarning[];
+    metadata: CompilationMetadata;
+} {
+    const options = mergeConfig(config);
+    const state = new State(source, options);
 
     let code = '';
-    let metadata: CompilationMetadata | undefined;
     const warnings: CompilationWarning[] = [];
 
     try {
-        const parsingResults = parse(source);
-        metadata = parsingResults.metadata;
+        const parsingResults = parse(source, state);
         warnings.push(...parsingResults.warnings);
 
         const hasParsingError = parsingResults.warnings.some(
@@ -36,7 +29,7 @@ export default function compiler(
         );
 
         if (!hasParsingError && parsingResults.root) {
-            const output = generate(parsingResults.root, metadata);
+            const output = generate(parsingResults.root, state);
             code = output.code;
         }
     } catch (error) {
@@ -51,6 +44,10 @@ export default function compiler(
     return {
         code,
         warnings,
-        metadata,
+        metadata: {
+            definedSlots: state.slots,
+            templateUsedIds: state.ids,
+            templateDependencies: state.dependencies,
+        },
     };
 }

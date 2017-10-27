@@ -1,0 +1,11 @@
+:host {
+    color: blue;
+}
+
+div {
+    color: red;
+}
+
+x-foo {
+    color: green;
+}

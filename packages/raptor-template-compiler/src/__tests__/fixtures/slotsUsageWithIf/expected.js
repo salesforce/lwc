@@ -12,24 +12,24 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                   'p',
                                   {
                                       attrs: {
-                                          slot: true,
-                                      },
+                                          slot: true
+                                      }
                                   },
-                                  [api_text('S1')],
+                                  [api_text('S1')]
                               )
                             : null,
                         api_element(
                             'p',
                             {
                                 attrs: {
-                                    slot: true,
-                                },
+                                    slot: true
+                                }
                             },
-                            [api_text('S2')],
-                        ),
-                    ],
-                },
-            }),
-        ]),
+                            [api_text('S2')]
+                        )
+                    ]
+                }
+            })
+        ])
     ];
 }

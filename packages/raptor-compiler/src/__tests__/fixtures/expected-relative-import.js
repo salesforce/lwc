@@ -28,6 +28,7 @@ class RelativeImport extends engine.Element {
     }
 
 }
+RelativeImport.style = tmpl.style;
 
 return RelativeImport;
 

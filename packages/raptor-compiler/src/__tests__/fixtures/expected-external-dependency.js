@@ -21,5 +21,6 @@ class Foo extends Element {
     }
 
 }
+Foo.style = tmpl.style;
 
 export default Foo;

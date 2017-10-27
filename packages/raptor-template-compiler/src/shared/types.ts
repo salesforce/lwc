@@ -118,6 +118,7 @@ export interface CompilationWarning {
 }
 
 export interface CompilationOptions {
+    token: string;
     computedMemberExpression?: boolean;
 }
 

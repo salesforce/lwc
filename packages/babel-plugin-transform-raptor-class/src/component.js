@@ -1,10 +1,11 @@
 const { basename } = require('path');
-const { findClassMethod, findClassProperty } = require('./utils');
+const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
 
 const RAPTOR_PACKAGE_ALIAS = 'engine';
 const BASE_RAPTOR_COMPONENT_CLASS = 'Element';
 
 const LABELS_CLASS_PROPERTY_NAME = 'labels';
+const STYLE_CLASS_PROPERTY_NAME = 'style';
 const COMPONENT_RENDER_METHOD_NAME = 'render';
 
 const MISSPELLED_LIFECYCLE_METHODS = {
@@ -37,11 +38,11 @@ module.exports = function ({ types: t, }) {
             }
         },
         Class(path, state) {
-            const classRef = path.node.id;
             const isRaptorComponent = state.raptorBaseClassImport &&
-                isClassRaptorComponentClass(path, state.raptorBaseClassImport);
+            isClassRaptorComponentClass(path, state.raptorBaseClassImport);
 
             if (isRaptorComponent) {
+                const classRef = path.node.id;
                 if (!classRef) {
                     throw path.buildCodeFrameError(
                         `Raptor component class can't be an anonymous.`
@@ -52,18 +53,18 @@ module.exports = function ({ types: t, }) {
 
                 checkLifecycleMethodMisspell(classBody);
 
+                // Deal with component labels
                 const labels = getComponentLabels(classBody);
                 state.file.metadata.labels.push(...labels);
 
-                const isExportClass = exportDafaultNode(path);
-                const hasRenderMethod = !!findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME);
-                if(!hasRenderMethod && isExportClass) {
-                    classBody.pushContainer('body', [
-                        getRenderMethod(state)
-                    ]);
+                // Import and wire template to the component if the class has no render method
+                if(
+                    isDefaultExport(path)
+                    && !findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME)
+                ) {
+                    wireTemplateToClass(state, classBody);
                 }
             }
-
         },
     };
 
@@ -118,7 +119,7 @@ module.exports = function ({ types: t, }) {
         return labels;
     }
 
-    function exportDafaultNode(path) {
+    function isDefaultExport(path) {
         return path.parentPath.isExportDefaultDeclaration();
     }
 
@@ -127,17 +128,32 @@ module.exports = function ({ types: t, }) {
         return basename(classPath, '.js');
     }
 
-    function getRenderMethod(state) {
+    function importDefaultTemplate(state) {
         const componentName = getComponentName(state);
-        const templateImport = state.file.addImport(`./${componentName}.html`, 'default', 'tmpl');
+        return state.file.addImport(`./${componentName}.html`, 'default', 'tmpl');
+    }
 
-        return t.classMethod(
+    function wireTemplateToClass(state, classBody) {
+        const templateIdentifier = importDefaultTemplate(state);
+
+        const styleProperty = staticClassProperty(
+            t,
+            STYLE_CLASS_PROPERTY_NAME,
+            t.memberExpression(templateIdentifier, t.identifier(STYLE_CLASS_PROPERTY_NAME)),
+        );
+
+        const renderMethod = t.classMethod(
             'method',
             t.identifier(COMPONENT_RENDER_METHOD_NAME),
             [],
             t.blockStatement([
-                t.returnStatement(templateImport),
+                t.returnStatement(templateIdentifier),
             ])
         );
+
+        classBody.pushContainer('body', [
+            renderMethod,
+            styleProperty,
+        ]);
     }
 }

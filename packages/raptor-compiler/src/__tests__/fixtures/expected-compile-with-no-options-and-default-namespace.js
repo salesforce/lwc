@@ -14,5 +14,6 @@ class Default extends Element {
   }
 
 }
+Default.style = tmpl.style;
 
 export default Default;

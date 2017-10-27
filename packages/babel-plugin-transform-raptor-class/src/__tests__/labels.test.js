@@ -21,6 +21,7 @@ describe('labels', () => {
             }
 
         }
+        Test.style = _tmpl.style;
     `);
 
     it('returns labels as metadata', () => {

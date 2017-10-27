@@ -29,6 +29,7 @@ describe('Element import', () => {
           }
 
         }
+        Test.style = _tmpl.style;
     `);
 });
 
@@ -45,6 +46,7 @@ describe('render method', () => {
           }
 
         }
+        Test.style = _tmpl.style;
     `);
 
     test(`keep the render method if present`, `
@@ -77,6 +79,7 @@ describe('render method', () => {
           }
 
         }
+        Test2.style = _tmpl.style;
     `)
 });
 

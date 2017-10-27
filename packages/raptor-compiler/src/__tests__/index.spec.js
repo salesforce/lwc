@@ -1,8 +1,5 @@
 /* eslint-env node, jest */
 
-const fs = require('fs');
-const path = require('path');
-
 const { compile } = require('../index');
 const { fixturePath, readFixture, pretify } = require('./test-utils');
 
@@ -30,6 +27,31 @@ describe('validate options', () => {
             }),
         ).toThrow(
             /in-memory module resolution expects values to be string. Received true for key \/x\/foo\/foo.js/,
+        );
+    });
+});
+
+describe('stylesheet', () => {
+    it('should import the associated stylesheet by default', async () => {
+        const { code } = await compile(
+            fixturePath('namespaced_folder/styled/styled.js'),
+        );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-styled.js')),
+        );
+    });
+
+    it('should import compress css in prod mode', async () => {
+        const { code } = await compile(
+            fixturePath('namespaced_folder/styled/styled.js'),
+            {
+                mode: 'prod'
+            }
+        );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-styled-prod.js')),
         );
     });
 });

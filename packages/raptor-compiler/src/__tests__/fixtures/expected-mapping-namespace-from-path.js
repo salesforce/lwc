@@ -19,5 +19,6 @@ class Cmp1 extends Element {
     }
 
 }
+Cmp1.style = tmpl.style;
 
 export default Cmp1;

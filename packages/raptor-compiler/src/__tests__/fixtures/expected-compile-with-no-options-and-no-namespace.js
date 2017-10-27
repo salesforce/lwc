@@ -14,5 +14,6 @@ class FooBar extends Element {
   }
 
 }
+FooBar.style = tmpl.style;
 
 export default FooBar;

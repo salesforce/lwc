@@ -57,6 +57,8 @@
     "babel-preset-babili": "^0.1.2",
     "babel-preset-env": "^1.6.0",
     "raptor-template-compiler": "0.15.3",
+    "cssnano": "^3.10.0",
+    "postcss": "^6.0.13",
     "rollup": "~0.50.0",
     "rollup-plugin-babel": "^3.0.2"
   },

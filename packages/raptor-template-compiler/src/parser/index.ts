@@ -46,12 +46,13 @@ import {
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
-    CompilationMetadata,
 } from '../shared/types';
 
 import {
     bindExpression,
 } from '../shared/scope';
+
+import State from '../state';
 
 import {
     EXPRESSION_RE,
@@ -64,26 +65,20 @@ import {
     DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
 
-export default function parse(source: string): {
+export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
     warnings: CompilationWarning[],
-    metadata: CompilationMetadata,
 } {
     const warnings: CompilationWarning[] = [];
-    const metadata: CompilationMetadata = {
-        templateUsedIds: [],
-        definedSlots: [],
-        templateDependencies: [],
-    };
 
     const { fragment, errors: parsingErrors } = parseHTML(source);
     if (parsingErrors.length) {
-        return { warnings: parsingErrors, metadata };
+        return { warnings: parsingErrors };
     }
 
     const templateRoot = getTemplateRoot(fragment);
     if (!templateRoot) {
-        return { warnings, metadata };
+        return { warnings };
     }
 
     let root: any;
@@ -392,9 +387,9 @@ export default function parse(source: string): {
 
         if (component) {
             element.component = component;
-            const dependencies = metadata.templateDependencies;
-            if (!dependencies.includes(component)) {
-                dependencies.push(component);
+
+            if (!state.dependencies.includes(component)) {
+                state.dependencies.push(component);
             }
         }
     }
@@ -427,8 +422,8 @@ export default function parse(source: string): {
 
         element.slotName = name;
 
-        if (!metadata.definedSlots.includes(name)) {
-            metadata.definedSlots.push(name);
+        if (!state.slots.includes(name)) {
+            state.slots.push(name);
         }
     }
 
@@ -499,12 +494,12 @@ export default function parse(source: string): {
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
-        const expression = parseExpression(sourceExpression, node);
+        const expression = parseExpression(sourceExpression, node, state);
         const { bounded } = bindExpression(expression, node, false);
 
         for (const boundedIdentifier of bounded) {
-            if (!metadata.templateUsedIds.includes(boundedIdentifier)) {
-                metadata.templateUsedIds.push(boundedIdentifier);
+            if (!state.ids.includes(boundedIdentifier)) {
+                state.ids.push(boundedIdentifier);
             }
         }
 
@@ -610,5 +605,5 @@ export default function parse(source: string): {
         warnings.push({ message, start, length, level });
     }
 
-    return { root, warnings, metadata };
+    return { root, warnings };
 }

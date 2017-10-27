@@ -3,7 +3,10 @@ import * as t from 'babel-types';
 
 import template = require('babel-template');
 
+import State from '../state';
+
 import {
+    TEMPLATE_TOKEN,
     TEMPLATE_PARAMS,
     TEMPLATE_FUNCTION_NAME,
 } from '../shared/constants';
@@ -26,7 +29,6 @@ import {
     IRText,
     IRAttribute,
     IRAttributeType,
-    CompilationMetadata,
     CompilationOutput,
 } from '../shared/types';
 
@@ -48,6 +50,7 @@ import CodeGen from './codegen';
 function transform(
     root: IRNode,
     codeGen: CodeGen,
+    state: State,
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
@@ -167,7 +170,7 @@ function transform(
             slots.push(
                 t.objectProperty(
                     t.stringLiteral(key),
-                    transform(slotRoot, codeGen),
+                    transform(slotRoot, codeGen, state),
                 ),
             );
         });
@@ -346,12 +349,13 @@ function transform(
             className,
             style,
             styleMap,
-            attrs,
+            attrs = {},
             props,
             on,
             forKey,
         } = element;
 
+        // Class attibute defined via string
         if (className) {
             const { expression: classExpression } = bindExpression(
                 className,
@@ -360,11 +364,13 @@ function transform(
             data.push(t.objectProperty(t.identifier('className'), classExpression));
         }
 
+        // Class attibute defined via an object
         if (classMap) {
             const classMapObj = objectToAST(classMap, () => t.booleanLiteral(true));
             data.push(t.objectProperty(t.identifier('classMap'), classMapObj));
         }
 
+        // Style attibute defined via an object
         if (styleMap) {
             const styleObj = objectToAST(
                 styleMap,
@@ -377,18 +383,32 @@ function transform(
             data.push(t.objectProperty(t.identifier('styleMap'), styleObj));
         }
 
+        // Style attibute defined via a string
         if (style) {
             const { expression: styleExpression } = bindExpression(style, element);
             data.push(t.objectProperty(t.identifier('style'), styleExpression));
         }
 
-        if (attrs) {
-            const atrsObj = objectToAST(attrs, key =>
-                computeAttrValue(attrs[key], element),
+        // Attributes
+        const attrsObj = objectToAST(attrs, key =>
+            computeAttrValue(attrs[key], element),
+        );
+
+        if (state.config.stylesheet) {
+            attrsObj.properties.push(
+                t.objectProperty(
+                    t.identifier(TEMPLATE_TOKEN),
+                    t.booleanLiteral(true),
+                    true,
+                ),
             );
-            data.push(t.objectProperty(t.identifier('attrs'), atrsObj));
         }
 
+        if (attrsObj.properties.length) {
+            data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
+        }
+
+        // Properties
         if (props) {
             const propsObj = objectToAST(props, key =>
                 computeAttrValue(props[key], element),
@@ -396,10 +416,12 @@ function transform(
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
+        // Key property on VNode
         if (forKey) {
             data.push(t.objectProperty(t.identifier('key'), forKey));
         }
 
+        // Event handler
         if (on) {
             const onObj = objectToAST(on, key => {
                 const { expression: componentHandler } = bindExpression(on[key], element);
@@ -443,20 +465,19 @@ function transform(
 /**
  * Generate metadata that will be attached to the template function
  */
-function generateTemplateMetadata(metadata: CompilationMetadata): t.ExpressionStatement[] {
-    const { definedSlots } = metadata;
+function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
     const metadataExpressions: t.ExpressionStatement[] = [];
 
     // Generate the slots property on template function if slots are defined in the template
     // tmpl.slots = ['$default$', 'x']
-    if (definedSlots.length) {
+    if (state.slots.length) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),
             t.identifier('slots'),
         );
 
         const slotsArray = t.arrayExpression(
-            metadata.definedSlots.map((slot) => t.stringLiteral(slot)),
+            state.slots.map((slot) => t.stringLiteral(slot)),
         );
 
         const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
@@ -483,9 +504,9 @@ const TEMPLATE_FUNCTION = template(
     { sourceType: 'module' },
 );
 
-export default function(templateRoot: IRElement, metadata: CompilationMetadata): CompilationOutput {
+export default function(templateRoot: IRElement, state: State): CompilationOutput {
     const codeGen = new CodeGen();
-    const statement = transform(templateRoot, codeGen);
+    const statement = transform(templateRoot, codeGen, state);
 
     const apis = destructuringAssignmentFromObject(
         t.identifier(TEMPLATE_PARAMS.API),
@@ -536,15 +557,64 @@ export default function(templateRoot: IRElement, metadata: CompilationMetadata):
         STATEMENT:  statement,
     }) as t.ExportDefaultDeclaration;
 
-    const imports = metadata.templateDependencies.map((cmpClassName) => (
-        importFromComponentName(cmpClassName)
-    ));
-    const templateMetadata = generateTemplateMetadata(metadata);
+    const intro = [];
+    const outro = [];
+
+    intro.push(
+        ...state.dependencies.map((cmpClassName) => (
+            importFromComponentName(cmpClassName)
+        )),
+    );
+
+    outro.push(
+        ...generateTemplateMetadata(state),
+    );
+
+    if (state.config.stylesheet) {
+        const styleIdentifier = t.identifier('style');
+        const tokenIdentifier = t.identifier(TEMPLATE_TOKEN);
+
+        const stylesheetImport = t.importDeclaration(
+            [
+                t.importSpecifier(styleIdentifier, styleIdentifier),
+                t.importSpecifier(tokenIdentifier, tokenIdentifier),
+            ],
+            t.stringLiteral(state.config.stylesheet),
+        );
+        intro.push(stylesheetImport);
+
+        const styleAssignment = t.expressionStatement(
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_FUNCTION_NAME),
+                    t.identifier('style'),
+                ),
+                styleIdentifier,
+            ),
+        );
+
+        const tokenAssignment = t.expressionStatement(
+            t.assignmentExpression(
+                '=',
+                t.memberExpression(
+                    t.identifier(TEMPLATE_FUNCTION_NAME),
+                    t.identifier('token'),
+                ),
+                tokenIdentifier,
+            ),
+        );
+
+        outro.unshift(
+            styleAssignment,
+            tokenAssignment,
+        );
+    }
 
     const program = t.program([
-        ...imports,
+        ...intro,
         content,
-        ...templateMetadata,
+        ...outro,
     ]);
 
     const { code } = generate(program);

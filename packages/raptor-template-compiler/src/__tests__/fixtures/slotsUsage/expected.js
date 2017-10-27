@@ -11,25 +11,25 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             'p',
                             {
                                 attrs: {
-                                    slot: 'header',
-                                },
+                                    slot: 'header'
+                                }
                             },
-                            [api_text('Header Slot Content')],
-                        ),
+                            [api_text('Header Slot Content')]
+                        )
                     ],
                     $default$: [
                         api_element(
                             'p',
                             {
                                 attrs: {
-                                    slot: true,
-                                },
+                                    slot: true
+                                }
                             },
-                            [api_text('Default Content')],
-                        ),
-                    ],
-                },
-            }),
-        ]),
+                            [api_text('Default Content')]
+                        )
+                    ]
+                }
+            })
+        ])
     ];
 }

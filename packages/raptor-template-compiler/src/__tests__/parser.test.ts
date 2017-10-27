@@ -1,12 +1,21 @@
 /* tslint:disable:max-line-length */
 
+import { mergeConfig } from '../config';
+import State from '../state';
 import parse from '../parser';
 
 const TEMPLATE_EXPRESSION = { type: 'MemberExpression' };
 const TEMPLATE_IDENTIFIER = { type: 'Identifier' };
 
 function parseTemplate(src: string): any {
-    return parse(src);
+    const config = mergeConfig({});
+    const state = new State(src, config);
+
+    const res = parse(src, state);
+    return {
+        ...res,
+        state,
+    };
 }
 
 describe('parsing', () => {
@@ -439,36 +448,36 @@ describe('props and attributes', () => {
 
 describe('metadata', () => {
     it('usedIds simple', () => {
-        const { metadata } = parseTemplate(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
-        expect(Array.from(metadata.templateUsedIds)).toEqual(['visible', 'titleClass', 'text']);
+        const { state } = parseTemplate(`<template><h1 if:true={visible} class={titleClass}>{text}</h1></template>`);
+        expect(Array.from(state.ids)).toEqual(['visible', 'titleClass', 'text']);
     });
 
     it('usedIds with expression', () => {
-        const { metadata } = parseTemplate(`<template>
+        const { state } = parseTemplate(`<template>
             <div for:each={state.items} for:item="item">
                 <template if:true={item.visible}>
                     {componentProp} - {item.value}
                 </template>
             </div>
         </template>`);
-        expect(Array.from(metadata.templateUsedIds)).toEqual(['state', 'componentProp']);
+        expect(Array.from(state.ids)).toEqual(['state', 'componentProp']);
     });
 
     it('dependent component', () => {
-        const { metadata } = parseTemplate(`<template>
+        const { state } = parseTemplate(`<template>
             <x-menu></x-menu>
             <button is="x-button"></button>
         </template>`);
 
-        expect(Array.from(metadata.templateDependencies)).toEqual(['x-menu', 'x-button']);
+        expect(Array.from(state.dependencies)).toEqual(['x-menu', 'x-button']);
     });
 
     it('slots', () => {
-        const { metadata } = parseTemplate(`<template>
+        const { state } = parseTemplate(`<template>
             <slot></slot>
             <slot name="foo"></slot>
         </template>`);
 
-        expect(Array.from(metadata.definedSlots)).toEqual(['$default$', 'foo']);
+        expect(Array.from(state.slots)).toEqual(['$default$', 'foo']);
     });
 });

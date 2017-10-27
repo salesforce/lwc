@@ -23,5 +23,6 @@ class ClassAndTemplate extends Element {
     }
 
 }
+ClassAndTemplate.style = tmpl.style;
 
 export default ClassAndTemplate;

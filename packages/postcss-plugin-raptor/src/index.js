@@ -3,11 +3,12 @@ const selectorParser = require('postcss-selector-parser');
 
 const {
     isTag,
+    isCustomElement,
     isPseudo,
     isCombinator,
     findNode,
     replaceNodeWith,
-    trimNodeWhitespaces
+    trimNodeWhitespaces,
 } = require('./selector-utils');
 
 const PLUGIN_NAME = 'postcss-plugin-raptor';
@@ -15,6 +16,7 @@ const PLUGIN_NAME = 'postcss-plugin-raptor';
 const DEPRECATED_SELECTORS = ['/deep/', '::shadow', '>>>'];
 
 const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
+const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
 function hostPlaceholder() {
     return selectorParser.tag({ value: HOST_SELECTOR_PLACEHOLDER });
@@ -28,15 +30,19 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
     const { tagName, token } = options;
 
     if (tagName == undefined || typeof tagName !== 'string') {
-        throw new TypeError(`tagName option must be a string but instead received ${typeof tagName}`);
+        throw new TypeError(
+            `tagName option must be a string but instead received ${typeof tagName}`,
+        );
     } else if (token == undefined || typeof token !== 'string') {
-        throw new TypeError(`token option must be a string but instead received ${typeof token}`);
+        throw new TypeError(
+            `token option must be a string but instead received ${typeof token}`,
+        );
     }
 
     /** Generate a scoping attribute based on the passed token */
     const scopeAttribute = () =>
         selectorParser.attribute({
-            attribute: token
+            attribute: token,
         });
 
     /** Generate a host selector by tag name */
@@ -45,7 +51,7 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
     /** Generate a host selector via the "is" attribute: [is="x-foo"] */
     const hostByIsAttribute = () =>
         selectorParser.attribute({
-            value: `is="${tagName}"`
+            value: `is="${tagName}"`,
         });
 
     /** Throw error on deprecated attributes */
@@ -55,16 +61,72 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
 
             if (DEPRECATED_SELECTORS.includes(value)) {
                 throw new Error(
-                    `Invalid usage of deprecated ${value} selector`
+                    `Invalid usage of deprecated ${value} selector`,
                 );
             }
 
             if (value === '::slotted') {
                 throw new Error(
-                    `::slotted pseudo-element selector is not supported`
+                    `::slotted pseudo-element selector is not supported`,
                 );
             }
         });
+    };
+
+    /**
+     * Duplicate all the custom element tag to it's "is attribute" form
+     *   x-foo -> x-foo, [is="x-foo"]
+     */
+    const customElementSelector = selectors => {
+        // List of selectors waiting to be treated. Need to keep track of a list of pending
+        // selectors to process to avoid processing twice the same custom element selector.
+        const pending = [];
+
+        // Find all the custom element selector and prefix them to be retrieved later
+        selectors.each(selector => {
+            selector.each(node => {
+                if (isCustomElement(node)) {
+                    node.value = CUSTOM_ELEMENT_SELECTOR_PREFIX + node.value;
+                    pending.push(selector);
+                }
+            });
+        });
+
+        while (pending.length > 0) {
+            const selector = pending.pop();
+
+            // Find first custom element tag in the selector
+            const customElement = findNode(
+                selector,
+                node =>
+                    isTag(node) &&
+                    node.value.startsWith(CUSTOM_ELEMENT_SELECTOR_PREFIX),
+            );
+
+            if (customElement) {
+                // Reassign original value to the selector by removing the prefix
+                const tagName = customElement.value.slice(
+                    CUSTOM_ELEMENT_SELECTOR_PREFIX.length,
+                );
+                customElement.value = tagName;
+
+                const clonedSelector = selector.clone();
+                selectors.append(clonedSelector);
+
+                // Locate the node in the cloned selector and replace it
+                const index = selector.index(customElement);
+                replaceNodeWith(
+                    clonedSelector.at(index),
+                    selectorParser.attribute({
+                        value: `is="${tagName}"`,
+                    }),
+                );
+
+                // Add both original and transformed selectors to the pending queue for further processing.
+                // Each of those selector can still contain other custom element nodes to process.
+                pending.push(clonedSelector, selector);
+            }
+        }
     };
 
     /**
@@ -104,7 +166,7 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
     const transfromHost = selector => {
         const hostNode = findNode(
             selector,
-            node => isPseudo(node) && node.value === ':host'
+            node => isPseudo(node) && node.value === ':host',
         );
 
         if (hostNode) {
@@ -135,7 +197,7 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
     const transformHostContext = selector => {
         const hostContextNode = findNode(
             selector,
-            node => isPseudo(node) && node.value === ':host-context'
+            node => isPseudo(node) && node.value === ':host-context',
         );
 
         const hostNode = findNode(selector, isHostPlaceholder);
@@ -159,7 +221,7 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
                     });
 
                     return clone;
-                }
+                },
             );
 
             replaceNodeWith(selector, ...contextualSelectors);
@@ -176,7 +238,7 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
         if (hostPlaceholder) {
             const hostActualSelectors = [
                 hostByTag(),
-                hostByIsAttribute()
+                hostByIsAttribute(),
             ].map(actualSelector => {
                 const clone = selector.clone();
 
@@ -195,8 +257,11 @@ module.exports = postcss.plugin(PLUGIN_NAME, (options = {}) => {
         selectors.each(errorOnDeprecatedSelectors);
 
         selectors.each(scopeSelector);
+
         selectors.each(transfromHost);
         selectors.each(transformHostContext);
+
+        customElementSelector(selectors);
 
         selectors.each(replaceHostPlaceholder);
     });

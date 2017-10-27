@@ -31,6 +31,8 @@ var ClassAndTemplate = function (_Element) {
     return ClassAndTemplate;
 }(engine.Element);
 
+__setKey(ClassAndTemplate, "style", __getKey(tmpl, "style"));
+
 return ClassAndTemplate;
 
 });

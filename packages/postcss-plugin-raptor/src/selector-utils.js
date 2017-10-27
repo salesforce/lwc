@@ -2,6 +2,10 @@ function isTag(node) {
     return node && node.type === 'tag';
 }
 
+function isCustomElement(node) {
+    return isTag(node) && node.value.includes('-');
+}
+
 function isPseudo(node) {
     return node && node.type === 'pseudo';
 }
@@ -33,6 +37,7 @@ function trimNodeWhitespaces(node) {
 
 module.exports = {
     isTag,
+    isCustomElement,
     isPseudo,
     isCombinator,
     findNode,

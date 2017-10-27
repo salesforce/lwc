@@ -21,6 +21,7 @@ class ClassAndTemplate extends engine.Element {
     }
 
 }
+ClassAndTemplate.style = tmpl.style;
 
 return ClassAndTemplate;
 

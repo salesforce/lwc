@@ -3,9 +3,7 @@ import * as types from 'babel-types';
 import * as babylon from 'babylon';
 import * as esutils from 'esutils';
 
-import {
-    config as compilerConfig,
-} from '../index';
+import State from '../state';
 
 import {
     TemplateExpression,
@@ -34,7 +32,7 @@ export function isPotentialExpression(source: string): boolean {
 }
 
 // FIXME: Avoid throwing errors and return it properly
-export function parseExpression(source: string, element?: IRNode): TemplateExpression {
+export function parseExpression(source: string, element: IRNode, state: State): TemplateExpression {
     try {
         const parsed = babylon.parse(source);
 
@@ -62,7 +60,7 @@ export function parseExpression(source: string, element?: IRNode): TemplateExpre
 
             MemberExpression: {
                 exit(path) {
-                    const shouldReportComputed = !compilerConfig.computedMemberExpression
+                    const shouldReportComputed = !state.config.computedMemberExpression
                         && (path.node as types.MemberExpression).computed;
 
                     if (shouldReportComputed) {

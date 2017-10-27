@@ -14,7 +14,12 @@ function readFixture(location) {
 }
 
 function pretify(str) {
-    return str.toString().replace(/^\s+|\s+$/, '');
+    return str.toString()
+        .replace(/^\s+|\s+$/, '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length)
+        .join('\n');
 }
 
 module.exports = {

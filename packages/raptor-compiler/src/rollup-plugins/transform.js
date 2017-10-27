@@ -1,5 +1,6 @@
 import * as path from 'path';
 
+import styleTransform from '../transformers/style';
 import templateTransformer from '../transformers/template';
 import javascriptTransformer from '../transformers/javascript';
 
@@ -11,6 +12,9 @@ function getTransformer(fileName) {
     switch (path.extname(fileName)) {
         case '.html':
             return templateTransformer;
+
+        case '.css':
+            return styleTransform;
 
         case '.js':
         case '.ts':

@@ -85,6 +85,33 @@ describe('selectors', () => {
     });
 });
 
+describe('custom-element', () => {
+    it('should handle custom element', async () => {
+        const { css } = await process('x-bar {}');
+        expect(css).toBe(`x-bar[x-foo_tmpl],[is="x-bar"][x-foo_tmpl] {}`);
+    });
+
+    it('should handle nested custom element', async () => {
+        const { css } = await process('x-bar x-baz {}');
+        expect(css).toBe(
+            [
+                `x-bar[x-foo_tmpl] x-baz[x-foo_tmpl],[is="x-bar"][x-foo_tmpl] x-baz[x-foo_tmpl],`,
+                `x-bar[x-foo_tmpl] [is="x-baz"][x-foo_tmpl],[is="x-bar"][x-foo_tmpl] [is="x-baz"][x-foo_tmpl] {}`
+            ].join('')
+        );
+    });
+
+    it('should handle custom elements in the :host-context selector', async () => {
+        const { css } = await process(':host-context(x-bar) {}');
+        expect(css).toBe(
+            [
+                `x-bar x-foo[x-foo_tmpl],x-bar [is="x-foo"][x-foo_tmpl],`,
+                `[is="x-bar"] x-foo[x-foo_tmpl],[is="x-bar"] [is="x-foo"][x-foo_tmpl] {}`
+            ].join('')
+        );
+    });
+});
+
 describe(':host', () => {
     it('should handle no context', async () => {
         const { css } = await process(':host {}');
