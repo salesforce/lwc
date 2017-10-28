@@ -3,18 +3,19 @@ import compile from 'raptor-template-compiler';
 
 export default function(src, options) {
     const { filename, moduleResolver } = options;
+    const cssName = path.basename(filename, path.extname(filename)) + '.css';
 
-    const cssLocation = path.resolve(
+    const cssLocation = path.join(
         filename,
         '..',
-        path.basename(filename, path.extname(filename)) + '.css',
+        cssName
     );
 
     return moduleResolver.fileExists(cssLocation).then(hasStylesheet => {
         const config = {};
 
         if (hasStylesheet) {
-            config.stylesheet = cssLocation;
+            config.stylesheet = './' + cssName;
         }
 
         const { code, metadata, warnings } = compile(src, config);

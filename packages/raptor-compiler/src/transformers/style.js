@@ -25,7 +25,8 @@ export default function transformStyle(src, options) {
     if (isProd(mode)) {
         plugins.push(
             cssnano({
-                preset: 'default',
+                svgo: false,
+                preset: ['default'],
             }),
         );
     }
@@ -37,7 +38,6 @@ export default function transformStyle(src, options) {
                 `export const style = \`${res}\`;`,
                 `export const token = '${token}';`,
             ].join('\n');
-
             return {
                 code,
                 metadata: {},
