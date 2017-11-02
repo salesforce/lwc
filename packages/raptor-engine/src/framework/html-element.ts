@@ -28,7 +28,11 @@ function ComponentElement(): ComponentElement {
     vmBeingConstructed.component = this;
     this[ViewModelReflection] = vmBeingConstructed;
 }
-
+/*eslint-disable*/
+interface ComposableEvent extends Event {
+    composed: boolean
+}
+/*eslint-disable*/
 ComponentElement.prototype = {
     // Raptor.Element APIs
     renderedCallback: noop,
@@ -39,12 +43,15 @@ ComponentElement.prototype = {
     disconnectedCallback: noop,
 
     // HTML Element - The Good Parts
-    dispatchEvent(event: Event): boolean {
+    dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
         assert.block(() => {
-            const { type: evtName } = event;
+            const { type: evtName, composed, bubbles } = event;
             const vm = this[ViewModelReflection];
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
+            if (bubbles && !composed) {
+                assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
+            }
             if (vm.idx === 0) {
                 assert.logWarning(`Unreachable event "${evtName}" dispatched from disconnected element ${this}. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).`);
             }

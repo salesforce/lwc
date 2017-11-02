@@ -84,6 +84,37 @@ describe('html-element', () => {
     });
 
     describe('#dispatchEvent', function () {
+        it('should log a warning when dispatching an event without composed flag', function () {
+            class Foo extends Element {
+                connectedCallback() {
+                    const event = new CustomEvent('badevent', {
+                        bubbles: true
+                    });
+                    this.dispatchEvent(event);
+                }
+            }
+            jest.spyOn(assertLogger, 'logWarning');
+            const elem = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elem);
+            expect(assertLogger.logWarning).toBeCalledWith('Invalid event "badevent" dispatched in element <x-foo>. Events with \'bubbles: true\' must also be \'composed: true\'. Without \'composed: true\', the dispatched event will not be observable outside of your component.');
+            assertLogger.logWarning.mockRestore();
+        });
+        it('should log a warning when dispatching an event with bubbles: true, composed: false', function () {
+            class Foo extends Element {
+                connectedCallback() {
+                    const event = new CustomEvent('badevent', {
+                        composed: false,
+                        bubbles: true
+                    });
+                    this.dispatchEvent(event);
+                }
+            }
+            jest.spyOn(assertLogger, 'logWarning');
+            const elem = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elem);
+            expect(assertLogger.logWarning).toBeCalledWith('Invalid event "badevent" dispatched in element <x-foo>. Events with \'bubbles: true\' must also be \'composed: true\'. Without \'composed: true\', the dispatched event will not be observable outside of your component.');
+            assertLogger.logWarning.mockRestore();
+        });
         it('should throw when event is dispatched during construction', function () {
             expect.assertions(1);
             class Foo extends Element {
@@ -131,7 +162,7 @@ describe('html-element', () => {
             });
         });
 
-        it ('should log warning when event name contains non-alphanumeric lowercase characters', function () {
+        it('should log warning when event name contains non-alphanumeric lowercase characters', function () {
             class Foo extends Element {}
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
@@ -146,7 +177,7 @@ describe('html-element', () => {
             });
         });
 
-        it ('should log warning when event name does not start with alphabetic lowercase characters', function () {
+        it('should log warning when event name does not start with alphabetic lowercase characters', function () {
             class Foo extends Element {}
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
@@ -160,7 +191,7 @@ describe('html-element', () => {
             })
         });
 
-        it ('should not log warning for alphanumeric lowercase event name', function () {
+        it('should not log warning for alphanumeric lowercase event name', function () {
             class Foo extends Element {}
             const elm = document.createElement('x-foo');
             document.body.appendChild(elm);
