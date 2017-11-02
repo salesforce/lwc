@@ -24,14 +24,7 @@ module.exports = {
             // Should compiler guess component namespaces based on it path.
             // (default: false)
             mapNamespaceFromPath: true,
-
-            // Use the compiler in bundle mode.
-            // (default: false)
-            bundle: false,
         }),
     ]
 };
 ```
-
-**Note:** All the options passed to the `rollup-plugin-raptor-compiler` are also passed
-to the `raptor-compiler-code`.

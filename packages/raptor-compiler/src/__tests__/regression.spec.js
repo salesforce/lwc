@@ -1,5 +1,5 @@
 const { compile } = require('../index');
-const { fixturePath, readFixture, pretify } = require('./test-utils');
+const { fixturePath, readFixture, pretify } = require('./utils');
 
 describe('resgression test', () => {
     it('#743 - Object rest spread throwing', async () => {

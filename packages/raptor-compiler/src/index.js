@@ -1,7 +1,9 @@
 import * as path from 'path';
 
+import bundle from './bundle';
+import transformFile from './transform';
+
 import { MODES, ALL_MODES } from './modes';
-import { compileBundle } from './compiler';
 import { zipObject, isUndefined, isString } from './utils';
 
 import fsModuleResolver from './module-resolvers/fs';
@@ -9,7 +11,7 @@ import inMemoryModuleResolver from './module-resolvers/in-memory';
 
 const DEFAULT_NAMESPACE = 'x';
 
-const DEFAULT_OPTIONS = {
+const DEFAULT_COMPILE_OPTIONS = {
     format: 'es',
     mode: MODES.DEV,
     mapNamespaceFromPath: false,
@@ -18,22 +20,26 @@ const DEFAULT_OPTIONS = {
     },
 };
 
+const DEFAULT_TRANSFORM_OPTIONS = {
+    mode: MODES.DEV,
+};
+
 export function compile(entry, options = {}) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
-            `Expected a string for entry. Received instead ${entry}`
+            `Expected a string for entry. Received instead ${entry}`,
         );
     }
 
     entry = normalizeEntryPath(entry);
-    options = Object.assign({ entry }, DEFAULT_OPTIONS, options);
+    options = Object.assign({ entry }, DEFAULT_COMPILE_OPTIONS, options);
 
     const acceptedModes = Object.keys(MODES).map(mode => MODES[mode]);
     if (!acceptedModes.includes(options.mode)) {
         throw new Error(
             `Expected a mode in ${acceptedModes.join(
-                ', '
-            )}. Received instead ${options.mode}`
+                ', ',
+            )}. Received instead ${options.mode}`,
         );
     }
 
@@ -42,7 +48,7 @@ export function compile(entry, options = {}) {
     //       not all the modules are components.
     const { name, namespace, normalizedName } = getNormalizedName(
         entry,
-        options
+        options,
     );
     options.moduleName = name;
     options.moduleNamespace = namespace;
@@ -56,7 +62,7 @@ export function compile(entry, options = {}) {
         : inMemoryModuleResolver(options);
 
     if (options.mode !== MODES.ALL) {
-        return compileBundle(entry, options);
+        return bundle(entry, options);
     } else {
         // Compile the bundle in all modes at the same time
 
@@ -65,12 +71,36 @@ export function compile(entry, options = {}) {
         //       processor at the same time!
         return Promise.all(
             ALL_MODES.map(mode =>
-                compile(entry, Object.assign({}, options, { mode }))
-            )
+                compile(entry, Object.assign({}, options, { mode })),
+            ),
         ).then(results => {
             return zipObject(ALL_MODES, results);
         });
     }
+}
+
+export function transform(src, id, options) {
+    if (!isString(src)) {
+        throw new Error(`Expect a string for source. Received ${src}`);
+    }
+
+    if (!isString(id)) {
+        throw new Error(`Expect a string for id. Received ${id}`);
+    }
+
+    if (
+        isUndefined(options) ||
+        !isString(options.moduleName) ||
+        !isString(options.moduleNamespace)
+    ) {
+        throw new Error(
+            `Expects an option with a moduleName and moduleNamespace string property. Instead received ${options}`,
+        );
+    }
+
+    options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
+
+    return transformFile(src, id, options);
 }
 
 /**
@@ -97,9 +127,9 @@ function normalizeEntryPath(fileName) {
  * @param {string} fileName
  * @param {boolean} mapNamespaceFromPath
  */
-export function getNormalizedName(
+function getNormalizedName(
     fileName,
-    { componentName, componentNamespace, mapNamespaceFromPath }
+    { componentName, componentNamespace, mapNamespaceFromPath },
 ) {
     const ext = path.extname(fileName);
     const parts = fileName.split(path.sep);

@@ -1,19 +1,20 @@
 import _xFoo from 'x-foo';
 import { Element } from 'engine';
 
-const style = `x-styled[x-styled_styled],[is="x-styled"][x-styled_styled] {
+function style(tagName, token) {
+    return `${tagName}[${token}],[is="${tagName}"][${token}] {
     color: blue;
 }
 
-div[x-styled_styled] {
+div[${token}] {
     color: red;
 }
 
-x-foo[x-styled_styled],[is="x-foo"][x-styled_styled] {
+x-foo[${token}],[is="x-foo"][${token}] {
     color: green;
 }
-`;
-const token = 'x-styled_styled';
+    `;
+}
 
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
@@ -21,18 +22,16 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element
   } = $api;
 
-  return [api_element("div", {
-    attrs: {
-      [token]: true
-    }
-  }, []), api_custom_element("x-foo", _xFoo, {
-    attrs: {
-      [token]: true
-    }
-  })];
+  return [api_element("div", {}, []), api_custom_element("x-foo", _xFoo, {})];
 }
-tmpl.style = style;
-tmpl.token = token;
+
+if (style) {
+    const tagName = 'x-styled';
+    const token = 'x-styled_styled';
+
+    tmpl.token = token;
+    tmpl.style = style(tagName, token);
+}
 
 class Styled extends Element {
   render() {

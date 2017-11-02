@@ -1,5 +1,7 @@
 import { Element } from 'engine';
 
+const style = undefined;
+
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
     t: api_text,
@@ -7,6 +9,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
 
   return [api_element("p", {}, [api_text("CMP1")])];
+}
+
+if (style) {
+    const tagName = 'x-cmp1';
+    const token = 'x-cmp1_cmp1';
+    tmpl.token = token;
+    tmpl.style = style(tagName, token);
 }
 
 class Cmp1 extends Element {

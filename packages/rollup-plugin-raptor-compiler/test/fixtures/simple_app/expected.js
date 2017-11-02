@@ -1,5 +1,9 @@
 import { Element, createElement } from 'engine';
 
+const style = undefined;
+
+const style$2 = undefined;
+
 function tmpl$1($api, $cmp, $slotset, $ctx) {
     const { d: api_dynamic, h: api_element } = $api;
 
@@ -8,6 +12,14 @@ function tmpl$1($api, $cmp, $slotset, $ctx) {
         {},
         [api_dynamic($cmp.x)]
     )];
+}
+
+if (style$2) {
+  const tagName = "x-foo";
+  const token = "x-foo_foo";
+
+  tmpl$1.token = token;
+  tmpl$1.style = style$2(tagName, token);
 }
 
 class Foo extends Element {
@@ -36,6 +48,14 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             }
         )]
     )];
+}
+
+if (style) {
+  const tagName = "x-app";
+  const token = "x-app_app";
+
+  tmpl.token = token;
+  tmpl.style = style(tagName, token);
 }
 
 class App extends Element {

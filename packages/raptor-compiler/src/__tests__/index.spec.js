@@ -1,9 +1,9 @@
 /* eslint-env node, jest */
 
-const { compile } = require('../index');
-const { fixturePath, readFixture, pretify } = require('./test-utils');
+const { compile, transform } = require('../index');
+const { pretify } = require('./utils');
 
-describe('validate options', () => {
+describe('compile', () => {
     it('should validate entry type', () => {
         expect(() => compile()).toThrow(/Expected a string for entry/);
     });
@@ -31,311 +31,108 @@ describe('validate options', () => {
     });
 });
 
-describe('stylesheet', () => {
-    it('should import the associated stylesheet by default', async () => {
-        const { code } = await compile(
-            fixturePath('namespaced_folder/styled/styled.js'),
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-styled.js')),
+describe('transform', () => {
+    it('should validate presence of src', () => {
+        expect(() => transform()).toThrow(
+            /Expect a string for source. Received undefined/,
         );
     });
 
-    it('should import compress css in prod mode', async () => {
-        const { code } = await compile(
-            fixturePath('namespaced_folder/styled/styled.js'),
-            {
-                mode: 'prod'
+    it('should validate presence of id', () => {
+        expect(() => transform(`console.log('Hello')`)).toThrow(
+            /Expect a string for id. Received undefined/,
+        );
+    });
+
+    it('should validate options', () => {
+        expect(() => transform(`console.log('Hello')`, './test.js')).toThrow(
+            /Expects an option with a moduleName and moduleNamespace string property/,
+        );
+    });
+
+    it('should apply transformation for javascript file', async () => {
+        const actual = `
+            import { Element } from 'engine';
+            export default class Foo extends Element {}
+        `;
+
+        const expected = `
+            import _tmpl from './foo.html';
+            import { Element } from 'engine';
+            export default class Foo extends Element {
+                render() {
+                    return _tmpl;
+                }
             }
-        );
+            Foo.style = _tmpl.style;
+        `;
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-styled-prod.js')),
-        );
-    });
-});
-
-describe('component name and namespace override', () => {
-    it('should be able to override module name', async () => {
-        const { code } = await compile('/x/foo/foo.js', {
-            componentName: 'bar',
-            format: 'amd',
-            mode: 'prod',
-            sources: {
-                '/x/foo/foo.js': `console.log('foo')`,
-            },
+        const { code } = await transform(actual, 'foo.js', {
+            moduleNamespace: 'x',
+            moduleName: 'foo',
         });
 
-        expect(pretify(code)).toBe(
-            pretify(`define('x-bar',function(){console.log('foo')});`),
-        );
+        expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it('should be able to override module namespace', async () => {
-        const { code } = await compile('/x/foo/foo.js', {
-            componentNamespace: 'bar',
-            format: 'amd',
-            mode: 'prod',
-            sources: {
-                '/x/foo/foo.js': `console.log('foo')`,
-            },
+    it('should apply transformation for template file', async () => {
+        const actual = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+
+        const expected = `
+            import style from './foo.css'
+
+            export default function tmpl($api, $cmp, $slotset, $ctx) {
+                const {
+                    t: api_text,
+                    h: api_element
+                } = $api;
+
+                return [api_element("div", {}, [api_text("Hello")])];
+            }
+
+            if (style) {
+                const tagName = 'x-foo';
+                const token = 'x-foo_foo';
+                tmpl.token = token;
+                tmpl.style = style(tagName, token);
+            }
+        `;
+
+        const { code } = await transform(actual, 'foo.html', {
+            moduleNamespace: 'x',
+            moduleName: 'foo',
         });
 
-        expect(pretify(code)).toBe(
-            pretify(`define('bar-foo',function(){console.log('foo')});`),
-        );
-    });
-});
-
-describe('compile from file system', () => {
-    it('compiles module with no option and namespace', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('namespaced_folder/custom/foo-bar.js'),
-        );
-
-        expect(pretify(code)).toMatch(
-            pretify(
-                readFixture(
-                    'expected-compile-with-no-options-and-no-namespace.js',
-                ),
-            ),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('compiles module with no option and default namespace', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('namespaced_folder/default/default.js'),
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(
-                readFixture(
-                    'expected-compile-with-no-options-and-default-namespace.js',
-                ),
-            ),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it('compiles with namespace mapping', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('namespaced_folder/ns1/cmp1/cmp1.js'),
-        );
+    it('should apply transformation for stylesheet file', async () => {
+        const actual = `
+            div {
+                background-color: red;
+            }
+        `;
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-mapping-namespace-from-path.js')),
-        );
+        const expected = `
+            function style(tagName, token) {
+                return \`
+            div[\${token}] {
+                background-color: red;
+            }
+                \`;
+            }
+            export default style;
+        `;
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-});
-
-describe('compile from in-memory', () => {
-    it('add external dependencies and labels to the metadata bag', async () => {
-        const { code, metadata } = await compile('/x/external/external.js', {
-            mapNamespaceFromPath: true,
-            sources: {
-                '/x/external/external.js': readFixture(
-                    'namespaced_folder/external/external.js',
-                ),
-                '/x/external/external.html': readFixture(
-                    'namespaced_folder/external/external.html',
-                ),
-            },
+        const { code } = await transform(actual, 'foo.css', {
+            moduleNamespace: 'x',
+            moduleName: 'foo',
         });
 
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-external-dependency.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine', 'another-module'],
-            bundleLabels: ['test-label'],
-        });
-    });
-
-    it('compiles to ESModule by deafult', async () => {
-        const { code, metadata } = await compile('/x/foo/foo.js', {
-            mapNamespaceFromPath: true,
-            sources: {
-                '/x/foo/foo.js': readFixture(
-                    'class_and_template/class_and_template.js',
-                ),
-                '/x/foo/foo.html': readFixture(
-                    'class_and_template/class_and_template.html',
-                ),
-            },
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-sources-namespaced.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('respects the output format', async () => {
-        const { code, metadata } = await compile('/x/foo/foo.js', {
-            format: 'amd',
-            mapNamespaceFromPath: true,
-            sources: {
-                '/x/foo/foo.js': readFixture(
-                    'class_and_template/class_and_template.js',
-                ),
-                '/x/foo/foo.html': readFixture(
-                    'class_and_template/class_and_template.html',
-                ),
-            },
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-sources-namespaced-format.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('respects the output format', async () => {
-        const {
-            code,
-            metadata,
-        } = await compile('myns/relative_import/relative_import.js', {
-            format: 'amd',
-            mapNamespaceFromPath: true,
-            sources: {
-                'myns/relative_import/relative_import.html': readFixture(
-                    'relative_import/relative_import.html',
-                ),
-                'myns/relative_import/relative_import.js': readFixture(
-                    'relative_import/relative_import.js',
-                ),
-                'myns/relative_import/relative.js': readFixture(
-                    'relative_import/relative.js',
-                ),
-                'myns/relative_import/other/relative2.js': readFixture(
-                    'relative_import/other/relative2.js',
-                ),
-                'myns/relative_import/other/relative3.js': readFixture(
-                    'relative_import/other/relative3.js',
-                ),
-            },
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-relative-import.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-});
-
-describe('mode generation', () => {
-    it('handles prod mode', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('class_and_template/class_and_template.js'),
-            {
-                format: 'amd',
-                mode: 'prod',
-            },
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-prod-mode.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('handles compat mode', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('class_and_template/class_and_template.js'),
-            {
-                format: 'amd',
-                mode: 'compat',
-            },
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-compat-mode.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('handles prod-compat mode', async () => {
-        const { code, metadata } = await compile(
-            fixturePath('class_and_template/class_and_template.js'),
-            {
-                format: 'amd',
-                mode: 'prod_compat',
-            },
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-prod_compat-mode.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
-    });
-
-    it('handles all modes', async () => {
-        const res = await compile(
-            fixturePath('class_and_template/class_and_template.js'),
-            {
-                format: 'amd',
-                mode: 'all',
-            },
-        );
-
-        expect(Object.keys(res)).toEqual([
-            'dev',
-            'prod',
-            'compat',
-            'prod_compat',
-        ]);
-
-        for (let mode of Object.keys(res)) {
-            const { code, metadata } = res[mode];
-
-            expect(pretify(code)).toBe(
-                pretify(readFixture(`expected-${mode}-mode.js`)),
-            );
-
-            expect(metadata).toMatchObject({
-                bundleDependencies: ['engine'],
-                bundleLabels: [],
-            });
-        }
+        expect(pretify(code)).toBe(pretify(expected));
     });
 });

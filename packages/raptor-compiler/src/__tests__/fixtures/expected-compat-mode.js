@@ -1,9 +1,18 @@
 define('x-class_and_template', ['proxy-compat/callKey', 'proxy-compat/getKey', 'proxy-compat/setKey', 'babel/helpers/classCallCheck', 'babel/helpers/createClass', 'babel/helpers/possibleConstructorReturn', 'babel/helpers/inherits', 'engine'], function (__callKey, __getKey, __setKey, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
 
+var style = undefined;
+
 function tmpl($api, $cmp, $slotset, $ctx) {
-  var api_element = __getKey($api, "h");
+  var api_element = __getKey($api, 'h');
 
   return [api_element("section", {}, [])];
+}
+
+if (style) {
+    var tagName = 'x-class_and_template';
+    var token = 'x-class_and_template_class_and_template';
+    __setKey(tmpl, 'token', token);
+    __setKey(tmpl, 'style', style(tagName, token));
 }
 
 var Test = 1;

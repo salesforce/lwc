@@ -31,7 +31,7 @@ function mergeMetadata(metadata) {
     };
 }
 
-export function compileBundle(entry, options = {}) {
+export default function bundle(entry, options = {}) {
     const plugins = [rollupModuleResolver(options), rollupTransfrom(options)];
 
     if (isCompat(options.mode)) {
