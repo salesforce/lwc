@@ -1,5 +1,6 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
+import track from "../track";
 
 describe('track.ts', () => {
     describe('integration', () => {
@@ -243,5 +244,19 @@ describe('track.ts', () => {
         elm1.label = labelVal;
 
         expect(elm1.counter).toBe(countVal);
+    });
+
+    describe('@track misuse', () => {
+        it('should throw when invoking track as a function', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    track();
+                }
+            }
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow('@track may only be used as a decorator.');
+        });
     });
 });

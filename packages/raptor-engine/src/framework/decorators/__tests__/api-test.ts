@@ -1,5 +1,6 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
+import api from "../api";
 
 describe('api.ts', () => {
     describe('@api x', () => {
@@ -110,7 +111,6 @@ describe('api.ts', () => {
     });
 
     describe('@api get/set x', () => {
-
         it('should allow public getters', function () {
             class MyComponent extends Element  {
                 get breakfast() {
@@ -281,7 +281,6 @@ describe('api.ts', () => {
             document.body.appendChild(elm);
             expect(elm.x).toBe(1);
         });
-
     });
 
     describe('@api foo()', () => {
@@ -331,7 +330,7 @@ describe('api.ts', () => {
     });
 
     describe('@api regression', () => {
-        test(`#608 - each instance should have it's own version of the property`, () => {
+        test(`#608 - each instance should have its own version of the property`, () => {
             const originalValue = 0;
             const newValue = 100;
 
@@ -357,4 +356,19 @@ describe('api.ts', () => {
             expect(elm2.counter).toBe(originalValue);
         });
     });
+
+    describe('@api misuse', () => {
+        it('should throw when invoking api as a function', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    api();
+                }
+            }
+            expect(() => {
+                createElement('x-foo', { is: MyComponent });
+            }).toThrow('@api may only be used as a decorator.');
+        });
+    });
+
 });

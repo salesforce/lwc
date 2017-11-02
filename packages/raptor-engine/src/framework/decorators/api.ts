@@ -7,6 +7,11 @@ import { EmptyObject, getAttrNameFromPropName } from "../utils";
 import { ViewModelReflection } from "../def";
 import { isBeingConstructed } from "../component";
 
+// stub function to prevent misuse of the @api decorator
+export default function api() {
+    assert.fail("@api may only be used as a decorator.");
+}
+
 let vmBeingUpdated: VM | null = null;
 export function prepareForPropUpdate(vm: VM) {
     assert.vm(vm);

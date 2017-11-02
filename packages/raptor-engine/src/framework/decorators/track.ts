@@ -6,6 +6,11 @@ import { subscribeToSetHook, notifyListeners } from "../watcher";
 import { ViewModelReflection } from "../def";
 import { isBeingConstructed } from "../component";
 
+// stub function to prevent misuse of the @track decorator
+export default function track() {
+    assert.fail("@track may only be used as a decorator.");
+}
+
 // TODO: how to allow symbols as property keys?
 export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
     defineProperty(proto, key, {
