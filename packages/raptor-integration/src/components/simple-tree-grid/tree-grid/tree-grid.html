@@ -1,0 +1,5 @@
+<template>
+    <template for:each={data} for:item="item">
+        <tree-node key={item.id} data={item} collapsed-nodes={collapsedNodes}></tree-node>
+    </template>
+</template>
