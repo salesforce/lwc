@@ -4,7 +4,7 @@
   "version": "0.15.3",
   "license": "Beerware",
   "scripts": {
-    "clean": "rimraf dist/",
+    "clean": "rimraf dist/ && rimraf public/",
     "test": "echo 'No unit test in this package'",
     "build": "node scripts/build.js",
     "build:dev": "MODE=dev yarn build",

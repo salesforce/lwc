@@ -8,6 +8,7 @@ const templates = require('../src/shared/templates.js');
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 const testSufix = '.test.js';
+const testPrefix = 'test-';
 const testDir = path.join(__dirname, '../', 'src/components');
 const tests = fs.readdirSync(testDir);
 const testEntries = tests.map(test => path.join(testDir, test, `${test}${testSufix}`));
@@ -17,7 +18,7 @@ const testSharedOutput = path.join(testOutput, 'shared');
 // -- Plugins & Helpers -------------------------------------
 
 function getTestName(absPpath) {
-    return path.basename(absPpath.replace(testSufix, '.js'), '.js');
+    return path.basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js').replace(testPrefix, '');
 }
 
 function testCaseComponentResolverPlugin() {
@@ -60,8 +61,9 @@ const baseInputConfig = {
         entryPointResolverPlugin(),
         raptorCompilerPlugin({
             mode,
-            exclude: `**/*${testSufix}` ,
+            exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
+            mapNamespaceFromPath: false,
             resolveProxyCompat: { global: 'window.Proxy' }
         }),
         testCaseComponentResolverPlugin()
@@ -110,7 +112,7 @@ testEntries.reduce(async (promise, testEntry) => {
         dest: `${testOutput}/${testName}/${testName}.js`
     });
 
-    fs.writeFileSync(`${testOutput}/${testName}/${testName}.html`, templates.html(testName, isCompat), 'utf8');
+    fs.writeFileSync(`${testOutput}/${testName}/index.html`, templates.html(testName, isCompat), 'utf8');
 
 }, Promise.resolve())
 .catch((err) => { console.log(err); });

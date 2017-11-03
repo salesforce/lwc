@@ -123,13 +123,13 @@ module.exports = function ({ types: t, }) {
         return path.parentPath.isExportDefaultDeclaration();
     }
 
-    function getComponentName({ opts, file }) {
-        const classPath = opts.componentName || file.opts.filename;
+    function getBaseName({ opts, file }) {
+        const classPath = file.opts.filename;
         return basename(classPath, '.js');
     }
 
     function importDefaultTemplate(state) {
-        const componentName = getComponentName(state);
+        const componentName = getBaseName(state);
         return state.file.addImport(`./${componentName}.html`, 'default', 'tmpl');
     }
 

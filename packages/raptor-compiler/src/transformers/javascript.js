@@ -4,16 +4,11 @@ import raptorClassTransformPlugin from 'babel-plugin-transform-raptor-class';
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 
 export default function(code, options) {
-    const { filename, moduleName } = options;
+    const { filename } = options;
 
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [
-            [
-                raptorClassTransformPlugin,
-                {
-                    componentName: moduleName,
-                },
-            ],
+            raptorClassTransformPlugin,
             ...BABEL_PLUGINS_BASE,
         ],
         filename,

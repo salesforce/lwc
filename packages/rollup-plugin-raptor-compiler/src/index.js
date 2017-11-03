@@ -10,39 +10,46 @@ const raptorNpmResolver = require('raptor-npm-resolver');
 
 const { DEFAULT_NS, DEFAULT_OPTIONS } = require('./constants');
 
+function getModuleQualifiedName(file, opts) {
+    const parts = file.split('/');
+    const ext = path.extname(file);
+    let name = path.basename(parts.pop(), ext);
+    const nameParts = name.split('-');
+    const noNamespace = nameParts.length === 1;
+    let ns;
+
+    // If mapping folder structure override namespace
+    if (opts.mapNamespaceFromPath) {
+        ns = parts.pop();
+    } else if (noNamespace) {
+        ns = DEFAULT_NS;
+    } else {
+        ns = nameParts.shift();
+        name = nameParts.join('-');
+    }
+
+    const mappingEntry = `${ns}-${name}`;
+    const absoluteFile = path.resolve(process.cwd(), file);
+    const root = path.dirname(absoluteFile);
+
+    return {
+        name,
+        namespace: ns,
+        fullName: mappingEntry,
+        entry: absoluteFile,
+        root
+    };
+
+}
+
 function getSourceModulePaths(opts, entry) {
     const pathDir = path.dirname(entry);
     const pattern = pathDir + '/**/*.js';
-
     const mapping = {};
 
     glob.sync(pattern).forEach(file => {
-        const rel = path.relative(pathDir, file);
-        const parts = rel.split('/');
-        const name = path.basename(parts.pop(), '.js');
-
-        const cmpNs = opts.componentNamespace;
-        let ns = cmpNs ? cmpNs : name.indexOf('-') === -1 ? DEFAULT_NS : null;
-
-        let tmpNs = parts.pop();
-        if (tmpNs === name) {
-            tmpNs = parts.pop();
-        }
-
-        // If mapping folder structure override namespace
-        if (opts.mapNamespaceFromPath) {
-            ns = tmpNs === 'components' ? parts.pop() : tmpNs;
-        }
-
-        const mappingEntry = ns ? `${ns}-${name}` : name;
-        const absoluteFile = path.resolve(process.cwd(), file);
-
-        mapping[mappingEntry] = {
-            name,
-            namespace: ns,
-            entry: absoluteFile,
-            root: path.dirname(absoluteFile),
-        }
+        const moduleRegistry = getModuleQualifiedName(file, opts);
+        mapping[moduleRegistry.fullName] = moduleRegistry;
     });
 
     return mapping;
@@ -101,16 +108,13 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
                 if (!moduleDef.root) {
                     return;
                 }
+                return id.startsWith(moduleDef.entry);
+            }) || getModuleQualifiedName(id, opts);
 
-                return id.startsWith(moduleDef.root);
+            return compiler.transform(code, id, {
+                moduleName: moduleDefinition.name,
+                moduleNamespace: moduleDefinition.namespace,
             });
-
-            if (moduleDefinition) {
-                return compiler.transform(code, id, {
-                    moduleName: moduleDefinition.name,
-                    moduleNamespace: moduleDefinition.namespace
-                });
-            }
         },
     };
 };
