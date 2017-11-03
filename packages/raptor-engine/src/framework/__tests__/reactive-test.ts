@@ -392,6 +392,27 @@ describe('reactive', function () {
             }).not.toThrow();
             expect(proxy.first).toEqual({ text: 'Learn JavaScript' });
         });
+        it('should not throw when using hasOwnProperty on nested frozen property', function () {
+            const obj = { frozen: { foo: { bar: true } } };
+            const proxy = target.getReactiveProxy(obj);
+            Object.freeze(proxy.frozen);
+            expect(() => {
+                Object.prototype.hasOwnProperty.call(proxy, 'frozen');
+                Object.prototype.hasOwnProperty.call(proxy.frozen, 'foo')
+            }).not.toThrow();
+        });
+        it('should not throw when using hasOwnProperty on frozen property', function () {
+            const obj = { foo: 'bar' };
+            const proxy = target.getReactiveProxy(obj);
+            Object.defineProperty(proxy, 'foo', {
+                value: '',
+                configurable: false,
+                writable: false
+            });
+            expect(() => {
+                Object.prototype.hasOwnProperty.call(proxy, 'foo')
+            }).not.toThrow();
+        });
         it('should handle defineProperty with writable false and undefined value', function () {
             const todos = {};
             Object.defineProperty(todos, 'first', {

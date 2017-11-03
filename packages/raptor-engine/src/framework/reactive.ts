@@ -17,7 +17,6 @@ import {
     defineProperty,
     preventExtensions,
     getPrototypeOf,
-    hasOwnProperty,
     getOwnPropertySymbols,
     ArrayConcat
 } from "./language";
@@ -189,7 +188,8 @@ export class ReactiveProxyHandler {
         if (!desc) {
             return desc;
         }
-        if (!desc.configurable && !hasOwnProperty.call(shadowTarget, key)) {
+        let shadowDescriptor = getOwnPropertyDescriptor(shadowTarget, key);
+        if (!desc.configurable && !shadowDescriptor) {
             // If descriptor from original target is not configurable,
             // We must copy the wrapped descriptor over to the shadow target.
             // Otherwise, proxy will throw an invariant error.
@@ -198,7 +198,7 @@ export class ReactiveProxyHandler {
             desc = wrapDescriptor(desc);
             defineProperty(shadowTarget, key, desc);
         }
-        return desc;
+        return shadowDescriptor || desc;
     }
     preventExtensions(shadowTarget: ShadowTarget): boolean {
         const { originalTarget } = this;
