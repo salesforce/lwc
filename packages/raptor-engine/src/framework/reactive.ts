@@ -92,7 +92,7 @@ export class ReactiveProxyHandler {
             return originalTarget;
         }
         const value = originalTarget[key];
-        if (isRendering && vmBeingRendered) {
+        if (isRendering) {
             subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
         }
 
@@ -139,8 +139,15 @@ export class ReactiveProxyHandler {
     construct(target: any, argArray: any, newTarget?: any): any { // eslint-disable-line no-unused-vars
         assert.fail(`invalid construction invocation for property proxy ${toString(target)}`);
     }
+
     has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
+
+        // make reactive
+        if (isRendering) {
+            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
+        }
+
         return key in originalTarget;
     }
     ownKeys(shadowTarget: ShadowTarget): Array<string> { // eslint-disable-line no-unused-vars
@@ -172,6 +179,12 @@ export class ReactiveProxyHandler {
     }
     getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor {
         const { originalTarget } = this;
+
+        // keys looked up via hasOwnProperty need to be reactive
+        if (isRendering) {
+            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
+        }
+
         let desc = getOwnPropertyDescriptor(originalTarget, key);
         if (!desc) {
             return desc;
@@ -196,6 +209,7 @@ export class ReactiveProxyHandler {
     defineProperty(shadowTarget: ShadowTarget, key: string | symbol, descriptor: PropertyDescriptor): boolean {
         const { originalTarget } = this;
         const { configurable } = descriptor;
+
         // We have to check for value in descriptor
         // because Object.freeze(proxy) calls this method
         // with only { configurable: false, writeable: false }
@@ -211,6 +225,8 @@ export class ReactiveProxyHandler {
         if (configurable === false) {
             defineProperty(shadowTarget, key, wrapDescriptor(descriptor));
         }
+
+        notifyListeners(originalTarget, key);
         return true;
     }
 }
