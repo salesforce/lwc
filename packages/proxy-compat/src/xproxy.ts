@@ -51,6 +51,7 @@ const {
 
 const {
     slice: ArraySlice,
+    unshift: ArrayUnshift,
 } = Array.prototype;
 
 const { isArray } = Array;
@@ -192,7 +193,7 @@ export class XProxy implements XProxyInstance {
                         throw new TypeError(`Cannot perform '${trapName}' on a proxy that has been revoked`);
                     }
                     const args = ArraySlice.call(arguments);
-                    args.unshift(target);
+                    ArrayUnshift.call(args, target);
                     const h = handler[trapName] ? handler : defaultHandlerTraps;
                     const value = h[trapName].apply(h, args);
                     if (proxyTrapFalsyErrors[trapName] && value === false) {
@@ -292,7 +293,6 @@ export class XProxy implements XProxyInstance {
             // because we access the length property during the construction
             // of the proxy, but it should be fine...
             adjustArrayIndex(proxy.get('length'));
-
         }
 
         return proxy;

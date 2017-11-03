@@ -28,6 +28,308 @@ describe('EcmaScript', () => {
             assert.deepEqual(Array.from(o), [1, 2]);
         });
 
+        it('should correctly slice array', function () {
+            const array = [1, 2, 3, 2];
+            const proxy = new Proxy(array, {});
+
+            expect(
+                Proxy.callKey(proxy, 'slice', 2)
+            ).toEqual([
+                3,
+                2
+            ]);
+        });
+
+        it('should correctly report lastIndexOf', function () {
+            const array = [1, 2, 3, 2];
+            const proxy = new Proxy(array, {});
+
+            expect(
+                Proxy.callKey(proxy, 'lastIndexOf', 2)
+            ).toBe(3);
+        });
+
+        it('should correctly join', function () {
+            const array = [1, 2, 3];
+            const proxy = new Proxy(array, {});
+
+            expect(
+                Proxy.callKey(proxy, 'join', '-')
+            ).toBe('1-2-3');
+        });
+
+        it('should correctly report indexOf', function () {
+            const array = [1, 2, 3];
+            const proxy = new Proxy(array, {});
+
+            expect(
+                Proxy.callKey(proxy, 'indexOf', 2)
+            ).toBe(1);
+
+            expect(
+                Proxy.callKey(proxy, 'indexOf', 'no')
+            ).toBe(-1);
+        });
+
+        it('should correctly report includes', function () {
+            const array = [1, 2, 3];
+            const proxy = new Proxy(array, {});
+
+            expect(
+                Proxy.callKey(proxy, 'includes', 1)
+            ).toBe(true);
+
+            expect(
+                Proxy.callKey(proxy, 'includes', 'no')
+            ).toBe(false);
+        });
+
+        it('should correctly fill arrays', function () {
+            const array = [1, 2, 3];
+            const proxy = new Proxy(array, {});
+
+            Proxy.callKey(proxy, 'fill', 'foo', 1);
+            expect(proxy.length).toBe(3);
+            expect(proxy[0]).toEqual(1);
+            expect(proxy[1]).toEqual('foo');
+            expect(proxy[2]).toEqual('foo');
+            expect(Proxy.getKey(proxy, 0)).toEqual(1);
+            expect(Proxy.getKey(proxy, 1)).toEqual('foo');
+            expect(Proxy.getKey(proxy, 2)).toEqual('foo');
+        });
+
+        it('should correctly sort arrays', function () {
+            const array = [2, 1, 3];
+            const proxy = new Proxy(array, {});
+
+            Proxy.callKey(proxy, 'sort', (a, b) => {
+                return a > b;
+            });
+            expect(proxy.length).toBe(3);
+            expect(proxy[0]).toEqual(1);
+            expect(proxy[1]).toEqual(2);
+            expect(proxy[2]).toEqual(3);
+            expect(Proxy.getKey(proxy, 0)).toEqual(1);
+            expect(Proxy.getKey(proxy, 1)).toEqual(2);
+            expect(Proxy.getKey(proxy, 2)).toEqual(3);
+        });
+
+        it('should correctly shift arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+
+            Proxy.callKey(proxy, 'shift');
+            expect(proxy.length).toBe(1);
+            expect(proxy[0]).toEqual(2);
+            expect(proxy[1]).toEqual(undefined);
+            expect(Proxy.getKey(proxy, 0)).toEqual(2);
+            expect(Proxy.getKey(proxy, 1)).toEqual(undefined);
+        });
+
+        it('should correctly reverse arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+
+            Proxy.callKey(proxy, 'reverse');
+            expect(proxy.length).toBe(2);
+            expect(proxy[0]).toEqual(2);
+            expect(proxy[1]).toEqual(1);
+            expect(Proxy.getKey(proxy, 0)).toEqual(2);
+            expect(Proxy.getKey(proxy, 1)).toEqual(1);
+        });
+
+        it('should correctly pop arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+
+            const result = Proxy.callKey(proxy, 'pop');
+            expect(result).toBe(2);
+            expect(proxy.length).toBe(1);
+            expect(proxy[0]).toEqual(1);
+            expect(proxy[1]).toEqual(undefined);
+            expect(Proxy.getKey(proxy, 0)).toEqual(1);
+            expect(Proxy.getKey(proxy, 1)).toEqual(undefined);
+        });
+
+        it('should correctly concat arrays', function () {
+            const array = [1, 2];
+            const other = [3, 4];
+            const first = new Proxy(array, {});
+            const second = new Proxy(other, {});
+
+            const result = Proxy.callKey(first, 'concat', second);
+            expect(result.length).toBe(4);
+            expect(result).toEqual([1, 2, 3, 4]);
+            expect(first.length).toBe(2);
+            expect(second.length).toBe(2);
+        });
+
+        it('should correctly concat string arguments', function () {
+            const array = [1, 2];
+            const first = new Proxy(array, {});
+
+            const result = Proxy.callKey(first, 'concat', 'foo');
+            expect(result.length).toBe(3);
+            expect(result).toEqual([1, 2, 'foo']);
+        });
+
+        it('should correctly concat native arrays', function () {
+            const array = [1, 2];
+
+            const result = Proxy.callKey(array, 'concat', [3, 4]);
+            expect(result.length).toBe(4);
+            expect(result).toEqual([1, 2, 3, 4]);
+        });
+
+        it('should correctly concat a mix of compat proxy and arrays', function () {
+            const array = [1, 2];
+            const first = new Proxy(array, {});
+
+            const result = Proxy.callKey(first, 'concat', [3, 4]);
+            expect(result.length).toBe(4);
+            expect(result).toEqual([1, 2, 3, 4]);
+        });
+
+        it('should concat arrays with get trap', function () {
+            const array = [1, 2];
+            const other = [3, 4];
+            const first = new Proxy(array, {});
+            const second = new Proxy(other, {
+                get (target, key) {
+                    if (key === 0) {
+                        return 'asd';
+                    }
+                    return target[key];
+                }
+            });
+            const result = Proxy.callKey(first, 'concat', second);
+            expect(result).toEqual([
+                1, 2, 'asd', 4
+            ])
+        });
+
+        it('should correctly concat multiple arrays', function () {
+            const array = [1, 2];
+            const other = [3, 4];
+            const first = new Proxy(array, {});
+            const second = new Proxy(other, {});
+            const third = new Proxy([5, 6], {});
+
+            const result = Proxy.callKey(first, 'concat', second, third);
+            expect(result.length).toBe(6);
+            expect(result).toEqual([1, 2, 3, 4, 5, 6]);
+        });
+
+        it('should correctly slice arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            Proxy.callKey(proxy, 'splice', 0, 1);
+            expect([
+                Proxy.getKey(proxy, 0),
+                Proxy.getKey(proxy, 1),
+                Proxy.getKey(proxy, 2)
+            ]).toEqual([2, undefined, undefined]);
+        });
+
+        it('should correctly push arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            Proxy.callKey(proxy, 'push', 3);
+            expect([
+                Proxy.getKey(proxy, 0),
+                Proxy.getKey(proxy, 1),
+                Proxy.getKey(proxy, 2)
+            ]).toEqual([1, 2, 3]);
+            expect(proxy.length).toBe(3);
+        });
+
+        it('should be able to iterate through pushed arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            Proxy.callKey(proxy, 'push', 3);
+            const args = [];
+
+            Proxy.callKey(proxy, 'forEach', function (item) {
+                args.push(item);
+            });
+            expect(args).toEqual([
+                1, 2, 3
+            ]);
+        });
+
+        it('should call get trap with length with using push', function () {
+            const array = [1, 2];
+            const keys = [];
+            const proxy = new Proxy(array, {
+                set (target, key) {
+                    keys.push(key);
+                    return true;
+                }
+            });
+
+            Proxy.callKey(proxy, 'push', 'hey');
+            expect(keys.indexOf('length')).toBeGreaterThan(-1);
+        });
+
+        it('should correctly push native arrays', function () {
+            const array = [1, 2];
+            Proxy.callKey(array, 'push', 3);
+            expect([
+                Proxy.getKey(array, 0),
+                Proxy.getKey(array, 1),
+                Proxy.getKey(array, 2)
+            ]).toEqual([1, 2, 3]);
+            expect(array).toEqual([
+                1, 2, 3
+            ])
+        });
+
+        it('should access and set array values correctly', function () {
+            const array = [];
+            const proxy = new Proxy(array, {});
+            Proxy.setKey(proxy, 1, 'a');
+            expect(Proxy.getKey(proxy, 1)).toBe('a');
+            Proxy.setKey(proxy, 0, 'b');
+            expect(Proxy.getKey(proxy, 0)).toBe('b');
+        });
+
+        it('should correctly unshift arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            Proxy.callKey(proxy, 'unshift', 3);
+            expect(proxy.length).toBe(3);
+            const ret = Proxy.callKey(proxy, 'unshift', 10);
+            expect(proxy.length).toBe(4);
+            expect(ret).toBe(4);
+            expect([
+                Proxy.getKey(proxy, 0),
+                Proxy.getKey(proxy, 1),
+                Proxy.getKey(proxy, 2),
+                Proxy.getKey(proxy, 3),
+                Proxy.getKey(proxy, 4)
+            ]).toEqual([10, 3, 1, 2, undefined]);
+        });
+
+        it('should allow arbitrary access to unshifted arrays', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            Proxy.callKey(proxy, 'unshift', 3);
+            expect(proxy[0]).toBe(3);
+            expect(proxy[1]).toBe(1);
+            expect(proxy[2]).toBe(2);
+        });
+
+        it('should iterate through unshifted compat arrays correctly', function () {
+            const array = [1, 2];
+            const proxy = new Proxy(array, {});
+            let calls = [];
+            Proxy.callKey(proxy, 'unshift', 3);
+            Proxy.callKey(proxy, 'forEach', (i) => {
+                calls.push(i);
+            });
+            expect(calls).toEqual([3, 1, 2]);
+        });
+
         it('should support iterable objects', () => {
             const iterable = {
                 [Symbol.iterator]: function() {
