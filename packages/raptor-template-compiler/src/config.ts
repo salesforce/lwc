@@ -1,10 +1,5 @@
 export interface Config {
     /**
-     * Template stylesheet url associated with the template.
-     */
-    stylesheet?: string;
-
-    /**
      * Enable computed member expression in the template. eg:
      *    <template>
      *        {list[0].name}
@@ -14,7 +9,6 @@ export interface Config {
 }
 
 export interface ResolvedConfig {
-    stylesheet?: string;
     computedMemberExpression: boolean;
 }
 
@@ -24,7 +18,6 @@ const DEFAULT_CONFIG = {
 
 const REQUIRED_OPTION_NAMES = new Set([]);
 const AVAILABLE_OPTION_NAMES = new Set([
-    'stylesheet',
     'computedMemberExpression',
 ]);
 

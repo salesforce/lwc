@@ -1,5 +1,3 @@
-export const TEMPLATE_TOKEN = 'token';
-
 export const TEMPLATE_FUNCTION_NAME: string = 'tmpl';
 
 export const TEMPLATE_PARAMS: { [label: string]: string } = {

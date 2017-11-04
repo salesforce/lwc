@@ -6,7 +6,6 @@ import template = require('babel-template');
 import State from '../state';
 
 import {
-    TEMPLATE_TOKEN,
     TEMPLATE_PARAMS,
     TEMPLATE_FUNCTION_NAME,
 } from '../shared/constants';
@@ -349,7 +348,7 @@ function transform(
             className,
             style,
             styleMap,
-            attrs = {},
+            attrs,
             props,
             on,
             forKey,
@@ -390,21 +389,10 @@ function transform(
         }
 
         // Attributes
-        const attrsObj = objectToAST(attrs, key =>
-            computeAttrValue(attrs[key], element),
-        );
-
-        if (state.config.stylesheet) {
-            attrsObj.properties.push(
-                t.objectProperty(
-                    t.identifier(TEMPLATE_TOKEN),
-                    t.booleanLiteral(true),
-                    true,
-                ),
+        if (attrs) {
+            const attrsObj = objectToAST(attrs, key =>
+                computeAttrValue(attrs[key], element),
             );
-        }
-
-        if (attrsObj.properties.length) {
             data.push(t.objectProperty(t.identifier('attrs'), attrsObj));
         }
 
@@ -557,59 +545,11 @@ export default function(templateRoot: IRElement, state: State): CompilationOutpu
         STATEMENT:  statement,
     }) as t.ExportDefaultDeclaration;
 
-    const intro = [];
-    const outro = [];
+    const intro = state.dependencies.map((cmpClassName) => (
+        importFromComponentName(cmpClassName)
+    ));
 
-    intro.push(
-        ...state.dependencies.map((cmpClassName) => (
-            importFromComponentName(cmpClassName)
-        )),
-    );
-
-    outro.push(
-        ...generateTemplateMetadata(state),
-    );
-
-    if (state.config.stylesheet) {
-        const styleIdentifier = t.identifier('style');
-        const tokenIdentifier = t.identifier(TEMPLATE_TOKEN);
-
-        const stylesheetImport = t.importDeclaration(
-            [
-                t.importSpecifier(styleIdentifier, styleIdentifier),
-                t.importSpecifier(tokenIdentifier, tokenIdentifier),
-            ],
-            t.stringLiteral(state.config.stylesheet),
-        );
-        intro.push(stylesheetImport);
-
-        const styleAssignment = t.expressionStatement(
-            t.assignmentExpression(
-                '=',
-                t.memberExpression(
-                    t.identifier(TEMPLATE_FUNCTION_NAME),
-                    t.identifier('style'),
-                ),
-                styleIdentifier,
-            ),
-        );
-
-        const tokenAssignment = t.expressionStatement(
-            t.assignmentExpression(
-                '=',
-                t.memberExpression(
-                    t.identifier(TEMPLATE_FUNCTION_NAME),
-                    t.identifier('token'),
-                ),
-                tokenIdentifier,
-            ),
-        );
-
-        outro.unshift(
-            styleAssignment,
-            tokenAssignment,
-        );
-    }
+    const outro = generateTemplateMetadata(state);
 
     const program = t.program([
         ...intro,
