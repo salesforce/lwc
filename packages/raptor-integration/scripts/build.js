@@ -51,6 +51,15 @@ function entryPointResolverPlugin() {
 
 // -- Rollup config ---------------------------------------------
 
+const globalModules = {
+    'engine': 'Engine',
+    'babel/helpers/classCallCheck': 'classCallCheck',
+    'babel/helpers/possibleConstructorReturn': 'possibleConstructorReturn',
+    'babel/helpers/inherits' : 'inherits',
+    'babel/helpers/createClass' : 'createClass',
+    'babel/helpers/defineProperty': 'defineProperty'
+};
+
 const baseInputConfig = {
     external: function (id) {
         if (id.includes('babel/helpers') || id.includes('engine')) {
@@ -64,20 +73,15 @@ const baseInputConfig = {
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
             mapNamespaceFromPath: false,
-            resolveProxyCompat: { global: 'window.Proxy' }
+            resolveProxyCompat: { global: 'window.Proxy' },
+            globals: globalModules
         }),
         testCaseComponentResolverPlugin()
     ]
 };
 const baseOutputConfig = {
     format: 'iife',
-    globals: {
-        'engine': 'Engine',
-        'babel/helpers/classCallCheck': 'classCallCheck',
-        'babel/helpers/possibleConstructorReturn': 'possibleConstructorReturn',
-        'babel/helpers/inherits' : 'inherits',
-        'babel/helpers/createClass' : 'createClass',
-    }
+    globals: globalModules
 };
 
 // -- Build shared artifacts -----------------------------------------------------
@@ -104,12 +108,12 @@ testEntries.reduce(async (promise, testEntry) => {
 
     const bundle = await rollup.rollup({
         ...baseInputConfig,
-        entry: testEntry
+        input: testEntry
     });
 
     const result = await bundle.write({
         ...baseOutputConfig,
-        dest: `${testOutput}/${testName}/${testName}.js`
+        file: `${testOutput}/${testName}/${testName}.js`
     });
 
     fs.writeFileSync(`${testOutput}/${testName}/index.html`, templates.html(testName, isCompat), 'utf8');

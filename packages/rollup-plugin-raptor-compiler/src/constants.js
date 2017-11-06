@@ -3,6 +3,7 @@
 const DEFAULT_NS = 'x';
 
 const DEFAULT_OPTIONS = {
+    mode: 'dev',
     resolveFromSource: true,
     resolveFromPackages: true,
 };

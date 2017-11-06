@@ -31,7 +31,7 @@
     "raptor-compiler": "0.16.0",
     "raptor-engine": "0.16.0",
     "rimraf": "^2.6.1",
-    "rollup": "0.45.1",
+    "rollup": "0.50.0",
     "rollup-plugin-raptor-compiler": "0.16.0",
     "wdio-mocha-framework": "^0.5.10",
     "wdio-sauce-service": "^0.4.0",

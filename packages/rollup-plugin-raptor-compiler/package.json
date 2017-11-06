@@ -11,7 +11,7 @@
     "prettier": "^1.7.3",
     "raptor-compiler": "0.16.0",
     "raptor-engine": "0.16.0",
-    "rollup": "^0.41.6"
+    "rollup": "^0.50.0"
   },
   "dependencies": {
     "glob": "^7.1.2",

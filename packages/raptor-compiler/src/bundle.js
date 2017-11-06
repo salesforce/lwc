@@ -55,6 +55,7 @@ export default function bundle(entry, options = {}) {
                 interop: false,
                 strict: false,
                 format: options.format,
+                globals: options.globals
             });
         })
         .then(result => {

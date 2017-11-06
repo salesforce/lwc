@@ -67,7 +67,10 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
     return {
         name: 'rollup-raptor-compiler',
 
-        options({ entry }) {
+        options(opts) {
+            // "entry" options has been rename into "input" with rollup "0.50.0"
+            const entry = opts.input || opts.entry;
+
             const externalPaths = options.resolveFromPackages
                 ? raptorNpmResolver()
                 : {};
@@ -116,5 +119,15 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
                 moduleNamespace: moduleDefinition.namespace,
             });
         },
+
+        transformBundle(code, { format }) {
+            return compiler.compile('/my/super/entry.js', {
+                format: format,
+                mode: options.mode,
+                sources: { '/my/super/entry.js': code },
+                resolveProxyCompat: options.resolveProxyCompat,
+                globals: options.globals
+            })
+        }
     };
 };
