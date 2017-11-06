@@ -98,7 +98,7 @@ rollup.rollup({
             }
         },
         raptorPlugin({
-            componentNamespace: 'benchmark',
+            mapNamespaceFromPath: false,
             resolveFromPackages: false,
         }),
         stripPlugin({
