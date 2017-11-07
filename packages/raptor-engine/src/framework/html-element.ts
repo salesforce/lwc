@@ -7,7 +7,7 @@ import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM } from "./vm";
-import { pierce } from "./piercing";
+import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 
 function getLinkedElement(cmp: ComponentElement): HTMLElement {
@@ -45,9 +45,9 @@ ComponentElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
+        const vm = this[ViewModelReflection];
         assert.block(() => {
             const { type: evtName, composed, bubbles } = event;
-            const vm = this[ViewModelReflection];
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && !composed) {
                 assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
@@ -60,8 +60,10 @@ ComponentElement.prototype = {
                 assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
             }
         });
-        // custom elements will rely on the DOM dispatchEvent mechanism
-        return elm.dispatchEvent(event);
+        // Pierce dispatchEvent so locker service has a chance to overwrite
+        pierce(vm, elm);
+        const dispatchEvent = piercingHook(vm.membrane, elm, 'dispatchEvent', elm.dispatchEvent);
+        return dispatchEvent.call(elm, event);
     },
     addEventListener(type: string, listener: EventListener) {
         const vm = this[ViewModelReflection];

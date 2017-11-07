@@ -4,6 +4,7 @@ import { OwnerKey } from "../vm";
 import * as api from "../api";
 import { patch } from '../patch';
 import assertLogger from './../assert';
+import { register } from "./../services";
 
 describe('html-element', () => {
 
@@ -84,6 +85,61 @@ describe('html-element', () => {
     });
 
     describe('#dispatchEvent', function () {
+        it('should pierce dispatch event', function () {
+            let callCount = 0;
+            register({
+                piercing: (component, data, def, context, target, key, value, callback) => {
+                    if (value === EventTarget.prototype.dispatchEvent) {
+                        callCount += 1;
+                    }
+                }
+            })
+            class Foo extends Element {
+                connectedCallback() {
+                    const event = new CustomEvent('badevent', {
+                        bubbles: true,
+                        composed: true
+                    });
+                    this.dispatchEvent(event);
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(callCount).toBe(1);
+        });
+        it('should use custom function pierced for dispatch event', function () {
+            let event;
+            let received;
+            let piercedThis;
+            let count = 0;
+            const pierced = function (evt) {
+                piercedThis = this;
+                received = evt;
+                count += 1;
+            }
+            register({
+                piercing: (component, data, def, context, target, key, value, callback) => {
+                    if (value === EventTarget.prototype.dispatchEvent) {
+                        callback(pierced);
+                    }
+                }
+            })
+            class Foo extends Element {
+                connectedCallback() {
+                    event = {
+                        type: 'secure',
+                        composed: true,
+                        bubbles: true
+                    };
+                    this.dispatchEvent(event);
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(count).toBe(1);
+            expect(piercedThis).toBe(elm);
+            expect(received).toBe(event);
+        });
         it('should log a warning when dispatching an event without composed flag', function () {
             class Foo extends Element {
                 connectedCallback() {
