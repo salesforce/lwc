@@ -356,6 +356,18 @@ describe('EcmaScript', () => {
             assert.deepEqual(Object.keys(o), ['x', 'y', 'z']);
         });
 
+        it('Object.keys should not return non-enumerable keys', () => {
+            const o = {
+                foo: 'bar'
+            };
+            Object.defineProperty(o, 'hidden', {
+                value: ''
+            });
+            const proxy = new Proxy(o, {});
+            const keys = Object.keys(proxy);
+            expect(keys).toEqual(['foo']);
+        });
+
         it('should support Object.getOwnPropertyNames()', () => {
             const o = new Proxy({ x: 1, y: 2 }, {});
             Proxy.setKey(o, 'z', 3); // expando

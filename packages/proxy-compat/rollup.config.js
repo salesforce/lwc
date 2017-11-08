@@ -66,8 +66,4 @@ module.exports = [
     rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
     rollupConfig({ formats: ['umd'], prod: true }),
 
-    // NOOP
-    rollupConfig({ noop: true, formats: ['umd'] }),
-    rollupConfig({ noop: true, formats: ['umd'], prod: true })
-
 ];

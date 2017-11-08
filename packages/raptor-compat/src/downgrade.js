@@ -56,8 +56,7 @@ var toRemove = [
             'values',
             'entries',
             'assign',
-            'is',
-            'setPrototypeOf'
+            'is'
         ]
     },
     {

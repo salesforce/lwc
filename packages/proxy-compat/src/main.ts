@@ -117,7 +117,8 @@ function keys(replicaOrAny: any): Array<string> {
         const all = replicaOrAny.forIn(); // get all enumerables and filter by own
         var result = [], prop;
         for (let prop in all) {
-            if (replicaOrAny.getOwnPropertyDescriptor(prop)) {
+            const desc = replicaOrAny.getOwnPropertyDescriptor(prop);
+            if (desc && desc.enumerable === true) {
                 result.push(prop);
             }
         }
@@ -269,7 +270,7 @@ function overrideProxy() {
 }
 
 // At this point Proxy can be the real Proxy (function) a noop-proxy (object with noop-keys) or undefined
-let FinalProxy = typeof Proxy !== undefined ? Proxy : {};
+let FinalProxy = typeof Proxy !== 'undefined' ? Proxy : {};
 
 if (typeof FinalProxy !== 'function' || overrideProxy()) {
     FinalProxy = class Proxy extends XProxy {

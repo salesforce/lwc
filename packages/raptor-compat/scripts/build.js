@@ -8,7 +8,6 @@ const ecmaPolyfillBuilder = require('core-js-builder'); // For the polyfill list
 const UglifyJS = require("uglify-es");
 
 // -- File source dependencies ----------
-const proxyCompatNoop = fs.readFileSync(require.resolve('proxy-compat/dist/umd/proxy-compat-noop.js'), 'utf8');
 const proxyCompat = fs.readFileSync(require.resolve('proxy-compat/dist/umd/proxy-compat.js'), 'utf8');
 const babelHelpers = fs.readFileSync(require.resolve('babel-helpers-raptor/dist/engine-helpers.js'), 'utf8');
 const polyfillsDir = path.resolve(__dirname, '../src/polyfills');
@@ -64,13 +63,11 @@ ecmaPolyfillBuilder(polyfillConfig)
     const { code : compatPolyfillsAndBabelHelpers } = babel.transform(compatArtifactsSource, babelConfig);
 
     const compatSrc = [
-        '/* proxy-compat-noop */',
-        proxyCompatNoop,
+        '/* proxy-compat */',
+        proxyCompat,
         '/* Transformed Polyfills + Babel helpers */',
         compatPolyfillsAndBabelHelpers,
         '/* proxy-compat */',
-        proxyCompat,
-        '/* Overrides for proxy-compat globals */',
         compatOverrides
     ].join('\n');
 

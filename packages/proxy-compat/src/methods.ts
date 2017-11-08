@@ -11,10 +11,7 @@ export type compatSetKey = (replicaOrAny: any, key: PropertyKey, newValue: any, 
 export type compatDeleteKey = (replicaOrAny: any, key: PropertyKey) => boolean;
 export type compatInKey = (replicaOrAny: any, key: PropertyKey) => boolean;
 export type compatIterableKey = (replicaOrAny: any) => Array<any>;
-
 const { getPrototypeOf } = Object;
-
-const { hasInstance: symbolHasInstance } = Symbol;
 
 
 export function defaultHasInstance (instance: any, Type: any) {
@@ -89,5 +86,5 @@ export function instanceOfKey(instance: any, Type: any): boolean {
     if (instanceIsCompatProxy) {
         return defaultHasInstance(instance, Type);
     }
-    return Type[symbolHasInstance](instance);
+    return Type[Symbol.hasInstance](instance);
 }

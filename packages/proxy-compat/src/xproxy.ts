@@ -55,26 +55,24 @@ const {
 } = Array.prototype;
 
 const { isArray } = Array;
-const { iterator, hasInstance: symbolHasInstance } = Symbol;
-const ArrayPrototypeIterator = Array.prototype[iterator as any];
-const FunctionPrototypeSymbolHasInstance: HasInstanceFunction = (Function.prototype as any)[symbolHasInstance];
 
 // Proto chain check might be needed because of usage of a limited polyfill
 // https://github.com/es-shims/get-own-property-symbols
 // In this case, because this polyfill is assing all the stuff to Object.prototype to keep
 // all the other invariants of Symbols, we need to do some manual checks here for the slow patch.
-export const inOperator = typeof Symbol() === 'object' ? function inOperatorCompat(obj: any, key: PropertyKey): boolean {
-    if (key && key.constructor === Symbol) {
-        while (obj) {
-            if (getOwnPropertySymbols(obj).indexOf(key as symbol) !== -1) {
-                return true;
+export const inOperator = function inOperatorCompat(obj: any, key: PropertyKey): boolean {
+    if (typeof Symbol !== 'undefined' && typeof Symbol() === 'object') {
+        if (key && key.constructor === Symbol) {
+            while (obj) {
+                if (getOwnPropertySymbols(obj).indexOf(key as symbol) !== -1) {
+                    return true;
+                }
+                obj = getPrototypeOf(obj);
             }
-            obj = getPrototypeOf(obj);
+            return false;
         }
-        return false;
+        return key in obj;
     }
-    return key in obj;
-} : function inOperator(obj: any, key: PropertyKey): boolean {
     return key in obj;
 }
 
@@ -208,10 +206,11 @@ export class XProxy implements XProxyInstance {
         }
 
         let proxyDefaultHasInstance: HasInstanceFunction;
-
-        defineProperty(proxy, symbolHasInstance, {
+        const SymbolHasInstance = Symbol.hasInstance;
+        const FunctionPrototypeSymbolHasInstance = Function.prototype[SymbolHasInstance] as any;
+        defineProperty(proxy, SymbolHasInstance, {
             get: function () {
-                const hasInstance = proxy.get(symbolHasInstance);
+                const hasInstance = proxy.get(SymbolHasInstance);
                 // We do not want to deal with any Symbol.hasInstance here
                 // because we need to do special things to check prototypes.
                 // Symbol polyfill adds Symbol.hasInstance to the function prototype
@@ -228,6 +227,7 @@ export class XProxy implements XProxyInstance {
             configurable: false,
             enumerable: false
         });
+
 
         defineProperty(proxy, ProxySlot, {
             value: ProxyIdentifier,
@@ -246,6 +246,18 @@ export class XProxy implements XProxyInstance {
             configurable: false,
             enumerable: false,
             writable: false,
+        });
+
+        const SymbolIterator = Symbol.iterator;
+        defineProperty(proxy, SymbolIterator, {
+            enumerable: false,
+            configurable: true,
+            get: function (this: XProxy) {
+                return this.get(SymbolIterator);
+            },
+            set: function (this: XProxy, value: any): any {
+                this.set(SymbolIterator, value);
+            },
         });
 
         if (targetIsArray) {
@@ -308,14 +320,3 @@ export class XProxy implements XProxyInstance {
 
     [key: string]: any;
 };
-
-defineProperty(XProxy.prototype, iterator, {
-    enumerable: false,
-    configurable: true,
-    get: function (this: XProxy) {
-        return this.get(iterator);
-    },
-    set: function (this: XProxy, value: any): any {
-        this.set(iterator, value);
-    },
-});

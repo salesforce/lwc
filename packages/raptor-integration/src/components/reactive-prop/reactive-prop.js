@@ -49,6 +49,4 @@ export default class ReactiveProp extends Element {
             enumerable: false
         });
     }
-
-
 }
