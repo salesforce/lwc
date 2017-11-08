@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { lifeCycleHooks as hook } from "./hook";
-import { isArray, create, isUndefined, isFunction, isObject, isString, toString, ArrayPush } from "./language";
+import { isArray, create, isUndefined, isNull, isFunction, isObject, isString, toString, ArrayPush } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { getMapFromClassName, EmptyArray } from "./utils";
 
@@ -28,17 +28,25 @@ function addNS(data: any, children: Array<VNode> | undefined, sel: string | unde
 }
 
 // [v]node node
-export function v(sel: string | undefined, data: VNodeData | undefined, children: Array<VNode | string> | undefined, text?: string | number | undefined, elm?: Element | Text | undefined, Ctor?: Class<Component>): VNode {
+export function v(sel: string | undefined, data: VNodeData | undefined, children: Array<VNode | string> | undefined, text?: string | number | undefined, elm?: Element | Text | undefined, Ctor?: ComponentContructor): VNode {
     data = data || EmptyData;
+
     let { key } = data;
-    // Try to identify the owner, but for root elements and other special cases, we
-    // can just fallback to 0 which means top level creation.
-    const uid = vmBeingRendered ? vmBeingRendered.uid : 0;
+    let uid = 0;
+
+    // For root elements and other special cases the vm is not set.
+    if (!isNull(vmBeingRendered)) {
+        uid = vmBeingRendered.uid;
+        data.token = vmBeingRendered.context.tplToken;
+    }
+
     const vnode: VNode = { sel, data, children, text, elm, key, Ctor, uid };
+
     assert.block(function devModeCheck() {
         // adding toString to all vnodes for debuggability
         vnode.toString = (): string => `[object:vnode ${sel}]`;
     });
+
     return vnode;
 }
 
@@ -74,7 +82,7 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
 }
 
 // [c]ustom element node
-export function c(sel: string, Ctor: Class<Component>, data: VNodeData): VNode {
+export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNode {
     // The compiler produce AMD modules that do not support circular dependencies
     // We need to create an indirection to circumvent those cases.
     // We could potentially move this check to the definition

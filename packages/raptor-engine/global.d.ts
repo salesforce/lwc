@@ -1,4 +1,8 @@
-type Template = (api: RenderAPI, cmp: Component, slotset: Slotset) => undefined | Array<VNode>;
+declare interface Template {
+    (api: RenderAPI, cmp: Component, slotset: Slotset, ctx: VMContext): undefined | Array<VNode>;
+    style?: string;
+    token?: string;
+}
 
 declare class Component {
     classList: DOMTokenList;
@@ -14,6 +18,10 @@ declare class Component {
     observedAttributes: Array<string>;
     labels: Array<string>;
     [key: string]: any;
+}
+
+declare interface ComponentContructor {
+    new (): Component;
 }
 
 declare interface Slotset {
@@ -48,6 +56,12 @@ declare class ComponentElement extends Component {
     classList: DOMTokenList;
 }
 
+declare interface VMContext {
+    tplToken?: string;
+    tplCache?: any;
+    [key: string]: any;
+}
+
 declare class VM {
     uid: number;
     idx: number;
@@ -58,12 +72,12 @@ declare class VM {
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;
     cmpClasses?: HashTable<Boolean>;
-    cmpTemplate?: any;
+    cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
     isScheduled: boolean;
     isDirty: boolean;
     def: ComponentDef;
-    context: HashTable<any>;
+    context: VMContext;
     component?: Component;
     membrane?: Membrane;
     vnode: VNode;
@@ -126,6 +140,7 @@ declare class VNode  {
     text: string | undefined;
     key: number | string;
     uid: number;
+    Ctor?: ComponentContructor;
 }
 
 declare interface RenderAPI {

@@ -1,6 +1,6 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
 
 const EmptySlots: Slotset = create(null);
 
@@ -52,21 +52,48 @@ function validateFields(vm: VM, html: any) {
     });
 }
 
-
 function validateTemplate(vm: VM, html: any) {
     validateSlots(vm, html);
     validateFields(vm, html);
 }
 
-export function evaluateTemplate(vm: VM, html: any): Array<VNode|null> {
+function applyTokenToHost(vm: VM, html: Template): void {
+    const { vnode, context } = vm;
+
+    const oldToken = context.tplToken;
+    const newToken = html.token;
+
+    if (oldToken !== newToken) {
+        const host = vnode.elm as Element;
+
+        // Remove the token currently applied to the host element if different than the one associated
+        // with the current template
+        if (!isUndefined(oldToken)) {
+            host.removeAttribute(oldToken);
+        }
+
+        // If the template has a token apply the token to the host element
+        if (!isUndefined(newToken)) {
+            host.setAttribute(newToken, '');
+        }
+    }
+}
+
+export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     assert.vm(vm);
     assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
+
     // TODO: add identity to the html functions
     let { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
     // reset the cache momizer for template when needed
     if (html !== cmpTemplate) {
-        context.tplCache = create(null);
+        applyTokenToHost(vm, html);
+
         vm.cmpTemplate = html;
+
+        context.tplCache = create(null);
+        context.tplToken = html.token;
+
         assert.block(function devModeCheck() {
             validateTemplate(vm, html);
         });

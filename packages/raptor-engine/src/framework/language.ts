@@ -54,30 +54,30 @@ export {
     forEach,
 }
 
-export function isUndefined(obj: any): boolean {
+export function isUndefined(obj: any): obj is undefined {
     return obj === undefined;
 }
 
-export function isNull(obj: any): boolean {
+export function isNull(obj: any): obj is null {
     return obj === null;
 }
 
-export function isTrue(obj: any): boolean {
+export function isTrue(obj: any): obj is true {
     return obj === true;
 }
 
-export function isFunction(obj: any): boolean {
+export function isFunction(obj: any): obj is Function {
     return typeof obj === 'function';
 }
-export function isObject(obj: any): boolean {
+export function isObject(obj: any): obj is object {
     return typeof obj === 'object';
 }
 
-export function isString(obj: any): boolean {
+export function isString(obj: any): obj is string {
     return typeof obj === 'string';
 }
 
-export function isNumber(obj: any): boolean {
+export function isNumber(obj: any): obj is number {
     return typeof obj === 'number';
 }
 

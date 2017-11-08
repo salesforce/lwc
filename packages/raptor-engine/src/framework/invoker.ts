@@ -35,7 +35,7 @@ export function invokeComponentMethod(vm: VM, methodName: string, args?: Array<a
     return invokeComponentCallback(vm, component[methodName], component, args);
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: Class<Component>): Component {
+export function invokeComponentConstructor(vm: VM, Ctor: ComponentContructor): Component | undefined {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);

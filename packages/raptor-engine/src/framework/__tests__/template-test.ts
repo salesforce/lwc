@@ -295,7 +295,6 @@ describe('template', () => {
     });
 
     describe('evaluateTemplate()', () => {
-
         it('should throw for undefined value', () => {
             expect(() => {
                 target.evaluateTemplate({ component: 1 }, undefined);
@@ -325,6 +324,84 @@ describe('template', () => {
             expect(() => {
                 target.evaluateTemplate({ component: 1 }, [elm]);
             }).toThrow();
+        });
+    });
+
+    describe('token', () => {
+        it('adds token to the host element if template has a token', () => {
+            const styledTmpl: Template = () => [];
+            styledTmpl.token = 'token';
+
+            class Component extends Element {
+                render() {
+                    return styledTmpl;
+                }
+            }
+
+            const cmp = createElement('x-cmp', { is: Component });
+
+            expect(cmp.hasAttribute('token')).toBe(false);
+            document.body.appendChild(cmp);
+            expect(cmp.hasAttribute('token')).toBe(true);
+        });
+
+        it('removes token from the host element when changing template', () => {
+            const styledTmpl: Template = () => [];
+            styledTmpl.token = 'token';
+
+            const unstyledTmpl: Template = () => [];
+
+            class Component extends Element {
+                tmpl = styledTmpl;
+                render() {
+                    return this.tmpl;
+                }
+            }
+            Component.publicProps = {
+                tmpl: { config: 0 }
+            };
+
+            const cmp = createElement('x-cmp', { is: Component });
+            document.body.appendChild(cmp);
+
+            expect(cmp.hasAttribute('token')).toBe(true);
+
+            cmp.tmpl = unstyledTmpl;
+
+            return Promise.resolve().then(() => {
+                expect(cmp.hasAttribute('token')).toBe(false);
+            });
+        });
+
+        it('swaps the token when replacing the template with a different token', () => {
+            const styledTmplA: Template = () => [];
+            styledTmplA.token = 'tokenA';
+
+            const styledTmplB: Template = () => [];
+            styledTmplB.token = 'tokenB';
+
+            class Component extends Element {
+                tmpl = styledTmplA;
+                render() {
+                    return this.tmpl;
+                }
+            }
+            Component.publicProps = {
+                tmpl: { config: 0 }
+            };
+
+            const cmp = createElement('x-cmp', { is: Component });
+            document.body.appendChild(cmp);
+
+            expect(cmp.hasAttribute('tokenA')).toBe(true);
+            expect(cmp.hasAttribute('tokenB')).toBe(false);
+
+            cmp.tmpl = styledTmplB;
+
+            return Promise.resolve().then(() => {
+                expect(cmp.hasAttribute('tokenA')).toBe(false);
+                expect(cmp.hasAttribute('tokenB')).toBe(true);
+            });
         });
     });
 });
