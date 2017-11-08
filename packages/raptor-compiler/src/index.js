@@ -3,11 +3,13 @@ import * as path from 'path';
 import bundle from './bundle';
 import transformFile from './transform';
 
-import { MODES, ALL_MODES } from './modes';
+import { MODES, ALL_MODES, isCompat, isProd } from './modes';
 import { zipObject, isUndefined, isString } from './utils';
 
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
+import minifyPlugin from "./rollup-plugins/minify";
+import compatPlugin from "./rollup-plugins/compat";
 
 const DEFAULT_NAMESPACE = 'x';
 
@@ -101,6 +103,24 @@ export function transform(src, id, options) {
     options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
 
     return transformFile(src, id, options);
+}
+
+export function transformBundle(src, options) {
+    const mode = options.mode;
+
+    if (isCompat(mode)) {
+        const plugin = compatPlugin(options);
+        const result = plugin(src);
+        src = result.code;
+    }
+
+    if (isProd(mode)) {
+        const plugin = minifyPlugin(options);
+        const result = plugin(src);
+        src = result.code;
+    }
+
+    return src;
 }
 
 /**

@@ -8,6 +8,10 @@ const compiler = require('raptor-compiler');
 const pluginUtils = require('rollup-pluginutils');
 const raptorNpmResolver = require('raptor-npm-resolver');
 
+// These are transient dependencies that we get from the peer raptor-compiler
+const babel = require('babel-core');
+const compatPlugin = require('babel-plugin-transform-raptor-compat');
+
 const { DEFAULT_NS, DEFAULT_OPTIONS } = require('./constants');
 
 function getModuleQualifiedName(file, opts) {
@@ -120,14 +124,13 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
             });
         },
 
-        transformBundle(code, { format }) {
-            return compiler.compile('/my/super/entry.js', {
-                format: format,
+        transformBundle(code) {
+            return compiler.transformBundle(code, {
                 mode: options.mode,
-                sources: { '/my/super/entry.js': code },
-                resolveProxyCompat: options.resolveProxyCompat,
-                globals: options.globals
-            })
+                resolveProxyCompat: {
+                    global: 'window'
+                }
+            });
         }
     };
 };
