@@ -9,7 +9,7 @@ import compiler from '../index';
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 const BASE_CONFIG = {};
 
-describe('snapshots ', () => {
+describe('fixtures', () => {
     const fixtures = glob.sync(path.resolve(FIXTURE_DIR, '**/*.html'));
 
     for (const caseEntry of fixtures) {
