@@ -22,8 +22,13 @@ export const patch = init([
     // from this point on, we do a series of DOM mutations
     componentEvents,
     componentClasses,
-    props,
+
+    // Attrs need to be applied to element before props
+    // IE11 will wipe out value on radio inputs if value
+    // is set before type=radio.
+    // See https://git.soma.salesforce.com/raptor/raptor/issues/791 for more
     attrs,
+    props,
     classes,
     styles,
     events,
