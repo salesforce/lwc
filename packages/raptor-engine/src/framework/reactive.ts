@@ -21,7 +21,10 @@ import {
     ArrayConcat
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
-import { addProxy as devFormatterAddProxy } from './reactive-dev-formatter';
+import { init as initDevFormatter } from './reactive-dev-formatter';
+assert.block(() => {
+    initDevFormatter();
+});
 
 /*eslint-disable*/
 export type ShadowTarget = (Object | Array<any>);
@@ -243,8 +246,5 @@ export function getReactiveProxy(value: any): any {
     const shadowTarget = isArray(value) ? [] : {};
     proxy = new Proxy(shadowTarget, handler);
     ReactiveMap.set(value, proxy as Reactive);
-    assert.block(() => {
-        devFormatterAddProxy(proxy);
-    });
     return proxy;
 }
