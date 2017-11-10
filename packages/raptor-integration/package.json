@@ -1,7 +1,7 @@
 {
   "name": "raptor-integration",
   "private": true,
-  "version": "0.16.0",
+  "version": "0.16.1",
   "license": "Beerware",
   "scripts": {
     "clean": "rimraf dist/ && rimraf public/",
@@ -28,11 +28,11 @@
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
-    "raptor-compiler": "0.16.0",
-    "raptor-engine": "0.16.0",
+    "raptor-compiler": "0.16.1",
+    "raptor-engine": "0.16.1",
     "rimraf": "^2.6.1",
     "rollup": "0.50.0",
-    "rollup-plugin-raptor-compiler": "0.16.0",
+    "rollup-plugin-raptor-compiler": "0.16.1",
     "wdio-mocha-framework": "^0.5.10",
     "wdio-sauce-service": "^0.4.0",
     "wdio-selenium-standalone-service": "0.0.9",
