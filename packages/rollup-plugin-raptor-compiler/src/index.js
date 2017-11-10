@@ -121,15 +121,16 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
             return compiler.transform(code, id, {
                 moduleName: moduleDefinition.name,
                 moduleNamespace: moduleDefinition.namespace,
+                mode: options.mode,
+                resolveProxyCompat: {
+                    global: 'window.Proxy'
+                }
             });
         },
 
         transformBundle(code) {
             return compiler.transformBundle(code, {
-                mode: options.mode,
-                resolveProxyCompat: {
-                    global: 'window'
-                }
+                mode: options.mode
             });
         }
     };

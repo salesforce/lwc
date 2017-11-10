@@ -3,6 +3,8 @@ import * as path from 'path';
 import styleTransform from './transformers/style';
 import templateTransformer from './transformers/template';
 import javascriptTransformer from './transformers/javascript';
+import compatPluginFactory from "./rollup-plugins/compat";
+import { isCompat } from './modes';
 
 /**
  * Returns the associted transformer for a specific file
@@ -28,14 +30,23 @@ function getTransformer(fileName) {
 /**
  * Run approriate transformation for the passed source
  */
-export default function transform(src, id, options) {
+export default async function transform(src, id, options) {
     const transfomer = getTransformer(id);
-    return Promise.resolve(
+    const mergedOptions = Object.assign({}, options, {
+        filename: id,
+    });
+
+    const result = await Promise.resolve(
         transfomer(
             src,
-            Object.assign({}, options, {
-                filename: id,
-            }),
-        ),
+            mergedOptions
+        )
     );
+
+    if (isCompat(options.mode)) {
+        const { transform } = compatPluginFactory(mergedOptions);
+        return transform(result.code);
+    }
+
+    return result;
 }

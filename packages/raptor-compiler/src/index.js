@@ -108,12 +108,6 @@ export function transform(src, id, options) {
 export function transformBundle(src, options) {
     const mode = options.mode;
 
-    if (isCompat(mode)) {
-        const plugin = compatPlugin(options);
-        const result = plugin.transform(src);
-        src = result.code;
-    }
-
     if (isProd(mode)) {
         const plugin = minifyPlugin(options);
         const result = plugin.transformBundle(src);
