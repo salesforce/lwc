@@ -110,13 +110,13 @@ export function transformBundle(src, options) {
 
     if (isCompat(mode)) {
         const plugin = compatPlugin(options);
-        const result = plugin(src);
+        const result = plugin.transform(src);
         src = result.code;
     }
 
     if (isProd(mode)) {
         const plugin = minifyPlugin(options);
-        const result = plugin(src);
+        const result = plugin.transformBundle(src);
         src = result.code;
     }
 
