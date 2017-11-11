@@ -273,15 +273,15 @@ function overrideProxy() {
 let FinalProxy = typeof Proxy !== 'undefined' ? Proxy : {};
 
 if (typeof FinalProxy !== 'function' || overrideProxy()) {
-    FinalProxy = class Proxy extends XProxy {
-        static getKey = getKey;
-        static callKey = callKey;
-        static setKey = setKey;
-        static deleteKey = deleteKey;
-        static inKey = inKey;
-        static iterableKey = iterableKey;
-        static instanceOfKey = instanceOfKey;
-    }
+    FinalProxy = class Proxy extends XProxy {};
 }
+
+FinalProxy.getKey = getKey;
+FinalProxy.callKey = callKey;
+FinalProxy.setKey = setKey;
+FinalProxy.deleteKey = deleteKey;
+FinalProxy.inKey = inKey;
+FinalProxy.iterableKey = iterableKey;
+FinalProxy.instanceOfKey = instanceOfKey;
 
 export default FinalProxy;
