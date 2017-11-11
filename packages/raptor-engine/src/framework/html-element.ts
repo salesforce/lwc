@@ -2,9 +2,9 @@ import assert from "./assert";
 import { ClassList } from "./class-list";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
-import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined } from "./language";
+import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice } from "./language";
 import { GlobalHTMLProperties } from "./dom";
-import { getPropNameFromAttrName, noop, toAttributeValue } from "./utils";
+import { getPropNameFromAttrName, noop } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
@@ -89,13 +89,7 @@ ComponentElement.prototype = {
     getAttribute(attrName: string): string | null {
         const vm = this[ViewModelReflection];
         assert.vm(vm);
-        const { vnode: { data: { attrs } } } = vm;
-        if (!attrName) {
-            if (arguments.length === 0) {
-                throw new TypeError(`Failed to execute \`getAttribute\` on ${vm}: 1 argument is required, got 0.`);
-            }
-            return null;
-        }
+
         // logging errors for experimentals and special attributes
         assert.block(function devModeCheck() {
             const propName = getPropNameFromAttrName(attrName);
@@ -111,9 +105,9 @@ ComponentElement.prototype = {
                 }
             }
         });
-        // normalizing attrs from compiler into HTML global attributes
-        let raw = attrs && attrName in attrs ? attrs[attrName] : null;
-        return toAttributeValue(raw);
+
+        const elm = getLinkedElement(this);
+        return elm.getAttribute.apply(elm, ArraySlice.call(arguments));
     },
     getBoundingClientRect(): DOMRect {
         const elm = getLinkedElement(this);

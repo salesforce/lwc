@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction, isString } from "./language";
 
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
@@ -30,7 +30,7 @@ const attrNameToPropNameMap = create(null);
 
 export function getPropNameFromAttrName(attrName: string): string {
     let propName = attrNameToPropNameMap[attrName];
-    if (!propName) {
+    if (!propName && isString(attrName)) {
         propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
         attrNameToPropNameMap[attrName] = propName;
     }
@@ -63,16 +63,6 @@ export function getAttrNameFromPropName(propName: string): string {
         propNameToAttributeNameMap[propName] = attrName;
     }
     return attrName;
-}
-
-export function toAttributeValue(raw: any): string | null {
-    // normalizing attrs from compiler into HTML global attributes
-    if (raw === true) {
-        raw = '';
-    } else if (raw === false) {
-        raw = null;
-    }
-    return raw != null ? raw + '' : null; // null and undefined should always produce null
 }
 
 export function noop() {}

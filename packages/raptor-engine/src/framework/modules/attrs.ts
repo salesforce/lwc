@@ -2,7 +2,6 @@ const xlinkNS = 'http://www.w3.org/1999/xlink';
 const xmlNS = 'http://www.w3.org/XML/1998/namespace';
 const ColonCharCode = 58;
 const XCharCode = 120;
-const { setAttribute, removeAttribute, setAttributeNS } = Element.prototype;
 
 function updateAttrs(oldVnode: VNode, vnode: VNode) {
     let { data: { attrs: oldAttrs } } = oldVnode;
@@ -15,6 +14,8 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         return;
     }
     const { elm } = vnode;
+    const { setAttribute, removeAttribute, setAttributeNS } = elm;
+
     let key: string;
     oldAttrs = oldAttrs || {};
     attrs = attrs || {};

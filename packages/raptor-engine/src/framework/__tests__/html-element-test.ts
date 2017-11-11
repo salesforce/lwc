@@ -362,6 +362,81 @@ describe('html-element', () => {
             }
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
         });
+
+        it('should set user specified value during setAttribute call', () => {
+            let userDefinedTabIndexValue = -1;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                }
+
+                renderedCallback() {
+                    userDefinedTabIndexValue = this.getAttribute("tabindex");
+                }
+            }
+            const elm = createElement('x-foo', {is: MyComponent});
+            elm.setAttribute('tabindex', '0');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( ()=> {
+                expect(userDefinedTabIndexValue).toBe('0');
+            });
+
+        }),
+
+        it('should delete existing attribute prior rendering', () => {
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                }
+            }
+            const elm = createElement('x-foo', { is: def });
+            elm.setAttribute('title', 'parent title');
+            elm.removeAttribute('title');
+
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( () => {
+                expect(elm.getAttribute('title')).not.toBe('parent title');
+            })
+        }),
+
+        it('should correctly set child attribute ', () => {
+            let childTitle = null;
+
+            class Parent extends Element {
+                constructor() {
+                    super();
+                }
+
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ]
+                    }
+                }
+            }
+
+            class Child extends Element {
+                constructor() {
+                    super();
+                }
+
+                renderedCallback() {
+                    childTitle = this.getAttribute('title');
+                }
+            }
+
+            const parentElm = createElement('x-parent', { is: Parent });
+            parentElm.setAttribute('title', 'parent title');
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                expect(childElm.getAttribute('title')).toBe('child title');
+            })
+        })
     });
 
     describe('#toString()', () => {
