@@ -927,6 +927,22 @@ describe('html-element', () => {
             expect(assertLogger.logWarning).not.toBeCalled();
             assertLogger.logWarning.mockRestore();
         });
+
+        it('should not log a warning when initializing api value to null', function () {
+            jest.spyOn(assertLogger, 'logWarning');
+            class MyComponent extends Element {
+                foo = null;
+            }
+            MyComponent.publicProps = {
+                foo: {
+                    config: 0
+                }
+            };
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(assertLogger.logWarning).not.toBeCalled();
+            assertLogger.logWarning.mockRestore();
+        });
     });
 
 });

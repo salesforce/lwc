@@ -53,7 +53,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 const observable = isObservable(newValue);
                 newValue = observable ? getReactiveProxy(newValue) : newValue;
                 assert.block(function devModeCheck () {
-                    if (!observable && isObject(newValue)) {
+                    if (!observable && newValue !== null && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 });
