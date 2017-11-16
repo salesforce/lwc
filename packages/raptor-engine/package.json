@@ -4,6 +4,7 @@
   "description": "Raptor Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
+  "typings": "types/engine.d.ts",
   "scripts": {
     "clean": "rimraf dist/ lib/",
     "test": "jest --coverage",
