@@ -1,0 +1,7 @@
+playground/
+.*
+*.log
+rollup.config.js
+jest.config.js
+src/
+

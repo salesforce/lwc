@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`wired-property snapshots default snapshot 1`] = `
+<x-wired-property>
+  Name: 
+  
+  <br />
+  Error: 
+</x-wired-property>
+`;
+
+exports[`wired-property snapshots should display complete correctly 1`] = `
+<x-wired-property>
+  Name: 
+  
+  <br />
+  Error: 
+</x-wired-property>
+`;
+
+exports[`wired-property snapshots should display data correctly 1`] = `
+<x-wired-property>
+  Name: 
+  name
+  <br />
+  Error: 
+</x-wired-property>
+`;
+
+exports[`wired-property snapshots should display error correctly 1`] = `
+<x-wired-property>
+  Name: 
+  
+  <br />
+  Error: 
+  error message
+</x-wired-property>
+`;

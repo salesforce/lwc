@@ -2,6 +2,58 @@
 # yarn lockfile v1
 
 
+"@babel/code-frame@7.0.0-beta.32", "@babel/code-frame@^7.0.0-beta.31":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/code-frame/-/code-frame-7.0.0-beta.32.tgz#04f231b8ec70370df830d9926ce0f5add074ec4c"
+  dependencies:
+    chalk "^2.0.0"
+    esutils "^2.0.2"
+    js-tokens "^3.0.0"
+
+"@babel/helper-function-name@7.0.0-beta.32":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/helper-function-name/-/helper-function-name-7.0.0-beta.32.tgz#6161af4419f1b4e3ed2d28c0c79c160e218be1f3"
+  dependencies:
+    "@babel/helper-get-function-arity" "7.0.0-beta.32"
+    "@babel/template" "7.0.0-beta.32"
+    "@babel/types" "7.0.0-beta.32"
+
+"@babel/helper-get-function-arity@7.0.0-beta.32":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/helper-get-function-arity/-/helper-get-function-arity-7.0.0-beta.32.tgz#93721a99db3757de575a83bab7c453299abca568"
+  dependencies:
+    "@babel/types" "7.0.0-beta.32"
+
+"@babel/template@7.0.0-beta.32":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/template/-/template-7.0.0-beta.32.tgz#e1d9fdbd2a7bcf128f2f920744a67dab18072495"
+  dependencies:
+    "@babel/code-frame" "7.0.0-beta.32"
+    "@babel/types" "7.0.0-beta.32"
+    babylon "7.0.0-beta.32"
+    lodash "^4.2.0"
+
+"@babel/traverse@^7.0.0-beta.31":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/traverse/-/traverse-7.0.0-beta.32.tgz#b78b754c6e1af3360626183738e4c7a05951bc99"
+  dependencies:
+    "@babel/code-frame" "7.0.0-beta.32"
+    "@babel/helper-function-name" "7.0.0-beta.32"
+    "@babel/types" "7.0.0-beta.32"
+    babylon "7.0.0-beta.32"
+    debug "^3.0.1"
+    globals "^10.0.0"
+    invariant "^2.2.0"
+    lodash "^4.2.0"
+
+"@babel/types@7.0.0-beta.32", "@babel/types@^7.0.0-beta.31":
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/@babel/types/-/types-7.0.0-beta.32.tgz#c317d0ecc89297b80bbcb2f50608e31f6452a5ff"
+  dependencies:
+    esutils "^2.0.2"
+    lodash "^4.2.0"
+    to-fast-properties "^2.0.0"
+
 "@types/babel-generator@^6.7.14":
   version "6.25.0"
   resolved "https://registry.npmjs.org/@types/babel-generator/-/babel-generator-6.25.0.tgz#8255469aa14712f0d1608b99683cabd5b413d96b"
@@ -103,6 +155,10 @@ acorn@^5.0.0, acorn@^5.1.1:
   version "5.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-5.1.2.tgz#911cb53e036807cf0fa778dc5d370fbd864246d7"
 
+acorn@^5.2.1:
+  version "5.2.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/acorn/-/acorn-5.2.1.tgz#317ac7821826c22c702d66189ab8359675f135d7"
+
 add-stream@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/add-stream/-/add-stream-1.0.0.tgz#6a7990437ca736d5e1288db92bd3266d5f5cb2aa"
@@ -126,6 +182,10 @@ ajv-keywords@^2.0.0:
   version "2.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ajv-keywords/-/ajv-keywords-2.1.0.tgz#a296e17f7bfae7c1ce4f7e0de53d29cb32162df0"
 
+ajv-keywords@^2.1.0:
+  version "2.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ajv-keywords/-/ajv-keywords-2.1.1.tgz#617997fc5f60576894c435f940d819e135b80762"
+
 ajv@^4.7.0, ajv@^4.9.1:
   version "4.11.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ajv/-/ajv-4.11.8.tgz#82ffb02b29e662ae53bdc20af15947706739c536"
@@ -141,6 +201,15 @@ ajv@^5.1.0, ajv@^5.1.5:
     fast-deep-equal "^1.0.0"
     json-schema-traverse "^0.3.0"
     json-stable-stringify "^1.0.1"
+
+ajv@^5.2.3, ajv@^5.3.0:
+  version "5.3.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ajv/-/ajv-5.3.0.tgz#4414ff74a50879c208ee5fdc826e32c303549eda"
+  dependencies:
+    co "^4.6.0"
+    fast-deep-equal "^1.0.0"
+    fast-json-stable-stringify "^2.0.0"
+    json-schema-traverse "^0.3.0"
 
 align-text@^0.1.1, align-text@^0.1.3:
   version "0.1.4"
@@ -166,6 +235,10 @@ ansi-escapes@^3.0.0:
   version "3.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-escapes/-/ansi-escapes-3.0.0.tgz#ec3e8b4e9f8064fc02c3ac9b65f1c275bda8ef92"
 
+ansi-regex@^0.2.0, ansi-regex@^0.2.1:
+  version "0.2.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-regex/-/ansi-regex-0.2.1.tgz#0d8e946967a3d8143f93e24e298525fc1b2235f9"
+
 ansi-regex@^2.0.0:
   version "2.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-regex/-/ansi-regex-2.1.1.tgz#c3b33ab5ee360d86e0e628f0468ae7ef27d654df"
@@ -173,6 +246,10 @@ ansi-regex@^2.0.0:
 ansi-regex@^3.0.0:
   version "3.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-regex/-/ansi-regex-3.0.0.tgz#ed0317c322064f79466c02966bddb605ab37d998"
+
+ansi-styles@^1.1.0:
+  version "1.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ansi-styles/-/ansi-styles-1.1.0.tgz#eaecbf66cd706882760b2f4691582b8f55d7a7de"
 
 ansi-styles@^2.2.1:
   version "2.2.1"
@@ -428,6 +505,15 @@ babel-core@^6.0.0, babel-core@^6.24.0, babel-core@^6.24.1, babel-core@^6.26.0:
     private "^0.1.7"
     slash "^1.0.0"
     source-map "^0.5.6"
+
+babel-eslint@^8.0.1:
+  version "8.0.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-eslint/-/babel-eslint-8.0.2.tgz#e44fb9a037d749486071d52d65312f5c20aa7530"
+  dependencies:
+    "@babel/code-frame" "^7.0.0-beta.31"
+    "@babel/traverse" "^7.0.0-beta.31"
+    "@babel/types" "^7.0.0-beta.31"
+    babylon "^7.0.0-beta.31"
 
 babel-generator@6.26.0, babel-generator@^6.18.0, babel-generator@^6.24.1, babel-generator@^6.26.0:
   version "6.26.0"
@@ -1095,6 +1181,10 @@ babel-types@6.26.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
 
+babylon@7.0.0-beta.32, babylon@^7.0.0-beta.31:
+  version "7.0.0-beta.32"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babylon/-/babylon-7.0.0-beta.32.tgz#e9033cb077f64d6895f4125968b37dc0a8c3bc6e"
+
 babylon@^6.17.0, babylon@^6.18.0:
   version "6.18.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
@@ -1134,6 +1224,10 @@ big.js@^3.1.3:
 binary-extensions@^1.0.0:
   version "1.10.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/binary-extensions/-/binary-extensions-1.10.0.tgz#9aeb9a6c5e88638aad171e167f5900abe24835d0"
+
+bindings@~1.2.1:
+  version "1.2.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
 
 bl@^1.0.0:
   version "1.2.1"
@@ -1203,7 +1297,7 @@ brorand@^1.0.1:
   version "1.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
 
-browser-resolve@^1.11.2:
+browser-resolve@^1.11.0, browser-resolve@^1.11.2:
   version "1.11.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/browser-resolve/-/browser-resolve-1.11.2.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
   dependencies:
@@ -1279,6 +1373,13 @@ browserslist@^2.1.2:
     caniuse-lite "^1.0.30000744"
     electron-to-chromium "^1.3.24"
 
+browserslist@^2.5.1:
+  version "2.9.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/browserslist/-/browserslist-2.9.0.tgz#706aca15c53be15610f466e348cbfa0c00a6a379"
+  dependencies:
+    caniuse-lite "^1.0.30000760"
+    electron-to-chromium "^1.3.27"
+
 bser@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/bser/-/bser-2.0.0.tgz#9ac78d3ed5d915804fd87acb158bc797147a1719"
@@ -1301,7 +1402,7 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-builtin-modules@^1.0.0:
+builtin-modules@^1.0.0, builtin-modules@^1.1.0, builtin-modules@^1.1.1:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
 
@@ -1367,9 +1468,17 @@ caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
   version "1.0.30000748"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-db/-/caniuse-db-1.0.30000748.tgz#785d9edfcd645bf795c6ff3ced33c45d580c48a0"
 
+caniuse-db@^1.0.30000748:
+  version "1.0.30000764"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-db/-/caniuse-db-1.0.30000764.tgz#d73ab11ae62f6a9e2f69867d6d9c23ae3f2e5d8d"
+
 caniuse-lite@^1.0.30000744:
   version "1.0.30000745"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000745.tgz#20d6fede1157a4935133502946fc7e0e6b880da5"
+
+caniuse-lite@^1.0.30000760:
+  version "1.0.30000764"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/caniuse-lite/-/caniuse-lite-1.0.30000764.tgz#97ea7472f9d3e691eede34f21983cfc219ac7842"
 
 caseless@~0.11.0:
   version "0.11.0"
@@ -1385,6 +1494,16 @@ center-align@^0.1.1:
   dependencies:
     align-text "^0.1.3"
     lazy-cache "^1.0.3"
+
+chalk@0.5.1:
+  version "0.5.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/chalk/-/chalk-0.5.1.tgz#663b3a648b68b55d04690d49167aa837858f2174"
+  dependencies:
+    ansi-styles "^1.1.0"
+    escape-string-regexp "^1.0.0"
+    has-ansi "^0.1.0"
+    strip-ansi "^0.3.0"
+    supports-color "^0.2.0"
 
 chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
   version "1.1.3"
@@ -1586,6 +1705,10 @@ command-join@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/command-join/-/command-join-2.0.0.tgz#52e8b984f4872d952ff1bdc8b98397d27c7144cf"
 
+commander@2.6.0:
+  version "2.6.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/commander/-/commander-2.6.0.tgz#9df7e52fb2a0cb0fb89058ee80c3104225f37e1d"
+
 commander@2.9.0:
   version "2.9.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
@@ -1620,13 +1743,26 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concat-stream@^1.4.10, concat-stream@^1.5.2:
+concat-stream@^1.4.10, concat-stream@^1.4.7, concat-stream@^1.5.2, concat-stream@^1.6.0:
   version "1.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/concat-stream/-/concat-stream-1.6.0.tgz#0aac662fd52be78964d5532f694784e70110acf7"
   dependencies:
     inherits "^2.0.3"
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
+
+concurrently@^3.4.0:
+  version "3.5.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/concurrently/-/concurrently-3.5.0.tgz#8cf1b7707a6916a78a4ff5b77bb04dec54b379b2"
+  dependencies:
+    chalk "0.5.1"
+    commander "2.6.0"
+    date-fns "^1.23.0"
+    lodash "^4.5.1"
+    rx "2.3.24"
+    spawn-command "^0.0.2-1"
+    supports-color "^3.2.3"
+    tree-kill "^1.1.0"
 
 console-browserify@^1.1.0:
   version "1.1.0"
@@ -1641,6 +1777,10 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
 constants-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
+
+contains-path@^0.1.0:
+  version "0.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
 
 content-disposition@0.5.2:
   version "0.5.2"
@@ -1869,6 +2009,13 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+cross-env@^3.1.4:
+  version "3.2.4"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cross-env/-/cross-env-3.2.4.tgz#9e0585f277864ed421ce756f81a980ff0d698aba"
+  dependencies:
+    cross-spawn "^5.1.0"
+    is-windows "^1.0.0"
+
 cross-spawn@^5.0.1, cross-spawn@^5.1.0:
   version "5.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/cross-spawn/-/cross-spawn-5.1.0.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
@@ -2017,6 +2164,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+date-fns@^1.23.0:
+  version "1.29.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -2032,6 +2183,13 @@ dateformat@^2.0.0:
   version "2.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
 
+deasync@^0.1.10:
+  version "0.1.10"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/deasync/-/deasync-0.1.10.tgz#4e4a6836fbe0477bd5f908308bd2a96557d5d7fe"
+  dependencies:
+    bindings "~1.2.1"
+    nan "^2.0.7"
+
 debug@2, debug@2.6.9, debug@^2.1.1, debug@^2.2.0, debug@^2.6.3, debug@^2.6.8:
   version "2.6.9"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -2041,6 +2199,12 @@ debug@2, debug@2.6.9, debug@^2.1.1, debug@^2.2.0, debug@^2.6.3, debug@^2.6.8:
 debug@2.6.8:
   version "2.6.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
+  dependencies:
+    ms "2.0.0"
+
+debug@^3.0.1:
+  version "3.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
     ms "2.0.0"
 
@@ -2156,6 +2320,13 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
+doctrine@1.5.0:
+  version "1.5.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
+  dependencies:
+    esutils "^2.0.2"
+    isarray "^1.0.0"
+
 doctrine@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/doctrine/-/doctrine-2.0.0.tgz#c73d8d2909d22291e1a007a395804da8b665fe63"
@@ -2220,7 +2391,7 @@ ejs@~2.5.6:
   version "2.5.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ejs/-/ejs-2.5.7.tgz#cc872c168880ae3c7189762fd5ffc00896c9518a"
 
-electron-to-chromium@^1.2.7:
+electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.27:
   version "1.3.27"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/electron-to-chromium/-/electron-to-chromium-1.3.27.tgz#78ecb8a399066187bb374eede35d9c70565a803d"
 
@@ -2345,7 +2516,7 @@ escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
 
-escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
+escape-string-regexp@1.0.5, escape-string-regexp@^1.0.0, escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
@@ -2369,11 +2540,78 @@ escope@^3.6.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
+eslint-import-resolver-node@^0.3.1:
+  version "0.3.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-import-resolver-node/-/eslint-import-resolver-node-0.3.1.tgz#4422574cde66a9a7b099938ee4d508a199e0e3cc"
+  dependencies:
+    debug "^2.6.8"
+    resolve "^1.2.0"
+
+eslint-module-utils@^2.1.1:
+  version "2.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-module-utils/-/eslint-module-utils-2.1.1.tgz#abaec824177613b8a95b299639e1b6facf473449"
+  dependencies:
+    debug "^2.6.8"
+    pkg-dir "^1.0.0"
+
+eslint-plugin-compat@^2.0.1:
+  version "2.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-compat/-/eslint-plugin-compat-2.1.0.tgz#c854947f96f3b9b4deddb8918e1fa23f75cbcdae"
+  dependencies:
+    babel-runtime "^6.26.0"
+    browserslist "^2.5.1"
+    caniuse-db "^1.0.30000748"
+    requireindex "^1.1.0"
+
+eslint-plugin-eslint-comments@^2.0.1:
+  version "2.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-2.0.1.tgz#2cddd5507f1f93b6738b5295f1730f4c2712f2a3"
+  dependencies:
+    escape-string-regexp "^1.0.5"
+    ignore "^3.3.7"
+
+eslint-plugin-import@^2.8.0:
+  version "2.8.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-import/-/eslint-plugin-import-2.8.0.tgz#fa1b6ef31fcb3c501c09859c1b86f1fc5b986894"
+  dependencies:
+    builtin-modules "^1.1.1"
+    contains-path "^0.1.0"
+    debug "^2.6.8"
+    doctrine "1.5.0"
+    eslint-import-resolver-node "^0.3.1"
+    eslint-module-utils "^2.1.1"
+    has "^1.0.1"
+    lodash.cond "^4.3.0"
+    minimatch "^3.0.3"
+    read-pkg-up "^2.0.0"
+
+eslint-plugin-jest@^20.0.3:
+  version "20.0.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-jest/-/eslint-plugin-jest-20.0.3.tgz#ec15eba6ac0ab44a67ebf6e02672ca9d7e7cba29"
+
+eslint-plugin-raptor@^0.1.24:
+  version "0.1.24"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-raptor/-/eslint-plugin-raptor-0.1.24.tgz#34ff5264630c7b9ef6866b2150f0095ea6300f41"
+  dependencies:
+    babel-eslint "^8.0.1"
+    eslint-plugin-compat "^2.0.1"
+    eslint-plugin-eslint-comments "^2.0.1"
+    eslint-plugin-import "^2.8.0"
+    eslint-plugin-jest "^20.0.3"
+    minimatch "^3.0.4"
+
 eslint-plugin-typescript@^0.1.0:
   version "0.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-plugin-typescript/-/eslint-plugin-typescript-0.1.0.tgz#6d82b7960f3ff21a499e8b157b304453be5a5700"
   dependencies:
     requireindex "~1.1.0"
+
+eslint-scope@^3.7.1:
+  version "3.7.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint-scope/-/eslint-scope-3.7.1.tgz#3d63c3edfda02e06e01a452ad88caacc7cdcb6e8"
+  dependencies:
+    esrecurse "^4.1.0"
+    estraverse "^4.1.1"
 
 eslint@^3.19.0:
   version "3.19.0"
@@ -2415,11 +2653,60 @@ eslint@^3.19.0:
     text-table "~0.2.0"
     user-home "^2.0.0"
 
+eslint@^4.3.0:
+  version "4.11.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/eslint/-/eslint-4.11.0.tgz#39a8c82bc0a3783adf5a39fa27fdd9d36fac9a34"
+  dependencies:
+    ajv "^5.3.0"
+    babel-code-frame "^6.22.0"
+    chalk "^2.1.0"
+    concat-stream "^1.6.0"
+    cross-spawn "^5.1.0"
+    debug "^3.0.1"
+    doctrine "^2.0.0"
+    eslint-scope "^3.7.1"
+    espree "^3.5.2"
+    esquery "^1.0.0"
+    estraverse "^4.2.0"
+    esutils "^2.0.2"
+    file-entry-cache "^2.0.0"
+    functional-red-black-tree "^1.0.1"
+    glob "^7.1.2"
+    globals "^9.17.0"
+    ignore "^3.3.3"
+    imurmurhash "^0.1.4"
+    inquirer "^3.0.6"
+    is-resolvable "^1.0.0"
+    js-yaml "^3.9.1"
+    json-stable-stringify-without-jsonify "^1.0.1"
+    levn "^0.3.0"
+    lodash "^4.17.4"
+    minimatch "^3.0.2"
+    mkdirp "^0.5.1"
+    natural-compare "^1.4.0"
+    optionator "^0.8.2"
+    path-is-inside "^1.0.2"
+    pluralize "^7.0.0"
+    progress "^2.0.0"
+    require-uncached "^1.0.3"
+    semver "^5.3.0"
+    strip-ansi "^4.0.0"
+    strip-json-comments "~2.0.1"
+    table "^4.0.1"
+    text-table "~0.2.0"
+
 espree@^3.4.0:
   version "3.5.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/espree/-/espree-3.5.1.tgz#0c988b8ab46db53100a1954ae4ba995ddd27d87e"
   dependencies:
     acorn "^5.1.1"
+    acorn-jsx "^3.0.0"
+
+espree@^3.5.2:
+  version "3.5.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/espree/-/espree-3.5.2.tgz#756ada8b979e9dcfcdb30aad8d1a9304a905e1ca"
+  dependencies:
+    acorn "^5.2.1"
     acorn-jsx "^3.0.0"
 
 esprima@^2.6.0:
@@ -2552,7 +2839,7 @@ expect@^21.2.1:
     jest-message-util "^21.2.1"
     jest-regex-util "^21.2.0"
 
-express@^4.14.0:
+express@^4.14.0, express@^4.15.2:
   version "4.16.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/express/-/express-4.16.2.tgz#e35c6dfe2d64b7dca0a5cd4f21781be3299e076c"
   dependencies:
@@ -2619,6 +2906,10 @@ fancy-log@^1.1.0:
 fast-deep-equal@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fast-deep-equal/-/fast-deep-equal-1.0.0.tgz#96256a3bc975595eb36d82e9929d060d893439ff"
+
+fast-json-stable-stringify@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
 fast-levenshtein@~2.0.4:
   version "2.0.6"
@@ -2821,6 +3112,10 @@ function-bind@^1.0.2, function-bind@^1.1.0:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
 
+functional-red-black-tree@^1.0.1:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
+
 gauge@~2.7.3:
   version "2.7.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/gauge/-/gauge-2.7.4.tgz#2c03405c7538c39d7eb37b317022e325fb018bf7"
@@ -2954,7 +3249,11 @@ glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@~7.1.1:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-globals@^9.14.0, globals@^9.18.0:
+globals@^10.0.0:
+  version "10.3.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/globals/-/globals-10.3.0.tgz#716aba93657b56630b5a0e77de5ea8ac6215afaa"
+
+globals@^9.14.0, globals@^9.17.0, globals@^9.18.0:
   version "9.18.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/globals/-/globals-9.18.0.tgz#aa3896b3e69b487f17e31ed2143d69a8e30c2d8a"
 
@@ -3104,6 +3403,12 @@ har-validator@~5.0.3:
   dependencies:
     ajv "^5.1.0"
     har-schema "^2.0.0"
+
+has-ansi@^0.1.0:
+  version "0.1.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/has-ansi/-/has-ansi-0.1.0.tgz#84f265aae8c0e6a88a12d7022894b7568894c62e"
+  dependencies:
+    ansi-regex "^0.2.0"
 
 has-ansi@^2.0.0:
   version "2.0.0"
@@ -3291,6 +3596,10 @@ ignore@^3.2.0:
   version "3.3.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ignore/-/ignore-3.3.5.tgz#c4e715455f6073a8d7e5dae72d2fc9d71663dba6"
 
+ignore@^3.3.3, ignore@^3.3.7:
+  version "3.3.7"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
+
 imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
@@ -3346,7 +3655,7 @@ inquirer@^0.12.0:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
-inquirer@^3.2.2:
+inquirer@^3.0.6, inquirer@^3.2.2:
   version "3.3.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/inquirer/-/inquirer-3.3.0.tgz#9dd2f2ad765dcab1ff0443b491442a20ba227dc9"
   dependencies:
@@ -3387,7 +3696,7 @@ interpret@^1.0.0:
   version "1.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/interpret/-/interpret-1.0.4.tgz#820cdd588b868ffb191a809506d6c9c8f212b1b0"
 
-invariant@^2.2.2:
+invariant@^2.2.0, invariant@^2.2.2:
   version "2.2.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/invariant/-/invariant-2.2.2.tgz#9e1f56ac0acdb6bf303306f338be3b204ae60360"
   dependencies:
@@ -3480,6 +3789,10 @@ is-glob@^3.1.0:
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-glob/-/is-glob-3.1.0.tgz#7ba5ae24217804ac70707b96922567486cc3e84a"
   dependencies:
     is-extglob "^2.1.0"
+
+is-module@^1.0.0:
+  version "1.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-module/-/is-module-1.0.0.tgz#3258fb69f78c14d5b815d664336b4cffb6441591"
 
 is-my-json-valid@^2.10.0, is-my-json-valid@^2.12.4:
   version "2.16.1"
@@ -3575,6 +3888,10 @@ is-typedarray@~1.0.0:
 is-utf8@^0.2.0:
   version "0.2.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-utf8/-/is-utf8-0.2.1.tgz#4b0da1442104d1b336340e80797e865cf39f7d72"
+
+is-windows@^1.0.0:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/is-windows/-/is-windows-1.0.1.tgz#310db70f742d259a16a369202b51af84233310d9"
 
 isarray@0.0.1:
   version "0.0.1"
@@ -3880,7 +4197,7 @@ jest-validate@^21.2.1:
     leven "^2.1.0"
     pretty-format "^21.2.1"
 
-jest@^21.2.1:
+jest@21.2.1, jest@^21.2.1:
   version "21.2.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/jest/-/jest-21.2.1.tgz#c964e0b47383768a1438e3ccf3c3d470327604e1"
   dependencies:
@@ -3894,7 +4211,7 @@ js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/js-tokens/-/js-tokens-3.0.2.tgz#9866df395102130e38f7f996bceb65443209c25b"
 
-js-yaml@^3.5.1, js-yaml@^3.7.0:
+js-yaml@^3.5.1, js-yaml@^3.7.0, js-yaml@^3.9.1:
   version "3.10.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/js-yaml/-/js-yaml-3.10.0.tgz#2e78441646bd4682e963f22b6e92823c309c62dc"
   dependencies:
@@ -3959,6 +4276,10 @@ json-schema-traverse@^0.3.0:
 json-schema@0.2.3:
   version "0.2.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
+
+json-stable-stringify-without-jsonify@^1.0.1:
+  version "1.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
 
 json-stable-stringify@^1.0.0, json-stable-stringify@^1.0.1:
   version "1.0.1"
@@ -4201,6 +4522,10 @@ lodash._root@^3.0.0:
   version "3.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash._root/-/lodash._root-3.0.1.tgz#fba1c4524c19ee9a5f8136b4609f017cf4ded692"
 
+lodash.cond@^4.3.0:
+  version "4.5.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.cond/-/lodash.cond-4.5.2.tgz#f471a1da486be60f6ab955d17115523dd1d255d5"
+
 lodash.create@3.1.1:
   version "3.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.create/-/lodash.create-3.1.1.tgz#d7f2849f0dbda7e04682bb8cd72ab022461debe7"
@@ -4289,7 +4614,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.1.0, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.4, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.8.0, lodash@~4.17.4:
+lodash@^4.0.0, lodash@^4.1.0, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1, lodash@^4.8.0, lodash@~4.17.4:
   version "4.17.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -4546,7 +4871,7 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.3.0:
+nan@^2.0.7, nan@^2.3.0:
   version "2.7.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
@@ -4775,6 +5100,10 @@ os-locale@^2.0.0:
     lcid "^1.0.0"
     mem "^1.1.0"
 
+os-shim@^0.1.2:
+  version "0.1.3"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-shim/-/os-shim-0.1.3.tgz#6b62c3791cf7909ea35ed46e17658bb417cb3917"
+
 os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
@@ -4887,7 +5216,7 @@ path-is-absolute@^1.0.0, path-is-absolute@^1.0.1:
   version "1.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
 
-path-is-inside@^1.0.1:
+path-is-inside@^1.0.1, path-is-inside@^1.0.2:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/path-is-inside/-/path-is-inside-1.0.2.tgz#365417dede44430d1c11af61027facf074bdfc53"
 
@@ -4957,6 +5286,12 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
+pkg-dir@^1.0.0:
+  version "1.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pkg-dir/-/pkg-dir-1.0.0.tgz#7a4b508a8d5bb2d629d447056ff4e9c9314cf3d4"
+  dependencies:
+    find-up "^1.0.0"
+
 pkg-dir@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
@@ -4966,6 +5301,10 @@ pkg-dir@^2.0.0:
 pluralize@^1.2.1:
   version "1.2.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pluralize/-/pluralize-1.2.1.tgz#d1a21483fd22bb41e58a12fa3421823140897c45"
+
+pluralize@^7.0.0:
+  version "7.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
 
 portfinder@^1.0.13:
   version "1.0.13"
@@ -5290,6 +5629,14 @@ power-assert@^1.4.2:
     universal-deep-strict-equal "^1.2.1"
     xtend "^4.0.0"
 
+pre-commit@^1.2.2:
+  version "1.2.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pre-commit/-/pre-commit-1.2.2.tgz#dbcee0ee9de7235e57f79c56d7ce94641a69eec6"
+  dependencies:
+    cross-spawn "^5.0.1"
+    spawn-sync "^1.0.15"
+    which "1.2.x"
+
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
@@ -5332,6 +5679,10 @@ process@^0.11.0:
 progress@1.1.8, progress@^1.1.8:
   version "1.1.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/progress/-/progress-1.1.8.tgz#e260c78f6161cdd9b0e56cc3e0a85de17c7a57be"
+
+progress@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/progress/-/progress-2.0.0.tgz#8a1be366bf8fc23db2bd23f10c6fe920b4389d1f"
 
 proxy-addr@~2.0.2:
   version "2.0.2"
@@ -5417,6 +5768,13 @@ randombytes@^2.0.0, randombytes@^2.0.1:
 range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
+
+raptor-jest-transformer@^2.0.1:
+  version "2.0.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-jest-transformer/-/raptor-jest-transformer-2.0.1.tgz#dc2cd5cf91876ed7dcf11e5106215acab84ffc93"
+  dependencies:
+    babel-core "^6.24.1"
+    deasync "^0.1.10"
 
 raw-body@2.3.2:
   version "2.3.2"
@@ -5694,14 +6052,14 @@ require-main-filename@^1.0.1:
   version "1.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/require-main-filename/-/require-main-filename-1.0.1.tgz#97f717b69d48784f5f526a6c5aa8ffdda055a4d1"
 
-require-uncached@^1.0.2:
+require-uncached@^1.0.2, require-uncached@^1.0.3:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/require-uncached/-/require-uncached-1.0.3.tgz#4e0d56d6c9662fd31e43011c4b95aa49955421d3"
   dependencies:
     caller-path "^0.1.0"
     resolve-from "^1.0.0"
 
-requireindex@~1.1.0:
+requireindex@^1.1.0, requireindex@~1.1.0:
   version "1.1.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/requireindex/-/requireindex-1.1.0.tgz#e5404b81557ef75db6e49c5a72004893fe03e162"
 
@@ -5724,6 +6082,12 @@ resolve@1.1.7:
 resolve@^1.1.6, resolve@^1.3.2:
   version "1.4.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/resolve/-/resolve-1.4.0.tgz#a75be01c53da25d934a98ebd0e4c4a7312f92a86"
+  dependencies:
+    path-parse "^1.0.5"
+
+resolve@^1.2.0:
+  version "1.5.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/resolve/-/resolve-1.5.0.tgz#1f09acce796c9a762579f31b2c1cc4c3cddf9f36"
   dependencies:
     path-parse "^1.0.5"
 
@@ -5783,6 +6147,15 @@ rollup-plugin-inject@^1.4.1:
     magic-string "^0.10.0"
     rollup-pluginutils "^1.2.0"
 
+rollup-plugin-node-resolve@^3.0.0:
+  version "3.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.0.tgz#8b897c4c3030d5001277b0514b25d2ca09683ee0"
+  dependencies:
+    browser-resolve "^1.11.0"
+    builtin-modules "^1.1.0"
+    is-module "^1.0.0"
+    resolve "^1.1.6"
+
 rollup-plugin-replace@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-replace/-/rollup-plugin-replace-2.0.0.tgz#19074089c8ed57184b8cc64e967a03d095119277"
@@ -5794,6 +6167,15 @@ rollup-plugin-replace@^2.0.0:
 rollup-plugin-strip-caridy-patched@^1.1.1:
   version "1.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-strip-caridy-patched/-/rollup-plugin-strip-caridy-patched-1.1.1.tgz#de95416f41a1c78cd8ba682e40dde3d2a153bf1b"
+  dependencies:
+    acorn "^3.1.0"
+    estree-walker "^0.2.1"
+    magic-string "^0.15.0"
+    rollup-pluginutils "^1.3.1"
+
+rollup-plugin-strip@^1.1.1:
+  version "1.1.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-strip/-/rollup-plugin-strip-1.1.1.tgz#b965d9caa5971d626ed1b703ee73d3421e3fefd1"
   dependencies:
     acorn "^3.1.0"
     estree-walker "^0.2.1"
@@ -5859,6 +6241,10 @@ rx-lite@*, rx-lite@^4.0.8:
 rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
+
+rx@2.3.24:
+  version "2.3.24"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rx/-/rx-2.3.24.tgz#14f950a4217d7e35daa71bbcbe58eff68ea4b2b7"
 
 rx@^4.1.0:
   version "4.1.0"
@@ -6018,6 +6404,12 @@ slice-ansi@0.0.4:
   version "0.0.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/slice-ansi/-/slice-ansi-0.0.4.tgz#edbf8903f66f7ce2f8eafd6ceed65e264c831b35"
 
+slice-ansi@1.0.0:
+  version "1.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/slice-ansi/-/slice-ansi-1.0.0.tgz#044f1a49d8842ff307aad6b505ed178bd950134d"
+  dependencies:
+    is-fullwidth-code-point "^2.0.0"
+
 snabbdom@^0.5.4:
   version "0.5.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/snabbdom/-/snabbdom-0.5.4.tgz#82d726fd495843d8920d54ac3ca670b7e503375e"
@@ -6102,6 +6494,17 @@ source-map@^0.6.0, source-map@^0.6.1:
 sparkles@^1.0.0:
   version "1.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/sparkles/-/sparkles-1.0.0.tgz#1acbbfb592436d10bbe8f785b7cc6f82815012c3"
+
+spawn-command@^0.0.2-1:
+  version "0.0.2-1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/spawn-command/-/spawn-command-0.0.2-1.tgz#62f5e9466981c1b796dc5929937e11c9c6921bd0"
+
+spawn-sync@^1.0.15:
+  version "1.0.15"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/spawn-sync/-/spawn-sync-1.0.15.tgz#b00799557eb7fb0c8376c29d44e8a1ea67e57476"
+  dependencies:
+    concat-stream "^1.4.7"
+    os-shim "^0.1.2"
 
 spdx-correct@~1.0.0:
   version "1.0.2"
@@ -6198,7 +6601,7 @@ string-width@^1.0.1, string-width@^1.0.2:
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
 
-string-width@^2.0.0, string-width@^2.1.0:
+string-width@^2.0.0, string-width@^2.1.0, string-width@^2.1.1:
   version "2.1.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/string-width/-/string-width-2.1.1.tgz#ab93f27a8dc13d28cac815c462143a6d9012ae9e"
   dependencies:
@@ -6226,6 +6629,12 @@ stringifier@^1.3.0:
 stringstream@~0.0.4, stringstream@~0.0.5:
   version "0.0.5"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/stringstream/-/stringstream-0.0.5.tgz#4e484cd4de5a0bbbee18e46307710a8a81621878"
+
+strip-ansi@^0.3.0:
+  version "0.3.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/strip-ansi/-/strip-ansi-0.3.0.tgz#25f48ea22ca79187f3174a4db8759347bb126220"
+  dependencies:
+    ansi-regex "^0.2.1"
 
 strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
@@ -6285,6 +6694,10 @@ supports-color@3.1.2:
   dependencies:
     has-flag "^1.0.0"
 
+supports-color@^0.2.0:
+  version "0.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/supports-color/-/supports-color-0.2.0.tgz#d92de2694eb3f67323973d7ae3d8b55b4c22190a"
+
 supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
@@ -6333,6 +6746,17 @@ table@^3.7.8:
     lodash "^4.0.0"
     slice-ansi "0.0.4"
     string-width "^2.0.0"
+
+table@^4.0.1:
+  version "4.0.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/table/-/table-4.0.2.tgz#a33447375391e766ad34d3486e6e2aedc84d2e36"
+  dependencies:
+    ajv "^5.2.3"
+    ajv-keywords "^2.1.0"
+    chalk "^2.1.0"
+    lodash "^4.17.4"
+    slice-ansi "1.0.0"
+    string-width "^2.1.1"
 
 tapable@^0.2.7:
   version "0.2.8"
@@ -6471,6 +6895,10 @@ to-fast-properties@^1.0.3:
   version "1.0.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-fast-properties/-/to-fast-properties-1.0.3.tgz#b83571fa4d8c25b82e231b06e3a3055de4ca1a47"
 
+to-fast-properties@^2.0.0:
+  version "2.0.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/to-fast-properties/-/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
+
 tough-cookie@^2.3.2, tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   version "2.3.3"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tough-cookie/-/tough-cookie-2.3.3.tgz#0b618a5565b6dea90bf3425d04d55edc475a7561"
@@ -6484,6 +6912,10 @@ tr46@~0.0.3:
 traverse@^0.6.6:
   version "0.6.6"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/traverse/-/traverse-0.6.6.tgz#cbdf560fd7b9af632502fed40f918c157ea97137"
+
+tree-kill@^1.1.0:
+  version "1.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/tree-kill/-/tree-kill-1.2.0.tgz#5846786237b4239014f05db156b643212d4c6f36"
 
 trim-newlines@^1.0.0:
   version "1.0.0"
@@ -7007,6 +7439,12 @@ whet.extend@~0.9.9:
 which-module@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
+
+which@1.2.x:
+  version "1.2.14"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
+  dependencies:
+    isexe "^2.0.0"
 
 which@^1.2.12, which@^1.2.9:
   version "1.3.0"

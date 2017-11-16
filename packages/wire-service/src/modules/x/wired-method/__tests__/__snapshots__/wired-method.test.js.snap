@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`wired-method snapshots should display complete correctly 1`] = `
+<wired-method>
+  Name: 
+  <br />
+  Error: 
+</wired-method>
+`;
+
+exports[`wired-method snapshots should display data correctly 1`] = `
+<wired-method>
+  Name: 
+  name
+  <br />
+  Error: 
+</wired-method>
+`;
+
+exports[`wired-method snapshots should display error correctly 1`] = `
+<wired-method>
+  Name: 
+  <br />
+  Error: 
+  error message
+</wired-method>
+`;

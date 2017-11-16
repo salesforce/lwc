@@ -1,0 +1,47 @@
+/**
+ * @wire adapter for todo data.
+ */
+import { getSubject, getImmutableObservable } from './util';
+
+function generateTodo(id, completed) {
+    return {
+        id,
+        title: 'task ' + id,
+        completed
+    };
+}
+
+// the data
+const TODO = [
+    generateTodo(0, true),
+    generateTodo(1, false),
+    // intentionally skip 2
+    generateTodo(3, true),
+    generateTodo(4, true),
+    // intentionally skip 5
+    generateTodo(6, false),
+    generateTodo(7, false)
+].reduce((acc, value) => {
+    acc[value.id] = value;
+    return acc;
+}, {});
+
+
+/**
+ * Services @wire('todo') requests.
+ * @param {Object} config Service config bag.
+ * @return {Observable} An observable for the recordUis.
+ */
+export default function serviceTodo(config) {
+    if (!('id' in config)) {
+        return undefined;
+    }
+
+    const todo = TODO[config.id];
+    if (!todo) {
+        const subject = getSubject(undefined, { message: 'Todo not found' });
+        return subject.observable;
+    }
+
+    return getImmutableObservable(todo);
+}
