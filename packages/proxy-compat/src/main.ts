@@ -16,9 +16,7 @@ import {
 import { XProxy, ProxySlot, ProxyIdentifier, ArraySlot, XProxyInstance } from "./xproxy";
 
 const {
-    assign: _assign,
     keys: _keys,
-    getOwnPropertyNames: _getOwnPropertyNames,
     hasOwnProperty: _hasOwnProperty,
     getOwnPropertyDescriptor: _getOwnPropertyDescriptor,
     preventExtensions: _preventExtensions,
@@ -28,6 +26,8 @@ const {
     setPrototypeOf: _setPrototypeOf
 } = Object;
 const _isArray = Array.isArray;
+
+import { patchedAssign, patchedGetOwnPropertyNames } from './object';
 
 import { isCompatProxy } from './methods';
 
@@ -141,13 +141,6 @@ function setPrototypeOf(replicaOrAny: object, proto: object): boolean {
     return _setPrototypeOf(replicaOrAny, proto);
 }
 
-function getOwnPropertyNames(replicaOrAny: object): Array<string> {
-    if (isCompatProxy(replicaOrAny)) {
-        return replicaOrAny.ownKeys(); // TODO: only strings
-    }
-    return _getOwnPropertyNames(replicaOrAny);
-}
-
 function getOwnPropertyDescriptor(replicaOrAny: object, key: PropertyKey) {
     if (isCompatProxy(replicaOrAny)) {
         return replicaOrAny.getOwnPropertyDescriptor(key);
@@ -183,35 +176,6 @@ function hasOwnProperty(this: any, key: string | symbol): boolean {
     return _hasOwnProperty.call(this, key);
 }
 
-function assign(replicaOrAny: object): object {
-    if (replicaOrAny == null) { // TypeError if undefined or null
-      throw new TypeError('Cannot convert undefined or null to object');
-    }
-    const to = Object(replicaOrAny);
-
-    for (var index = 1; index < arguments.length; index++) {
-        const nextSource = arguments[index];
-
-        if (nextSource != null) { // Skip over if undefined or null
-            if (isCompatProxy(nextSource)) {
-                for (let nextKey in iterableKey(nextSource)) {
-                    if (nextSource.getOwnPropertyDescriptor(nextKey)) {
-                        setKey(to, nextKey, getKey(nextSource, nextKey));
-                    }
-                }
-            } else {
-                for (let nextKey in nextSource) {
-                    // Avoid bugs when hasOwnProperty is shadowed in regular objects
-                    if (_hasOwnProperty.call(nextSource, nextKey)) {
-                        setKey(to, nextKey, nextSource[nextKey]);
-                    }
-                }
-            }
-        }
-    }
-    return to;
-}
-
 // patches
 // [*] Object.prototype.hasOwnProperty should be patched as a general rule
 // [ ] Object.propertyIsEnumerable should be patched
@@ -244,7 +208,7 @@ Array.isArray = isArray;
 Object.defineProperty = defineProperty;
 Object.preventExtensions = preventExtensions;
 Object.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
-Object.getOwnPropertyNames = getOwnPropertyNames;
+Object.getOwnPropertyNames = patchedGetOwnPropertyNames;
 Object.keys = keys;
 Object.isExtensible = isExtensible;
 // trap `getPrototypeOf` can be covered by a patched version of:
@@ -259,7 +223,7 @@ Object.getPrototypeOf = getPrototypeOf;
 
 // Other necessary patches:
 // [*] Object.assign
-Object.assign = assign;
+Object.assign = patchedAssign;
 
 Array.prototype.unshift = compatUnshift;
 Array.prototype.concat = compatConcat;

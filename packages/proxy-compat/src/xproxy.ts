@@ -1,4 +1,5 @@
 import { defaultHasInstance } from './methods';
+import { OwnPropertyKeys } from './object';
 
 type XProxyTargetFunction = (...args: Array<any>) => any;
 type XProxyTargetConstructor = {
@@ -44,14 +45,13 @@ const {
     getPrototypeOf,
     setPrototypeOf,
     getOwnPropertyDescriptor,
-    getOwnPropertySymbols,
-    getOwnPropertyNames,
     preventExtensions,
 } = Object;
 
 const {
     slice: ArraySlice,
     unshift: ArrayUnshift,
+    concat: ArrayConcat,
 } = Array.prototype;
 
 const { isArray } = Array;
@@ -62,6 +62,7 @@ const { isArray } = Array;
 // all the other invariants of Symbols, we need to do some manual checks here for the slow patch.
 export const inOperator = function inOperatorCompat(obj: any, key: PropertyKey): boolean {
     if (typeof Symbol !== 'undefined' && typeof Symbol() === 'object') {
+        const { getOwnPropertySymbols } = Object;
         if (key && key.constructor === Symbol) {
             while (obj) {
                 if (getOwnPropertySymbols(obj).indexOf(key as symbol) !== -1) {
@@ -97,9 +98,8 @@ const defaultHandlerTraps: XProxyHandler<object> = {
     deleteProperty(target: XProxyTarget, property: PropertyKey): boolean {
         return delete target[property];
     },
-    ownKeys(target: XProxyTarget): Array<string> {
-        // Note: we don't need to worry about symbols here since Symbol and Proxy go hand to hand
-        return getOwnPropertyNames(target);
+    ownKeys(target: XProxyTarget): PropertyKey[] {
+        return OwnPropertyKeys(target);
     },
     has(target: XProxyTarget, propertyKey: PropertyKey): boolean {
         return inOperator(target, propertyKey);
