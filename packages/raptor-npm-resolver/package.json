@@ -1,7 +1,7 @@
 {
   "name": "raptor-npm-resolver",
   "description": "Resolves paths for raptor components",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "main": "./src/index.js",
   "license": "MIT",
   "devDependencies": {
