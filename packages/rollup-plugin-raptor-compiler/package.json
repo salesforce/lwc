@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-raptor-compiler",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "Rollup plugin to compile components in raptor",
   "main": "src/index.js",
   "license": "MIT",
@@ -9,18 +9,18 @@
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "prettier": "^1.7.3",
-    "raptor-compiler": "0.16.4",
-    "raptor-engine": "0.16.4",
+    "raptor-compiler": "0.16.5",
+    "raptor-engine": "0.16.5",
     "rollup": "^0.50.0"
   },
   "dependencies": {
     "glob": "^7.1.2",
-    "raptor-npm-resolver": "0.16.4",
+    "raptor-npm-resolver": "0.16.5",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
-    "raptor-compiler": "0.16.4",
-    "raptor-engine": "0.16.4"
+    "raptor-compiler": "0.16.5",
+    "raptor-engine": "0.16.5"
   },
   "scripts": {
     "test": "mocha"
