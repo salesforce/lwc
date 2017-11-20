@@ -41,7 +41,7 @@ describe('services', () => {
         });
 
         it('should allow multiple services to register the same hook', () => {
-            expect(target.Services.render).toBeUndefined();
+            expect(target.Services.rendered).toBeUndefined();
             target.register({
                 rendered: function () {}
             });

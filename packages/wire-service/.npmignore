@@ -1,7 +1,11 @@
 playground/
+src/
+coverage/
 .*
 *.log
-rollup.config.js
 jest.config.js
-src/
-
+global-jest-stub.js
+rollup.config.es-and-cjs.js
+rollup.config.umd.dev.js
+rollup.config.umd.prod.js
+rollup.config.util.js

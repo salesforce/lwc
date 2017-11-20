@@ -2,8 +2,8 @@
   "name": "raptor-wire-service",
   "version": "0.16.5",
   "description": "@wire service",
-  "main": "dist/wire-service.common.js",
-  "module": "dist/wire-service.es.js",
+  "main": "dist/commonjs/es2017/wire-service.js",
+  "module": "dist/modules/es2017/wire-service.js",
   "scripts": {
     "clean": "rimraf dist playground/index.js",
     "lint": "eslint src playground",
