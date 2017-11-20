@@ -23,7 +23,7 @@ describe('wired-property', () => {
         it('should display data correctly', () => {
             const element = createElement('x-wired-property', { is: WiredProperty });
             document.body.appendChild(element);
-            mockTestAdapter.data({
+            mockTestAdapter.next({
                 Name: 'name'
             });
 

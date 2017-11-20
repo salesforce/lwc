@@ -41,6 +41,10 @@ export class WiredValue {
         if (this.config[param] === value) {
             return;
         }
+
+        // disconnect from previous observable
+        this.release();
+
         this.config[param] = value;
         this.provide();
     }
@@ -72,7 +76,6 @@ export class WiredValue {
      */
     _provide() {
         this.providePromise = undefined;
-        this.release();
 
         const observable = this.adapter(this.config);
         // adapter returns falsey if config is insufficient

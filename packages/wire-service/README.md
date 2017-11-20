@@ -1,15 +1,15 @@
 # Wire Service
 
-This is the implementation of Raptor's wire service. It enables declarative binding of services to a Raptor component using `@wire` decorator.
+This is the implementation of Raptor's wire service. It enables declarative binding of services to a Raptor component using the `@wire` decorator.
 
-A common usage is for a component to declare the data it requires. For example, a component may load data of type `record` like so:
+A common usage is for a component to declare the data it requires. For example, a component may load data of type `todo` like so:
 
 ```js
-import { Element } from 'engine';
+import { Element, api, wire } from 'engine';
 export default class WiredComponent extends Element {
-    @api recordId;
-    @wire('record', { recordId: '$recordId' })
-    record
+    @api todoId;
+    @wire('todo', { id: '$todoId' })
+    todo
 }
 ```
 

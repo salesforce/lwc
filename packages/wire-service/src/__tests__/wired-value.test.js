@@ -29,6 +29,22 @@ describe("wired-value.js", () => {
             wiredValue.update("foo", "original value");
             expect(wiredValue.provide).not.toHaveBeenCalled();
         });
+        it("calls release() when new value set", () => {
+            const config = { "foo": "original value" };
+            const wiredValue = new WiredValue(undefined, config);
+            wiredValue.release = jest.fn();
+            wiredValue.provide = jest.fn();
+            wiredValue.update("foo", "new value");
+            expect(wiredValue.release).toHaveBeenCalled();
+        });
+        it("does not call release() when same value set", () => {
+            const config = { "foo": "original value" };
+            const wiredValue = new WiredValue(undefined, config);
+            wiredValue.release = jest.fn();
+            wiredValue.provide = jest.fn();
+            wiredValue.update("foo", "original value");
+            expect(wiredValue.release).not.toHaveBeenCalled();
+        });
     });
 
     describe("provide()", () => {
@@ -69,13 +85,6 @@ describe("wired-value.js", () => {
     });
 
     describe("_provide()", () => {
-        it("calls release()", () => {
-            const adapter = jest.fn();
-            const wiredValue = new WiredValue(adapter);
-            wiredValue.release = jest.fn();
-            wiredValue._provide();
-            expect(wiredValue.release).toHaveBeenCalled();
-        });
         it("calls adapter with config", () => {
             const adapter = jest.fn();
             const config = "expected";
