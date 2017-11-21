@@ -3,11 +3,15 @@ import { clearListeners } from "./component";
 import { rehydrate, addInsertionIndex, removeInsertionIndex, patchShadowRoot } from "./vm";
 
 export function insert(vnode: ComponentVNode) {
-    assert.vnode(vnode);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vnode(vnode);
+        assert.vm(vnode.vm);
+        if (vnode.vm.idx > 0) {
+            assert.isTrue(vnode.isRoot, `${vnode.vm} is already inserted.`);
+        }
+    }
     const { vm } = vnode;
-    assert.vm(vm);
     if (vm.idx > 0) {
-        assert.isTrue(vnode.isRoot, `${vm} is already inserted.`);
         destroy(vnode); // moving the element from one place to another is observable via life-cycle hooks
     }
     addInsertionIndex(vm);
@@ -20,9 +24,12 @@ export function insert(vnode: ComponentVNode) {
 }
 
 export function update(oldVnode: ComponentVNode, vnode: ComponentVNode) {
-    assert.vnode(vnode);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vnode(vnode);
+        assert.vm(vnode.vm);
+    }
     const { vm } = vnode;
-    assert.vm(vm);
+
     // TODO: we don't really need this block anymore, but it will require changes
     // on many tests that are just patching the element directly.
     if (vm.idx === 0 && !vnode.isRoot) {
@@ -44,10 +51,12 @@ export function update(oldVnode: ComponentVNode, vnode: ComponentVNode) {
 }
 
 export function destroy(vnode: ComponentVNode) {
-    assert.vnode(vnode);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vnode(vnode);
+        assert.vm(vnode.vm);
+        assert.isTrue(vnode.vm.idx, `${vnode.vm} is not inserted.`);
+    }
     const { vm } = vnode;
-    assert.vm(vm);
-    assert.isTrue(vm.idx, `${vm} is not inserted.`);
     removeInsertionIndex(vm);
     // just in case it comes back, with this we guarantee re-rendering it
     vm.isDirty = true;

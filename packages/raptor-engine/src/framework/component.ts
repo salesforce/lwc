@@ -24,28 +24,35 @@ export interface ComponentClass {
 
 export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     return vmBeingConstructed === vm;
 }
 
 export function createComponent(vm: VM, Ctor: ComponentClass) {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     // create the component instance
     const vmBeingConstructedInception = vmBeingConstructed;
     vmBeingConstructed = vm;
     const component = invokeComponentConstructor(vm, Ctor);
     vmBeingConstructed = vmBeingConstructedInception;
-    assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
-    assert.block(() => {
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
         const { track } = getComponentDef(Ctor);
         if ('state' in component && (!track || !track.state)) {
             assert.logWarning(`Non-trackable component state detected in ${component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);
         }
-    });
+    }
 }
 
 export function linkComponent(vm: VM) {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     // wiring service
     const { def: { wire } } = vm;
     if (wire) {
@@ -57,14 +64,18 @@ export function linkComponent(vm: VM) {
 }
 
 export function clearListeners(vm: VM) {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     const { deps } = vm;
     const len = deps.length;
     if (len) {
         for (let i = 0; i < len; i += 1) {
             const set = deps[i];
             const pos = ArrayIndexOf.call(deps[i], vm);
-            assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.invariant(pos > -1, `when clearing up deps, the vm must be part of the collection.`);
+            }
             ArraySplice.call(set, pos, 1);
         }
         deps.length = 0;
@@ -78,8 +89,10 @@ export function createComponentListener(): EventListener {
 }
 
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
-    assert.vm(vm);
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+    }
     let { cmpEvents, cmpListener, idx: vmIdx } = vm;
     if (isUndefined(cmpEvents)) {
         // this piece of code must be in sync with modules/component-events
@@ -100,17 +113,21 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
             elm.addEventListener(eventName, cmpListener, false);
         }
     }
-    assert.block(function devModeCheck() {
+
+    if (process.env.NODE_ENV !== 'production') {
         if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
             assert.logWarning(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the connectedCallback() hook.`);
         }
-    });
+    }
+
     ArrayPush.call(cmpEvents[eventName], newHandler);
 }
 
 export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
-    assert.vm(vm);
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
+    }
     const { cmpEvents } = vm;
     if (cmpEvents) {
         const handlers = cmpEvents[eventName];
@@ -120,17 +137,24 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
             return;
         }
     }
-    assert.block(function devModeCheck() {
+    if (process.env.NODE_ENV !== 'production') {
         assert.logWarning(`Did not find event listener ${oldHandler} for event "${eventName}" on ${vm}. Instead only remove an event listener once.`);
-    });
+    }
 }
 
 export function dispatchComponentEvent(vm: VM, event: Event): boolean {
-    assert.vm(vm);
-    assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
+    }
+
     const { cmpEvents, component } = vm;
     const { type } = event;
-    assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is at least one listener in queue for ${type} on ${vm}.`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is at least one listener in queue for ${type} on ${vm}.`);
+    }
+
     const handlers = cmpEvents[type];
     let uninterrupted = true;
     const { stopImmediatePropagation } = event;
@@ -148,9 +172,11 @@ export function dispatchComponentEvent(vm: VM, event: Event): boolean {
 }
 
 export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
-    assert.vm(vm);
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
-    assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${toString(newValue)} for slot ${slotName} in ${vm}.`)
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+        assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${toString(newValue)} for slot ${slotName} in ${vm}.`)
+    }
     let { cmpSlots } = vm;
     let oldValue = cmpSlots && cmpSlots[slotName];
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
@@ -165,7 +191,7 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
             vm.cmpSlots = cmpSlots = create(null);
         }
         cmpSlots[slotName] = newValue;
-        console.log(`Marking ${vm} as dirty: a new value for slot "${slotName}" was added.`);
+
         if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
@@ -173,14 +199,16 @@ export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode
 }
 
 export function removeComponentSlot(vm: VM, slotName: string) {
-    assert.vm(vm);
-    assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
+    }
     // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
     // one of those is changed, the vm should be marked as dirty.
     const { cmpSlots } = vm;
     if (cmpSlots && cmpSlots[slotName]) {
         cmpSlots[slotName] = undefined; // delete will de-opt the cmpSlots, better to set it to undefined
-        console.log(`Marking ${vm} as dirty: the value of slot "${slotName}" was removed.`);
+
         if (!vm.isDirty) {
             markComponentAsDirty(vm);
         }
@@ -188,19 +216,26 @@ export function removeComponentSlot(vm: VM, slotName: string) {
 }
 
 export function renderComponent(vm: VM): VNode[] {
-    assert.vm(vm);
-    assert.invariant(vm.isDirty, `${vm} is not dirty.`);
-    console.log(`${vm} is being updated.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(vm.isDirty, `${vm} is not dirty.`);
+    }
+
     clearListeners(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
-    assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(isArray(vnodes), `${vm}.render() should always return an array of vnodes instead of ${vnodes}`);
+    }
     return vnodes;
 }
 
 export function markComponentAsDirty(vm: VM) {
-    assert.vm(vm);
-    assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
-    assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
+        assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
+    }
     vm.isDirty = true;
 }

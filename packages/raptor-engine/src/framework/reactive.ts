@@ -22,9 +22,10 @@ import {
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 import { init as initDevFormatter } from './reactive-dev-formatter';
-assert.block(() => {
+
+if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();
-});
+}
 
 /*eslint-disable*/
 export type ShadowTarget = (Object | Array<any>);
@@ -98,9 +99,8 @@ export class ReactiveProxyHandler {
         if (isRendering) {
             subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
         }
-
         const observable = isObservable(value);
-        assert.block(function devModeCheck () {
+        if (process.env.NODE_ENV !== 'production') {
             if (!observable && value !== null && isObject(value)) {
                 if (isRendering) {
                     assert.logWarning(`Rendering a non-reactive value ${value} from member property ${key} of ${vmBeingRendered} is not common because mutations on that value will not re-render the template.`);
@@ -108,13 +108,15 @@ export class ReactiveProxyHandler {
                     assert.logWarning(`Returning a non-reactive value ${value} to member property ${key} of ${toString(originalTarget)} is not common because mutations on that value cannot be observed.`);
                 }
             }
-        });
+        }
         return observable ? getReactiveProxy(value) : value;
     }
     set(shadowTarget: ShadowTarget, key: PropertyKey, value: any): boolean {
         const { originalTarget } = this;
         if (isRendering) {
-            assert.logError(`Setting property "${toString(key)}" of ${toString(shadowTarget)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.logError(`Setting property "${toString(key)}" of ${toString(shadowTarget)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
+            }
             return false;
         }
         const oldValue = originalTarget[key];
@@ -137,10 +139,14 @@ export class ReactiveProxyHandler {
         return true;
     }
     apply(target: any/*, thisArg: any, argArray?: any*/) {
-        assert.fail(`invalid call invocation for property proxy ${toString(target)}`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`invalid call invocation for property proxy ${toString(target)}`);
+        }
     }
     construct(target: any, argArray: any, newTarget?: any): any { // eslint-disable-line no-unused-vars
-        assert.fail(`invalid construction invocation for property proxy ${toString(target)}`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`invalid construction invocation for property proxy ${toString(target)}`);
+        }
     }
 
     has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
@@ -174,7 +180,9 @@ export class ReactiveProxyHandler {
         return targetIsExtensible;
     }
     setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any { // eslint-disable-line no-unused-vars
-        assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
+        }
     }
     getPrototypeOf(shadowTarget: ShadowTarget): Object { // eslint-disable-line no-unused-vars
         const { originalTarget } = this;
@@ -236,7 +244,9 @@ export class ReactiveProxyHandler {
 }
 
 export function getReactiveProxy(value: any): any {
-    assert.isTrue(isObservable(value), "perf-optimization: avoid calling this method with non-observable values.");
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isObservable(value), "perf-optimization: avoid calling this method with non-observable values.");
+    }
     value = unwrap(value);
     let proxy = ReactiveMap.get(value);
     if (proxy) {

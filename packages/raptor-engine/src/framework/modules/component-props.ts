@@ -32,7 +32,9 @@ function syncProps(oldVnode: VNode, vnode: ComponentVNode) {
             if (!(key in oldProps) || oldProps[key] != cur) {
                 if (isUndefined(publicProps[key])) {
                     // TODO: this should never really happen because the compiler should always validate
-                    assert.fail(`Ignoring unknown public property "${key}" of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                    if (process.env.NODE_ENV !== 'production') {
+                        assert.fail(`Ignoring unknown public property "${key}" of ${vm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                    }
                     return;
                 }
                 prepareForPropUpdate(vm);

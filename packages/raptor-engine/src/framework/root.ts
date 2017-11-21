@@ -14,7 +14,11 @@ function getLinkedElement(root: Root): HTMLElement {
 
 export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | null {
     const vm = shadowRoot[ViewModelReflection];
-    assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+    }
+
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
     const querySelector = piercingHook(vm.membrane, elm, 'querySelector', elm.querySelector);
@@ -23,7 +27,9 @@ export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: strin
 
 export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: string): MembraneObject {
     const vm = shadowRoot[ViewModelReflection];
-    assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+    }
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
     const querySelectorAll = piercingHook(vm.membrane, elm, 'querySelectorAll', elm.querySelectorAll);
@@ -31,7 +37,10 @@ export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: st
 }
 
 export function Root(vm: VM): ShadowRoot {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+
     defineProperty(this, ViewModelReflection, {
         value: vm,
         writable: false,
@@ -49,22 +58,22 @@ Root.prototype = {
     },
     querySelector(selector: string): MembraneObject | null {
         const node = shadowRootQuerySelector(this, selector);
-        assert.block(() => {
+        if (process.env.NODE_ENV !== 'production') {
             const vm = this[ViewModelReflection];
             if (!node && vm.component.querySelector(selector)) {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
-        });
+        }
         return node;
     },
     querySelectorAll(selector: string): MembraneObject {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
-        assert.block(() => {
+        if (process.env.NODE_ENV !== 'production') {
             const vm = this[ViewModelReflection];
             if (nodeList.length === 0 && vm.component.querySelectorAll(selector).length) {
                 assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
             }
-        });
+        }
         return nodeList;
     },
     toString(): string {

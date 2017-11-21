@@ -9,7 +9,9 @@ import { Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
 
 export function piercingHook(membrane: Membrane, target: Replicable, key: string | Symbol, value: any): any {
     const { handler: { vm } } = membrane;
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     const { piercing } = Services;
     if (piercing) {
         const { component, vnode: { data }, def, context } = vm;
@@ -29,7 +31,9 @@ export function piercingHook(membrane: Membrane, target: Replicable, key: string
 export class PiercingMembraneHandler implements MembraneHandler {
     vm: VM; // eslint-disable-line no-undef
     constructor(vm: VM) {
-        assert.vm(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+        }
         this.vm = vm;
     }
     get(membrane: Membrane, target: Replicable, key: string | Symbol): any {
@@ -51,13 +55,18 @@ export class PiercingMembraneHandler implements MembraneHandler {
         return getReplica(membrane, targetFn.apply(thisArg, argumentsList));
     }
     construct(membrane: Membrane, targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
-        assert.isTrue(newTarget, `construct handler expects a 3rd argument with a newly created object that will be ignored in favor of the wrapped constructor.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isTrue(newTarget, `construct handler expects a 3rd argument with a newly created object that will be ignored in favor of the wrapped constructor.`);
+        }
         return getReplica(membrane, new targetFn(...argumentsList));
     }
 }
 
 export function pierce(vm: VM, value: Replicable | any): any {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+
     let { membrane } = vm;
     if (!membrane) {
         const handler = new PiercingMembraneHandler(vm);

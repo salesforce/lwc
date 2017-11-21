@@ -44,7 +44,7 @@ export const ViewModelReflection = Symbol('internal');
 
 let observableHTMLAttrs: HashTable<boolean>;
 
-assert.block(function devModeCheck () {
+if (process.env.NODE_ENV !== 'production') {
     observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
         const globalProperty = GlobalHTMLProperties[key];
         if (globalProperty && globalProperty.attribute) {
@@ -52,7 +52,7 @@ assert.block(function devModeCheck () {
         }
         return acc;
     }, create(null));
-});
+}
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -74,10 +74,15 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
 }
 
 function createComponentDef(Ctor: ComponentClass): ComponentDef {
-    assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+        // local to dev block
+        const ctorName = Ctor.name;
+        assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
+        assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
+    }
+
     const name: string = Ctor.name;
-    assert.isTrue(name && isString(name), `${toString(Ctor)} should have a "name" property with string value, but found ${name}.`);
-    assert.isTrue(Ctor.constructor, `Missing ${name}.constructor, ${name} should have a "constructor" property.`);
     let props = getPublicPropertiesHash(Ctor);
     let methods = getPublicMethodsHash(Ctor);
     let observedAttrs = getObservedAttributesHash(Ctor);
@@ -89,10 +94,11 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         const propDef = props[propName];
         // initializing getters and setters for each public prop on the target prototype
         const descriptor = getOwnPropertyDescriptor(proto, propName);
-        assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
         const { config } = propDef;
         if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
-            assert.block(function devModeCheck() {
+
+            if (process.env.NODE_ENV !== 'production') {
+                assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
                 const mustHaveGetter = COMPUTED_GETTER_MASK & config;
                 const mustHaveSetter = COMPUTED_SETTER_MASK & config;
                 if (mustHaveGetter) {
@@ -102,7 +108,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
                     assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
                     assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
                 }
-            });
+            }
             createPublicAccessorDescriptor(proto, propName, descriptor);
         } else {
             createPublicPropertyDescriptor(proto, propName, descriptor);
@@ -116,12 +122,12 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
             }
             const descriptor = getOwnPropertyDescriptor(proto, propName);
             // TODO: maybe these conditions should be always applied.
-            assert.block(function devModeCheck() {
+            if (process.env.NODE_ENV !== 'production') {
                 const { get, set, configurable, writable } = descriptor || EmptyObject;
                 assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
                 assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
                 assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            });
+            }
             // initializing getters and setters for each public prop on the target prototype
             createWiredPropertyDescriptor(proto, propName, descriptor);
         }
@@ -130,12 +136,12 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         for (let propName in track) {
             const descriptor = getOwnPropertyDescriptor(proto, propName);
             // TODO: maybe these conditions should be always applied.
-            assert.block(function devModeCheck() {
+            if (process.env.NODE_ENV !== 'production') {
                 const { get, set, configurable, writable } = descriptor || EmptyObject;
                 assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
                 assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
                 assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            });
+            }
             // initializing getters and setters for each public prop on the target prototype
             createTrackedPropertyDescriptor(proto, propName, descriptor);
         }
@@ -161,7 +167,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         descriptors,
     };
 
-    assert.block(function devModeCheck() {
+    if (process.env.NODE_ENV !== 'production') {
         freeze(Ctor.prototype);
         freeze(wire);
         freeze(props);
@@ -173,7 +179,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
                 writable: false,
             });
         }
-    });
+    }
     return def;
 }
 
@@ -190,16 +196,20 @@ function createSetter(key: string) {
         // logic for setting new properties of the element directly from the DOM
         // will only be allowed for root elements created via createElement()
         if (!vm.vnode.isRoot) {
-            assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
+            }
             return;
         }
         const observable = isObservable(newValue);
         newValue = observable ? getReactiveProxy(newValue) : newValue;
-        assert.block(function devModeCheck () {
+
+        if (process.env.NODE_ENV !== 'production') {
             if (!observable && newValue !== null && isObject(newValue)) {
                 assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
             }
-        });
+        }
+
         prepareForPropUpdate(vm);
         vm.component[key] = newValue;
     }
@@ -216,22 +226,26 @@ const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
 
 function getAttributePatched(attrName: string): string | null {
     const vm: VM = this[ViewModelReflection];
-    assert.vm(vm);
-    assert.block(function devModeCheck() {
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
         assertPublicAttributeColission(vm, attrName);
-    });
+    }
+
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
 function setAttributePatched(attrName: string, newValue: any) {
     const vm = this[ViewModelReflection];
-    assert.vm(vm);
-    const { def: { observedAttrs } } = vm;
 
-    assert.block(function devModeCheck() {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
-    });
+    }
+
+    const { def: { observedAttrs } } = vm;
+
     const oldValue = getAttribute.call(this, attrName);
     setAttribute.apply(this, ArraySlice.call(arguments));
     newValue = getAttribute.call(this, attrName);
@@ -243,13 +257,13 @@ function setAttributePatched(attrName: string, newValue: any) {
 
 function removeAttributePatched(attrName: string) {
     const vm = this[ViewModelReflection];
-    assert.vm(vm);
-    const { def: { observedAttrs } } = vm;
 
-    assert.block(function devModeCheck() {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
-    });
+    }
+    const { def: { observedAttrs } } = vm;
     const oldValue = getAttribute.call(this, attrName);
     removeAttribute.apply(this, ArraySlice.call(arguments));
     const newValue = getAttribute.call(this, attrName);
@@ -264,15 +278,20 @@ function assertPublicAttributeColission(vm: VM, attrName: string) {
     const propName = getPropNameFromAttrName(lowercasedAttrName);
     const { def: { props: propsConfig } } = vm;
 
-    if (propsConfig && propsConfig[propName]) {
-        assert.logError(`Invalid attribute "${lowercasedAttrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+    if (process.env.NODE_ENV !== 'production') {
+        if (propsConfig && propsConfig[propName]) {
+            assert.logError(`Invalid attribute "${lowercasedAttrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+        }
     }
 }
 
 function assertTemplateMutationViolation(vm: VM, attrName: string) {
     const { vnode: { isRoot } } = vm;
-    if (!isRoot) {
-        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isRoot) {
+            assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+        }
     }
 }
 
@@ -314,9 +333,8 @@ function getTrackHash(target: ComponentClass): HashTable<WireDef> | undefined {
     if (!track || !getOwnPropertyNames(track).length) {
         return;
     }
-    assert.block(function devModeCheck() {
-        // TODO: check that anything in `track` is correctly defined in the prototype
-    });
+
+    // TODO: check that anything in `track` is correctly defined in the prototype
     return assign(create(null), track);
 }
 
@@ -326,9 +344,7 @@ function getWireHash(target: ComponentClass): HashTable<WireDef> | undefined {
         return;
     }
 
-    assert.block(function devModeCheck() {
-        // TODO: check that anything in `wire` is correctly defined in the prototype
-    });
+    // TODO: check that anything in `wire` is correctly defined in the prototype
     return assign(create(null), wire);
 }
 
@@ -338,7 +354,7 @@ function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: HashTable<PropDef>, propName: string): HashTable<PropDef> => {
-        assert.block(function devModeCheck() {
+        if (process.env.NODE_ENV !== 'production') {
             if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, attribute, experimental } = GlobalHTMLProperties[propName];
                 const msg = [];
@@ -353,7 +369,7 @@ function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
                 }
                 console.error(msg.join('\n'));
             }
-        });
+        }
 
         propsHash[propName] = assign({ config: 0 }, props[propName]);
         return propsHash;
@@ -367,10 +383,12 @@ function getPublicMethodsHash(target: ComponentClass): HashTable<number> {
     }
     return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable<number> => {
         methodsHash[methodName] = 1;
-        assert.block(function devModeCheck() {
+
+        if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
             freeze(target.prototype[methodName]);
-        });
+        }
+
         return methodsHash;
     }, create(null));
 }
@@ -381,28 +399,19 @@ function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
         return EmptyObject;
     }
     return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable<number> => {
-        assert.block(function devModeCheck() {
-            // Check if it is a regular data or aria attribute
-            if (attrName.indexOf('data-') === 0 || attrName.indexOf('aria-') === 0) {
-                return;
-            }
-            // Check if observed attribute is observable HTML Attribute
-            if (observableHTMLAttrs[attrName]) {
-                return;
-            }
-            // TODO: all these checks should be done in the compiler
+        if (process.env.NODE_ENV !== 'production') {
             const propName = getPropNameFromAttrName(attrName);
             // Check if it is a user defined public property
             if (target.publicProps && target.publicProps[propName]) { // User defined prop
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. To observe mutations of the public property "${propName}" you can define a public getter and setter decorated with @api in component ${target.name}.`);
-            } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
+            } else if (!observableHTMLAttrs[attrName] && ( GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute)) {
                 // Check for misspellings
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[propName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-            } else {
+            } else if(!observableHTMLAttrs[attrName] && (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1)){
                 // Attribute is not valid observable HTML Attribute
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
             }
-        });
+        }
         observedAttributes[attrName] = 1;
         return observedAttributes;
     }, create(null));

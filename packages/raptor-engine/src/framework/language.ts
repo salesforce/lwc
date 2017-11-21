@@ -88,15 +88,3 @@ export function toString(obj: any): string {
     }
     return obj + '';
 }
-
-export function bind(fn: Function, ctx: Object): Function {
-    function boundFn(a: any): any {
-        const l = arguments.length
-        return l
-            ? l > 1
-                ? fn.apply(ctx, arguments)
-                : fn.call(ctx, a)
-            : fn.call(ctx)
-    }
-    return boundFn;
-}

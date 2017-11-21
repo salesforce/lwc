@@ -11,7 +11,9 @@ const ConnectingSlot = Symbol();
 const DisconnectingSlot = Symbol();
 
 function callNodeSlot(node: Node, slot: symbol): Node {
-    assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
+    }
     if (!isUndefined(node[slot])) {
         node[slot]();
     }
@@ -45,9 +47,11 @@ assign(Node.prototype, {
 // * it is a root, and was removed manually
 // * the element was appended to another container which requires disconnection to happen first
 function forceDisconnection(vnode: ComponentVNode) {
-    assert.vnode(vnode);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vnode(vnode);
+        assert.vm(vnode.vm);
+    }
     const { vm } = vnode;
-    assert.vm(vm);
     vm.isDirty = true;
     removeInsertionIndex(vm);
     clearListeners(vm);

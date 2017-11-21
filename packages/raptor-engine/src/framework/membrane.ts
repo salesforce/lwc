@@ -33,7 +33,9 @@ export function getReplica(membrane: Membrane, value: Replicable | any): Replica
     if (!isReplicable(value)) {
         return value;
     }
-    assert.isTrue(membrane instanceof Membrane, `getReplica() first argument must be a membrane.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(membrane instanceof Membrane, `getReplica() first argument must be a membrane.`);
+    }
     let { cells } = membrane;
     const r = cells.get(value);
     if (r) {
