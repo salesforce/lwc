@@ -4,7 +4,7 @@ import registerWireService from 'wire-service';
 function createMockWireService() {
     let observer;
 
-    function data(d) {
+    function next(d) {
         observer.next(d);
     }
 
@@ -29,7 +29,7 @@ function createMockWireService() {
 
     return {
         init,
-        data,
+        next,
         error,
         complete,
         lastInitializedArgs

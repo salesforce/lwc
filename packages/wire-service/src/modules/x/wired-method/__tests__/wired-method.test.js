@@ -27,7 +27,7 @@ describe('wired-method', () => {
         it('should display data correctly', () => {
             const elem = createElement('wired-method', { is: WiredMethod });
             document.body.appendChild(elem);
-            mockTestAdapter.data({
+            mockTestAdapter.next({
                 Name: 'name'
             });
 
