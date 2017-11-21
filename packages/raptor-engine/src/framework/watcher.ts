@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { scheduleRehydration } from "./vm";
 import { markComponentAsDirty } from "./component";
-import { isUndefined, toString, create, ArrayIndexOf, ArrayPush } from "./language";
+import { isUndefined, create, ArrayIndexOf, ArrayPush } from "./language";
 
 const TargetToReactiveRecordMap: Map<Object, ReactiveRecord> = new WeakMap();
 
@@ -13,11 +13,11 @@ export function notifyListeners(target: Object, key: string | Symbol) {
             const len = value.length;
             for (let i = 0; i < len; i += 1) {
                 const vm = value[i];
-                assert.vm(vm);
-                console.log(`Marking ${vm} as dirty: property "${toString(key)}" of ${toString(target)} was set to a new value.`);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.vm(vm);
+                }
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);
-                    console.log(`Scheduling ${vm} for rehydration due to mutation.`);
                     scheduleRehydration(vm);
                 }
             }
@@ -26,7 +26,9 @@ export function notifyListeners(target: Object, key: string | Symbol) {
 }
 
 export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol) {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     let reactiveRecord: ReactiveRecord = TargetToReactiveRecordMap.get(target);
     if (isUndefined(reactiveRecord)) {
         const newRecord: ReactiveRecord = create(null);

@@ -8,7 +8,9 @@ export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
 
 function flushCallbackQueue() {
-    assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+    }
     const callbacks: Array<Callback> = nextTickCallbackQueue;
     nextTickCallbackQueue = []; // reset to a new queue
     for (let i = 0, len = callbacks.length; i < len; i += 1) {
@@ -17,7 +19,9 @@ function flushCallbackQueue() {
 }
 
 export function addCallbackToNextTick(callback: Callback) {
-    assert.isTrue(isFunction(callback), `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isFunction(callback), `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
+    }
     if (nextTickCallbackQueue.length === 0) {
         Promise.resolve().then(flushCallbackQueue);
     }
@@ -90,9 +94,9 @@ export function getMapFromClassName(className: string): HashTable<boolean> {
         map[className.slice(start, i)] = true;
     }
     classNameToClassMap[className] = map;
-    assert.block(() => {
+    if (process.env.NODE_ENV !== 'production') {
         // just to make sure that this object never changes as part of the diffing algo
         freeze(map);
-    });
+    }
     return map;
 }

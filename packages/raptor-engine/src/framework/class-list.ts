@@ -17,7 +17,9 @@ function getLinkedElement(classList: ClassList): HTMLElement {
 // the simplest one.
 // https://www.w3.org/TR/dom/#domtokenlist
 export function ClassList(vm: VM): DOMTokenList {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     defineProperty(this, ViewModelReflection, {
         value: vm,
         writable: false,

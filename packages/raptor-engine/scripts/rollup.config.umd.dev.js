@@ -1,17 +1,13 @@
 const path = require('path');
-const strip = require('rollup-plugin-strip-caridy-patched');
-const uglify = require('rollup-plugin-uglify');
-
 const replace = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
 
-const { minify } = require('uglify-es');
 const { version } = require('../package.json');
+const { generateTargetName } = require('./engine.rollup.config.util');
 
 const input = path.resolve(__dirname, '../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../dist/umd');
 
-const { generateTargetName } = require('./engine.rollup.config.util');
 const banner = (
     `/*
      * Copyright (C) 2017 salesforce.com, inc.
@@ -20,21 +16,10 @@ const banner = (
 );
 const footer = `/** version: ${version} */`;
 
-function rollupConfig({target, format}) {
-
-    let plugins = [
-        typescript({
-            target: target,
-            typescript: require('typescript'),
-        }),
-        replace({
-            'process.env.NODE_ENV': JSON.stringify('development'),
-            exclude: 'node_modules/**'
-        })
-    ].filter((plugin) => plugin)
-
-    const targetName = generateTargetName(arguments[0]);
-    const config = {
+function rollupConfig(config) {
+    const { format, target } = config;
+    const targetName = generateTargetName(config);
+    return {
         input: input,
         name: "Engine",
         banner: banner,
@@ -43,9 +28,16 @@ function rollupConfig({target, format}) {
             file: path.join(outputDir + `/${target}`,  targetName),
             format: format
         },
-        plugins: plugins.filter( (plugin) => plugin )
+        plugins: [
+            typescript({
+                target: target,
+                typescript: require('typescript'),
+            }),
+            replace({
+                'process.env.NODE_ENV': JSON.stringify('development')
+            })
+        ]
     }
-    return config;
 }
 
 module.exports = [

@@ -6,7 +6,7 @@
   "module": "dist/modules/es2017/engine.js",
   "typings": "types/engine.d.ts",
   "scripts": {
-    "clean": "rimraf dist/ lib/",
+    "clean": "rimraf dist/",
     "test": "jest --coverage",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
@@ -27,7 +27,6 @@
     "rollup": "~0.50.0",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-strip-caridy-patched": "^1.1.1",
     "rollup-plugin-typescript": "^0.8.1",
     "rollup-plugin-uglify": "^2.0.1",
     "snabbdom": "^0.5.4",

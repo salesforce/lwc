@@ -13,14 +13,20 @@ function initializeComponent(oldVnode: ComponentVNode, vnode: ComponentVNode) {
      * The reason why we do the initialization here instead of prepatch or any other hook
      * is because the creation of the component does require the element to be available.
      */
-    assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(vnode.elm, `${vnode}.elm should be ready.`);
+    }
     if (oldVnode.vm && oldVnode.Ctor === Ctor) {
-        assert.invariant(vnode.elm === oldVnode.elm, `${vnode}.elm should always match the oldVnode's   element.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.invariant(vnode.elm === oldVnode.elm, `${vnode}.elm should always match the oldVnode's element.`);
+        }
         relinkVM(oldVnode.vm, vnode);
     } else {
         createVM(vnode);
     }
-    assert.invariant(vnode.vm.component, `vm ${vnode.vm} should have a component and element associated to it.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(vnode.vm.component, `vm ${vnode.vm} should have a component and element associated to it.`);
+    }
 }
 
 export default {

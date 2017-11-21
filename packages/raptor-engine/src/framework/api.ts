@@ -42,39 +42,41 @@ export function v(sel: string | undefined, data: VNodeData | undefined, children
 
     const vnode: VNode = { sel, data, children, text, elm, key, Ctor, uid };
 
-    assert.block(function devModeCheck() {
+    if (process.env.NODE_ENV !== 'production') {
         // adding toString to all vnodes for debuggability
         vnode.toString = (): string => `[object:vnode ${sel}]`;
-    });
+    }
 
     return vnode;
 }
 
 // [h]tml node
 export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
-    assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
-    assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
-    assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
-    // checking reserved internal data properties
-    assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
-    const { classMap, className, style, styleMap } = data;
-    assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
-    data.class = classMap || (className && getMapFromClassName(className));
-    assert.isFalse(styleMap && style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
-    assert.block(function devModeCheck () {
-        if (style && !isString(style)) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
+        assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
+        assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+        // checking reserved internal data properties
+        assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
+        assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+        assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+        if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-    });
+    }
+    const { classMap, className, style, styleMap } = data;
+
+    data.class = classMap || (className && getMapFromClassName(className));
     data.style = styleMap || (style && style + '');
-    assert.block(function devModeCheck() {
+
+    if (process.env.NODE_ENV !== 'production') {
         children.forEach((vnode) => {
-            if (vnode === null) {
-                return;
+            if (vnode !== null) {
+                assert.vnode(vnode);
             }
-            assert.vnode(vnode);
         });
-    });
+    }
+
     if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
         addNS(data, children, sel);
     }
@@ -90,14 +92,23 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
         Ctor = Ctor();
     }
 
-    assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
-    assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
-    assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
+        assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
+        assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         // checking reserved internal data properties
-    assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
+        assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling c().`);
+        assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
+        assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
+        assert.isFalse(data.styleMap && data.style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
+        if (data.style && !isString(data.style)) {
+            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
+        }
+    }
+
     const { key, slotset, styleMap, style, on, className, classMap, props: _props } = data;
     let { attrs } = data;
-    assert.isTrue(arguments.length < 4, `Compiler Issue: Custom elements expect up to 3 arguments, received ${arguments.length} instead.`);
+
     // hack to allow component authors to force the usage of the "is" attribute in their components
     const { forceTagName } = Ctor;
     if (!isUndefined(forceTagName) && (isUndefined(attrs) || isUndefined(attrs.is))) {
@@ -105,15 +116,9 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
         attrs.is = sel;
         sel = forceTagName;
     }
+
     data = { hook, key, slotset, attrs, on, _props };
-    assert.isFalse(className && classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
     data.class = classMap || (className && getMapFromClassName(className));
-    assert.isFalse(styleMap && style, `vnode.data.styleMap and vnode.data.style ambiguous declaration.`);
-    assert.block(function devModeCheck () {
-        if (style && !isString(style)) {
-            assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
-        }
-    });
     data.style = styleMap || (style && style + '');
     return v(sel, data, EmptyArray, undefined, undefined, Ctor);
 }
@@ -122,12 +127,20 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
 export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
     const list: Array<VNode> = [];
     if (isUndefined(iterable) || iterable === null) {
-        assert.logWarning(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.logWarning(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
+        }
         return list;
     }
-    assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
+    }
     const iterator = iterable[SymbolIterator]();
-    assert.isTrue(iterator && isFunction(iterator.next), `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(iterator && isFunction(iterator.next), `Invalid iterator function for "${iterable}" in ${vmBeingRendered}.`);
+    }
 
     let next = iterator.next();
     let i = 0;
@@ -144,7 +157,8 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
         } else {
             ArrayPush.call(list, vnode);
         }
-        assert.block(function devModeCheck() {
+
+        if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach((vnode: VNode | any) => {
                 if (vnode && isObject(vnode) && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
@@ -152,7 +166,7 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
                     assert.logWarning(`Missing "key" attribute in iteration with child "${toString(vnode.Ctor.name)}", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }
             });
-        });
+        }
 
         // preparing next value
         i += 1;
@@ -165,7 +179,9 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
  * [f]lattening
  */
 export function f(items: Array<any>): Array<any> {
-    assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
+    }
     const len = items.length;
     const flattened: Array<VNode|null|number|string> = [];
     for (let i = 0; i < len; i += 1) {
@@ -194,7 +210,9 @@ export function d(value: any): VNode | null {
 
 // [b]ind function
 export function b(fn: EventListener): EventListener {
-    assert.vm(vmBeingRendered);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vmBeingRendered);
+    }
     function handler(event: Event) {
         // TODO: only if the event is `composed` it can be dispatched
         invokeComponentCallback(handler.vm, handler.fn, handler.vm.component, [event]);

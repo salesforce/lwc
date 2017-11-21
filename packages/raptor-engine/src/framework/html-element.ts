@@ -21,10 +21,11 @@ function querySelectorAllFromComponent(cmp: ComponentElement, selectors: string)
 
 // This should be as performant as possible, while any initialization should be done lazily
 function ComponentElement(): ComponentElement {
-    assert.vm(vmBeingConstructed);
-    assert.vnode(vmBeingConstructed.vnode);
-    const vnode = vmBeingConstructed.vnode;
-    assert.invariant(vnode.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vnode}.`);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vmBeingConstructed);
+        assert.vnode(vmBeingConstructed.vnode);
+        assert.invariant(vmBeingConstructed.vnode.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed.vnode}.`);
+    }
     vmBeingConstructed.component = this;
     this[ViewModelReflection] = vmBeingConstructed;
 }
@@ -46,7 +47,8 @@ ComponentElement.prototype = {
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
         const vm = this[ViewModelReflection];
-        assert.block(() => {
+
+        if (process.env.NODE_ENV !== 'production') {
             const { type: evtName, composed, bubbles } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && !composed) {
@@ -59,7 +61,8 @@ ComponentElement.prototype = {
             if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
                 assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
             }
-        });
+        }
+
         // Pierce dispatchEvent so locker service has a chance to overwrite
         pierce(vm, elm);
         const dispatchEvent = piercingHook(vm.membrane, elm, 'dispatchEvent', elm.dispatchEvent);
@@ -67,31 +70,35 @@ ComponentElement.prototype = {
     },
     addEventListener(type: string, listener: EventListener) {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        assert.block(function devModeCheck() {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
             if (arguments.length > 2) {
                 // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
                 assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
-        });
+        }
         addComponentEventListener(vm, type, listener);
     },
     removeEventListener(type: string, listener: EventListener) {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        assert.block(function devModeCheck() {
+
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
             if (arguments.length > 2) {
                 assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
             }
-        });
+        }
         removeComponentEventListener(vm, type, listener);
     },
     getAttribute(attrName: string): string | null {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
 
         // logging errors for experimentals and special attributes
-        assert.block(function devModeCheck() {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
             const propName = getPropNameFromAttrName(attrName);
             const { def: { props: publicPropsConfig } } = vm;
             if (publicPropsConfig[propName]) {
@@ -99,24 +106,28 @@ ComponentElement.prototype = {
             } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, experimental } = GlobalHTMLProperties[propName];
                 if (error) {
-                    console.error(error);
+                    assert.logError(error);
                 } else if (experimental) {
-                    console.error(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
+                    assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
                 }
             }
-        });
+        }
 
         const elm = getLinkedElement(this);
         return elm.getAttribute.apply(elm, ArraySlice.call(arguments));
     },
     getBoundingClientRect(): DOMRect {
         const elm = getLinkedElement(this);
-        assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
+        }
         return elm.getBoundingClientRect();
     },
     querySelector(selectors: string): Node | null {
         const vm = this[ViewModelReflection];
-        assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        }
         const nodeList = querySelectorAllFromComponent(this, selectors);
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
@@ -124,25 +135,30 @@ ComponentElement.prototype = {
                 return pierce(vm, nodeList[i]);
             }
         }
-        assert.block(() => {
+
+        if (process.env.NODE_ENV !== 'production') {
             if (shadowRootQuerySelector(this.root, selectors)) {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
             }
-        });
+        }
 
         return null;
     },
     querySelectorAll(selectors: string): NodeList {
         const vm = this[ViewModelReflection];
-        assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
+        }
+
         const nodeList = querySelectorAllFromComponent(this, selectors);
         // TODO: locker service might need to do something here
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
-        assert.block(() => {
+
+        if (process.env.NODE_ENV !== 'production') {
             if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
-        });
+        }
         return pierce(vm, filteredNodes);
     },
     get tagName(): string {
@@ -155,20 +171,24 @@ ComponentElement.prototype = {
     },
     set tabIndex(value: number) {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
-        assert.isFalse(isRendering, `Setting property "tabIndex" of ${toString(value)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
-
-        if (isBeingConstructed(vm)) {
-            assert.fail(`Setting property "tabIndex" during the construction process of ${vm} is invalid.`);
-            return;
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isRendering, `Setting property "tabIndex" of ${toString(value)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
+            if (isBeingConstructed(vm)) {
+                assert.fail(`Setting property "tabIndex" during the construction process of ${vm} is invalid.`);
+            }
         }
 
+        if (isBeingConstructed(vm)) {
+            return;
+        }
         const elm = getLinkedElement(this);
         elm.tabIndex = value;
     },
     get classList(): DOMTokenList {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+        }
         let { classListObj } = vm;
         // lazy creation of the ClassList Object the first time it is accessed.
         if (isUndefined(classListObj)) {
@@ -180,7 +200,9 @@ ComponentElement.prototype = {
     },
     get root(): ShadowRoot {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+        }
         let { cmpRoot } = vm;
         // lazy creation of the ShadowRoot Object the first time it is accessed.
         if (isUndefined(cmpRoot)) {
@@ -191,7 +213,9 @@ ComponentElement.prototype = {
     },
     toString(): string {
         const vm = this[ViewModelReflection];
-        assert.vm(vm);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+        }
         const { vnode: { sel, data: { attrs } } } = vm;
         const is = attrs && attrs.is;
         return `<${sel}${ is ? ' is="${is}' : '' }>`;
@@ -199,8 +223,7 @@ ComponentElement.prototype = {
 }
 
 // Global HTML Attributes
-assert.block(function devModeCheck() {
-
+if (process.env.NODE_ENV !== 'production') {
     getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
         if (propName in ComponentElement.prototype) {
             return; // no need to redefine something that we are already exposing
@@ -235,7 +258,7 @@ assert.block(function devModeCheck() {
         })
     });
 
-});
+}
 
 freeze(ComponentElement);
 seal(ComponentElement.prototype);

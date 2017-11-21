@@ -9,12 +9,16 @@ import { isBeingConstructed } from "../component";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
-    assert.fail("@api may only be used as a decorator.");
+    if (process.env.NODE_ENV !== 'production') {
+        assert.fail("@api may only be used as a decorator.");
+    }
 }
 
 let vmBeingUpdated: VM | null = null;
 export function prepareForPropUpdate(vm: VM) {
-    assert.vm(vm);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
     vmBeingUpdated = vm;
 }
 
@@ -23,9 +27,13 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
     defineProperty(proto, key, {
         get(): any {
             const vm: VM = this[ViewModelReflection];
-            assert.vm(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
             if (isBeingConstructed(vm)) {
-                assert.logError(`${vm} constructor should not read the value of property "${key}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} constructor should not read the value of property "${key}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                }
                 return;
             }
             if (isRendering) {
@@ -37,8 +45,10 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
         },
         set(newValue: any) {
             const vm = this[ViewModelReflection];
-            assert.vm(vm);
-            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
+            }
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
@@ -52,14 +62,16 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             } else if (isBeingConstructed(vm)) {
                 const observable = isObservable(newValue);
                 newValue = observable ? getReactiveProxy(newValue) : newValue;
-                assert.block(function devModeCheck () {
+                if (process.env.NODE_ENV !== 'production') {
                     if (!observable && newValue !== null && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
-                });
+                }
                 vm.cmpProps[key] = newValue;
             } else {
-                assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
+                }
             }
         },
         enumerable: descriptor ? descriptor.enumerable : true,
@@ -71,23 +83,31 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
     defineProperty(proto, key, {
         get(): any {
             const vm: VM = this[ViewModelReflection];
-            assert.vm(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
             if (get) {
                 return get.call(this);
             }
         },
         set(newValue: any) {
             const vm = this[ViewModelReflection];
-            assert.vm(vm);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
             if (!isBeingConstructed(vm) && vmBeingUpdated !== vm) {
-                assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
+                }
                 return;
             }
             vmBeingUpdated = null; // releasing the lock
             if (set) {
                 set.call(this, newValue);
             } else {
-                assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter.`);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter.`);
+                }
             }
         },
         enumerable,
