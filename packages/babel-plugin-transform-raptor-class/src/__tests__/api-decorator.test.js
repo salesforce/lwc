@@ -211,3 +211,38 @@ describe('Public Methods', () => {
         Test.publicMethods = ["foo"];
     `);
 });
+
+describe('metadata', () => {
+    test('has @api properties', `
+        import { Element } from 'engine';
+        export default class Foo extends Element {
+            _privateTodo;
+            @api get todo () { 
+                return this._privateTodo; 
+            }
+            @api set todo (val) { 
+                return this._privateTodo = val;
+            }
+            @api
+            index;
+        }
+    `, undefined, undefined, {
+            apiProperties: [{ name: 'todo' }, { name: 'index' }]
+    });
+
+    test('no @api properties', `
+        import { Element } from 'engine';
+        export default class Foo extends Element {
+            _privateTodo;
+            get todo () { 
+                return this._privateTodo; 
+            }
+            set todo (val) { 
+                return this._privateTodo = val;
+            }
+            index;
+        }
+    `, undefined, undefined, {
+        apiProperties: []
+    });
+});

@@ -2,6 +2,7 @@
 /* eslint-env node */
 
 import * as path from 'path';
+import * as util from 'util';
 import { compile } from '../packages/raptor-compiler/src/index.js';
 
 const args = process.argv.slice(2);
@@ -41,6 +42,10 @@ compile(entry, options)
     console.log('\n>> Metadata --------------------------------------------------');
     console.log('\n', result.metadata);
     console.log('>> End Metadata ------------------------------------------------');
+
+    console.log('\n>> Raw Metadata --------------------------------------------------');
+    console.log('\n', util.inspect(result.rawMetadata, false, null, true));
+    console.log('>> End Raw Metadata ------------------------------------------------');
 })
 .catch((err) => {
     console.log(err);

@@ -87,14 +87,24 @@ module.exports = function apiVisitor ({ types: t }) {
     };
 
     return {
-        Class(path) {
+        Class(path, state) {
             const classBody = path.get('body');
-            const publicMethods = [];
-            const publicProps = [];
+            const publicMethods = []; // paths to @api Decorator nodes for class methods
+            const publicProps = []; // paths to @api Decorator nodes for class properties
 
             path.traverse(decoratorVisitor, {
                 publicMethods,
                 publicProps,
+            });
+
+            publicProps.forEach((decoratorPath) => {
+                const property = decoratorPath.parent;
+                if (property.kind !== 'get') {
+                    const id = property.key;
+                    state.file.metadata.apiProperties.push({
+                        name: id.name
+                    });
+                }
             });
 
             if (publicProps.length) {

@@ -36,7 +36,7 @@ function errorFromObject(obj) {
 function makeTest(plugin, opts = {}) {
     const testTransform = transform(plugin, opts);
 
-    const pluginTest = function(name, source, expectedSource, expectedError) {
+    const pluginTest = function(name, source, expectedSource, expectedError, expectedMetadata) {
         test(name, () => {
             let res;
             let err;
@@ -55,7 +55,12 @@ function makeTest(plugin, opts = {}) {
 
                 expect(err).toMatchObject(errorFromObject(expectedError));
             } else {
-                expect(res.code).toBe(unpad(expectedSource));
+                if (expectedSource) {
+                    expect(res.code).toBe(unpad(expectedSource));
+                }
+                if (expectedMetadata) {
+                    expect(res.metadata).toMatchObject(expectedMetadata);
+                }
             }
         });
     }
