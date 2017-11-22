@@ -11,6 +11,7 @@ module.exports = function ({ types, traverse }) {
         Program: {
             enter(_, state) {
                 state.file.metadata.labels = [];
+                state.file.metadata.apiProperties = [];
             }
         }
     };

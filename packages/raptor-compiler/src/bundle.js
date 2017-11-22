@@ -63,6 +63,7 @@ export default function bundle(entry, options = {}) {
                 code: result.code,
                 map: result.map,
                 metadata: mergeMetadata(options.$metadata),
+                rawMetadata: options.$metadata
             };
         });
 }

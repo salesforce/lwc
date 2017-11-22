@@ -135,4 +135,27 @@ describe('transform', () => {
 
         expect(pretify(code)).toBe(pretify(expected));
     });
+
+    it('javascript metadata contains apiProperties', async () => {
+        const content = `
+            import { Element } from 'engine';
+            export default class Foo extends Element {
+                _privateTodo;
+                @api get todo () { 
+                    return this._privateTodo; 
+                }
+                @api set todo (val) { 
+                    return this._privateTodo = val;
+                }
+                @api
+                index;
+            }
+        `;
+
+        const result = await transform(content, 'foo.js', {
+            moduleNamespace: 'x',
+            moduleName: 'foo',
+        });
+        expect(result.metadata.apiProperties).toEqual([{ name: 'todo' }, { name: 'index' }]);
+    });
 });
