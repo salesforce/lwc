@@ -17,7 +17,7 @@ export function patchedGetOwnPropertyNames(replicaOrAny: object): Array<string> 
 // https://tc39.github.io/ecma262/#sec-ordinary-object-internal-methods-and-internal-slots-ownpropertykeys
 // https://tc39.github.io/ecma262/#sec-ordinaryownpropertykeys
 export function OwnPropertyKeys(O: any) {
-    return ArrayConcat.call(patchedGetOwnPropertyNames(O), Object.getOwnPropertySymbols(O));
+    return ArrayConcat.call(Object.getOwnPropertyNames(O), Object.getOwnPropertySymbols(O));
 }
 
 export function patchedAssign(replicaOrAny: object): object {
