@@ -34,7 +34,9 @@ import { isCompatProxy } from './methods';
 const {
     shift: ArrayShift,
     slice: ArraySlice,
-    unshift: ArrayUnshift
+    unshift: ArrayUnshift,
+    push: ArrayPush,
+    concat: ArrayConcat
 } = Array.prototype;
 
 // Patched Functions:
@@ -47,6 +49,9 @@ function isArray(replicaOrAny: any): replicaOrAny is any[] {
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.4
 function compatConcat (this: any) {
+    if (!isCompatProxy(this)) {
+        return ArrayConcat.apply(this, arguments);
+    }
     const O = Object(this);
     const A = [];
     let N = 0;
@@ -67,10 +72,14 @@ function compatConcat (this: any) {
         }
     }
     return A;
+
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.13
 function compatUnshift (this: any): number {
+    if (!isCompatProxy(this)) {
+        return ArrayUnshift.apply(this, arguments);
+    }
     const O = Object(this);
     const len = O.length;
     const argCount = arguments.length;
@@ -100,6 +109,9 @@ function compatUnshift (this: any): number {
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.7
 function compatPush (this: any) {
+    if (!isCompatProxy(this)) {
+        return ArrayPush.apply(this, arguments);
+    }
     const O = Object(this);
     let n = O.length;
     let items = ArraySlice.call(arguments);
