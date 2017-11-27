@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const babel = require('babel-core');
-const compatPlugin = require('babel-plugin-transform-raptor-compat');
-const ecmaPolyfillBuilder = require('core-js-builder'); // For the polyfill list: https://github.com/zloirock/core-js
 const UglifyJS = require("uglify-es");
+const compatPlugin = require('babel-plugin-transform-raptor-compat');
+const PolyfillBuilder = require('./polyfill-builder');
 
 // -- File source dependencies ----------
 const proxyCompat = fs.readFileSync(require.resolve('proxy-compat/dist/umd/proxy-compat.js'), 'utf8');
@@ -19,37 +19,6 @@ const polyfillSources = polyfillList.reduce((src, p) => src + fs.readFileSync(pa
 const compatKeys = Object.values(compatPlugin.keys);
 const compatOverrides = compatKeys.reduce((str, key) => `${str} var __${key} = window.Proxy.${key};`, '');
 const dest = path.join(__dirname, '../dist/umd');
-const polyfillConfig = {
-    modules: [
-        'es6',
-        'core.dict',
-        'es7.array.includes',
-        'es7.object.values',
-        'es7.object.entries'
-    ],
-    blacklist: [
-        'es6.reflect',
-        'es6.math',
-        'es6.array.slice',
-        'es6.array.join',
-        'es6.array.forEach',
-        'es6.string.anchor',
-        'es6.string.big',
-        'es6.string.blink',
-        'es6.string.bold',
-        'es6.string.fixed',
-        'es6.string.fontcolor',
-        'es6.string.fontsize',
-        'es6.string.italics',
-        'es6.string.link',
-        'es6.string.small',
-        'es6.string.strike',
-        'es6.string.sub',
-        'es6.string.sup',
-    ],
-    library: false, // flag for build without global namespace pollution, by default - false
-    umd: false      // use UMD wrapper for export `core` object, by default - true
-};
 
 const babelConfig = {
     babelrc: false,
@@ -57,16 +26,16 @@ const babelConfig = {
 };
 
 // -- Build -----------------------------
-ecmaPolyfillBuilder(polyfillConfig)
+PolyfillBuilder()
 .then(ecmaPolyfills => {
-    const compatArtifactsSource = polyfillSources + ecmaPolyfills + babelHelpers;
-    const { code : compatPolyfillsAndBabelHelpers } = babel.transform(compatArtifactsSource, babelConfig);
+    const { code : babelHelpersCompat } = babel.transform(babelHelpers, babelConfig);
+    const compatArtifactsSource = polyfillSources + ecmaPolyfills + babelHelpersCompat;
 
     const compatSrc = [
         '/* proxy-compat */',
         proxyCompat,
         '/* Transformed Polyfills + Babel helpers */',
-        compatPolyfillsAndBabelHelpers,
+        compatArtifactsSource,
         '/* proxy-compat */',
         compatOverrides
     ].join('\n');

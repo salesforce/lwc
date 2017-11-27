@@ -35,15 +35,28 @@ export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxyInstance
 }
 
 export const getKey: compatGetKey = function(replicaOrAny: any, key: PropertyKey): any {
-    if (isCompatProxy(replicaOrAny)) {
-        return replicaOrAny.get(key);
-    }
-    return replicaOrAny[key];
+    return isCompatProxy(replicaOrAny) ?
+        replicaOrAny.get(key) :
+        replicaOrAny[key];
 }
 
-export const callKey: compatCallKey = function(replicaOrAny: any, key: PropertyKey, ...args: Array<any>): any {
+export const callKey: compatCallKey = function(replicaOrAny: any, key: PropertyKey, a1: any, a2: any, a3: any): any {
     const fn = getKey(replicaOrAny, key);
-    return fn.apply(replicaOrAny, args);
+    const l = arguments.length;
+
+    switch (l) {
+      case 2: return fn.call(replicaOrAny);
+      case 3: return fn.call(replicaOrAny, a1);
+      case 4: return fn.call(replicaOrAny, a1, a2);
+      case 5: return fn.call(replicaOrAny, a1, a2, a3);
+
+      default:
+        const args = [];
+        for (let i = 2; i < l; i++) {
+            args[i - 2] = arguments[i];
+        }
+        return fn.apply(replicaOrAny, args);
+    }
 }
 
 export const setKey: compatSetKey = function(replicaOrAny: any, key: PropertyKey, newValue: any, originalReturnValue?: any): any {

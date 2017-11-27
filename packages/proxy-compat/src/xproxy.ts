@@ -60,8 +60,17 @@ const { isArray } = Array;
 // https://github.com/es-shims/get-own-property-symbols
 // In this case, because this polyfill is assing all the stuff to Object.prototype to keep
 // all the other invariants of Symbols, we need to do some manual checks here for the slow patch.
+let isNotNativeSymbol: boolean;
 export const inOperator = function inOperatorCompat(obj: any, key: PropertyKey): boolean {
-    if (typeof Symbol !== 'undefined' && typeof Symbol() === 'object') {
+    if (isNotNativeSymbol === undefined) {
+        if (typeof Symbol === 'undefined') {
+            throw new Error('Symbol is not available. Make sure to apply symbol polyfill before calling inOperator');
+        }
+
+        isNotNativeSymbol = typeof Symbol() === 'object';
+    }
+
+    if (isNotNativeSymbol) {
         const { getOwnPropertySymbols } = Object;
         if (key && key.constructor === Symbol) {
             while (obj) {
