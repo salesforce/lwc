@@ -1,6 +1,6 @@
 {
   "lerna": "2.4.0",
-  "version": "0.16.5",
+  "version": "0.16.6",
   "commands": {
     "publish": {
       "forcePublish": "*"

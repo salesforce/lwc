@@ -1,6 +1,6 @@
 {
   "name": "raptor-wire-service",
-  "version": "0.16.5",
+  "version": "0.16.6",
   "description": "@wire service",
   "main": "dist/wire-service.common.js",
   "module": "dist/wire-service.es.js",
@@ -28,13 +28,13 @@
     "express": "^4.15.2",
     "jest": "21.2.1",
     "pre-commit": "^1.2.2",
-    "raptor-compiler": "0.16.5",
-    "raptor-engine": "0.16.5",
+    "raptor-compiler": "0.16.6",
+    "raptor-engine": "0.16.6",
     "raptor-jest-transformer": "^2.0.1",
     "rimraf": "^2.6.1",
     "rollup": "0.50.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-raptor-compiler": "0.16.5",
+    "rollup-plugin-raptor-compiler": "0.16.6",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.1.3"
   }
