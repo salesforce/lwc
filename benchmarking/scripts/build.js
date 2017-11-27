@@ -4,10 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const minimist = require('minimist');
-
+const replace = require('rollup-plugin-replace');
 const webpack = require('webpack');
 const rollup = require('rollup');
-const stripPlugin = require('rollup-plugin-strip');
 const raptorPlugin = require('rollup-plugin-raptor-compiler');
 
 const {
@@ -101,10 +100,9 @@ rollup.rollup({
             mapNamespaceFromPath: false,
             resolveFromPackages: false,
         }),
-        stripPlugin({
-            debugger: true,
-            functions: [ 'console.*', 'assert.*' ],
-        }),
+        replace({
+            'process.env.NODE_ENV': JSON.stringify('production'),
+        })
     ],
 }).then(bundle => (
     bundle.generate({
