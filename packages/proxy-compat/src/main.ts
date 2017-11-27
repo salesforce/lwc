@@ -14,6 +14,11 @@ import {
     compatIterableKey
 } from "./methods";
 import { XProxy, ProxySlot, ProxyIdentifier, ArraySlot, XProxyInstance } from "./xproxy";
+import { setPrototypeOf as setPrototypeOfPolyfill } from './polyfills/set-prototype-of';
+
+if (!Object.setPrototypeOf || !({__proto__:[]} instanceof Array)) {
+    Object.setPrototypeOf = setPrototypeOfPolyfill;
+}
 
 const {
     keys: _keys,
