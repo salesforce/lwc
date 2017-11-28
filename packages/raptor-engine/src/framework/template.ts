@@ -1,6 +1,7 @@
 import assert from "./assert";
 import * as api from "./api";
 import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
+import { prepareForAttributeMutationFromTemplate } from './def';
 
 const EmptySlots: Slotset = create(null);
 
@@ -85,11 +86,17 @@ function applyTokenToHost(vm: VM, html: Template): void {
         // Remove the token currently applied to the host element if different than the one associated
         // with the current template
         if (!isUndefined(oldToken)) {
+            if (process.env.NODE_ENV !== 'production'){
+                prepareForAttributeMutationFromTemplate(host, oldToken);
+            }
             host.removeAttribute(oldToken);
         }
 
         // If the template has a token apply the token to the host element
         if (!isUndefined(newToken)) {
+            if (process.env.NODE_ENV !== 'production'){
+                prepareForAttributeMutationFromTemplate(host, newToken);
+            }
             host.setAttribute(newToken, '');
         }
     }
