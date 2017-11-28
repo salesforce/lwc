@@ -366,10 +366,6 @@ describe('html-element', () => {
         it('should set user specified value during setAttribute call', () => {
             let userDefinedTabIndexValue = -1;
             class MyComponent extends Element {
-                constructor() {
-                    super();
-                }
-
                 renderedCallback() {
                     userDefinedTabIndexValue = this.getAttribute("tabindex");
                 }
@@ -384,16 +380,70 @@ describe('html-element', () => {
 
         }),
 
-        it('should delete existing attribute prior rendering', () => {
-            const def = class MyComponent extends Element {
-                constructor() {
-                    super();
+        it('should log console error when user land code changes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+            class Parent extends Element {
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ]
+                    }
                 }
             }
+            class Child extends Element {}
+            const parentElm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                childElm.setAttribute('title', "value from parent");
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should log console error when user land code removes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+            class Parent extends Element {
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ]
+                    }
+                }
+            }
+            class Child extends Element {}
+            const parentElm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                childElm.removeAttribute('title');
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should not log error message when attribute is set via createElement', () =>{
+            jest.spyOn(assertLogger, 'logError');
+            class MyComponent extends Element {}
+            const elm = createElement('x-foo', {is: MyComponent});
+            elm.setAttribute('tabindex', '0');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( () => {
+                expect(assertLogger.logError).not.toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should delete existing attribute prior rendering', () => {
+            const def = class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'parent title');
             elm.removeAttribute('title');
-
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {
@@ -405,10 +455,6 @@ describe('html-element', () => {
             let childTitle = null;
 
             class Parent extends Element {
-                constructor() {
-                    super();
-                }
-
                 render() {
                     return function($api, $cmp) {
                         return [
@@ -419,10 +465,6 @@ describe('html-element', () => {
             }
 
             class Child extends Element {
-                constructor() {
-                    super();
-                }
-
                 renderedCallback() {
                     childTitle = this.getAttribute('title');
                 }

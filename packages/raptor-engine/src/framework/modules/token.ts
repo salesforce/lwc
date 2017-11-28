@@ -1,4 +1,5 @@
 import { isUndefined } from "../language";
+import { prepareForAttributeMutationFromTemplate } from '../def';
 
 function updateToken(oldVnode: VNode, vnode: VNode) {
     const { data: { token: oldToken } } = oldVnode;
@@ -9,10 +10,16 @@ function updateToken(oldVnode: VNode, vnode: VNode) {
     }
 
     if (!isUndefined(oldToken)) {
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForAttributeMutationFromTemplate(elm, oldToken);
+        }
         elm!.removeAttribute(oldToken);
     }
 
     if (!isUndefined(newToken)) {
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForAttributeMutationFromTemplate(elm, newToken);
+        }
         elm!.setAttribute(newToken, '');
     }
 }

@@ -274,24 +274,61 @@ function removeAttributePatched(attrName: string) {
 }
 
 function assertPublicAttributeColission(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
     const lowercasedAttrName = isString(attrName) ? attrName.toLocaleLowerCase() : null;
     const propName = getPropNameFromAttrName(lowercasedAttrName);
     const { def: { props: propsConfig } } = vm;
 
-    if (process.env.NODE_ENV !== 'production') {
-        if (propsConfig && propsConfig[propName]) {
-            assert.logError(`Invalid attribute "${lowercasedAttrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
-        }
+    if (propsConfig && propsConfig[propName]) {
+        assert.logError(`Invalid attribute "${lowercasedAttrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
     }
 }
 
 function assertTemplateMutationViolation(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
     const { vnode: { isRoot } } = vm;
+    if (!isAttributeChangeControlled(attrName) && !isRoot) {
+        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+    }
+    // attribute change control must be released every time its value is checked
+    resetAttibuteChangeControl();
+}
 
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isRoot) {
-            assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
-        }
+let controlledAttributeChange: boolean = false;
+let controlledAttributeName: string | void;
+
+function isAttributeChangeControlled(attrName: string): boolean {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    return controlledAttributeChange && attrName === controlledAttributeName;
+}
+
+function resetAttibuteChangeControl() {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    controlledAttributeChange = false;
+    controlledAttributeName = undefined;
+}
+
+export function prepareForAttributeMutationFromTemplate(elm: Element, key: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    if (elm[ViewModelReflection]) {
+        // TODO: we should guarantee that the methods of the element are all patched
+        controlledAttributeChange = true;
+        controlledAttributeName = key;
     }
 }
 
