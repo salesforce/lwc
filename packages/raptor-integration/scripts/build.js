@@ -9,9 +9,20 @@ const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 const testSufix = '.test.js';
 const testPrefix = 'test-';
-const testDir = path.join(__dirname, '../', 'src/components');
-const tests = fs.readdirSync(testDir);
-const testEntries = tests.map(test => path.join(testDir, test, `${test}${testSufix}`));
+const functionalTestDir = path.join(__dirname, '../', 'src/components');
+const functionalTests = fs.readdirSync(functionalTestDir);
+const testEntries = functionalTests.reduce((seed, functionalFolder) => {
+    const testsFolder = path.join(functionalTestDir, functionalFolder);
+    const tests = fs.readdirSync(testsFolder).map((test) => {
+        const testPath = path.join(testsFolder, test, `${test}${testSufix}`);
+        return {
+            path: testPath,
+            namespace: functionalFolder,
+            name: getTestName(testPath),
+        };
+    });
+    return seed.concat(tests);
+}, []);
 const testOutput = path.join(__dirname, '../', 'public');
 const testSharedOutput = path.join(testOutput, 'shared');
 
@@ -76,7 +87,7 @@ const baseInputConfig = {
             resolveProxyCompat: { global: 'window.Proxy' },
             globals: globalModules
         }),
-        testCaseComponentResolverPlugin()
+        testCaseComponentResolverPlugin(),
     ]
 };
 const baseOutputConfig = {
@@ -101,11 +112,9 @@ fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
 
 // -- Build component tests -----------------------------------------------------=
 
-testEntries.reduce(async (promise, testEntry) => {
+testEntries.reduce(async (promise, test) => {
     await promise;
-
-    const testName = getTestName(testEntry);
-
+    const { name: testName, path: testEntry, namespace: testNamespace } = test;
     const bundle = await rollup.rollup({
         ...baseInputConfig,
         input: testEntry
@@ -113,10 +122,10 @@ testEntries.reduce(async (promise, testEntry) => {
 
     const result = await bundle.write({
         ...baseOutputConfig,
-        file: `${testOutput}/${testName}/${testName}.js`
+        file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`
     });
 
-    fs.writeFileSync(`${testOutput}/${testName}/index.html`, templates.html(testName, isCompat), 'utf8');
+    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, templates.html(testName, isCompat), 'utf8');
 
 }, Promise.resolve())
 .catch((err) => { console.log(err); });

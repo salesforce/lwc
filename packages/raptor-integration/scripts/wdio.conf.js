@@ -1,10 +1,45 @@
 // const CHROME_BIN_PATH = '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
-
+const fs = require('fs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const RaptorIntegrationReporter = require('./reporter');
 const MODE_COMPAT = 'compat';
 const mode = process.env.MODE || MODE_COMPAT;
+const suiteFolders = path.resolve(__dirname, '../', 'src/components');
+/*
+    SUITE
+    {
+        name: string, // folder names at src/components. attributes, dom, etc
+        path: string, // fully qualified path to suite in src/components
+        specs: Array<{
+            mount: string, // browser where web driver will access spec
+            path: string, // local file path where web driver will resolve mount path
+        }>
+    }
+*/
+const suites = fs.readdirSync(suiteFolders).map((suiteName) => {
+    const suitePath = path.resolve(suiteFolders, suiteName);
+    const specs = fs.readdirSync(suitePath).map((specFolderName) => {
+        const testBasePath = path.basename(specFolderName).replace('test-', '');
+        return {
+            mount: `/${testBasePath}`,
+            path: `./public/${suiteName}/${testBasePath}`,
+        };
+    });
+    return {
+        name: suiteName,
+        path: suitePath,
+        specs,
+    };
+});
+const staticFolders = suites.reduce((seed, suite) => {
+    return seed.concat(suite.specs);
+}, []);
+
+const wdSuites = suites.reduce((seed, suite) => {
+    seed[suite.name] = [`${suite.path}/**/*.spec.js`];
+    return seed;
+}, {});
 
 const config = {
     //
@@ -19,6 +54,7 @@ const config = {
     specs: [
         './src/**/*.spec.js'
     ],
+    suites: wdSuites,
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -128,7 +164,7 @@ const config = {
 
     staticServerFolders: [
         { mount: '/', path: './public' }
-    ],
+    ].concat(staticFolders),
     staticServerPort: 4567,
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
