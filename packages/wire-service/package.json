@@ -27,7 +27,6 @@
     "eslint-plugin-raptor": "^0.1.24",
     "express": "^4.15.2",
     "jest": "21.2.1",
-    "pre-commit": "^1.2.2",
     "raptor-compiler": "0.16.5",
     "raptor-engine": "0.16.5",
     "raptor-jest-transformer": "^2.0.1",

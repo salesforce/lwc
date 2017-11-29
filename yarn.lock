@@ -1755,7 +1755,7 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concat-stream@^1.4.10, concat-stream@^1.4.7, concat-stream@^1.5.2, concat-stream@^1.6.0:
+concat-stream@^1.4.10, concat-stream@^1.5.2, concat-stream@^1.6.0:
   version "1.6.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/concat-stream/-/concat-stream-1.6.0.tgz#0aac662fd52be78964d5532f694784e70110acf7"
   dependencies:
@@ -5106,10 +5106,6 @@ os-locale@^2.0.0:
     lcid "^1.0.0"
     mem "^1.1.0"
 
-os-shim@^0.1.2:
-  version "0.1.3"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-shim/-/os-shim-0.1.3.tgz#6b62c3791cf7909ea35ed46e17658bb417cb3917"
-
 os-tmpdir@^1.0.0, os-tmpdir@^1.0.1, os-tmpdir@~1.0.2:
   version "1.0.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
@@ -5634,14 +5630,6 @@ power-assert@^1.4.2:
     power-assert-formatter "^1.3.1"
     universal-deep-strict-equal "^1.2.1"
     xtend "^4.0.0"
-
-pre-commit@^1.2.2:
-  version "1.2.2"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/pre-commit/-/pre-commit-1.2.2.tgz#dbcee0ee9de7235e57f79c56d7ce94641a69eec6"
-  dependencies:
-    cross-spawn "^5.0.1"
-    spawn-sync "^1.0.15"
-    which "1.2.x"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -6486,13 +6474,6 @@ sparkles@^1.0.0:
 spawn-command@^0.0.2-1:
   version "0.0.2-1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/spawn-command/-/spawn-command-0.0.2-1.tgz#62f5e9466981c1b796dc5929937e11c9c6921bd0"
-
-spawn-sync@^1.0.15:
-  version "1.0.15"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/spawn-sync/-/spawn-sync-1.0.15.tgz#b00799557eb7fb0c8376c29d44e8a1ea67e57476"
-  dependencies:
-    concat-stream "^1.4.7"
-    os-shim "^0.1.2"
 
 spdx-correct@~1.0.0:
   version "1.0.2"
@@ -7427,12 +7408,6 @@ whet.extend@~0.9.9:
 which-module@^2.0.0:
   version "2.0.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
-
-which@1.2.x:
-  version "1.2.14"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
-  dependencies:
-    isexe "^2.0.0"
 
 which@^1.2.12, which@^1.2.9:
   version "1.3.0"
