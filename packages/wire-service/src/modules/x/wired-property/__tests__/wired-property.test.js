@@ -52,4 +52,46 @@ describe('wired-property', () => {
             });
         });
     });
+
+    describe('component lifecycle hooks', () => {
+        it('should get data when created', () => {
+            const element = createElement('x-wired-property', { is: WiredProperty });
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+
+            document.body.appendChild(element);
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('name');
+        });
+
+        it('should stop receiving data when disconnected', () => {
+            const element = createElement('x-wired-property', { is: WiredProperty });
+            document.body.appendChild(element);
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+            document.body.removeChild(element);
+            mockTestAdapter.next({
+                Name: 'new_name'
+            });
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('');
+        });
+
+        it('should receive data when reconnected', () => {
+            const element = createElement('x-wired-property', { is: WiredProperty });
+            document.body.appendChild(element);
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+            document.body.removeChild(element);
+            mockTestAdapter.next({
+                Name: 'new_name'
+            });
+            document.body.appendChild(element);
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('new_name');
+        });
+    });
 });

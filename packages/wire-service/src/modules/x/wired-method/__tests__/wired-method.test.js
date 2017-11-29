@@ -25,7 +25,7 @@ describe('wired-method', () => {
 
     describe('snapshots', () => {
         it('should display data correctly', () => {
-            const elem = createElement('wired-method', { is: WiredMethod });
+            const elem = createElement('x-wired-method', { is: WiredMethod });
             document.body.appendChild(elem);
             mockTestAdapter.next({
                 Name: 'name'
@@ -37,7 +37,7 @@ describe('wired-method', () => {
         });
 
         it('should display error correctly', () => {
-            const elem = createElement('wired-method', { is: WiredMethod });
+            const elem = createElement('x-wired-method', { is: WiredMethod });
             document.body.appendChild(elem);
             mockTestAdapter.error('error message');
 
@@ -47,13 +47,55 @@ describe('wired-method', () => {
         });
 
         it('should display complete correctly', () => {
-            const elem = createElement('wired-method', { is: WiredMethod });
+            const elem = createElement('x-wired-method', { is: WiredMethod });
             document.body.appendChild(elem);
             mockTestAdapter.complete();
 
             return Promise.resolve().then(() => {
                 expect(elem).toMatchSnapshot();
             });
+        });
+    });
+
+    describe('component lifecycle hooks', () => {
+        it('should get data when created', () => {
+            const element = createElement('x-wired-method', { is: WiredMethod });
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+
+            document.body.appendChild(element);
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('name');
+        });
+
+        it('should stop receiving data when disconnected', () => {
+            const element = createElement('x-wired-method', { is: WiredMethod });
+            document.body.appendChild(element);
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+            document.body.removeChild(element);
+            mockTestAdapter.next({
+                Name: 'new_name'
+            });
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('');
+        });
+
+        it('should receive data when reconnected', () => {
+            const element = createElement('x-wired-method', { is: WiredMethod });
+            document.body.appendChild(element);
+            mockTestAdapter.next({
+                Name: 'name'
+            });
+            document.body.removeChild(element);
+            mockTestAdapter.next({
+                Name: 'new_name'
+            });
+            document.body.appendChild(element);
+
+            expect(element.textContent.substring('Name: '.length, element.textContent.indexOf('Error'))).toBe('new_name');
         });
     });
 });
