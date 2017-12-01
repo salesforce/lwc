@@ -128,12 +128,10 @@ export class WiredValue {
             } else {
                 this.observer = {
                     next: value => {
-                        this.cmp[this.propName].data = value;
-                        this.cmp[this.propName].error = undefined;
+                        this.cmp[this.propName] = { 'data': value, 'error': undefined };
                     },
                     error: err => {
-                        this.cmp[this.propName].data = undefined;
-                        this.cmp[this.propName].error = err;
+                        this.cmp[this.propName] = { 'data': undefined, 'error': err };
                     },
                     complete: () => {
                         this.completeHandler();
