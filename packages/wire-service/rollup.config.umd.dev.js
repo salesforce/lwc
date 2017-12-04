@@ -18,7 +18,7 @@ function rollupConfig(config) {
     const targetName = generateTargetName(config);
     return {
         input: input,
-        name: "wire-service",
+        name: "WireService",
         banner: banner,
         footer: footer,
         output: {

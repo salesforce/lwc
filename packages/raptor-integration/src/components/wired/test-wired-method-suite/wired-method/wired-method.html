@@ -1,0 +1,12 @@
+<template>
+    <template if:true={state.error}>
+        <span>{state.error.message}</span>
+    </template>
+    <template if:true={state.todo}>
+        Title:
+        <span>{state.todo.title}</span>
+        <br> Completed:
+        <span>{state.todo.completed}</span>
+        <br>
+    </template>
+</template>

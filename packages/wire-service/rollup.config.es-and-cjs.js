@@ -21,7 +21,7 @@ function rollupConfig(config) {
     const targetDirectory = (format === 'es' ? modulesDirectory : commonJSDirectory) + `/${target}`;
 
      return {
-        name: 'wire-service',
+        name: 'WireService',
         banner: banner,
         footer: footer,
         input: entry,

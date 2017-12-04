@@ -34,7 +34,7 @@ function rollupConfig(config){
 
     // sourceMap issue: https://github.com/mjeanroy/rollup-plugin-license/issues/6
     return {
-        name: "wire-service",
+        name: "WireService",
         banner: banner,
         footer: footer,
         input: entry,

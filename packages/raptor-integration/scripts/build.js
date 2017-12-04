@@ -54,7 +54,7 @@ function entryPointResolverPlugin() {
         load(id) {
             if (id.includes(testSufix)) {
                 const testBundle = getTestName(id);
-                return templates.app(testBundle);
+                return testBundle.startsWith('wired-') ? templates.todoApp(testBundle) : templates.app(testBundle);
             }
         },
     }
@@ -68,12 +68,13 @@ const globalModules = {
     'babel/helpers/possibleConstructorReturn': 'possibleConstructorReturn',
     'babel/helpers/inherits' : 'inherits',
     'babel/helpers/createClass' : 'createClass',
-    'babel/helpers/defineProperty': 'defineProperty'
+    'babel/helpers/defineProperty': 'defineProperty',
+    'wire-service': 'WireService'
 };
 
 const baseInputConfig = {
     external: function (id) {
-        if (id.includes('babel/helpers') || id.includes('engine')) {
+        if (id.includes('babel/helpers') || id.includes('engine') || id.includes('wire-service')) {
             return true;
         }
     },
@@ -99,6 +100,7 @@ const baseOutputConfig = {
 
 const engineModeFile = path.join(require.resolve(`raptor-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
 const compatPath = path.join(require.resolve('raptor-compat/dist/umd/compat_downgrade.js'));
+const wireServicePath = path.join(require.resolve(`raptor-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
 
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile
@@ -108,7 +110,7 @@ if (!fs.existsSync(engineModeFile)) {
 // copy static files
 fs.copySync(compatPath, path.join(testSharedOutput, 'compat.js'));
 fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
-
+fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire-service.js'));
 
 // -- Build component tests -----------------------------------------------------=
 
@@ -125,7 +127,7 @@ testEntries.reduce(async (promise, test) => {
         file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`
     });
 
-    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, templates.html(testName, isCompat), 'utf8');
+    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, testName.startsWith('wired-') ? templates.wireServiceHtml(testName, isCompat) : templates.html(testName, isCompat), 'utf8');
 
 }, Promise.resolve())
 .catch((err) => { console.log(err); });
