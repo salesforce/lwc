@@ -1,3 +1,4 @@
+import __compatConcat from 'proxy-compat/compatConcat';
 import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey from 'proxy-compat/callKey';
 import __getKey from 'proxy-compat/getKey';
@@ -47,7 +48,7 @@ var Test = function (_Foo) {
   function Test() {
     _classCallCheck(this, Test);
 
-    return _possibleConstructorReturn(this, __callKey(__getKey(Test, "__proto__") || __callKey(Object, "getPrototypeOf", Test), "apply", this, arguments));
+    return _possibleConstructorReturn(this, __callKey(__getKey(Test, "__proto__") || Object.getPrototypeOf(Test), "apply", this, arguments));
   }
 
   return Test;
@@ -73,7 +74,7 @@ var _didIteratorError = false;
 var _iteratorError = undefined;
 
 try {
-  for (var _iterator = __callKey(arr, __getKey(Symbol, "iterator")), _step; !(_iteratorNormalCompletion = __getKey(_step = __callKey(_iterator, "next"), "done")); _iteratorNormalCompletion = true) {
+  for (var _iterator = __callKey(arr, Symbol.iterator), _step; !(_iteratorNormalCompletion = __getKey(_step = __callKey(_iterator, "next"), "done")); _iteratorNormalCompletion = true) {
     var _i = __getKey(_step, "value");
 
     __callKey(console, "log", _i);
@@ -114,7 +115,7 @@ var obj2 = {
 
 // babel-plugin-transform-es2015-spread
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-spread/test/fixtures/spread/single/actual.js
-__callKey(console, "log", __callKey([], "concat", _toConsumableArray(foo)));
+__callKey(console, "log", __compatConcat([], _toConsumableArray(foo)));
 
 // babel-plugin-transform-es2015-template-literals
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-template-literals/test/fixtures/loose/tag/actual.js
@@ -196,8 +197,8 @@ __callKey(console, "log", num);
 
 // babel-plugin-transform-object-rest-spread
 // https://github.com/babel/babel/blob/6.x/packages/babel-plugin-transform-object-rest-spread/test/fixtures/object-spread/assignment/actual.js
-z = __callKey(Object, "assign", { x: x }, y);
-z = { x: x, w: __callKey(Object, "assign", {}, y) };
+z = Object.assign({ x: x }, y);
+z = { x: x, w: Object.assign({}, y) };
 
 // babel-plugin-transform-class-properties
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-class-properties/test/fixtures/loose/instance/actual.js

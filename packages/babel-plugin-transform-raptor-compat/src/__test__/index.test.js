@@ -3,9 +3,16 @@
 const fs = require('fs');
 const path = require('path');
 const babel = require('babel-core');
+const proxyCompat = require('proxy-compat');
+
 const transfromRaptorCompat = require('../index');
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
+const FIXTURES = [
+    'key-operations',
+    'array-operations',
+    'intrinsics',
+];
 
 function unpad(src) {
     return src.split('\n')
@@ -14,7 +21,7 @@ function unpad(src) {
         .join('\n');
 }
 
-test('validate config property', () => {
+test('Validate config property', () => {
     expect(() => {
         babel.transform('', {
             plugins: [
@@ -28,19 +35,6 @@ test('validate config property', () => {
     }).toThrow(
         /Unexcepted resolveProxyCompat option/
     );
-});
-
-test('compat transform', () => {
-    const actual = fs.readFileSync(path.resolve(FIXTURE_DIR, 'actual.js'), 'utf-8');
-    const expected = fs.readFileSync(path.resolve(FIXTURE_DIR, 'expected.js'), 'utf-8');
-
-    const { code } = babel.transform(actual, {
-        plugins: [
-            [transfromRaptorCompat]
-        ]
-    });
-
-    expect(unpad(code)).toBe(unpad(expected));
 });
 
 test('APIs retrieval from global', () => {
@@ -99,4 +93,30 @@ test('APIs retrieval from independant modules', () => {
         import __getKey from "my-proxy-compat/getKey";
         __callKey(console, "log", __getKey(foo, "bar"));`
     ));
+});
+
+test('module expose the proxy-compat keys', () => {
+    for (let key of Object.keys(transfromRaptorCompat.keys)) {
+        const proxyApi = transfromRaptorCompat.keys[key];
+
+        expect(proxyCompat).toHaveProperty(proxyApi);
+        expect(typeof proxyCompat[proxyApi] === 'function').toBe(true)
+    }
+});
+
+describe('Compat transform fixtures', () => {
+    for (let fixture of FIXTURES) {
+        test(`${fixture}`, () => {
+            const actual = fs.readFileSync(path.resolve(FIXTURE_DIR, fixture, 'actual.js'), 'utf-8');
+            const expected = fs.readFileSync(path.resolve(FIXTURE_DIR, fixture, 'expected.js'), 'utf-8');
+
+            const { code } = babel.transform(actual, {
+                plugins: [
+                    [transfromRaptorCompat]
+                ]
+            });
+
+            expect(unpad(code)).toBe(unpad(expected));
+        })
+    }
 });
