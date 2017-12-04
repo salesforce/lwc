@@ -8,12 +8,7 @@ const entry = path.resolve(__dirname, '../src/framework/main.ts');
 const commonJSDirectory = path.resolve(__dirname, '../dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, '../dist/modules');
 
-const banner = (
-    `/*
-    * Copyright (C) 2017 salesforce.com, inc.
-    */
-    `
-);
+const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
 

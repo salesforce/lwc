@@ -13,12 +13,7 @@ const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
 const name = 'LockerMembrane';
 
-const banner = (
-`/*
- * Copyright (C) 2017 salesforce.com, inc.
- */
-`
-);
+const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
 const baseRollupConfig = {

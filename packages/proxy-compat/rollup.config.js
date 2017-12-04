@@ -15,13 +15,7 @@ const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
 const name = 'Proxy';
 
-const banner = (
-`/*
- * Copyright (C) 2018 Salesforce, inc.
- */
-`
-);
-
+const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
 const baseRollupConfig = {

@@ -11,12 +11,7 @@ const { generateTargetName } = require('./engine.rollup.config.util');
 const entry = path.resolve(__dirname, '../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../dist/umd');
 
-const banner = (
-    `/*
-     * Copyright (C) 2017 salesforce.com, inc.
-     */
-    `
-);
+const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config){
