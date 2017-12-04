@@ -1,20 +1,60 @@
 /* eslint-env node */
-const KEYS = require('./keys');
 
-const defaultResolveOptions = {
+const DEFAULT_RESOLVE_OPTIONS = {
     module: 'proxy-compat'
 };
+
+const OBJECT_OPERATIONS = {
+    GET_KEY: 'getKey',
+    SET_KEY: 'setKey',
+    CALL_KEY: 'callKey',
+    ITERABLE_KEY: 'iterableKey',
+    IN_KEY:'inKey',
+    DELETE_KEY: 'deleteKey',
+    INSTANCEOF_KEY: 'instanceOfKey',
+};
+
+const OBJECT_KEYS = 'compatKeys';
+
+const ARRAY_OPERATIONS = {
+    PUSH: 'compatPush',
+    UNSHIFT: 'compatUnshift',
+    CONCAT: 'compatConcat',
+}
+
+const NO_TRANSFORM = Symbol('no-transform');
+
+// List here: https://tc39.github.io/ecma262/#sec-well-known-intrinsic-objects
+const INTRINSICS = [
+    'Array',
+    'Boolean',
+    'Date',
+    'Function',
+    'JSON',
+    'Map',
+    'Math',
+    'Number',
+    'Object',
+    'Promise',
+    'Proxy',
+    'RegExp',
+    'Set',
+    'String',
+    'Symbol',
+    'WeakMap',
+    'WeakSet'
+];
+
+function getResolveOptions (state) {
+    const { resolveProxyCompat } = state.opts;
+    return resolveProxyCompat || DEFAULT_RESOLVE_OPTIONS;
+}
 
 function compatPlugin({ types: t }) {
     function convertProperty(property, isComputed = false) {
         return t.isIdentifier(property) && !isComputed
             ? t.stringLiteral(property.name)
             : property;
-    }
-
-    function getResolveOptions (state) {
-        const { resolveProxyCompat } = state.opts;
-        return resolveProxyCompat || defaultResolveOptions;
     }
 
     /**
@@ -27,6 +67,251 @@ function compatPlugin({ types: t }) {
         }
 
         return keysSeen[memberName];
+    }
+
+    const objectTransformVisitor = {
+
+        /**
+         * Transforms:
+         *      a.b    => getKey(a, "b")
+         *      a["b"] => getKey(a, "b")
+         *      a[b]   => getKey(a, b);
+         */
+        MemberExpression(path) {
+            const { property, object, computed } = path.node;
+            if (!path.node[NO_TRANSFORM]) {
+                const id = resolveCompatProxyImport(OBJECT_OPERATIONS.GET_KEY, this.keysSeen);
+                const args = [object, convertProperty(property, computed)];
+                path.replaceWith(t.callExpression(id, args));
+            }
+        },
+
+        /**
+         * Transforms:
+         *      obj.f = 1;   =>   setKey(obj, "f", 1);
+         */
+        AssignmentExpression(path) {
+            let { left, right, operator } = path.node;
+            let assignment, args;
+
+            // Skip assigments such as var a = 1;
+            if (!t.isMemberExpression(left)) {
+                return;
+            }
+
+            args = [
+                left.object,
+                convertProperty(left.property, left.computed),
+                right
+            ];
+            if (operator !== '=') {
+                args[2] = t.binaryExpression(
+                    operator.slice(0, -1),
+                    left,
+                    right
+                );
+            }
+
+            const id = resolveCompatProxyImport(OBJECT_OPERATIONS.SET_KEY, this.keysSeen);
+            assignment = t.callExpression(id, args);
+
+            if (assignment) {
+                path.replaceWith(assignment);
+            }
+        },
+
+        /**
+         * Transforms:
+         *     console.log('foo', 'bar');   =>   callKey(console, 'log', 'foo', 'bar');
+         */
+        CallExpression(path) {
+            const { callee, arguments: args } = path.node;
+
+            if (t.isMemberExpression(callee) && !callee[NO_TRANSFORM]) {
+                const { property, object, computed } = callee;
+
+                const id = resolveCompatProxyImport(OBJECT_OPERATIONS.CALL_KEY, this.keysSeen);
+                const callKey = t.callExpression(id, [
+                    object,
+                    convertProperty(property, computed),
+                    ...args
+                ]);
+
+                path.replaceWith(callKey);
+          }
+        },
+
+        /**
+         * Transforms:
+         *      delete obj.f;   =>   deleteKey(obj, 'f')
+         */
+        UnaryExpression(path) {
+            const { operator, argument } = path.node;
+            if (operator === 'delete' && t.isMemberExpression(argument)) {
+                const args = [
+                    argument.object,
+                    convertProperty(argument.property, argument.computed)
+                ];
+
+                const id = resolveCompatProxyImport(OBJECT_OPERATIONS.DELETE_KEY, this.keysSeen);
+                const deletion = t.callExpression(id, args);
+                path.replaceWith(deletion);
+            }
+        },
+
+        /**
+         * Transforms:
+         *      obj.e++;   =>   _setKey(obj, "e", _getKey(obj, "e") + 1, _getKey(obj, "e"));
+         *      ++obj.e;   =>    _setKey(obj, "f", _getKey(obj, "f") + 1);
+         */
+        UpdateExpression(path) {
+            const { operator, argument, prefix } = path.node;
+
+            // Do nothing for: i++
+            if (!t.isMemberExpression(argument)) {
+                return;
+            }
+
+            const updatedValue = t.binaryExpression(
+                operator == '++' ? '+' : '-',
+                argument,
+                t.numericLiteral(1)
+            );
+            const args = [
+                argument.object,
+                convertProperty(argument.property, argument.computed),
+                updatedValue
+            ];
+
+            // return old value and increment: obj.i++
+            if (!prefix) {
+                args.push(argument);
+            }
+
+            const id = resolveCompatProxyImport(OBJECT_OPERATIONS.SET_KEY, this.keysSeen);
+            const assignment = t.callExpression(id, args);
+            path.replaceWith(assignment);
+        },
+
+        /**
+         * Transforms:
+         *      for (let k in obj) {}   =>   for (let k in _iterableKey(obj)) {}
+         */
+        ForInStatement(path) {
+            const { node } = path;
+
+            const id = resolveCompatProxyImport(OBJECT_OPERATIONS.ITERABLE_KEY, this.keysSeen);
+            const wrappedIterator = t.callExpression(id, [node.right]);
+            node.right = wrappedIterator;
+        },
+
+        /**
+         * Transforms:
+         *      if ("x" in obj) {}   =>   if (_inKey(obj, "x")) {}
+         */
+        BinaryExpression(path) {
+            const { operator, left, right } = path.node;
+            if (operator === 'instanceof') {
+                const id = resolveCompatProxyImport(OBJECT_OPERATIONS.INSTANCEOF_KEY, this.keysSeen);
+                const warppedInOperator = t.callExpression(id, [left, right]);
+                path.replaceWith(warppedInOperator);
+            } else if (operator === 'in') {
+                const id = resolveCompatProxyImport(OBJECT_OPERATIONS.IN_KEY, this.keysSeen);
+                const warppedInOperator = t.callExpression(id, [right, left]);
+                path.replaceWith(warppedInOperator);
+            }
+        }
+    };
+
+    const intrisicMethodsVisitor = {
+        /**
+         * Transforms:
+         *     Array.prototype.push   =>   Array.prototype.compatPush
+         *     Array.prototype.concat   =>   Array.prototype.compatConcat
+         *     Array.prototype.unshift   =>   Array.prototype.compatUnshift
+         */
+        MemberExpression(path) {
+            // is true is the object of the memberExpression is "Array.prototype"
+            const isArrayProto =
+                path.get('property').isIdentifier() &&
+                path.get('object.property').isIdentifier({ name: 'prototype' }) &&
+                path.get('object.object').isIdentifier({ name: 'Array' });
+
+            const isObjectKeys =
+                path.get('property').isIdentifier({ name: 'keys' }) &&
+                path.get('object').isIdentifier({ name: 'Object' });
+
+            if (isArrayProto) {
+                const { name: arrayProtoApi } = path.node.property;
+
+                if (ARRAY_OPERATIONS.hasOwnProperty(arrayProtoApi.toUpperCase())) {
+                    path.get('property').replaceWith(
+                        t.identifier(ARRAY_OPERATIONS[arrayProtoApi.toUpperCase()])
+                    );
+                }
+            } else if (isObjectKeys) {
+
+                path.get('property').replaceWith(
+                        t.identifier(OBJECT_KEYS)
+                    );
+            }
+        },
+
+        /**
+         * Transforms:
+         *     [].push(1)   =>   compatPush([], 1)
+         *     [].concat([1])   =>   compatConcat([], [1])
+         *     [].unshift(1)   =>   compatUnshift([], 1)
+         */
+        CallExpression(path) {
+            const { callee, arguments: args } = path.node;
+
+            // Return if not a member expression call
+            if (!t.isMemberExpression(callee)) {
+                return;
+            }
+
+            const { property, object } = callee;
+            const { name } = property;
+
+            if (
+                t.isIdentifier(property) &&
+                ARRAY_OPERATIONS.hasOwnProperty(name.toUpperCase())
+            ) {
+                const id = resolveCompatProxyImport(ARRAY_OPERATIONS[name.toUpperCase()], this.keysSeen);
+                const compatArrayCall = t.callExpression(id, [
+                    object,
+                    ...args
+                ]);
+
+                path.replaceWith(compatArrayCall);
+            }
+        },
+    }
+
+    const markerTransformVisitor = {
+        Identifier(path) {
+            const { node: { name }, scope } = path;
+
+            if (
+                INTRINSICS.includes(name) &&
+                scope.hasGlobal(name) &&
+                !scope.hasOwnBinding(name)
+            ) {
+                path.node[NO_TRANSFORM] = true;
+            }
+        },
+
+        MemberExpression: {
+            exit(path) {
+                if (
+                    path.get('object').isIdentifier() &&
+                    path.node.object[NO_TRANSFORM]
+                ) {
+                    path.node[NO_TRANSFORM] = true;
+                }
+            }
+        }
     }
 
     return {
@@ -46,9 +331,15 @@ function compatPlugin({ types: t }) {
         visitor: {
             Program: {
                 /**
-                 * Retrieve APIs for proxy compat
+                 * Apply the compat transform on exit in order to ensure all the other transformations has been applied before
                  */
-                exit: function (path, state) {
+                exit(path, state) {
+                    // It's required to do the AST traversal in 2 times. The Array transformations before the Object transformations in
+                    // order to ensure the transformations are applied in the right order.
+                    path.traverse(intrisicMethodsVisitor, state);
+                    path.traverse(markerTransformVisitor, state);
+                    path.traverse(objectTransformVisitor, state);
+
                     const {
                         global: globalName,
                         module: moduleName,
@@ -110,156 +401,11 @@ function compatPlugin({ types: t }) {
                 }
             },
 
-            /**
-             * Transforms:
-             *      a.b    => getKey(a, "b")
-             *      a["b"] => getKey(a, "b")
-             *      a[b]   => getKey(a, b);
-             */
-            MemberExpression(path) {
-                const { property, object, computed } = path.node;
-                const id = resolveCompatProxyImport(KEYS.GET_KEY, this.keysSeen);
-                const args = [object, convertProperty(property, computed)];
-                path.replaceWith(t.callExpression(id, args));
-            },
 
-            /**
-             * Transforms:
-             *      obj.f = 1;   =>   setKey(obj, "f", 1);
-             */
-            AssignmentExpression(path) {
-                let { left, right, operator } = path.node;
-                let assignment, args;
-
-                // Skip assigments such as var a = 1;
-                if (!t.isMemberExpression(left)) {
-                    return;
-                }
-
-                args = [
-                    left.object,
-                    convertProperty(left.property, left.computed),
-                    right
-                ];
-                if (operator !== '=') {
-                    args[2] = t.binaryExpression(
-                        operator.slice(0, -1),
-                        left,
-                        right
-                    );
-                }
-
-                const id = resolveCompatProxyImport(KEYS.SET_KEY, this.keysSeen);
-                assignment = t.callExpression(id, args);
-
-                if (assignment) {
-                    path.replaceWith(assignment);
-                }
-            },
-
-            /**
-             * Transforms:
-             *     console.log('foo', 'bar');   =>   callKey(console, 'log', 'foo', 'bar');
-             */
-            CallExpression(path) {
-                const { callee, arguments: args } = path.node;
-                if (t.isMemberExpression(callee)) {
-                    const { property, object, computed } = callee;
-                    const callArguments = [
-                        object,
-                        convertProperty(property, computed),
-                        ...args
-                    ];
-
-                    const id = resolveCompatProxyImport(KEYS.CALL_KEY, this.keysSeen);
-                    const call = t.callExpression(id, callArguments);
-                    path.replaceWith(call);
-                }
-            },
-
-            /**
-             * Transforms:
-             *      delete obj.f;   =>   deleteKey(obj, 'f')
-             */
-            UnaryExpression(path) {
-                const { operator, argument } = path.node;
-                if (operator === 'delete' && t.isMemberExpression(argument)) {
-                    const args = [
-                        argument.object,
-                        convertProperty(argument.property, argument.computed)
-                    ];
-
-                    const id = resolveCompatProxyImport(KEYS.DELETE_KEY, this.keysSeen);
-                    const deletion = t.callExpression(id, args);
-                    path.replaceWith(deletion);
-                }
-            },
-
-            /**
-             * Transforms:
-             *      obj.e++;   =>   _setKey(obj, "e", _getKey(obj, "e") + 1, _getKey(obj, "e"));
-             *      ++obj.e;   =>    _setKey(obj, "f", _getKey(obj, "f") + 1);
-             */
-            UpdateExpression(path) {
-                const { operator, argument, prefix } = path.node;
-
-                // Do nothing for: i++
-                if (!t.isMemberExpression(argument)) {
-                    return;
-                }
-
-                const updatedValue = t.binaryExpression(
-                    operator == '++' ? '+' : '-',
-                    argument,
-                    t.numericLiteral(1)
-                );
-                const args = [
-                    argument.object,
-                    convertProperty(argument.property, argument.computed),
-                    updatedValue
-                ];
-
-                // return old value and increment: obj.i++
-                if (!prefix) {
-                    args.push(argument);
-                }
-
-                const id = resolveCompatProxyImport(KEYS.SET_KEY, this.keysSeen);
-                const assignment = t.callExpression(id, args);
-                path.replaceWith(assignment);
-            },
-
-            /**
-             * Transforms:
-             *      for (let k in obj) {}   =>   for (let k in _iterableKey(obj)) {}
-             */
-            ForInStatement(path) {
-                const { node } = path;
-
-                const id = resolveCompatProxyImport(KEYS.ITERABLE_KEY, this.keysSeen);
-                const wrappedIterator = t.callExpression(id, [node.right]);
-                node.right = wrappedIterator;
-            },
-
-            /**
-             * Transforms:
-             *      if ("x" in obj) {}   =>   if (_inKey(obj, "x")) {}
-             */
-            BinaryExpression(path) {
-                const { operator, left, right } = path.node;
-                if (operator === 'instanceof') {
-                    const id = resolveCompatProxyImport(KEYS.INSTANCEOF_KEY, this.keysSeen);
-                    const warppedInOperator = t.callExpression(id, [left, right]);
-                    path.replaceWith(warppedInOperator);
-                } else if (operator === 'in') {
-                    const id = resolveCompatProxyImport(KEYS.IN_KEY, this.keysSeen);
-                    const warppedInOperator = t.callExpression(id, [right, left]);
-                    path.replaceWith(warppedInOperator);
-                }
-            }
         }
     };
 }
 
-compatPlugin.keys = KEYS;
+compatPlugin.keys = Object.assign({}, OBJECT_OPERATIONS, ARRAY_OPERATIONS);
+
 module.exports = compatPlugin;

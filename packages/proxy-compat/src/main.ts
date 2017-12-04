@@ -54,9 +54,6 @@ function isArray(replicaOrAny: any): replicaOrAny is any[] {
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.4
 function compatConcat (this: any) {
-    if (!isCompatProxy(this)) {
-        return ArrayConcat.apply(this, arguments);
-    }
     const O = Object(this);
     const A = [];
     let N = 0;
@@ -82,9 +79,6 @@ function compatConcat (this: any) {
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.13
 function compatUnshift (this: any): number {
-    if (!isCompatProxy(this)) {
-        return ArrayUnshift.apply(this, arguments);
-    }
     const O = Object(this);
     const len = O.length;
     const argCount = arguments.length;
@@ -114,9 +108,6 @@ function compatUnshift (this: any): number {
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.7
 function compatPush (this: any) {
-    if (!isCompatProxy(this)) {
-        return ArrayPush.apply(this, arguments);
-    }
     const O = Object(this);
     let n = O.length;
     let items = ArraySlice.call(arguments);
@@ -213,7 +204,6 @@ Array.isArray = isArray;
 // [*] Object.defineProperty()
 // [ ] Reflect.defineProperty()
 
-
 // trap `deleteProperty` can be covered by the transpilation and the patched version of:
 // [ ] Reflect.deleteProperty()
 
@@ -226,7 +216,6 @@ Object.defineProperty = defineProperty;
 Object.preventExtensions = preventExtensions;
 Object.getOwnPropertyDescriptor = getOwnPropertyDescriptor;
 Object.getOwnPropertyNames = patchedGetOwnPropertyNames;
-Object.keys = keys;
 Object.isExtensible = isExtensible;
 // trap `getPrototypeOf` can be covered by a patched version of:
 // [x] Object.setPrototypeOf()
@@ -242,9 +231,13 @@ Object.getPrototypeOf = getPrototypeOf;
 // [*] Object.assign
 Object.assign = patchedAssign;
 
-Array.prototype.unshift = compatUnshift;
-Array.prototype.concat = compatConcat;
-Array.prototype.push = compatPush;
+// Object methods path
+Object.compatKeys = keys;
+
+// Array.prototype methods patches
+Array.prototype.compatUnshift = compatUnshift;
+Array.prototype.compatConcat = compatConcat;
+Array.prototype.compatPush = compatPush;
 
 function overrideProxy() {
     return Proxy.__COMPAT__;
@@ -264,5 +257,32 @@ FinalProxy.deleteKey = deleteKey;
 FinalProxy.inKey = inKey;
 FinalProxy.iterableKey = iterableKey;
 FinalProxy.instanceOfKey = instanceOfKey;
+
+FinalProxy.compatPush = function (replicaOrAny: any): any {
+    const originalPush = getKey(replicaOrAny, 'push');
+    const args = ArraySlice.call(arguments, 1);
+
+    return originalPush === ArrayPush ?
+       compatPush.apply(replicaOrAny, args) :
+       originalPush.apply(replicaOrAny, args);
+};
+
+FinalProxy.compatUnshift = function (replicaOrAny: any): any {
+    const originalUnshift = getKey(replicaOrAny, 'unshift');
+    const args = ArraySlice.call(arguments, 1);
+
+    return originalUnshift === ArrayUnshift ?
+       compatUnshift.apply(replicaOrAny, args) :
+       originalUnshift.apply(replicaOrAny, args);
+};
+
+FinalProxy.compatConcat = function (replicaOrAny: any): any {
+    const originalConcat = getKey(replicaOrAny, 'concat');
+    const args = ArraySlice.call(arguments, 1);
+
+    return originalConcat === ArrayConcat ?
+       compatConcat.apply(replicaOrAny, args) :
+       originalConcat.apply(replicaOrAny, args);
+};
 
 export default FinalProxy;

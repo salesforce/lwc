@@ -23,7 +23,7 @@ var ClassAndTemplate = function (_Element) {
     function ClassAndTemplate() {
         _classCallCheck(this, ClassAndTemplate);
 
-        var _this = _possibleConstructorReturn(this, __callKey(__getKey(ClassAndTemplate, "__proto__") || __callKey(Object, "getPrototypeOf", ClassAndTemplate), "call", this));
+        var _this = _possibleConstructorReturn(this, __callKey(__getKey(ClassAndTemplate, "__proto__") || Object.getPrototypeOf(ClassAndTemplate), "call", this));
 
         __setKey(_this, "t", Test);
         __setKey(_this, "counter", 0);
