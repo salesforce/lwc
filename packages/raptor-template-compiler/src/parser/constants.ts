@@ -64,6 +64,15 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     for: 'htmlFor',
 };
 
+export const HTML_TAG_BLACKLIST: { [tagname: string]: boolean } = {
+    base: true,
+    link: true,
+    meta: true,
+    script: true,
+    style: true,
+    title: true,
+};
+
 export const HTML_ATTRIBUTES_REVERSE_LOOKUP: { [attr: string]: string[] } = {
   'xlink:href': [
     'use',

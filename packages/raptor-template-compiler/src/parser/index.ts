@@ -61,6 +61,7 @@ import {
     EVENT_HANDLER_RE,
     EVENT_HANDLER_NAME_RE,
     DEFAULT_SLOT_NAME,
+    HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
@@ -92,11 +93,11 @@ export default function parse(source: string, state: State): {
 
                 const element = createElement(elementNode.tagName, node);
                 element.attrsList = elementNode.attrs;
-
                 if (!root) {
                     validateRoot(element);
                     root = element;
                 } else {
+                    validateTagName(element);
                     element.parent = parent;
                     parent.children.push(element);
                 }
@@ -199,6 +200,13 @@ export default function parse(source: string, state: State): {
 
         if (element.attrsList.length) {
             return warnOnElement(`Root template doesn't allow attributes`, element.__original);
+        }
+    }
+
+    function validateTagName(element: IRElement) {
+        const { tag } = element;
+        if (HTML_TAG_BLACKLIST[tag]) {
+            return warnOnElement(`Forbidden tag found in template: '<${tag}>' tag is not allowed.`, element.__original);
         }
     }
 
