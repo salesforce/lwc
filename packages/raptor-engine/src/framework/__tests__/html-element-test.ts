@@ -140,37 +140,6 @@ describe('html-element', () => {
             expect(piercedThis).toBe(elm);
             expect(received).toBe(event);
         });
-        it('should log a warning when dispatching an event without composed flag', function () {
-            class Foo extends Element {
-                connectedCallback() {
-                    const event = new CustomEvent('badevent', {
-                        bubbles: true
-                    });
-                    this.dispatchEvent(event);
-                }
-            }
-            jest.spyOn(assertLogger, 'logWarning');
-            const elem = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elem);
-            expect(assertLogger.logWarning).toBeCalledWith('Invalid event "badevent" dispatched in element <x-foo>. Events with \'bubbles: true\' must also be \'composed: true\'. Without \'composed: true\', the dispatched event will not be observable outside of your component.');
-            assertLogger.logWarning.mockRestore();
-        });
-        it('should log a warning when dispatching an event with bubbles: true, composed: false', function () {
-            class Foo extends Element {
-                connectedCallback() {
-                    const event = new CustomEvent('badevent', {
-                        composed: false,
-                        bubbles: true
-                    });
-                    this.dispatchEvent(event);
-                }
-            }
-            jest.spyOn(assertLogger, 'logWarning');
-            const elem = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elem);
-            expect(assertLogger.logWarning).toBeCalledWith('Invalid event "badevent" dispatched in element <x-foo>. Events with \'bubbles: true\' must also be \'composed: true\'. Without \'composed: true\', the dispatched event will not be observable outside of your component.');
-            assertLogger.logWarning.mockRestore();
-        });
         it('should throw when event is dispatched during construction', function () {
             expect.assertions(1);
             class Foo extends Element {

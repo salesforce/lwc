@@ -51,7 +51,7 @@ ComponentElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             const { type: evtName, composed, bubbles } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
-            if (bubbles && !composed) {
+            if (bubbles && ('composed' in event && !composed)) {
                 assert.logWarning(`Invalid event "${evtName}" dispatched in element ${this}. Events with 'bubbles: true' must also be 'composed: true'. Without 'composed: true', the dispatched event will not be observable outside of your component.`);
             }
             if (vm.idx === 0) {
