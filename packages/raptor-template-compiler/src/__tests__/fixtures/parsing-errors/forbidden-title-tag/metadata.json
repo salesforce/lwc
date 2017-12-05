@@ -1,0 +1,8 @@
+{
+    "warnings": [{
+      "level": "error",
+      "message": "Forbidden tag found in template: '<title>' tag is not allowed.",
+      "start": 15,
+      "length": 20
+    }]
+  }
