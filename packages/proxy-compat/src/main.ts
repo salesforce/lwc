@@ -234,10 +234,12 @@ Object.assign = patchedAssign;
 // Object methods path
 Object.compatKeys = keys;
 
-// Array.prototype methods patches
-Array.prototype.compatUnshift = compatUnshift;
-Array.prototype.compatConcat = compatConcat;
-Array.prototype.compatPush = compatPush;
+// Array.prototype methods patches.
+Object.defineProperties(Array.prototype, {
+    compatUnshift: { value: compatUnshift, enumerable: false },
+    compatConcat: { value: compatConcat, enumerable: false },
+    compatPush: { value: compatPush, enumerable: false },
+});
 
 function overrideProxy() {
     return Proxy.__COMPAT__;

@@ -56,6 +56,7 @@ module.exports = function buildPolyfills() {
 };
 
 const compatPolyfillList = [
+    'es6.symbol', // no-compat
     'es6.object.get-prototype-of', // we need it since spec has changed
     'es6.object.keys', // spec changed
     'es6.object.get-own-property-names', // buggy ie11
@@ -83,8 +84,6 @@ const compatPolyfillList = [
 ];
 
 const nonCompatPollyfills = [
-
-    'es6.symbol', // no-compat
 
     'es6.object.define-property', // no-compat
     'es6.object.define-properties', // no-compat
