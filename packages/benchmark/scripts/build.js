@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
@@ -79,7 +77,7 @@ const bundlePath = path.resolve(DIST_DIR, argv.name);
 
 rollup.rollup({
     // TODO: add support for multi-entry using with rollup-plugin-multi-entry
-    entry: BENCHMARK_ENTRY,
+    input: BENCHMARK_ENTRY,
 
     // TODO: remove me once Babel helpers is fixed
     onwarn: message => {
@@ -107,7 +105,7 @@ rollup.rollup({
 }).then(bundle => (
     bundle.generate({
         format: 'umd',
-        moduleName: 'bundle',
+        name: 'bundle',
         globals: { runner: 'runner' }
     })
 )).then(({ code }) => {

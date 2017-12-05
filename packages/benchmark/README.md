@@ -59,13 +59,13 @@ yarn run cli
 
 ```bash
 # Run the benchmark for the bundle named HEAD served from the dist directory.
-yarn run cli -- --base=/HEAD
+yarn run start -- --base=/HEAD
 
 # Run a quick benchmark for sanity check.
-yarn run cli -- --base=/HEAD --max-duration=1 --min-sample-count=2
+yarn run start -- --base=/HEAD --max-duration=1 --min-sample-count=2
 
 # Compare 2 bundles from the central bundle repository and store the results as markdown
-yarn run cli -- \
+yarn run start -- \
     --base=https://git.soma.salesforce.com/pages/raptor/benchmark-artifacts/2b29efe \
     --compare=https://git.soma.salesforce.com/pages/raptor/benchmark-artifacts/530706c \
     --reporter=markdown \

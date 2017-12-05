@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 const crypto = require('crypto');
 const { execSync, spawnSync } = require('child_process');
 

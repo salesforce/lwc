@@ -23,16 +23,12 @@ node("private-cloud") {
         stage("Setup") {
             // Set pending benchmark status on github
             postGitStatus()
-
-            // Build runner
-            dir("benchmarking") {
-                helpers.yarnInstall()
-            }
+            helpers.yarnInstall()
         }
 
         stage("Benchmark") {
             // Run the actual performance benchmark
-            dir("benchmarking") {
+            dir("packages/benchmark") {
                 def baseCommitHash = findLastestBenchmarkOnBranch(params.baseBranch)
                 def compareCommitHash = params.compareCommit.take(7)
 
@@ -41,14 +37,14 @@ node("private-cloud") {
 
                 try {
                     sh """
-                        yarn run cli -- \
+                        yarn start -- \
                             --timeout=$BENCHMARK_TIMEOUT \
                             --browser=$BENCHMARK_BROWSER_NAME \
                             --server=$compareUrl \
                             --base=$baseUrl \
                             --compare=$compareUrl \
                             --reporter=markdown \
-                            --dest=../results.md
+                            --dest=../../results.md
                     """
                     currentBuild.result = "SUCCESS"
                 } catch (e) {

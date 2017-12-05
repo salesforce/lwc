@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 import minimist from 'minimist';
 
 import browser from './browser';

@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 import fs from 'fs';
 import os from 'os';
 import childProcess from 'child_process';

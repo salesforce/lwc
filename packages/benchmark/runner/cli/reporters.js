@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 import fs from 'fs';
 import Table from 'cli-table';
 

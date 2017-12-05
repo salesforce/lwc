@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 const path = require('path');
 
 const BENCHMARK_DIR = path.resolve(__dirname, '../src');

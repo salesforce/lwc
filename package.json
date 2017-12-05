@@ -4,7 +4,7 @@
   "description": "Raptor",
   "scripts": {
     "prepublish": "yarn run build",
-    "clean": "lerna run clean && lerna clean && rm -rf node_modules",
+    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
     "test:integration":

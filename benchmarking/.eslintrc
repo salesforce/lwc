@@ -1,9 +1,0 @@
-{
-    "globals": {
-        "benchmark": true
-    },
-    "env": {
-        "node": true,
-        "browser": true
-    }
-}
