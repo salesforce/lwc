@@ -20,7 +20,6 @@ import {
     getOwnPropertyNames,
     getPrototypeOf,
     isString,
-    isNull,
     isFunction,
     isObject,
     ArraySlice,
@@ -58,6 +57,7 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
+
 
 function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     protoSet = protoSet || [];
@@ -222,7 +222,14 @@ function createMethodCaller(key: string) {
     }
 }
 
-const { getAttribute, setAttribute, removeAttribute } = Element.prototype;
+const {
+    getAttribute,
+    getAttributeNS,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS
+} = Element.prototype;
 
 function getAttributePatched(attrName: string): string | null {
     const vm: VM = this[ViewModelReflection];
@@ -243,15 +250,37 @@ function setAttributePatched(attrName: string, newValue: any) {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
+    const isObserved = isAttrObserved(vm, attrName);
+    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
 
-    const { def: { observedAttrs } } = vm;
-
-    const oldValue = getAttribute.call(this, attrName);
     setAttribute.apply(this, ArraySlice.call(arguments));
-    newValue = getAttribute.call(this, attrName);
 
-    if (!isNull(attrName) && attrName in observedAttrs && oldValue !== newValue) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+    if (isObserved) {
+        newValue = getAttribute.call(this, attrName);
+        if (oldValue !== newValue) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        }
+    }
+}
+
+function setAttributeNSPatched(attrNameSpace: string, attrName: string, newValue: any) {
+    const vm = this[ViewModelReflection];
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
+    }
+    const isObserved = isAttrObserved(vm, attrName);
+    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
+
+    setAttributeNS.apply(this, ArraySlice.call(arguments));
+
+    if (isObserved) {
+        newValue = getAttributeNS.call(this, attrNameSpace, attrName);
+        if (oldValue !== newValue) {
+            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+        }
     }
 }
 
@@ -263,13 +292,31 @@ function removeAttributePatched(attrName: string) {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
-    const { def: { observedAttrs } } = vm;
-    const oldValue = getAttribute.call(this, attrName);
-    removeAttribute.apply(this, ArraySlice.call(arguments));
-    const newValue = getAttribute.call(this, attrName);
+    const isObserved = isAttrObserved(vm, attrName);
+    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
 
-    if (!isNull(attrName) && attrName in observedAttrs && oldValue !== newValue) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
+    removeAttribute.apply(this, ArraySlice.call(arguments));
+
+    if (isObserved && oldValue !== null) {
+        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
+    }
+}
+
+function removeAttributeNSPatched(attrNameSpace: string, attrName: string){
+    const vm = this[ViewModelReflection];
+
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
+    }
+    const isObserved = isAttrObserved(vm, attrName);
+    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
+
+    removeAttributeNS.apply(this, ArraySlice.call(arguments));
+
+    if (isObserved && oldValue !== null) {
+        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
     }
 }
 
@@ -298,6 +345,10 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
     }
     // attribute change control must be released every time its value is checked
     resetAttibuteChangeControl();
+}
+
+function isAttrObserved(vm, attrName) {
+    return attrName in vm.def.observedAttrs;
 }
 
 let controlledAttributeChange: boolean = false;
@@ -343,8 +394,16 @@ function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfi
             value: setAttributePatched,
             configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         },
+        setAttributeNS: {
+            value: setAttributeNSPatched,
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+        },
         removeAttribute: {
             value: removeAttributePatched,
+            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+        },
+        removeAttributeNS: {
+            value: removeAttributeNSPatched,
             configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
         },
     };

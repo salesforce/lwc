@@ -16,7 +16,10 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         return;
     }
     const { elm } = vnode;
-    const { setAttribute, removeAttribute, setAttributeNS } = elm;
+    const {
+        setAttribute,
+        removeAttribute
+    } = elm;
 
     let key: string;
     oldAttrs = oldAttrs || {};
@@ -27,33 +30,22 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         const cur = attrs[key];
         const old = oldAttrs[key];
         if (old !== cur) {
-            // TODO: once we fix issue #861, we can move the prepareForAttributeMutationFromTemplate up here.
+            if (process.env.NODE_ENV !== 'production') {
+                prepareForAttributeMutationFromTemplate(elm, key);
+            }
+
             if (cur === true) {
-                if (process.env.NODE_ENV !== 'production') {
-                    prepareForAttributeMutationFromTemplate(elm, key);
-                }
                 setAttribute.call(elm, key, "");
             } else if (cur === false) {
-                if (process.env.NODE_ENV !== 'production') {
-                    prepareForAttributeMutationFromTemplate(elm, key);
-                }
                 removeAttribute.call(elm, key);
             } else {
-                if (key.charCodeAt(0) !== XCharCode) {
-                    if (process.env.NODE_ENV !== 'production') {
-                        prepareForAttributeMutationFromTemplate(elm, key);
-                    }
-                    setAttribute.call(elm, key, cur);
-                } else if (key.charCodeAt(3) === ColonCharCode) {
+                if (key.charCodeAt(3) === ColonCharCode) {
                     // Assume xml namespace
-                    setAttributeNS.call(elm, xmlNS, key, cur);
+                    elm.setAttributeNS.call(elm, xmlNS, key, cur);
                 } else if (key.charCodeAt(5) === ColonCharCode) {
                     // Assume xlink namespace
-                    setAttributeNS.call(elm, xlinkNS, key, cur);
+                    elm.setAttributeNS.call(elm, xlinkNS, key, cur);
                 } else {
-                    if (process.env.NODE_ENV !== 'production') {
-                        prepareForAttributeMutationFromTemplate(elm, key);
-                    }
                     setAttribute.call(elm, key, cur);
                 }
             }
@@ -65,7 +57,15 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
             if (process.env.NODE_ENV !== 'production') {
                 prepareForAttributeMutationFromTemplate(elm, key);
             }
-            removeAttribute.call(elm, key);
+            if (key.charCodeAt(3) === ColonCharCode) {
+                // Assume xml namespace
+                elm.removeAttributeNS.call(elm, xmlNS, key, cur);
+            } else if (key.charCodeAt(5) === ColonCharCode) {
+                // Assume xlink namespace
+                elm.removeAttributeNS.call(elm, xlinkNS, key, cur);
+            } else {
+                removeAttribute.call(elm, key);
+            }
         }
     }
 }
