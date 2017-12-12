@@ -1,6 +1,6 @@
 {
   "name": "benchmark",
-  "version": "0.16.5",
+  "version": "0.17.0",
   "private": true,
   "scripts": {
     "clean": "rimraf dist/",
@@ -18,18 +18,18 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "html-webpack-plugin": "^2.30.1",
+    "lwc-compiler": "0.17.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "pem": "^1.12.3",
     "rimraf": "^2.6.1",
-    "lwc-compiler": "0.16.5",
     "rollup": "~0.50.0",
+    "rollup-plugin-lwc-compiler": "0.17.0",
     "rollup-plugin-strip": "^1.1.1",
-    "rollup-plugin-lwc-compiler": "0.16.5",
     "webpack": "^3.8.1"
   },
   "dependencies": {
-    "lwc-engine": "0.16.5",
-    "isomorphic-fetch": "^2.2.1"
+    "isomorphic-fetch": "^2.2.1",
+    "lwc-engine": "0.17.0"
   }
 }

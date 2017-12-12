@@ -1,26 +1,26 @@
 {
   "name": "rollup-plugin-lwc-compiler",
-  "version": "0.16.5",
+  "version": "0.17.0",
   "description": "Rollup plugin to compile LWC",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.24.0",
+    "lwc-compiler": "0.17.0",
+    "lwc-engine": "0.17.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2",
     "prettier": "^1.7.3",
-    "lwc-compiler": "0.16.5",
-    "lwc-engine": "0.16.5",
     "rollup": "^0.50.0"
   },
   "dependencies": {
     "glob": "^7.1.2",
-    "lwc-npm-resolver": "0.16.5",
+    "lwc-npm-resolver": "0.17.0",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
-    "lwc-compiler": "0.16.5",
-    "lwc-engine": "0.16.5"
+    "lwc-compiler": "0.17.0",
+    "lwc-engine": "0.17.0"
   },
   "scripts": {
     "test": "mocha"
