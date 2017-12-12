@@ -1,0 +1,1 @@
+# lwc-template-compiler

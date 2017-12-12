@@ -1,0 +1,46 @@
+{
+  "name": "lwc-template-compiler",
+  "version": "0.16.5",
+  "description": "Template compiler package",
+  "main": "dist/commonjs/index.js",
+  "typings": "dist/types/index.d.ts",
+  "license": "MIT",
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  },
+  "scripts": {
+    "clean": "rimraf coverage dist",
+    "lint": "tslint -t stylish src/**/*",
+    "test": "jest --coverage",
+    "build": "tsc",
+    "prepublish": "yarn run clean && yarn run build"
+  },
+  "devDependencies": {
+    "@types/babel-generator": "^6.7.14",
+    "@types/babel-template": "^6.7.14",
+    "@types/babel-traverse": "^6.7.16",
+    "@types/babylon": "^6.16.1",
+    "@types/he": "^0.5.29",
+    "@types/jest": "^21.1.2",
+    "ast-pretty-print": "^1.1.5",
+    "esutils": "^2.0.2",
+    "glob": "^7.1.2",
+    "jest": "^21.2.1",
+    "prettier": "^1.7.3",
+    "rimraf": "^2.6.1",
+    "ts-jest": "^21.1.2",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.4"
+  },
+  "dependencies": {
+    "babel-generator": "^6.24.1",
+    "babel-template": "^6.24.1",
+    "babel-traverse": "^6.24.1",
+    "babylon": "^6.17.0",
+    "camelcase": "^4.1.0",
+    "css-parse": "^2.0.0",
+    "decamelize": "^1.2.0",
+    "he": "^1.1.1",
+    "parse5-with-errors": "^4.0.1"
+  }
+}

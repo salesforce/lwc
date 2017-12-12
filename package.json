@@ -6,15 +6,14 @@
     "prepublish": "yarn run build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "lerna run lint",
-    "test": "lerna exec --concurrency 1 -- yarn test",
-    "test:integration":
-      "yarn run build && lerna run sauce --scope raptor-integration",
-    "build": "lerna run build --ignore raptor-integration",
+    "test": "lerna exec --ignore lwc-wire-service --concurrency 1 -- yarn test",
+    "test:integration": "yarn run build && lerna run sauce --scope lwc-integration",
+    "build": "lerna run build --ignore lwc-integration",
     "build:artifacts": "npm run build && npm run build:compiler",
-    "build:compiler": "lerna exec --scope raptor-compiler yarn build:umd",
-    "build:engine": "lerna run build --scope raptor-engine",
+    "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
+    "build:engine": "lerna run build --scope lwc-engine",
     "start":
-      "yarn build:artifacts && lerna run build --scope raptor-integration && lerna run start --scope raptor-integration",
+      "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
     "release": "yarn run prepublish && lerna publish --force-publish=*",
     "release:canary":
       "yarn run prepublish && lerna publish --force-publish=* --canary --skip-git --yes"
@@ -24,7 +23,7 @@
     "url": "https://git.soma.salesforce.com/raptor/raptor.git"
   },
   "bin": {
-    "raptor-compiler": "bin/raptor-compiler-cli.js"
+    "lwc-compiler": "bin/lwc-compiler-cli.js"
   },
   "babel": { "presets": ["env"] },
   "devDependencies": {

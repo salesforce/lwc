@@ -3,12 +3,12 @@
 
 import * as path from 'path';
 import * as util from 'util';
-import { compile } from '../packages/raptor-compiler/src/index.js';
+import { compile } from '../packages/lwc-compiler/src/index.js';
 
 const args = process.argv.slice(2);
 if (!args.length) {
     console.log(`[ERROR]: Missing parameters.
-    Usage: ./bin/raptor-compiler-cli.js path/to/file.js
+    Usage: ./bin/lwc-compiler-cli.js path/to/file.js
             --format [ amd | es6 | iife ]
             --mode [ dev | prod | compat | prod_compat | all ]`
     );

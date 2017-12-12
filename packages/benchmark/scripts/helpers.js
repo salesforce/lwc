@@ -8,7 +8,7 @@ function sanatizeBuffer(buffer) {
 function getRaptorVersion() {
     const res = spawnSync('npm', ['list']);
     const output = res.stdout.toString();
-    let [, raptorVerion] = output.match(/raptor-engine@([\d\.]+)/);
+    let [, raptorVerion] = output.match(/lwc-engine@([\d\.]+)/);
 
     return raptorVerion;
 }

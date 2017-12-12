@@ -1,0 +1,29 @@
+{
+  "name": "babel-helpers-lwc",
+  "version": "0.16.5",
+  "main": "dist/engine-helpers.js",
+  "description": "Babel helpers + regenerator + other utils for LWC",
+  "license": "MIT",
+  "dependencies": {
+    "babel-generator": "6.26.0",
+    "babel-helpers": "6.24.1",
+    "babel-runtime": "6.26.0",
+    "babel-template": "6.26.0",
+    "babel-types": "6.26.0",
+    "regenerator-runtime": "0.11.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.1",
+    "uglify-js": "^3.1.3"
+  },
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "node scripts/build",
+    "test": "echo 'No test in this package'"
+  },
+  "publishConfig": {
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+  }
+}

@@ -1,6 +1,6 @@
 const tsc = require('typescript');
 const babel = require('babel-core');
-const plugin = require('babel-plugin-transform-raptor-compat');
+const plugin = require('babel-plugin-transform-proxy-compat');
 const tsJest = require('ts-jest/preprocessor.js');
 
 function isTestFile(path) {

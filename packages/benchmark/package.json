@@ -22,14 +22,14 @@
     "mkdirp": "^0.5.1",
     "pem": "^1.12.3",
     "rimraf": "^2.6.1",
-    "raptor-compiler": "0.16.5",
+    "lwc-compiler": "0.16.5",
     "rollup": "~0.50.0",
     "rollup-plugin-strip": "^1.1.1",
-    "rollup-plugin-raptor-compiler": "0.16.5",
+    "rollup-plugin-lwc-compiler": "0.16.5",
     "webpack": "^3.8.1"
   },
   "dependencies": {
-    "raptor-engine": "0.16.5",
+    "lwc-engine": "0.16.5",
     "isomorphic-fetch": "^2.2.1"
   }
 }

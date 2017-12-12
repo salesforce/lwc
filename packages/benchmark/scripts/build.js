@@ -5,7 +5,7 @@ const minimist = require('minimist');
 const replace = require('rollup-plugin-replace');
 const webpack = require('webpack');
 const rollup = require('rollup');
-const raptorPlugin = require('rollup-plugin-raptor-compiler');
+const raptorPlugin = require('rollup-plugin-lwc-compiler');
 
 const {
     DIST_DIR,
@@ -90,7 +90,7 @@ rollup.rollup({
         {
             resolveId(id) {
                 if (id === 'engine') {
-                    return require.resolve('raptor-engine/dist/modules/es2017/engine.js');
+                    return require.resolve('lwc-engine/dist/modules/es2017/engine.js');
                 }
             }
         },
