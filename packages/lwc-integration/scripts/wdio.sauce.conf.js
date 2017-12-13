@@ -7,6 +7,34 @@ if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_KEY) {
     throw new Error("process.env.SAUCE_USERNAME and process.env.SAUCE_KEY are required to be set to run tests against SauceLabs");
 }
 
+const browsers = [
+    // Chrome inherited from base config file
+    {
+        browserName: 'MicrosoftEdge',
+        platform: 'Windows 10',
+        version: '15.15063'
+    },
+    {
+        browserName: 'safari',
+        platform: 'macOS 10.12',
+        version: '11.0'
+    },
+    {
+        browserName: 'firefox',
+        platform: 'macOS 10.12',
+        version: '55.0'
+    },
+];
+
+// Browsers that are only expected to work in compat mode
+const compatBrowsers = [
+    {
+        browserName: 'internet explorer',
+        platform: 'Windows 10',
+        version: '11.103'
+    },
+];
+
 const sauce = {
     services: ['sauce'],
     user: process.env.SAUCE_USERNAME,
@@ -14,29 +42,7 @@ const sauce = {
     sauceConnect: true,
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
-    capabilities: [
-        // Chrome inherited from base config file
-        {
-            browserName: 'internet explorer',
-            platform: 'Windows 10',
-            version: '11.103'
-        },
-        {
-            browserName: 'MicrosoftEdge',
-            platform: 'Windows 10',
-            version: '15.15063'
-        },
-        {
-            browserName: 'safari',
-            platform: 'macOS 10.12',
-            version: '10.0'
-        },
-        {
-            browserName: 'firefox',
-            platform: 'macOS 10.12',
-            version: '55.0'
-        },
-    ]
+    capabilities: process.env.MODE.indexOf('compat') !== -1 ? browsers.concat(compatBrowsers) : browsers
 }
 
 /**
