@@ -197,6 +197,18 @@ describe('Public Props', () => {
         };
         Text.publicMethods = ["m1"];
     `);
+
+    test('throws error if default value is true', `
+        export default class Test {
+            @api publicProp = true;
+        }
+    `, undefined, {
+        message: 'test.js: Boolean public property publicProp must default to false.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
 });
 
 describe('Public Methods', () => {
@@ -217,10 +229,10 @@ describe('metadata', () => {
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
-            @api get todo () { 
-                return this._privateTodo; 
+            @api get todo () {
+                return this._privateTodo;
             }
-            @api set todo (val) { 
+            @api set todo (val) {
                 return this._privateTodo = val;
             }
             @api
@@ -234,10 +246,10 @@ describe('metadata', () => {
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
-            get todo () { 
-                return this._privateTodo; 
+            get todo () {
+                return this._privateTodo;
             }
-            set todo (val) { 
+            set todo (val) {
                 return this._privateTodo = val;
             }
             index;

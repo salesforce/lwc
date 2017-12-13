@@ -34,6 +34,12 @@ function computePublicPropsConfig(publicProps) {
     return decorateProperties.reduce((config, property) => {
         const propertyName = property.get('key.name').node;
 
+        if (isBooleanPropDefaultTrue(property)) {
+            throw property.buildCodeFrameError(
+                `Boolean public property ${propertyName} must default to false.`
+            );
+        }
+
         // Ensure all public setters are associated with a getter
         if (isSetterClassMethod(property)) {
             const associatedGetter = decorateProperties.find(property => (
@@ -55,6 +61,11 @@ function computePublicPropsConfig(publicProps) {
         config[propertyName].config |= getPropertyBitmask(property);
         return config;
     }, {});
+}
+
+function isBooleanPropDefaultTrue(property) {
+    const propertyValue = property.node.value;
+    return propertyValue && propertyValue.type === "BooleanLiteral" && propertyValue.value;
 }
 
 function computePublicMethodsConfig(publicMethods) {
