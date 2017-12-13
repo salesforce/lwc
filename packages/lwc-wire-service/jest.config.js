@@ -9,7 +9,7 @@ module.exports = {
         ".css$": "<rootDir>/global-jest-stub.js",
     },
     "transform": {
-        "^.+\\.(js|html)$": "raptor-jest-transformer"
+        "^.+\\.(js|html)$": "lwc-jest-transformer"
     },
     mapCoverage: true,
     collectCoverageFrom: ['src/*.js', '!**/__tests__/**'],

@@ -6,7 +6,7 @@
     "prepublish": "yarn run build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "lerna run lint",
-    "test": "lerna exec --ignore lwc-wire-service --concurrency 1 -- yarn test",
+    "test": "lerna exec --concurrency 1 -- yarn test",
     "test:integration": "yarn run build && lerna run sauce --scope lwc-integration",
     "build": "lerna run build --ignore lwc-integration",
     "build:artifacts": "npm run build && npm run build:compiler",

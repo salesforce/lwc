@@ -4875,6 +4875,13 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
+lwc-jest-transformer@^0.17.1:
+  version "0.17.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lwc-jest-transformer/-/lwc-jest-transformer-0.17.1.tgz#25063820768eb01f1272b618c7b73fc9616d418d"
+  dependencies:
+    babel-core "^6.24.1"
+    deasync "^0.1.10"
+
 macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
@@ -6040,13 +6047,6 @@ randombytes@^2.0.0, randombytes@^2.0.1:
 range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
-
-raptor-jest-transformer@^2.0.1:
-  version "2.0.1"
-  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/raptor-jest-transformer/-/raptor-jest-transformer-2.0.1.tgz#dc2cd5cf91876ed7dcf11e5106215acab84ffc93"
-  dependencies:
-    babel-core "^6.24.1"
-    deasync "^0.1.10"
 
 raw-body@2.3.2:
   version "2.3.2"
