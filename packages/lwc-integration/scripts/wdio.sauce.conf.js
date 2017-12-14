@@ -33,6 +33,26 @@ const compatBrowsers = [
         platform: 'Windows 10',
         version: '11.103'
     },
+    {
+        browserName: 'safari',
+        platform: 'macOS 10.12',
+        version: '10.1'
+    },
+    {
+        browserName: 'safari',
+        platform: 'OS X 10.11',
+        version: '9.0'
+    },
+    {
+        browserName: 'chrome',
+        platform: 'Windows 8.1',
+        version: '30.0'
+    },
+    {
+        browserName: 'firefox',
+        platform: 'Windows 8',
+        version: '45.0'
+    },
 ];
 
 const sauce = {
@@ -42,7 +62,7 @@ const sauce = {
     sauceConnect: true,
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
-    capabilities: process.env.MODE.indexOf('compat') !== -1 ? browsers.concat(compatBrowsers) : browsers
+    capabilities: process.env.MODE.indexOf('compat') !== -1 ? compatBrowsers : browsers
 }
 
 /**

@@ -2291,6 +2291,10 @@ date-fns@^1.23.0:
   version "1.29.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
+date-format@0.0.2:
+  version "0.0.2"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/date-format/-/date-format-0.0.2.tgz#fafd448f72115ef1e2b739155ae92f2be6c28dd1"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -4557,6 +4561,15 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+junit-report-builder@~1.2.0:
+  version "1.2.0"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/junit-report-builder/-/junit-report-builder-1.2.0.tgz#6897ccd5ee3d805191a4be6f12c7be850e50c0d6"
+  dependencies:
+    date-format "0.0.2"
+    lodash "^3.8.0"
+    mkdirp "^0.5.0"
+    xmlbuilder "^2.6.2"
+
 kind-of@^3.0.2:
   version "3.2.2"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -4838,6 +4851,10 @@ lodash.unescape@4.0.1:
 lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
+
+lodash@^3.5.0, lodash@^3.8.0:
+  version "3.10.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
 lodash@^4.0.0, lodash@^4.1.0, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1, lodash@^4.8.0, lodash@~4.17.4:
   version "4.17.4"
@@ -7558,6 +7575,13 @@ wdio-dot-reporter@~0.0.8:
   version "0.0.9"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wdio-dot-reporter/-/wdio-dot-reporter-0.0.9.tgz#929b2adafd49d6b0534fda068e87319b47e38fe5"
 
+wdio-junit-reporter@^0.3.1:
+  version "0.3.1"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wdio-junit-reporter/-/wdio-junit-reporter-0.3.1.tgz#77b1bf4450d31b0f95bacc16dc1ba7bfcbd8fe09"
+  dependencies:
+    junit-report-builder "~1.2.0"
+    mkdirp "~0.5.1"
+
 wdio-mocha-framework@^0.5.10:
   version "0.5.11"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/wdio-mocha-framework/-/wdio-mocha-framework-0.5.11.tgz#33208d3a320ea7c9293093b831306c9dceab8416"
@@ -7831,6 +7855,12 @@ xml-char-classes@^1.0.0:
 xml-name-validator@^2.0.1:
   version "2.0.1"
   resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/xml-name-validator/-/xml-name-validator-2.0.1.tgz#4d8b8f1eccd3419aa362061becef515e1e559635"
+
+xmlbuilder@^2.6.2:
+  version "2.6.5"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/xmlbuilder/-/xmlbuilder-2.6.5.tgz#6ff7ad60fb72d22764f007a164b77f2bf1400526"
+  dependencies:
+    lodash "^3.5.0"
 
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.1"

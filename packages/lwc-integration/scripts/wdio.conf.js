@@ -177,10 +177,17 @@ const config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/testrunner/reporters.html
-    reporters: [RaptorIntegrationReporter],
+    reporters: [RaptorIntegrationReporter, 'junit'],
     reporterOptions: {
         RaptorIntegrationReporter: {
             mode: mode.toUpperCase()
+        },
+        junit: {
+            outputDir: './results',
+            outputFileFormat: function(opts) {
+                return `results-${mode}.${opts.cid}.${opts.capabilities}.xml`
+            },
+            packageName: mode.toUpperCase()
         }
     },
     //

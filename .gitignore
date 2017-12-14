@@ -19,4 +19,4 @@ benchmarking/dist
 packages/lwc-integration/public
 packages/lwc-integration/errorShots
 packages/lwc-integration/.env
-packages/lwc-fixtures/public/engine/*
+packages/lwc-integration/results
