@@ -117,6 +117,11 @@ module.exports = function apiVisitor ({ types: t }) {
 
             if (isApiDecorator) {
                 path.remove();
+                const { parentPath } = path;
+                if (parentPath.node.computed) {
+                    const { node: name } = parentPath.get('key.name');
+                    throw parentPath.buildCodeFrameError('@api cannot be applied to a computed property, getter, setter or method.')
+                }
 
                 if (isClassMethod(path.parentPath)) {
                     publicMethods.push(path);

@@ -294,6 +294,19 @@ describe('Public Methods', () => {
         }
         Test.publicMethods = ["foo"];
     `);
+
+    test('Does not allow computed api getters and setters', `
+        export default class ComputedAPIProp extends Element {
+            @api set [x](value) {}
+            @api get [x]() {}
+        }
+    `, undefined, {
+        message: 'test.js: @api cannot be applied to a computed property, getter, setter or method.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
 });
 
 describe('metadata', () => {
