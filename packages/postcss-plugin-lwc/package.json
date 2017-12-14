@@ -1,6 +1,6 @@
 {
   "name": "postcss-plugin-lwc",
-  "version": "0.17.0",
+  "version": "0.17.2",
   "main": "src/index.js",
   "description": "Postcss plugin for LWC style scoping",
   "scripts": {
