@@ -5,13 +5,13 @@ const PREFIX = 'lwc';
 const RAPTOR_MODULES_PREFIX = `${PREFIX}-`;
 const PATTERN_PATH = `*/package.json`;
 const BLACKLIST = new Set(['lwc-npm-resolver']);
-const VISITED = new Set();
 
 function isLWCPackage(name) {
     return name.startsWith(RAPTOR_MODULES_PREFIX);
 }
 
 module.exports = function resolve(options = {}) {
+    const VISITED = new Set();
     return module.paths.reduce((m, nodeModulesDir) => {
         return glob.sync(PATTERN_PATH, { cwd: nodeModulesDir }).reduce((mappings, file) => {
             const fullPath = path.join(nodeModulesDir, file);
