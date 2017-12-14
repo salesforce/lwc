@@ -37,7 +37,20 @@ const assert = {
         try {
             throw new Error(msg);
         } catch (e) {
-            console.warn(e);
+            const stackTraceLines: string[] = e.stack.split('\n');
+            console.group(`Warning: ${msg}`);
+            stackTraceLines.filter((trace) => {
+                 // Chrome adds the error message as the first item in the stack trace
+                 // So we filter it out to prevent logging it twice.
+                return trace.replace('Error: ', '') !== msg;
+            })
+            .forEach((trace) => {
+                // We need to format this as a string,
+                // because Safari will detect that the string
+                // is a stack trace line item and will format it as so
+                console.log('%s', trace.trim());
+            });
+            console.groupEnd();
         }
     },
     childNode(container: Node, node: Node, msg: string) {
