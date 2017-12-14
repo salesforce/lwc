@@ -10,6 +10,8 @@ const PUBLIC_PROP_BIT_MASK = {
     SETTER: 2
 }
 
+const { GLOBAL_ATTRIBUTE_SET } = require('../constants');
+
 function getPropertyBitmask(classProperty) {
     const isGetter = isGetterClassMethod(classProperty);
     const isSetter = isSetterClassMethod(classProperty);
@@ -32,6 +34,8 @@ function computePublicPropsConfig(publicProps) {
     );
 
     return decorateProperties.reduce((config, property) => {
+        validatePropertyName(property);
+
         const propertyName = property.get('key.name').node;
 
         if (isBooleanPropDefaultTrue(property)) {
@@ -61,6 +65,36 @@ function computePublicPropsConfig(publicProps) {
         config[propertyName].config |= getPropertyBitmask(property);
         return config;
     }, {});
+}
+
+function validatePropertyName(property) {
+    const propertyName = property.get('key.name').node;
+
+    if (propertyName === 'is') {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. "is" is a reserved attribute.`
+        );
+    } else if (propertyName === 'part') {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. "part" is a future reserved attribute for web components.`
+        );
+    } else if (propertyName.startsWith('on')) {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. Properties starting with "on" are reserved for event handlers.`
+        );
+    } else if (propertyName.startsWith('data')) {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. Properties starting with "data" are reserved attributes.`
+        );
+    } else if (propertyName.startsWith('aria')) {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. Properties starting with "aria" are reserved attributes.`
+        );
+    } else if (GLOBAL_ATTRIBUTE_SET.has(propertyName)) {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. ${propertyName} is a global HTML attribute, use attributeChangedCallback to observe this attribute.`
+        );
+    }
 }
 
 function isBooleanPropDefaultTrue(property) {

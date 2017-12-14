@@ -209,6 +209,78 @@ describe('Public Props', () => {
             column: 9
         }
     });
+
+    test('throws error if property name is "is"', `
+        export default class Test {
+            @api is;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name is. "is" is a reserved attribute.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name prefixed with "on"', `
+        export default class Test {
+            @api onChangeHandler;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name onChangeHandler. Properties starting with "on" are reserved for event handlers.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name prefixed with "data"', `
+        export default class Test {
+            @api dataFooBar;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name dataFooBar. Properties starting with "data" are reserved attributes.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name prefixed with "aria"', `
+        export default class Test {
+            @api ariaDescribedby;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name ariaDescribedby. Properties starting with "aria" are reserved attributes.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name conflicts with global html attribute name', `
+        export default class Test {
+            @api slot;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name slot. slot is a global HTML attribute, use attributeChangedCallback to observe this attribute.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name is "part"', `
+        export default class Test {
+            @api part;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name part. "part" is a future reserved attribute for web components.',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
 });
 
 describe('Public Methods', () => {
