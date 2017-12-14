@@ -5,15 +5,15 @@
                 Toggle <span if:true={isNodeCollapsed}>(open)</span><span if:false={isNodeCollapsed}>(close)</span>
             </a>
         </li>
-        <li style="display:inline-block" >Id: {data.id}</li>
-        <li>Name: {data.name}</li>
-        <li>Address: {data.address}</li>
-        <li>Phone: {data.phone}</li>
+        <li style="display:inline-block" >Id: {treeData.id}</li>
+        <li>Name: {treeData.name}</li>
+        <li>Address: {treeData.address}</li>
+        <li>Phone: {treeData.phone}</li>
         <li><a onclick={handleRefresh} href="javascript:void">Counter: {counter}</a></li>
         <template if:true={hasChildrenAndIsNotCollapsed}>
             <li class="node">
-                <template for:each={data.children} for:item="child">
-                    <tree-node key={child.id} data={child} collapsed-nodes={collapsedNodes}></tree-node>
+                <template for:each={treeData.children} for:item="child">
+                    <tree-node key={child.id} tree-data={child} collapsed-nodes={collapsedNodes}></tree-node>
                 </template>
             </li>
         </template>

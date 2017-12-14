@@ -1,7 +1,7 @@
 import { Element } from 'engine';
 
 export default class Tree1 extends Element {
-    @api data;
+    @api treeData;
 
     @track
     state = {};

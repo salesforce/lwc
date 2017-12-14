@@ -1,17 +1,17 @@
 import { Element } from 'engine';
 
 export default class Tree2 extends Element {
-    @api data;
+    @api treeData;
     @api collapsedNodes = [];
     @track
     counter = 0;
 
     get hasChildren() {
-        return this.data.children && !!this.data.children.length;
+        return this.treeData.children && !!this.treeData.children.length;
     }
 
     get isNodeCollapsed() {
-        return this.collapsedNodes.includes(this.data.id);
+        return this.collapsedNodes.includes(this.treeData.id);
     }
 
     get hasChildrenAndIsNotCollapsed() {
@@ -22,7 +22,7 @@ export default class Tree2 extends Element {
         this.dispatchEvent(new CustomEvent('togglerow', {
             composed: true,
             bubbles: true,
-            detail: { id: this.data.id }
+            detail: { id: this.treeData.id }
         }));
     }
 
