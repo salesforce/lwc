@@ -11,6 +11,8 @@ import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";
 import compatPlugin from "./rollup-plugins/compat";
 
+export { templateCompiler } from 'lwc-template-compiler';  // used by the lwc-language-server
+
 const DEFAULT_NAMESPACE = 'x';
 
 const DEFAULT_COMPILE_OPTIONS = {
