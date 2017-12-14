@@ -3,10 +3,6 @@
         <span>{state.error.message}</span>
     </template>
     <template if:true={state.todo}>
-        Title:
-        <span>{state.todo.title}</span>
-        <br> Completed:
-        <span>{state.todo.completed}</span>
-        <br>
+        Title:<span>{state.todo.title}</span> Completed:<span>{state.todo.completed}</span>
     </template>
 </template>
