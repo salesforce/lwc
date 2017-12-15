@@ -19,10 +19,10 @@ describe('test pre dom-insertion setAttribute and removeAttribute functionality'
 
     it('should remove user specified attribute', () => {
         const childElm = browser.element('my-child');
-        assert.notEqual(childElm.getAttribute('tabindex'), '0');
+        assert.notEqual(childElm.getAttribute('tabindex'), '4');
 
         // verify via element
         const tabAttrElm = browser.element('#tabindexattr');
-        assert.notEqual(tabAttrElm.getText(), '0');
+        assert.notEqual(tabAttrElm.getText(), '4');
     })
 })
