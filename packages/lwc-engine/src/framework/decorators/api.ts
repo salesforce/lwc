@@ -3,7 +3,7 @@ import { isArray, isUndefined, create, getOwnPropertyDescriptor, defineProperty,
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { subscribeToSetHook, notifyListeners } from "../watcher";
-import { EmptyObject, getAttrNameFromPropName } from "../utils";
+import { EmptyObject } from "../utils";
 import { ViewModelReflection } from "../def";
 import { isBeingConstructed } from "../component";
 

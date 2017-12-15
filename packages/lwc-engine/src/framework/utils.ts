@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction, isString } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf } from "./language";
 
 let nextTickCallbackQueue: Array<Callback> = [];
 const SPACE_CHAR = 32;
@@ -47,26 +47,29 @@ import {
 } from "./dom";
 
 /**
- * This dictionary contains the mapping between property names
- * and the corresponding attribute name. This helps to trigger observable attributes.
+ * This method maps between property names
+ * and the corresponding attribute name.
  */
-const propNameToAttributeNameMap = {
-    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`
-    className: 'class',
-    htmlFor: 'for',
-};
-// Few more exceptions where the attribute name matches the property in lowercase.
-HTMLPropertyNamesWithLowercasedReflectiveAttributes.forEach((propName: string) => {
-    propNameToAttributeNameMap[propName] = propName.toLowerCase();
-});
-
 export function getAttrNameFromPropName(propName: string): string {
-    let attrName = propNameToAttributeNameMap[propName];
-    if (!attrName) {
-        attrName = propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
-        propNameToAttributeNameMap[propName] = attrName;
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
     }
-    return attrName;
+
+    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`,
+    switch (propName) {
+        case 'className':
+            return 'class';
+        case 'htmlFor':
+            return 'for';
+        default:
+            // Few more exceptions where the attribute name matches the property in lowercase.
+            if (ArrayIndexOf.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, propName) >= 0) {
+                propName.toLocaleLowerCase()
+            }
+    }
+    // otherwise we do the regular canonical transformation.
+    return propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
 }
 
 export function noop() {}
