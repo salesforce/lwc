@@ -1,13 +1,13 @@
 {
   "name": "babel-plugin-transform-proxy-compat",
   "description": "Babel plugin to transform code to COMPAT mode",
-  "version": "0.17.2",
+  "version": "0.17.3",
   "main": "src/index.js",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "jest": "^21.2.1",
-    "proxy-compat": "0.17.2"
+    "proxy-compat": "0.17.3"
   },
   "scripts": {
     "test": "jest --coverage"
