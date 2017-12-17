@@ -5,9 +5,6 @@
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/index.d.ts",
   "license": "MIT",
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
-  },
   "scripts": {
     "clean": "rimraf coverage dist",
     "lint": "tslint -t stylish src/**/*",

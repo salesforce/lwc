@@ -20,8 +20,5 @@
     "clean": "rimraf dist/",
     "build": "node scripts/build",
     "test": "echo 'No test in this package'"
-  },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }

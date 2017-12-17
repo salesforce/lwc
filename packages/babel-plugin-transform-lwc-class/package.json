@@ -14,9 +14,6 @@
   "devDependencies": {
     "jest": "^21.2.1"
   },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
-  },
   "jest": {
     "testRegex": "/__tests__/.*test\\.js$"
   }

@@ -11,8 +11,5 @@
   },
   "scripts": {
     "test": "jest --coverage"
-  },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }

@@ -13,8 +13,5 @@
   },
   "scripts": {
     "test": "echo 'No tests in lwc-npm-resolver'"
-  },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }

@@ -12,15 +12,15 @@
     "build:artifacts": "npm run build && npm run build:compiler",
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
     "build:engine": "lerna run build --scope lwc-engine",
-    "start":
-      "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
-    "release": "yarn run prepublish && lerna publish --force-publish=*",
-    "release:canary":
-      "yarn run prepublish && lerna publish --force-publish=* --canary --skip-git --yes"
+    "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
+    "release": "yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
+    "release:canary":"yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/' --canary --skip-git --yes",
+    "release:external": "yarn run prepublish && lerna publish --scope=babel-helpers-lwc --registry='https://npm.lwcjs.org' --canary --skip-git --yes",
+    "release:externalcanary": "yarn run prepublish && lerna publish --scope=babel-helpers-lwc --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
   },
   "repository": {
     "type": "git",
-    "url": "https://git.soma.salesforce.com/raptor/raptor.git"
+    "url": "https://git.soma.salesforce.com/lwc/lwc.git"
   },
   "bin": {
     "lwc-compiler": "bin/lwc-compiler-cli.js"
@@ -29,7 +29,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.6.0",
-    "lerna": "2.4.0",
+    "lerna": "^2.5.1",
     "rimraf": "^2.6.1"
   },
   "workspaces": ["packages/*"]

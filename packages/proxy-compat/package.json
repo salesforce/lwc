@@ -13,9 +13,6 @@
     "build": "rollup -c",
     "prepublish": "yarn run build"
   },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
-  },
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-plugin-typescript": "^0.1.0",

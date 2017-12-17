@@ -16,9 +16,6 @@
     "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve\"",
     "test": "jest --coverage"
   },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
-  },
   "devDependencies": {
     "concurrently": "^3.4.0",
     "cross-env": "^3.1.4",
