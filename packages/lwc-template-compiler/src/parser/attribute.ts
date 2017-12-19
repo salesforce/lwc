@@ -35,14 +35,50 @@ function isEscapedAttribute(rawAttribute: string) {
     return !value || !(value.includes('{') && value.includes('}'));
 }
 
+const booleanAttributes = new Set<string>([
+    'autofocus', // <button>, <input>, <keygen>, <select>, <textarea>
+    'autoplay', // <audio>, <video>
+    'capture', // <input type='file'>
+    'checked', // <command>, <input>
+    'disabled', // <button>, <command>, <fieldset>, <input>, <keygen>, <optgroup>, <option>, <select>, <textarea>
+    'formnovalidate', // submit button
+    'hidden', // Global attribute
+    'loop', // <audio>, <bgsound>, <marquee>, <video>
+    'multiple', // <input>, <select>
+    'muted', // <audio>, <video>
+    'novalidate', // <form>
+    'open', // <details>
+    'readonly', // <input>, <textarea>
+    'required', // <input>, <select>, <textarea>
+    'reversed', // <ol>
+    'selected', // <option>
+]);
+
 export function normalizeAttributeValue(
     attr: parse5.AST.Default.Attribute,
     raw: string,
+    tag: string,
 ): {
     value: string,
     escapedExpression: boolean,
 } {
-    const { value } = attr;
+    const { name, value } = attr;
+    if (booleanAttributes.has(name)) {
+        if (value === 'true') {
+            throw new Error([
+                `To set a boolean attributes, try <${tag} ${name}> instead of <${tag} ${name}="${value}">.`,
+                'If the attribute is present, its value must either be the empty string',
+                'or a value that is an ASCII case -insensitive match for the attribute\'s canonical name',
+                'with no leading or trailing whitespace.',
+            ].join(''));
+        } else if (value === 'false') {
+            throw new Error([
+                `To not set a boolean attribute, try <${tag}> instead of <${tag} ${name}="${value}">.`,
+                'To represent a false value, the attribute has to be omitted altogether.',
+            ].join(' '));
+        }
+    }
+
     const isQuoted = isQuotedAttribute(raw);
     const isEscaped = isEscapedAttribute(raw);
     if (!isEscaped && isExpression(value)) {

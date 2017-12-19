@@ -1,0 +1,28 @@
+{
+  "warnings": [
+    {
+      "length": 11,
+      "level": "error",
+      "message": "To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">.If the attribute is present, its value must either be the empty stringor a value that is an ASCII case -insensitive match for the attribute's canonical namewith no leading or trailing whitespace.",
+      "start": 18
+    },
+    {
+      "length": 12,
+      "level": "error",
+      "message": "To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
+      "start": 43
+    },
+    {
+      "length": 13,
+      "level": "error",
+      "message": "To set a boolean attributes, try <p hidden> instead of <p hidden=\"true\">.If the attribute is present, its value must either be the empty stringor a value that is an ASCII case -insensitive match for the attribute's canonical namewith no leading or trailing whitespace.",
+      "start": 69
+    },
+    {
+      "length": 14,
+      "level": "error",
+      "message": "To not set a boolean attribute, try <p> instead of <p hidden=\"false\">. To represent a false value, the attribute has to be omitted altogether.",
+      "start": 96
+    }
+  ]
+}

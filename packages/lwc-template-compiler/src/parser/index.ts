@@ -546,7 +546,7 @@ export default function parse(source: string, state: State): {
             let parsed: IRAttribute;
 
             const isBooleanAttribute = !rawAttribute.includes('=');
-            const { value, escapedExpression } = normalizeAttributeValue(matching, rawAttribute);
+            const { value, escapedExpression } = normalizeAttributeValue(matching, rawAttribute, el.tag);
             if (isExpression(value) && !escapedExpression) {
                 return parsed = {
                     name,
