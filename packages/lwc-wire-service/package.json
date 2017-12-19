@@ -21,7 +21,7 @@
     "cross-env": "^3.1.4",
     "deasync": "^0.1.10",
     "eslint": "^4.3.0",
-    "eslint-plugin-raptor": "^0.1.24",
+    "eslint-plugin-lwc": "^0.2.4",
     "express": "^4.15.2",
     "jest": "21.2.1",
     "lwc-compiler": "0.17.3",

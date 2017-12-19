@@ -14,6 +14,7 @@
       ],
       "arrow-parens": false,
       "max-classes-per-file": false,
+      "no-implicit-dependencies": [true, "dev"],
       "member-access": false,
       "object-literal-sort-keys": false,
       "interface-name": [

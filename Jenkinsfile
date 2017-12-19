@@ -1,5 +1,5 @@
 // Global variables
-NEXUS_PROXY = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
+CUSTOM_REGISTRY = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
 GIT_SOMA_SSH_CREDENTIAL = "8ee1b190-5d0e-463b-a516-45c7261723ce"
 
 BENCHMARKING_JENKINS_JOB = "raptor-performance-benchmark"
@@ -33,7 +33,7 @@ node("raptor_node") {
             }
 
             // yarn doesn't support command line override so set some globals
-            sh "yarn config set registry $NEXUS_PROXY"
+            sh "yarn config set registry $CUSTOM_REGISTRY"
 
             // FIXME: Need to add git.soma.salesforce.com as trusted server
             sh "mkdir ~/.ssh && ssh-keyscan -H git.soma.salesforce.com >> ~/.ssh/known_hosts"

@@ -1,8 +1,6 @@
 {
-    "extends": "plugin:raptor/recommended",
-    "plugins": [
-        "raptor"
-    ],
+    "extends": "plugin:lwc/recommended",
+    "plugins": ["lwc"],
     "rules": {
         "compat/compat": "off",
         "jest/no-disabled-tests": "off"

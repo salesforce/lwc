@@ -5,6 +5,7 @@ dist/*.js
 node_modules
 packages/**/yarn.lock
 coverage
+yarn.lock
 .vscode
 *.log
 /lib/
