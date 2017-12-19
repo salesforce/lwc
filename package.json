@@ -15,8 +15,8 @@
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
     "release": "yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
     "release:canary":"yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/' --canary --skip-git --yes",
-    "release:external": "yarn run prepublish && lerna publish --scope=babel-helpers-lwc --registry='https://npm.lwcjs.org' --canary --skip-git --yes",
-    "release:externalcanary": "yarn run prepublish && lerna publish --scope=babel-helpers-lwc --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
+    "release:external": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --skip-git",
+    "release:externalcanary": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
   },
   "repository": {
     "type": "git",
