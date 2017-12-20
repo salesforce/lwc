@@ -5,6 +5,7 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const RaptorIntegrationReporter = require('./reporter');
 const MODE_COMPAT = 'compat';
 const mode = process.env.MODE || MODE_COMPAT;
+const webDriverPort = process.env.WD_PORT || 4567;
 const suiteFolders = path.resolve(__dirname, '../', 'src/components');
 /*
     SUITE
@@ -165,7 +166,7 @@ const config = {
     staticServerFolders: [
         { mount: '/', path: './public' }
     ].concat(staticFolders),
-    staticServerPort: 4567,
+    staticServerPort: webDriverPort,
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
     // see also: http://webdriver.io/guide/testrunner/frameworks.html
