@@ -7,7 +7,7 @@
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
-    "test:integration": "yarn run build && lerna run sauce --scope lwc-integration",
+    "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
     "build": "lerna run build --ignore locker-membrane --ignore benchmark --ignore lwc-integration",
     "build:artifacts": "npm run build && npm run build:compiler",
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",

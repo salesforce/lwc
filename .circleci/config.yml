@@ -11,8 +11,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v2-{{ checksum "package.json" }}
-          - yarn-v2-
+          - yarn-v3-{{ checksum "package.json" }}
+          - yarn-v3-
 
       - run: yarn install
 
@@ -21,11 +21,9 @@ jobs:
             - node_modules
             - packages/*/node_modules
             - yarn.lock
-          key: yarn-v2-{{ checksum "package.json" }}
+          key: yarn-v3-{{ checksum "package.json" }}
 
-      - run: mkdir -p /tmp/workspace
-
-  test:
+  unit_test:
     working_directory: ~/lwc
 
     docker:
@@ -36,8 +34,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v2-{{ checksum "package.json" }}
-          - yarn-v2-
+          - yarn-v3-{{ checksum "package.json" }}
+          - yarn-v3-
 
       - run: yarn install
 
@@ -45,12 +43,42 @@ jobs:
           name: Unit Test
           command: yarn test
 
+  integration_test:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8.9.3-stretch-browsers
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v3-{{ checksum "package.json" }}
+          - yarn-v3-
+
+      - run: yarn install
+      - run:
+          name: Integration Test
+          command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn test:integration
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test:
+      - build:
+          filters:
+            branches:
+              only: /\w+\/.*/
+
+      - unit_test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /\w+\/.*/
+
+      - integration_test:
           requires:
             - build
           filters:
