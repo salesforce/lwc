@@ -10,13 +10,14 @@
     "test": "jest --coverage",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
-    "build": "npm run build:es-and-cjs && npm run build:umd:prod && npm run build:umd:dev",
+    "build": "concurrently \"npm run build:es-and-cjs\" \"npm run build:umd:prod\" \"npm run build:umd:dev\"",
     "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js",
     "prepublish": "yarn run build"
   },
   "devDependencies": {
+    "concurrently": "^3.5.1",
     "eslint": "^3.19.0",
     "eslint-plugin-typescript": "^0.1.0",
     "jest": "^21.2.1",

@@ -1,7 +1,7 @@
-import * as babel from 'babel-core';
-import * as fs from 'fs';
-import * as path from 'path';
-import assert from 'power-assert';
+const babel = require('babel-core');
+const fs = require('fs');
+const path = require('path');
+const assert = require('power-assert');
 
 function trim(str) {
     return str.toString().replace(/^\s+|\s+$/, '');
@@ -48,7 +48,7 @@ function generateTestCase(dir, name, babelOpts) {
     });
 }
 
-export function transform(filePath, options) {
+module.exports.transform = function(filePath, options) {
     const { plugins = [], parserOpts } = options;
     const { code, map, metadata } = babel.transformFileSync(filePath, {
         babelrc: false,
@@ -59,7 +59,7 @@ export function transform(filePath, options) {
     return { code, map, metadata };
 }
 
-export function babelFixtureTransform (dir, babelOpts) {
+module.exports.babelFixtureTransform = function(dir, babelOpts) {
     describe('fixtures', () => {
         fs.readdirSync(dir).map(name => {
             const fixtureDir = path.join(dir, name);
