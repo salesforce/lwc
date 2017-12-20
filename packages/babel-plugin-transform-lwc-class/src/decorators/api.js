@@ -1,6 +1,11 @@
-const { isClassMethod, isGetterClassMethod, isSetterClassMethod, staticClassProperty } = require('../utils');
+const {
+    isAPIDecorator,
+    isClassMethod,
+    isGetterClassMethod,
+    isSetterClassMethod,
+    staticClassProperty
+} = require('../utils');
 
-const API_DECORATOR = 'api';
 const PUBLIC_PROPS_CLASS_PROPERTY = 'publicProps';
 const PUBLIC_METHODS_CLASS_PROPERTY = 'publicMethods';
 
@@ -111,11 +116,7 @@ function computePublicMethodsConfig(publicMethods) {
 module.exports = function apiVisitor ({ types: t }) {
     const decoratorVisitor = {
         Decorator(path, { publicMethods, publicProps }) {
-            const isApiDecorator = path.get('expression').isIdentifier({
-                name: API_DECORATOR
-            });
-
-            if (isApiDecorator) {
+            if (isAPIDecorator(path)) {
                 path.remove();
                 const { parentPath } = path;
                 if (parentPath.node.computed) {

@@ -1,6 +1,5 @@
-const { staticClassProperty } = require('../utils');
+const { isWireDecorator, staticClassProperty } = require('../utils');
 
-const WIRE_DECORATOR = 'wire';
 const WIRE_CLASS_PROPERTY = 'wire';
 const WIRE_PARAM_PREFIX = '$';
 
@@ -64,10 +63,7 @@ module.exports = function wireVisitor ({ types: t }) {
 
     const decoratorVisitor = {
         Decorator(path, { wiredValues }) {
-            const isWireDecorator = path.get('expression').isCallExpression() &&
-                                    path.get('expression.callee').isIdentifier({ name: WIRE_DECORATOR });
-
-            if (isWireDecorator) {
+            if (isWireDecorator(path)) {
                 const [id, config] = path.get('expression.arguments');
 
                 if (!id || !config) {

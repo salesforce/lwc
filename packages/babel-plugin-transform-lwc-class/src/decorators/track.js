@@ -1,17 +1,12 @@
-const { staticClassProperty } = require('../utils');
+const { isTrackDecorator, staticClassProperty } = require('../utils');
 
-const TRACK_DECORATOR = 'track';
 const TRACK_CLASS_PROPERTY = 'track';
 const TRACK_PROPERTY_VALUE = 1;
 
 module.exports = function apiVisitor({ types: t }) {
     const decoratorVisitor = {
         Decorator(path, { trackFields }) {
-            const isTrackDecorator = path.get('expression').isIdentifier({
-                name: TRACK_DECORATOR
-            });
-
-            if (isTrackDecorator) {
+            if (isTrackDecorator(path)) {
                 path.remove();
 
                 const { parentPath } = path;

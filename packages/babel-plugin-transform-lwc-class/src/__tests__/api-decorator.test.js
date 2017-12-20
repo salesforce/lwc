@@ -281,6 +281,20 @@ describe('Public Props', () => {
             column: 9
         }
     });
+
+    test('throws when combined with @track', `
+        export default class Test {
+            @track
+            @api
+            apiWithTrack = 'foo';
+        }
+    `, undefined, {
+        message: 'test.js: @api method or property cannot be used with @track',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
 });
 
 describe('Public Methods', () => {

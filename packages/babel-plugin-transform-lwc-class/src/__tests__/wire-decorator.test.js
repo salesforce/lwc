@@ -76,4 +76,74 @@ describe('Wired method', () => {
             }
         };
     `);
+
+    test('throws when wired method is combined with @api', `
+        export default class Test {
+            @api
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredWithApi() {}
+        }
+    `, undefined, {
+        message: 'test.js: @wire method or property cannot be used with @api',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
+
+    test('throws when wired property is combined with @api', `
+        export default class Test {
+            @api
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredPropWithApi;
+        }
+    `, undefined, {
+        message: 'test.js: @wire method or property cannot be used with @api',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
+
+    test('throws when wired method is combined with @track', `
+        export default class Test {
+            @track
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredWithTrack() {}
+        }
+    `, undefined, {
+        message: 'test.js: @wire method or property cannot be used with @track',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
+
+    test('throws when wired property is combined with @track', `
+        export default class Test {
+            @track
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredWithTrack
+        }
+    `, undefined, {
+        message: 'test.js: @wire method or property cannot be used with @track',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
+
+    test('throws when using 2 wired decorators', `
+        export default class Test {
+            @wire('record', { recordId: '$recordId', fields: ['Address'] })
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredWithTrack
+        }
+    `, undefined, {
+        message: 'test.js: Method or property can only have 1 @wire decorator',
+        loc: {
+            line: 2,
+            column: 20,
+        },
+    });
 });

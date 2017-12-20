@@ -60,6 +60,27 @@ function staticClassProperty(types, name, expression) {
     return classProperty;
 }
 
+const API_DECORATOR = 'api';
+const TRACK_DECORATOR = 'track';
+const WIRE_DECORATOR = 'wire';
+
+function isWireDecorator(path) {
+    return path.get('expression').isCallExpression() &&
+        path.get('expression.callee').isIdentifier({ name: WIRE_DECORATOR });
+}
+
+function isAPIDecorator(path) {
+    return path.get('expression').isIdentifier({
+        name: API_DECORATOR
+    });
+}
+
+function isTrackDecorator(path) {
+    return path.get('expression').isIdentifier({
+        name: TRACK_DECORATOR
+    });
+}
+
 module.exports = {
     decamelize,
     findClassMethod,
@@ -67,5 +88,8 @@ module.exports = {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
+    isAPIDecorator,
+    isTrackDecorator,
+    isWireDecorator,
     staticClassProperty,
 };
