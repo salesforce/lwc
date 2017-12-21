@@ -1,3 +1,4 @@
+CUSTOM_REGISTRY = "https://nexus.ci.data.com/nexus/content/groups/npm-all/"
 GITHUB_STATUS_CONTEXT = "continuous-integration/jenkins/performance"
 BENCHMARKING_ARTEFACT_PAGE = "https://git.soma.salesforce.com/pages/lwc/benchmark-artifacts"
 
@@ -23,6 +24,11 @@ node("private-cloud") {
         stage("Setup") {
             // Set pending benchmark status on github
             postGitStatus()
+            withCredentials([file(credentialsId: 'team-auraframework_nexus-token', variable: 'NPMRC')]) {
+                sh "cat $NPMRC >> .npmrc"
+            }
+            // yarn doesn't support command line override so set some globals
+            sh "yarn config set registry $CUSTOM_REGISTRY"
             helpers.yarnInstall()
         }
 
