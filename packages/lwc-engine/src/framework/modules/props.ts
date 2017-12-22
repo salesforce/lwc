@@ -1,8 +1,8 @@
 import assert from "../assert";
 import { isUndefined } from "../language";
-import { EmptyObject } from "../utils";
+import { EmptyObject, getAttrNameFromPropName } from "../utils";
+import { prepareForPropUpdate } from "../decorators/api";
 
-// TODO: eventually use the one shipped by snabbdom directly
 function update(oldVnode: VNode, vnode: VNode) {
     let oldProps = oldVnode.data.props;
     let props = vnode.data.props;
@@ -18,32 +18,40 @@ function update(oldVnode: VNode, vnode: VNode) {
     props = props || EmptyObject;
 
     let key: string, cur: any, old: any;
-    const { elm } = vnode;
+    const { elm, vm } = vnode;
 
     for (key in oldProps) {
-        if (!(key in props)) {
-            delete elm[key];
+        if (!(key in props) && (key in elm)) {
+            elm[key] = undefined;
         }
     }
     for (key in props) {
         cur = props[key];
         old = oldProps[key];
 
-        if (old !== cur) {
-            if (old !== cur && (key !== 'value' || elm[key] !== cur)) {
-                // only touching the dom if the prop really changes.
-                if (process.env.NODE_ENV !== 'production') {
-                    if (elm[key] === cur && old !== undefined) {
-                        console.warn(`Unneccessary update of property "${key}" in ${elm}, it has the same value in ${vnode.vm || vnode}.`);
-                    }
-                }
-                elm[key] = cur;
+        if (process.env.NODE_ENV !== 'production') {
+            if (old !== cur && !(key in elm)) {
+                // TODO: this should never really happen because the compiler should always validate
+                assert.fail(`Unknown public property "${key}" of ${elm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
+        }
+
+        if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
+            if (process.env.NODE_ENV !== 'production') {
+                if (elm[key] === cur && old !== undefined) {
+                    console.warn(`Unneccessary update of property "${key}" in ${elm}.`);
+                }
+            }
+            if (!isUndefined(vm)) {
+                prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
+            }
+            // touching the dom if the prop really changes.
+            elm[key] = cur;
         }
     }
 }
-
-export default {
+const propsModule: Module = {
     create: update,
     update,
 };
+export default propsModule;

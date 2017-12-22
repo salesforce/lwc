@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { isArray, isUndefined, create, getOwnPropertyDescriptor, defineProperty, isObject } from "../language";
+import { isArray, isUndefined, create, getOwnPropertyDescriptor, defineProperty, isObject, isNull } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { subscribeToSetHook, notifyListeners } from "../watcher";
@@ -49,6 +49,16 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
+            if (vm.vnode.isRoot || isBeingConstructed(vm)) {
+                vmBeingUpdated = vm;
+                const observable = isObservable(newValue);
+                newValue = observable ? getReactiveProxy(newValue) : newValue;
+                if (process.env.NODE_ENV !== 'production') {
+                    if (!observable && !isNull(newValue) && isObject(newValue)) {
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+                    }
+                }
+            }
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
@@ -59,19 +69,10 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                     // perf optimization to skip this step if not in the DOM
                     notifyListeners(this, key);
                 }
-            } else if (isBeingConstructed(vm)) {
-                const observable = isObservable(newValue);
-                newValue = observable ? getReactiveProxy(newValue) : newValue;
-                if (process.env.NODE_ENV !== 'production') {
-                    if (!observable && newValue !== null && isObject(newValue)) {
-                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
-                    }
-                }
-                vm.cmpProps[key] = newValue;
-            } else {
-                if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
-                }
+            } else if (process.env.NODE_ENV !== 'production') {
+                // logic for setting new properties of the element directly from the DOM
+                // will only be allowed for root elements created via createElement()
+                assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
             }
         },
         enumerable: descriptor ? descriptor.enumerable : true,
@@ -82,8 +83,8 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
     const { get, set, enumerable } = descriptor || EmptyObject;
     defineProperty(proto, key, {
         get(): any {
-            const vm: VM = this[ViewModelReflection];
             if (process.env.NODE_ENV !== 'production') {
+                const vm: VM = this[ViewModelReflection];
                 assert.vm(vm);
             }
             if (get) {
@@ -94,20 +95,30 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             const vm = this[ViewModelReflection];
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            if (!isBeingConstructed(vm) && vmBeingUpdated !== vm) {
+            if (vm.vnode.isRoot || isBeingConstructed(vm)) {
+                vmBeingUpdated = vm;
+                const observable = isObservable(newValue);
+                newValue = observable ? getReactiveProxy(newValue) : newValue;
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm} can only set a new value for property "${key}" during construction.`);
+                    if (!observable && !isNull(newValue) && isObject(newValue)) {
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+                    }
                 }
-                return;
             }
-            vmBeingUpdated = null; // releasing the lock
-            if (set) {
-                set.call(this, newValue);
-            } else {
-                if (process.env.NODE_ENV !== 'production') {
-                    assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter.`);
+            if (vmBeingUpdated === vm) {
+                // not need to wrap or check the value since that is happening somewhere else
+                vmBeingUpdated = null; // releasing the lock
+                if (set) {
+                    set.call(this, newValue);
+                } else if (process.env.NODE_ENV !== 'production') {
+                    assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter decorated with @api.`);
                 }
+            } else if (process.env.NODE_ENV !== 'production') {
+                // logic for setting new properties of the element directly from the DOM
+                // will only be allowed for root elements created via createElement()
+                assert.fail(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
             }
         },
         enumerable,

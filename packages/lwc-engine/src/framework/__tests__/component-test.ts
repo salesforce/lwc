@@ -240,9 +240,7 @@ describe('component', function () {
             expect(context).toBe(vnode.vm.component);
         });
 
-        it('should not execute setter function when used directly from DOM', function () {
-            let callCount = 0;
-
+        it('should fail to execute setter function when used directly from DOM', function () {
             class MyComponent extends Element  {
                 value = 'pancakes';
                 get breakfast () {
@@ -250,7 +248,6 @@ describe('component', function () {
                 }
 
                 set breakfast (value) {
-                    callCount += 1;
                     this.value = value;
                 }
             }
@@ -265,9 +262,7 @@ describe('component', function () {
             document.body.appendChild(elm);
             const vnode = api.c('x-foo', MyComponent, {});
             patch(elm, vnode);
-            elm.breakfast = 'hey';
-
-            expect(callCount).toBe(0);
+            expect(() => elm.breakfast = 'hey').toThrow();
         });
 
         it('should execute setter function with correct context when component is root', function () {

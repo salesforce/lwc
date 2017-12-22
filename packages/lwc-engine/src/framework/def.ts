@@ -27,10 +27,9 @@ import {
 import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
-import { createPublicPropertyDescriptor, createPublicAccessorDescriptor, prepareForPropUpdate } from "./decorators/api";
+import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
-import { getReactiveProxy, isObservable } from "./reactive";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
 
 /*eslint-disable*/
@@ -185,33 +184,13 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
 
 function createGetter(key: string) {
     return function (): any {
-        const vm = this[ViewModelReflection];
-        return vm.component[key];
+        return this[ViewModelReflection].component[key];
     }
 }
 
 function createSetter(key: string) {
     return function (newValue: any): any {
-        const vm = this[ViewModelReflection];
-        // logic for setting new properties of the element directly from the DOM
-        // will only be allowed for root elements created via createElement()
-        if (!vm.vnode.isRoot) {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
-            }
-            return;
-        }
-        const observable = isObservable(newValue);
-        newValue = observable ? getReactiveProxy(newValue) : newValue;
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (!observable && newValue !== null && isObject(newValue)) {
-                assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
-            }
-        }
-
-        prepareForPropUpdate(vm);
-        vm.component[key] = newValue;
+        this[ViewModelReflection].component[key] = newValue;
     }
 }
 

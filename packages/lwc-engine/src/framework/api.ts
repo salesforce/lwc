@@ -106,7 +106,7 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
         }
     }
 
-    const { key, slotset, styleMap, style, on, className, classMap, props: _props } = data;
+    const { key, slotset, styleMap, style, on, className, classMap, props } = data;
     let { attrs } = data;
 
     // hack to allow component authors to force the usage of the "is" attribute in their components
@@ -117,7 +117,7 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
         sel = forceTagName;
     }
 
-    data = { hook, key, slotset, attrs, on, _props };
+    data = { hook, key, slotset, attrs, on, props };
     data.class = classMap || (className && getMapFromClassName(className));
     data.style = styleMap || (style && style + '');
     return v(sel, data, EmptyArray, undefined, undefined, Ctor);

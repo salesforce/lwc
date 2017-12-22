@@ -1,3 +1,4 @@
+import "../../patch"; // TODO: there is some wierd issue with the order of imports that break this test is this is not running first
 import target from '../props';
 
 describe('module/props', () => {
