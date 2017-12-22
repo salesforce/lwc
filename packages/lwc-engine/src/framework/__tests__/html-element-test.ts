@@ -24,16 +24,27 @@ describe('html-element', () => {
     });
 
     describe('#classList()', () => {
-        it('should have a valid classList during construction', () => {
-            expect.assertions(1);
+        it('should throw when adding classList during construction', () => {
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
                     this.classList.add('foo');
+                }
+            }
+            expect(() => createElement('x-foo', { is: def })).toThrow();
+        });
+
+        it('should have a valid classList during connectedCallback', () => {
+            expect.assertions(2);
+            const def = class MyComponent extends Element {
+                connectedCallback() {
+                    this.classList.add('foo');
                     expect(this.classList.contains('foo')).toBe(true);
                 }
             }
-            createElement('x-foo', { is: def });
+            const elm = createElement('x-foo', { is: def });
+            document.body.appendChild(elm);
+            expect(elm.classList.contains('foo')).toBe(true);
         });
     });
 

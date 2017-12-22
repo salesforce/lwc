@@ -1,5 +1,4 @@
 import assert from "./assert";
-import { ClassList } from "./class-list";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener } from "./component";
 import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice } from "./language";
@@ -185,18 +184,12 @@ ComponentElement.prototype = {
         elm.tabIndex = value;
     },
     get classList(): DOMTokenList {
-        const vm = this[ViewModelReflection];
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.vm(this[ViewModelReflection]);
+            // TODO: this still fails in dev but works in production, eventually, we should just throw in all modes
+            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct ${this[ViewModelReflection]}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`);
         }
-        let { classListObj } = vm;
-        // lazy creation of the ClassList Object the first time it is accessed.
-        if (isUndefined(classListObj)) {
-            vm.cmpClasses = {};
-            classListObj = new ClassList(vm);
-            vm.classListObj = classListObj;
-        }
-        return classListObj;
+        return getLinkedElement(this).classList;
     },
     get root(): ShadowRoot {
         const vm = this[ViewModelReflection];

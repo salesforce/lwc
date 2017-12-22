@@ -71,7 +71,6 @@ declare class VM {
     cmpTrack: HashTable<any>;
     cmpEvents?: HashTable<Array<EventListener>>;
     cmpListener?: (event: Event) => void;
-    cmpClasses?: HashTable<Boolean>;
     cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
     isScheduled: boolean;
@@ -84,7 +83,6 @@ declare class VM {
     shadowVNode: VNode;
     fragment: Array<VNode>;
     deps: Array<Array<VM>>;
-    classListObj?: DOMTokenList;
     toString(): string;
 }
 

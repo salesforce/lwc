@@ -2,7 +2,6 @@ import { init } from "../3rdparty/snabbdom/snabbdom";
 
 import componentInit from "./modules/component-init";
 import componentEvents from "./modules/component-events";
-import componentClasses from "./modules/component-classes";
 import componentSlotset from "./modules/component-slotset";
 import props from "./modules/props";
 import attrs from "./modules/attrs";
@@ -17,7 +16,6 @@ export const patch = init([
     componentSlotset,
     // from this point on, we do a series of DOM mutations
     componentEvents,
-    componentClasses,
 
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
