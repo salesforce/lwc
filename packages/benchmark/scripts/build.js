@@ -5,7 +5,7 @@ const minimist = require('minimist');
 const replace = require('rollup-plugin-replace');
 const webpack = require('webpack');
 const rollup = require('rollup');
-const raptorPlugin = require('rollup-plugin-lwc-compiler');
+const lwcPlugin = require('rollup-plugin-lwc-compiler');
 
 const {
     DIST_DIR,
@@ -66,11 +66,7 @@ function saveRunner(bundlePath) {
     return Promise.all(buildPromise);
 }
 
-const argv = minimist(process.argv.slice(2), {
-    default: {
-        name: getCommitHash(true),
-    }
-});
+const argv = minimist(process.argv.slice(2), { default: { name: getCommitHash(true) }});
 
 console.log('Building bundle');
 const bundlePath = path.resolve(DIST_DIR, argv.name);
@@ -94,13 +90,8 @@ rollup.rollup({
                 }
             }
         },
-        raptorPlugin({
-            mapNamespaceFromPath: false,
-            resolveFromPackages: false,
-        }),
-        replace({
-            'process.env.NODE_ENV': JSON.stringify('production'),
-        })
+        lwcPlugin({ mapNamespaceFromPath: false, resolveFromPackages: false }),
+        replace({ 'process.env.NODE_ENV': JSON.stringify('production') })
     ],
 }).then(bundle => (
     bundle.generate({

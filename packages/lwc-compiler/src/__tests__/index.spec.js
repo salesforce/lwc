@@ -44,12 +44,6 @@ describe('transform', () => {
         );
     });
 
-    it('should validate options', () => {
-        expect(() => transform(`console.log('Hello')`, './test.js')).toThrow(
-            /Expects an option with a moduleName and moduleNamespace string property/,
-        );
-    });
-
     it('should apply transformation for javascript file', async () => {
         const actual = `
             import { Element } from 'engine';
@@ -141,10 +135,10 @@ describe('transform', () => {
             import { Element } from 'engine';
             export default class Foo extends Element {
                 _privateTodo;
-                @api get todo () { 
-                    return this._privateTodo; 
+                @api get todo () {
+                    return this._privateTodo;
                 }
-                @api set todo (val) { 
+                @api set todo (val) {
                     return this._privateTodo = val;
                 }
                 @api

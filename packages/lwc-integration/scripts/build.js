@@ -85,6 +85,7 @@ const baseInputConfig = {
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
             mapNamespaceFromPath: false,
+            ignoreFolderName: true,
             resolveProxyCompat: { global: 'window.Proxy' },
             globals: globalModules
         }),

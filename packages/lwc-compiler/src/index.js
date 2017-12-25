@@ -14,6 +14,7 @@ import compatPlugin from "./rollup-plugins/compat";
 export { templateCompiler } from 'lwc-template-compiler';  // used by the lwc-language-server
 
 const DEFAULT_NAMESPACE = 'x';
+const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };
 
 const DEFAULT_COMPILE_OPTIONS = {
     format: 'es',
@@ -22,10 +23,6 @@ const DEFAULT_COMPILE_OPTIONS = {
     resolveProxyCompat: {
         independent: 'proxy-compat',
     },
-};
-
-const DEFAULT_TRANSFORM_OPTIONS = {
-    mode: MODES.DEV,
 };
 
 export function compile(entry, options = {}) {
@@ -50,10 +47,7 @@ export function compile(entry, options = {}) {
     // Extract component namespace and name and add it to option
     // TODO: rename the componentName and componentNamespace APIs, to moduleName and moduleNamespace,
     //       not all the modules are components.
-    const { name, namespace, normalizedName } = getNormalizedName(
-        entry,
-        options,
-    );
+    const { name, namespace, normalizedName } = getNormalizedName(entry, options);
     options.moduleName = name;
     options.moduleNamespace = namespace;
     options.normalizedModuleName = normalizedName;
@@ -90,16 +84,6 @@ export function transform(src, id, options) {
 
     if (!isString(id)) {
         throw new Error(`Expect a string for id. Received ${id}`);
-    }
-
-    if (
-        isUndefined(options) ||
-        !isString(options.moduleName) ||
-        !isString(options.moduleNamespace)
-    ) {
-        throw new Error(
-            `Expects an option with a moduleName and moduleNamespace string property. Instead received ${options}`,
-        );
     }
 
     options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
@@ -143,10 +127,7 @@ function normalizeEntryPath(fileName) {
  * @param {string} fileName
  * @param {boolean} mapNamespaceFromPath
  */
-function getNormalizedName(
-    fileName,
-    { componentName, componentNamespace, mapNamespaceFromPath },
-) {
+function getNormalizedName(fileName,{ componentName, componentNamespace, mapNamespaceFromPath }) {
     const ext = path.extname(fileName);
     const parts = fileName.split(path.sep);
 

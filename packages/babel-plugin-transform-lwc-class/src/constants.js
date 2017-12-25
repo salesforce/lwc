@@ -3,6 +3,4 @@ const GLOBAL_ATTRIBUTE_SET = new Set([
     'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
 ]);
 
-module.exports = {
-    GLOBAL_ATTRIBUTE_SET
-};
+module.exports = { GLOBAL_ATTRIBUTE_SET };

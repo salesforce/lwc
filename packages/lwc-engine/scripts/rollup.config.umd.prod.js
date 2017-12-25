@@ -18,15 +18,10 @@ function rollupConfig(config){
     const { format, target, prod } = config;
 
     let plugins = [
-        typescript({
-            target: target,
-            typescript: require('typescript'),
-        }),
-        replace({
-            'process.env.NODE_ENV': JSON.stringify('production'),
-        }),
+        typescript({ target: target, typescript: require('typescript') }),
+        replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         prod && uglify({}, code => minify(code))
-    ].filter((plugin) => plugin);
+    ].filter(p => p);
 
     const targetName = generateTargetName(config);
 

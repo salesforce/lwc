@@ -20,10 +20,10 @@
     "concurrently": "^3.4.0",
     "cross-env": "^3.1.4",
     "deasync": "^0.1.10",
-    "eslint": "^4.3.0",
+    "eslint": "~4.13.0",
     "eslint-plugin-lwc": "^0.2.4",
     "express": "^4.15.2",
-    "jest": "21.2.1",
+    "jest": "^21.2.1",
     "lwc-compiler": "0.17.3",
     "lwc-engine": "0.17.3",
     "lwc-jest-transformer": "^0.17.1",
@@ -33,5 +33,10 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.1.3"
+  },
+  "lwc": {
+    "modules": {
+      "wire-service": "dist/modules/es2017/wire-service.js"
+    }
   }
 }

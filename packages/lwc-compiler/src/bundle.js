@@ -49,9 +49,7 @@ export default function bundle(entry, options = {}) {
     })
         .then(bundle => {
             return bundle.generate({
-                amd: {
-                    id: options.normalizedModuleName,
-                },
+                amd: { id: options.normalizedModuleName },
                 interop: false,
                 strict: false,
                 format: options.format,

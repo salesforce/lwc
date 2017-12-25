@@ -41,7 +41,7 @@ describe('emit asserts for simple_app: ', () => {
 
     it(`output match:`, () => {
         const entry = path.join(fixtureCaseDir, 'main.js');
-        return doRollup(entry).then(res => {
+        return doRollup(entry, { allowUnnamespaced: true } ).then(res => {
             const { code: actual } = res;
 
             const expected = fs.readFileSync(path.join(fixturesDir, 'simple_app/expected.js'), 'utf-8');

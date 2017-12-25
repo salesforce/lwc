@@ -32,16 +32,8 @@ function getTransformer(fileName) {
  */
 export default async function transform(src, id, options) {
     const transfomer = getTransformer(id);
-    const mergedOptions = Object.assign({}, options, {
-        filename: id,
-    });
-
-    const result = await Promise.resolve(
-        transfomer(
-            src,
-            mergedOptions
-        )
-    );
+    const mergedOptions = Object.assign({}, options, { filename: id });
+    const result = await Promise.resolve(transfomer( src, mergedOptions));
 
     if (isCompat(options.mode)) {
         const { transform } = compatPluginFactory(mergedOptions);
