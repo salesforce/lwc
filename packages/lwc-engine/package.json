@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
-    "eslint": "^3.19.0",
+    "eslint": "^4.13.0",
     "eslint-plugin-typescript": "^0.1.0",
     "jest": "^21.2.1",
     "rimraf": "^2.6.1",

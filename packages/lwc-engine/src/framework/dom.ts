@@ -45,7 +45,7 @@ export const GlobalHTMLProperties = {
     },
     dataset: {
         readOnly: true,
-        msg: 'Using property "dataset" is an anti-pattern. Instead declare \`static observedAttributes = ["data-foo"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes.',
+        msg: 'Using property "dataset" is an anti-pattern. Instead declare `static observedAttributes = ["data-foo"]` and use `attributeChangedCallback(attrName, oldValue, newValue)` to get a notification each time the attribute changes.',
     },
     dir: {
         attribute: 'dir',
