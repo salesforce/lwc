@@ -87,7 +87,8 @@ const baseInputConfig = {
             mapNamespaceFromPath: false,
             ignoreFolderName: true,
             resolveProxyCompat: { global: 'window.Proxy' },
-            globals: globalModules
+            globals: globalModules,
+            allowUnnamespaced: true
         }),
         testCaseComponentResolverPlugin(),
     ]
