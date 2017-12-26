@@ -38,9 +38,10 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
 
     return {
         name: 'rollup-lwc-compiler',
+
         options(opts) {
             const entry = opts.input || opts.entry;
-            const entryDir = path.dirname(entry);
+            const entryDir = options.rootDir || path.dirname(entry);
             const externalPaths = options.resolveFromPackages ? lwcResolver.resolveLwcNpmModules(options) : {};
             const sourcePaths = options.resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, options): {};
             modulePaths = Object.assign({}, externalPaths, sourcePaths);
