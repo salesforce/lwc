@@ -13,7 +13,7 @@
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
     "build:engine": "lerna run build --scope lwc-engine",
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
-    "release": "yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
+    "release": "yarn build && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
     "release:canary":"yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/' --canary --skip-git --yes",
     "release:external": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --skip-git",
     "release:externalcanary": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
