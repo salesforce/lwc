@@ -1,12 +1,12 @@
 {
   "name": "lwc-module-resolver",
   "description": "Resolves paths for LWC components",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "main": "./src/index.js",
   "license": "MIT",
   "devDependencies": {
-    "mocha": "^3.2.0",
-    "jest": "^21.2.1"
+    "jest": "^21.2.1",
+    "mocha": "^3.2.0"
   },
   "dependencies": {
     "glob": "^7.1.2",

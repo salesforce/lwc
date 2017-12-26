@@ -1,6 +1,6 @@
 {
   "name": "lwc-engine",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Raptor Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
@@ -13,8 +13,7 @@
     "build": "concurrently \"npm run build:es-and-cjs\" \"npm run build:umd:prod\" \"npm run build:umd:dev\"",
     "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
-    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js",
-    "prepublish": "yarn run build"
+    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",

@@ -1,17 +1,19 @@
 {
   "name": "lwc-helper-fixture",
   "description": "Helper package to run fixture testing",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",
     "babel-preset-env": "^1.6.0",
     "mocha": "^3.2.0",
     "power-assert": "^1.4.2"
   },
   "scripts": {
-    "prepublish": "yarn run build",
-    "test": "echo 'No tests in lwc-helper-fixture'"
+    "prepare": "yarn build",
+    "build": "babel src/ --out-dir dist/",
+    "test": "echo '[lwc-helper-fixture] - No tests'"
   }
 }

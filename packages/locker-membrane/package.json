@@ -1,6 +1,6 @@
 {
   "name": "locker-membrane",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Membrane implementation for locker service",
   "main": "dist/commonjs/locker-membrane.js",
   "module": "dist/modules/locker-membrane.js",
@@ -10,8 +10,7 @@
     "test": "jest --coverage --no-cache",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
-    "build": "rollup -c",
-    "prepublish": "yarn run build"
+    "build": "rollup -c"
   },
   "devDependencies": {
     "eslint": "^4.13.0",

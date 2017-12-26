@@ -1,6 +1,6 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/index.d.ts",
@@ -9,8 +9,7 @@
     "clean": "rimraf coverage dist",
     "lint": "tslint -t stylish src/**/*",
     "test": "jest --coverage",
-    "build": "tsc",
-    "prepublish": "yarn run clean && yarn run build"
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.7.14",
