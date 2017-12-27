@@ -1,23 +1,34 @@
+import assert from "../assert";
 import { EmptyObject } from "../utils";
+import { isUndefined } from "../language";
+import { Module, VNode } from "../../3rdparty/snabbdom/types";
 
 function updateClass(oldVnode: VNode, vnode: VNode) {
-    const { data: { class: oldClass = EmptyObject } } = oldVnode;
-    const { elm, data: { class: klass = EmptyObject } } = vnode;
-
+    const { elm, data: { class: klass } } = vnode;
+    if (isUndefined(klass)) {
+        return;
+    }
+    let { data: { class: oldClass } } = oldVnode;
     if (oldClass === klass) {
         return;
     }
 
-    const { classList } = elm;
-    let name: string
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(isUndefined(oldClass) || typeof oldClass === typeof klass, `vnode.data.class cannot change types.`);
+    }
+
+    const { classList } = (elm as Element);
+    let name: string;
+    oldClass = isUndefined(oldClass) ? EmptyObject : oldClass;
+
     for (name in oldClass) {
         // remove only if it is not in the new class collection and it is not set from within the instance
-        if (!klass[name]) {
+        if (isUndefined(klass[name])) {
             classList.remove(name);
         }
     }
     for (name in klass) {
-        if (!oldClass[name]) {
+        if (isUndefined(oldClass[name])) {
             classList.add(name);
         }
     }

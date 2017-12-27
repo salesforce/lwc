@@ -1,17 +1,18 @@
 import { TargetSlot } from './membrane';
+import { ArrayPush, ArrayConcat } from "./language";
+
 const { create, getPrototypeOf, getOwnPropertyNames, getOwnPropertySymbols } = Object;
 const { isArray } = Array;
-/* eslint-disable */
-type DevToolFormatter = {
+
+interface DevToolFormatter {
     header: (object: any, config: any) => any;
     hasBody: (object: any, config: any) => boolean | null;
     body: (object: any, config: any) => any;
 }
 
 interface DevWindow extends Window {
-    devtoolsFormatters: Array<DevToolFormatter>
+    devtoolsFormatters: DevToolFormatter[];
 }
-/* eslint-enable */
 
 function getTarget(item: any) {
     return item && item[TargetSlot];
@@ -25,13 +26,13 @@ function extract(objectOrArray: any): any {
                 return extract(original);
             }
             return item;
-        })
+        });
     }
 
-    const obj = create(getPrototypeOf(objectOrArray))
-
-    return getOwnPropertyNames(objectOrArray).concat(getOwnPropertySymbols(objectOrArray))
-        .reduce((seed: any, key: string | symbol) => {
+    const obj = create(getPrototypeOf(objectOrArray));
+    const names = getOwnPropertyNames(objectOrArray);
+    return ArrayConcat.call(names, getOwnPropertySymbols(objectOrArray))
+        .reduce((seed: any, key: PropertyKey) => {
             const item = objectOrArray[key];
             const original = getTarget(item);
             if (original) {
@@ -61,15 +62,18 @@ const formatter: DevToolFormatter = {
     }
 };
 
-
 export function init() {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
     // Custom Formatter for Dev Tools
     // To enable this, open Chrome Dev Tools
     // Go to Settings,
     // Under console, select "Enable custom formatters"
     // For more information, https://docs.google.com/document/d/1FTascZXT9cxfetuPRT2eXPQKXui4nWFivUnS_335T3U/preview
-    const devWindow = (<DevWindow>window); // eslint-disable-line no-undef
+    const devWindow = (window as DevWindow);
     const devtoolsFormatters = devWindow.devtoolsFormatters || [];
-    devtoolsFormatters.push(formatter);
-    devWindow.devtoolsFormatters = devtoolsFormatters; // eslint-disable-line no-undef
+    ArrayPush.call(devtoolsFormatters, formatter);
+    devWindow.devtoolsFormatters = devtoolsFormatters;
 }

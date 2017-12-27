@@ -18,28 +18,28 @@ import {
     preventExtensions,
     getPrototypeOf,
     getOwnPropertySymbols,
-    ArrayConcat
+    ArrayConcat,
+    isUndefined
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 import { init as initDevFormatter } from './reactive-dev-formatter';
+import { VM } from "./vm";
 
 if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();
 }
 
-/*eslint-disable*/
-export type ShadowTarget = (Object | Array<any>);
-type Observable = (Object | Array<any>);
-type Reactive = ProxyHandler<ReactiveProxyHandler>
-/*eslint-enable*/
+export type ShadowTarget = (object | any[]);
+type Observable = (object | any[]);
+type Reactive = ProxyHandler<ReactiveProxyHandler>;
 
 const ReactiveMap: WeakMap<Observable, Reactive> = new WeakMap();
 const ObjectDotPrototype = Object.prototype;
 
-function lockShadowTarget (shadowTarget: ShadowTarget, originalTarget: any): void {
+function lockShadowTarget(shadowTarget: ShadowTarget, originalTarget: any): void {
     const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     targetKeys.forEach((key: PropertyKey) => {
-        let descriptor = getOwnPropertyDescriptor(originalTarget, key);
+        let descriptor = getOwnPropertyDescriptor(originalTarget, key) as PropertyDescriptor;
 
         // We do not need to wrap the descriptor if not configurable
         // Because we can deal with wrapping it when user goes through
@@ -62,7 +62,7 @@ function wrapDescriptor(descriptor: PropertyDescriptor): PropertyDescriptor {
     return descriptor;
 }
 
-export function isObservable (value: any): boolean {
+export function isObservable(value: any): boolean {
     if (!value) {
         return false;
     }
@@ -83,11 +83,11 @@ function unwrapDescriptor(descriptor: PropertyDescriptor): PropertyDescriptor {
 }
 
 export class ReactiveProxyHandler {
-    originalTarget: any; // eslint-disable-line no-undef
-    constructor (value: any) {
+    originalTarget: any;
+    constructor(value: any) {
         this.originalTarget = value;
     }
-    get(shadowTarget: ShadowTarget, key: string | symbol): any {
+    get(shadowTarget: ShadowTarget, key: PropertyKey): any {
         if (key === MembraneSlot) {
             return this;
         }
@@ -97,7 +97,7 @@ export class ReactiveProxyHandler {
         }
         const value = originalTarget[key];
         if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
+            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
         }
         const observable = isObservable(value);
         if (process.env.NODE_ENV !== 'production') {
@@ -143,7 +143,7 @@ export class ReactiveProxyHandler {
             assert.fail(`invalid call invocation for property proxy ${toString(target)}`);
         }
     }
-    construct(target: any, argArray: any, newTarget?: any): any { // eslint-disable-line no-unused-vars
+    construct(target: any, argArray: any, newTarget?: any): any {
         if (process.env.NODE_ENV !== 'production') {
             assert.fail(`invalid construction invocation for property proxy ${toString(target)}`);
         }
@@ -154,12 +154,12 @@ export class ReactiveProxyHandler {
 
         // make reactive
         if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
+            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
         }
 
         return key in originalTarget;
     }
-    ownKeys(shadowTarget: ShadowTarget): Array<string> { // eslint-disable-line no-unused-vars
+    ownKeys(shadowTarget: ShadowTarget): string[] {
         const { originalTarget } = this;
         return ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     }
@@ -179,28 +179,28 @@ export class ReactiveProxyHandler {
 
         return targetIsExtensible;
     }
-    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any { // eslint-disable-line no-unused-vars
+    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any {
         if (process.env.NODE_ENV !== 'production') {
             assert.fail(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
         }
     }
-    getPrototypeOf(shadowTarget: ShadowTarget): Object { // eslint-disable-line no-unused-vars
+    getPrototypeOf(shadowTarget: ShadowTarget): object {
         const { originalTarget } = this;
         return getPrototypeOf(originalTarget);
     }
-    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor {
+    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
         const { originalTarget } = this;
 
         // keys looked up via hasOwnProperty need to be reactive
         if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key); // eslint-disable-line no-undef
+            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
         }
 
         let desc = getOwnPropertyDescriptor(originalTarget, key);
-        if (!desc) {
+        if (isUndefined(desc)) {
             return desc;
         }
-        let shadowDescriptor = getOwnPropertyDescriptor(shadowTarget, key);
+        const shadowDescriptor = getOwnPropertyDescriptor(shadowTarget, key);
         if (!desc.configurable && !shadowDescriptor) {
             // If descriptor from original target is not configurable,
             // We must copy the wrapped descriptor over to the shadow target.
@@ -218,7 +218,7 @@ export class ReactiveProxyHandler {
         preventExtensions(originalTarget);
         return true;
     }
-    defineProperty(shadowTarget: ShadowTarget, key: string | symbol, descriptor: PropertyDescriptor): boolean {
+    defineProperty(shadowTarget: ShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         const { originalTarget } = this;
         const { configurable } = descriptor;
 
@@ -230,7 +230,7 @@ export class ReactiveProxyHandler {
         // So we can just check if writable is present and then see if
         // value is present. This eliminates getter and setter descriptors
         if ('writable' in descriptor && !('value' in descriptor)) {
-            const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key);
+            const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key) as PropertyDescriptor;
             descriptor.value = originalDescriptor.value;
         }
         defineProperty(originalTarget, key, unwrapDescriptor(descriptor));

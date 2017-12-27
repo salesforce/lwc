@@ -1,7 +1,5 @@
 import * as target from '../services';
 import { Element } from "../html-element";
-import * as api from "../api";
-import { patch } from '../patch';
 import { createElement } from '../upgrade';
 
 function resetServices() {
@@ -25,7 +23,7 @@ describe('services', () => {
         it('should support single hooks', () => {
             expect(target.Services.rendered).toBeUndefined();
             target.register({
-                rendered: function () {},
+                rendered() {},
             });
             expect(target.Services.rendered).toHaveLength(1);
         });
@@ -33,8 +31,8 @@ describe('services', () => {
         it('should support multiple hook', () => {
             expect(target.Services.rendered).toBeUndefined();
             target.register({
-                rendered: function () {},
-                connected: function () {}
+                rendered() {},
+                connected() {}
             });
             expect(target.Services.rendered).toHaveLength(1);
             expect(target.Services.connected).toHaveLength(1);
@@ -43,10 +41,10 @@ describe('services', () => {
         it('should allow multiple services to register the same hook', () => {
             expect(target.Services.rendered).toBeUndefined();
             target.register({
-                rendered: function () {}
+                rendered() {}
             });
             target.register({
-                rendered: function () {}
+                rendered() {}
             });
             expect(target.Services.rendered).toHaveLength(2);
         });
@@ -57,24 +55,20 @@ describe('services', () => {
         it('should invoke all hooks', () => {
             let r = 0, c = 0, d = 0;
             target.register({
-                rendered: function () {
+                rendered() {
                     r++;
                 },
-                connected: function () {
+                connected() {
                     c++;
                 },
-                disconnected: function () {
+                disconnected() {
                     d++;
                 }
             });
             class MyComponent extends Element {}
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            // insertion
-            patch(elm, api.c('x-foo', MyComponent, {}));
-            // removal
-            patch(elm, api.h('div', {}, []));
-
+            document.body.removeChild(elm);
             return Promise.resolve(() => {
                 expect(r).toBe(1);
                 expect(c).toBe(1);
@@ -83,15 +77,15 @@ describe('services', () => {
         });
 
         it('should invoke before component lifecycle hooks', () => {
-            let lifecycleLog: string[] = [];
+            const lifecycleLog: string[] = [];
             target.register({
-                connected: function() {
+                connected() {
                     lifecycleLog.push('service connected callback');
                 },
-                rendered: function() {
+                rendered() {
                     lifecycleLog.push('service rendered callback');
                 },
-                disconnected: function() {
+                disconnected() {
                     lifecycleLog.push('service disconnected callback');
                 }
             });
@@ -110,11 +104,11 @@ describe('services', () => {
 
                 render() {
                     lifecycleLog.push('component render method');
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                    return function tmpl() {
                         return [];
                     };
                 }
-            };
+            }
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
@@ -130,6 +124,6 @@ describe('services', () => {
                 'component disconnected callback'
             ]);
         });
-    })
+    });
 
 });

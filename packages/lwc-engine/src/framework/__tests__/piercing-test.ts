@@ -1,25 +1,21 @@
-import * as target from '../component';
-import * as api from "../api";
 import { Element } from "../html-element";
-import { patch } from '../patch';
 import { pierce } from '../piercing';
+import { ViewModelReflection } from "../def";
+import { createElement } from "../upgrade";
 
-describe('piercing', function () {
-    it('should set property on pierced object successfully', function () {
+describe('piercing', function() {
+    it('should set property on pierced object successfully', function() {
         class MyComponent extends Element  {
-            render () {
-                return ($api, $cmp, $slotset, $ctx) => {
+            render() {
+                return ($api) => {
                     return [$api.h('div', {}, [])];
-                }
+                };
             }
         }
 
-        const elm = document.createElement('x-foo');
+        const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        const vnode = api.c('x-foo', MyComponent, {});
-        patch(elm, vnode);
-
-        const replica = pierce(vnode.vm, elm);
+        const replica = pierce(elm[ViewModelReflection], elm);
         expect(() => {
             replica.style.position = 'absolute';
             expect(elm.style.position).toBe('absolute');
@@ -27,24 +23,21 @@ describe('piercing', function () {
 
     });
 
-    it('should delete property on pierced object successfully', function () {
+    it('should delete property on pierced object successfully', function() {
         class MyComponent extends Element  {
-            render () {
-                return ($api, $cmp, $slotset, $ctx) => {
+            render() {
+                return ($api) => {
                     return [$api.h('div', {}, [])];
-                }
+                };
             }
         }
 
-        const elm = document.createElement('x-foo');
+        const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         const piercedObject = {
             deleteMe: true
         };
-        const vnode = api.c('x-foo', MyComponent, {});
-        patch(elm, vnode);
-
-        const replica = pierce(vnode.vm, piercedObject);
+        const replica = pierce(elm[ViewModelReflection], piercedObject);
         expect(() => {
             delete replica.deleteMe;
         }).not.toThrow();

@@ -1,46 +1,52 @@
+import assert from "../assert";
 import {
     isString,
+    isUndefined,
 } from './../language';
+import { EmptyObject } from '../utils';
+import { VNode, Module } from "../../3rdparty/snabbdom/types";
 
 const DashCharCode = 45;
 
 function updateStyle(oldVnode: VNode, vnode: VNode) {
+    const { data: { style: newStyle } } = vnode;
+    if (isUndefined(newStyle)) {
+        return;
+    }
     let { data: { style: oldStyle } } = oldVnode;
-    let { data: { style } } = vnode;
+    if (oldStyle === newStyle) {
+        return;
+    }
 
-    if (!oldStyle && !style) {
-        return;
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(isUndefined(oldStyle) || typeof newStyle === typeof oldStyle, `vnode.data.style cannot change types.`);
     }
-    if (oldStyle === style) {
-        return;
-    }
-    oldStyle = oldStyle || {};
-    style = style || {};
 
     let name: string;
-    const { elm } = vnode;
+    const style = (vnode.elm as HTMLElement).style;
 
-    if (isString(style)) {
-        elm.style.cssText = style;
+    if (isString(newStyle)) {
+        style.cssText = newStyle;
     } else {
-        if (isString(oldStyle)) {
-            elm.style.cssText = '';
-        } else {
+        if (!isUndefined(oldStyle)) {
             for (name in oldStyle) {
-                if (!(name in style)) {
-                    elm.style.removeProperty(name);
+                if (!(name in newStyle)) {
+                    style.removeProperty(name);
                 }
             }
+        } else {
+            oldStyle = EmptyObject;
         }
 
-        for (name in style) {
-            const cur = style[name];
+        for (name in newStyle) {
+            const cur = newStyle[name];
             if (cur !== oldStyle[name]) {
                 if (name.charCodeAt(0) === DashCharCode && name.charCodeAt(1) === DashCharCode) {
                     // if the name is prefied with --, it will be considered a variable, and setProperty() is needed
-                    elm.style.setProperty(name, cur);
+                    style.setProperty(name, cur);
                 } else {
-                    elm.style[name] = cur;
+                    // @ts-ignore
+                    style[name] = cur;
                 }
             }
         }

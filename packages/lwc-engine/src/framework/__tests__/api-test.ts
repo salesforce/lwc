@@ -7,10 +7,12 @@ describe('api', () => {
         class Foo extends Element {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function () { return Foo };
+            const factory = function() { return class extends Element {
+                static forceTagName = 'p';
+            }; };
             factory.__circular__ = true;
             const vnode = api.c('x-foo', factory, { className: 'foo' });
-            expect(Foo).toBe(vnode.Ctor);
+            expect(vnode.tag).toBe('p');
         });
 
         it('should convert className to a classMap property', () => {
@@ -44,7 +46,7 @@ describe('api', () => {
 
         it('assign correct style value when style is present', () => {
             const style = 'color:red';
-            const factory = function () { return Foo };
+            const factory = function() { return Foo; };
             const vnode = api.c('x-foo', factory, { style });
 
             expect(vnode.data.style).toBe('color:red');
@@ -54,16 +56,16 @@ describe('api', () => {
             const style = {
                 color: 'red'
             };
-            const factory = function () { return Foo };
+            const factory = function() { return Foo; };
             const vnode = api.c('x-foo', factory, { style });
 
             expect(vnode.data.style).toBe('[object Object]');
         });
 
-        it('should not throw an error when createElement is called without Ctor', function () {
+        it('should throw an error when createElement is called without Ctor', function() {
             expect(() => {
                 createElement('x-foo');
-            }).not.toThrow();
+            }).toThrow();
         });
 
         it('should support forceTagName static definition to force tagname on root node', () => {
@@ -71,14 +73,10 @@ describe('api', () => {
                 static forceTagName = 'div';
             }
             const element = createElement('x-foo', { is: Bar });
+            document.body.appendChild(element);
             expect(element.tagName).toBe('DIV');
+            // the "is" attribute is only inserted after the element is connected
             expect(element.getAttribute('is')).toBe('x-foo');
-        });
-
-        it('should not include is attribute when Ctor is not present', () => {
-            class Bar extends Element {}
-            const element = createElement('x-foo');
-            expect(element.hasAttribute('is')).toBe(false);
         });
 
         it('should not include is attribute when forceTagName is not present on root', () => {
@@ -90,9 +88,9 @@ describe('api', () => {
         it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
             class Foo extends Element {
                 render() {
-                    return function ($api) {
-                        return [$api.c('span', Bar, { attrs: { is: "x-bar" } })]
-                    }
+                    return function($api) {
+                        return [$api.c('span', Bar, { attrs: { is: "x-bar" } })];
+                    };
                 }
             }
             class Bar extends Element {
@@ -198,13 +196,13 @@ describe('api', () => {
             expect(vnodes).toEqual([false, false, true]);
         });
 
-        it('should handle arrays', function () {
+        it('should handle arrays', function() {
             const o = [1, 2];
             const vnodes = api.i(o, (item) => item + 'a');
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should handle Sets', function () {
+        it('should handle Sets', function() {
             const o = new Set();
             o.add(1);
             o.add(2);
@@ -212,7 +210,7 @@ describe('api', () => {
             expect(vnodes).toEqual(['1a', '2a']);
         });
 
-        it('should handle Map', function () {
+        it('should handle Map', function() {
             const o = new Map();
             o.set('foo', 1);
             o.set('bar', 2);
@@ -220,7 +218,7 @@ describe('api', () => {
             expect(vnodes).toEqual(['foo,1a', 'bar,2a']);
         });
 
-        it('should handle proxies objects', function () {
+        it('should handle proxies objects', function() {
             const array = [1, 2];
             const o = new Proxy(array, {});
             const vnodes = api.i(o, (item) => item + 'a');
@@ -229,6 +227,43 @@ describe('api', () => {
     });
 
     describe('#f()', () => {
+        // TBD
+    });
+
+    describe('#t()', () => {
+        class Foo extends Element {
+            render() {
+                return function($api) {
+                    return [$api.t('miami')];
+                };
+            }
+        }
+        const elm = createElement('x-foo', { is: Foo });
+        document.body.appendChild(elm);
+        // TODO: once we switch to shadow DOM this test will have to be adjusted
+        expect(elm.textContent).toEqual('miami');
+    });
+
+    describe('#p()', () => {
+        class Foo extends Element {
+            render() {
+                return function($api) {
+                    console.error($api.p('miami'));
+                    return [$api.p('miami')];
+                };
+            }
+        }
+        const elm = createElement('x-foo', { is: Foo });
+        document.body.appendChild(elm);
+        // TODO: once we switch to shadow DOM this test will have to be adjusted
+        expect(elm.innerHTML).toEqual('<!--miami-->');
+    });
+
+    describe('#d()', () => {
+        // TBD
+    });
+
+    describe('#b()', () => {
         // TBD
     });
 

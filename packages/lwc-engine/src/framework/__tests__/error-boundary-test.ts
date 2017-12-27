@@ -1,7 +1,5 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { create } from "domain";
-import assertLogger from './../assert';
 
 function createBoundaryComponent(elementsToRender) {
     class Boundary extends Element {
@@ -14,16 +12,15 @@ function createBoundaryComponent(elementsToRender) {
         }
 
         render() {
-
             return function($api, $cmp) {
-                if($cmp.getError()) {
+                if ($cmp.getError()) {
                     return [];
                 } else {
-                    return elementsToRender.map( (config) => {
-                        return $api.c(config.name, config.ctor, config.props || {})
-                    })
+                    return elementsToRender.map((config) => {
+                        return $api.c(config.name, config.ctor, config.props || {});
+                    });
                 }
-            }
+            };
         }
     }
     Boundary.publicMethods = ['getError'];
@@ -33,7 +30,7 @@ function createBoundaryComponent(elementsToRender) {
 
 describe('error boundary component', () => {
 
-    describe('errors occured inside boundary wrapped child`s lifecycle methods', ()=> {
+    describe('errors occured inside boundary wrapped child`s lifecycle methods', () => {
 
         describe('constructor', () => {
             it('should call errorCallback when boundary child throws inside constructor', () => {
@@ -73,8 +70,8 @@ describe('error boundary component', () => {
                             return [
                                 $api.c('x-boundary', Boundary, {}),
                                 $api.c('x-boundary-sibling', BoundarySibling, {}),
-                            ]
-                        }
+                            ];
+                        };
                     }
                 }
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
@@ -94,7 +91,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [ $api.c('x-second-level-child', SecondLevelChild, {})];
-                        }
+                        };
                     }
                 }
                 const Boundary = createBoundaryComponent([{
@@ -124,18 +121,17 @@ describe('error boundary component', () => {
                                 $api.c('x-first-level-child-sibling', FirstLevelChildSibling, {}),
                                 $api.c('x-first-level-child', FirstLevelChild, {})
                             ];
-                        }
+                        };
                     }
                 }
-                expect( ()=> {
+                expect( () => {
                     const elm = createElement('x-boundary', { is: Boundary });
                     document.body.appendChild(elm);
                 }).toThrow();
                 expect(document.body.querySelector('x-first-level-child')).toBeNull();
                 expect(document.body.querySelector('x-first-level-child-sibling')).toBeNull();
-            })
+            });
         }),
-
 
         describe('render', () => {
             it('should call errorCallback when boundary child throws inside render', () => {
@@ -172,7 +168,7 @@ describe('error boundary component', () => {
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
 
                 expect( () => {
-                    document.body.appendChild(boundaryElm)
+                    document.body.appendChild(boundaryElm);
                 }).toThrow();
             }),
 
@@ -193,8 +189,8 @@ describe('error boundary component', () => {
                             return [
                                 $api.c('x-boundary', Boundary, {}),
                                 $api.c('x-boundary-sibling', BoundarySibling, {}),
-                            ]
-                        }
+                            ];
+                        };
                     }
                 }
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
@@ -213,7 +209,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [ $api.c('x-second-level-child', SecondLevelChild, {})];
-                        }
+                        };
                     }
                 }
                 const Boundary = createBoundaryComponent([{
@@ -225,7 +221,7 @@ describe('error boundary component', () => {
                 document.body.appendChild(elm);
 
                 expect(elm.querySelector('x-first-level-child')).toBeNull();
-                expect(elm.querySelector('x-second-level-child')).toBeNull()
+                expect(elm.querySelector('x-second-level-child')).toBeNull();
             }),
 
             it ('should call errorCallback if slot throws an error inside render', () => {
@@ -238,7 +234,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp, $slotset) {
                             return $slotset.x;
-                        }
+                        };
                     }
                 }
                 class BoundaryWithSlot extends Element {
@@ -253,8 +249,8 @@ describe('error boundary component', () => {
                             // TODO: There is no way to set 'slot' value onto the template to be matched agains slotset key.
                             // Not setting it causes the following warning:
                             // - Ignoring unknown provided slot name "x" in [object:vm ChildWithSlot (7)]. This is probably a typo on the slot attribute.
-                            return [ $api.c('x-child-with-slot', ChildWithSlot, { slotset: { x: [ $api.c('x-slot-cmp', SlotCmp, {})]}}) ]
-                        }
+                            return [ $api.c('x-child-with-slot', ChildWithSlot, { slotset: { x: [ $api.c('x-slot-cmp', SlotCmp, {})]}}) ];
+                        };
                     }
                 }
                 BoundaryWithSlot.publicMethods = ['getError'];
@@ -264,7 +260,7 @@ describe('error boundary component', () => {
                 document.body.appendChild(boundaryElm);
 
                 expect(boundaryElm.getError()).toBe('Slot cmp throws in render method');
-            })
+            });
         }),
 
         describe('renderedCallback', () => {
@@ -302,7 +298,7 @@ describe('error boundary component', () => {
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
 
                 expect( () => {
-                    document.body.appendChild(boundaryElm)
+                    document.body.appendChild(boundaryElm);
                 }).toThrow();
             }),
 
@@ -322,7 +318,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
-                        }
+                        };
                     }
                 }
                 ChildErrorBoundary.publicMethods = ['getError'];
@@ -333,7 +329,7 @@ describe('error boundary component', () => {
                     ctor: ChildErrorBoundary
                 }]);
 
-                const hostBoundaryElm = createElement('host-boundary', {is:HostErrorBoundary});
+                const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
 
                 expect(hostBoundaryElm.getError()).toBe('Child Boundary ErrorCallback Throw');
@@ -360,7 +356,7 @@ describe('error boundary component', () => {
                     ctor: ChildErrorBoundary
                 }]);
 
-                const hostBoundaryElm = createElement('host-boundary', {is:HostErrorBoundary});
+                const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
 
                 expect(hostBoundaryElm.getError()).toBe('Child Boundary RenderedCallback Throw');
@@ -386,7 +382,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
-                        }
+                        };
                     }
                 }
                 ChildErrorBoundary.publicMethods = ['getError'];
@@ -397,7 +393,7 @@ describe('error boundary component', () => {
                     ctor: ChildErrorBoundary
                 }]);
 
-                const hostBoundaryElm = createElement('host-boundary', {is:HostErrorBoundary});
+                const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
                 document.body.appendChild(hostBoundaryElm);
 
                 expect(hostBoundaryElm.getError()).toBe('Child Boundary RenderedCallback Throw');
@@ -423,8 +419,8 @@ describe('error boundary component', () => {
                             return [
                                 $api.c('x-boundary', Boundary, {}),
                                 $api.c('x-boundary-sibling', BoundarySibling, {}),
-                            ]
-                        }
+                            ];
+                        };
                     }
                 }
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
@@ -443,7 +439,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [ $api.c('x-second-level-child', SecondLevelChild, {})];
-                        }
+                        };
                     }
                 }
                 const Boundary = createBoundaryComponent([{
@@ -456,7 +452,7 @@ describe('error boundary component', () => {
 
                 expect(elm.querySelector('x-second-level-child')).toBeNull();
                 expect(elm.querySelector('x-first-level-child')).toBeNull();
-            })
+            });
         }),
 
         describe('connectedCallback', () => {
@@ -495,7 +491,7 @@ describe('error boundary component', () => {
                 const boundaryElm = createElement('x-boundary', {is: Boundary});
 
                 expect( () => {
-                    document.body.appendChild(boundaryElm)
+                    document.body.appendChild(boundaryElm);
                 }).toThrow();
             }),
 
@@ -517,8 +513,8 @@ describe('error boundary component', () => {
                             return [
                                 $api.c('x-boundary', Boundary, {}),
                                 $api.c('x-boundary-sibling', BoundarySibling, {}),
-                            ]
-                        }
+                            ];
+                        };
                     }
                 }
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
@@ -537,7 +533,7 @@ describe('error boundary component', () => {
                     render() {
                         return function($api, $cmp) {
                             return [ $api.c('x-second-level-child', SecondLevelChild, {})];
-                        }
+                        };
                     }
                 }
                 const Boundary = createBoundaryComponent([{
@@ -550,9 +546,8 @@ describe('error boundary component', () => {
 
                 expect(elm.querySelector('x-second-level-child')).toBeNull();
                 expect(elm.querySelector('x-first-level-child')).toBeNull();
-            })
-        })
-
+            });
+        });
 
         describe('attributeChangedCallback', () => {
             it('should call errorCallback when boundary child throws inside attributeChangedCallback', () => {
@@ -596,8 +591,8 @@ describe('error boundary component', () => {
                             return [
                                 $api.c('x-boundary', Boundary, {}),
                                 $api.c('x-boundary-sibling', BoundarySibling, {}),
-                            ]
-                        }
+                            ];
+                        };
                     }
                 }
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
@@ -624,7 +619,7 @@ describe('error boundary component', () => {
                                     { attrs: { title: "title from parent"}}
                                 )
                             ];
-                        }
+                        };
                     }
                 }
                 const Boundary = createBoundaryComponent([{
@@ -637,7 +632,7 @@ describe('error boundary component', () => {
 
                 expect(elm.querySelector('x-second-level-child')).toBeNull();
                 expect(elm.querySelector('x-first-level-child')).toBeNull();
-            })
+            });
         }),
 
         describe('error boundary failures in rendering alternative view', () => {
@@ -661,12 +656,12 @@ describe('error boundary component', () => {
                     }
                     render() {
                         return function($api, $cmp) {
-                            if($cmp.getError()) {
+                            if ($cmp.getError()) {
                                 return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
                             } else {
                                 return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
                             }
-                        }
+                        };
                     }
                 }
                 AltViewErrorBoundary.publicMethods = ['getError'];
@@ -699,12 +694,12 @@ describe('error boundary component', () => {
                     }
                     render() {
                         return function($api, $cmp) {
-                            if($cmp.getError()) {
+                            if ($cmp.getError()) {
                                 return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
                             } else {
                                 return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
                             }
-                        }
+                        };
                     }
                 }
                 AltViewErrorBoundary.publicMethods = ['getError'];
@@ -722,5 +717,5 @@ describe('error boundary component', () => {
                 expect(hostElm.querySelectorAll('alt-view-error-boundary').length).toBe(0);
             });
         });
-    })
-})
+    });
+});

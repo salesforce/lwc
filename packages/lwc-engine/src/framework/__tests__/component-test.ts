@@ -1,20 +1,18 @@
 import * as target from '../component';
 import { Element } from "../html-element";
-import * as api from "../api";
-import { patch } from '../patch';
 import { createElement } from "../upgrade";
+import { ViewModelReflection } from '../def';
 
-describe('component', function () {
+describe('component', function() {
     describe('#createComponent()', () => {
         it('should throw for non-object values', () => {
             expect(() => target.createComponent(undefined)).toThrow();
             expect(() => target.createComponent("")).toThrow();
             expect(() => target.createComponent(NaN)).toThrow();
-            expect(() => target.createComponent(function () {})).toThrow();
+            expect(() => target.createComponent(function() {})).toThrow();
             expect(() => target.createComponent(1)).toThrow();
         });
     });
-
 
     describe('attribute-change-life-cycle', () => {
         it('should invoke attributeChangeCallback() with old value as null the first time', () => {
@@ -31,15 +29,12 @@ describe('component', function () {
                 }
             }
             MyComponent.observedAttributes = ['title'];
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { title: 2 } });
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(counter).toBe(1);
-                expect(keyValue).toBe('title');
-                expect(oldValue).toBe(null);
-                expect(newValue).toBe('2');
-            });
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('title', 2);
+            expect(counter).toBe(1);
+            expect(keyValue).toBe('title');
+            expect(oldValue).toBe(null);
+            expect(newValue).toBe('2');
         });
 
         it('should invoke attributeChangeCallback() for data-* attributes', () => {
@@ -53,15 +48,12 @@ describe('component', function () {
                 }
             }
             MyComponent.observedAttributes = ['data-xyz'];
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { 'data-xyz': 2 } });
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(counter).toBe(1);
-                expect(keyValue).toBe('data-xyz');
-                expect(oldValue).toBe(null);
-                expect(newValue).toBe('2');
-            });
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('data-xyz', 2);
+            expect(counter).toBe(1);
+            expect(keyValue).toBe('data-xyz');
+            expect(oldValue).toBe(null);
+            expect(newValue).toBe('2');
         });
 
         it('should invoke attributeChangeCallback() for aria-* attributes', () => {
@@ -75,23 +67,20 @@ describe('component', function () {
                 }
             }
             MyComponent.observedAttributes = ['aria-describedby'];
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { 'aria-describedby': 'xyz' } });
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(counter).toBe(1);
-                expect(keyValue).toBe('aria-describedby');
-                expect(oldValue).toBe(null);
-                expect(newValue).toBe('xyz');
-            });
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('aria-describedby', 'xyz');
+            expect(counter).toBe(1);
+            expect(keyValue).toBe('aria-describedby');
+            expect(oldValue).toBe(null);
+            expect(newValue).toBe('xyz');
         });
     });
 
     describe('public computed props', () => {
-        it('should allow public getters', function () {
+        it('should allow public getters', function() {
             class MyComponent extends Element  {
                 value = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     return this.value;
                 }
             }
@@ -104,12 +93,12 @@ describe('component', function () {
 
             class Parent extends Element {
                 value = 'salad';
-                get lunch () {
+                get lunch() {
                     return this.value;
                 }
 
-                render () {
-                    return () => [api.c('x-component', MyComponent, {})];
+                render() {
+                    return ($api) => [$api.c('x-component', MyComponent, {})];
                 }
             }
 
@@ -119,21 +108,18 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Parent, {});
-            patch(elm, vnode);
-
             expect(elm.lunch).toBe('salad');
-            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm[ViewModelReflection].component.root.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
-        it('should allow calling public getters when element is accessed by querySelector', function () {
-            let count = 0;
+        it('should allow calling public getters when element is accessed by querySelector', function() {
+            const count = 0;
             let value;
-            let propVal = { foo: 'bar' };
+            const propVal = { foo: 'bar' };
             class MyChild extends Element {
-                m = propVal
+                m = propVal;
             }
             MyChild.publicProps = {
                 m: {
@@ -145,9 +131,9 @@ describe('component', function () {
                     value = this.root.querySelector('x-child').m;
                 }
                 render() {
-                    return function () {
-                        return [api.c('x-child', MyChild, {})]
-                    }
+                    return function($api) {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
                 }
             }
             MyComponent.publicMethods = ['callChildM'];
@@ -159,9 +145,9 @@ describe('component', function () {
             }).not.toThrow();
         });
 
-        it('should not allow public getters to be set by owner', function () {
+        it('should not allow public getters to be set by owner', function() {
             class MyComponent extends Element  {
-                get x () {
+                get x() {
                     return 1;
                 }
             }
@@ -172,18 +158,16 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, { props: { x: 2 } });
+            const elm = createElement('x-foo', { is: MyComponent });
             // x can't be set via props, only read via getter
-            expect(() => patch(elm, vnode)).toThrow();
+            expect(() => elm.x = 1).toThrow();
         });
 
-        it('should be render reactive', function () {
+        it('should be render reactive', function() {
             class MyComponent extends Element  {
                 state = { value: 0 };
 
-                get validity () {
+                get validity() {
                     return this.state.value > 5;
                 }
 
@@ -191,14 +175,14 @@ describe('component', function () {
                     this.state.value = value;
                 }
 
-                render () {
+                render() {
                     return ($api, $cmp, $slotset, $ctx) => {
                         return [$api.h('div', {}, [$api.d($cmp.validity)])];
-                    }
+                    };
                 }
             }
 
-            MyComponent.track = { state: 1 }
+            MyComponent.track = { state: 1 };
             MyComponent.publicProps = {
                 validity: {
                     config: 1
@@ -214,12 +198,12 @@ describe('component', function () {
             });
         });
 
-        it('should call public getter with correct context', function () {
+        it('should call public getter with correct context', function() {
             let context;
 
             class MyComponent extends Element  {
                 value = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     context = this;
                     return this.value;
                 }
@@ -231,57 +215,61 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            vnode.vm.component.breakfast;
-
-            expect(context).toBe(vnode.vm.component);
+            elm.breakfast;
+            expect(context).toBe(elm[ViewModelReflection].component);
         });
 
-        it('should fail to execute setter function when used directly from DOM', function () {
-            class MyComponent extends Element  {
+        it('should fail to execute setter function when used directly from DOM', function() {
+            class MyChild extends Element {
                 value = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     return this.value;
                 }
 
-                set breakfast (value) {
+                set breakfast(value) {
                     this.value = value;
                 }
             }
-
-            MyComponent.publicProps = {
+            MyChild.publicProps = {
                 breakfast: {
                     config: 3
                 }
             };
-
-            const elm = document.createElement('x-foo');
+            class MyComponent extends Element  {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
+                }
+                run() {
+                    this.root.querySelector('x-child').breakfast = 'eggs';
+                }
+            }
+            MyComponent.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            expect(() => elm.breakfast = 'hey').toThrow();
+            expect(() => elm.run()).toThrow();
         });
 
-        it('should execute setter function with correct context when component is root', function () {
+        it('should execute setter function with correct context when component is root', function() {
             let callCount = 0;
             let context;
             let component;
 
             class MyComponent extends Element  {
-                constructor () {
+                constructor() {
                     super();
                     component = this;
                 }
 
                 value = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     return this.value;
                 }
 
-                set breakfast (value) {
+                set breakfast(value) {
                     context = this;
                     callCount += 1;
                     this.value = value;
@@ -301,17 +289,17 @@ describe('component', function () {
             expect(component).toBe(context);
         });
 
-        it('should call setter with correct context when template value is updated', function () {
+        it('should call setter with correct context when template value is updated', function() {
             let callCount = 0;
             let context;
 
             class MyComponent extends Element  {
                 value = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     return this.value;
                 }
 
-                set breakfast (value) {
+                set breakfast(value) {
                     callCount += 1;
                     context = this;
                     this.value = value;
@@ -324,29 +312,24 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('div');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            const nextVNode = api.c('x-foo', MyComponent, { props: { breakfast: 'eggs' } });
-            patch(elm, vnode);
-            patch(vnode, nextVNode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.breakfast = 'eggs';
             expect(callCount).toBe(1);
-            expect(context).toBe(nextVNode.vm.component);
+            expect(context).toBe(elm[ViewModelReflection].component);
         });
 
-        it('should call setter when default value is provided', function () {
+        it('should call setter when default value is provided', function() {
             let callCount = 0;
             let context;
 
             class MyComponent extends Element  {
                 value;
                 breakfast = 'pancakes';
-                get breakfast () {
+                get breakfast() {
                     return this.value;
                 }
 
-                set breakfast (value) {
+                set breakfast(value) {
                     callCount += 1;
                     context = this;
                     this.value = value;
@@ -359,23 +342,14 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('div');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
             expect(callCount).toBe(1);
-            expect(context).toBe(vnode.vm.component);
+            expect(context).toBe(elm[ViewModelReflection].component);
         });
 
-        it('should throw when configured prop is missing getter', function () {
-            let callCount = 0;
-            let context;
-
+        it('should throw when configured prop is missing getter', function() {
             class MyComponent extends Element  {
-                set breakfast (value) {
-
-                }
+                set breakfast(value) {}
             }
 
             MyComponent.publicProps = {
@@ -384,20 +358,13 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('div');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
             expect(() => {
-                patch(elm, vnode);
+                createElement('x-foo', { is: MyComponent });
             }).toThrow();
         });
 
-        it('should throw when configured prop is missing setter', function () {
-            let callCount = 0;
-            let context;
-
+        it('should throw when configured prop is missing setter', function() {
             class MyComponent extends Element  {
-
             }
 
             MyComponent.publicProps = {
@@ -406,25 +373,22 @@ describe('component', function () {
                 }
             };
 
-            const elm = document.createElement('div');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
             expect(() => {
-                patch(elm, vnode);
+                createElement('x-foo', { is: MyComponent });
             }).toThrow();
         });
     });
 
-    describe('styles', function () {
-        it('should handle string styles', function () {
+    describe('styles', function() {
+        it('should handle string styles', function() {
             let calledCSSText = false;
             class MyComponent extends Element  {
                 state = {
                     customStyle: 'color: red'
-                }
+                };
 
-                render () {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                render() {
+                    return function tmpl($api, $cmp) {
                         return [$api.h(
                             "section",
                             {
@@ -432,41 +396,34 @@ describe('component', function () {
                             },
                             []
                         )];
-                    }
+                    };
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-
+            const elm = createElement('x-foo', { is: MyComponent });
             const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
-                get: function () {
+                get() {
                     return cssTextPropDef.get.call(this);
                 },
-                set: function (value) {
+                set(value) {
                     calledCSSText = true;
                     return cssTextPropDef.set.call(this, value);
                 }
             });
-
-            patch(elm, vnode);
-
-            return Promise.resolve().then(() => {
-                expect(elm.querySelector('section').style.cssText).toBe('color: red;');
-                expect(calledCSSText).toBe(true);
-            });
+            document.body.appendChild(elm);
+            expect(elm[ViewModelReflection].component.root.querySelector('section').style.cssText).toBe('color: red;');
+            expect(calledCSSText).toBe(true);
         });
 
-        it('should handle undefined properly', function () {
+        it('should handle undefined properly', function() {
             let calledCSSTextWithUndefined = false;
             class MyComponent extends Element  {
                 state = {
                     customStyle: undefined
-                }
+                };
 
-                render () {
+                render() {
                     return function tmpl($api, $cmp, $slotset, $ctx) {
                         return [$api.h(
                             "section",
@@ -475,44 +432,36 @@ describe('component', function () {
                             },
                             []
                         )];
-                    }
+                    };
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-
+            const elm = createElement('x-foo', { is: MyComponent });
             const cssTextPropDef = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'cssText');
             Object.defineProperty(CSSStyleDeclaration.prototype, 'cssText', {
-                get: function () {
+                get() {
                     return cssTextPropDef.get.call(this);
                 },
-                set: function (value) {
+                set(value) {
                     if (value === 'undefined') {
                         calledCSSTextWithUndefined = true;
                     }
                     return cssTextPropDef.set.call(this, value);
                 }
             });
-
-            patch(elm, vnode);
-
-            return Promise.resolve().then(() => {
-                expect(elm.style.cssText).toBe('');
-                expect(calledCSSTextWithUndefined).toBe(false);
-            });
+            document.body.appendChild(elm);
+            expect(elm.style.cssText).toBe('');
+            expect(calledCSSTextWithUndefined).toBe(false);
         });
 
-        it('should handle null properly', function () {
-            let styleString;
+        it('should handle null properly', function() {
             class MyComponent extends Element  {
                 state = {
                     customStyle: null
-                }
+                };
 
-                render () {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
+                render() {
+                    return function tmpl($api, $cmp) {
                         return [$api.h(
                             "section",
                             {
@@ -520,31 +469,25 @@ describe('component', function () {
                             },
                             []
                         )];
-                    }
+                    };
                 }
             }
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-
-            patch(elm, vnode);
-
-            return Promise.resolve().then(() => {
-                expect(elm.style.cssText).toBe('');
-            });
+            expect(elm.style.cssText).toBe('');
         });
 
-        it('should diff between style objects and strings correctly', function () {
+        it('should diff between style objects and strings correctly', function() {
             let called = false;
             class MyComponent extends Element  {
                 state = {
                     customStyle: {
                         color: 'red'
                     }
-                }
+                };
 
-                render () {
+                render() {
                     return function tmpl($api, $cmp, $slotset, $ctx) {
                         return [$api.h(
                             "section",
@@ -553,28 +496,26 @@ describe('component', function () {
                             },
                             []
                         )];
-                    }
+                    };
                 }
             }
+            MyComponent.track = { state: 1 };
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            const section = elm.querySelector('section');
-            section.style.removeProperty = function () {
+            const section = elm[ViewModelReflection].component.root.querySelector('section');
+            section.style.removeProperty = function() {
                 called = true;
             };
-            vnode.vm.component.state.customStyle = 'color:green';
-
-            return Promise.resolve().then(() => {
+            elm[ViewModelReflection].component.state.customStyle = 'color:green';
+            return Promise.resolve().then(_ => {
                 expect(called).toBe(false);
             });
         });
     });
 
     describe('public methods', () => {
-        it('should not invoke function when accessing public method', function () {
+        it('should not invoke function when accessing public method', function() {
             let callCount = 0;
 
             class MyComponent extends Element  {
@@ -584,16 +525,12 @@ describe('component', function () {
             }
             MyComponent.publicMethods = ['m'];
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.m;
             expect(callCount).toBe(0);
         });
 
-        it('should invoke function only once', function () {
+        it('should invoke function only once', function() {
             let callCount = 0;
 
             class MyComponent extends Element  {
@@ -603,16 +540,12 @@ describe('component', function () {
             }
             MyComponent.publicMethods = ['m'];
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.m();
             expect(callCount).toBe(1);
         });
 
-        it('should call function with correct context', function () {
+        it('should call function with correct context and arguments', function() {
             let context, args;
 
             class MyComponent extends Element  {
@@ -623,32 +556,24 @@ describe('component', function () {
             }
             MyComponent.publicMethods = ['m'];
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
             elm.m(1, 2);
-            expect(context).toBe(vnode.vm.component);
+            expect(context).toBe(elm[ViewModelReflection].component);
             expect(args).toEqual([1, 2]);
         });
 
-        it('should express function identity with strict equality', function () {
+        it('should express function identity with strict equality', function() {
             class MyComponent extends Element  {
                 m() {
                 }
             }
             MyComponent.publicMethods = ['m'];
 
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
             expect(elm.m).toBe(elm.m);
         });
 
-        it('should allow calling methods when element is referenced with querySelector', function () {
+        it('should allow calling methods when element is referenced with querySelector', function() {
             let count = 0;
             class MyChild extends Element {
                 m() {
@@ -661,9 +586,9 @@ describe('component', function () {
                     this.root.querySelector('x-child').m();
                 }
                 render() {
-                    return function () {
-                        return [api.c('x-child', MyChild, {})]
-                    }
+                    return function($api) {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
                 }
             }
             MyComponent.publicMethods = ['callChildM'];
@@ -676,7 +601,7 @@ describe('component', function () {
             expect(count).toBe(1);
         });
 
-        it('should allow calling getAttribute on child when referenced with querySelector', function () {
+        it('should allow calling getAttribute on child when referenced with querySelector', function() {
             let count = 0;
             class MyChild extends Element {
                 m() {
@@ -689,9 +614,9 @@ describe('component', function () {
                     this.root.querySelector('x-child').getAttribute('title');
                 }
                 render() {
-                    return function () {
-                        return [api.c('x-child', MyChild, {})]
-                    }
+                    return function($api) {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
                 }
             }
             MyComponent.publicMethods = ['getChildAttribute'];
@@ -703,7 +628,7 @@ describe('component', function () {
             }).not.toThrow();
         });
 
-        it('should allow calling setAttribute on child when referenced with querySelector', function () {
+        it('should allow calling setAttribute on child when referenced with querySelector', function() {
             let count = 0;
             class MyChild extends Element {
                 m() {
@@ -716,9 +641,9 @@ describe('component', function () {
                     this.root.querySelector('x-child').setAttribute('title', 'foo');
                 }
                 render() {
-                    return function () {
-                        return [api.c('x-child', MyChild, {})]
-                    }
+                    return function($api) {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
                 }
             }
             MyComponent.publicMethods = ['setChildAttribute'];
@@ -730,7 +655,7 @@ describe('component', function () {
             }).not.toThrow();
         });
 
-        it('should allow calling removeAttribute on child when referenced with querySelector', function () {
+        it('should allow calling removeAttribute on child when referenced with querySelector', function() {
             let count = 0;
             class MyChild extends Element {
                 m() {
@@ -743,9 +668,9 @@ describe('component', function () {
                     this.root.querySelector('x-child').removeAttribute('title');
                 }
                 render() {
-                    return function () {
-                        return [api.c('x-child', MyChild, {})]
-                    }
+                    return function($api) {
+                        return [$api.c('x-child', MyChild, {})];
+                    };
                 }
             }
             MyComponent.publicMethods = ['removeChildAttribute'];

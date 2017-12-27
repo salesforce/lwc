@@ -2,9 +2,9 @@ import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import api from "../api";
 
-describe('api.ts', () => {
+describe('decorators/api.ts', () => {
     describe('@api x', () => {
-        it('should allow inheriting public props', function () {
+        it('should allow inheriting public props', function() {
             class MyComponent extends Element  {
                 constructor() {
                     super();
@@ -24,7 +24,7 @@ describe('api.ts', () => {
                     this.parentGetter = 'parentgetter';
                 }
                 render() {
-                    return (api) => [api.c('x-component', MyComponent, {})];
+                    return ($api) => [$api.c('x-component', MyComponent, {})];
                 }
             }
 
@@ -40,7 +40,7 @@ describe('api.ts', () => {
             expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
-        it('should not be consider properties reactive if not used in render', function () {
+        it('should not be consider properties reactive if not used in render', function() {
             let counter = 0;
             class MyComponent extends Element  {
                 render() {
@@ -63,7 +63,7 @@ describe('api.ts', () => {
             });
         });
 
-        it('should consider tracked property reactive if used in render', function () {
+        it('should consider tracked property reactive if used in render', function() {
             let counter = 0;
             class MyComponent extends Element  {
                 render() {
@@ -86,12 +86,12 @@ describe('api.ts', () => {
             });
         });
 
-        it('should allow access to public props from outside and from templates', function () {
+        it('should allow access to public props from outside and from templates', function() {
             class MyComponent extends Element  {
                 render() {
                     return ($api, $cmp, $slotset, $ctx) => {
                         return [$api.h('div', {}, [$api.d($cmp.x)])];
-                    }
+                    };
                 }
             }
 
@@ -111,7 +111,7 @@ describe('api.ts', () => {
     });
 
     describe('@api get/set x', () => {
-        it('should allow public getters', function () {
+        it('should allow public getters', function() {
             class MyComponent extends Element  {
                 get breakfast() {
                     return 'pancakes';
@@ -130,7 +130,7 @@ describe('api.ts', () => {
                 }
 
                 render() {
-                    return (api) => [api.c('x-component', MyComponent, {})];
+                    return ($api) => [$api.c('x-component', MyComponent, {})];
                 }
             }
 
@@ -146,7 +146,7 @@ describe('api.ts', () => {
             expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
-        it('should not be consider getter and setters reactive', function () {
+        it('should not be consider getter and setters reactive', function() {
             let counter = 0;
             class MyComponent extends Element  {
                 get x() {
@@ -154,7 +154,7 @@ describe('api.ts', () => {
                 }
                 set x(v) {}
 
-                render () {
+                render() {
                     this.x;
                     counter++;
                 }
@@ -175,7 +175,7 @@ describe('api.ts', () => {
             });
         });
 
-        it('should consider tracked property reactive if used via getter and setter', function () {
+        it('should consider tracked property reactive if used via getter and setter', function() {
             let counter = 0;
             class MyComponent extends Element  {
                 get x() {
@@ -185,7 +185,7 @@ describe('api.ts', () => {
                     this.y = v;
                 }
 
-                render () {
+                render() {
                     this.x;
                     counter++;
                 }
@@ -209,16 +209,16 @@ describe('api.ts', () => {
             });
         });
 
-        it('should allow access simple getters from outside and from templates', function () {
+        it('should allow access simple getters from outside and from templates', function() {
             class MyComponent extends Element  {
-                get validity () {
+                get validity() {
                     return 'foo';
                 }
 
-                render () {
+                render() {
                     return ($api, $cmp, $slotset, $ctx) => {
                         return [$api.h('div', {}, [$api.d($cmp.validity)])];
-                    }
+                    };
                 }
             }
 
@@ -234,7 +234,7 @@ describe('api.ts', () => {
             expect(elm.textContent).toBe('foo');
         });
 
-        it('should allow calling the getter during construction', function () {
+        it('should allow calling the getter during construction', function() {
             class MyComponent extends Element  {
                 get x() {
                     return 1;
@@ -258,7 +258,7 @@ describe('api.ts', () => {
             expect(elm.x).toBe(1);
         });
 
-        it('should allow calling the setter during construction', function () {
+        it('should allow calling the setter during construction', function() {
             class MyComponent extends Element  {
                 get x() {
                     return 1;
@@ -284,7 +284,7 @@ describe('api.ts', () => {
     });
 
     describe('@api foo()', () => {
-        it('should allow inheriting public methods', function () {
+        it('should allow inheriting public methods', function() {
             class MyComponent extends Element  {
                 x() {
                     return 1;
@@ -307,7 +307,7 @@ describe('api.ts', () => {
             expect(elm.y()).toBe(2);
         });
 
-        it('should preserve the context in public methods', function () {
+        it('should preserve the context in public methods', function() {
             let args, ctx, that;
             class MyComponent extends Element  {
                 constructor() {
@@ -352,7 +352,7 @@ describe('api.ts', () => {
             document.body.appendChild(elm2);
 
             elm1.counter = newValue;
-            expect(elm1.counter).toBe(newValue)
+            expect(elm1.counter).toBe(newValue);
             expect(elm2.counter).toBe(originalValue);
         });
     });
