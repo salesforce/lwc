@@ -22,31 +22,66 @@ import {
     isString,
     isFunction,
     isObject,
+    isUndefined,
     ArraySlice,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
-import { Element as BaseElement } from "./html-element";
+import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
+import { OwnerKey, VM, VMElement } from "./vm";
 
-/*eslint-disable*/
+declare interface HashTable<T> {
+    [key: string]: T;
+}
+export interface PropDef {
+    config: number;
+    type: string; // TODO: make this an enum
+}
+export interface WireDef {
+    method?: number;
+    [key: string]: any;
+}
+export interface PropsDef {
+    [key: string]: PropDef;
+}
+export interface TrackDef {
+    [key: string]: 1;
+}
+export interface MethodDef {
+    [key: string]: 1;
+}
+export interface ObservedAttrsDef {
+    [key: string]: 1;
+}
+export interface WireHash {
+    [key: string]: WireDef;
+}
+export interface ComponentDef {
+    name: string;
+    wire: WireHash | undefined;
+    track: TrackDef;
+    props: PropsDef;
+    methods: MethodDef;
+    observedAttrs: ObservedAttrsDef;
+    descriptors: PropertyDescriptorMap;
+}
 import {
-    ComponentClass
+    ComponentConstructor, getCustomElementComponent
  } from './component';
- /*eslint-enable*/
 
-export const ViewModelReflection = Symbol('internal');
+export const ViewModelReflection = Symbol();
 
-let observableHTMLAttrs: HashTable<boolean>;
+let observableHTMLAttrs: ObservedAttrsDef;
 
 if (process.env.NODE_ENV !== 'production') {
     observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
         const globalProperty = GlobalHTMLProperties[key];
         if (globalProperty && globalProperty.attribute) {
-            acc[globalProperty.attribute] = true;
+            acc[globalProperty.attribute] = 1;
         }
         return acc;
     }, create(null));
@@ -57,8 +92,7 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-
-function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
+function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
@@ -72,7 +106,7 @@ function isElementComponent(Ctor: any, protoSet?: Array<any>): boolean {
     return isElementComponent(proto, protoSet);
 }
 
-function createComponentDef(Ctor: ComponentClass): ComponentDef {
+function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
         // local to dev block
@@ -84,18 +118,17 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
     const name: string = Ctor.name;
     let props = getPublicPropertiesHash(Ctor);
     let methods = getPublicMethodsHash(Ctor);
-    let observedAttrs = getObservedAttributesHash(Ctor);
+    const observedAttrs = getObservedAttributesHash(Ctor);
     let wire = getWireHash(Ctor);
-    let track = getTrackHash(Ctor);
+    const track = getTrackHash(Ctor);
 
     const proto = Ctor.prototype;
-    for (let propName in props) {
+    for (const propName in props) {
         const propDef = props[propName];
         // initializing getters and setters for each public prop on the target prototype
         const descriptor = getOwnPropertyDescriptor(proto, propName);
         const { config } = propDef;
         if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
-
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
                 const mustHaveGetter = COMPUTED_GETTER_MASK & config;
@@ -114,7 +147,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         }
     }
     if (wire) {
-        for (let propName in wire) {
+        for (const propName in wire) {
             if (wire[propName].method) {
                 // for decorated methods we need to do nothing
                 continue;
@@ -132,7 +165,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         }
     }
     if (track) {
-        for (let propName in track) {
+        for (const propName in track) {
             const descriptor = getOwnPropertyDescriptor(proto, propName);
             // TODO: maybe these conditions should be always applied.
             if (process.env.NODE_ENV !== 'production') {
@@ -172,7 +205,7 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
         freeze(props);
         freeze(methods);
         freeze(observedAttrs);
-        for (let key in def) {
+        for (const key in def) {
             defineProperty(def, key, {
                 configurable: false,
                 writable: false,
@@ -183,22 +216,22 @@ function createComponentDef(Ctor: ComponentClass): ComponentDef {
 }
 
 function createGetter(key: string) {
-    return function (): any {
-        return this[ViewModelReflection].component[key];
-    }
+    return function(this: VMElement): any {
+        return getCustomElementComponent(this)[key];
+    };
 }
 
 function createSetter(key: string) {
-    return function (newValue: any): any {
-        this[ViewModelReflection].component[key] = newValue;
-    }
+    return function(this: VMElement, newValue: any): any {
+        getCustomElementComponent(this)[key] = newValue;
+    };
 }
 
 function createMethodCaller(key: string) {
-    return function (): any {
-        const vm = this[ViewModelReflection];
-        return vm.component[key].apply(vm.component, ArraySlice.call(arguments));
-    }
+    return function(this: VMElement): any {
+        const component = getCustomElementComponent(this);
+        return component[key].apply(component, ArraySlice.call(arguments));
+    };
 }
 
 const {
@@ -210,22 +243,19 @@ const {
     removeAttributeNS
 } = Element.prototype;
 
-function getAttributePatched(attrName: string): string | null {
-    const vm: VM = this[ViewModelReflection];
-
+function getAttributePatched(this: VMElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        const vm = getCustomElementVM(this);
         assertPublicAttributeColission(vm, attrName);
     }
 
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributePatched(attrName: string, newValue: any) {
-    const vm = this[ViewModelReflection];
+function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
+    const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
@@ -242,11 +272,10 @@ function setAttributePatched(attrName: string, newValue: any) {
     }
 }
 
-function setAttributeNSPatched(attrNameSpace: string, attrName: string, newValue: any) {
-    const vm = this[ViewModelReflection];
+function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string, newValue: any) {
+    const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
@@ -263,11 +292,10 @@ function setAttributeNSPatched(attrNameSpace: string, attrName: string, newValue
     }
 }
 
-function removeAttributePatched(attrName: string) {
-    const vm = this[ViewModelReflection];
+function removeAttributePatched(this: VMElement, attrName: string) {
+    const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
@@ -281,11 +309,10 @@ function removeAttributePatched(attrName: string) {
     }
 }
 
-function removeAttributeNSPatched(attrNameSpace: string, attrName: string){
-    const vm = this[ViewModelReflection];
+function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {
+    const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
@@ -318,15 +345,15 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const { vnode: { isRoot } } = vm;
-    if (!isAttributeChangeControlled(attrName) && !isRoot) {
+    const { elm } = vm;
+    if (!isAttributeChangeControlled(attrName) && !isUndefined(elm[OwnerKey])) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
     // attribute change control must be released every time its value is checked
     resetAttibuteChangeControl();
 }
 
-function isAttrObserved(vm, attrName) {
+function isAttrObserved(vm: VM, attrName: string): boolean {
     return attrName in vm.def.observedAttrs;
 }
 
@@ -362,7 +389,7 @@ export function prepareForAttributeMutationFromTemplate(elm: Element, key: strin
     }
 }
 
-function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfig: HashTable<number>): PropertyDescriptorMap {
+function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
     // replacing mutators and accessors on the element itself to catch any mutation
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
@@ -387,14 +414,14 @@ function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfi
         },
     };
     // expose getters and setters for each public props on the Element
-    for (let key in publicProps) {
+    for (const key in publicProps) {
         descriptors[key] = {
             get: createGetter(key),
             set: createSetter(key),
         };
     }
     // expose public methods as props on the Element
-    for (let key in publicMethodsConfig) {
+    for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(key),
             configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
@@ -403,17 +430,17 @@ function createDescriptorMap(publicProps: HashTable<PropDef>, publicMethodsConfi
     return descriptors;
 }
 
-function getTrackHash(target: ComponentClass): HashTable<WireDef> | undefined {
+function getTrackHash(target: ComponentConstructor): TrackDef {
     const track = target.track;
     if (!track || !getOwnPropertyNames(track).length) {
-        return;
+        return EmptyObject;
     }
 
     // TODO: check that anything in `track` is correctly defined in the prototype
     return assign(create(null), track);
 }
 
-function getWireHash(target: ComponentClass): HashTable<WireDef> | undefined {
+function getWireHash(target: ComponentConstructor): WireHash | undefined {
     const wire = target.wire;
     if (!wire || !getOwnPropertyNames(wire).length) {
         return;
@@ -423,12 +450,12 @@ function getWireHash(target: ComponentClass): HashTable<WireDef> | undefined {
     return assign(create(null), wire);
 }
 
-function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
+function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
     const props = target.publicProps;
     if (!props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
-    return getOwnPropertyNames(props).reduce((propsHash: HashTable<PropDef>, propName: string): HashTable<PropDef> => {
+    return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
         if (process.env.NODE_ENV !== 'production') {
             if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, attribute, experimental } = GlobalHTMLProperties[propName];
@@ -446,17 +473,17 @@ function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
             }
         }
 
-        propsHash[propName] = assign({ config: 0 }, props[propName]);
+        propsHash[propName] = assign({ config: 0, type: 'any' }, props[propName]);
         return propsHash;
     }, create(null));
 }
 
-function getPublicMethodsHash(target: ComponentClass): HashTable<number> {
+function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     const publicMethods = target.publicMethods;
     if (!publicMethods || !publicMethods.length) {
         return EmptyObject;
     }
-    return publicMethods.reduce((methodsHash: HashTable<number>, methodName: string): HashTable<number> => {
+    return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
         methodsHash[methodName] = 1;
 
         if (process.env.NODE_ENV !== 'production') {
@@ -468,12 +495,12 @@ function getPublicMethodsHash(target: ComponentClass): HashTable<number> {
     }, create(null));
 }
 
-function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
+function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsDef {
     const observedAttributes = target.observedAttributes;
     if (!observedAttributes || !observedAttributes.length) {
         return EmptyObject;
     }
-    return observedAttributes.reduce((observedAttributes: HashTable<number>, attrName: string): HashTable<number> => {
+    return observedAttributes.reduce((observedAttributes: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
         if (process.env.NODE_ENV !== 'production') {
             const propName = getPropNameFromAttrName(attrName);
             // Check if it is a user defined public property
@@ -482,7 +509,7 @@ function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
             } else if (!observableHTMLAttrs[attrName] && ( GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute)) {
                 // Check for misspellings
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[propName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-            } else if(!observableHTMLAttrs[attrName] && (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1)){
+            } else if (!observableHTMLAttrs[attrName] && (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1)) {
                 // Attribute is not valid observable HTML Attribute
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
             }
@@ -492,7 +519,7 @@ function getObservedAttributesHash(target: ComponentClass): HashTable<number> {
     }, create(null));
 }
 
-export function getComponentDef(Ctor: ComponentClass): ComponentDef {
+export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
     if (def) {
         return def;
@@ -500,4 +527,23 @@ export function getComponentDef(Ctor: ComponentClass): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
+}
+
+const TagNameToCtor: HashTable<ComponentConstructor> = create(null);
+
+export function getCtorByTagName(tagName: string): ComponentConstructor | undefined {
+    return TagNameToCtor[tagName];
+    /////// TODO: what is this?
+}
+
+export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
+    if (!isUndefined(TagNameToCtor[tagName])) {
+        if (TagNameToCtor[tagName] === Ctor) {
+            return;
+        } else if (process.env.NODE_ENV !== 'production') {
+            // TODO: eventually we should throw, this is only needed for the tests today
+            assert.logWarning(`Different component class cannot be registered to the same tagName="${tagName}".`);
+        }
+    }
+    TagNameToCtor[tagName] = Ctor;
 }

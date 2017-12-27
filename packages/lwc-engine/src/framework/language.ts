@@ -54,7 +54,7 @@ export {
     ArrayIndexOf,
     ArrayPush,
     forEach,
-}
+};
 
 export function isUndefined(obj: any): obj is undefined {
     return obj === undefined;
@@ -66,6 +66,10 @@ export function isNull(obj: any): obj is null {
 
 export function isTrue(obj: any): obj is true {
     return obj === true;
+}
+
+export function isFalse(obj: any): obj is false {
+    return obj === false;
 }
 
 export function isFunction(obj: any): obj is Function {

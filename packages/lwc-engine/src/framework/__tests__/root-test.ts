@@ -1,9 +1,11 @@
 import { Root, wrapIframeWindow } from "../root";
 import { Element } from "../html-element";
 import * as api from "../api";
-import { patch } from '../patch';
 import { unwrap } from '../membrane';
-import { createElement } from '../main';
+import { createElement } from "../upgrade";
+import { ViewModelReflection } from "../def";
+import { VM } from "../vm";
+import { Component } from "../component";
 
 describe('root', () => {
     describe('#constructor()', () => {
@@ -17,85 +19,73 @@ describe('root', () => {
     describe('integration', () => {
 
         it('should support this.root.host', () => {
-            let vnode;
-            const def = class MyComponent extends Element {}
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def, { className: 'foo' });
-            patch(elm, vnode);
-            expect(vnode.vm.component).toBe(vnode.vm.component.root.host);
+            class MyComponent extends Element {}
+            const elm = createElement('x-foo', { is: MyComponent });
+            const vm = elm[ViewModelReflection] as VM;
+            expect(vm.component).toBe((vm.component as Component).root.host);
         });
 
         it('should support this.root.mode', () => {
-            let vnode;
-            const def = class MyComponent extends Element {}
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', def, { className: 'foo' });
-            patch(elm, vnode);
-            expect(vnode.vm.component.root.mode).toBe('closed');
+            class MyComponent extends Element {}
+            const elm = createElement('x-foo', { is: MyComponent });
+            const vm = elm[ViewModelReflection] as VM;
+            expect((vm.component as Component).root.mode).toBe('closed');
         });
 
         it('should allow searching for elements from template', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('p', {}, [])]
+                    return ($api) => [$api.h('p', {}, [])];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const nodes = vnode.vm.component.root.querySelectorAll('p');
+                const nodes = (elm[ViewModelReflection].component as Component).root.querySelectorAll('p');
                 expect(nodes).toHaveLength(1);
             });
         });
 
         it('should allow searching for one element from template', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('p', {}, [])]
+                    return ($api) => [$api.h('p', {}, [])];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const node = vnode.vm.component.root.querySelector('p');
+                const node = (elm[ViewModelReflection].component as Component).root.querySelector('p');
                 expect(node.tagName).toBe('P');
             });
         });
 
         it('should ignore elements from other owner', () => {
-            const outerp = api.h('p', {}, []);
-            const def = class MyComponent extends Element {
+            const vnodeFromAnotherOwner = api.h('p', {}, []);
+            class MyComponent extends Element {
                 render() {
-                    return () => [outerp]
+                    return () => [vnodeFromAnotherOwner];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const nodes = vnode.vm.component.root.querySelectorAll('p');
+                const nodes = (elm[ViewModelReflection].component as Component).root.querySelectorAll('p');
                 expect(nodes).toHaveLength(0);
             });
         });
 
         it('should ignore element from other owner', () => {
-            const outerp = api.h('p', {}, []);
-            const def = class MyComponent extends Element {
+            const vnodeFromAnotherOwner = api.h('p', {}, []);
+            class MyComponent extends Element {
                 render() {
-                    return () => [outerp]
+                    return () => [vnodeFromAnotherOwner];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const node = vnode.vm.component.root.querySelector('p');
+                const node = (elm[ViewModelReflection].component as Component).root.querySelector('p');
                 expect(node).toBeNull();
             });
         });
@@ -234,17 +224,15 @@ describe('root', () => {
     describe('membrane', () => {
 
         it('should querySelector on element from template', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [api.h('li', {}, [])])]
+                    return ($api) => [$api.h('ul', {}, [$api.h('li', {}, [])])];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const ul = vnode.vm.component.root.querySelector('ul');
+                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
                 expect(ul);
                 const li = ul.querySelector('li');
                 expect(li);
@@ -252,17 +240,15 @@ describe('root', () => {
         });
 
         it('should querySelectorAll on element from template', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [api.h('li', {}, [])])]
+                    return ($api) => [$api.h('ul', {}, [$api.h('li', {}, [])])];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const ul = vnode.vm.component.root.querySelectorAll('ul')[0];
+                const ul = (elm[ViewModelReflection].component as Component).root.querySelectorAll('ul')[0];
                 expect(ul);
                 const li = ul.querySelectorAll('li')[0];
                 expect(li);
@@ -270,17 +256,15 @@ describe('root', () => {
         });
 
         it('should ignore extraneous elements', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [])]
+                    return ($api) => [$api.h('ul', {}, [])];
                 }
             }
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
             return Promise.resolve().then(() => {
-                const ul = vnode.vm.component.root.querySelector('ul');
+                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
                 expect(ul);
                 ul.appendChild(document.createElement('li'));
                 const li1 = ul.querySelectorAll('li')[0];
@@ -291,74 +275,62 @@ describe('root', () => {
         });
 
         it('should not throw error if querySelector does not match any elements', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [])]
+                    return ($api) => [$api.h('ul', {}, [])];
                 }
             }
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-
             return Promise.resolve().then(() => {
                 expect(() => {
-                    vnode.vm.component.root.querySelector('doesnotexist');
+                    (elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist');
                 }).not.toThrow();
             });
         });
 
         it('should return null if querySelector does not match any elements', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [])]
+                    return ($api) => [$api.h('ul', {}, [])];
                 }
             }
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-
             return Promise.resolve().then(() => {
-                expect(vnode.vm.component.root.querySelector('doesnotexist')).toBeNull();
+                expect((elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist')).toBeNull();
             });
         });
 
         it('should not throw error if querySelectorAll does not match any elements', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('ul', {}, [])]
+                    return ($api) => [$api.h('ul', {}, [])];
                 }
             }
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-
             return Promise.resolve().then(() => {
                 expect(() => {
-                    vnode.vm.component.root.querySelectorAll('doesnotexist');
+                    (elm[ViewModelReflection].component as Component).root.querySelectorAll('doesnotexist');
                 }).not.toThrow();
             });
         });
 
         it('should allow walking back to the shadow root', () => {
-            const def = class MyComponent extends Element {
+            class MyComponent extends Element {
                 render() {
-                    return () => [api.h('div', {}, [])]
+                    return ($api) => [$api.h('div', {}, [])];
                 }
             }
 
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-
             return Promise.resolve().then(() => {
-                const root = vnode.vm.component.root;
+                const root = (elm[ViewModelReflection].component as Component).root;
                 expect(root.querySelector('div').parentNode).toBe(root);
             });
         });

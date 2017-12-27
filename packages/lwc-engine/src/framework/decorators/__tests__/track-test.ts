@@ -93,7 +93,7 @@ describe('track.ts', () => {
             });
         });
 
-        it('should not proxify primitive value', function () {
+        it('should not proxify primitive value', function() {
             expect.assertions(1);
 
             class MyComponent extends Element {
@@ -110,7 +110,7 @@ describe('track.ts', () => {
             elm.injectFoo(1);
         });
 
-        it('should proxify plain arrays', function () {
+        it('should proxify plain arrays', function() {
             expect.assertions(2);
 
             const a = [];
@@ -129,7 +129,7 @@ describe('track.ts', () => {
             elm.injectFoo(a);
         });
 
-        it('should not proxify exotic objects', function () {
+        it('should not proxify exotic objects', function() {
             expect.assertions(1);
 
             const d = new Date();
@@ -147,7 +147,7 @@ describe('track.ts', () => {
             elm.injectFoo(d);
         });
 
-        it('should not proxify non-observable object', function () {
+        it('should not proxify non-observable object', function() {
             expect.assertions(1);
 
             const o = Object.create({});
@@ -165,7 +165,7 @@ describe('track.ts', () => {
             elm.injectFoo(o);
         });
 
-        it('should not throw an error if track is observable object', function () {
+        it('should not throw an error if track is observable object', function() {
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
@@ -180,7 +180,7 @@ describe('track.ts', () => {
             }).not.toThrow();
         });
 
-        it('should throw a track property is mutated during rendering', function () {
+        it('should throw a track property is mutated during rendering', function() {
             class MyComponent extends Element {
                 render() {
                     this.foo = 1;
@@ -218,7 +218,7 @@ describe('track.ts', () => {
             elm1.counter = elm1NewVal;
             elm2.counter = elm2NewVal;
 
-            expect(elm1.counter).toBe(elm1NewVal)
+            expect(elm1.counter).toBe(elm1NewVal);
             expect(elm2.counter).toBe(elm2NewVal);
         });
     });
@@ -232,7 +232,7 @@ describe('track.ts', () => {
             }
         }
 
-        XFoo.track = { counter: 1, label:1 };
+        XFoo.track = { counter: 1, label: 1 };
 
         const elm1 = createElement('x-foo', { is: XFoo });
         document.body.appendChild(elm1);

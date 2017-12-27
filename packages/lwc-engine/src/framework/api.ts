@@ -1,57 +1,96 @@
 import assert from "./assert";
-import { lifeCycleHooks as hook } from "./hook";
-import { isArray, create, isUndefined, isNull, isFunction, isObject, isString, toString, ArrayPush } from "./language";
+import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { getMapFromClassName, EmptyArray } from "./utils";
+import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
+import { registerComponent } from "./def";
+import { ComponentConstructor, markComponentAsDirty } from "./component";
+
+import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
+import { getCustomElementVM } from "./html-element";
+
+export interface RenderAPI {
+    h(tagName: string, data: VNodeData, children: VNodes): VNode;
+    c(tagName: string, Ctor: ComponentConstructor, data: VNodeData): VNode;
+    i(items: any[], factory: () => VNode | VNode): VNodes;
+    f(items: any[]): any[];
+    t(text: string): VText;
+    p(text: string): VComment;
+    d(value: any): VNode | null;
+    b(fn: EventListener): EventListener;
+}
 
 const CHAR_S = 115;
 const CHAR_V = 118;
 const CHAR_G = 103;
-const EmptyData = create(null);
 const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
-function addNS(data: any, children: Array<VNode> | undefined, sel: string | undefined) {
-    data.ns = NamespaceAttributeForSVG;
-    if (isUndefined(children) || sel === 'foreignObject') {
-        return;
+const { ELEMENT_NODE, TEXT_NODE, COMMENT_NODE } = Node;
+
+// insert is called after postpatch, which is used somewhere else (via a module)
+// to mark the vm as inserted, that means we cannot use postpatch as the main channel
+// to rehydrate when dirty, because sometimes the element is not inserted just yet,
+// which breaks some invariants. For that reason, we have the following for any
+// Custom Element that is inserted via a template.
+const hook: Hooks = {
+    postpatch(oldVNode: VNode, vnode: VNode) {
+        const vm = getCustomElementVM(vnode.elm as HTMLElement);
+        vm.cmpSlots = vnode.data.slotset;
+        // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
+        // one of those is changed, the vm should be marked as dirty.
+        // TODO: Issue #133
+        if (vm.cmpSlots !== oldVNode.data.slotset && !vm.isDirty) {
+            markComponentAsDirty(vm);
+        }
+        renderVM(vm);
+    },
+    insert(vnode: VNode) {
+        const vm = getCustomElementVM(vnode.elm as HTMLElement);
+        appendVM(vm);
+        renderVM(vm);
+    },
+    create(oldVNode: VNode, vnode: VNode) {
+        createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
+    },
+    remove(vnode: VNode, removeCallback) {
+        removeVM(getCustomElementVM(vnode.elm as HTMLElement));
+        removeCallback();
     }
-    const len = children.length;
-    for (let i = 0; i < len; ++i) {
-        const child = children[i];
-        let { data } = child;
-        if (data !== undefined) {
-            const grandChildren: Array<VNode> = child.children;
-            addNS(data, grandChildren, child.sel);
+};
+
+function isVElement(vnode: VNode): vnode is VElement {
+    return vnode.nt === ELEMENT_NODE;
+}
+
+function addNS(vnode: VElement) {
+    const { data, children, sel } = vnode;
+    // TODO: review why `sel` equal `foreignObject` should get this `ns`
+    data.ns = NamespaceAttributeForSVG;
+    if (isArray(children) && sel !== 'foreignObject') {
+        for (let i = 0, n = children.length; i < n; ++i) {
+            const childNode = children[i];
+            if (childNode != null && isVElement(childNode)) {
+                addNS(childNode);
+            }
         }
     }
 }
 
-// [v]node node
-export function v(sel: string | undefined, data: VNodeData | undefined, children: Array<VNode | string> | undefined, text?: string | number | undefined, elm?: Element | Text | undefined, Ctor?: ComponentContructor): VNode {
-    data = data || EmptyData;
+function getCurrentOwnerId(): number {
+    return isNull(vmBeingRendered) ? 0 : vmBeingRendered.uid;
+}
 
-    let { key } = data;
-    let uid = 0;
-
+function getCurrentTplToken(): string | undefined {
     // For root elements and other special cases the vm is not set.
-    if (!isNull(vmBeingRendered)) {
-        uid = vmBeingRendered.uid;
-        data.token = vmBeingRendered.context.tplToken;
+    if (isNull(vmBeingRendered)) {
+        return;
     }
-
-    const vnode: VNode = { sel, data, children, text, elm, key, Ctor, uid };
-
-    if (process.env.NODE_ENV !== 'production') {
-        // adding toString to all vnodes for debuggability
-        vnode.toString = (): string => `[object:vnode ${sel}]`;
-    }
-
-    return vnode;
+    return vmBeingRendered.context.tplToken;
 }
 
 // [h]tml node
-export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
+export function h(sel: string, data: VNodeData, children: any[]): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
@@ -63,28 +102,37 @@ export function h(sel: string, data: VNodeData, children: Array<any>): VNode {
         if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-    }
-    const { classMap, className, style, styleMap } = data;
-
-    data.class = classMap || (className && getMapFromClassName(className));
-    data.style = styleMap || (style && style + '');
-
-    if (process.env.NODE_ENV !== 'production') {
         children.forEach((vnode) => {
-            if (vnode !== null) {
+            if (vnode != null) {
                 assert.vnode(vnode);
             }
         });
     }
+    const { classMap, className, style, styleMap, key } = data;
 
+    data.class = classMap || (className && getMapFromClassName(className));
+    data.style = styleMap || (style && style + '');
+    data.token = getCurrentTplToken();
+    data.uid = getCurrentOwnerId();
+    let text, elm;
+    const vnode: VElement = {
+        nt: ELEMENT_NODE,
+        tag: sel,
+        sel,
+        data,
+        children,
+        text,
+        elm,
+        key,
+    };
     if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
-        addNS(data, children, sel);
+        addNS(vnode);
     }
-    return v(sel, data, children);
+    return vnode;
 }
 
 // [c]ustom element node
-export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNode {
+export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData): VElement {
     // The compiler produce AMD modules that do not support circular dependencies
     // We need to create an indirection to circumvent those cases.
     // We could potentially move this check to the definition
@@ -105,27 +153,43 @@ export function c(sel: string, Ctor: ComponentContructor, data: VNodeData): VNod
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
     }
-
     const { key, slotset, styleMap, style, on, className, classMap, props } = data;
     let { attrs } = data;
 
     // hack to allow component authors to force the usage of the "is" attribute in their components
     const { forceTagName } = Ctor;
-    if (!isUndefined(forceTagName) && (isUndefined(attrs) || isUndefined(attrs.is))) {
-        attrs = attrs || {};
+    let tag = sel, text, elm;
+    if (!isUndefined(attrs) && !isUndefined(attrs.is)) {
+        tag = sel;
+        sel = attrs.is as string;
+    } else if (!isUndefined(forceTagName)) {
+        tag = forceTagName;
+        attrs = assign({}, attrs);
         attrs.is = sel;
-        sel = forceTagName;
     }
+    registerComponent(sel, Ctor);
 
     data = { hook, key, slotset, attrs, on, props };
     data.class = classMap || (className && getMapFromClassName(className));
     data.style = styleMap || (style && style + '');
-    return v(sel, data, EmptyArray, undefined, undefined, Ctor);
+    data.token = getCurrentTplToken();
+    data.uid = getCurrentOwnerId();
+    const vnode: VElement = {
+        nt: ELEMENT_NODE,
+        tag,
+        sel,
+        data,
+        children: EmptyArray,
+        text,
+        elm,
+        key,
+    };
+    return vnode;
 }
 
 // [i]terable node
-export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
-    const list: Array<VNode> = [];
+export function i(iterable: Iterable<any>, factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode): VNodes {
+    const list: VNodes = [];
     if (isUndefined(iterable) || iterable === null) {
         if (process.env.NODE_ENV !== 'production') {
             assert.logWarning(`Invalid template iteration for value "${iterable}" in ${vmBeingRendered}, it should be an Array or an iterable Object.`);
@@ -134,8 +198,10 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+        // @ts-ignore
         assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
     }
+    // @ts-ignore
     const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
@@ -160,10 +226,10 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            vnodes.forEach((vnode: VNode | any) => {
-                if (vnode && isObject(vnode) && vnode.sel && vnode.Ctor && isUndefined(vnode.key)) {
+            vnodes.forEach((vnode) => {
+                if (!isNull(vnode) && isObject(vnode) && !isUndefined(vnode.sel) && vnode.sel.indexOf('-') > 0 && isUndefined(vnode.key)) {
                     // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "${toString(vnode.Ctor.name)}", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    assert.logWarning(`Missing "key" attribute in iteration with child "<${vnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }
             });
         }
@@ -178,7 +244,7 @@ export function i(iterable: Iterable<any>, factory: Function): Array<VNode> {
 /**
  * [f]lattening
  */
-export function f(items: Array<any>): Array<any> {
+export function f(items: any[]): any[] {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
@@ -196,8 +262,30 @@ export function f(items: Array<any>): Array<any> {
 }
 
 // [t]ext node
-export function t(value: string | number): VNode {
-    return v(undefined, undefined, undefined, value);
+export function t(text: string): VText {
+    let sel, data = {}, children, key, elm;
+    return {
+        nt: TEXT_NODE,
+        sel,
+        data,
+        children,
+        text,
+        elm,
+        key,
+    };
+}
+
+export function p(text: string): VComment {
+    let sel = '!', data = {}, children, key, elm;
+    return {
+        nt: COMMENT_NODE,
+        sel,
+        data,
+        children,
+        text,
+        elm,
+        key,
+    };
 }
 
 // [d]ynamic value to produce a text vnode
@@ -205,19 +293,17 @@ export function d(value: any): VNode | null {
     if (value === undefined || value === null) {
         return null;
     }
-    return v(undefined, undefined, undefined, value);
+    return t(value);
 }
 
 // [b]ind function
 export function b(fn: EventListener): EventListener {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vmBeingRendered);
+    if (isNull(vmBeingRendered)) {
+        throw new Error();
     }
-    function handler(event: Event) {
+    const vm: VM = vmBeingRendered;
+    return function handler(event: Event) {
         // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(handler.vm, handler.fn, handler.vm.component, [event]);
-    }
-    handler.vm = vmBeingRendered;
-    handler.fn = fn;
-    return handler;
+        invokeComponentCallback(vm, fn, [event]);
+    };
 }

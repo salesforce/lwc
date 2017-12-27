@@ -1,86 +1,89 @@
 // import * as target from '../watcher';
-import * as api from "../api";
-import { patch } from '../patch';
 import { Element } from "../html-element";
+import { createElement } from "../upgrade";
+import { ViewModelReflection } from "../def";
+import { VM } from "../vm";
 
 describe('vm', () => {
-    describe('integration', () => {
-        var elm, vnode0;
-
-        beforeEach(function() {
-            elm = document.createElement('x-foo');
-            vnode0 = elm;
-        });
-
+    describe('insertion index', () => {
         it('should assign idx=0 (insertion index) during construction', () => {
-            let idx;
-            class MyComponent1 extends Element {
-                constructor() {
-                    super();
-                    idx = vnode0.vm.idx;
-                }
-            }
-            vnode0 = api.c('x-foo', MyComponent1, {});
-            patch(elm, vnode0);
-            expect(idx).toBe(0);
+            class MyComponent1 extends Element {}
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            expect(elm[ViewModelReflection].idx).toBe(0);
         });
 
         it('should assign idx>0 after insertion', () => {
             class MyComponent2 extends Element {}
-            vnode0 = api.c('x-foo', MyComponent2, {});
-            patch(elm, vnode0);
-            expect(vnode0.vm.idx).toBeGreaterThan(0);
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            document.body.appendChild(elm);
+            expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
         });
 
         it('should assign idx=0 after removal', () => {
-            document.body.appendChild(elm); // destroy hook is only invoked if the element is trully in the DOM :/
             class MyComponent3 extends Element {}
-            vnode0 = api.c('x-foo', MyComponent3, {});
-            patch(elm, vnode0);
-            const vnode1 = api.h('div', {}, []);
-            patch(vnode0, vnode1);
-            expect(vnode0.vm.idx).toBe(0);
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
+            document.body.removeChild(elm);
+            expect(elm[ViewModelReflection].idx).toBe(0);
         });
 
         it('should assign bigger idx to children', () => {
-            class ChildComponent41 extends Element {}
-            const vnodeChild = api.c('x-bar', ChildComponent41, {});
-            class MyComponent4 extends Element {
-                render() {
-                    return () => [vnodeChild];
+            let vm1: VM, vm2: VM;
+            class ChildComponent4 extends Element {
+                constructor() {
+                    super();
+                    vm2 = this[ViewModelReflection];
                 }
             }
-            vnode0 = api.c('x-foo', MyComponent4, {});
-            patch(elm, vnode0);
-            expect(vnode0.vm.idx).toBeGreaterThan(0);
-            expect(vnodeChild.vm.idx).toBeGreaterThan(vnode0.vm.idx);
+            class MyComponent4 extends Element {
+                constructor() {
+                    super();
+                    vm1 = this[ViewModelReflection];
+                }
+                render() {
+                    return ($api) => [$api.c('x-bar', ChildComponent4, {})];
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent4 });
+            document.body.appendChild(elm);
+            expect(vm1.idx).toBeGreaterThan(0);
+            expect(vm2.idx).toBeGreaterThan(0);
+            expect(vm2.idx).toBeGreaterThan(vm1.idx);
         });
 
         it('should assign bigger idx on reinsertion, including children idx', () => {
-            document.body.appendChild(elm); // destroy hook is only invoked if the element is trully in the DOM :/
+            let vm1: VM, vm2: VM;
             let counter = 0;
-            class ChildComponent51 extends Element {
+            class ChildComponent5 extends Element {
+                constructor() {
+                    super();
+                    vm2 = this[ViewModelReflection];
+                }
                 render() {
                     counter++;
                 }
             }
-            let vnodeChild;
             class MyComponent5 extends Element {
+                constructor() {
+                    super();
+                    vm1 = this[ViewModelReflection];
+                }
                 render() {
-                    vnodeChild = api.c('x-bar', ChildComponent51, {});
-                    return () => [vnodeChild];
+                    return ($api) => [$api.c('x-bar', ChildComponent5, {})];
                 }
             }
-            vnode0 = api.c('x-foo', MyComponent5, {});
-            patch(elm, vnode0); // insertion
-            const firstIdx = vnode0.vm.idx;
-            const vnode1 = api.h('div', {}, []);
-            patch(vnode0, vnode1); // removal
-            expect(vnode0.vm.idx).toBe(0);
-            expect(vnodeChild.vm.idx).toBe(0);
-            patch(vnode1, vnode0); // re-insertion
-            expect(vnode0.vm.idx).toBeGreaterThan(firstIdx);
-            expect(vnodeChild.vm.idx).toBeGreaterThan(vnode0.vm.idx);
+            const elm = createElement('x-foo', { is: MyComponent5 });
+            document.body.appendChild(elm);
+            expect(vm1.idx).toBeGreaterThan(0);
+            expect(vm2.idx).toBeGreaterThan(0);
+            const firstIdx = vm1.idx;
+            document.body.removeChild(elm);
+            expect(vm1.idx).toBe(0);
+            expect(vm2.idx).toBe(0);
+            // reinsertion
+            document.body.appendChild(elm);
+            expect(vm1.idx).toBeGreaterThan(firstIdx);
+            expect(vm2.idx).toBeGreaterThan(vm1.idx);
             expect(counter).toBe(2);
         });
 

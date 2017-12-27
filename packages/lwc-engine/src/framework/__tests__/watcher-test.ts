@@ -1,8 +1,6 @@
-// import * as target from '../watcher';
-import * as api from "../api";
-import { patch } from '../patch';
 import { Element } from "../html-element";
 import { createElement } from './../main';
+import { ViewModelReflection } from "../def";
 
 describe('watcher', () => {
 
@@ -10,22 +8,19 @@ describe('watcher', () => {
 
         it('should not rerender the component if nothing changes', () => {
             let counter = 0;
-            const def = class MyComponent1 extends Element {
+            class MyComponent1 extends Element {
                 render() {
                     counter++;
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, {});
-            const vnode2 = api.c('x-foo', def, {});
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
         });
 
         it('should rerender the component if any reactive prop changes', () => {
             let counter = 0;
-            const def = class MyComponent2 extends Element {
+            class MyComponent2 extends Element {
                 render() {
                     counter++;
                     // TODO: if x is used in render (outside of html), and it is not used inside the compiled template
@@ -39,70 +34,98 @@ describe('watcher', () => {
                     };
                 }
             }
-            def.publicProps = { x: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, { props: { x: 2 } });
-            const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
-            expect(counter).toBe(2);
+            MyComponent2.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            elm.x = 2;
+            document.body.appendChild(elm);
+            elm.x = 3;
+            Promise.resolve().then(_ => {
+                expect(counter).toBe(2);
+            });
         });
 
         it('should not rerender the component if a non-reactive prop changes', () => {
             let counter = 0;
-            const def = class MyComponent3 extends Element {
+            class MyComponent3 extends Element {
                 render() {
                     counter++;
                 }
             }
-            def.publicProps = { x: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, { props: { x: 2 } });
-            const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
-            expect(counter).toBe(1);
+            MyComponent3.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            elm.x = 2;
+            document.body.appendChild(elm);
+            elm.x = 3;
+            Promise.resolve().then(_ => {
+                expect(counter).toBe(1);
+            });
         });
 
         it('should rerender the component if any reactive slot changes', () => {
             let counter = 0;
-            const def = class MyComponent4 extends Element {
+            class Child extends Element {
                 render() {
                     counter++;
                     return function html($api, $cmp, $slotset) {
-                        $slotset.x;
-                        return [];
+                        return $slotset.x || [];
                     };
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, {});
-            const vnode2 = api.c('x-foo', def, { slotset: { x: [api.h('p', {}, [])] } });
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
-            expect(counter).toBe(2);
+            class MyComponent4 extends Element {
+                constructor() {
+                    super();
+                    this.round = 0;
+                }
+                render() {
+                    const r = this.round;
+                    return function html($api) {
+                        return [$api.c('x-child', Child, {
+                            slotset: r === 0 ? {} : { x: [$api.h('p', {}, [])] }
+                        })];
+                    };
+                }
+            }
+            MyComponent4.track = { round: 1 };
+            const elm = createElement('x-foo', { is: MyComponent4 });
+            document.body.appendChild(elm);
+            elm[ViewModelReflection].component.round += 1;
+            Promise.resolve().then(_ => {
+                expect(counter).toBe(2);
+            });
         });
 
         it('should not rerender the component if a non-reactive slot changes', () => {
             let counter = 0;
-            const def = class MyComponent5 extends Element {
+            let data;
+            class Child extends Element {
                 render() {
                     counter++;
                 }
             }
-            def.publicProps = { x: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, { slotset: { x: [] } });
-            const vnode2 = api.c('x-foo', def, { slotset: { x: [/* new array */] } });
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
-            expect(counter).toBe(1);
+            class MyComponent4 extends Element {
+                constructor() {
+                    super();
+                    data = this.data = { slotset: {} };
+                }
+                render() {
+                    return function html($api) {
+                        return [$api.c('x-child', Child, data)];
+                    };
+                }
+            }
+            MyComponent4.track = { data: 1 };
+            const elm = createElement('x-foo', { is: MyComponent4 });
+            document.body.appendChild(elm);
+            data.slotset.x = []; // new array
+            Promise.resolve().then(_ => {
+                expect(counter).toBe(1);
+            });
         });
 
         it('should rerender the component if tracked property changes', () => {
             let counter = 0;
             let state;
-            const def = class MyComponent6 extends Element {
+            class MyComponent6 extends Element {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -116,13 +139,11 @@ describe('watcher', () => {
                     };
                 }
             }
-            def.track = { state: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            expect(counter).toBe(1);
-            state.x = 1;
-            return Promise.resolve().then(() => {
+            MyComponent6.track = { state: 1 };
+            const elm = createElement('x-foo', { is: MyComponent6 });
+            document.body.appendChild(elm);
+            state.x = 2;
+            Promise.resolve().then(_ => {
                 expect(counter).toBe(2);
             });
         });
@@ -130,7 +151,7 @@ describe('watcher', () => {
         it('should not rerender the component if a non-reactive state changes', () => {
             let counter = 0;
             let state;
-            const def = class MyComponent7 extends Element {
+            class MyComponent7 extends Element {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -140,18 +161,17 @@ describe('watcher', () => {
                     counter++;
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent7 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
-            state.x = 1; // this is not used in the rendering phase
+            state.x = 2;
             return Promise.resolve().then(() => {
                 expect(counter).toBe(1);
             });
         });
 
         it('should prevent any mutation during the rendering phase', () => {
-            const def = class MyComponent8 extends Element {
+            class MyComponent8 extends Element {
                 state = { x: 0 };
                 render() {
                     return function html($api, $cmp) {
@@ -159,15 +179,14 @@ describe('watcher', () => {
                     };
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def, {});
-            expect(() => patch(elm, vnode)).toThrow();
+            const elm = createElement('x-foo', { is: MyComponent8 });
+            expect(() => document.body.appendChild(elm)).toThrow();
         });
 
         it('should compute reactive state per rendering', () => {
             let counter = 0;
             let state;
-            const def = class MyComponent9 extends Element {
+            class MyComponent9 extends Element {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -183,10 +202,9 @@ describe('watcher', () => {
                     };
                 }
             }
-            def.track = { state: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
+            MyComponent9.track = { state: 1 };
+            const elm = createElement('x-foo', { is: MyComponent9 });
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
             state.x = 1; // this is marked as reactive
             return Promise.resolve().then(() => {
@@ -200,7 +218,7 @@ describe('watcher', () => {
 
         it('should mark public prop as reactive even if it is used via a getter', () => {
             let counter = 0;
-            const def = class MyComponent2 extends Element {
+            class MyComponent2 extends Element {
                 get foo() {
                     return this.x;
                 }
@@ -217,13 +235,14 @@ describe('watcher', () => {
                     };
                 }
             }
-            def.publicProps = { x: 1 };
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', def, { props: { x: 2 } });
-            const vnode2 = api.c('x-foo', def, { props: { x: 3 } });
-            patch(elm, vnode1);
-            patch(vnode1, vnode2);
-            expect(counter).toBe(2);
+            MyComponent2.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            elm.x = 2;
+            document.body.appendChild(elm);
+            elm.x = 3;
+            Promise.resolve().then(_ => {
+                expect(counter).toBe(2);
+            });
         });
 
         it('should allow observing public prop via setter', () => {
@@ -240,9 +259,9 @@ describe('watcher', () => {
                 }
             }
             MyComponent2.publicProps = { x: { config: 3 } };
-            const elm = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent2, { props: { x: 2 } });
-            patch(elm, vnode1);
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            elm.x = 2;
+            document.body.appendChild(elm);
             expect(counter).toBe(1);
             expect(newValue).toBe(2);
             expect(oldValue).toBeUndefined();
@@ -265,7 +284,7 @@ describe('watcher', () => {
                     this.state.list.map((v) => v + 1);
                 }
             }
-            MyComponent1.track = { state: 1 }
+            MyComponent1.track = { state: 1 };
             MyComponent1.publicMethods = ['pushToList'];
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
@@ -312,7 +331,7 @@ describe('watcher', () => {
                 }
             }
             MyComponent1.publicMethods = ['unshiftFromList'];
-            MyComponent1.track = { state: 1 }
+            MyComponent1.track = { state: 1 };
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);

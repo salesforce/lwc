@@ -1,3 +1,6 @@
+import { VM } from "./vm";
+import { VNode } from "../3rdparty/snabbdom/types";
+
 const compareDocumentPosition = Node.prototype.compareDocumentPosition;
 const { DOCUMENT_POSITION_CONTAINS } = Node;
 

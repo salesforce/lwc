@@ -1,11 +1,24 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty } from "./language";
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, assign } from "./language";
 import { prepareForAttributeMutationFromTemplate } from './def';
+
+import { VNode, VNodes } from "../3rdparty/snabbdom/types";
+import { RenderAPI } from "./api";
+import { Context } from "./context";
+import { Slotset, VM } from "./vm";
+import { EmptyArray } from "./utils";
+import { Component } from "./component";
+
+export interface Template {
+    (api: RenderAPI, cmp: object, slotset: Slotset, ctx: Context): undefined | VNodes;
+    style?: string;
+    token?: string;
+}
 
 const EmptySlots: Slotset = create(null);
 
-function getSlotsetValue(slotset: Slotset, slotName: string): Array<VNode> {
+function getSlotsetValue(slotset: Slotset, slotName: string): VNode[] {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isObject(slotset), `Invalid slotset value ${toString(slotset)}`);
     }
@@ -27,23 +40,25 @@ const slotsetProxyHandler: ProxyHandler<Slotset> = {
         }
         return false;
     },
-    apply(/*target: any, thisArg: any, argArray?: any*/) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(`invalid call invocation from slotset`);
-        }
-    },
-    construct(/*target: any, argArray: any, newTarget?: any*/) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.fail(`invalid construction invocation from slotset`);
-        }
-    },
 };
+
+if (process.env.NODE_ENV === 'production') {
+    assign(slotsetProxyHandler, {
+        apply(target: any, thisArg: any, argArray?: any) {
+            throw new Error(`invalid call invocation from slotset`);
+        },
+        construct(target: Slotset, argArray: any, newTarget?: any): object {
+            throw new Error(`invalid construction invocation from slotset`);
+        },
+    });
+}
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV !== 'production') {
-        let { cmpSlots = EmptySlots } = vm;
-        const { slots = [] } = html;
-        for (let slotName in cmpSlots) {
+        const { cmpSlots = EmptySlots } = vm;
+        const { slots = EmptyArray } = html;
+        for (const slotName in cmpSlots) {
+            assert.isTrue(isArray(cmpSlots[slotName]) && cmpSlots[slotName].length > 0, `Slots can only be set to a non-empty array, instead received ${toString(cmpSlots[slotName])} for slot ${slotName} in ${vm}.`);
             if (ArrayIndexOf.call(slots, slotName) === -1) {
                 // TODO: this should never really happen because the compiler should always validate
                 console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
@@ -54,7 +69,7 @@ function validateSlots(vm: VM, html: any) {
 
 function validateFields(vm: VM, html: any) {
     if (process.env.NODE_ENV !== 'production') {
-        let { component } = vm;
+        const component = vm.component as Component;
         // validating identifiers used by template that should be provided by the component
         const { ids = [] } = html;
         ids.forEach((propName: string) => {
@@ -75,18 +90,18 @@ function validateTemplate(vm: VM, html: any) {
 }
 
 function applyTokenToHost(vm: VM, html: Template): void {
-    const { vnode, context } = vm;
+    const { context } = vm;
 
     const oldToken = context.tplToken;
     const newToken = html.token;
 
     if (oldToken !== newToken) {
-        const host = vnode.elm as Element;
+        const host = vm.elm;
 
         // Remove the token currently applied to the host element if different than the one associated
         // with the current template
         if (!isUndefined(oldToken)) {
-            if (process.env.NODE_ENV !== 'production'){
+            if (process.env.NODE_ENV !== 'production') {
                 prepareForAttributeMutationFromTemplate(host, oldToken);
             }
             host.removeAttribute(oldToken);
@@ -94,7 +109,7 @@ function applyTokenToHost(vm: VM, html: Template): void {
 
         // If the template has a token apply the token to the host element
         if (!isUndefined(newToken)) {
-            if (process.env.NODE_ENV !== 'production'){
+            if (process.env.NODE_ENV !== 'production') {
                 prepareForAttributeMutationFromTemplate(host, newToken);
             }
             host.setAttribute(newToken, '');
@@ -109,7 +124,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     }
 
     // TODO: add identity to the html functions
-    let { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
+    const { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
     // reset the cache momizer for template when needed
     if (html !== cmpTemplate) {
         applyTokenToHost(vm, html);
@@ -128,7 +143,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
     }
     const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
-    let vnodes = html.call(undefined, api, component, slotset, context.tplCache);
+    const vnodes = html.call(undefined, api, component, slotset, context.tplCache);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);

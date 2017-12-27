@@ -1,10 +1,11 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
+import { Template } from "../../template";
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
-        const tmpl = api => [
-            api.v('section', {}, [ api.t('test') ]),
+        const tmpl = $api => [
+            $api.h('section', {}, [ $api.t('test') ]),
         ];
         tmpl.token = 'test';
 
@@ -20,14 +21,14 @@ describe('modules/token', () => {
         expect(cmp.querySelectorAll('[test]')).toHaveLength(1);
     });
 
-    it('removes children element tokens if the template as no token', () => {
-        const styledTmpl = api => [
-            api.v('section', {}, [ api.t('test') ]),
+    it('removes children element tokens if the template has no token', () => {
+        const styledTmpl = $api => [
+            $api.h('section', {}, [ $api.t('test') ]),
         ];
         styledTmpl.token = 'test';
 
-        const unstyledTmpl = api => [
-            api.v('section', {}, [ api.t('test') ]),
+        const unstyledTmpl = $api => [
+            $api.h('section', {}, [ $api.t('test') ]),
         ];
 
         class Component extends Element {
@@ -55,13 +56,13 @@ describe('modules/token', () => {
     });
 
     it('replace children element tokens when swapping template', () => {
-        const styledTmplA = api => [
-            api.v('section', {}, [ api.t('test') ]),
+        const styledTmplA: Template = $api => [
+            $api.h('section', {}, [ $api.t('test') ]),
         ];
         styledTmplA.token = 'testA';
 
-        const styledTmplB = api => [
-            api.v('section', {}, [ api.t('test') ]),
+        const styledTmplB: Template = $api => [
+            $api.h('section', {}, [ $api.t('test') ]),
         ];
         styledTmplB.token = 'testB';
 
@@ -88,4 +89,4 @@ describe('modules/token', () => {
             expect(cmp.querySelectorAll('[testB]')).toHaveLength(1);
         });
     });
-})
+});
