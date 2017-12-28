@@ -11,6 +11,7 @@ declare class Component {
     connectedCallback(): void;
     disconnectedCallback(): void;
     renderedCallback(): void;
+    errorCallback(error: any, stack: string): void
     attributeChangedCallback(attrName: string, oldValue: any, newValue: any): void;
     publicProps: any;
     publicMethods: Array<string>;
@@ -77,18 +78,21 @@ declare class VM {
     isDirty: boolean;
     def: ComponentDef;
     context: VMContext;
-    component?: Component;
+    component: Component;
     membrane?: Membrane;
-    vnode: VNode;
+    vnode: ComponentVNode;
     shadowVNode: VNode;
     fragment: Array<VNode>;
     deps: Array<Array<VM>>;
     toString(): string;
+    hasErroredOnce: boolean;
 }
 
 declare class ComponentVNode extends VNode {
     Ctor: ObjectConstructor;
     vm: VM;
+    elm: Element;
+    children: Array<VNode>;
     toString: () => string;
 }
 

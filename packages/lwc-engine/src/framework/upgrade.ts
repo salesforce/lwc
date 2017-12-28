@@ -46,7 +46,7 @@ assign(Node.prototype, {
 // this could happen for two reasons:
 // * it is a root, and was removed manually
 // * the element was appended to another container which requires disconnection to happen first
-function forceDisconnection(vnode: ComponentVNode) {
+export function forceDisconnection(vnode: ComponentVNode) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vnode(vnode);
         assert.vm(vnode.vm);

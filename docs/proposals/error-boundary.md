@@ -1,8 +1,8 @@
 # Status
 This is a `draft`, brainstorm is needed
 
-# Error Boundary Components in Raptor
-JavaScript errors inside components corrupt Raptor internal state and cause UI errors visible to users.
+# Error Boundary Components in LWC
+JavaScript errors inside components corrupt LWC internal state and cause UI errors visible to users.
 
 ## Use Cases
 - As an app developer, I can structure my component logic to metigate rendering failures
@@ -13,13 +13,9 @@ JavaScript errors inside components corrupt Raptor internal state and cause UI e
 
 ## Proposal
 
-To prevent breakage of an entire UI and to allow component logic to take advantage of alternative view rendering, Raptor introduces Error Boundaries. Error Boundaries are Raptor's components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback/alternative UI instead of the component tree that crashed. Error boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them.
+To prevent breakage of an entire UI and to allow component logic to take advantage of alternative view rendering, LWC introduces Error Boundaries. Error Boundaries are LWC's components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback/alternative UI instead of the component tree that crashed. Error boundaries only catch error occured in lifecycle method, such as constructor, render, connectedCallback, renderedCallback, and attributeChangedCallback.
 
-Note that error boundaries only catch errors in child components, not the parent. An error boundary can’t catch an error within itself. If a component fails to catch rendering failure, the error will propagate to the closest error boundary component above. This, too, is similar to how catch {} block works in JavaScript.
-Failures that were not caught by error boundary component will result in entire Raptor tree removal from the DOM.
-
-It is important to note, that error caused outside of the rendering cycle, such as event click error, will not result in compoment removal from the DOM. Instead, console error will be logged.
-
+Note that error boundary only catches errors in its children and not in the error boundary itself. If a component fails to catch rendering failure, the error will propagate to the closest error boundary component above. This, too, is similar to how catch {} block works in JavaScript. It is important to note that error caused outside of the lifecycle hooks, such as errors occurring when handling click event, will not result in compoment removal from the DOM.
 
 
 Error Boundary functionality is inspired by [React 16 new error handling mechanism]:(https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html)
@@ -52,7 +48,7 @@ The renderedError() method works like a JavaScript catch {} block, but for compo
         <x-alternative-view error={this.error} info={this.info}></x-alternative-view>
     </template>
     <template if:false={this.error}>
-        <slot></slot>
+        <x-offender-component></x-offender-comonent>
     </template>
 </template>
 ```
@@ -64,7 +60,7 @@ Then use Boundary component as a wrapper
 ```
 
 
-## Examples below illustrate two type of component errors: within rendering lifecycle errors and out-of rendering lifecycle errors. 
+## Examples below illustrate two type of component errors: within rendering lifecycle errors and out-of rendering lifecycle errors.
 
 ### Within rendering lifecycle error examples:
 
@@ -93,7 +89,7 @@ Error during construction of  'x-component-b' will result in rendering of an alt
     </x-component-a>
 </template>
 ```
-Rendering Lifecycle error in x-component-c will result in removing of its entire DOM subtree and its wrapping parent. x-alternative-view will be rendered instead of x-component-b and c. 
+Rendering Lifecycle error in x-component-c will result in removing of its entire DOM subtree and its wrapping parent. x-alternative-view will be rendered instead of x-component-b and c.
 
 #### Error during construction wrapped in Boundary will not affect boundary siblings
 ```html
@@ -108,7 +104,7 @@ Rendering Lifecycle error in x-component-c will result in removing of its entire
 ```
 Error in x-component-b does not affect the rendering of x-component-c. Any sibling of x-boundary component is unaffected.
 
-#### Error during construction of the component not wrapped in the Boundary component 
+#### Error during construction of the component not wrapped in the Boundary component
 ```html
 <template>
     <x-component-a>
@@ -116,7 +112,7 @@ Error in x-component-b does not affect the rendering of x-component-c. Any sibli
     </x-component-a>
 </template>
 ```
-Everything up to the root element will be unmounted. Neither x-component-a nor x-component-c will be rendered
+Default throw behavior will be observed. Component will not be unmounted.
 
 
 ### Out-of rendering lifecycle error example:

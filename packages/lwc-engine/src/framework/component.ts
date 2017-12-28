@@ -37,6 +37,7 @@ export function createComponent(vm: VM, Ctor: ComponentClass) {
     // create the component instance
     const vmBeingConstructedInception = vmBeingConstructed;
     vmBeingConstructed = vm;
+
     const component = invokeComponentConstructor(vm, Ctor);
     vmBeingConstructed = vmBeingConstructedInception;
 

@@ -2,12 +2,11 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent } from "./component";
 import { patch } from "./patch";
-import { ArrayPush, isUndefined, keys, defineProperties } from "./language";
+import { ArrayPush, isUndefined, isNull, keys, defineProperties, ArrayUnshift, ArraySlice } from "./language";
 import { addCallbackToNextTick, noop, EmptyObject } from "./utils";
 import { ViewModelReflection } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentMethod } from "./invoker";
-
 let idx: number = 0;
 let uid: number = 0;
 
@@ -107,26 +106,93 @@ export function relinkVM(vm: VM, vnode: ComponentVNode) {
     vnode.vm = vm;
     vm.vnode = vnode;
 }
+
 export function rehydrate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
+        assert.isTrue(vm.vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
     }
-    if (vm.idx && vm.isDirty) {
-        const { vnode } = vm;
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isTrue(vnode.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
-        }
-        const children = renderComponent(vm);
+    if (vm.idx > 0 && vm.isDirty) {
+        const children = renderComponent(vm).filter( (child) => {return child; });
         vm.isScheduled = false;
         patchShadowRoot(vm, children);
-        const { rendered } = Services;
-        if (rendered) {
-            invokeServiceHook(vm, rendered);
+        processPostPatchCallbacks(vm);
+    }
+}
+
+export function patchErrorBoundaryVm(errorBoundaryVm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(errorBoundaryVm);
+        assert.isTrue(errorBoundaryVm.vnode.elm instanceof HTMLElement, `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`);
+        assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
+    }
+    // remove empty nodes
+    const children = renderComponent(errorBoundaryVm).filter((child) => { return child; });
+    const { vnode: {elm}, shadowVNode: oldShadowVNode } = errorBoundaryVm;
+
+    errorBoundaryVm.isScheduled = false;
+
+    // patch function mutates and returns newShadowVNode object,
+    // however, if patching fails we don't get a return value which
+    // contains partial changes to the vnode. These changes are mandatory
+    // for successful patching, therefore we preserve newShadowVNode reference
+    // prior calling patch
+    const newShadowVNode = createShadowRootVNode(elm, children);
+    errorBoundaryVm.shadowVNode = newShadowVNode;
+
+    // patch failures are caught in flushRehydrationQueue
+    patch(oldShadowVNode, newShadowVNode);
+    processPostPatchCallbacks(errorBoundaryVm);
+}
+
+export function patchShadowRoot(vm: VM, children: VNode[]) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    let error;
+    const { shadowVNode: oldShadowVNode } = vm;
+
+    // patch function mutates and returns newShadowVNode object,
+    // however, if patching fails we don't get a return value which
+    // contains partial changes to the vnode. These changes are mandatory
+    // for successful patching, therefore we preserve newShadowVNode reference
+    // prior calling patch
+    const newShadowVNode = createShadowRootVNode(vm.vnode.elm, children);
+    vm.shadowVNode = newShadowVNode;
+
+    try {
+        patch(oldShadowVNode, newShadowVNode);
+    } catch (e) {
+        error = Object(e);
+    } finally {
+        if (!isUndefined(error)) {
+            const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
+            if (errorBoundaryVm) {
+                recoverFromLifecyleError(vm, errorBoundaryVm, error);
+
+                // syncronously render error boundary's alternative view
+                // to recover in the same tick
+                if (errorBoundaryVm.isDirty) {
+                    patchErrorBoundaryVm(errorBoundaryVm);
+                }
+            } else {
+                throw error; // eslint-disable-line no-unsafe-finally
+            }
         }
-        const { component: { renderedCallback } } = vm;
-        if (renderedCallback && renderedCallback !== noop) {
-            invokeComponentMethod(vm, 'renderedCallback');
-        }
+    }
+}
+
+function processPostPatchCallbacks(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const { rendered } = Services;
+    if (rendered) {
+        invokeServiceHook(vm, rendered);
+    }
+    const { component: { renderedCallback } } = vm;
+    if (renderedCallback && renderedCallback !== noop) {
+        invokeComponentMethod(vm, 'renderedCallback');
     }
 }
 
@@ -139,7 +205,64 @@ function flushRehydrationQueue() {
     const vms: Array<VM> = rehydrateQueue.sort((a: VM, b: VM): boolean => a.idx > b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
-        rehydrate(vms[i]);
+        const vm = vms[i];
+        try {
+            rehydrate(vm);
+        } catch (error) {
+            const errorBoundaryVm = getErrorBoundaryVMFromParentElement(vm);
+            // we only recover if error boundary is present in the hierarchy
+            if (errorBoundaryVm) {
+                recoverFromLifecyleError(vm, errorBoundaryVm, error);
+                if (errorBoundaryVm.isDirty) {
+                    patchErrorBoundaryVm(errorBoundaryVm);
+                }
+            } else {
+                if (i + 1 < len) {
+                    // pieces of the queue are still pending to be rehydrated, those should have priority
+                    if (rehydrateQueue.length === 0) {
+                        addCallbackToNextTick(flushRehydrationQueue);
+                    }
+                    ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
+                }
+                // rethrowing the original error will break the current tick, but since the next tick is
+                // already scheduled, it should continue patching the rest.
+                throw error; // eslint-disable-line no-unsafe-finally
+            }
+        }
+    }
+}
+
+function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
+    if (isUndefined(error.wcStack)) {
+        error.wcStack = getComponentStack(failedVm);
+    }
+    resetShadowRoot(failedVm); // remove offenders
+    invokeComponentMethod(errorBoundaryVm, 'errorCallback', [error, error.wcStack]);
+}
+
+function resetShadowRoot(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const { vnode, vnode: { elm }, shadowVNode: oldShadowVNode } = vm;
+
+    // patch function mutates and returns newShadowVNode object,
+    // however, if patching fails we don't get a return value which
+    // contains partial changes to the vnode. These changes are mandatory
+    // for successful patching, therefore we preserve newShadowVNode reference
+    // prior calling patch
+    const newShadowVNode = createShadowRootVNode(elm, []);
+    vm.shadowVNode = newShadowVNode;
+
+    try {
+        patch(oldShadowVNode, newShadowVNode);
+    } catch (e) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.logError("Swallow Error: Failed to reset component's shadow with an empty list of children: " + e);
+        }
+        // in the event of patch failure force offender removal
+        vnode.children = [];
+        vnode.elm.innerHTML = "";
     }
 }
 
@@ -191,11 +314,51 @@ function createShadowRootVNode(elm: Element, children: VNode[]): VNode {
     return vnode;
 }
 
-export function patchShadowRoot(vm: VM, children: VNode[]) {
+function getErrorBoundaryVMFromParentElement(vm: VM): VM | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    const { shadowVNode: oldShadowVNode } = vm;
-    const shadowVNode = createShadowRootVNode(vm.vnode.elm, children);
-    vm.shadowVNode = patch(oldShadowVNode, shadowVNode);
+    const { vnode: { elm }} = vm;
+    const parentElm = elm && elm.parentElement;
+    return getErrorBoundaryVM(parentElm);
+}
+
+function getErrorBoundaryVMFromOwnElement(vm: VM): VM | null {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const { vnode: { elm }} = vm;
+    return getErrorBoundaryVM(elm);
+}
+
+function getErrorBoundaryVM(startingElement: HTMLElement): VM | null {
+    let elm: HTMLElement | null = startingElement;
+    let vm: VM | null = null;
+
+    while (!isNull(elm)) {
+        // @ts-ignore
+        vm = elm[ViewModelReflection];
+        if (!isUndefined(vm) && !isUndefined(vm.component.errorCallback)) {
+            return vm;
+        }
+        // TODO: if shadowDOM start preventing this walking process, we will
+        // need to find a different way to find the right boundary
+        elm = elm.parentElement;
+    }
+
+    return null;
+}
+
+export function getComponentStack(vm: VM): string {
+    const wcStack: string[] = [];
+    let elm = vm.vnode.elm;
+    do {
+        const vm = elm[ViewModelReflection];
+        if (!isUndefined(vm)) {
+            wcStack.push(vm.component.toString());
+        }
+
+        elm = elm.parentElement;
+    } while (elm);
+    return wcStack.reverse().join('\n\t');
 }

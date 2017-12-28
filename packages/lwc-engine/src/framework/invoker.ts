@@ -5,12 +5,12 @@ import {
 } from "./context";
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
-import { ViewModelReflection } from "./def";
+import { getComponentStack } from "./vm";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export function invokeComponentCallback(vm: VM, fn: () => any, fnCtx: any, args?: Array<any>): any {
+export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, fnCtx: any, args?: Array<any>): any {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -19,12 +19,14 @@ export function invokeComponentCallback(vm: VM, fn: () => any, fnCtx: any, args?
         // TODO: membrane proxy for all args that are objects
         result = fn.apply(fnCtx, args);
     } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        error.wcStack = getComponentStack(vm);
-        throw error; // rethrowing the original error after restoring the context
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // eslint-disable-line no-unsafe-finally
+        }
     }
     return result;
 }
@@ -42,15 +44,18 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentContructor): C
     try {
         component = new Ctor();
     } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        error.wcStack = getComponentStack(vm);
-        throw error; // rethrowing the original error after restoring the context
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // eslint-disable-line no-unsafe-finally
+        }
     }
     return component;
 }
+
 
 export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
     const { component, context } = vm;
@@ -71,49 +76,24 @@ export function invokeComponentRenderMethod(vm: VM): Array<VNode> {
             }
         }
     } catch (e) {
-        error = e;
-    }
-    isRendering = isRenderingInception;
-    vmBeingRendered = vmBeingRenderedInception;
-    establishContext(ctx);
-    if (error) {
-        error.wcStack = getComponentStack(vm);
-        throw error; // rethrowing the original error after restoring the context
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        isRendering = isRenderingInception;
+        vmBeingRendered = vmBeingRenderedInception;
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // eslint-disable-line no-unsafe-finally
+        }
     }
     return result || [];
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { component, context } = vm;
-    const { attributeChangedCallback } = component;
-    if (isUndefined(attributeChangedCallback)) {
-        return;
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(vm.component.attributeChangedCallback, `if ${vm} does not have attributeChangedCallback it should never call invokeComponentAttributeChangedCallback()`);
     }
-    const ctx = currentContext;
-    establishContext(context);
-    let error;
-    try {
-        component.attributeChangedCallback(attrName, oldValue, newValue);
-    } catch (e) {
-        error = e;
-    }
-    establishContext(ctx);
-    if (error) {
-        error.wcStack = getComponentStack(vm);
-        throw error; // rethrowing the original error after restoring the context
-    }
+    invokeComponentCallback(vm, vm.component.attributeChangedCallback, vm.component, [attrName, oldValue, newValue]);
 }
 
-function getComponentStack(vm: VM) : string {
-    const wcStack: string[] = [];
-    let elm = vm.vnode.elm;
-    do {
-        const vm = elm[ViewModelReflection];
-        if (!isUndefined(vm)) {
-            wcStack.push(vm.component.toString());
-        }
-
-        elm = elm.parentElement;
-    } while (elm);
-    return wcStack.reverse().join('\n\t');
-}

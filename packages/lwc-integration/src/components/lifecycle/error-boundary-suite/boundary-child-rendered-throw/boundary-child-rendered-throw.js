@@ -1,0 +1,9 @@
+import { Element } from 'engine'
+
+export default class BoundaryChildRenderedThrow extends Element {
+    @track state = {};
+
+    errorCallback(error) {
+        this.state.error = error;
+    }
+}
