@@ -1,4 +1,5 @@
 import { rollup } from 'rollup';
+import rollupPluginReplace from 'rollup-plugin-replace';
 
 import { isCompat, isProd } from './modes';
 
@@ -31,8 +32,16 @@ function mergeMetadata(metadata) {
     };
 }
 
+
 export default function bundle(entry, options = {}) {
-    const plugins = [rollupModuleResolver(options), rollupTransfrom(options)];
+    const environment = options.env.NODE_ENV || process.env.NODE_ENV;
+    const plugins = [
+        rollupPluginReplace({
+            'process.env.NODE_ENV': JSON.stringify(environment),
+        }),
+        rollupModuleResolver(options),
+        rollupTransfrom(options)
+    ];
 
     if (isCompat(options.mode)) {
         plugins.push(rollupCompat(options));

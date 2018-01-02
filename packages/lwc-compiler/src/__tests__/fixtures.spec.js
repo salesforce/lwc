@@ -320,3 +320,69 @@ describe('mode generation', () => {
         }
     });
 });
+
+describe('node env', function () {
+    it('does not remove production code when no NODE_ENV option is specified', async () => {
+        const previous = process.env.NODE_ENV;
+        process.env.NODE_ENV = undefined;
+        const { code, metadata } = await compile(
+            fixturePath('node_env/node_env.js'),
+            {
+                mode: 'dev',
+            },
+        );
+        process.env.NODE_ENV = previous;
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-node-env-dev.js')),
+        );
+    });
+
+    it('does removes production code when process.env.NODE_ENV is production', async () => {
+        const previous = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'production';
+        const { code, metadata } = await compile(
+            fixturePath('node_env/node_env.js'),
+            {
+                mode: 'dev',
+            },
+        );
+        process.env.NODE_ENV = previous;
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-node-env-prod.js')),
+        );
+    });
+
+    it('removes production code when NODE_ENV option is production', async () => {
+        const { code, metadata } = await compile(
+            fixturePath('node_env/node_env.js'),
+            {
+                mode: 'dev',
+                env: {
+                    NODE_ENV: 'production',
+                }
+            },
+        );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-node-env-prod.js')),
+        );
+    });
+
+    it('does not remove production code when in NODE_ENV option is development', async () => {
+        const { code, metadata } = await compile(
+            fixturePath('node_env/node_env.js'),
+            {
+                mode: 'dev',
+                env: {
+                    NODE_ENV: 'development',
+                }
+            },
+        );
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-node-env-dev.js')),
+        );
+    });
+});

@@ -20,6 +20,7 @@ const DEFAULT_COMPILE_OPTIONS = {
     format: 'es',
     mode: MODES.DEV,
     mapNamespaceFromPath: false,
+    env: {},
     resolveProxyCompat: {
         independent: 'proxy-compat',
     },
