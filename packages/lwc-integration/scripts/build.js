@@ -69,6 +69,7 @@ const globalModules = {
     'babel/helpers/inherits' : 'inherits',
     'babel/helpers/createClass' : 'createClass',
     'babel/helpers/defineProperty': 'defineProperty',
+    'babel/helpers/objectDestructuringEmpty': 'objectDestructuringEmpty',
     'wire-service': 'WireService'
 };
 
