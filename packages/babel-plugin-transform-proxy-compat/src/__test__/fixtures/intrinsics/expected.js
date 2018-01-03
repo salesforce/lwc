@@ -11,7 +11,7 @@ Object.compatKeys({});
 __callKey(__getKey(Array.prototype, 'compatPush'), 'apply', [], [a]);
 
 //Array['prototype'].push.apply([], [a]);
-__callKey(__getKey(Array['prototype'], 'push'), 'apply', [], [a]);
+__callKey(Array['prototype'].push, 'apply', [], [a]);
 
 //Array.prototype.join.call(arguments, ' ');
 __callKey(__getKey(Array.prototype, 'join'), 'call', arguments, ' ');
