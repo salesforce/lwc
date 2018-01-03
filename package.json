@@ -4,7 +4,7 @@
   "description": "Raptor",
   "scripts": {
     "prepare": "yarn run build",
-    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
+    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules && rm yarn.lock",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
@@ -13,10 +13,10 @@
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
     "build:engine": "lerna run build --scope lwc-engine",
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
-    "release": "yarn prepare && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
-    "release:canary":"yarn run prepare && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/' --canary --skip-git --yes",
-    "release:external": "yarn run prepare && lerna publish --registry='https://npm.lwcjs.org' --skip-git",
-    "release:externalcanary": "yarn run prepare && lerna publish --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
+    "release": "yarn prepare && lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org'",
+    "release:canary":"yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary --yes",
+    "release:internal": "yarn prepare && lerna publish --exact --force-publish=* --skip-git --repo-version `node -pe \"require('./lerna.json').version\"` --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
+    "release:internalcanary": "yarn prepare && lerna publish --canary --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'"
   },
   "repository": {
     "type": "git",

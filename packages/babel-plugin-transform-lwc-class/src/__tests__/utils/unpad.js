@@ -1,5 +1,5 @@
 // Remove padding from a string.
-// From https://github.com/babel/babili/blob/56e87e6e38f02c171ea6bb75d4224c0ea06c6b23/utils/unpad.js
+// https://github.com/babel/minify/blob/56e87e6e38f02c171ea6bb75d4224c0ea06c6b23/utils/unpad.js
 function unpad(str) {
   const lines = str.split("\n");
   const m = lines[1] && lines[1].match(/^\s+/);

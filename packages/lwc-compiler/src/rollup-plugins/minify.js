@@ -1,9 +1,9 @@
 import { transform } from 'babel-core';
-import babili from 'babel-preset-babili';
+import minify from 'babel-preset-minify';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 
-export const MINIFY_CONFIG = Object.assign({}, BABEL_CONFIG_BASE, babili());
+export const MINIFY_CONFIG = Object.assign({}, BABEL_CONFIG_BASE, minify());
 
 /**
  * Rollup plugin applying minification to the generated bundle.
