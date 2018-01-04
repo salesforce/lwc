@@ -14,7 +14,7 @@
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
     "build:engine": "lerna run build --scope lwc-engine",
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
-    "release": "yarn prepare && lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org'",
+    "release": "yarn prepare && lerna publish --conventional-commits --exact --force-publish=* --registry='https://npm.lwcjs.org'",
     "release:canary":"yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary --yes",
     "release:internal": "yarn prepare && lerna publish --exact --force-publish=* --skip-git --repo-version `node -pe \"require('./lerna.json').version\"` --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
     "release:internalcanary": "yarn prepare && lerna publish --canary --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'"
@@ -26,12 +26,24 @@
   "bin": {
     "lwc-compiler": "bin/lwc-compiler-cli.js"
   },
-  "babel": { "presets": ["env"] },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.6.0",
+    "cz-conventional-changelog": "^2.1.0",
     "lerna": "^2.5.1",
     "rimraf": "^2.6.1"
   },
-  "workspaces": ["packages/*"]
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
