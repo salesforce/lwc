@@ -27,3 +27,16 @@ export function nextTick(cb) {
 export function nextFrame(cb) {
     setTimeout(cb, 0);
 }
+
+export const insertTableComponent = function(el, container = document.body) {
+    return new Promise((resolve) => {
+        container.appendChild(el);
+        nextFrame(() => {
+            resolve(el);
+        });
+    });
+}
+
+export const destroyTableComponent = function (el) {
+    return el && el.parentElement.removeChild(el);
+}
