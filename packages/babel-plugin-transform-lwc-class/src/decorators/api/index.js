@@ -123,7 +123,8 @@ module.exports = function apiVisitor({ types: t }) {
                 }
 
                 if (publicProps.length) {
-                    for (let property of publicProps) {
+                    for (let decorator of publicProps) {
+                        const property = decorator.parentPath.node;
                         if (property.kind !== 'get') {
                             const id = property.key;
                             state.file.metadata.apiProperties.push({
