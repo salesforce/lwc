@@ -7,7 +7,7 @@
   "jsnext:main": "dist/modules/locker-membrane.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage --no-cache",
+    "test": "jest --coverage --no-cache --maxWorkers=2",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c"

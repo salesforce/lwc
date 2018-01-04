@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rimraf coverage dist",
     "lint": "tslint -t stylish src/**/*",
-    "test": "jest --coverage",
+    "test": "jest --coverage --maxWorkers=2",
     "build": "tsc"
   },
   "devDependencies": {

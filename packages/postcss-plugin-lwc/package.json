@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "description": "Postcss plugin for LWC style scoping",
   "scripts": {
-    "test": "jest"
+    "test": "jest --maxWorkers=2"
   },
   "dependencies": {
     "postcss": "^6.0.13",

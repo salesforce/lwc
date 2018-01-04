@@ -3,7 +3,7 @@ module.exports = {
     plugins: {
         "rollup-plugin-lwc-compiler": {
             "rootDir": "<rootDir>/src/",
-            "mode": "prod"
+            //"mode": "prod"
         }
     },
     "benchmarkOnClient": false,
