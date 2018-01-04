@@ -1,4 +1,6 @@
 import { OwnerKey } from "../vm";
+import { defineProperty } from './../language';
+
 
 function updateUID(oldVnode: VNode, vnode: VNode) {
     const { uid: oldUid } = oldVnode;
@@ -7,7 +9,12 @@ function updateUID(oldVnode: VNode, vnode: VNode) {
         return;
     }
     // @ts-ignore
-    elm[OwnerKey] = uid;
+    defineProperty(elm, OwnerKey, {
+        value: uid,
+        enumerable: false,
+        writable: true,
+        configurable: true,
+    });
 }
 
 const uidModule: Module = {

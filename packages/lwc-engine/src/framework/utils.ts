@@ -71,7 +71,7 @@ export function getAttrNameFromPropName(propName: string): string {
     // otherwise we do the regular canonical transformation.
     return propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
 }
-
+export const usesNativeSymbols = typeof Symbol() === 'symbol';
 export function noop() {}
 
 const classNameToClassMap = create(null);
