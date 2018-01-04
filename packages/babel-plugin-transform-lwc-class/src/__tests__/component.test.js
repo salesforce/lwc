@@ -123,3 +123,45 @@ describe('Misspelled Component APIs', () => {
         }
     });
 });
+
+describe('metadata', () => {
+    test('class jsdoc single line (and declarationLoc)', `
+        import { Element } from 'engine';
+        /** Foo doc */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+            doc: 'Foo doc', declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
+    });
+
+    test('class jsdoc', `
+        import { Element } from 'engine';
+        /**
+         * Foo doc
+         */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+            doc: 'Foo doc'
+    });
+    test('class jsdoc multiline', `
+        import { Element } from 'engine';
+        /**
+         * multi
+         * line
+         */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+            doc: 'multi\nline'
+    });
+    test('class jsdoc multi comments', `
+        import { Element } from 'engine';
+        /** first */
+        /** last */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+            doc: 'last'
+    });
+});

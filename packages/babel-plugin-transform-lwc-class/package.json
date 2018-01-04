@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "babel-core": "^6.24.1",
-    "babel-plugin-transform-class-properties": "^6.24.1"
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "comment-parser": "^0.5.0"
   },
   "devDependencies": {
     "jest": "^21.2.1"

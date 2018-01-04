@@ -1,5 +1,6 @@
 const { basename } = require('path');
 const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
+const commentParser = require('comment-parser');
 
 const RAPTOR_PACKAGE_ALIAS = 'engine';
 const BASE_RAPTOR_COMPONENT_CLASS = 'Element';
@@ -57,12 +58,22 @@ module.exports = function ({ types: t, }) {
                 const labels = getComponentLabels(classBody);
                 state.file.metadata.labels.push(...labels);
 
-                // Import and wire template to the component if the class has no render method
-                if(
-                    isDefaultExport(path)
-                    && !findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME)
-                ) {
-                    wireTemplateToClass(state, classBody);
+                if (isDefaultExport(path)) {
+                    const declaration = path.parentPath.node;
+                    if (declaration.leadingComments) {
+                        const lastComment = declaration.leadingComments[declaration.leadingComments.length - 1].value;
+                        const sanitized = sanitizeComment(lastComment);
+                        if (sanitized) {
+                            state.file.metadata.doc = sanitized;
+                        }
+                    }
+                    const loc = declaration.loc;
+                    state.file.metadata.declarationLoc = { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
+
+                    // Import and wire template to the component if the class has no render method
+                    if (!findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME)) {
+                        wireTemplateToClass(state, classBody);
+                    }
                 }
             }
         },
@@ -155,5 +166,13 @@ module.exports = function ({ types: t, }) {
             renderMethod,
             styleProperty,
         ]);
+    }
+
+    function sanitizeComment(comment) {
+        comment = comment.trim();
+        if (comment.length > 0 && comment.charAt(0) === '*') {
+            return commentParser('/*' + comment + '*/')[0].source;
+        }
+        return null; // ignoring non-JSDoc comments
     }
 }
