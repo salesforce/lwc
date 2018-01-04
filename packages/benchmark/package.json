@@ -32,6 +32,7 @@
     "lwc-engine": "0.17.6",
     "best-cli": "0.0.3",
     "@best/runner-headless": "0.0.3",
+    "@best/store-aws": "0.0.3",
     "rollup-plugin-lwc-compiler": "0.17.6"
   }
 }
