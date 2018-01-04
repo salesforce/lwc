@@ -1,5 +1,4 @@
 const babel = require('babel-core');
-const unpad = require('./unpad');
 
 const test = it;
 
@@ -17,7 +16,7 @@ function transform(plugin, opts = {}) {
     }, opts);
 
     return function(source) {
-        return babel.transform(unpad(source), testConfig);
+        return babel.transform(pretify(source), testConfig);
     }
 }
 
@@ -31,6 +30,15 @@ function errorFromObject(obj) {
     }
 
     return error;
+}
+
+function pretify(str) {
+    return str.toString()
+        .replace(/^\s+|\s+$/, '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length)
+        .join('\n');
 }
 
 function makeTest(plugin, opts = {}) {
@@ -56,7 +64,7 @@ function makeTest(plugin, opts = {}) {
                 expect(err).toMatchObject(errorFromObject(expectedError));
             } else {
                 if (expectedSource) {
-                    expect(res.code).toBe(unpad(expectedSource));
+                    expect(pretify(res.code)).toBe(pretify(expectedSource));
                 }
                 if (expectedMetadata) {
                     expect(res.metadata).toMatchObject(expectedMetadata);
@@ -70,6 +78,8 @@ function makeTest(plugin, opts = {}) {
 
     return pluginTest;
 }
+
+
 
 module.exports.test = makeTest;
 module.exports.transform = transform;

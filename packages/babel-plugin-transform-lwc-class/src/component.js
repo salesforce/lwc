@@ -1,18 +1,6 @@
 const { basename } = require('path');
 const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
-
-const RAPTOR_PACKAGE_ALIAS = 'engine';
-const BASE_RAPTOR_COMPONENT_CLASS = 'Element';
-
-const LABELS_CLASS_PROPERTY_NAME = 'labels';
-const STYLE_CLASS_PROPERTY_NAME = 'style';
-const COMPONENT_RENDER_METHOD_NAME = 'render';
-
-const MISSPELLED_LIFECYCLE_METHODS = {
-    'renderCallback'     : 'renderedCallback',
-    'connectCallback'    : 'connectedCallback',
-    'disconnectCallback' : 'disconnectedCallback'
-};
+const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS, RAPTOR_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t, }) {
     return {
@@ -29,7 +17,7 @@ module.exports = function ({ types: t, }) {
             // Find the Element identifier from the imported identifier
             const baseComponentClassImport = path.get('specifiers').find(path => (
                  path.get('imported').isIdentifier({
-                    name: BASE_RAPTOR_COMPONENT_CLASS
+                    name: RAPTOR_PACKAGE_EXPORTS.BASE_COMPONENT
                 })
             ));
 
@@ -51,8 +39,6 @@ module.exports = function ({ types: t, }) {
 
                 const classBody = path.get('body');
 
-                checkLifecycleMethodMisspell(classBody);
-
                 // Deal with component labels
                 const labels = getComponentLabels(classBody);
                 state.file.metadata.labels.push(...labels);
@@ -60,7 +46,7 @@ module.exports = function ({ types: t, }) {
                 // Import and wire template to the component if the class has no render method
                 if(
                     isDefaultExport(path)
-                    && !findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME)
+                    && !findClassMethod(classBody, RAPTOR_COMPONENT_PROPERTIES.RENDER)
                 ) {
                     wireTemplateToClass(state, classBody);
                 }
@@ -78,22 +64,10 @@ module.exports = function ({ types: t, }) {
             );
     }
 
-    function checkLifecycleMethodMisspell(classBody) {
-        for (let misspelledAPI of Object.keys(MISSPELLED_LIFECYCLE_METHODS)) {
-            const method = findClassMethod(classBody, misspelledAPI);
-
-            if (method) {
-                throw method.buildCodeFrameError(
-                    `Wrong lifecycle method name ${misspelledAPI}. You probably meant ${MISSPELLED_LIFECYCLE_METHODS[misspelledAPI]}`
-                );
-            }
-        }
-    }
-
     function getComponentLabels(classBody) {
         const labels = [];
 
-        const labelProperty = findClassProperty(classBody, LABELS_CLASS_PROPERTY_NAME, { static: true });
+        const labelProperty = findClassProperty(classBody, RAPTOR_COMPONENT_PROPERTIES.LABELS, { static: true });
         if (labelProperty) {
             if (!labelProperty.get('value').isArrayExpression()) {
                 throw labelProperty.buildCodeFrameError(
@@ -123,7 +97,7 @@ module.exports = function ({ types: t, }) {
         return path.parentPath.isExportDefaultDeclaration();
     }
 
-    function getBaseName({ opts, file }) {
+    function getBaseName({ file }) {
         const classPath = file.opts.filename;
         return basename(classPath, '.js');
     }
@@ -138,13 +112,13 @@ module.exports = function ({ types: t, }) {
 
         const styleProperty = staticClassProperty(
             t,
-            STYLE_CLASS_PROPERTY_NAME,
-            t.memberExpression(templateIdentifier, t.identifier(STYLE_CLASS_PROPERTY_NAME)),
+            RAPTOR_COMPONENT_PROPERTIES.STYLE,
+            t.memberExpression(templateIdentifier, t.identifier(RAPTOR_COMPONENT_PROPERTIES.STYLE)),
         );
 
         const renderMethod = t.classMethod(
             'method',
-            t.identifier(COMPONENT_RENDER_METHOD_NAME),
+            t.identifier(RAPTOR_COMPONENT_PROPERTIES.RENDER),
             [],
             t.blockStatement([
                 t.returnStatement(templateIdentifier),
