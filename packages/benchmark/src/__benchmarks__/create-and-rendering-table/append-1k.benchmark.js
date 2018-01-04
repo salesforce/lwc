@@ -5,16 +5,21 @@ import { insertTableComponent, destroyTableComponent } from '../../utils';
 
 const tableName = 'benchmark-table';
 
-benchmark(`${tableName}/create/10k`, () => {
+benchmark(`${tableName}/add/1k`, () => {
     let tableElement;
-    before(() => {
+    let store;
+
+    before(async () => {
         tableElement = createElement(tableName, { is: Table });
-        return insertTableComponent(tableElement);
+        await insertTableComponent(tableElement);
+
+        store = new Store();
+        store.run();
+        tableElement.rows = store.data;
     });
 
     run(() => {
-        const store = new Store();
-        store.runLots();
+        store.add();
         tableElement.rows = store.data;
     });
 
