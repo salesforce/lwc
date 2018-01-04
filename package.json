@@ -6,7 +6,7 @@
     "prepare": "yarn run build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules && rm yarn.lock",
     "lint": "lerna run lint",
-    "test": "lerna exec --concurrency 1 -- yarn test",
+    "test": "lerna exec --concurrency 1 -- yarn test --maxWorkers=2",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
     "test:performance": "lerna exec --scope benchmark -- best --externalStorage='@best/store-aws'",
     "build": "lerna run build --ignore locker-membrane --ignore benchmark --ignore lwc-integration",
