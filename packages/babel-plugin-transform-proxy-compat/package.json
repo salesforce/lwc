@@ -10,6 +10,6 @@
     "proxy-compat": "0.17.6"
   },
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage --maxWorkers=2"
   }
 }

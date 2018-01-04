@@ -7,7 +7,7 @@
   "typings": "types/engine.d.ts",
   "scripts": {
     "clean": "rimraf dist/",
-    "test": "jest --coverage",
+    "test": "jest --coverage --maxWorkers=2",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "concurrently \"npm run build:es-and-cjs\" \"npm run build:umd:prod\" \"npm run build:umd:dev\"",

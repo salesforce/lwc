@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage --maxWorkers=2"
   },
   "dependencies": {
     "babel-core": "^6.24.1",

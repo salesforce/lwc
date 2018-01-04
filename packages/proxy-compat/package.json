@@ -7,7 +7,7 @@
   "jsnext:main": "dist/modules/proxy-compat.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage",
+    "test": "jest --coverage --maxWorkers=2",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c"

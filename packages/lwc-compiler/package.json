@@ -9,7 +9,7 @@
     "clean": "rimraf dist/",
     "build": "babel src/ --out-dir dist/commonjs",
     "build:umd": "webpack --progress",
-    "test": "jest --coverage"
+    "test": "jest --coverage --maxWorkers=2"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
