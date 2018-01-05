@@ -164,4 +164,25 @@ describe('metadata', () => {
     `, undefined, undefined, {
             doc: 'last'
     });
+    test('class jsdoc empty', `
+        import { Element } from 'engine';
+        /** */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+    });
+    test('class no-jsdoc /**/', `
+        import { Element } from 'engine';
+        /* not a jsdoc */
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+    });
+    test('class no-jsdoc //', `
+        import { Element } from 'engine';
+        // not a jsdoc
+        export default class Foo extends Element {
+        }
+    `, undefined, undefined, {
+    });
 });
