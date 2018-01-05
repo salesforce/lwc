@@ -1,36 +1,42 @@
-const { isAPIDecorator, isTrackDecorator, isWireDecorator } = require('../utils');
+const track = require('./track');
+const { RAPTOR_PACKAGE_EXPORTS: { API_DECORATOR, TRACK_DECORATOR, WIRE_DECORATOR } } = require('../constants');
 
-const decoratorVisitor = {
-    Decorator(path) {
-        if (isWireDecorator(path)) {
-            const decorators = path.parentPath.get('decorators');
-            if (decorators.length > 1) {
-                decorators.forEach((decorator) => {
-                    if (isAPIDecorator(decorator) || isTrackDecorator(decorator)) {
-                        throw path.buildCodeFrameError(`@wire method or property cannot be used with @${decorator.node.expression.name}`);
-                    } else if (isWireDecorator(decorator) && decorator.node !== path.node) {
-                        throw path.buildCodeFrameError(`Method or property can only have 1 @wire decorator`);
-                    }
-                })
-            }
-        } else if (isAPIDecorator(path)) {
-            const decorators = path.parentPath.get('decorators');
-            if (decorators.length > 1) {
-                decorators.forEach((decorator) => {
-                    if (isTrackDecorator(decorator)) {
-                        throw path.buildCodeFrameError('@api method or property cannot be used with @track');
-                    }
-                })
-            }
+function validateApiUsage(decorators) {
+    decorators.filter(decorator => (
+        decorator.type === API_DECORATOR
+    )).forEach(apiDecorator => {
+        const isPublicFieldTracked = decorators.some(decorator => (
+            decorator.type === TRACK_DECORATOR
+            && decorator.path.parentPath.node === apiDecorator.path.parentPath.node
+        ));
+
+        if (isPublicFieldTracked) {
+            throw apiDecorator.path.buildCodeFrameError('@api method or property cannot be used with @track');
         }
-    }
-};
+    });
+}
 
-module.exports = function validateDecorators ({ types }) {
-    return {
-        Class(path) {
-            const classBody = path.get('body');
-            path.traverse(decoratorVisitor);
-        },
-    };
-};
+function validateWireUsage(decorators) {
+    decorators.filter(decorator => (
+        decorator.type === WIRE_DECORATOR
+    )).forEach(wireDecorator => {
+        decorators.forEach(decorator => {
+            if (wireDecorator !== decorator
+                && decorator.type === WIRE_DECORATOR) {
+                throw wireDecorator.path.buildCodeFrameError('Method or property can only have 1 @wire decorator');
+            }
+            if ((decorator.type === API_DECORATOR || decorator.type === TRACK_DECORATOR)
+                && decorator.path.parentPath.node === wireDecorator.path.parentPath.node) {
+                throw wireDecorator.path.buildCodeFrameError(`@wire method or property cannot be used with @${decorator.type}`);
+            }
+        });
+    });
+}
+
+/** Assert there is no conflict in the usage of decorators */
+module.exports = function validateDecoratorCombination(klass, decorators) {
+    validateApiUsage(decorators);
+    validateWireUsage(decorators);
+
+    track.validate(klass, decorators);
+}
