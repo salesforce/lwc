@@ -157,18 +157,35 @@ describe('EcmaScript', () => {
             const first = new Proxy(array, {});
             const second = new Proxy(other, {});
 
-            const result = Proxy.compatConcat(first, second);
+            const result = first.concat(second);
             expect(result.length).toBe(4);
             expect(result).toEqual([1, 2, 3, 4]);
             expect(first.length).toBe(2);
             expect(second.length).toBe(2);
         });
 
+        it('should use concat function returned by trap', function () {
+            const array = [1, 2];
+            let called = false;
+            const proxy = new Proxy(array, {
+                get(target, key) {
+                    if (key === 'concat') {
+                        return function () {
+                            called = true;
+                        }
+                    }
+                    return target[key];
+                }
+            })
+            proxy.concat([2]);
+            expect(called).toBe(true);
+        });
+
         it('should correctly concat string arguments', function () {
             const array = [1, 2];
             const first = new Proxy(array, {});
 
-            const result = Proxy.compatConcat(first, 'foo');
+            const result = first.concat('foo');
             expect(result.length).toBe(3);
             expect(result).toEqual([1, 2, 'foo']);
         });
@@ -176,7 +193,7 @@ describe('EcmaScript', () => {
         it('should correctly concat native arrays', function () {
             const array = [1, 2];
 
-            const result = Proxy.compatConcat(array, [3, 4]);
+            const result = array.concat([3, 4]);
             expect(result.length).toBe(4);
             expect(result).toEqual([1, 2, 3, 4]);
         });
@@ -185,7 +202,7 @@ describe('EcmaScript', () => {
             const array = [1, 2];
             const first = new Proxy(array, {});
 
-            const result = Proxy.compatConcat(first, [3, 4]);
+            const result = first.concat([3, 4]);
             expect(result.length).toBe(4);
             expect(result).toEqual([1, 2, 3, 4]);
         });
@@ -202,7 +219,7 @@ describe('EcmaScript', () => {
                     return target[key];
                 }
             });
-            const result = Proxy.compatConcat(first, second);
+            const result = first.concat(second);
             expect(result).toEqual([
                 1, 2, 'asd', 4
             ])
@@ -215,7 +232,7 @@ describe('EcmaScript', () => {
             const second = new Proxy(other, {});
             const third = new Proxy([5, 6], {});
 
-            const result = Proxy.compatConcat(first, second, third);
+            const result = first.concat(second, third);
             expect(result.length).toBe(6);
             expect(result).toEqual([1, 2, 3, 4, 5, 6]);
         });
@@ -245,7 +262,7 @@ describe('EcmaScript', () => {
         it('should correctly push arrays', function () {
             const array = [1, 2];
             const proxy = new Proxy(array, {});
-            Proxy.compatPush(proxy, 3);
+            proxy.push(3);
             expect([
                 Proxy.getKey(proxy, 0),
                 Proxy.getKey(proxy, 1),
@@ -257,7 +274,7 @@ describe('EcmaScript', () => {
         it('should be able to iterate through pushed arrays', function () {
             const array = [1, 2];
             const proxy = new Proxy(array, {});
-            Proxy.compatPush(proxy, 3);
+            proxy.push(3);
             const args = [];
 
             Proxy.callKey(proxy, 'forEach', function (item) {
@@ -278,13 +295,13 @@ describe('EcmaScript', () => {
                 }
             });
 
-            Proxy.compatPush(proxy, 'hey');
+            proxy.push('hey');
             expect(keys.indexOf('length')).toBeGreaterThan(-1);
         });
 
         it('should correctly push native arrays', function () {
             const array = [1, 2];
-            Proxy.compatPush(array, 3);
+            array.push(3);
             expect([
                 Proxy.getKey(array, 0),
                 Proxy.getKey(array, 1),
@@ -293,6 +310,23 @@ describe('EcmaScript', () => {
             expect(array).toEqual([
                 1, 2, 3
             ])
+        });
+
+        it('should use push function returned by trap', function () {
+            const array = [1, 2];
+            let called = false;
+            const proxy = new Proxy(array, {
+                get(target, key) {
+                    if (key === 'push') {
+                        return function () {
+                            called = true;
+                        }
+                    }
+                    return target[key];
+                }
+            })
+            proxy.push(3);
+            expect(called).toBe(true);
         });
 
         it('should corrently push into array when using prototype', function () {
@@ -322,9 +356,9 @@ describe('EcmaScript', () => {
         it('should correctly unshift arrays', function () {
             const array = [1, 2];
             const proxy = new Proxy(array, {});
-            Proxy.compatUnshift(proxy, 3);
+            proxy.unshift(3);
             expect(proxy.length).toBe(3);
-            const ret = Proxy.compatUnshift(proxy, 10);
+            const ret = proxy.unshift(10);
             expect(proxy.length).toBe(4);
             expect(ret).toBe(4);
             expect([
@@ -336,10 +370,27 @@ describe('EcmaScript', () => {
             ]).toEqual([10, 3, 1, 2, undefined]);
         });
 
+        it('should use unshift function returned by trap', function () {
+            const array = [1, 2];
+            let called = false;
+            const proxy = new Proxy(array, {
+                get(target, key) {
+                    if (key === 'unshift') {
+                        return function () {
+                            called = true;
+                        }
+                    }
+                    return target[key];
+                }
+            })
+            proxy.unshift(2);
+            expect(called).toBe(true);
+        });
+
         it('should allow arbitrary access to unshifted arrays', function () {
             const array = [1, 2];
             const proxy = new Proxy(array, {});
-            Proxy.compatUnshift(proxy, 3);
+            proxy.unshift(3);
             expect(proxy[0]).toBe(3);
             expect(proxy[1]).toBe(1);
             expect(proxy[2]).toBe(2);
@@ -349,7 +400,7 @@ describe('EcmaScript', () => {
             const array = [1, 2];
             const proxy = new Proxy(array, {});
             let calls = [];
-            Proxy.compatUnshift(proxy, 3);
+            proxy.unshift(3);
             Proxy.callKey(proxy, 'forEach', (i) => {
                 calls.push(i);
             });

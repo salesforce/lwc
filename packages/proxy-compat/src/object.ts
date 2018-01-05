@@ -4,7 +4,8 @@ const {
 } = Array.prototype;
 
 const {
-    getOwnPropertyNames
+    getOwnPropertyNames,
+    hasOwnProperty: _hasOwnProperty,
 } = Object;
 
 export function patchedGetOwnPropertyNames(replicaOrAny: object): Array<string> {
@@ -40,4 +41,11 @@ export function patchedAssign(replicaOrAny: object): object {
         }
     }
     return to;
+}
+
+export function compatHasOwnProperty(this: any, key: string | symbol): boolean {
+    if (isCompatProxy(this)) {
+        return !!this.getOwnPropertyDescriptor(key);
+    }
+    return _hasOwnProperty.call(this, key);
 }

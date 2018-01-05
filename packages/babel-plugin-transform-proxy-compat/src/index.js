@@ -256,37 +256,6 @@ function compatPlugin({ types: t }) {
                     );
             }
         },
-
-        /**
-         * Transforms:
-         *     [].push(1)   =>   compatPush([], 1)
-         *     [].concat([1])   =>   compatConcat([], [1])
-         *     [].unshift(1)   =>   compatUnshift([], 1)
-         */
-        CallExpression(path) {
-            const { callee, arguments: args } = path.node;
-
-            // Return if not a member expression call
-            if (!t.isMemberExpression(callee)) {
-                return;
-            }
-
-            const { property, object } = callee;
-            const { name } = property;
-
-            if (
-                t.isIdentifier(property) &&
-                ARRAY_OPERATIONS.hasOwnProperty(name.toUpperCase())
-            ) {
-                const id = resolveCompatProxyImport(ARRAY_OPERATIONS[name.toUpperCase()], this.keysSeen);
-                const compatArrayCall = t.callExpression(id, [
-                    object,
-                    ...args
-                ]);
-
-                path.replaceWith(compatArrayCall);
-            }
-        },
     }
 
     const markerTransformVisitor = {
@@ -304,9 +273,14 @@ function compatPlugin({ types: t }) {
 
         MemberExpression: {
             exit(path) {
+                const propertyName = path.get('property').node.name;
                 if (
-                    path.get('object').isIdentifier() &&
-                    path.node.object[NO_TRANSFORM]
+                    (
+                        path.get('object').isIdentifier() &&
+                        path.node.object[NO_TRANSFORM]
+                    ) || (
+                        propertyName && ARRAY_OPERATIONS.hasOwnProperty(propertyName.toUpperCase())
+                    )
                 ) {
                     path.node[NO_TRANSFORM] = true;
                 }

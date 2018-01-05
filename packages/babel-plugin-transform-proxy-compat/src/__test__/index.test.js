@@ -95,15 +95,6 @@ test('APIs retrieval from independant modules', () => {
     ));
 });
 
-test('module expose the proxy-compat keys', () => {
-    for (let key of Object.keys(transfromRaptorCompat.keys)) {
-        const proxyApi = transfromRaptorCompat.keys[key];
-
-        expect(proxyCompat).toHaveProperty(proxyApi);
-        expect(typeof proxyCompat[proxyApi] === 'function').toBe(true)
-    }
-});
-
 describe('Compat transform fixtures', () => {
     for (let fixture of FIXTURES) {
         test(`${fixture}`, () => {
