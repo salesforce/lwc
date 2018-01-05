@@ -91,7 +91,7 @@ describe("wire-service.js", () => {
                 target: { update: () => { } }
             };
             const handlers = target.getPropChangeHandlers(wireConfigs, wiredValues);
-            expect(handlers.prop1.length).toBe(1);
+            expect(handlers.prop1).toHaveLength(1);
         });
         it("maps one prop to multiple params to multiple hanlders for one prop", () => {
             const wireConfigs = {
@@ -103,7 +103,7 @@ describe("wire-service.js", () => {
                 target: { update: () => { } }
             };
             const handlers = target.getPropChangeHandlers(wireConfigs, wiredValues);
-            expect(handlers.prop1.length).toBe(2);
+            expect(handlers.prop1).toHaveLength(2);
         });
         it("maps same prop from multiple wires to multiple handlers for one prop", () => {
             const wireConfigs = {
@@ -119,7 +119,7 @@ describe("wire-service.js", () => {
                 target2: { update: () => { } }
             };
             const handlers = target.getPropChangeHandlers(wireConfigs, wiredValues);
-            expect(handlers.prop1.length).toBe(2);
+            expect(handlers.prop1).toHaveLength(2);
         });
         it("binds param name to WiredValue.update", () => {
             const wireConfigs = {
