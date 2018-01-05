@@ -5,7 +5,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
 const builder = require('../src/index');
-const UglifyJS = require('uglify-js');
+const UglifyJS = require('uglify-es');
 
 const result = builder.build(GLOBAL_MEMBER, GLOBAL_VAR);
 const resultMin = UglifyJS.minify(result).code;

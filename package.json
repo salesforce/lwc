@@ -4,19 +4,20 @@
   "description": "Raptor",
   "scripts": {
     "prepare": "yarn run build",
-    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
+    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules && rm yarn.lock",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
+    "test:performance": "lerna exec --scope benchmark -- best --externalStorage='@best/store-aws'",
     "build": "lerna run build --ignore locker-membrane --ignore benchmark --ignore lwc-integration",
     "build:artifacts": "npm run build && npm run build:compiler",
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",
     "build:engine": "lerna run build --scope lwc-engine",
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
-    "release": "yarn build && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
-    "release:canary":"yarn run prepublish && lerna publish --force-publish=* --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/' --canary --skip-git --yes",
-    "release:external": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --skip-git",
-    "release:externalcanary": "yarn run prepublish && lerna publish --registry='https://npm.lwcjs.org' --canary --skip-git --yes"
+    "release": "yarn prepare && lerna publish --conventional-commits --exact --force-publish=* --registry='https://npm.lwcjs.org'",
+    "release:canary": "yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary --yes",
+    "release:internal": "yarn prepare && lerna publish --exact --force-publish=* --skip-git --repo-version `node -pe \"require('./lerna.json').version\"` --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
+    "release:internalcanary": "yarn prepare && lerna publish --canary --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'"
   },
   "repository": {
     "type": "git",
@@ -25,12 +26,25 @@
   "bin": {
     "lwc-compiler": "bin/lwc-compiler-cli.js"
   },
-  "babel": { "presets": ["env"] },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.6.0",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.1.0",
     "lerna": "^2.5.1",
     "rimraf": "^2.6.1"
   },
-  "workspaces": ["packages/*"]
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

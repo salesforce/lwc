@@ -11,8 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "package.json" }}
-          - yarn-v3-
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
 
       - run: yarn install
 
@@ -21,7 +20,7 @@ jobs:
             - node_modules
             - packages/*/node_modules
             - yarn.lock
-          key: yarn-v3-{{ checksum "package.json" }}
+          key: yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
 
   unit_test:
     working_directory: ~/lwc
@@ -34,8 +33,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "package.json" }}
-          - yarn-v3-
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-
 
       - run: yarn install
 
@@ -54,13 +53,36 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "package.json" }}
-          - yarn-v3-
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-
 
       - run: yarn install
       - run:
           name: Integration Test
           command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn test:integration
+
+  performance_test:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8.9.3-stretch-browsers
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-
+
+      - run: yarn install
+      - run:
+          name: Preformance Test
+          command: yarn test:performance
+
+      - store_artifacts:
+          path: ~/lwc/packages/benchmark/__benchmark_results__/
+          destination: benchmarks
 
 workflows:
   version: 2
@@ -69,7 +91,9 @@ workflows:
       - build:
           filters:
             branches:
-              only: /\w+\/.*/
+              only:
+                - master
+                - /\w+\/.*/
 
       - unit_test:
           requires:
@@ -84,3 +108,12 @@ workflows:
           filters:
             branches:
               only: /\w+\/.*/
+
+      - performance_test:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - /\w+\/.*/

@@ -15,6 +15,8 @@ packages/locker-membrane/lib
 playground/*
 packages/**/dist
 benchmarking/dist
+packages/**/__benchmark_results__
+__benchmark_results__
 .idea/
 .project
 packages/lwc-integration/public

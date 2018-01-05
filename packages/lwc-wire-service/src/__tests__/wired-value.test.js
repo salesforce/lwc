@@ -165,7 +165,7 @@ describe("wired-value.js", () => {
             wiredValue.install();
             const observer = wiredValue.getObserver();
             observer.next(expected);
-            expect(cmp.target.mock.calls.length).toBe(1);
+            expect(cmp.target.mock.calls).toHaveLength(1);
             expect(cmp.target.mock.calls[0][0]).toBe(null);
             expect(cmp.target.mock.calls[0][1]).toBe(expected);
         });
@@ -178,7 +178,7 @@ describe("wired-value.js", () => {
             wiredValue.install();
             const observer = wiredValue.getObserver();
             observer.error(expected);
-            expect(cmp.target.mock.calls.length).toBe(1);
+            expect(cmp.target.mock.calls).toHaveLength(1);
             expect(cmp.target.mock.calls[0][0]).toBe(expected);
             expect(cmp.target.mock.calls[0][1]).toBe(undefined);
         });
@@ -195,7 +195,7 @@ describe("wired-value.js", () => {
             observer.next(expected);
             observer.complete();
             expect(mock).toHaveBeenCalledTimes(1);
-            expect(cmp.target.mock.calls.length).toBe(1);
+            expect(cmp.target.mock.calls).toHaveLength(1);
         });
     });
 

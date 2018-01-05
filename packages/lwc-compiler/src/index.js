@@ -10,8 +10,7 @@ import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";
 import compatPlugin from "./rollup-plugins/compat";
-
-export { templateCompiler } from 'lwc-template-compiler';  // used by the lwc-language-server
+export { default as templateCompiler } from 'lwc-template-compiler';
 
 const DEFAULT_NAMESPACE = 'x';
 const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };

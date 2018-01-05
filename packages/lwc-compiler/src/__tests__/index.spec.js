@@ -130,9 +130,10 @@ describe('transform', () => {
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it('javascript metadata contains apiProperties', async () => {
+    it('javascript metadata', async () => {
         const content = `
             import { Element, api } from 'engine';
+            /** Foo doc */
             export default class Foo extends Element {
                 _privateTodo;
                 @api get todo () {
@@ -150,6 +151,9 @@ describe('transform', () => {
             moduleNamespace: 'x',
             moduleName: 'foo',
         });
-        expect(result.metadata.apiProperties).toEqual([{ name: 'todo' }, { name: 'index' }]);
+        const metadata = result.metadata;
+        expect(metadata.apiProperties).toEqual([{ name: 'todo' }, { name: 'index' }]);
+        expect(metadata.doc).toBe('Foo doc');
+        expect(metadata.declarationLoc).toEqual({ start: { line: 4, column: 12 }, end: { line: 14, column: 13 } });
     });
 });

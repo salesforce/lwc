@@ -24,12 +24,15 @@
     "pem": "^1.12.3",
     "rimraf": "^2.6.1",
     "rollup": "~0.50.0",
-    "rollup-plugin-lwc-compiler": "0.17.6",
     "rollup-plugin-strip": "^1.1.1",
     "webpack": "^3.8.1"
   },
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
-    "lwc-engine": "0.17.6"
+    "lwc-engine": "0.17.6",
+    "best-cli": "0.0.3",
+    "@best/runner-headless": "0.0.3",
+    "@best/store-aws": "0.0.3",
+    "rollup-plugin-lwc-compiler": "0.17.6"
   }
 }

@@ -7,7 +7,7 @@
   "typings": "types/engine.d.ts",
   "scripts": {
     "clean": "rimraf dist/",
-    "test": "jest --coverage",
+    "test": "jest --coverage --maxWorkers=2",
     "types": "tsc src/**/*.ts --noEmit",
     "lint": "eslint src/**/*.ts",
     "build": "concurrently \"npm run build:es-and-cjs\" \"npm run build:umd:prod\" \"npm run build:umd:dev\"",
@@ -30,7 +30,7 @@
     "ts-jest": "^21.0.1",
     "typescript": "^2.6.2",
     "typescript-eslint-parser": "^3.0.0",
-    "uglify-es": "~3.2.2"
+    "uglify-es": "~3.3.4"
   },
   "lwc": {
     "modules": {

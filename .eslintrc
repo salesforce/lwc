@@ -17,6 +17,10 @@
         "no-console": 0
     },
     "globals": {
-        "process": true
+        "process": true,
+        "benchmark": true,
+        "before": true,
+        "run": true,
+        "after": true
     }
 }

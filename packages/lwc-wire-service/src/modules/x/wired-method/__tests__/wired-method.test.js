@@ -17,7 +17,7 @@ describe('wired-method', () => {
         const elem = createElement('x-wired-method', { is: WiredMethod });
         document.body.appendChild(elem);
 
-        expect(mockTestAdapter.init.mock.calls.length).toBe(1);
+        expect(mockTestAdapter.init.mock.calls).toHaveLength(1);
         expect(mockTestAdapter.lastInitializedArgs()).toEqual([{
             fields: ['Name']
         }]);

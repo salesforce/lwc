@@ -1,4 +1,5 @@
 const { basename } = require('path');
+const commentParser = require('comment-parser');
 const { findClassMethod, findClassProperty, staticClassProperty, getImportSpecifiers } = require('./utils');
 const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS, RAPTOR_COMPONENT_PROPERTIES } = require('./constants');
 
@@ -32,12 +33,22 @@ module.exports = function ({ types: t, }) {
                 const existingLabels = state.file.metadata.labels || [];
                 state.file.metadata.labels = [...existingLabels, ...labels];
 
-                // Import and wire template to the component if the class has no render method
-                if(
-                    isDefaultExport(path)
-                    && !findClassMethod(classBody, RAPTOR_COMPONENT_PROPERTIES.RENDER)
-                ) {
-                    wireTemplateToClass(state, classBody);
+                if (isDefaultExport(path)) {
+                    const declaration = path.parentPath.node;
+                    if (declaration.leadingComments) {
+                        const lastComment = declaration.leadingComments[declaration.leadingComments.length - 1].value;
+                        const sanitized = sanitizeComment(lastComment);
+                        if (sanitized) {
+                            state.file.metadata.doc = sanitized;
+                        }
+                    }
+                    const loc = declaration.loc;
+                    state.file.metadata.declarationLoc = { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
+
+                    // Import and wire template to the component if the class has no render method
+                    if (!findClassMethod(classBody, RAPTOR_COMPONENT_PROPERTIES.RENDER)) {
+                        wireTemplateToClass(state, classBody);
+                    }
                 }
             }
         },
@@ -120,5 +131,13 @@ module.exports = function ({ types: t, }) {
             renderMethod,
             styleProperty,
         ]);
+    }
+
+    function sanitizeComment(comment) {
+        comment = comment.trim();
+        if (comment.length > 0 && comment.charAt(0) === '*') {
+            return commentParser('/*' + comment + '*/')[0].source;
+        }
+        return null; // ignoring non-JSDoc comments
     }
 }
