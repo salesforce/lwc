@@ -49,6 +49,30 @@ function staticClassProperty(types, name, expression) {
     return classProperty;
 }
 
+function getImportsStatements(path, sourceName) {
+    const programPath = path.isProgram() ?
+        path :
+        path.findParent(node => node.isProgram());
+
+    return programPath.get('body').filter(node => (
+        node.isImportDeclaration() &&
+        node.get('source').isStringLiteral({ value: sourceName })
+    ));
+}
+
+function getImportSpecifiers(path, sourceName) {
+    const engineImports = getImportsStatements(path, sourceName);
+
+    return engineImports.reduce((acc, importStatement) => {
+        // Flat-map the specifier list for each import statement
+        return [...acc, ...importStatement.get('specifiers')];
+    }, []).reduce((acc, specifier) => {
+        // Get the list of specifiers with their name
+        const imported = specifier.get('imported').node.name;
+        return [...acc, { name: imported, path: specifier }];
+    }, []);
+}
+
 module.exports = {
     findClassMethod,
     findClassProperty,
@@ -56,4 +80,5 @@ module.exports = {
     isGetterClassMethod,
     isSetterClassMethod,
     staticClassProperty,
+    getImportSpecifiers,
 };

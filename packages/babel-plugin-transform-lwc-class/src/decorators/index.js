@@ -1,6 +1,7 @@
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
+const { getImportSpecifiers } = require('../utils');
 const { RAPTOR_PACKAGE_ALIAS } = require('../constants');
 
 const DECORATOR_TRANSFORMS = [
@@ -13,36 +14,6 @@ function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some(transform => transform.name === name);
 }
 
-/** Returns the import statement for a specific source */
-function getImportsStatements(path, sourceName) {
-    const programPath = path.isProgram() ?
-        path :
-        path.findParent(node => node.isProgram());
-
-    return programPath.get('body').filter(node => (
-        node.isImportDeclaration() &&
-        node.get('source').isStringLiteral({ value: sourceName })
-    ));
-}
-
-/** Returns a list of all the decorators import specifiers */
-function getLwcDecoratorsImportSpecifiers(path) {
-    const engineImports = getImportsStatements(path, RAPTOR_PACKAGE_ALIAS);
-
-    return engineImports.reduce((acc, importStatement) => {
-        // Flat-map the specifier list for each import statement
-        return [...acc, ...importStatement.get('specifiers')];
-    }, []).reduce((acc, specifier) => {
-        // Get the list of decorators import specifiers
-        const imported = specifier.get('imported').node.name;
-        const isDecoratorImport = isLwcDecoratorName(imported);
-
-        return isDecoratorImport ?
-            [...acc, { type: imported, specifier }] :
-            acc;
-    }, []);
-}
-
 /** Returns a list of all the refences to an identifier */
 function getReferences(identifier) {
     return identifier.scope.getBinding(identifier.node.name).referencePaths;
@@ -50,11 +21,11 @@ function getReferences(identifier) {
 
 /** Returns a list of all the LWC decorators usages */
 function getLwcDecorators(importSpecifiers) {
-    return importSpecifiers.reduce((acc, { type, specifier }) => {
+    return importSpecifiers.reduce((acc, { name, path }) => {
         // Get a list of all the  local references
-        const local = specifier.get('imported');
+        const local = path.get('imported');
         const references = getReferences(local).map(reference => ({
-            type,
+            type: name,
             reference
         }))
 
@@ -120,9 +91,9 @@ function removeDecorators(decorators) {
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
 function removeImportSpecifiers(specifiers) {
-    for (let { specifier } of specifiers) {
-        const importStatement = specifier.parentPath;
-        specifier.remove();
+    for (let { path } of specifiers) {
+        const importStatement = path.parentPath;
+        path.remove();
 
         if (importStatement.get('specifiers').length === 0) {
             importStatement.remove();
@@ -133,8 +104,12 @@ function removeImportSpecifiers(specifiers) {
 module.exports = function apiVisitor({ types: t }) {
     return {
         Program(path, state) {
-            const importSpecifiers = getLwcDecoratorsImportSpecifiers(path);
-            const decorators = getLwcDecorators(importSpecifiers);
+            const engineImportSpecifiers = getImportSpecifiers(path, RAPTOR_PACKAGE_ALIAS);
+            const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => (
+                isLwcDecoratorName(name)
+            ));
+
+            const decorators = getLwcDecorators(decoratorImportSpecifiers);
 
             state.file.metadata = Object.assign({}, state.metadata, {
                 apiProperties: [],
@@ -152,7 +127,7 @@ module.exports = function apiVisitor({ types: t }) {
             }
 
             removeDecorators(decorators);
-            removeImportSpecifiers(importSpecifiers);
+            removeImportSpecifiers(decoratorImportSpecifiers);
         }
     }
 }

@@ -1,33 +1,21 @@
 const { basename } = require('path');
-const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
+const { findClassMethod, findClassProperty, staticClassProperty, getImportSpecifiers } = require('./utils');
 const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS, RAPTOR_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t, }) {
     return {
-        ImportDeclaration(path, state) {
-            // Check if importing engine
-            const isRaptorImport = path.get('source').isStringLiteral({
-                value: RAPTOR_PACKAGE_ALIAS
-            });
+        Program(path, state) {
+            const engineImportSpecifiers = getImportSpecifiers(path, RAPTOR_PACKAGE_ALIAS);
 
-            if (!isRaptorImport) {
-                return;
-            }
-
-            // Find the Element identifier from the imported identifier
-            const baseComponentClassImport = path.get('specifiers').find(path => (
-                 path.get('imported').isIdentifier({
-                    name: RAPTOR_PACKAGE_EXPORTS.BASE_COMPONENT
-                })
+            // Store on state local identifiers referencing engine base component
+            state.raptorBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
+                name === RAPTOR_PACKAGE_EXPORTS.BASE_COMPONENT
+            )).map(({ path }) => (
+                path.get('local')
             ));
-
-            if (baseComponentClassImport) {
-                state.raptorBaseClassImport = baseComponentClassImport.get('local');
-            }
         },
         Class(path, state) {
-            const isRaptorComponent = state.raptorBaseClassImport &&
-            isClassRaptorComponentClass(path, state.raptorBaseClassImport);
+            const isRaptorComponent = isClassRaptorComponentClass(path, state.raptorBaseClassImports);
 
             if (isRaptorComponent) {
                 const classRef = path.node.id;
@@ -55,14 +43,16 @@ module.exports = function ({ types: t, }) {
         },
     };
 
-    function isClassRaptorComponentClass(classPath, raptorBaseClassImport) {
+    function isClassRaptorComponentClass(classPath, raptorBaseClassImports) {
         const superClass = classPath.get('superClass');
 
         return superClass.isIdentifier()
-            && classPath.scope.bindingIdentifierEquals(
-                superClass.node.name,
-                raptorBaseClassImport.node
-            );
+            && raptorBaseClassImports.some(raptorBaseClassImport => (
+                classPath.scope.bindingIdentifierEquals(
+                    superClass.node.name,
+                    raptorBaseClassImport.node
+                )
+            ));
     }
 
     function isDefaultExport(path) {

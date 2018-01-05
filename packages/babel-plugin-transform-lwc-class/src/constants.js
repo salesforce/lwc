@@ -18,6 +18,8 @@ const RAPTOR_COMPONENT_PROPERTIES = {
     RENDER: 'render',
     PUBLIC_PROPS: 'publicProps',
     PUBLIC_METHODS: 'publicMethods',
+    WIRE: 'wire',
+    TRACK: 'track',
 }
 
 module.exports = {

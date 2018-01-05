@@ -1,7 +1,6 @@
 const { staticClassProperty } = require('../../utils');
-const { RAPTOR_PACKAGE_EXPORTS: { TRACK_DECORATOR } } = require('../../constants');
+const { RAPTOR_PACKAGE_EXPORTS: { TRACK_DECORATOR }, RAPTOR_COMPONENT_PROPERTIES } = require('../../constants');
 
-const TRACK_CLASS_PROPERTY = 'track';
 const TRACK_PROPERTY_VALUE = 1;
 
 function isTrackDecorator(decorator) {
@@ -34,7 +33,7 @@ function transform(t, klass, decorators) {
             'body',
             staticClassProperty(
                 t,
-                TRACK_CLASS_PROPERTY,
+                RAPTOR_COMPONENT_PROPERTIES.TRACK,
                 t.valueToNode(trackConfig)
             )
         );

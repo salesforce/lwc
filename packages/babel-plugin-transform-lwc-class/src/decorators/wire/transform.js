@@ -1,7 +1,7 @@
 const { isWireDecorator } = require('./shared');
 const { staticClassProperty } = require('../../utils');
+const { RAPTOR_COMPONENT_PROPERTIES } = require('../../constants');
 
-const WIRE_CLASS_PROPERTY = 'wire';
 const WIRE_PARAM_PREFIX = '$';
 
 function isObservedProperty(configProperty) {
@@ -84,7 +84,7 @@ module.exports = function transform(t, klass, decorators) {
             'body',
             staticClassProperty(
                 t,
-                WIRE_CLASS_PROPERTY,
+                RAPTOR_COMPONENT_PROPERTIES.WIRE,
                 buildWireConfigValue(t, wiredValues)
             )
         );
