@@ -10,6 +10,16 @@ function findClassMethod(path, name, properties = {}) {
     ));
 }
 
+function findClassProperty(path, name, properties = {}) {
+    path.assertClassBody();
+
+    return path.get('body').find(path => (
+        path.isClassProperty({ static: properties.static }) &&
+        path.get('key').isIdentifier({ name })
+    ));
+}
+
+
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
     return classMethod.isClassMethod({ kind }) &&
@@ -41,6 +51,7 @@ function staticClassProperty(types, name, expression) {
 
 module.exports = {
     findClassMethod,
+    findClassProperty,
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
