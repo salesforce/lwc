@@ -9,12 +9,7 @@ function updateUID(oldVnode: VNode, vnode: VNode) {
         return;
     }
     // @ts-ignore
-    defineProperty(elm, OwnerKey, {
-        value: uid,
-        enumerable: false,
-        writable: true,
-        configurable: true,
-    });
+    elm[OwnerKey] = uid;
 }
 
 const uidModule: Module = {
