@@ -118,7 +118,7 @@ describe('Proxy', () => {
         it('should allow arbitrary index access when length grows', function () {
             const array = ['a', 'b'];
             const proxy = new Proxy(array, {});
-            Proxy.callKey(proxy, 'push', 'c');
+            proxy.push('c');
             expect(proxy[0]).toBe('a');
             expect(proxy[1]).toBe('b');
             expect(proxy[2]).toBe('c');

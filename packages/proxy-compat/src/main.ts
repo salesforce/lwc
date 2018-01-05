@@ -1,3 +1,5 @@
+import { compatPush, isArray, compatConcat, compatUnshift } from './array';
+import { compatHasOwnProperty } from './object';
 import {
     getKey,
     callKey,
@@ -22,7 +24,6 @@ if (!Object.setPrototypeOf || !({__proto__:[]} instanceof Array)) {
 
 const {
     keys: _keys,
-    hasOwnProperty: _hasOwnProperty,
     getOwnPropertyDescriptor: _getOwnPropertyDescriptor,
     preventExtensions: _preventExtensions,
     defineProperty: _defineProperty,
@@ -30,7 +31,6 @@ const {
     getPrototypeOf: _getPrototypeOf,
     setPrototypeOf: _setPrototypeOf
 } = Object;
-const _isArray = Array.isArray;
 
 import { patchedAssign, patchedGetOwnPropertyNames } from './object';
 
@@ -44,81 +44,6 @@ const {
     concat: ArrayConcat
 } = Array.prototype;
 
-// Patched Functions:
-function isArray(replicaOrAny: any): replicaOrAny is any[] {
-    if (isCompatProxy(replicaOrAny)) {
-        return replicaOrAny[ArraySlot] === ProxyIdentifier;
-    }
-    return _isArray(replicaOrAny);
-}
-
-// http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.4
-function compatConcat (this: any) {
-    const O = Object(this);
-    const A = [];
-    let N = 0;
-    const items = ArraySlice.call(arguments);
-    ArrayUnshift.call(items, O);
-    while(items.length) {
-        const E = ArrayShift.call(items);
-        if (isArray(E)) {
-            let k = 0;
-            let length = E.length;
-            for(k; k < length; k += 1, N += 1) {
-                const subElement = getKey(E, k);
-                A[N] = subElement;
-            }
-        } else {
-            A[N] = E;
-            N += 1;
-        }
-    }
-    return A;
-
-}
-
-// http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.13
-function compatUnshift (this: any): number {
-    const O = Object(this);
-    const len = O.length;
-    const argCount = arguments.length;
-    let k = len;
-    while (k > 0) {
-        const from = k - 1;
-        const to = k + argCount - 1;
-        const fromPresent = hasOwnProperty.call(O, from);
-        if (fromPresent) {
-            const fromValue = O[from];
-            setKey(O, to, fromValue);
-        } else {
-            deleteKey(O, to);
-        }
-        k -= 1;
-    }
-    let j = 0;
-    let items = ArraySlice.call(arguments);
-    while(items.length) {
-        const E = ArrayShift.call(items);
-        setKey(O, j, E);
-        j += 1;
-    }
-    O.length = len + argCount;
-    return O.length;
-}
-
-// http://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.7
-function compatPush (this: any) {
-    const O = Object(this);
-    let n = O.length;
-    let items = ArraySlice.call(arguments);
-    while(items.length) {
-        const E = ArrayShift.call(items);
-        setKey(O, n, E);
-        n += 1;
-    }
-    O.length = n;
-    return O.length;
-}
 
 function keys(replicaOrAny: any): Array<string> {
     if (isCompatProxy(replicaOrAny)) {
@@ -177,18 +102,12 @@ function defineProperty(replicaOrAny: object, key: PropertyKey, descriptor: Prop
     return _defineProperty(replicaOrAny, key, descriptor);
 }
 
-function hasOwnProperty(this: any, key: string | symbol): boolean {
-    if (isCompatProxy(this)) {
-        return !!this.getOwnPropertyDescriptor(key);
-    }
-    return _hasOwnProperty.call(this, key);
-}
 
 // patches
 // [*] Object.prototype.hasOwnProperty should be patched as a general rule
 // [ ] Object.propertyIsEnumerable should be patched
 // [*] Array.isArray
-Object.prototype.hasOwnProperty = hasOwnProperty;
+Object.prototype.hasOwnProperty = compatHasOwnProperty;
 Array.isArray = isArray;
 
 // trap `preventExtensions` can be covered by a patched version of:
@@ -259,32 +178,5 @@ FinalProxy.deleteKey = deleteKey;
 FinalProxy.inKey = inKey;
 FinalProxy.iterableKey = iterableKey;
 FinalProxy.instanceOfKey = instanceOfKey;
-
-FinalProxy.compatPush = function (replicaOrAny: any): any {
-    const originalPush = getKey(replicaOrAny, 'push');
-    const args = ArraySlice.call(arguments, 1);
-
-    return originalPush === ArrayPush ?
-       compatPush.apply(replicaOrAny, args) :
-       originalPush.apply(replicaOrAny, args);
-};
-
-FinalProxy.compatUnshift = function (replicaOrAny: any): any {
-    const originalUnshift = getKey(replicaOrAny, 'unshift');
-    const args = ArraySlice.call(arguments, 1);
-
-    return originalUnshift === ArrayUnshift ?
-       compatUnshift.apply(replicaOrAny, args) :
-       originalUnshift.apply(replicaOrAny, args);
-};
-
-FinalProxy.compatConcat = function (replicaOrAny: any): any {
-    const originalConcat = getKey(replicaOrAny, 'concat');
-    const args = ArraySlice.call(arguments, 1);
-
-    return originalConcat === ArrayConcat ?
-       compatConcat.apply(replicaOrAny, args) :
-       originalConcat.apply(replicaOrAny, args);
-};
 
 export default FinalProxy;
