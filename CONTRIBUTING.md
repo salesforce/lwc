@@ -87,6 +87,7 @@ generally follows the same pattern each time:
 1. [Check your submission](#check-your-submission)
 1. [Create a pull request](#create-a-pull-request)
 1. [Update the pull request](#update-the-pull-request)
+1. [Commit Message Guidelines](#commit)
 
 ### Create a feature branch
 
@@ -102,9 +103,11 @@ Modify the files, build, test, lint and eventually commit your code using the fo
 
 ```bash
 git add <path/to/file/to/commit>
-git commit
+git commit or git cz
 git push origin <name-of-the-feature>
 ```
+Commit your changes using a descriptive commit message that follows our [Commit Message Guidelines](#commit). Adherence to these conventions is necessary because release notes are automatically generated from these messages.
+NOTE: optional use of _git cz_ command triggers interactive semantic commit, which prompts user with commit related quetions, such as commit type, scope, description, and breaking changes. Use of _git cz_ is optional but recommended to ensure format consistency.
 
 The above commands will commit the files into your feature branch. You can keep
 pushing new changes into the same branch until you are ready to create a pull
@@ -151,6 +154,8 @@ More details testing in our [TESTING.md](https://git.soma.salesforce.com/raptor/
 
 If you've never created a pull request before, follow [these
 instructions][creating-a-pull-request].
+Pull request title must be formatted according to [Commit Message Guidelines](#commit). 
+Pull request samples can be found [here](https://git.soma.salesforce.com/lwc/lwc/pulls)
 
 ### Update the pull request
 
@@ -167,7 +172,107 @@ git push origin ${feature_branch} --force
 
 _note: If more changes are needed as part of the pull request, just keep committing and pushing your feature branch as described above and the pull request will automatically update._
 
+### <a name="commit"></a> Commit Message Conventions
 
+Git commit messages have to be formatted according to a well defined set of rules.  This leads to **more
+readable messages** that are easy to follow when looking through the **project history**.  In addition,
+these git commit messages are used to **generate the LWC change log**. It is important to keep in mind that malformed messages won't be reflected in the change log file. 
+
+#### Commit Message Format
+Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
+format that includes a **type**, a **scope** and a **subject**:
+
+```
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+The **header** is mandatory and the **scope** of the header is optional.
+
+Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
+to read on GitHub as well as in various git tools.
+
+Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
+
+Samples: (even more [samples](https://git.soma.salesforce.com/lwc/lwc/pulls))
+
+```
+docs(changelog): update change log to beta.5
+```
+```
+fix(release): need to depend on latest rxjs and zone.js
+
+The version in our package.json gets copied to the one we publish, and users need the latest of these.
+```
+
+#### Reverting a commit
+If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+
+#### Commit Type
+Must be one of the following:
+
+* **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+* **chore**: Other changes that don't modify src or test files
+* **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+* **docs**: Documentation only changes
+* **feat**: A new feature
+* **fix**: A bug fix
+* **perf**: A code change that improves performance
+* **refactor**: A code change that neither fixes a bug nor adds a feature
+* **revert**: Reverts a previous commit
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* **test**: Adding missing tests or correcting existing tests
+
+#### Commit Scope
+The scope should be the name of the npm package affected (as perceived by person reading changelog generated from commit messages.
+
+The following is the list of supported scopes:
+
+* **babel-helpers**
+* **babel-plugin-transform-proxy-compat**
+* **babal-plugin-transform-lwc-class**
+* **benchmark**
+* **compiler**
+* **engine**
+* **helper-fixture**
+* **integration**
+* **language-service**
+* **locker-membrane**
+* **module-resolver**
+* **npm-resolver**
+* **template-compiler**
+* **wire-service**
+* **postcss-plugin**
+* **proxy-compat**
+* **rollup-plugin-lwc-compiler**
+* **upgrade**
+
+There are currently a few exceptions to the "use package name" rule:
+
+* **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
+* **changelog**: used for updating the release notes in CHANGELOG.md
+* **lwc docs**: used for docs related changes within the lwc/docs directory of the repo
+* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
+
+#### Commit Subject
+The subject contains succinct description of the change:
+
+* use the imperative, present tense: "change" not "changed" nor "changes"
+* don't capitalize first letter
+* no dot (.) at the end
+
+#### Commit Body
+Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
+The body should include the motivation for the change and contrast this with previous behavior.
+
+#### Commit Footer
+The footer should contain any information about **Breaking Changes** and is also the place to
+reference GitHub issues that this commit **Closes**.
+
+**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
 
 [setup-github-ssh]: https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/
 [creating-a-pull-request]: https://help.github.com/articles/creating-a-pull-request/
