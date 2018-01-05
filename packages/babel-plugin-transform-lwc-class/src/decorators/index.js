@@ -1,11 +1,17 @@
+const api = require('./api');
+const wire = require('./wire');
 const track = require('./track');
-const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS } = require('../constants');
+const { RAPTOR_PACKAGE_ALIAS } = require('../constants');
 
-const DECORATOR_TYPES = [
-    RAPTOR_PACKAGE_EXPORTS.API_DECORATOR,
-    RAPTOR_PACKAGE_EXPORTS.TRACK_DECORATOR,
-    RAPTOR_PACKAGE_EXPORTS.WIRE_DECORATOR,
+const DECORATOR_TRANSFORMS = [
+    api,
+    wire,
+    track
 ];
+
+function isLwcDecoratorName(name) {
+    return DECORATOR_TRANSFORMS.some(transform => transform.name === name);
+}
 
 /** Returns the import statement for a specific source */
 function getImportsStatements(path, sourceName) {
@@ -26,6 +32,14 @@ function getLwcDecoratorsImportSpecifiers(path) {
     return engineImports.reduce((acc, importStatement) => {
         // Flat-map the specifier list for each import statement
         return [...acc, ...importStatement.get('specifiers')];
+    }, []).reduce((acc, specifier) => {
+        // Get the list of decorators import specifiers
+        const imported = specifier.get('imported').node.name;
+        const isDecoratorImport = isLwcDecoratorName(imported);
+
+        return isDecoratorImport ?
+            [...acc, { type: imported, specifier }] :
+            acc;
     }, []);
 }
 
@@ -36,15 +50,7 @@ function getReferences(identifier) {
 
 /** Returns a list of all the LWC decorators usages */
 function getLwcDecorators(importSpecifiers) {
-    return importSpecifiers.reduce((acc, specifier) => {
-        // Get the list of decorators import specifiers
-        const imported = specifier.get('imported').node.name;
-        const isDecoratorImport = DECORATOR_TYPES.includes(imported);
-
-        return isDecoratorImport ?
-            [...acc, { type: imported, specifier }] :
-            acc;
-    }, []).reduce((acc, { type, specifier }) => {
+    return importSpecifiers.reduce((acc, { type, specifier }) => {
         // Get a list of all the  local references
         const local = specifier.get('imported');
         const references = getReferences(local).map(reference => ({
@@ -63,7 +69,7 @@ function getLwcDecorators(importSpecifiers) {
             reference.parentPath.parentPath;
 
         if (!decorator.isDecorator()) {
-            throw decorator.buildCodeFrameError(`"${type}" can only be used as a class properties decorator`);
+            throw decorator.buildCodeFrameError(`"${type}" can only be used as a class decorator`);
         }
 
         const propertyOrMethod = decorator.parentPath;
@@ -93,12 +99,16 @@ function groupDecorator(decorators) {
     }, new Map());
 }
 
+/** Validate the usage of decorator by calling each validation function */
 function validate(klass, decorators) {
-    track.validate(klass, decorators);
+    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(klass, decorators));
 }
 
+/** Transform the decorators and returns the metadata */
 function transform(t, klass, decorators) {
-    track.transform(t, klass, decorators);
+    return DECORATOR_TRANSFORMS.reduce((metadata, { transform }) => (
+        Object.assign(metadata, transform(t, klass, decorators))
+    ), {});
 }
 
 /** Remove all the decorators */
@@ -110,7 +120,7 @@ function removeDecorators(decorators) {
 
 /** Remove import specifiers. It also removes the import statement if the specifier list becomes empty */
 function removeImportSpecifiers(specifiers) {
-    for (let specifier of specifiers) {
+    for (let { specifier } of specifiers) {
         const importStatement = specifier.parentPath;
         specifier.remove();
 
@@ -126,10 +136,19 @@ module.exports = function apiVisitor({ types: t }) {
             const importSpecifiers = getLwcDecoratorsImportSpecifiers(path);
             const decorators = getLwcDecorators(importSpecifiers);
 
+            state.file.metadata = Object.assign({}, state.metadata, {
+                apiProperties: [],
+                apiMethods: []
+            });
+
             const grouped = groupDecorator(decorators);
             for (let [klass, decorators] of grouped) {
                 validate(klass, decorators);
-                transform(t, klass, decorators);
+
+                // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
+                // last class will be returned
+                const metadata = transform(t, klass, decorators);
+                state.file.metadata = Object.assign({}, state.metadata, metadata);
             }
 
             removeDecorators(decorators);

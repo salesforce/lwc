@@ -1,11 +1,34 @@
-const { GLOBAL_ATTRIBUTE_SET } = require('../../constants');
+const { isApiDecorator } = require('./shared');
+const { isClassMethod, isGetterClassMethod, isSetterClassMethod } = require('../../utils');
+const { GLOBAL_ATTRIBUTE_SET, RAPTOR_PACKAGE_EXPORTS: { TRACK_DECORATOR } } = require('../../constants');
+
+function validateConflict(path, decorators) {
+    const isPublicFieldTracked = decorators.some(decorator => (
+        decorator.type === TRACK_DECORATOR
+        && decorator.path.parentPath.node === path.parentPath.node
+    ));
+
+    if (isPublicFieldTracked) {
+        throw path.buildCodeFrameError('@api method or property cannot be used with @track');
+    }
+}
 
 function isBooleanPropDefaultTrue(property) {
     const propertyValue = property.node.value;
     return propertyValue && propertyValue.type === "BooleanLiteral" && propertyValue.value;
 }
 
+function validatePropertyValue(property) {
+    if (isBooleanPropDefaultTrue(property)) {
+        throw property.buildCodeFrameError('Boolean public property must default to false.');
+    }
+}
+
 function validatePropertyName(property) {
+    if (property.node.computed) {
+        throw property.buildCodeFrameError('@api cannot be applied to a computed property, getter, setter or method.');
+    }
+
     const propertyName = property.get('key.name').node;
 
     if (propertyName === 'is') {
@@ -35,27 +58,35 @@ function validatePropertyName(property) {
     }
 }
 
-module.exports = function validate(identifier) {
-    const decorator = identifier.parentPath;
-    if (!decorator.isDecorator()) {
-        throw decorator.buildCodeFrameError('"api" can only be used as a decorator');
-    }
+function validatePairSetterGetter(decorators) {
+    decorators.filter(decorator => (
+        isApiDecorator(decorator) &&
+        isSetterClassMethod(decorator.path.parentPath)
+    )).forEach(({ path }) => {
+        const name = path.parentPath.get('key.name').node;
+        const associatedGetter = decorators.find(decorator => (
+            isApiDecorator(decorator) &&
+            isGetterClassMethod(decorator.path.parentPath) &&
+            path.parentPath.get('key.name').node === name
+        ))
 
-    const propertyOrMethod = decorator.parentPath;
-    if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-        throw propertyOrMethod.buildCodeFrameError('"@api" can only be applied on class properties');
-    }
-
-    if (propertyOrMethod.isClassProperty()) {
-        const property = propertyOrMethod;
-        validatePropertyName(property);
-
-        if (isBooleanPropDefaultTrue(property)) {
-            throw property.buildCodeFrameError('Boolean public property must default to false.');
+        if (!associatedGetter) {
+            throw path.buildCodeFrameError(`@api set ${name} setter does not have associated getter.`);
         }
+    });
+}
 
-        if (property.node.computed) {
-            throw property.buildCodeFrameError('"@api" cannot be applied to a computed property, getter, setter or method.');
+module.exports = function validate(klass, decorators) {
+    decorators.filter(isApiDecorator).forEach(({ path }) => {
+        validateConflict(path, decorators);
+
+        if (!isClassMethod(path.parentPath)) {
+            const property = path.parentPath;
+
+            validatePropertyName(property);
+            validatePropertyValue(property);
         }
-    }
+    });
+
+    validatePairSetterGetter(decorators);
 }

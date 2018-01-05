@@ -1,5 +1,5 @@
 const { basename } = require('path');
-const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
+const { findClassMethod, staticClassProperty } = require('./utils');
 const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS, RAPTOR_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t, }) {
@@ -38,11 +38,6 @@ module.exports = function ({ types: t, }) {
                 }
 
                 const classBody = path.get('body');
-
-                // Deal with component labels
-                const labels = getComponentLabels(classBody);
-                state.file.metadata.labels.push(...labels);
-
                 // Import and wire template to the component if the class has no render method
                 if(
                     isDefaultExport(path)
@@ -62,35 +57,6 @@ module.exports = function ({ types: t, }) {
                 superClass.node.name,
                 raptorBaseClassImport.node
             );
-    }
-
-    function getComponentLabels(classBody) {
-        const labels = [];
-
-        const labelProperty = findClassProperty(classBody, RAPTOR_COMPONENT_PROPERTIES.LABELS, { static: true });
-        if (labelProperty) {
-            if (!labelProperty.get('value').isArrayExpression()) {
-                throw labelProperty.buildCodeFrameError(
-                    `"labels" static class property should be an array of string`
-                );
-            }
-
-            labels.push(
-                ...labelProperty.get('value.elements').map(labelValue => {
-                    if (!labelValue.isStringLiteral()) {
-                        throw labelValue.buildCodeFrameError(
-                            `Label is expected to a be string, but found ${labelValue.type}`
-                        );
-                    }
-
-                    return labelValue.node.value;
-                })
-            );
-
-            labelProperty.remove();
-        }
-
-        return labels;
     }
 
     function isDefaultExport(path) {

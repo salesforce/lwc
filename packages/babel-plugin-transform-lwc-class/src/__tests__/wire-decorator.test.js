@@ -112,21 +112,6 @@ describe('Wired method', () => {
         },
     });
 
-    test('throws when wired method is combined with @track', `
-        import { track, wire } from 'engine';
-        export default class Test {
-            @track
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
-            wiredWithTrack() {}
-        }
-    `, undefined, {
-        message: 'test.js: @wire method or property cannot be used with @track',
-        loc: {
-            line: 2,
-            column: 20,
-        },
-    });
-
     test('throws when wired property is combined with @track', `
         import { track, wire } from 'engine';
         export default class Test {
