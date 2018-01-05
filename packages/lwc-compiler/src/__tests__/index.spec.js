@@ -132,7 +132,7 @@ describe('transform', () => {
 
     it('javascript metadata contains apiProperties', async () => {
         const content = `
-            import { Element } from 'engine';
+            import { Element, api } from 'engine';
             export default class Foo extends Element {
                 _privateTodo;
                 @api get todo () {

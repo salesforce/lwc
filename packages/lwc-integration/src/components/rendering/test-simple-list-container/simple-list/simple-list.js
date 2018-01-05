@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, api, track } from 'engine';
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 35;
