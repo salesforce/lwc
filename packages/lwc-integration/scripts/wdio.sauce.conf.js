@@ -8,7 +8,18 @@ if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_KEY) {
 }
 
 const browsers = [
-    // Chrome inherited from base config file
+    {
+        browserName: 'chrome',
+        platform: 'Windows 10',
+        version: '61.0',
+        chromeOptions: {
+                //binary: CHROME_BIN_PATH,
+                args: [
+                    'headless',
+                    'disable-gpu',
+                ],
+            },
+    },
     {
         browserName: 'MicrosoftEdge',
         platform: 'Windows 10',
@@ -29,6 +40,7 @@ const browsers = [
 // Browsers that are only expected to work in compat mode
 const compatBrowsers = [
     {
+        commonName: 'ie11',
         browserName: 'internet explorer',
         platform: 'Windows 10',
         version: '11.103'
@@ -55,6 +67,8 @@ const compatBrowsers = [
     },
 ];
 
+const filteredBrowsers = filterBrowsers();
+
 const sauce = {
     services: ['sauce'],
     user: process.env.SAUCE_USERNAME,
@@ -62,7 +76,31 @@ const sauce = {
     sauceConnect: true,
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
-    capabilities: process.env.MODE.indexOf('compat') !== -1 ? compatBrowsers : browsers
+    capabilities: filteredBrowsers
+}
+
+function filterBrowsers() {
+    let filtered = process.env.MODE.indexOf('compat') !== -1 ? compatBrowsers : browsers;
+
+    if (process.env.BROWSERS) {
+        const userBrowsers = process.env.BROWSERS.split(',');
+        console.log('userBrowsers', userBrowsers);
+        filtered = filtered.filter(b => {
+            console.log('b: ', b);
+            if (userBrowsers.includes(b.commonName)) {
+                console.log('returning true');
+                return true;
+            }
+            return false;
+        });
+
+        if (filtered.length === 0) {
+            throw new Error('No target browsers after filtering for the following browsers: ' + userBrowsers);
+        }
+    }
+
+    console.log('filtered: ', filtered);
+    return filtered;
 }
 
 /**
