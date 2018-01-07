@@ -8,7 +8,9 @@ if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_KEY) {
 }
 
 const browsers = [
+    // Note that headless Chrome also needs to be updated in wdio.conf.js for non-SauceLabs runs
     {
+        commonName: 'chrome',
         browserName: 'chrome',
         platform: 'Windows 10',
         version: '61.0',
@@ -21,16 +23,19 @@ const browsers = [
             },
     },
     {
+        commonName: 'edge',
         browserName: 'MicrosoftEdge',
         platform: 'Windows 10',
         version: '15.15063'
     },
     {
+        commonName: 'safari',
         browserName: 'safari',
         platform: 'macOS 10.12',
         version: '11.0'
     },
     {
+        commonName: 'firefox',
         browserName: 'firefox',
         platform: 'macOS 10.12',
         version: '55.0'
@@ -46,21 +51,25 @@ const compatBrowsers = [
         version: '11.103'
     },
     {
+        commonName: 'safari10',
         browserName: 'safari',
         platform: 'macOS 10.12',
         version: '10.1'
     },
     {
+        commonName: 'safari9',
         browserName: 'safari',
         platform: 'OS X 10.11',
         version: '9.0'
     },
     {
+        commonName: 'chrome30',
         browserName: 'chrome',
         platform: 'Windows 8.1',
         version: '30.0'
     },
     {
+        commonName: 'firefox45',
         browserName: 'firefox',
         platform: 'Windows 8',
         version: '45.0'
@@ -84,11 +93,8 @@ function filterBrowsers() {
 
     if (process.env.BROWSERS) {
         const userBrowsers = process.env.BROWSERS.split(',');
-        console.log('userBrowsers', userBrowsers);
         filtered = filtered.filter(b => {
-            console.log('b: ', b);
             if (userBrowsers.includes(b.commonName)) {
-                console.log('returning true');
                 return true;
             }
             return false;
@@ -99,18 +105,7 @@ function filterBrowsers() {
         }
     }
 
-    console.log('filtered: ', filtered);
     return filtered;
 }
 
-/**
- * Custom logic for merging arrays. Assume we want to always add any array entries
- * in this config to the base. Without this, default logic for an array of objects
- * would be for this config to override the base, forcing us to duplicate browser
- * entries in the 'capabilities' setting.
- */
-function arrayMerge(dest, src, options) {
-    return dest.concat(src);
-}
-
-exports.config = merge(base.config, sauce, { arrayMerge });
+exports.config = merge(base.config, sauce);

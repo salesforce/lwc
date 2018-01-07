@@ -58,8 +58,11 @@ jobs:
 
       - run: yarn install
       - run:
-          name: Integration Test
-          command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn test:integration
+          name: Integration Test - Headless Chrome
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
+      - run:
+          name: Integration Test - IE11 SauceLabs
+          command: cd packages/lwc-integration && BROWSERS=ie11 SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat
 
   performance_test:
     working_directory: ~/lwc
