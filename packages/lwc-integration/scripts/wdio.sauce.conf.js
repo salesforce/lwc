@@ -76,8 +76,6 @@ const compatBrowsers = [
     },
 ];
 
-const filteredBrowsers = filterBrowsers();
-
 const sauce = {
     services: ['sauce'],
     user: process.env.SAUCE_USERNAME,
@@ -85,7 +83,7 @@ const sauce = {
     sauceConnect: true,
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
-    capabilities: filteredBrowsers
+    capabilities: filterBrowsers()
 }
 
 function filterBrowsers() {
