@@ -74,6 +74,10 @@ jobs:
               export TARGET_COMMIT=${CIRCLE_SHA1}
               export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
 
+      - run:
+          name: Decode PEM as environment variable
+          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/best/git_app.pem
+
       - run: yarn install
       - run:
           name: Preformance Test
