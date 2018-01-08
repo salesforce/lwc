@@ -30,9 +30,9 @@
   "dependencies": {
     "isomorphic-fetch": "^2.2.1",
     "lwc-engine": "0.17.6",
-    "best-cli": "0.0.3",
-    "@best/runner-headless": "0.0.3",
-    "@best/store-aws": "0.0.3",
+    "best-cli": "0.0.4",
+    "@best/runner-headless": "0.0.4",
+    "@best/store-aws": "0.0.4",
     "rollup-plugin-lwc-compiler": "0.17.6"
   }
 }
