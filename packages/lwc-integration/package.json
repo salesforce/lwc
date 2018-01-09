@@ -24,6 +24,8 @@
     "sauce:prod_compat": "MODE=prod_compat yarn build && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "deepmerge": "^1.5.2",
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",

@@ -17,6 +17,7 @@
     "test": "jest --coverage --maxWorkers=2"
   },
   "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
     "concurrently": "^3.4.0",
     "cross-env": "^3.1.4",
     "deasync": "^0.1.10",
@@ -29,6 +30,7 @@
     "lwc-jest-transformer": "^0.17.1",
     "rimraf": "^2.6.1",
     "rollup": "0.50.0",
+    "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-lwc-compiler": "0.17.6",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",

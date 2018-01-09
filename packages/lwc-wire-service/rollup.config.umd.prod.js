@@ -4,11 +4,12 @@
 const path = require('path');
 const uglify = require('rollup-plugin-uglify');
 const replace = require('rollup-plugin-replace');
-const typescript = require('rollup-plugin-typescript');
+const babel = require('rollup-plugin-babel');
 const { minify } = require('uglify-es');
 
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
+const { compatBrowsersPreset } = require('../../scripts/babel-config-util');
 
 const entry = path.resolve(__dirname, 'src/main.js');
 const outputDir = path.resolve(__dirname, 'dist/umd');
@@ -18,31 +19,33 @@ const footer = `/** version: ${version} */`;
 
 function rollupConfig(config){
     const { format, target, prod } = config;
+    const isCompat = target === 'es5';
 
     let plugins = [
-        typescript({
-            target: target,
-            typescript: require('typescript'),
-        }),
         replace({
             'process.env.NODE_ENV': JSON.stringify('production'),
         }),
-        prod && uglify({}, code => minify(code))
+        prod && uglify({}, code => minify(code)),
+        isCompat && babel({
+            presets: [ compatBrowsersPreset ],
+            plugins: [ "external-helpers" ],
+            babelrc: false,
+        }),
     ].filter((plugin) => plugin);
 
     const targetName = generateTargetName(config);
 
     // sourceMap issue: https://github.com/mjeanroy/rollup-plugin-license/issues/6
     return {
-        name: "WireService",
-        banner: banner,
-        footer: footer,
         input: entry,
         output: {
             file: path.join(outputDir + `/${target}`,  targetName),
-            format: format,
+            name: "WireService",
+            format,
+            banner,
+            footer,
         },
-        plugins
+        plugins,
     }
 }
 
