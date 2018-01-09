@@ -1,28 +1,28 @@
 const { basename } = require('path');
 const commentParser = require('comment-parser');
 const { findClassMethod, findClassProperty, staticClassProperty, getImportSpecifiers } = require('./utils');
-const { RAPTOR_PACKAGE_ALIAS, RAPTOR_PACKAGE_EXPORTS, RAPTOR_COMPONENT_PROPERTIES } = require('./constants');
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t, }) {
     return {
         Program(path, state) {
-            const engineImportSpecifiers = getImportSpecifiers(path, RAPTOR_PACKAGE_ALIAS);
+            const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
 
             // Store on state local identifiers referencing engine base component
-            state.raptorBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
-                name === RAPTOR_PACKAGE_EXPORTS.BASE_COMPONENT
+            state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
+                name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT
             )).map(({ path }) => (
                 path.get('local')
             ));
         },
         Class(path, state) {
-            const isRaptorComponent = isClassRaptorComponentClass(path, state.raptorBaseClassImports);
+            const isComponent = isComponentClass(path, state.componentBaseClassImports);
 
-            if (isRaptorComponent) {
+            if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
                     throw path.buildCodeFrameError(
-                        `Raptor component class can't be an anonymous.`
+                        `LWC component class can't be an anonymous.`
                     );
                 }
 
@@ -46,7 +46,7 @@ module.exports = function ({ types: t, }) {
                     state.file.metadata.declarationLoc = { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
 
                     // Import and wire template to the component if the class has no render method
-                    if (!findClassMethod(classBody, RAPTOR_COMPONENT_PROPERTIES.RENDER)) {
+                    if (!findClassMethod(classBody, LWC_COMPONENT_PROPERTIES.RENDER)) {
                         wireTemplateToClass(state, classBody);
                     }
                 }
@@ -54,14 +54,14 @@ module.exports = function ({ types: t, }) {
         },
     };
 
-    function isClassRaptorComponentClass(classPath, raptorBaseClassImports) {
+    function isComponentClass(classPath, componentBaseClassImports) {
         const superClass = classPath.get('superClass');
 
         return superClass.isIdentifier()
-            && raptorBaseClassImports.some(raptorBaseClassImport => (
+            && componentBaseClassImports.some(componentBaseClassImport => (
                 classPath.scope.bindingIdentifierEquals(
                     superClass.node.name,
-                    raptorBaseClassImport.node
+                    componentBaseClassImport.node
                 )
             ));
     }
@@ -83,7 +83,7 @@ module.exports = function ({ types: t, }) {
     function getComponentLabels(classBody) {
         const labels = [];
 
-        const labelProperty = findClassProperty(classBody, RAPTOR_COMPONENT_PROPERTIES.LABELS, { static: true });
+        const labelProperty = findClassProperty(classBody, LWC_COMPONENT_PROPERTIES.LABELS, { static: true });
         if (labelProperty) {
             if (!labelProperty.get('value').isArrayExpression()) {
                 throw labelProperty.buildCodeFrameError(
@@ -114,13 +114,13 @@ module.exports = function ({ types: t, }) {
 
         const styleProperty = staticClassProperty(
             t,
-            RAPTOR_COMPONENT_PROPERTIES.STYLE,
-            t.memberExpression(templateIdentifier, t.identifier(RAPTOR_COMPONENT_PROPERTIES.STYLE)),
+            LWC_COMPONENT_PROPERTIES.STYLE,
+            t.memberExpression(templateIdentifier, t.identifier(LWC_COMPONENT_PROPERTIES.STYLE)),
         );
 
         const renderMethod = t.classMethod(
             'method',
-            t.identifier(RAPTOR_COMPONENT_PROPERTIES.RENDER),
+            t.identifier(LWC_COMPONENT_PROPERTIES.RENDER),
             [],
             t.blockStatement([
                 t.returnStatement(templateIdentifier),

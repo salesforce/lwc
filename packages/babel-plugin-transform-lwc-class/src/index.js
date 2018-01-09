@@ -6,7 +6,6 @@ module.exports = function ({ types, traverse }) {
     const { merge: mergeVisitors } = traverse.visitors;
 
     return {
-        name: 'raptor-class-transform',
         visitor: mergeVisitors([
             decorators({ types }),
             component({ types }),

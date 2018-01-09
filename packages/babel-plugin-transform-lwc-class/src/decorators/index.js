@@ -2,7 +2,7 @@ const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
 const { getImportSpecifiers } = require('../utils');
-const { RAPTOR_PACKAGE_ALIAS } = require('../constants');
+const { LWC_PACKAGE_ALIAS } = require('../constants');
 
 const DECORATOR_TRANSFORMS = [
     api,
@@ -104,7 +104,7 @@ function removeImportSpecifiers(specifiers) {
 module.exports = function apiVisitor({ types: t }) {
     return {
         Program(path, state) {
-            const engineImportSpecifiers = getImportSpecifiers(path, RAPTOR_PACKAGE_ALIAS);
+            const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
             const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => (
                 isLwcDecoratorName(name)
             ));

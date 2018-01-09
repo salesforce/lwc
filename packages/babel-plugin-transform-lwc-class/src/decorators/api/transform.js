@@ -1,6 +1,6 @@
 const { isApiDecorator } = require('./shared');
 const { isClassMethod, isGetterClassMethod, isSetterClassMethod, staticClassProperty } = require('../../utils');
-const { RAPTOR_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS } } = require('../../constants');
+const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS } } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
     PROPERTY: 0,

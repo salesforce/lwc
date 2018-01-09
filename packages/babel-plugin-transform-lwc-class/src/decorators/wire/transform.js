@@ -1,6 +1,6 @@
 const { isWireDecorator } = require('./shared');
 const { staticClassProperty } = require('../../utils');
-const { RAPTOR_COMPONENT_PROPERTIES } = require('../../constants');
+const { LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const WIRE_PARAM_PREFIX = '$';
 
@@ -84,7 +84,7 @@ module.exports = function transform(t, klass, decorators) {
             'body',
             staticClassProperty(
                 t,
-                RAPTOR_COMPONENT_PROPERTIES.WIRE,
+                LWC_COMPONENT_PROPERTIES.WIRE,
                 buildWireConfigValue(t, wiredValues)
             )
         );

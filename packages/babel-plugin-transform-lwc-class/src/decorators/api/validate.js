@@ -1,6 +1,6 @@
 const { isApiDecorator } = require('./shared');
 const { isClassMethod, isGetterClassMethod, isSetterClassMethod } = require('../../utils');
-const { GLOBAL_ATTRIBUTE_SET, RAPTOR_PACKAGE_EXPORTS: { TRACK_DECORATOR } } = require('../../constants');
+const { GLOBAL_ATTRIBUTE_SET, LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR } } = require('../../constants');
 
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(decorator => (

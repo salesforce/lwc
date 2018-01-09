@@ -1,5 +1,5 @@
 const { isWireDecorator } = require('./shared');
-const { RAPTOR_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
+const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
 
 function validateWireParameters(path) {
     const [id, config] = path.get('expression.arguments');

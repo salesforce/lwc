@@ -1,4 +1,4 @@
-const { RAPTOR_PACKAGE_EXPORTS: { API_DECORATOR } } = require('../../constants');
+const { LWC_PACKAGE_EXPORTS: { API_DECORATOR } } = require('../../constants');
 
 function isApiDecorator(decorator) {
     return decorator.type === API_DECORATOR;

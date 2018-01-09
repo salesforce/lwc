@@ -8,7 +8,7 @@ describe('Element import', () => {
 
         export default class extends Element {}
     `, undefined, {
-        message: `test.js: Raptor component class can't be an anonymous.`,
+        message: `test.js: LWC component class can't be an anonymous.`,
         loc: {
             line: 3,
             column: 15

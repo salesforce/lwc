@@ -1,5 +1,5 @@
 const { staticClassProperty } = require('../../utils');
-const { RAPTOR_PACKAGE_EXPORTS: { TRACK_DECORATOR }, RAPTOR_COMPONENT_PROPERTIES } = require('../../constants');
+const { LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, LWC_COMPONENT_PROPERTIES } = require('../../constants');
 
 const TRACK_PROPERTY_VALUE = 1;
 
@@ -33,7 +33,7 @@ function transform(t, klass, decorators) {
             'body',
             staticClassProperty(
                 t,
-                RAPTOR_COMPONENT_PROPERTIES.TRACK,
+                LWC_COMPONENT_PROPERTIES.TRACK,
                 t.valueToNode(trackConfig)
             )
         );
