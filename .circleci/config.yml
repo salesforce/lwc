@@ -62,7 +62,7 @@ jobs:
           command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
       - run:
           name: Integration Test - IE11 SauceLabs
-          command: cd packages/lwc-integration && BROWSERS=ie11 SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
 
   performance_test:
     working_directory: ~/lwc
