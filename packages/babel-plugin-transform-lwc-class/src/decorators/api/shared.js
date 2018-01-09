@@ -1,7 +1,7 @@
 const { LWC_PACKAGE_EXPORTS: { API_DECORATOR } } = require('../../constants');
 
 function isApiDecorator(decorator) {
-    return decorator.type === API_DECORATOR;
+    return decorator.name === API_DECORATOR;
 }
 
 module.exports = {

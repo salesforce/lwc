@@ -1,8 +1,8 @@
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
-const { getImportSpecifiers } = require('../utils');
-const { LWC_PACKAGE_ALIAS } = require('../constants');
+const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
+const { getImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
 
 const DECORATOR_TRANSFORMS = [
     api,
@@ -19,18 +19,33 @@ function getReferences(identifier) {
     return identifier.scope.getBinding(identifier.node.name).referencePaths;
 }
 
+/** Returns the type of decorator depdending on the property or method if get applied to */
+function getDecoratorType(propertyOrMethod) {
+    if (isClassMethod(propertyOrMethod)) {
+        return DECORATOR_TYPES.METHOD;
+    } else if (isGetterClassMethod(propertyOrMethod)) {
+        return DECORATOR_TYPES.GETTER;
+    } else if (isSetterClassMethod(propertyOrMethod)) {
+        return DECORATOR_TYPES.SETTER;
+    } else if (propertyOrMethod.isClassProperty()) {
+        return DECORATOR_TYPES.PROPERTY;
+    } else {
+        throw propertyOrMethod.buildCodeFrameError(`Invalid property of field type`);
+    }
+}
+
 /** Returns a list of all the LWC decorators usages */
 function getLwcDecorators(importSpecifiers) {
     return importSpecifiers.reduce((acc, { name, path }) => {
         // Get a list of all the  local references
         const local = path.get('imported');
         const references = getReferences(local).map(reference => ({
-            type: name,
+            name,
             reference
         }))
 
         return [...acc, ...references];
-    }, []).map(({ type, reference }) => {
+    }, []).map(({ name, reference }) => {
         // Get the decorator from the identifier
         // If the the decorator is:
         //   - an identifier @track : the decorator is the parent of the indentifier
@@ -40,17 +55,18 @@ function getLwcDecorators(importSpecifiers) {
             reference.parentPath.parentPath;
 
         if (!decorator.isDecorator()) {
-            throw decorator.buildCodeFrameError(`"${type}" can only be used as a class decorator`);
+            throw decorator.buildCodeFrameError(`"${name}" can only be used as a class decorator`);
         }
 
         const propertyOrMethod = decorator.parentPath;
         if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-            throw propertyOrMethod.buildCodeFrameError(`"@${type}" can only be applied on class properties`);
+            throw propertyOrMethod.buildCodeFrameError(`"@${name}" can only be applied on class properties`);
         }
 
         return {
-            type,
+            name,
             path: decorator,
+            type: getDecoratorType(propertyOrMethod)
         };
     });
 }

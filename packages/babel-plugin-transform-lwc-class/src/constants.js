@@ -22,6 +22,13 @@ const LWC_COMPONENT_PROPERTIES = {
     TRACK: 'track',
 }
 
+const DECORATOR_TYPES = {
+    PROPERTY: 'property',
+    GETTER: 'getter',
+    SETTER: 'setter',
+    METHOD: 'method'
+}
+
 module.exports = {
     GLOBAL_ATTRIBUTE_SET,
 
@@ -29,4 +36,6 @@ module.exports = {
     LWC_PACKAGE_EXPORTS,
 
     LWC_COMPONENT_PROPERTIES,
+
+    DECORATOR_TYPES,
 };

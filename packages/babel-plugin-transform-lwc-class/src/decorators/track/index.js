@@ -4,7 +4,7 @@ const { LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, LWC_COMPONENT_PROPERTIES } = r
 const TRACK_PROPERTY_VALUE = 1;
 
 function isTrackDecorator(decorator) {
-    return decorator.type === TRACK_DECORATOR;
+    return decorator.name === TRACK_DECORATOR;
 }
 
 function validate(klass, decorators) {

@@ -1,10 +1,9 @@
 const { isApiDecorator } = require('./shared');
-const { isClassMethod, isGetterClassMethod, isSetterClassMethod } = require('../../utils');
-const { GLOBAL_ATTRIBUTE_SET, LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR } } = require('../../constants');
+const { GLOBAL_ATTRIBUTE_SET, LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, DECORATOR_TYPES } = require('../../constants');
 
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(decorator => (
-        decorator.type === TRACK_DECORATOR
+        decorator.name === TRACK_DECORATOR
         && decorator.path.parentPath.node === path.parentPath.node
     ));
 
@@ -15,7 +14,7 @@ function validateConflict(path, decorators) {
 
 function isBooleanPropDefaultTrue(property) {
     const propertyValue = property.node.value;
-    return propertyValue && propertyValue.type === "BooleanLiteral" && propertyValue.value;
+    return propertyValue && propertyValue.name === "BooleanLiteral" && propertyValue.value;
 }
 
 function validatePropertyValue(property) {
@@ -61,12 +60,13 @@ function validatePropertyName(property) {
 function validatePairSetterGetter(decorators) {
     decorators.filter(decorator => (
         isApiDecorator(decorator) &&
-        isSetterClassMethod(decorator.path.parentPath)
+        decorator.type === DECORATOR_TYPES.SETTER
     )).forEach(({ path }) => {
         const name = path.parentPath.get('key.name').node;
+
         const associatedGetter = decorators.find(decorator => (
             isApiDecorator(decorator) &&
-            isGetterClassMethod(decorator.path.parentPath) &&
+            decorator.type === DECORATOR_TYPES.GETTER &&
             path.parentPath.get('key.name').node === name
         ))
 
@@ -77,10 +77,10 @@ function validatePairSetterGetter(decorators) {
 }
 
 module.exports = function validate(klass, decorators) {
-    decorators.filter(isApiDecorator).forEach(({ path }) => {
+    decorators.filter(isApiDecorator).forEach(({ path, type }) => {
         validateConflict(path, decorators);
 
-        if (!isClassMethod(path.parentPath)) {
+        if (type !== DECORATOR_TYPES.METHOD) {
             const property = path.parentPath;
 
             validatePropertyName(property);

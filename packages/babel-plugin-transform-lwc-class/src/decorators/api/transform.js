@@ -1,6 +1,6 @@
 const { isApiDecorator } = require('./shared');
-const { isClassMethod, isGetterClassMethod, isSetterClassMethod, staticClassProperty } = require('../../utils');
-const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS } } = require('../../constants');
+const { staticClassProperty } = require('../../utils');
+const { LWC_COMPONENT_PROPERTIES: { PUBLIC_PROPS, PUBLIC_METHODS }, DECORATOR_TYPES } = require('../../constants');
 
 const PUBLIC_PROP_BIT_MASK = {
     PROPERTY: 0,
@@ -8,25 +8,22 @@ const PUBLIC_PROP_BIT_MASK = {
     SETTER: 2
 };
 
-function getPropertyBitmask(classProperty) {
-    const isGetter = isGetterClassMethod(classProperty);
-    const isSetter = isSetterClassMethod(classProperty);
+function getPropertyBitmask(type) {
+    switch (type) {
+        case DECORATOR_TYPES.GETTER:
+            return PUBLIC_PROP_BIT_MASK.GETTER;
 
-    let bitMask;
-    if (isGetter) {
-        bitMask = PUBLIC_PROP_BIT_MASK.GETTER;
-    } else if (isSetter) {
-        bitMask = PUBLIC_PROP_BIT_MASK.SETTER;
-    } else {
-        bitMask = PUBLIC_PROP_BIT_MASK.PROPERTY;
+        case DECORATOR_TYPES.SETTER:
+            return PUBLIC_PROP_BIT_MASK.SETTER;
+
+        default:
+            return PUBLIC_PROP_BIT_MASK.PROPERTY;
     }
-
-    return bitMask;
 }
 
 /** Returns the public props configuration of a class based on a list decorators. */
 function computePublicPropsConfig(decorators) {
-    return decorators.reduce((acc, { path }) => {
+    return decorators.reduce((acc, { path, type }) => {
         const property = path.parentPath;
         const propertyName = property.get('key.name').node;
 
@@ -34,7 +31,7 @@ function computePublicPropsConfig(decorators) {
             acc[propertyName] = {};
         }
 
-        acc[propertyName].config |= getPropertyBitmask(property);
+        acc[propertyName].config |= getPropertyBitmask(type);
         return acc;
     }, {});
 }
@@ -48,7 +45,7 @@ function computePublicMethodsConfig(decorators) {
 
 /** Transform class public props and returns the list of public props */
 function transformPublicProps(t, klassBody, apiDecorators) {
-    const publicProps = apiDecorators.filter(({ path }) => !isClassMethod(path.parentPath));
+    const publicProps = apiDecorators.filter(({ type }) => type !== DECORATOR_TYPES.METHOD);
 
     if (publicProps.length) {
         const publicPropsConfig = computePublicPropsConfig(publicProps);
@@ -68,7 +65,7 @@ function transformPublicProps(t, klassBody, apiDecorators) {
 
 /** Transform class public methods and returns the list of public methods  */
 function transfromPublicMethods(t, klassBody, apiDecorators) {
-    const publicMethods = apiDecorators.filter(({ path }) => isClassMethod(path.parentPath));
+    const publicMethods = apiDecorators.filter(({ type }) => type === DECORATOR_TYPES.METHOD);
 
     if (publicMethods.length) {
         const publicMethodsConfig = computePublicMethodsConfig(publicMethods);
