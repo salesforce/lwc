@@ -101,7 +101,7 @@ function removeImportSpecifiers(specifiers) {
     }
 }
 
-module.exports = function apiVisitor({ types: t }) {
+module.exports = function decoratorVisitor({ types: t }) {
     return {
         Program(path, state) {
             const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
