@@ -88,8 +88,9 @@ const sauce = {
 
 function filterBrowsers() {
     const args = process.argv;
+    const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
+    let filtered = isCompat ? compatBrowsers : browsers;
     let userBrowsers;
-    let filtered = process.env.MODE.indexOf('compat') !== -1 ? compatBrowsers : browsers;
 
     for (let i = 0; i < args.length; i++) {
         if (args[i] === '--browsers') {
@@ -100,10 +101,7 @@ function filterBrowsers() {
 
     if (userBrowsers) {
         filtered = filtered.filter(b => {
-            if (userBrowsers.includes(b.commonName)) {
-                return true;
-            }
-            return false;
+            return userBrowsers.includes(b.commonName);
         });
 
         if (filtered.length === 0) {
