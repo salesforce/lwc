@@ -1,7 +1,8 @@
 // force non-headless Chrome on Sauce Labs for debugability
 process.env.HEADLESS_CHROME=false;
-const base = require('./wdio.conf.js');
 const merge = require('deepmerge');
+const minimist = require('minimist');
+const base = require('./wdio.conf.js');
 
 if (!process.env.SAUCE_USERNAME || !process.env.SAUCE_KEY) {
     throw new Error("process.env.SAUCE_USERNAME and process.env.SAUCE_KEY are required to be set to run tests against SauceLabs");
@@ -87,18 +88,11 @@ const sauce = {
 }
 
 function filterBrowsers() {
-    const args = process.argv;
     const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
     let filtered = isCompat ? compatBrowsers : browsers;
-    let userBrowsers;
 
-    for (let i = 0; i < args.length; i++) {
-        if (args[i] === '--browsers') {
-            userBrowsers = args[i+1].split(',');
-            break;
-        }
-    }
-
+    const args = minimist(process.argv.slice(2));
+    const userBrowsers = args.browsers;
     if (userBrowsers) {
         filtered = filtered.filter(b => {
             return userBrowsers.includes(b.commonName);
