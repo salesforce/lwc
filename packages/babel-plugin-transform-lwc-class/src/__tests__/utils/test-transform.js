@@ -16,7 +16,7 @@ function transform(plugin, opts = {}) {
     }, opts);
 
     return function(source) {
-        return babel.transform(pretify(source), testConfig);
+        return babel.transform(prettify(source), testConfig);
     }
 }
 
@@ -32,7 +32,7 @@ function errorFromObject(obj) {
     return error;
 }
 
-function pretify(str) {
+function prettify(str) {
     return str.toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
@@ -64,7 +64,7 @@ function makeTest(plugin, opts = {}) {
                 expect(err).toMatchObject(errorFromObject(expectedError));
             } else {
                 if (expectedSource) {
-                    expect(pretify(res.code)).toBe(pretify(expectedSource));
+                    expect(prettify(res.code)).toBe(prettify(expectedSource));
                 }
                 if (expectedMetadata) {
                     expect(res.metadata).toMatchObject(expectedMetadata);

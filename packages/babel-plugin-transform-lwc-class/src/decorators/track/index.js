@@ -22,7 +22,7 @@ function transform(t, klass, decorators) {
         // Get tracked field names
         path.parentPath.get('key.name').node
     )).reduce((acc, fieldName) => {
-        // Transform list of fiels to an object
+        // Transform list of fields to an object
         acc[fieldName] = TRACK_PROPERTY_VALUE;
         return acc;
     }, {});

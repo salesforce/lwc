@@ -14,7 +14,7 @@ function isLwcDecoratorName(name) {
     return DECORATOR_TRANSFORMS.some(transform => transform.name === name);
 }
 
-/** Returns a list of all the refences to an identifier */
+/** Returns a list of all the references to an identifier */
 function getReferences(identifier) {
     return identifier.scope.getBinding(identifier.node.name).referencePaths;
 }
@@ -33,7 +33,7 @@ function getLwcDecorators(importSpecifiers) {
     }, []).map(({ type, reference }) => {
         // Get the decorator from the identifier
         // If the the decorator is:
-        //   - an indentifier @track : the decorator is the parent of the indentifier
+        //   - an identifier @track : the decorator is the parent of the indentifier
         //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
         let decorator = reference.parentPath.isDecorator() ?
             reference.parentPath:
