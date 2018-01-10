@@ -33,6 +33,12 @@ Run integration tests across all browsers on Sauce Labs (see below for more deta
 yarn sauce
 ```
 
+Run integration tests on specific browsers on Sauce Labs (see below for more details):
+
+```
+yarn sauce --browsers firefox
+```
+
 Starts the server (not needed for testing)
 
 ```
@@ -67,7 +73,13 @@ SAUCE_KEY=123-456-789
 
 ### Modifying Browsers
 
-To modify the browsers Sauce Labs runs on, use their [Platform Configurator](https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/) to get the settings for the desired browser. Then, update the `capabilities` section of wdio.sauce.conf.js.
+To select a single browser for a run, pass `--browsers` followed by a comma separated list of browser you wish to run. The name of the browser to specify must match the `commonName` entry of the browsers in the webdriver.io config file (wdio.sauce.conf.js).
+
+```
+SAUCE_USERNAME=my_user SAUCE_KEY=123-456-789 yarn sauce:prod_compat --browsers ie11,safari9
+```
+
+To modify the master list of browsers Sauce Labs runs on, use their [Platform Configurator](https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/) to get the settings for the desired browser. Then, update the `capabilities` section of wdio.sauce.conf.js.
 
 ## Headless Chrome
 

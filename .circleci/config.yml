@@ -42,8 +42,27 @@ jobs:
 
       - run: yarn install
       - run:
-          name: Integration Test
-          command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn test:integration
+          name: Integration Test - Headless Chrome
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
+
+  integration_test_compat:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8.9.3-stretch-browsers
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-
+
+      - run: yarn install
+      - run:
+          name: Integration Test - IE11 SauceLabs
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
 
   perf_and_compare:
     working_directory: ~/lwc
@@ -96,6 +115,13 @@ workflows:
   build_and_test:
     jobs:
       - build_and_test
+
+      - integration_test_compat:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /\w+\/.*/
 
       - integration_test:
           requires:
