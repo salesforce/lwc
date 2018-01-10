@@ -11,6 +11,6 @@ describe('Issue 791: [IE11] Radio Buttons are not rendering with correct value',
         const radio = browser.element('#radiobtn');
         radio.click();
         const text = browser.element('#value');
-        assert(text.getText(), 'secondbutton');
+        assert.equal(text.getText(), 'secondbutton');
     });
 });

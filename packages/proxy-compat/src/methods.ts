@@ -13,7 +13,6 @@ export type compatInKey = (replicaOrAny: any, key: PropertyKey) => boolean;
 export type compatIterableKey = (replicaOrAny: any) => Array<any>;
 const { getPrototypeOf } = Object;
 
-
 export function defaultHasInstance (instance: any, Type: any) {
     // We have to grab getPrototypeOf here
     // because caching it at the module level is too early.
@@ -31,7 +30,13 @@ export function defaultHasInstance (instance: any, Type: any) {
 }
 
 export function isCompatProxy(replicaOrAny: any): replicaOrAny is XProxyInstance {
-    return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
+    try {
+        return replicaOrAny && replicaOrAny[ProxySlot] === ProxyIdentifier;
+    } catch (e) {
+        // some objects (iframe.contentWindow for example) throw an error trying
+        // to access random properties
+        return false;
+    }
 }
 
 export const getKey: compatGetKey = function(replicaOrAny: any, key: PropertyKey): any {

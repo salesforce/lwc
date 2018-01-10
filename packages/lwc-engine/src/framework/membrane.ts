@@ -22,7 +22,7 @@ export const MembraneSlot = Symbol();
 
 export function isReplicable(value: any): boolean {
     const type = typeof value;
-    return value && (type === 'object' || type === 'function');
+    return value && (type === 'object' || type === 'function') && !(value instanceof HTMLIFrameElement);
 }
 
 export function getReplica(membrane: Membrane, value: Replicable | any): Replica | any {
@@ -91,6 +91,22 @@ export class Membrane {
 // the proxy is a compat proxy, and define the unwrap method accordingly.
 const { getKey } = Proxy;
 
-export const unwrap = getKey ?
-    (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && getKey(replicaOrAny, TargetSlot)) || replicaOrAny
-    : (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
+function safeUnwrapCompat(replicaOrAny: Replica | any): Replicable | any {
+    try {
+        return (replicaOrAny && getKey(replicaOrAny, TargetSlot)) || replicaOrAny;
+    } catch (e) {
+        // Issue #867 - guard against errors during property access
+        return replicaOrAny;
+    }
+}
+
+function safeUnwrap(replicaOrAny: Replica | any): Replicable | any {
+    try {
+        return (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
+    } catch (e) {
+        // Issue #867 - guard against errors during property access
+        return replicaOrAny;
+    }
+}
+
+export const unwrap = getKey ? safeUnwrapCompat : safeUnwrap;
