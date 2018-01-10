@@ -121,14 +121,14 @@ workflows:
             branches:
               only: /\w+\/.*/
 
-      - integration_test:
+      - integration_test_compat:
           requires:
             - build
           filters:
             branches:
               only: /\w+\/.*/
 
-      - integration_test_compat:
+      - integration_test:
           requires:
             - build
           filters:
