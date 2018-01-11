@@ -19,16 +19,19 @@ function rollupWarningOverride(warning) {
 function mergeMetadata(metadata) {
     const dependencies = metadata.rollupDependencies;
     const labels = [];
+    const apiProperties = [];
 
     for (let i in metadata) {
         dependencies.push(...(metadata[i].templateDependencies || []));
         dependencies.push(...(metadata[i].classDependencies || []));
+        apiProperties.push(...(metadata[i].apiProperties || []).map(a => a.name));
         labels.push(...(metadata[i].labels || []));
     }
 
     return {
         bundleDependencies: Array.from(new Set(dependencies)),
         bundleLabels: labels,
+        bundleProperties: apiProperties
     };
 }
 

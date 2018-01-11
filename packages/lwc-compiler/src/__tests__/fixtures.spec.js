@@ -102,10 +102,9 @@ describe('compile from file system', () => {
             ),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', []);
     });
 
     it('compiles with namespace mapping', async () => {
@@ -117,10 +116,9 @@ describe('compile from file system', () => {
             pretify(readFixture('expected-mapping-namespace-from-path.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', []);
     });
 });
 
@@ -142,14 +140,13 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-external-dependency.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine', 'another-module'],
-            bundleLabels: ['test-label'],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine', 'another-module']);
+        expect(metadata).toHaveProperty('bundleLabels', ['test-label']);
+        expect(metadata).toHaveProperty('bundleProperties', []);
     });
 
     it('compiles to ESModule by deafult', async () => {
-        const { code, metadata } = await compile('/x/foo/foo.js', {
+        const { code, metadata, rawMetadata } = await compile('/x/foo/foo.js', {
             mapNamespaceFromPath: true,
             sources: {
                 '/x/foo/foo.js': readFixture(
@@ -165,10 +162,9 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-sources-namespaced.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
     });
 
     it('respects the output format', async () => {
@@ -189,10 +185,9 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-sources-namespaced-format.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
     });
 
     it('respects the output format', async () => {
@@ -225,10 +220,9 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-relative-import.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', []);
     });
 });
 
@@ -246,10 +240,9 @@ describe('mode generation', () => {
             pretify(readFixture('expected-prod-mode.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
     });
 
     it('handles compat mode', async () => {
@@ -265,10 +258,9 @@ describe('mode generation', () => {
             pretify(readFixture('expected-compat-mode.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
     });
 
     it('handles prod-compat mode', async () => {
@@ -284,10 +276,9 @@ describe('mode generation', () => {
             pretify(readFixture('expected-prod_compat-mode.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
-            bundleLabels: [],
-        });
+        expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+        expect(metadata).toHaveProperty('bundleLabels', []);
+        expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
     });
 
     it('handles all modes', async () => {
@@ -313,10 +304,9 @@ describe('mode generation', () => {
                 pretify(readFixture(`expected-${mode}-mode.js`)),
             );
 
-            expect(metadata).toMatchObject({
-                bundleDependencies: ['engine'],
-                bundleLabels: [],
-            });
+            expect(metadata).toHaveProperty('bundleDependencies', ['engine']);
+            expect(metadata).toHaveProperty('bundleLabels', []);
+            expect(metadata).toHaveProperty('bundleProperties', ['foo', 'bar']);
         }
     });
 });

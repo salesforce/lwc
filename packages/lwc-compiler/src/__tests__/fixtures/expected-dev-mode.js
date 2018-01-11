@@ -24,12 +24,29 @@ class ClassAndTemplate extends engine.Element {
         this.t = Test;
         this.counter = 0;
     }
-
+    get bar() {
+        return this._bar;
+    }
+    set bar(value) {
+        this._bar = value;
+    }
+    hello() {
+        return 'hello world!';
+    }
     render() {
         return tmpl;
     }
 
 }
+ClassAndTemplate.publicProps = {
+    foo: {
+        config: 0
+    },
+    bar: {
+        config: 3
+    }
+};
+ClassAndTemplate.publicMethods = ["hello"];
 ClassAndTemplate.style = tmpl.style;
 
 return ClassAndTemplate;

@@ -31,15 +31,36 @@ var ClassAndTemplate = function (_Element) {
     }
 
     _createClass(ClassAndTemplate, [{
+        key: "hello",
+        value: function hello() {
+            return 'hello world!';
+        }
+    }, {
         key: "render",
         value: function render() {
             return tmpl;
+        }
+    }, {
+        key: "bar",
+        get: function () {
+            return __getKey(this, "_bar");
+        },
+        set: function (value) {
+            __setKey(this, "_bar", value);
         }
     }]);
 
     return ClassAndTemplate;
 }(engine.Element);
-
+__setKey(ClassAndTemplate, "publicProps", {
+    foo: {
+        config: 0
+    },
+    bar: {
+        config: 3
+    }
+});
+__setKey(ClassAndTemplate, "publicMethods", ["hello"]);
 __setKey(ClassAndTemplate, "style", __getKey(tmpl, "style"));
 
 return ClassAndTemplate;
