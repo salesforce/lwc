@@ -1,3 +1,29 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="0.17.7"></a>
+# [0.17.7](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.6...v0.17.7) (2018-01-11)
+
+
+### Bug Fixes
+
+* Handle empty comments ([#962](https://git.soma.salesforce.com/lwc/lwc/issues/962)) ([6bee31c](https://git.soma.salesforce.com/lwc/lwc/commits/6bee31c))
+* **compat:** Do not wrap iframes in membrane ([#968](https://git.soma.salesforce.com/lwc/lwc/issues/968)) ([2c1a88a](https://git.soma.salesforce.com/lwc/lwc/commits/2c1a88a))
+* **compat form tag rendering:** Fixes issue where form tags could not be rendered ([#961](https://git.soma.salesforce.com/lwc/lwc/issues/961)) ([c4d8484](https://git.soma.salesforce.com/lwc/lwc/commits/c4d8484))
+* **integration tests:** Fix failing compat tests. Safari 10.1 driver fix. ([#975](https://git.soma.salesforce.com/lwc/lwc/issues/975)) ([0d5a50c](https://git.soma.salesforce.com/lwc/lwc/commits/0d5a50c))
+* **lwc-integration:** Fix Safari10 SauceLabs config ([#978](https://git.soma.salesforce.com/lwc/lwc/issues/978)) ([4f24752](https://git.soma.salesforce.com/lwc/lwc/commits/4f24752))
+* **wire-service:** Fix wire-service es5 build and related integration tests ([#971](https://git.soma.salesforce.com/lwc/lwc/issues/971)) ([bf91a13](https://git.soma.salesforce.com/lwc/lwc/commits/bf91a13))
+
+
+### Features
+
+* **integration:** Ability to specify target browsers ([#969](https://git.soma.salesforce.com/lwc/lwc/issues/969)) ([dd8f43b](https://git.soma.salesforce.com/lwc/lwc/commits/dd8f43b))
+
+
+
+
 <a name=""></a>
 # [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.6...v) (2018-01-03)
 
@@ -345,6 +371,3 @@
 
 <a name="0.4.1"></a>
 ## 0.4.1 (2017-03-11)
-
-
-
