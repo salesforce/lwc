@@ -1,4 +1,6 @@
 import { OwnerKey } from "../vm";
+import { defineProperty } from './../language';
+
 
 function updateUID(oldVnode: VNode, vnode: VNode) {
     const { uid: oldUid } = oldVnode;
