@@ -43,3 +43,10 @@ function foo() {
 function foo() {
     arguments[0].foo('string');
 }
+
+// function foo() {
+//     arguments.length;
+// }
+function foo() {
+    arguments.length;
+}

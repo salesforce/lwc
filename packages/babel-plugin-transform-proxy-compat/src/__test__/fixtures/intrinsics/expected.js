@@ -48,3 +48,10 @@ function foo() {
 function foo() {
     __callKey(arguments[0], 'foo', 'string');
 }
+
+// function foo() {
+//     arguments.length;
+// }
+function foo() {
+arguments.length;
+}
