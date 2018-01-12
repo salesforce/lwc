@@ -29,3 +29,22 @@ const children = __callKey(__getKey(Array.prototype, 'slice'), 'call', list);
 
 //String.prototype.slice(1);
 __callKey(String.prototype, 'slice', 1);
+
+//function foo() { arguments[0]; }
+function foo() {
+arguments[0];
+}
+
+// function foo() {
+//     arguments[0].foo;
+// }
+function foo() {
+    __getKey(arguments[0], 'foo');
+}
+
+// function foo() {
+//     arguments[0].foo('string');
+// }
+function foo() {
+    __callKey(arguments[0], 'foo', 'string');
+}

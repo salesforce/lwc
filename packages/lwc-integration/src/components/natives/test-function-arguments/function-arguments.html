@@ -1,0 +1,8 @@
+<template>
+    <div class="message-assert">{message}</div>
+    <ul class="iterate-list">
+        <template iterator:x={items}>
+            <li key={x.index}>{x.value}</li>
+        </template>
+    </ul>
+</template>

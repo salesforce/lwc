@@ -26,3 +26,20 @@ const children = Array.prototype.slice.call(list);
 
 //String.prototype.slice(1);
 String.prototype.slice(1);
+
+//function foo() { arguments[0]; }
+function foo() { arguments[0]; }
+
+// function foo() {
+//     arguments[0].foo;
+// }
+function foo() {
+    arguments[0].foo;
+}
+
+// function foo() {
+//     arguments[0].foo('string');
+// }
+function foo() {
+    arguments[0].foo('string');
+}

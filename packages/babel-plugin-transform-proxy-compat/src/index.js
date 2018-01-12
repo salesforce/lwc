@@ -42,7 +42,8 @@ const INTRINSICS = [
     'String',
     'Symbol',
     'WeakMap',
-    'WeakSet'
+    'WeakSet',
+    'arguments',
 ];
 
 function getResolveOptions (state) {
