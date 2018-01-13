@@ -87,7 +87,7 @@ function validatePropertyName(property) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "on" are reserved for event handlers.`
         );
-    } else if (propertyName.startsWith('data')) {
+    } else if (propertyName.startsWith('data') && propertyName !== 'data') {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "data" are reserved attributes.`
         );
