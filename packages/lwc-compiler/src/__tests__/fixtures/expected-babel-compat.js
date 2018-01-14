@@ -97,7 +97,7 @@ try {
 }
 
 function t() {
-  var _ref = __getKey(arguments, "length") > 0 && __getKey(arguments, 0) !== undefined ? __getKey(arguments, 0) : [1, 2, 3],
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [1, 2, 3],
       _ref2 = _slicedToArray(_ref, 3),
       a = __getKey(_ref2, 2);
 
