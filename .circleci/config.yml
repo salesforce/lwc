@@ -118,7 +118,7 @@ workflows:
 
       - integration_test_compat:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only: /\w+\/.*/
