@@ -57,7 +57,7 @@ export default function transformStyle(src, options) {
     }
 
     return postcss(plugins)
-        .process(src)
+        .process(src, { from: undefined })
         .then(res => {
             const code =
                 res.css && res.css.length
