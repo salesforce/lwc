@@ -103,12 +103,27 @@ function isParentNodeKeyword(key: string | Symbol): boolean {
     return (key === 'parentNode' || key === 'parentElement');
 }
 
+function isCrossOriginIframeWindow(key: PropertyKey, value: any) {
+    return (key === 'contentWindow') && value.window === value;
+}
+
+function wrapIframeWindow(win: Window) {
+    return {
+        postMessage() {
+            return win.postMessage.apply(win, arguments);
+        }
+    }
+}
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value?: any) => void) {
         const vm: VM = component[ViewModelReflection];
         const { elm } = (vm.vnode as ComponentVNode); // eslint-disable-line no-undef
         if (value) {
+            if (isCrossOriginIframeWindow(key as PropertyKey, value)) {
+                callback(wrapIframeWindow(value));
+            }
             if (value === querySelector) {
                 // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
