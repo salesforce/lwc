@@ -43,6 +43,12 @@ export default class MyComponent extends Element {
 </template>
 ```
 
+#### Pros
+- No code needed to make attributes reactive
+
+#### Cons
+- Requires updating existing components
+
 ### Detecting changes to attributes
 Component authors can listen to attribute changes by defining `attributeChangedCallback` coupled with a static `observedAttributes` property:
 ```
@@ -77,6 +83,14 @@ export default class MyComponent extends Element {
 ```
 
 This completely removes the need for `attributeChangedCallback` at all.
+
+#### Pros
+- Uses same approach for detecting changes to attributes and props
+- No more long switch statements
+
+#### Cons
+- Component authors have to unlearn attributeChangedCallback
+- Requires updating existing components
 
 
 ### HTML Attribute reflection
@@ -154,6 +168,13 @@ export default class MyComponent extends Element {
 </div>
 ```
 
+#### Pros
+- Declarative way to opt-out of attribute reflection
+
+#### Cons
+- New decorator
+- Possible landmine when defining custom getter/setter with no automatic reflection
+
 ### data- and aria- attributes
 Defining getters and setters for all possible data- and aria- attributes is not possible, especially since data- attributes are arbitrary. Also, because component authors have access to `@api` to expose setters, `data-` attributes are unnecessary. With this proposal, it will be _impossible_ for component authors to listen and use values from `data-` and `aria-` attributes. They will, however, still reflect out to the DOM:
 
@@ -177,3 +198,12 @@ export default class MyComponent extends Element {
 </div>
 
 // no console
+
+#### Pros
+- Component authors rely more on `@api` instead of `data-` and `aria-`
+- No need to implemenet `dataSet` inside components
+- `data-` and `aria-` can still be passed to native elements/non-LWC custom elements
+
+#### Cons
+- New decorator
+- Possible landmine when defining custom getter/setter with no automatic reflection
