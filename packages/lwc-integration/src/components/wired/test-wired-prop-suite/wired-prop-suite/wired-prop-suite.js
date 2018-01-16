@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, track } from 'engine';
 
 export default class WiredPropSuite extends Element {
     @track state = {
