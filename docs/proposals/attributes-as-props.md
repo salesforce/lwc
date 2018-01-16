@@ -170,6 +170,7 @@ export default class MyComponent extends Element {
 
 #### Pros
 - Declarative way to opt-out of attribute reflection
+- Much improved accessibility ergonomics
 
 #### Cons
 - New decorator
