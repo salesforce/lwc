@@ -1,4 +1,4 @@
-# Treat all attributes as props in LWC
+# LWC Attribute listening and reflection
 
 ## Status
 
