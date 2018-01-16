@@ -198,6 +198,7 @@ export default class MyComponent extends Element {
 </div>
 
 // no console
+```
 
 #### Pros
 - Component authors rely more on `@api` instead of `data-` and `aria-`
