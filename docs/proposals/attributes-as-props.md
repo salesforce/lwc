@@ -5,13 +5,13 @@
 _drafted_
 
 ## TL;DR
-- `attributeChangedCallback` removal
+- `static observableAttributes` and `attributeChangedCallback` removal
 - Allow Component authors to define public getter/setter for global HTML attributes
 - Opt-out of attribute reflection
 - `data-` and `aria-` attributes can no longer be accessed inside of components. They only reflect back to the DOM.
 
 ## Description
-Global HTML Attributes and public props are often a source of confusion for LWC developers(and the library maintainers!). This proposal seeks to remove the concept of attributes in LWC and treat all incoming data as props, whether or not their name is listed on the HTML Global Attributes list. With this goal in mind, below are the proposals for listening to prop changes, reflecting props on the custom element(or not!) and handling of `data-` and `aria-`.
+Global HTML Attributes and public props are often a source of confusion for for LWC developers (and LWC maintainers!). This proposal seeks to remove the concept of attributes in LWC and treat all incoming data as props, regardless of whether they are HTML global attributes. With this goal in mind, below are the proposals for listening to prop changes, reflecting props on the custom element(or not!) and handling of `data-` and `aria-`.
 
 ### Attribute reactivity
 LWC Attributes are not reactive today. In order to trigger a re-render from an attribute change, component authors have to jump through several hoops to make it happen:
@@ -50,7 +50,7 @@ export default class MyComponent extends Element {
 - Requires updating existing components
 
 ### Detecting changes to attributes
-Component authors can listen to attribute changes by defining `attributeChangedCallback` coupled with a static `observedAttributes` property:
+Today, component authors can.. listen to attribute changes by defining `attributeChangedCallback` coupled with a static `observedAttributes` property:
 ```
 import { Element } from 'engine';
 
@@ -63,7 +63,7 @@ export default class MyComponent extends Element {
 }
 ```
 
-With getters and setters defined on the Element prototype, it becomes possible instead for component authors to define their own setters to listen to component changes:
+With getters and setters defined on the Element prototype, it becomes possible instead for component authors to define their own setters to listen to component changes. It also avoids inheritance-related hazards with `attributeChangedCallback` usage.
 
 ```
 import { Element } from 'engine';
@@ -91,7 +91,7 @@ This completely removes the need for `attributeChangedCallback` at all.
 #### Cons
 - Component authors have to unlearn attributeChangedCallback
 - Requires updating existing components
-
+- Non-backwards compatible change that cannot be applied with codemod
 
 ### HTML Attribute reflection
 There are cases where it is desirable to prevent automatic reflection back to the custom element. If a component author does not define a custom getter/setter for an attribute, the attribute will be reflected back to the custom element by default:
@@ -139,7 +139,7 @@ export default class MyComponent extends Element {
 </div>
 ```
 
-In order to enable attribute reflection for that property, component author can import `@attribute` decorator and apply it to the getter/setter:
+~~In order to enable attribute reflection for that property, component author can import `@attribute` decorator and apply it to the getter/setter:
 
 ```
 import { attribute, Element } from 'engine';
@@ -154,6 +154,35 @@ export default class MyComponent extends Element {
     set title(value) {
         // perform side effects
         this.privateTitle = value;
+    }
+}
+
+// template.html
+<template>
+    <my-component title="foo"></my-component>
+</template>
+
+// output
+<div>
+    <my-component title="foo"></my-component>
+</div>
+```~~
+
+In order to enable attribute reflection for that property, component author can use `setAttribute` directly in their getter/setter:
+
+```
+import { Element } from 'engine';
+export default class MyComponent extends Element {
+    @track privateTitle;
+
+    @api
+    get title() {
+        return this.privateTitle;
+    }
+    set title(value) {
+        // perform side effects
+        this.privateTitle = value;
+        this.setAttribute('title', value);
     }
 }
 
@@ -207,3 +236,11 @@ export default class MyComponent extends Element {
 #### Cons
 - New decorator
 - Possible landmine when defining custom getter/setter with no automatic reflection
+
+
+### Conclusion:
+- Global attribute getters/setters defined on Element.prototype for automatic reactivity and reflection
+- Allow component authors to define global attribute getters/setters to detect changes, opt out of reflection
+- Removal of `attributeChangedCallback` and `observedAttributes`
+- Introduce `setAttribute` and `removeAttribute`
+- `data-` and `aria-` attributes cannot be listened to, but accessed via `getAttribute`
