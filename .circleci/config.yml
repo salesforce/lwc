@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_test:
     working_directory: ~/lwc
 
     docker:
@@ -22,24 +22,8 @@ jobs:
             - yarn.lock
           key: yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
 
-  unit_test:
-    working_directory: ~/lwc
-
-    docker:
-      - image: circleci/node:8.9.3-stretch-browsers
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
-          - yarn-v3-{{ .Branch }}-
-
-      - run: yarn install
-
       - run:
-          name: Unit Test
+          name: Run Unit Tests
           command: yarn test
 
   integration_test:
@@ -58,10 +42,10 @@ jobs:
 
       - run: yarn install
       - run:
-          name: Integration Test
-          command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn test:integration
+          name: Integration Test - Headless Chrome
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn local:prod
 
-  performance_test:
+  integration_test_compat:
     working_directory: ~/lwc
 
     docker:
@@ -77,6 +61,44 @@ jobs:
 
       - run: yarn install
       - run:
+          name: Integration Test - IE11 SauceLabs
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
+
+  perf_and_compare:
+    working_directory: ~/lwc
+
+    docker:
+      - image: circleci/node:8.9.3-stretch-browsers
+
+    environment:
+      - CUSTOM_BASH_ENV: ~/.bashrc
+      - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
+      - PATH_GIT_APP_CERT: ~/lwc/git_app.pem
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-
+
+      - run:
+          name: Setup dynamic environment variables
+          command:
+              echo '
+              export PATH=./node_modules/.bin:$PATH
+              export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
+              export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
+              export TARGET_COMMIT=${CIRCLE_SHA1}
+              export BASE_COMMIT=`git rev-parse origin/master`' >> $BASH_ENV
+
+      - run:
+          name: Decode PEM as environment variable
+          command: echo -e "$GIT_APP_CERT" | base64 -d >> ~/lwc/git_app.pem
+
+      - run: yarn install
+      - run:
           name: Preformance Test
           command: yarn test:performance
 
@@ -84,36 +106,30 @@ jobs:
           path: ~/lwc/packages/benchmark/__benchmark_results__/
           destination: benchmarks
 
+      - run:
+          name: Comparing Benchmarks
+          command: cd packages/benchmark/ && best --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-                - /\w+\/.*/
+      - build_and_test
 
-      - unit_test:
+      - integration_test_compat:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
               only: /\w+\/.*/
 
       - integration_test:
           requires:
-            - build
+            - build_and_test
           filters:
             branches:
-              only: /\w+\/.*/
+              ignore: master
 
-      - performance_test:
+      - perf_and_compare:
           requires:
-            - build
-          filters:
-            branches:
-              only:
-                - master
-                - /\w+\/.*/
+            - build_and_test

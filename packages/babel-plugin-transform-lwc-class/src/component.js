@@ -136,7 +136,8 @@ module.exports = function ({ types: t, }) {
     function sanitizeComment(comment) {
         comment = comment.trim();
         if (comment.length > 0 && comment.charAt(0) === '*') {
-            return commentParser('/*' + comment + '*/')[0].source;
+            const parsed = commentParser('/*' + comment + '*/');
+            return (parsed && parsed.length > 0) ? parsed[0].source : null;
         }
         return null; // ignoring non-JSDoc comments
     }

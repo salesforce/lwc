@@ -1,6 +1,8 @@
+const OriginalProxy = window.Proxy;
 window.Proxy.__COMPAT__ = true;
 
 import Proxy from "../main";
+import { isCompatProxy } from "../methods";
 
 describe('Proxy', () => {
     describe('.instanceOfKey', () => {
@@ -274,5 +276,22 @@ describe('Proxy', () => {
             expect(context).toBe(o.foo);
             expect(args.length).toBe(0);
         });
+    });
+});
+
+describe('isCompatProxy', () => {
+    it('should return false when property access throws error', () => {
+        // See issue #867 for background
+        const replicaOrAny = new OriginalProxy({}, {
+            get: () => {
+                throw new Error('intentional error thrown in test');
+            }
+        });
+        expect(isCompatProxy(replicaOrAny)).toBe(false);
+    });
+
+    it('should return true for compat Proxy object', () => {
+        const replicaOrAny = new Proxy({}, {});
+        expect(isCompatProxy(replicaOrAny)).toBe(true);
     });
 });

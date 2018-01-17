@@ -1,8 +1,11 @@
 const fs = require('fs-extra');
 const path = require('path');
+const babel = require('babel-core');
 const rollup = require('rollup');
 const lwcCompilerPlugin = require('rollup-plugin-lwc-compiler');
+const compatPlugin = require('babel-plugin-transform-proxy-compat');
 const templates = require('../src/shared/templates.js');
+const { compatBrowsersPreset } = require('../../../scripts/babel-config-util');
 
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
@@ -43,6 +46,15 @@ function testCaseComponentResolverPlugin() {
     };
 }
 
+function getTodoApp(testBundle) {
+    return isCompat ?
+        babel.transform(templates.todoApp(testBundle), {
+            presets: [ compatBrowsersPreset ],
+            plugins: [[compatPlugin, { resolveProxyCompat: { global: 'window.Proxy' } }]]}
+        ).code
+        : templates.todoApp(testBundle);
+}
+
 function entryPointResolverPlugin() {
     return {
         name: 'entry-point-resolver',
@@ -54,7 +66,7 @@ function entryPointResolverPlugin() {
         load(id) {
             if (id.includes(testSufix)) {
                 const testBundle = getTestName(id);
-                return testBundle.startsWith('wired-') ? templates.todoApp(testBundle) : templates.app(testBundle);
+                return testBundle.startsWith('wired-') ? getTodoApp(testBundle) : templates.app(testBundle);
             }
         },
     }

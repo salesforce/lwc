@@ -11,7 +11,7 @@ Object.compatKeys({});
 __callKey(__getKey(Array.prototype, 'compatPush'), 'apply', [], [a]);
 
 //Array['prototype'].push.apply([], [a]);
-__callKey(__getKey(Array['prototype'], 'push'), 'apply', [], [a]);
+__callKey(Array['prototype'].push, 'apply', [], [a]);
 
 //Array.prototype.join.call(arguments, ' ');
 __callKey(__getKey(Array.prototype, 'join'), 'call', arguments, ' ');
@@ -29,3 +29,29 @@ const children = __callKey(__getKey(Array.prototype, 'slice'), 'call', list);
 
 //String.prototype.slice(1);
 __callKey(String.prototype, 'slice', 1);
+
+//function foo() { arguments[0]; }
+function foo() {
+arguments[0];
+}
+
+// function foo() {
+//     arguments[0].foo;
+// }
+function foo() {
+    __getKey(arguments[0], 'foo');
+}
+
+// function foo() {
+//     arguments[0].foo('string');
+// }
+function foo() {
+    __callKey(arguments[0], 'foo', 'string');
+}
+
+// function foo() {
+//     arguments.length;
+// }
+function foo() {
+arguments.length;
+}

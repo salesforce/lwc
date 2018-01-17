@@ -45,7 +45,7 @@ export {
 
 export function isReplicable(value: any): value is Replicable {
     const type = typeof value;
-    return value && (type === 'object' || type === 'function');
+    return value && (type === 'object' || type === 'function') && !(value instanceof HTMLIFrameElement);
 }
 
 export const OriginalTargetSlot = Symbol();

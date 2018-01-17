@@ -2,7 +2,7 @@ exports.app = function (cmpName) {
     return `
         import { createElement } from 'engine';
         import Cmp from '${cmpName}';
-        const element = createElement('${cmpName}', { is: Cmp });
+        var element = createElement('${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }
@@ -102,7 +102,7 @@ exports.todoApp = function (cmpName) {
 const COMPAT = `
     <script src="/shared/compat.js"></script>
     <script>
-        for (let h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
+        for (var h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
     </script>
 `;
 

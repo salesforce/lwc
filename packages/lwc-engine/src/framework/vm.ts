@@ -3,14 +3,14 @@ import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent } from "./component";
 import { patch } from "./patch";
 import { ArrayPush, isUndefined, isNull, keys, defineProperties, ArrayUnshift, ArraySlice } from "./language";
-import { addCallbackToNextTick, noop, EmptyObject } from "./utils";
+import { addCallbackToNextTick, noop, EmptyObject, usesNativeSymbols } from "./utils";
 import { ViewModelReflection } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentMethod } from "./invoker";
 let idx: number = 0;
 let uid: number = 0;
 
-export const OwnerKey = Symbol('key');
+export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
 
 export function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {

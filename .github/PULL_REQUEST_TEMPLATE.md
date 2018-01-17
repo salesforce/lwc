@@ -20,15 +20,21 @@ If yes, please describe the impact and migration path for existing applications:
 Please check if your PR fulfills the following requirements:
 
 **The PR fulfills these requirements:**
-- [ ] The PR title follows conventional commit format:
-      ```
-      commit-type(optional scope): commit description.
-      ```
-      http://conventionalcommits.org/
 - [ ] Tests for the changes have been added (for bug fixes / features)
 - [ ] Both unit and integration tests pass
 - [ ] Docs have been added / updated (for bug fixes / features)
-
+- [ ] The PR title follows conventional commit format:
+      ```
+            commit-type(optional scope): commit description.
+      ```
+      
+      Supported commit types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test.
+      Supported scope: The scope should be the name of the npm package affected (engine, compiler, wire-service, etc.)
+      
+      
+ - More details on LWC semantic commit can be found [here](https://git.soma.salesforce.com/lwc/lwc/blob/master/CONTRIBUTING.md#commit).
+      
+      
 
 #### Other information:
 

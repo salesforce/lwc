@@ -2,10 +2,11 @@
 
 const path = require('path');
 const replace = require('rollup-plugin-replace');
-const typescript = require('rollup-plugin-typescript');
+const babel = require('rollup-plugin-babel');
 
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
+const { compatBrowsersPreset } = require('../../scripts/babel-config-util');
 
 const input = path.resolve(__dirname, 'src/main.js');
 const outputDir = path.resolve(__dirname, 'dist/umd');
@@ -15,25 +16,31 @@ const footer = `/** version: ${version} */`;
 
 function rollupConfig(config) {
     const { format, target } = config;
+    const isCompat = target === 'es5';
+
+    let plugins = [
+        replace({
+            'process.env.NODE_ENV': JSON.stringify('development'),
+        }),
+        isCompat && babel({
+            presets: [ compatBrowsersPreset ],
+            plugins: [ "external-helpers" ],
+            babelrc: false,
+        }),
+    ].filter((plugin) => plugin);
+
     const targetName = generateTargetName(config);
+
     return {
         input: input,
-        name: "WireService",
-        banner: banner,
-        footer: footer,
         output: {
             file: path.join(outputDir + `/${target}`,  targetName),
-            format: format
+            name: "WireService",
+            format,
+            banner,
+            footer,
         },
-        plugins: [
-            typescript({
-                target: target,
-                typescript: require('typescript'),
-            }),
-            replace({
-                'process.env.NODE_ENV': JSON.stringify('development')
-            })
-        ]
+        plugins,
     }
 }
 

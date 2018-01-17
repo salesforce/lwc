@@ -1,4 +1,3 @@
-import __compatConcat from 'proxy-compat/compatConcat';
 import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey from 'proxy-compat/callKey';
 import __getKey from 'proxy-compat/getKey';
@@ -98,7 +97,7 @@ try {
 }
 
 function t() {
-  var _ref = __getKey(arguments, "length") > 0 && __getKey(arguments, 0) !== undefined ? __getKey(arguments, 0) : [1, 2, 3],
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [1, 2, 3],
       _ref2 = _slicedToArray(_ref, 3),
       a = __getKey(_ref2, 2);
 
@@ -115,7 +114,7 @@ var obj2 = {
 
 // babel-plugin-transform-es2015-spread
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-spread/test/fixtures/spread/single/actual.js
-__callKey(console, "log", __compatConcat([], _toConsumableArray(foo)));
+__callKey(console, "log", [].concat(_toConsumableArray(foo)));
 
 // babel-plugin-transform-es2015-template-literals
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-template-literals/test/fixtures/loose/tag/actual.js

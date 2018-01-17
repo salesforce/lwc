@@ -1,3 +1,4 @@
+import { compatConcat, compatPush, compatUnshift } from './array';
 import { defaultHasInstance } from './methods';
 import { OwnPropertyKeys } from './object';
 
@@ -325,6 +326,30 @@ export class XProxy implements XProxyInstance {
             proxy: p,
             revoke: lastRevokeFn,
         };
+    }
+
+    push() {
+        let push = this.get('push');
+        if (push === Array.prototype.push) {
+            push = compatPush;
+        }
+        return push.apply(this, arguments);
+    }
+
+    concat() {
+        let concat = this.get('concat');
+        if (concat === Array.prototype.concat) {
+            concat = compatConcat;
+        }
+        return concat.apply(this, arguments);
+    }
+
+    unshift() {
+        let unshift = this.get('unshift');
+        if (unshift === Array.prototype.unshift) {
+            unshift = compatUnshift;
+        }
+        return unshift.apply(this, arguments);
     }
 
     [key: string]: any;
