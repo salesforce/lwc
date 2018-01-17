@@ -234,6 +234,19 @@ describe('Public Props', () => {
         }
     });
 
+    test('does not throw error if property name is "data"', `
+        export default class Test {
+            @api data;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            data: {
+                config: 0
+            }
+        };
+    `);
+
     test('throws error if property name prefixed with "data"', `
         export default class Test {
             @api dataFooBar;
