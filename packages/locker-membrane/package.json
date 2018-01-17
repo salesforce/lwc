@@ -1,6 +1,6 @@
 {
   "name": "locker-membrane",
-  "version": "0.17.7",
+  "version": "0.17.8",
   "description": "Membrane implementation for locker service",
   "main": "dist/commonjs/locker-membrane.js",
   "module": "dist/modules/locker-membrane.js",
