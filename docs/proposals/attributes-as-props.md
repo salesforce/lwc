@@ -139,34 +139,7 @@ export default class MyComponent extends Element {
 </div>
 ```
 
-~~In order to enable attribute reflection for that property, component author can import `@attribute` decorator and apply it to the getter/setter:
-
-```
-import { attribute, Element } from 'engine';
-export default class MyComponent extends Element {
-    @track privateTitle;
-
-    @attribute
-    @api
-    get title() {
-        return this.privateTitle;
-    }
-    set title(value) {
-        // perform side effects
-        this.privateTitle = value;
-    }
-}
-
-// template.html
-<template>
-    <my-component title="foo"></my-component>
-</template>
-
-// output
-<div>
-    <my-component title="foo"></my-component>
-</div>
-```~~
+~~In order to enable attribute reflection for that property, component author can import `@attribute` decorator and apply it to the getter/setter:~~
 
 In order to enable attribute reflection for that property, component author can use `setAttribute` directly in their getter/setter:
 
