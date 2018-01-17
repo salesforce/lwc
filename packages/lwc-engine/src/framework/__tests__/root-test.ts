@@ -2,6 +2,8 @@ import { Root, wrapIframeWindow } from "../root";
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
+import { unwrap } from '../membrane';
+import { createElement } from '../main';
 
 describe('root', () => {
     describe('#constructor()', () => {
@@ -100,19 +102,132 @@ describe('root', () => {
 
     });
 
-    describe.only('wrapped iframe window', () => {
-        let iframe;
-        beforeEach(() => {
-            console.log('before')
-            iframe = document.createElement('iframe');
-            iframe.src = 'http://daringfireball.net';
-            return new Promise((res) => {
-                setTimeout(res, 1000);
-            })
+    describe('wrapped iframe window', () => {
+        describe('methods', function () {
+            let contentWindow;
+            let wrapped;
+            let setLocation;
+            beforeEach(() => {
+                setLocation = jest.fn();
+                contentWindow = {
+                    postMessage: jest.fn(),
+                    blur: jest.fn(),
+                    close: jest.fn(),
+                    focus: jest.fn(),
+                    get closed() {
+                        return 'mock closed';
+                    },
+                    get frames() {
+                        return 'mock frames';
+                    },
+                    get length() {
+                        return 'mock length';
+                    },
+                    get location() {
+                        return 'mock location';
+                    },
+                    set location(value) {
+                        setLocation(value);
+                    },
+                    get opener() {
+                        return 'mock opener';
+                    },
+                    get parent() {
+                        return 'mock parent';
+                    },
+                    get self() {
+                        return 'mock self';
+                    },
+                    get top() {
+                        return 'mock top';
+                    },
+                    get window() {
+                        return 'mock window';
+                    },
+                };
+
+                wrapped = wrapIframeWindow(contentWindow);
+            });
+
+            it('should delegate setting location', function () {
+                wrapped.location = 'foo';
+                expect(setLocation).toHaveBeenCalledWith('foo');
+            });
+
+            it('should delegate window', function () {
+                expect(contentWindow.window).toBe('mock window');
+            });
+
+            it('should delegate top', function () {
+                expect(contentWindow.top).toBe('mock top');
+            });
+
+            it('should delegate self', function () {
+                expect(contentWindow.self).toBe('mock self');
+            });
+
+            it('should delegate parent', function () {
+                expect(contentWindow.parent).toBe('mock parent');
+            });
+
+            it('should delegate opener', function () {
+                expect(contentWindow.opener).toBe('mock opener');
+            });
+
+            it('should delegate location', function () {
+                expect(contentWindow.location).toBe('mock location');
+            });
+
+            it('should delegate length', function () {
+                expect(contentWindow.length).toBe('mock length');
+            });
+
+            it('should delegate frames', function () {
+                expect(contentWindow.frames).toBe('mock frames');
+            });
+
+            it('should delegate closed', function () {
+                expect(contentWindow.closed).toBe('mock closed');
+            });
+
+            it('should delegate close', function () {
+                wrapped.close();
+                expect(contentWindow.close).toHaveBeenCalled();
+            });
+
+            it('should delegate focus', function () {
+                wrapped.focus();
+                expect(contentWindow.focus).toHaveBeenCalled();
+            });
+
+            it('should delegate postMessage', function () {
+                wrapped.postMessage('foo', '*');
+                expect(contentWindow.postMessage).toHaveBeenCalledWith('foo', '*');
+            });
+
+            it('should delegate blur', function () {
+                wrapped.blur();
+                expect(contentWindow.blur).toHaveBeenCalled();
+            });
         });
 
-        it('should doo', function () {
-            iframe.contentWindow.foo;
+        describe.only('unwrapping', function () {
+            it('should return original object', function () {
+                class MyComponent extends Element {
+                    getContentWindow() {
+                        return this.root.querySelector('iframe').contentWindow;
+                    }
+                    render() {
+                        return () => [api.h('iframe', { src: 'https://salesforce.com' }, [])]
+                    }
+                }
+                MyComponent.publicMethods = ['getContentWindow'];
+
+                const elm = createElement('x-foo', { is: MyComponent });
+                document.body.appendChild(elm);
+                const iframeContentWindow = elm.getContentWindow();
+                expect(document.querySelector('iframe').contentWindow === unwrap(iframeContentWindow)).toBe(true);
+            });
         });
     });
 
