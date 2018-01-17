@@ -2,7 +2,7 @@
 
 ## Status
 
-_drafted_
+_consensus_
 
 ## TL;DR
 - `static observableAttributes` and `attributeChangedCallback` removal
