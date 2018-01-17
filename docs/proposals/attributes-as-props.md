@@ -1,4 +1,4 @@
-# Treat all attributes as props in LWC
+# LWC Attribute listening and reflection
 
 ## Status
 
@@ -199,6 +199,7 @@ export default class MyComponent extends Element {
 
 #### Pros
 - Declarative way to opt-out of attribute reflection
+- Much improved accessibility ergonomics
 
 #### Cons
 - New decorator
@@ -227,6 +228,7 @@ export default class MyComponent extends Element {
 </div>
 
 // no console
+```
 
 #### Pros
 - Component authors rely more on `@api` instead of `data-` and `aria-`
@@ -238,9 +240,12 @@ export default class MyComponent extends Element {
 - Possible landmine when defining custom getter/setter with no automatic reflection
 
 
-### Conclusion:
+----
+
+## Conclusion:
 - Global attribute getters/setters defined on Element.prototype for automatic reactivity and reflection
 - Allow component authors to define global attribute getters/setters to detect changes, opt out of reflection
 - Removal of `attributeChangedCallback` and `observedAttributes`
 - Introduce `setAttribute` and `removeAttribute`
 - `data-` and `aria-` attributes cannot be listened to, but accessed via `getAttribute`
+
