@@ -1,10 +1,21 @@
-# Change Log
+<a name=""></a>
+# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.8...v) (2018-01-17)
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+
+<a name="0.17.8"></a>
+## [0.17.8](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.7...v0.17.8) (2018-01-17)
+
+
+### Bug Fixes
+
+* **compiler:** Allow data to be a valid prop name ([#7](https://git.soma.salesforce.com/lwc/lwc/issues/7)) ([b5a7efd](https://git.soma.salesforce.com/lwc/lwc/commits/b5a7efd))
+* **packages:** use conventional-changelog instead of lerna's conventional-commits ([#9](https://git.soma.salesforce.com/lwc/lwc/issues/9)) ([ef42218](https://git.soma.salesforce.com/lwc/lwc/commits/ef42218))
+
+
 
 <a name="0.17.7"></a>
-# [0.17.7](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.6...v0.17.7) (2018-01-11)
+## [0.17.7](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.6...v0.17.7) (2018-01-12)
 
 
 ### Bug Fixes
@@ -20,12 +31,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 * **integration:** Ability to specify target browsers ([#969](https://git.soma.salesforce.com/lwc/lwc/issues/969)) ([dd8f43b](https://git.soma.salesforce.com/lwc/lwc/commits/dd8f43b))
-
-
-
-
-<a name=""></a>
-# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.6...v) (2018-01-03)
 
 
 
@@ -371,3 +376,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 <a name="0.4.1"></a>
 ## 0.4.1 (2017-03-11)
+
+
+
