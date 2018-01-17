@@ -5,7 +5,7 @@ export default class UnwrapCrossOriginIframe extends Element {
     errorMessage = 'no error';
 
     @api
-    sendMessage() {
+    unwrapContentWindow() {
         const contentWindow = this.root.querySelector('iframe').contentWindow;
         try {
             unwrap(contentWindow);

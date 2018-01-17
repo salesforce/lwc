@@ -1,4 +1,4 @@
-import { Root } from "../root";
+import { Root, wrapIframeWindow } from "../root";
 import { Element } from "../html-element";
 import * as api from "../api";
 import { patch } from '../patch';
@@ -100,6 +100,21 @@ describe('root', () => {
 
     });
 
+    describe.only('wrapped iframe window', () => {
+        let iframe;
+        beforeEach(() => {
+            console.log('before')
+            iframe = document.createElement('iframe');
+            iframe.src = 'http://daringfireball.net';
+            return new Promise((res) => {
+                setTimeout(res, 1000);
+            })
+        });
+
+        it('should doo', function () {
+            iframe.contentWindow.foo;
+        });
+    });
 
     describe('membrane', () => {
 
