@@ -28,9 +28,9 @@
     "webpack": "^3.8.1"
   },
   "dependencies": {
-    "@best/runner-headless": "0.0.6",
-    "@best/store-aws": "0.0.6",
-    "best-cli": "0.0.6",
+    "@best/runner-headless": "0.0.7",
+    "@best/store-aws": "0.0.7",
+    "best-cli": "0.0.7",
     "isomorphic-fetch": "^2.2.1",
     "lwc-engine": "0.17.8",
     "rollup-plugin-lwc-compiler": "0.17.8"
