@@ -223,7 +223,7 @@ describe('mode generation', () => {
         });
     });
 
-    it('handles compat mode', async () => {
+    it.only('handles compat mode', async () => {
         const { code, metadata } = await compile(
             fixturePath('class_and_template/class_and_template.js'),
             {

@@ -22,6 +22,8 @@ const ARRAY_OPERATIONS = {
     CONCAT: 'compatConcat',
 }
 
+const PRAGMA_DISABLE = 'proxy-compat-disable';
+
 const NO_TRANSFORM = Symbol('no-transform');
 
 // List here: https://tc39.github.io/ecma262/#sec-well-known-intrinsic-objects
@@ -59,7 +61,7 @@ function compatPlugin({ types: t }) {
     }
 
     /**
-     * Retrieve the indentifier for a proxy-compat API.
+     * Retrieve the identifier for a proxy-compat API.
      */
     function resolveCompatProxyImport(memberName, keysSeen) {
         // Create a local identifier and register it
@@ -95,7 +97,7 @@ function compatPlugin({ types: t }) {
             let { left, right, operator } = path.node;
             let assignment, args;
 
-            // Skip assigments such as var a = 1;
+            // Skip assignments such as var a = 1;
             if (!t.isMemberExpression(left)) {
                 return;
             }
@@ -214,17 +216,17 @@ function compatPlugin({ types: t }) {
             const { operator, left, right } = path.node;
             if (operator === 'instanceof') {
                 const id = resolveCompatProxyImport(OBJECT_OPERATIONS.INSTANCEOF_KEY, this.keysSeen);
-                const warppedInOperator = t.callExpression(id, [left, right]);
-                path.replaceWith(warppedInOperator);
+                const wrappedInOperator = t.callExpression(id, [left, right]);
+                path.replaceWith(wrappedInOperator);
             } else if (operator === 'in') {
                 const id = resolveCompatProxyImport(OBJECT_OPERATIONS.IN_KEY, this.keysSeen);
-                const warppedInOperator = t.callExpression(id, [right, left]);
-                path.replaceWith(warppedInOperator);
+                const wrappedInOperator = t.callExpression(id, [right, left]);
+                path.replaceWith(wrappedInOperator);
             }
         }
     };
 
-    const intrisicMethodsVisitor = {
+    const intrinsicMethodsVisitor = {
         /**
          * Transforms:
          *     Array.prototype.push   =>   Array.prototype.compatPush
@@ -296,8 +298,11 @@ function compatPlugin({ types: t }) {
             const resolveProxyCompat = opts.module || opts.global || opts.independent;
 
             if (resolveProxyCompat == undefined) {
-                throw new Error(`Unexcepted resolveProxyCompat option, expected property "module", "global" or "independent"`);
+                throw new Error(`Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"`);
             }
+
+            // Set to false if the file should not get the proxy compat transform
+            this.applyProxyCompatTransform = true;
 
             // Object to record used proxy compat APIs
             this.keysSeen = Object.create(null);
@@ -306,12 +311,39 @@ function compatPlugin({ types: t }) {
         visitor: {
             Program: {
                 /**
-                 * Apply the compat transform on exit in order to ensure all the other transformations has been applied before
+                 * Look for pragma to decide if the compat transform needs to be applied.
+                 * Because other transforms can change the order of the statement at the top of the file (adding extra imports),
+                 * the transform look for the present of the pragma not only at the top of the file but also in it's body.
+                 */
+                enter(path) {
+                    for (let child of path.node.body) {
+                        // Get all the comments for program children
+                        const { leadingComments = [], trailingComments = [] } = child;
+                        const comments = [...leadingComments, ...trailingComments];
+
+                        for (const comment of comments) {
+                            if (
+                                comment.type === 'CommentBlock' &&
+                                comment.value.trim() === PRAGMA_DISABLE
+                            ) {
+                                this.applyProxyCompatTransform = false;
+                            }
+                        }
+                    }
+                },
+
+                /**
+                 * Apply the compat transform on exit in order to ensure all the other transformations has been applied before.
                  */
                 exit(path, state) {
+                    // Early exit if the file should not get transformed
+                    if (!this.applyProxyCompatTransform) {
+                        return;
+                    }
+
                     // It's required to do the AST traversal in 2 times. The Array transformations before the Object transformations in
                     // order to ensure the transformations are applied in the right order.
-                    path.traverse(intrisicMethodsVisitor, state);
+                    path.traverse(intrinsicMethodsVisitor, state);
                     path.traverse(markerTransformVisitor, state);
                     path.traverse(objectTransformVisitor, state);
 
@@ -368,7 +400,7 @@ function compatPlugin({ types: t }) {
                     }
 
                     // We need to make sure babel doesn't visit the newly created variable declaration.
-                    // Otherwise it will apply the proxy transform to the member expression to retrive the proxy APIs.
+                    // Otherwise it will apply the proxy transform to the member expression to retrieve the proxy APIs.
                     path.stop();
 
                     // Finally add to the top of the file the API declarations
