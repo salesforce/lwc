@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, api } from 'engine';
 
 export default class TableComponentRow extends Element {
     @api row;

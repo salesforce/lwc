@@ -1,8 +1,8 @@
-import { Element } from "engine";
+import { Element, api } from "engine";
 
 export default class CompatExpando extends Element {
     state = {};
-    
+
     @api
     changeComputedText() {
         this.state.computed = this.state.computed ? this.state.computed + '#changed' : 'computed';

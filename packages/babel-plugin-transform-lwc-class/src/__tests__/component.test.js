@@ -8,7 +8,7 @@ describe('Element import', () => {
 
         export default class extends Element {}
     `, undefined, {
-        message: `test.js: Raptor component class can't be an anonymous.`,
+        message: `test.js: LWC component class can't be an anonymous.`,
         loc: {
             line: 3,
             column: 15
@@ -81,47 +81,6 @@ describe('render method', () => {
         }
         Test2.style = _tmpl.style;
     `)
-});
-
-describe('Misspelled Component APIs', () => {
-    test('connectCallback -> connectedCallback', `
-        import { Element } from "engine";
-        export default class Test extends Element {
-            connectCallback() {}
-        }
-    `, undefined, {
-        message: 'test.js: Wrong lifecycle method name connectCallback. You probably meant connectedCallback',
-        loc: {
-            line: 3,
-            column: 4
-        }
-    });
-
-    test('disconnectCallback -> disconnectedCallback', `
-        import { Element } from "engine";
-        export default class Test extends Element {
-            disconnectCallback() {}
-        }
-    `, undefined, {
-        message: 'test.js: Wrong lifecycle method name disconnectCallback. You probably meant disconnectedCallback',
-        loc: {
-            line: 3,
-            column: 4
-        }
-    });
-
-    test('renderCallback -> renderedCallback', `
-        import { Element } from "engine";
-        export default class Test extends Element {
-            renderCallback() {}
-        }
-    `, undefined, {
-        message: 'test.js: Wrong lifecycle method name renderCallback. You probably meant renderedCallback',
-        loc: {
-            line: 3,
-            column: 4
-        }
-    });
 });
 
 describe('metadata', () => {

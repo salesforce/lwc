@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, api, track } from 'engine';
 
 export default class Tree2 extends Element {
     @api treeData;
