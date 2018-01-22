@@ -4,12 +4,10 @@ const test = require('./utils/test-transform').test(
 
 describe('Public Props', () => {
     test('transforms public props', `
-        import { api } from 'engine';
         export default class Test {
             @api test = 1;
         }
     `,`
-
         export default class Test {
             constructor() {
                 this.test = 1;
@@ -24,7 +22,6 @@ describe('Public Props', () => {
     `);
 
     test('transform nested classes', `
-        import { api } from 'engine';
         export default class Outer {
             @api outer;
 
@@ -53,7 +50,6 @@ describe('Public Props', () => {
     `);
 
     test('transforms public getters', `
-        import { api } from 'engine';
         export default class Test {
             @api get publicGetter() {
                 return 1;
@@ -73,7 +69,6 @@ describe('Public Props', () => {
     `);
 
     test('transforms public getter/setter', `
-        import { api } from 'engine';
         export default class Test {
             @api get something() {
                 return this.s;
@@ -101,7 +96,6 @@ describe('Public Props', () => {
     `);
 
     test('throws error if setter is not associated with a getter', `
-        import { api } from 'engine';
         export default class Test {
             @api set publicSetter(value) {
                 this.thing = value;
@@ -116,7 +110,6 @@ describe('Public Props', () => {
     });
 
     test('transform pairs of setter and getter', `
-        import { api } from 'engine';
         export default class Test {
             _a = true;
             _b = false;
@@ -159,7 +152,6 @@ describe('Public Props', () => {
     `)
 
     test(`transform complex attributes`, `
-        import { api } from 'engine';
         export default class Text {
             @api publicProp;
             privateProp;
@@ -207,12 +199,11 @@ describe('Public Props', () => {
     `);
 
     test('throws error if default value is true', `
-        import { api } from 'engine';
         export default class Test {
             @api publicProp = true;
         }
     `, undefined, {
-        message: 'test.js: Boolean public property must default to false.',
+        message: 'test.js: Boolean public property publicProp must default to false.',
         loc: {
             line: 2,
             column: 9
@@ -220,7 +211,6 @@ describe('Public Props', () => {
     });
 
     test('throws error if property name is "is"', `
-        import { api } from 'engine';
         export default class Test {
             @api is;
         }
@@ -233,7 +223,6 @@ describe('Public Props', () => {
     });
 
     test('throws error if property name prefixed with "on"', `
-        import { api } from 'engine';
         export default class Test {
             @api onChangeHandler;
         }
@@ -246,7 +235,6 @@ describe('Public Props', () => {
     });
 
     test('does not throw error if property name is "data"', `
-        import { api } from 'engine';
         export default class Test {
             @api data;
         }
@@ -260,7 +248,6 @@ describe('Public Props', () => {
     `);
 
     test('throws error if property name prefixed with "data"', `
-        import { api } from 'engine';
         export default class Test {
             @api dataFooBar;
         }
@@ -273,7 +260,6 @@ describe('Public Props', () => {
     });
 
     test('throws error if property name prefixed with "aria"', `
-        import { api } from 'engine';
         export default class Test {
             @api ariaDescribedby;
         }
@@ -286,7 +272,6 @@ describe('Public Props', () => {
     });
 
     test('throws error if property name conflicts with global html attribute name', `
-        import { api } from 'engine';
         export default class Test {
             @api slot;
         }
@@ -299,7 +284,6 @@ describe('Public Props', () => {
     });
 
     test('throws error if property name is "part"', `
-        import { api } from 'engine';
         export default class Test {
             @api part;
         }
@@ -312,7 +296,6 @@ describe('Public Props', () => {
     });
 
     test('throws when combined with @track', `
-        import { api, track } from 'engine';
         export default class Test {
             @track
             @api
@@ -329,7 +312,6 @@ describe('Public Props', () => {
 
 describe('Public Methods', () => {
     test('transforms public methods', `
-        import { api } from 'engine';
         export default class Test {
             @api foo() {}
         }
@@ -337,11 +319,10 @@ describe('Public Methods', () => {
         export default class Test {
             foo() {}
         }
-        Test.publicMethods = ['foo'];
+        Test.publicMethods = ["foo"];
     `);
 
     test('Does not allow computed api getters and setters', `
-        import { api } from 'engine';
         export default class ComputedAPIProp extends Element {
             @api set [x](value) {}
             @api get [x]() {}
@@ -357,7 +338,6 @@ describe('Public Methods', () => {
 
 describe('metadata', () => {
     test('has @api properties', `
-        import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
@@ -375,7 +355,6 @@ describe('metadata', () => {
     });
 
     test('no @api properties', `
-        import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;

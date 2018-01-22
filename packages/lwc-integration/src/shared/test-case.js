@@ -1,4 +1,4 @@
-import { Element, api } from 'engine';
+import { Element } from 'engine';
 
 export default class TestCase extends Element {
     @api issueId;

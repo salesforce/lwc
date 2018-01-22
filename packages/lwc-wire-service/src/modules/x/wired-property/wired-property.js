@@ -1,4 +1,4 @@
-import { Element, api, wire } from 'engine';
+import { Element } from 'engine';
 
 export default class WiredProperty extends Element {
     @api propName;

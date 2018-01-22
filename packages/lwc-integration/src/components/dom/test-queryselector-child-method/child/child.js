@@ -1,9 +1,9 @@
-import { Element, api, track } from 'engine';
+import { Element } from 'engine';
 
 export default class Child extends Element {
     @track text;
-
-    @api foo() {
+    @api
+    foo() {
         this.text = 'method executed successfully';
     }
 }

@@ -1,3 +1,15 @@
+/**
+ * Transforms "unicornRainbow" to "unicorn-rainbow"
+ * Taken from https://github.com/sindresorhus/decamelize
+ */
+function decamelize(str) {
+    const sep = '-';
+    return str
+        .replace(/([a-z\d])([A-Z])/g, '$1' + sep + '$2')
+        .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1' + sep + '$2')
+        .toLowerCase();
+}
+
 function findClassMethod(path, name, properties = {}) {
     path.assertClassBody();
 
@@ -18,7 +30,6 @@ function findClassProperty(path, name, properties = {}) {
         path.get('key').isIdentifier({ name })
     ));
 }
-
 
 function isClassMethod(classMethod, properties = {}) {
     const { kind = 'method', name } = properties;
@@ -49,36 +60,36 @@ function staticClassProperty(types, name, expression) {
     return classProperty;
 }
 
-function getImportsStatements(path, sourceName) {
-    const programPath = path.isProgram() ?
-        path :
-        path.findParent(node => node.isProgram());
+const API_DECORATOR = 'api';
+const TRACK_DECORATOR = 'track';
+const WIRE_DECORATOR = 'wire';
 
-    return programPath.get('body').filter(node => (
-        node.isImportDeclaration() &&
-        node.get('source').isStringLiteral({ value: sourceName })
-    ));
+function isWireDecorator(path) {
+    return path.get('expression').isCallExpression() &&
+        path.get('expression.callee').isIdentifier({ name: WIRE_DECORATOR });
 }
 
-function getImportSpecifiers(path, sourceName) {
-    const engineImports = getImportsStatements(path, sourceName);
+function isAPIDecorator(path) {
+    return path.get('expression').isIdentifier({
+        name: API_DECORATOR
+    });
+}
 
-    return engineImports.reduce((acc, importStatement) => {
-        // Flat-map the specifier list for each import statement
-        return [...acc, ...importStatement.get('specifiers')];
-    }, []).reduce((acc, specifier) => {
-        // Get the list of specifiers with their name
-        const imported = specifier.get('imported').node.name;
-        return [...acc, { name: imported, path: specifier }];
-    }, []);
+function isTrackDecorator(path) {
+    return path.get('expression').isIdentifier({
+        name: TRACK_DECORATOR
+    });
 }
 
 module.exports = {
+    decamelize,
     findClassMethod,
     findClassProperty,
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
+    isAPIDecorator,
+    isTrackDecorator,
+    isWireDecorator,
     staticClassProperty,
-    getImportSpecifiers,
 };

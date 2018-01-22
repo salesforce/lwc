@@ -4,7 +4,6 @@ const test = require('./utils/test-transform').test(
 
 describe('Wired field', () => {
     test('transform track decorator field', `
-        import { track } from 'engine';
         export default class Test {
             @track record;
         }
@@ -16,7 +15,6 @@ describe('Wired field', () => {
     `);
 
     test('transform track decorator preserve intial value', `
-        import { track } from 'engine';
         export default class Test {
             @track record = {
                 value: 'test'
@@ -38,7 +36,6 @@ describe('Wired field', () => {
 
 
     test('throws if track decorator is applied to a getter', `
-        import { track } from 'engine';
         export default class Test {
             @track get record() {
                 return 'test';
@@ -53,7 +50,6 @@ describe('Wired field', () => {
     });
 
     test('throws if track decorator is applied to a setter', `
-        import { track } from 'engine';
         export default class Test {
             _record;
 
@@ -70,7 +66,6 @@ describe('Wired field', () => {
     });
 
     test('throws if track decorator is applied to a class method', `
-        import { track } from 'engine';
         export default class Test {
             _record;
 

@@ -1,4 +1,4 @@
-import { Element, track } from 'engine';
+import { Element, register } from 'engine';
 
 export default class PierceDispatchEvent extends Element {
     @track eventCount = 0;
