@@ -22,5 +22,13 @@ describe("wire-adapters.js", () => {
                 buildWireAdapterMap([adapter]);
             }).toThrow();
         });
+
+        it("accepts function identifier as adapter id", () => {
+            const myFunc = () => {};
+            const adapter = () => {
+                return { myFunc };
+            }
+            expect(buildWireAdapterMap([adapter]).size).toBe(1);
+        });
     });
 });

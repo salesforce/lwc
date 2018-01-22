@@ -50,10 +50,20 @@ export function getPropToParams(wireDef, wireTarget) {
  * @returns {Function} The wire adapter.
  */
 export function getAdapter(wireDef, wireTarget) {
-    const adapter = ADAPTERS.get(wireDef.type);
-    if (!adapter) {
-        throw new Error(`Unknown wire adapter id '${wireDef.type}' in ${wireTarget}'s @wire('${wireDef.type}, ...)`);
+    let adapter;
+    // TODO: deprecate type once consumers have migrate to use function identifier for adapter id.
+    if (wireDef.type) {
+        adapter = ADAPTERS.get(wireDef.type);
+        if (!adapter) {
+            throw new Error(`Unknown wire adapter id '${wireDef.type}' in ${wireTarget}'s @wire('${wireDef.type}, ...)`);
+        }
+    } else if (wireDef.adapter) {
+        adapter = ADAPTERS.get(wireDef.adapter.name);
+        if (!adapter) {
+            throw new Error(`Unknown wire adapter id '${wireDef.adapter.name}' in ${wireTarget}'s @wire('${wireDef.adapter.name}, ...)`);
+        }
     }
+
     return adapter;
 }
 

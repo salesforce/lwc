@@ -48,8 +48,9 @@ describe("wire-service.js", () => {
     });
 
     describe("getAdapter()", () => {
+        const knownFunc = () => {};
         const adapters = () => {
-            return { known: () => { } };
+            return { known: () => { }, knownFunc };
         };
         target.setWireAdapters([adapters]);
 
@@ -61,6 +62,17 @@ describe("wire-service.js", () => {
         });
         it("returns with a known adapter id", () => {
             const wireDef = { type: "known" };
+            target.getAdapter(wireDef, "target");
+        });
+        it("throws with an unknown function identifier adapter id", () => {
+            const unknownFunc = () => {};
+            const wireDef = { adapter: unknownFunc };
+            expect(() => {
+                target.getAdapter(wireDef, "target");
+            }).toThrow();
+        });
+        it("returns with a known function identifier adapter id", () => {
+            const wireDef = { adapter: knownFunc };
             target.getAdapter(wireDef, "target");
         });
     });
