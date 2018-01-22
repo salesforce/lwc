@@ -112,6 +112,9 @@ class LWCElement implements Component {
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
         const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+        }
         // use cached setAttributeNS, because elm.setAttribute throws
         // when not called in template
         return setAttributeNS.call(elm, ns, attrName, value);
