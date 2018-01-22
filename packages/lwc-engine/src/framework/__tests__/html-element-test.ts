@@ -109,7 +109,7 @@ describe('html-element', () => {
         });
     });
 
-    describe.only('#removeAttributeNS()', () => {
+    describe('#removeAttributeNS()', () => {
         it('should remove namespaced attribute on host element when element is nested in template', () => {
             class MyComponent extends Element {
                 removeTitle() {
@@ -232,7 +232,7 @@ describe('html-element', () => {
     });
 
     describe('#getAttributeNS()', () => {
-        it.only('should return correct attribute value', () => {
+        it('should return correct attribute value', () => {
             class MyComponent extends Element {
                 getXTitle() {
                     return this.getAttributeNS('x', 'title');
