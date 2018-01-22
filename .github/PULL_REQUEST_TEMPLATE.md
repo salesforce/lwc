@@ -32,7 +32,7 @@ Please check if your PR fulfills the following requirements:
       Supported scope: The scope should be the name of the npm package affected (engine, compiler, wire-service, etc.)
       
       
- - More details on LWC semantic commit can be found [here](https://git.soma.salesforce.com/lwc/lwc/blob/master/CONTRIBUTING.md#commit).
+ - More details on LWC semantic commit can be found [here](https://github.com/salesforce/lwc/blob/master/CONTRIBUTING.md#commit).
       
       
 
