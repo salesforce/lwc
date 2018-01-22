@@ -104,7 +104,6 @@ describe('compile from file system', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -119,35 +118,11 @@ describe('compile from file system', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 });
 
 describe('compile from in-memory', () => {
-    it('add external dependencies and labels to the metadata bag', async () => {
-        const { code, metadata } = await compile('/x/external/external.js', {
-            mapNamespaceFromPath: true,
-            sources: {
-                '/x/external/external.js': readFixture(
-                    'namespaced_folder/external/external.js',
-                ),
-                '/x/external/external.html': readFixture(
-                    'namespaced_folder/external/external.html',
-                ),
-            },
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-external-dependency.js')),
-        );
-
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine', 'another-module'],
-            bundleLabels: ['test-label'],
-        });
-    });
-
     it('compiles to ESModule by deafult', async () => {
         const { code, metadata } = await compile('/x/foo/foo.js', {
             mapNamespaceFromPath: true,
@@ -167,7 +142,6 @@ describe('compile from in-memory', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -191,7 +165,6 @@ describe('compile from in-memory', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -227,7 +200,6 @@ describe('compile from in-memory', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 });
@@ -248,7 +220,6 @@ describe('mode generation', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -267,7 +238,6 @@ describe('mode generation', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -286,7 +256,6 @@ describe('mode generation', () => {
 
         expect(metadata).toMatchObject({
             bundleDependencies: ['engine'],
-            bundleLabels: [],
         });
     });
 
@@ -315,7 +284,6 @@ describe('mode generation', () => {
 
             expect(metadata).toMatchObject({
                 bundleDependencies: ['engine'],
-                bundleLabels: [],
             });
         }
     });
