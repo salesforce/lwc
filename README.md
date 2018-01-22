@@ -1,6 +1,6 @@
-# Raptor Engine Repository
+# LWC Repository
 
-This repository contains the source code for the Raptor Engine. Additionaly, it contains examples, documentation, meeting notes and discussion notes for developers [contributing](https://git.soma.salesforce.com/raptor/raptor/tree/master/CONTRIBUTING.md) or using Raptor.
+This repository contains the source code for the LWC Engine and Compiler. Additionaly, it contains examples, documentation, meeting notes and discussion notes for developers [contributing](https://github.com/salesforce/lwc/blob/master/CONTRIBUTING.md) or using Raptor.
 
 ## Getting Start
 
@@ -12,7 +12,7 @@ This project is been developed by the Raptor Team in collaboration with Aura Tea
 
 ## Contributing
 
-Read our [contributing documentation](https://git.soma.salesforce.com/raptor/raptor/tree/master/CONTRIBUTING.md) to set up your environment and start contributing.
+Read our [contributing documentation](https://github.com/salesforce/lwc/blob/master/CONTRIBUTING.md) to set up your environment and start contributing.
 
 ## License
 
