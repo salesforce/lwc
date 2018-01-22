@@ -1,6 +1,6 @@
 # Wire Service
 
-This is the implementation of Raptor's wire service. It enables declarative binding of services to a Raptor component using the `@wire` decorator.
+This is the implementation of LWC's wire service. It enables declarative binding of services to a LWC component using the `@wire` decorator.
 
 A common usage is for a component to declare the data it requires. For example, a component may load data of type `todo` like so:
 
@@ -13,7 +13,7 @@ export default class WiredComponent extends Element {
 }
 ```
 
-Refer to the [Raptor developer guide](https://raptor.sfdc.es/guide/data.html) for full documentation.
+Refer to the [LWC developer guide](https://lwc.sfdc.es/guide/data.html) for full documentation.
 
 ## Build & run the playground
 

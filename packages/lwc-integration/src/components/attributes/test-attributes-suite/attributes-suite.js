@@ -1,4 +1,4 @@
-import { Element, createElement } from 'engine';
+import { Element, createElement, track } from 'engine';
 import Child from './my-child/my-child';
 
 export default class AttributesSuite extends Element {
