@@ -147,7 +147,7 @@ class LWCElement implements Component {
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
         return getAttributeNS.call(elm, ns, attrName);
-    }
+    },
 
     getAttribute(attrName: string): string | null {
         const vm = this[ViewModelReflection];
