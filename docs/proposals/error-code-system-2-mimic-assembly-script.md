@@ -2,7 +2,7 @@
 Proposal summary is identical from the original [proposal](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md). However, error processing deviates in the way errors are parsed and stored. From @p-dartus summary
 
 ### AssemblyScript summary
->[AssemblyScript](https://github.com/AssemblyScript/assemblyscript) compiler provides an interesting approach for specifying error. This error system is inspired from typescript compiler. All the errors are stored into [a json file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.json). At build time it generates an actual typescript file exporting those errors that you can reference from your code: https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L464
+>[AssemblyScript](https://github.com/AssemblyScript/assemblyscript) compiler provides an interesting approach for specifying error. This error system is inspired from typescript compiler. All the errors are stored into [a json file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.json). At build time it generates an actual typescript file exporting those errors that you can reference from your code like [here](https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L464).
 >However this approach make it a [little verbose](https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L551) for complex error messages.
 
 The AssemblyScript implementation stores its errors in json file in following format:
@@ -13,7 +13,7 @@ The AssemblyScript implementation stores its errors in json file in following fo
   }
 ```
 
-This JSON [file is then parsed to create a typescript file](https://github.com/AssemblyScript/assemblyscript/blob/master/scripts/build-diagnostics.js), which is then referenced in their invariant-equivalent function call ex:
+This JSON [file is then parsed to create a typescript file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.generated.ts), which is then referenced in their invariant-equivalent function call ex:
 ```this.report(declaration.name, typescript.DiagnosticsEx.Type_expected); ```
 
 ### Raptor version
@@ -21,7 +21,7 @@ Now that AssemblyScript summary has been stated, here is our Proposal:
 
 **1.** As with [proposal #1](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
 
-**2.** errorMessage - will refer to a compiled script file typescript.Diagnostics or whatever name we choose, which will contain objects with error specific information, such as error text, code, arguments array ex:
+**2.** errorMessage - will refer to a compiled script file DiagnosticCode or whatever name we choose, which will contain objects with error specific information, such as error text, code, arguments array ex:
 ```
 {
     "message" : "Invalid {$type} specified by {$functionName}!"
@@ -30,7 +30,7 @@ Now that AssemblyScript summary has been stated, here is our Proposal:
     "arguments": ["number", "foo()"]
 }
 ```
-This will allow for following retrieval: typescript.Diagnostics.someKey.message/code depending on the dev/prod environment.
+This will allow for following retrieval: DiagnosticCode.someKey.message/code depending on the dev/prod environment.
 
 However, unlike the AssemblyScript implementation, we are not going to use the actual message string as a key in errors.json. Here is their implementation ex:
 ```
@@ -47,7 +47,7 @@ typescript.DiagnosticsEx.Conversion_from_0_to_1_will_fail_when_switching_between
 
 Instead we will come up with a key pattern,  perhaps domain + message ( ex: engine_invalid_vm ). The key uniqueness will be checked when we generate typescript file, which will ensure no duplicates.
 
-**3.** error.json to typescrip conversion script - will be ran by developers whenever new entry to the errors.json is added. Regenerated typescript file will then contain new error and can be referenced in the invariant(condition, typescript.Diagnostics.newKey)
+**3.** error.json to typescrip conversion script - will be ran by developers whenever new entry to the errors.json is added. Regenerated typescript file will then contain new error and can be referenced in the invariant(condition, DiagnosticCode.newKey)
 
 **4.** replace-invariant-error-codes.js - is a Babel pass that rewrites error messages to IDs for a production (minified) build. ex:
 ```
@@ -59,9 +59,9 @@ invariant(condition, message, arguments);
 // into this:
 if (!condition) {
      if ("production" !== process.env.NODE_ENV) {
-         invariant(false, typescript.Diagnostics.key.message, 'bar');
+         invariant(false, DiagnosticCodeDiagnostics.key.message, 'bar');
      } else {
-         PROD_INVARIANT(typescript.Diagnostics.key.code, 'foo', 'bar');
+         PROD_INVARIANT(DiagnosticCode.key.code, 'foo', 'bar');
      }
 }
 ```
@@ -76,7 +76,7 @@ if (!condition) {
 Cons:
 - Manually maintained message file
 - File must be compiled prior using it during development
-- One large errors.json file may make it hard to locate existing errors ( not unless we introduce domain specific type typescript.Diagnostics.Engine.someKey )
+- One large errors.json file may make it hard to locate existing errors ( not unless we introduce domain specific type DiagnosticCode.Engine.someKey )
 
 Pros:
 - Typed error objects
