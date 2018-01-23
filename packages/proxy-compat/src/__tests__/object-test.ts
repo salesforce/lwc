@@ -11,7 +11,7 @@ describe('ECMA Object', function () {
         // We do not patch Object.getOwnPropertySymbols because
         // it is patched by the Symbol polyfill later on
         // in the code. As a result, this test will not work in node.
-        // See https://git.soma.salesforce.com/raptor/raptor/issues/833
+        // See lwc(internal) #833
         xit('should return correct keys from proxy', function () {
             const proxy = new XProxy({
                 foo: 'bar'
@@ -35,7 +35,7 @@ describe('ECMA Object', function () {
         // We do not patch Object.getOwnPropertySymbols because
         // it is patched by the Symbol polyfill later on
         // in the code. As a result, this test will not work in node.
-        // See https://git.soma.salesforce.com/raptor/raptor/issues/833
+        // See lwc(internal) #833
         xit('should assign symbols correctly', function () {
             const sym = Symbol();
             const proxy = new XProxy({ foo: 'bar', [sym]: 1 }, {});

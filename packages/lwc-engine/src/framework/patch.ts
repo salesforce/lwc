@@ -20,7 +20,7 @@ export const patch = init([
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    // See https://git.soma.salesforce.com/raptor/raptor/issues/791 for more
+    // See lwc(internal) #791 for more
     attrs,
     props,
     classes,
