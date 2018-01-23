@@ -1,4 +1,4 @@
-import { Element, track } from 'engine';
+import { Element } from 'engine';
 
 export default class RootParent extends Element {
     @track state = {

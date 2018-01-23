@@ -1,4 +1,4 @@
-import { Element, api } from "engine";
+import { Element } from "engine";
 
 export default class CompatItem extends Element {
     @api item;

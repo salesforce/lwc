@@ -1,4 +1,4 @@
-import { Element, api, track, wire } from 'engine';
+import { Element } from 'engine';
 
 export default class WiredMethod extends Element {
     @api propName;

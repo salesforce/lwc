@@ -1,4 +1,4 @@
-import { Element, api, wire } from 'engine';
+import { Element } from 'engine';
 
 export default class PrivateWiredNonapiProperty extends Element {
     // enable tests to trigger wire config changes driven by a non-public property
