@@ -1,9 +1,9 @@
-## **Second Version of Error Code Proposal.** 
-Proposal summary is identical from the original [proposal](https://git.soma.salesforce.com/raptor/raptor/blob/apapko/issue-603/error-codes-system-proposal/docs/proposals/error-code-system.md). However, error processing deviates in the way errors are parsed and stored. From @p-dartus summary
+## **Second Version of Error Code Proposal.**
+Proposal summary is identical from the original [proposal](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md). However, error processing deviates in the way errors are parsed and stored. From @p-dartus summary
 
 ### AssemblyScript summary
->[AssemblyScript](https://github.com/AssemblyScript/assemblyscript) compiler provides an interesting approach for specifying error. This error system is inspired from typescript compiler. All the errors are stored into [a json file](https://github.com/AssemblyScript/assemblyscript/blob/28e08df053a4402a43ecaa1333c190351ae777ba/src/typescript/diagnosticMessages.json). At build time it generates an actual typescript file exporting those errors that you can reference from your code: https://github.com/AssemblyScript/assemblyscript/blob/28e08df053a4402a43ecaa1333c190351ae777ba/src/compiler.ts#L427
->However this approach make it a [little verbose](https://github.com/AssemblyScript/assemblyscript/blob/28e08df053a4402a43ecaa1333c190351ae777ba/src/compiler.ts#L925) for complex error messages.
+>[AssemblyScript](https://github.com/AssemblyScript/assemblyscript) compiler provides an interesting approach for specifying error. This error system is inspired from typescript compiler. All the errors are stored into [a json file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.json). At build time it generates an actual typescript file exporting those errors that you can reference from your code: https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L464
+>However this approach make it a [little verbose](https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L551) for complex error messages.
 
 The AssemblyScript implementation stores its errors in json file in following format:
 ```
@@ -19,7 +19,7 @@ This JSON [file is then parsed to create a typescript file](https://github.com/A
 ### Raptor version
 Now that AssemblyScript summary has been stated, here is our Proposal:
 
-**1.** As with [proposal #1](https://git.soma.salesforce.com/raptor/raptor/blob/apapko/issue-603/error-codes-system-proposal/docs/proposals/error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
+**1.** As with [proposal #1](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
 
 **2.** errorMessage - will refer to a compiled script file typescript.Diagnostics or whatever name we choose, which will contain objects with error specific information, such as error text, code, arguments array ex:
 ```
@@ -41,8 +41,8 @@ However, unlike the AssemblyScript implementation, we are not going to use the a
 ```
 As you see, the key is verbose, requires processing to normalize key's value prior typescript conversion, and can get very long in the compiled version when referenced in the code ex:
 ```
-this.report(node, 
-typescript.DiagnosticsEx.Conversion_from_0_to_1_will_fail_when_switching_between_WASM32_64, fromType.toString(), toType.toString()); 
+this.report(node,
+typescript.DiagnosticsEx.Conversion_from_0_to_1_will_fail_when_switching_between_WASM32_64, fromType.toString(), toType.toString());
 ```
 
 Instead we will come up with a key pattern,  perhaps domain + message ( ex: engine_invalid_vm ). The key uniqueness will be checked when we generate typescript file, which will ensure no duplicates.
@@ -54,7 +54,7 @@ Instead we will come up with a key pattern,  perhaps domain + message ( ex: engi
 // Turns this code:
 invariant(condition, message, arguments);
 ```
-            
+
 ```
 // into this:
 if (!condition) {
@@ -68,7 +68,7 @@ if (!condition) {
 
 **5.** raptorProdInvariant.js is the replacement for invariant code in production, that accepts errorCode, arguments, and builds raptor error url. ex: https://raptor.sfdc.es/docs/error-decoder.html?id=1001&arg1='foo'&arg2='bar'.
 
-**6.** ErrorDecoderComponent is a Raptor component that lives at https://raptor.sfdc.es/docs/error-decoder.html. This page takes parameters like raptor version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page. 
+**6.** ErrorDecoderComponent is a Raptor component that lives at 'https://raptor.sfdc.es/docs/error-decoder.html'. This page takes parameters like raptor version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page.
 
 
 
@@ -80,6 +80,6 @@ Cons:
 
 Pros:
 - Typed error objects
-- Only one file to maintain 
+- Only one file to maintain
 - Automatic duplicate checks during errors.json to typescript file conversion
 - Strict structure
