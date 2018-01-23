@@ -19,8 +19,8 @@
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
-    "lwc-compiler": "0.17.7",
-    "lwc-engine": "0.17.7"
+    "lwc-compiler": "0.17.8",
+    "lwc-engine": "0.17.8"
   },
   "scripts": {
     "test": "mocha"
