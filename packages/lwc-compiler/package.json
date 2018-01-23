@@ -59,7 +59,7 @@
     "lwc-template-compiler": "0.17.8",
     "postcss": "^6.0.13",
     "postcss-plugin-lwc": "0.17.8",
-    "rollup": "~0.50.0",
+    "rollup": "0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0"
   }
