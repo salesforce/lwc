@@ -18,11 +18,7 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 git clone git@github.com:salesforce/lwc.git
 ```
 
-### 2) Setup npm/yarn to use Nexus repositories
-
-Nexus provides a public caching proxy and a private repository which hosts several dependent lwc modules. Follow the instructions at [https://sfdc.co/npm-nexus](https://sfdc.co/npm-nexus) to setup access to the Nexus npm registry.
-
-### 3) Install Dependencies
+### 2) Install Dependencies
 
 *We use [yarn](https://yarnpkg.com/) because it is significantly faster than npm for our use case. See this command [cheatsheet](https://yarnpkg.com/lang/en/docs/migrating-from-npm/).*
 
@@ -32,13 +28,13 @@ yarn install
 
 If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: unable to get local issuer certificate*, or a registry communication issue then re-verify that step 2 was successful.
 
-### 4) Start the server
+### 3) Start the server
 
 ```bash
 yarn start
 ```
 
-### 5) View examples
+### 4) View examples
 
 Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 

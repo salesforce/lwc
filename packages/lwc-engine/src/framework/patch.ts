@@ -20,7 +20,6 @@ export const patch = init([
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
     // is set before type=radio.
-    // See lwc(internal) #791 for more
     attrs,
     props,
     classes,
