@@ -211,7 +211,7 @@ describe('root', () => {
             });
         });
 
-        describe.only('unwrapping', function () {
+        describe.skip('unwrapping', function () {
             it('should return original object', function () {
                 class MyComponent extends Element {
                     getContentWindow() {
