@@ -6,6 +6,7 @@ import { OwnerKey, isNodeOwnedByVM } from "./vm";
 import { register } from "./services";
 import { pierce, piercingHook } from "./piercing";
 
+import { TargetSlot } from './membrane';
 const { querySelector, querySelectorAll } = Element.prototype;
 
 function getLinkedElement(root: Root): HTMLElement {
@@ -109,6 +110,7 @@ function isCrossOriginIframeWindow(key: PropertyKey, value: any) {
 
 export function wrapIframeWindow(win: Window) {
     return {
+        [TargetSlot]: win,
         postMessage() {
             return win.postMessage.apply(win, arguments);
         },

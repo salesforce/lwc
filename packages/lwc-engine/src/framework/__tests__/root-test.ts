@@ -155,39 +155,39 @@ describe('root', () => {
             });
 
             it('should delegate window', function () {
-                expect(contentWindow.window).toBe('mock window');
+                expect(wrapped.window).toBe('mock window');
             });
 
             it('should delegate top', function () {
-                expect(contentWindow.top).toBe('mock top');
+                expect(wrapped.top).toBe('mock top');
             });
 
             it('should delegate self', function () {
-                expect(contentWindow.self).toBe('mock self');
+                expect(wrapped.self).toBe('mock self');
             });
 
             it('should delegate parent', function () {
-                expect(contentWindow.parent).toBe('mock parent');
+                expect(wrapped.parent).toBe('mock parent');
             });
 
             it('should delegate opener', function () {
-                expect(contentWindow.opener).toBe('mock opener');
+                expect(wrapped.opener).toBe('mock opener');
             });
 
             it('should delegate location', function () {
-                expect(contentWindow.location).toBe('mock location');
+                expect(wrapped.location).toBe('mock location');
             });
 
             it('should delegate length', function () {
-                expect(contentWindow.length).toBe('mock length');
+                expect(wrapped.length).toBe('mock length');
             });
 
             it('should delegate frames', function () {
-                expect(contentWindow.frames).toBe('mock frames');
+                expect(wrapped.frames).toBe('mock frames');
             });
 
             it('should delegate closed', function () {
-                expect(contentWindow.closed).toBe('mock closed');
+                expect(wrapped.closed).toBe('mock closed');
             });
 
             it('should delegate close', function () {
@@ -211,7 +211,7 @@ describe('root', () => {
             });
         });
 
-        describe.skip('unwrapping', function () {
+        describe('unwrapping', function () {
             it('should return original object', function () {
                 class MyComponent extends Element {
                     getContentWindow() {
