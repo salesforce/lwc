@@ -55,12 +55,12 @@ export function getAdapter(wireDef, wireTarget) {
     if (wireDef.type) {
         adapter = ADAPTERS.get(wireDef.type);
         if (!adapter) {
-            throw new Error(`Unknown wire adapter id '${wireDef.type}' in ${wireTarget}'s @wire('${wireDef.type}, ...)`);
+            throw new Error(`Unknown wire adapter id '${wireDef.type}' in ${wireTarget}'s @wire('${wireDef.type}', ...)`);
         }
     } else if (wireDef.adapter) {
         adapter = ADAPTERS.get(wireDef.adapter.name);
         if (!adapter) {
-            throw new Error(`Unknown wire adapter id '${wireDef.adapter.name}' in ${wireTarget}'s @wire('${wireDef.adapter.name}, ...)`);
+            throw new Error(`Unknown wire adapter id '${wireDef.adapter.name}' in ${wireTarget}'s @wire(${wireDef.adapter.name}, ...)`);
         }
     }
 
