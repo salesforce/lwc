@@ -30,11 +30,11 @@ Please check if your PR fulfills the following requirements:
       
       Supported commit types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test.
       Supported scope: The scope should be the name of the npm package affected (engine, compiler, wire-service, etc.)
-      
-      
- - More details on LWC semantic commit can be found [here](https://git.soma.salesforce.com/lwc/lwc/blob/master/CONTRIBUTING.md#commit).
-      
-      
+
+
+ - More details on LWC semantic commit can be found [here](CONTRIBUTING.md#commit).
+
+
 
 #### Other information:
 

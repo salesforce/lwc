@@ -15,14 +15,10 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 ### 1) Download the repository
 
 ```bash
-git clone git@git.soma.salesforce.com:raptor/raptor.git
+git clone git@github.com:salesforce/lwc.git
 ```
 
-### 2) Setup npm/yarn to use Nexus repositories
-
-Nexus provides a public caching proxy and a private repository which hosts several dependent raptor modules. Follow the instructions at [https://sfdc.co/npm-nexus](https://sfdc.co/npm-nexus) to setup access to the Nexus npm registry.
-
-### 3) Install Dependencies
+### 2) Install Dependencies
 
 *We use [yarn](https://yarnpkg.com/) because it is significantly faster than npm for our use case. See this command [cheatsheet](https://yarnpkg.com/lang/en/docs/migrating-from-npm/).*
 
@@ -32,20 +28,20 @@ yarn install
 
 If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: unable to get local issuer certificate*, or a registry communication issue then re-verify that step 2 was successful.
 
-### 4) Start the server
+### 3) Start the server
 
 ```bash
 yarn start
 ```
 
-### 5) View examples
+### 4) View examples
 
 Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 
 
-## Building Raptor
+## Building LWC
 
-When using `yarn start`, raptor will build in dev-mode with a watcher, but if you wish to compile raptor in production mode, you can use the following command:
+When using `yarn start`, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
 
 ```bash
 yarn run build
@@ -58,7 +54,7 @@ code review process delightful!
 
 ### types
 
-Raptor relies on type annotataions heavily.
+LWC relies on type annotataions heavily.
 
 * Make sure your editor supports [typescript](https://www.typescriptlang.org/).
 
@@ -148,14 +144,12 @@ the ones related to the files you make changes to!
 yarn test
 ```
 
-More details testing in our [TESTING.md](https://git.soma.salesforce.com/raptor/raptor/tree/master/docs/TESTING.md) guide.
-
 ### Create a pull request
 
 If you've never created a pull request before, follow [these
 instructions][creating-a-pull-request].
 Pull request title must be formatted according to [Commit Message Guidelines](#commit). 
-Pull request samples can be found [here](https://git.soma.salesforce.com/lwc/lwc/pulls)
+Pull request samples can be found [here](https://github.com/salesforce/lwc/pulls)
 
 ### Update the pull request
 
@@ -197,7 +191,7 @@ to read on GitHub as well as in various git tools.
 
 Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
 
-Samples: (even more [samples](https://git.soma.salesforce.com/lwc/lwc/pulls))
+Samples: (even more [samples](https://github.com/salesforce/lwc/pulls))
 
 ```
 docs(changelog): update change log to beta.5
