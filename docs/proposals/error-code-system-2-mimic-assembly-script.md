@@ -1,5 +1,5 @@
 ## **Second Version of Error Code Proposal.**
-Proposal summary is identical from the original [proposal](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md). However, error processing deviates in the way errors are parsed and stored. From @p-dartus summary
+Proposal summary is identical from the original [proposal](error-code-system.md). However, error processing deviates in the way errors are parsed and stored. From @p-dartus summary
 
 ### AssemblyScript summary
 >[AssemblyScript](https://github.com/AssemblyScript/assemblyscript) compiler provides an interesting approach for specifying error. This error system is inspired from typescript compiler. All the errors are stored into [a json file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.json). At build time it generates an actual typescript file exporting those errors that you can reference from your code like [here](https://github.com/AssemblyScript/assemblyscript/blob/master/src/program.ts#L464).
