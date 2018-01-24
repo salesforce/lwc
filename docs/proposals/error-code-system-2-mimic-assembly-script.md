@@ -19,7 +19,7 @@ This JSON [file is then parsed to create a typescript file](https://github.com/A
 ### Raptor version
 Now that AssemblyScript summary has been stated, here is our Proposal:
 
-**1.** As with [proposal #1](https://github.com/salesforce/lwc/blob/master/docs/proposals/error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
+**1.** As with [proposal #1](error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
 
 **2.** errorMessage - will refer to a compiled script file DiagnosticCode or whatever name we choose, which will contain objects with error specific information, such as error text, code, arguments array ex:
 ```
