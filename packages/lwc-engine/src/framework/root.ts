@@ -104,7 +104,7 @@ function isParentNodeKeyword(key: string | Symbol): boolean {
     return (key === 'parentNode' || key === 'parentElement');
 }
 
-function isCrossOriginIframeWindow(key: PropertyKey, value: any) {
+function isIframeContentWindow(key: PropertyKey, value: any) {
     return (key === 'contentWindow') && value.window === value;
 }
 
@@ -162,7 +162,7 @@ register({
         const vm: VM = component[ViewModelReflection];
         const { elm } = (vm.vnode as ComponentVNode); // eslint-disable-line no-undef
         if (value) {
-            if (isCrossOriginIframeWindow(key as PropertyKey, value)) {
+            if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
             if (value === querySelector) {
