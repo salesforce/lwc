@@ -6,7 +6,7 @@
     'use strict';
 
 function getSubject(initialValue, initialError) {
-    let observer;
+    var observer;
 
     function next(value) {
         observer.next(value);
@@ -20,8 +20,8 @@ function getSubject(initialValue, initialError) {
         observer.complete();
     }
 
-    const observable = {
-        subscribe: (obs) => {
+    var observable = {
+        subscribe: function(obs) {
             observer = obs;
             if (initialValue) {
                 next(initialValue);
@@ -30,28 +30,28 @@ function getSubject(initialValue, initialError) {
                 error(initialError);
             }
             return {
-                unsubscribe: () => { }
+                unsubscribe: function() {}
             };
         }
     };
 
     return {
-        next,
-        error,
-        complete,
-        observable
+        next: next,
+        error: error,
+        complete: complete,
+        observable: observable
     };
 }
 
 function generateTodo(id, completed) {
     return {
-        id,
+        id: id,
         title: 'task ' + id,
-        completed
+        completed: completed
     };
 }
 
-const TODO = [
+var TODO = [
     generateTodo(0, true),
     generateTodo(1, false),
     // intentionally skip 2
@@ -60,7 +60,7 @@ const TODO = [
     // intentionally skip 5
     generateTodo(6, false),
     generateTodo(7, false)
-].reduce((acc, value) => {
+].reduce(function(acc, value) {
     acc[value.id] = value;
     return acc;
 }, {});
@@ -71,9 +71,9 @@ function serviceTodo(config) {
         return undefined;
     }
 
-    const todo = TODO[config.id];
+    var todo = TODO[config.id];
     if (!todo) {
-        const subject = getSubject(undefined, { message: 'Todo not found' });
+        var subject = getSubject(undefined, { message: 'Todo not found' });
         return subject.observable;
     }
 
