@@ -9,84 +9,10 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
+        import { serviceTodo } from 'todo';
         import registerWireService from 'wire-service';
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
-
-        function getSubject(initialValue, initialError) {
-            let observer;
-
-            function next(value) {
-                observer.next(value);
-            }
-
-            function error(err) {
-                observer.error(err);
-            }
-
-            function complete() {
-                observer.complete();
-            }
-
-            const observable = {
-                subscribe: (obs) => {
-                    observer = obs;
-                    if (initialValue) {
-                        next(initialValue);
-                    }
-                    if (initialError) {
-                        error(initialError);
-                    }
-                    return {
-                        unsubscribe: () => { }
-                    };
-                }
-            };
-
-            return {
-                next,
-                error,
-                complete,
-                observable
-            };
-        }
-
-        function generateTodo(id, completed) {
-            return {
-                id,
-                title: 'task ' + id,
-                completed
-            };
-        }
-
-        const TODO = [
-            generateTodo(0, true),
-            generateTodo(1, false),
-            // intentionally skip 2
-            generateTodo(3, true),
-            generateTodo(4, true),
-            // intentionally skip 5
-            generateTodo(6, false),
-            generateTodo(7, false)
-        ].reduce((acc, value) => {
-            acc[value.id] = value;
-            return acc;
-        }, {});
-
-
-        function serviceTodo(config) {
-            if (!('id' in config)) {
-                return undefined;
-            }
-
-            const todo = TODO[config.id];
-            if (!todo) {
-                const subject = getSubject(undefined, { message: 'Todo not found' });
-                return subject.observable;
-            }
-
-            return getSubject(todo).observable;
-        }
 
         registerWireService(register, () => {
             return {
@@ -132,6 +58,7 @@ exports.wireServiceHtml = function (cmpName, isCompat) {
         <body>
             ${isCompat ? COMPAT : ''}
             <script src="/shared/engine.js"></script>
+            <script src="/shared/todo.js"></script>
             <script src="/shared/wire-service.js"></script>
             <script src="./${cmpName}.js"></script>
         </body>
