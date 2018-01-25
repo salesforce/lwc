@@ -2082,6 +2082,10 @@ commander@2.9.0:
   dependencies:
     graceful-readlink ">= 1.0.0"
 
+commander@~2.12.1:
+  version "2.12.2"
+  resolved "http://npm.lwcjs.org/commander/-/commander-2.12.2/0f5946c427ed9ec0d91a46bb9def53e54650e555.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
+
 commander@~2.13.0:
   version "2.13.0"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.13.0/6964bca67685df7c1f1430c584f07d7597885b9c.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
@@ -7608,6 +7612,12 @@ rollup-plugin-typescript@^0.8.1:
     tippex "^2.1.1"
     typescript "^1.8.9"
 
+rollup-plugin-uglify@3.0.0:
+  version "3.0.0"
+  resolved "http://npm.lwcjs.org/rollup-plugin-uglify/-/rollup-plugin-uglify-3.0.0/a34eca24617709c6bf1778e9653baafa06099b86.tgz#a34eca24617709c6bf1778e9653baafa06099b86"
+  dependencies:
+    uglify-es "^3.3.7"
+
 rollup-plugin-uglify@^2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/rollup-plugin-uglify/-/rollup-plugin-uglify-2.0.1.tgz#67b37ad1efdafbd83af4c36b40c189ee4866c969"
@@ -8547,7 +8557,14 @@ typescript@^2.6.2:
   version "2.6.2"
   resolved "http://npm.lwcjs.org/typescript/-/typescript-2.6.2/3c5b6fd7f6de0914269027f03c0946758f7673a4.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
 
-uglify-es@~3.3.4:
+uglify-es@3.3.4:
+  version "3.3.4"
+  resolved "http://npm.lwcjs.org/uglify-es/-/uglify-es-3.3.4/2d592678791e5310456bbc95e952139e3b13167a.tgz#2d592678791e5310456bbc95e952139e3b13167a"
+  dependencies:
+    commander "~2.12.1"
+    source-map "~0.6.1"
+
+uglify-es@^3.3.7, uglify-es@~3.3.4:
   version "3.3.8"
   resolved "http://npm.lwcjs.org/uglify-es/-/uglify-es-3.3.8/f2c68e6cff0d0f9dc9577e4da207151c2e753b7e.tgz#f2c68e6cff0d0f9dc9577e4da207151c2e753b7e"
   dependencies:
