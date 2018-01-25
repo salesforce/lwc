@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.8...v) (2018-01-17)
+# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.10...v) (2018-01-24)
+
+
+
+<a name="0.17.10"></a>
+## [0.17.10](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.9...v0.17.10) (2018-01-24)
+
+
+
+<a name="0.17.9"></a>
+## [0.17.9](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.8...v0.17.9) (2018-01-24)
+
+
+### Features
+
+* **babel-plugin-transform-lwc-class:** Revert transform imported decorators ([#27](https://git.soma.salesforce.com/lwc/lwc/issues/27)) ([5339d5b](https://git.soma.salesforce.com/lwc/lwc/commits/5339d5b))
+* **babel-plugin-transform-lwc-class:** Transform imported decorators ([#16](https://git.soma.salesforce.com/lwc/lwc/issues/16)) ([0a8e11f](https://git.soma.salesforce.com/lwc/lwc/commits/0a8e11f))
 
 
 

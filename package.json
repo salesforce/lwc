@@ -4,7 +4,7 @@
   "description": "Raptor",
   "scripts": {
     "prepare": "yarn run build",
-    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules && rm yarn.lock",
+    "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "lerna run lint",
     "test": "lerna exec --concurrency 1 -- yarn test",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.soma.salesforce.com/lwc/lwc.git"
+    "url": "https://github.com/salesforce/lwc.git"
   },
   "bin": {
     "lwc-compiler": "bin/lwc-compiler-cli.js"

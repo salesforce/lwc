@@ -6,6 +6,7 @@ import { OwnerKey, isNodeOwnedByVM } from "./vm";
 import { register } from "./services";
 import { pierce, piercingHook } from "./piercing";
 
+import { TargetSlot } from './membrane';
 const { querySelector, querySelectorAll } = Element.prototype;
 
 function getLinkedElement(root: Root): HTMLElement {
@@ -103,12 +104,67 @@ function isParentNodeKeyword(key: string | Symbol): boolean {
     return (key === 'parentNode' || key === 'parentElement');
 }
 
+function isIframeContentWindow(key: PropertyKey, value: any) {
+    return (key === 'contentWindow') && value.window === value;
+}
+
+export function wrapIframeWindow(win: Window) {
+    return {
+        [TargetSlot]: win,
+        postMessage() {
+            return win.postMessage.apply(win, arguments);
+        },
+        blur() {
+            return win.blur.apply(win, arguments);
+        },
+        close() {
+            return win.close.apply(win, arguments);
+        },
+        focus() {
+            return win.focus.apply(win, arguments);
+        },
+        get closed() {
+            return win.closed;
+        },
+        get frames() {
+            return win.frames;
+        },
+        get length() {
+            return win.length;
+        },
+        get location() {
+            return win.location;
+        },
+        set location(value) {
+            (win.location as any) = value;
+        },
+        get opener() {
+            return win.opener;
+        },
+        get parent() {
+            return win.parent;
+        },
+        get self() {
+            return win.self;
+        },
+        get top() {
+            return win.top;
+        },
+        get window() {
+            return win.window;
+        },
+    }
+}
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value?: any) => void) {
         const vm: VM = component[ViewModelReflection];
         const { elm } = (vm.vnode as ComponentVNode); // eslint-disable-line no-undef
         if (value) {
+            if (isIframeContentWindow(key as PropertyKey, value)) {
+                callback(wrapIframeWindow(value));
+            }
             if (value === querySelector) {
                 // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
