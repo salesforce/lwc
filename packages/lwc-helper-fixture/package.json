@@ -1,7 +1,7 @@
 {
   "name": "lwc-helper-fixture",
   "description": "Helper package to run fixture testing",
-  "version": "0.17.10",
+  "version": "0.17.11",
   "main": "dist/index.js",
   "license": "MIT",
   "devDependencies": {
