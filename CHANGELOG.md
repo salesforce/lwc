@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.10...v) (2018-01-24)
+# [](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.11...v) (2018-01-25)
+
+
+
+<a name="0.17.11"></a>
+## [0.17.11](https://git.soma.salesforce.com/lwc/lwc/compare/v0.17.10...v0.17.11) (2018-01-25)
+
+
+### Bug Fixes
+
+* **engine:** Lock in uglify-es version ([#41](https://git.soma.salesforce.com/lwc/lwc/issues/41)) ([2b674a3](https://git.soma.salesforce.com/lwc/lwc/commits/2b674a3))
 
 
 
