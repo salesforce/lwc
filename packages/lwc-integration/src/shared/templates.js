@@ -90,7 +90,7 @@ exports.todoApp = function (cmpName) {
 
         registerWireService(register, () => {
             return {
-                'todo': serviceTodo
+                serviceTodo
             };
         });
 
