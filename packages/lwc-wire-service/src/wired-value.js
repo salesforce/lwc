@@ -114,12 +114,25 @@ export class WiredValue {
     getObserver() {
         if (!this.observer) {
             if (this.isMethod) {
+                const wireMethod = this.cmp[this.propName];
                 this.observer = {
                     next: value => {
-                        this.cmp[this.propName](null, value);
+                        // TODO: deprecate (error, data) args
+                        if (wireMethod.length === 2) {
+                            console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
+                            wireMethod.call(this.cmp, null, value);
+                        } else {
+                            wireMethod.call(this.cmp, { data: value, error: null });
+                        }
                     },
                     error: err => {
-                        this.cmp[this.propName](err, undefined);
+                        // TODO: deprecate (error, data) args
+                        if (wireMethod.length === 2) {
+                            console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
+                            wireMethod.call(this.cmp, err, undefined);
+                        } else {
+                            wireMethod.call(this.cmp, { data: undefined, error: err });
+                        }
                     },
                     complete: () => {
                         this.completeHandler();
