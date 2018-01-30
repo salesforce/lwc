@@ -15,7 +15,7 @@ const PUBLIC_PROP_BIT_MASK = {
     SETTER: 2
 }
 
-const { GLOBAL_ATTRIBUTE_SET } = require('../constants');
+const { HTML_ATTRIBUTE_SET } = require('../constants');
 
 function getPropertyBitmask(classProperty) {
     const isGetter = isGetterClassMethod(classProperty);
@@ -95,7 +95,7 @@ function validatePropertyName(property) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "aria" are reserved attributes.`
         );
-    } else if (GLOBAL_ATTRIBUTE_SET.has(propertyName)) {
+    } else if (HTML_ATTRIBUTE_SET.has(propertyName)) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. ${propertyName} is a global HTML attribute, use attributeChangedCallback to observe this attribute.`
         );

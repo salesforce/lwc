@@ -15,6 +15,7 @@ import {
 import {
     SVG_TAG_SET,
     DATA_ARIA_RE,
+    ATTRIBUTE_SET,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
@@ -172,7 +173,7 @@ function isInputStateAttribute(element: IRElement, attrName: string) {
 
 export function isAttribute(element: IRElement, attrName: string): boolean {
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
+    if (ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;
     }
 
@@ -194,7 +195,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) ||
+    if (ATTRIBUTE_SET.has(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
         SVG_TAG_SET.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName)) {
@@ -205,10 +206,14 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
     return !!validElements &&  (!validElements.length || validElements.includes(tagName));
 }
 
+const attributeToPropertyNameMap: { [key: string]: string } = {
+    tabindex: 'tabIndex',
+}
+
 export function attributeToPropertyName(element: IRElement, attrName: string): string {
     const { tag } = element;
 
-    let propName = attrName;
+    let propName = (attrName in attributeToPropertyNameMap) ? attributeToPropertyNameMap[attrName] : attrName;
     if (!SVG_TAG_SET.has(tag) && !isAriaOrDataOrFmkAttribute(attrName) && !isCustomElement(element)) {
         propName = ATTRS_PROPS_TRANFORMS[propName] || propName;
     }

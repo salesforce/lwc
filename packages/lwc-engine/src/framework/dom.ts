@@ -23,9 +23,11 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
 export const GlobalHTMLProperties = {
     id: {
         attribute: 'id',
+        reflective: true,
     },
     accessKey: {
         attribute: 'accesskey',
+        reflective: true,
     },
     accessKeyLabel: {
         readOnly: true,
@@ -36,6 +38,7 @@ export const GlobalHTMLProperties = {
     },
     contentEditable: {
         attribute: 'contenteditable',
+        reflective: true,
     },
     isContentEditable: {
         readOnly: true,
@@ -49,10 +52,12 @@ export const GlobalHTMLProperties = {
     },
     dir: {
         attribute: 'dir',
+        reflective: true,
     },
     draggable: {
         attribute: 'draggable',
         experimental: true,
+        reflective: true,
     },
     dropzone: {
         attribute: 'dropzone',
@@ -61,6 +66,7 @@ export const GlobalHTMLProperties = {
     },
     hidden: {
         attribute: 'hidden',
+        reflective: true,
     },
     itemScope: {
         attribute: 'itemscope',
@@ -90,6 +96,7 @@ export const GlobalHTMLProperties = {
     },
     lang: {
         attribute: 'lang',
+        reflective: true,
     },
     offsetHeight: {
         readOnly: true,
@@ -117,6 +124,7 @@ export const GlobalHTMLProperties = {
     },
     spellcheck: {
         experimental: true,
+        reflective: true,
     },
     style: {
         attribute: 'style',

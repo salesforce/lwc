@@ -430,8 +430,9 @@ function getPublicPropertiesHash(target: ComponentClass): HashTable<PropDef> {
     }
     return getOwnPropertyNames(props).reduce((propsHash: HashTable<PropDef>, propName: string): HashTable<PropDef> => {
         if (process.env.NODE_ENV !== 'production') {
-            if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
-                const { error, attribute, experimental } = GlobalHTMLProperties[propName];
+            const globalHTMLProperty = GlobalHTMLProperties[propName];
+            if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
+                const { error, attribute, experimental } = globalHTMLProperty;
                 const msg = [];
                 if (error) {
                     msg.push(error);

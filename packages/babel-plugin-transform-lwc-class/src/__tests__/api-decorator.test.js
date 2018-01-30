@@ -271,7 +271,7 @@ describe('Public Props', () => {
         }
     });
 
-    test('throws error if property name conflicts with global html attribute name', `
+    test('throws error if property name is slot', `
         export default class Test {
             @api slot;
         }
@@ -282,6 +282,146 @@ describe('Public Props', () => {
             column: 9
         }
     });
+
+    test('throws error if property name is accesskey', `
+        export default class Test {
+            @api accesskey;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name "accesskey". "accesskey" is a camel cased HTML prop and should be changed to "accessKey".',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name is contenteditable', `
+        export default class Test {
+            @api contenteditable;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name "contenteditable". "contenteditable" is a camel cased HTML prop and should be changed to "contentEditable".',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('throws error if property name is tabindex', `
+        export default class Test {
+            @api tabindex;
+        }
+    `, undefined, {
+        message: 'test.js: Invalid property name "tabindex". "tabindex" is a camel cased HTML prop and should be changed to "tabIndex".',
+        loc: {
+            line: 2,
+            column: 9
+        }
+    });
+
+    test('does not throw error if @api tabIndex specified', `
+        export default class Test {
+            @api tabIndex;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            tabIndex: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api lang specified', `
+        export default class Test {
+            @api lang;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            lang: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api hidden specified', `
+        export default class Test {
+            @api hidden;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            hidden: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api dir specified', `
+        export default class Test {
+            @api dir;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            dir: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api contentEditable specified', `
+        export default class Test {
+            @api contentEditable;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            contentEditable: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api accessKey specified', `
+        export default class Test {
+            @api accessKey;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            accessKey: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api id specified', `
+        export default class Test {
+            @api id;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            id: {
+                config: 0
+            }
+        };
+    `);
+
+    test('does not throw error if @api title specified', `
+        export default class Test {
+            @api title;
+        }
+    `, `
+        export default class Test {}
+        Test.publicProps = {
+            title: {
+                config: 0
+            }
+        };
+    `);
 
     test('throws error if property name is "part"', `
         export default class Test {

@@ -21,9 +21,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     'data-foo': 'datafoo',
                     'aria-hidden': 'h',
                     role: 'presentation',
+                },
+                props: {
                     href: '/foo',
                     title: 'test',
-                    tabindex: 'test'
+                    tabIndex: 'test'
                 }
             },
             []
@@ -36,12 +38,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 'data-xx': 'foo',
                 'aria-hidden': 'hidden',
                 role: 'xx',
-                tabindex: 'bar'
             },
             props: {
                 fooBar: 'x',
                 foo: 'bar',
-                bgcolor: 'blue'
+                bgcolor: 'blue',
+                tabIndex: 'bar'
             }
         }),
         api_element(
@@ -87,12 +89,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_custom_element('table', _nsTable, {
             attrs: {
                 bgcolor: 'x',
-                is: 'ns-table',
-                tabindex: '2'
+                is: 'ns-table'
             },
             props: {
                 bar: 'test',
-                min: '3'
+                min: '3',
+                tabIndex: '2'
             }
         }),
         api_element(

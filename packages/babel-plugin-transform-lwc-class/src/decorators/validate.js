@@ -1,7 +1,16 @@
+const { GLOBAL_ATTRIBUTE_PROP_SET } = require('../constants');
 const { isAPIDecorator, isTrackDecorator, isWireDecorator } = require('../utils');
 
 const decoratorVisitor = {
     Decorator(path) {
+        const name = path.parentPath.node.key.name;
+        if (GLOBAL_ATTRIBUTE_PROP_SET.has(name) && (isTrackDecorator(path) || isWireDecorator(path))) {
+            throw path.buildCodeFrameError(
+                `Only @api decorator can be applied to HTML properties. Use @api "${name}" instead.`
+            );
+
+        }
+
         if (isWireDecorator(path)) {
             const decorators = path.parentPath.get('decorators');
             if (decorators.length > 1) {
