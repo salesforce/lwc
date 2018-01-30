@@ -10,9 +10,16 @@ function validateWireParameters(path) {
         );
     }
 
-    if (!id.isStringLiteral()) {
+    // TODO: deprecate string as adapter id once consumer has migrated to use imported identifier
+    if (!id.isStringLiteral() && !id.isIdentifier()) {
         throw id.buildCodeFrameError(
-            `@wire expects a string as first parameter.`
+            `@wire expects a string or a function identifier as first parameter.`
+        );
+    }
+
+    if (id.isIdentifier() && !path.scope.getBinding(id.node.name).path.isImportSpecifier()) {
+        throw id.buildCodeFrameError(
+            `@wire expects a function identifier to be imported as first parameter.`
         );
     }
 

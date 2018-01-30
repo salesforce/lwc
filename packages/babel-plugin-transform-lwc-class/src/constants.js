@@ -13,7 +13,6 @@ const LWC_PACKAGE_EXPORTS = {
 }
 
 const LWC_COMPONENT_PROPERTIES = {
-    LABELS: 'labels',
     STYLE: 'style',
     RENDER: 'render',
     PUBLIC_PROPS: 'publicProps',

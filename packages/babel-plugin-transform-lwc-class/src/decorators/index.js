@@ -1,6 +1,7 @@
 const api = require('./api');
 const wire = require('./wire');
 const track = require('./track');
+
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
 const { getImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
 

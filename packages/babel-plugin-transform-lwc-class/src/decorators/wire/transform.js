@@ -32,10 +32,6 @@ function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(wiredValues.map(wiredValue => {
         const wireConfig = [
             t.objectProperty(
-                t.identifier('type'),
-                t.stringLiteral(wiredValue.type)
-            ),
-            t.objectProperty(
                 t.identifier('params'),
                 t.objectExpression(wiredValue.params)
             ),
@@ -44,6 +40,25 @@ function buildWireConfigValue(t, wiredValues) {
                 t.objectExpression(wiredValue.static)
             )
         ];
+
+        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
+        if (wiredValue.type) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('type'),
+                    t.stringLiteral(wiredValue.type)
+                )
+            )
+        }
+
+        if (wiredValue.adapter) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('adapter'),
+                    t.identifier(wiredValue.adapter)
+                )
+            )
+        }
 
         if (wiredValue.isClassMethod) {
             wireConfig.push(
@@ -70,13 +85,21 @@ module.exports = function transform(t, klass, decorators) {
             kind: 'method'
         });
 
-        return {
+        const wiredValue = {
             propertyName,
             isClassMethod,
-            type: id.node.value,
             static: getWiredStatic(config),
             params: getWiredParams(t, config),
-        };
+        }
+
+        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
+        if (id.isStringLiteral()) {
+            wiredValue.type = id.node.value;
+        } else if (id.isIdentifier()) {
+            wiredValue.adapter = id.node.name;
+        }
+
+        return wiredValue;
     });
 
     if (wiredValues.length) {

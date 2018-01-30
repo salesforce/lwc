@@ -18,7 +18,7 @@ export default class TestCase extends Element {
     }
 
     get issueHref() {
-        return `https://git.soma.salesforce.com/raptor/raptor/issues/${this.issueId}`;
+        return `https://github.com/salesforce/lwc/issues/${this.issueId}`;
     }
 
     get headerStyle() {
