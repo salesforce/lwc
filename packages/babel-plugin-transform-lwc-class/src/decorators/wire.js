@@ -32,10 +32,6 @@ module.exports = function wireVisitor ({ types: t }) {
         return t.objectExpression(wiredValues.map(wiredValue => {
             const wireConfig = [
                 t.objectProperty(
-                    t.identifier('type'),
-                    t.stringLiteral(wiredValue.type)
-                ),
-                t.objectProperty(
                     t.identifier('params'),
                     t.objectExpression(wiredValue.params)
                 ),
@@ -44,6 +40,25 @@ module.exports = function wireVisitor ({ types: t }) {
                     t.objectExpression(wiredValue.static)
                 )
             ];
+
+            // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
+            if (wiredValue.type) {
+                wireConfig.push(
+                    t.objectProperty(
+                        t.identifier('type'),
+                        t.stringLiteral(wiredValue.type)
+                    )
+                )
+            }
+
+            if (wiredValue.adapter) {
+                wireConfig.push(
+                    t.objectProperty(
+                        t.identifier('adapter'),
+                        t.identifier(wiredValue.adapter)
+                    )
+                )
+            }
 
             if (wiredValue.isClassMethod) {
                 wireConfig.push(
@@ -72,9 +87,16 @@ module.exports = function wireVisitor ({ types: t }) {
                     );
                 }
 
-                if (!id.isStringLiteral()) {
+                // TODO: deprecate string as adapter id once consumer has migrated to use imported identifier
+                if (!id.isStringLiteral() && !id.isIdentifier()) {
                     throw id.buildCodeFrameError(
-                        `@wire expects a string as first parameter.`
+                        `@wire expects a string or a function identifier as first parameter.`
+                    );
+                }
+
+                if (id.isIdentifier() && !path.scope.getBinding(id.node.name).path.isImportSpecifier()) {
+                    throw id.buildCodeFrameError(
+                        `@wire expects a function identifier to be imported as first parameter.`
                     );
                 }
 
@@ -89,13 +111,21 @@ module.exports = function wireVisitor ({ types: t }) {
                     kind: 'method'
                 });
 
-                wiredValues.push({
+                const wiredValue = {
                     propertyName,
                     isClassMethod,
-                    type: id.node.value,
                     static: getWiredStatic(config),
                     params: getWiredParams(config),
-                });
+                }
+
+                // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
+                if (id.isStringLiteral()) {
+                    wiredValue.type = id.node.value;
+                } else if (id.isIdentifier()) {
+                    wiredValue.adapter = id.node.name;
+                }
+
+                wiredValues.push(wiredValue);
 
                 path.remove();
             }

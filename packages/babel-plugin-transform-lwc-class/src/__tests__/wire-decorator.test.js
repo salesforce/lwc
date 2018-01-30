@@ -12,9 +12,9 @@ describe('Wired field', () => {
         export default class Test {}
         Test.wire = {
             innerRecord: {
-                type: "record",
                 params: { recordId: "recordId" },
-                static: { fields: ["Account", 'Rate'] }
+                static: { fields: ["Account", 'Rate'] },
+                type: "record"
             }
         };
     `);
@@ -31,17 +31,37 @@ describe('Wired field', () => {
         },
     });
 
-    test('decorator expects a string as first parameter', `
+    test('decorator expects a function identifier as first parameter', `
+        import { wire } from 'engine';
+        import { record } from 'data-service';
+        export default class Test {
+            @wire(record, {}) innerRecord;
+        }
+    `, `
+        import { wire } from 'engine';
+        import { record } from 'data-service';
+        export default class Test {}
+        Test.wire = {
+            innerRecord: {
+                params: {},
+                static: {},
+                adapter: record
+            }
+        };
+    `);
+
+    test('decorator expects an imported identifier as first parameter', `
+        import { wire } from 'engine';
         const RECORD = "record"
         export default class Test {
             @wire(RECORD, {}) innerRecord;
         }
     `, undefined, {
-        message: 'test.js: @wire expects a string as first parameter.',
-        loc: {
-            line: 3,
-            column: 10,
-        },
+            message: 'test.js: @wire expects a function identifier to be imported as first parameter.',
+            loc: {
+                line: 4,
+                column: 6,
+            },
     });
 
     test('decorator expects an oject as second parameter', `
@@ -69,9 +89,9 @@ describe('Wired method', () => {
         }
         Test.wire = {
             innerRecordMethod: {
-                type: "record",
                 params: { recordId: "recordId" },
                 static: { fields: ["Account", 'Rate'] },
+                type: "record",
                 method: 1
             }
         };
