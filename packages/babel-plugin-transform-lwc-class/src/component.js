@@ -83,18 +83,6 @@ module.exports = function ({ types: t, }) {
             );
     }
 
-    function checkLifecycleMethodMisspell(classBody) {
-        for (let misspelledAPI of Object.keys(MISSPELLED_LIFECYCLE_METHODS)) {
-            const method = findClassMethod(classBody, misspelledAPI);
-
-            if (method) {
-                throw method.buildCodeFrameError(
-                    `Wrong lifecycle method name ${misspelledAPI}. You probably meant ${MISSPELLED_LIFECYCLE_METHODS[misspelledAPI]}`
-                );
-            }
-        }
-    }
-
     function isDefaultExport(path) {
         return path.parentPath.isExportDefaultDeclaration();
     }
