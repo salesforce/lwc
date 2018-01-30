@@ -6831,9 +6831,9 @@ postcss-reduce-transforms@^1.0.3:
     postcss "^5.0.8"
     postcss-value-parser "^3.0.1"
 
-postcss-selector-parser@3.0.0-rc.0:
-  version "3.0.0-rc.0"
-  resolved "http://npm.lwcjs.org/postcss-selector-parser/-/postcss-selector-parser-3.0.0-rc.0.tgz#dfb74f1cf3bc043d5692e37203170ac2da40a150"
+postcss-selector-parser@3.1.1:
+  version "3.1.1"
+  resolved "http://npm.lwcjs.org/postcss-selector-parser/-/postcss-selector-parser-3.1.1/4f875f4afb0c96573d5cf4d74011aee250a7e865.tgz#4f875f4afb0c96573d5cf4d74011aee250a7e865"
   dependencies:
     dot-prop "^4.1.1"
     indexes-of "^1.0.1"
