@@ -9,19 +9,32 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     } = $api;
 
     return [
-        api_element('div', {}, [
-            api_custom_element('x-b', _xB, {
-                slotset: {
-                    $default$: api_flatten([
-                        $cmp.isLoading ? api_element('div', {}, []) : null,
-                        $cmp.haveLoadedItems
-                            ? api_iterator($cmp.menuItems, function(item) {
-                                  return api_text('x');
-                              })
-                            : []
-                    ])
-                }
-            })
-        ])
+        api_element(
+            'div',
+            {
+                ck: 2
+            },
+            [
+                api_custom_element('x-b', _xB, {
+                    ck: 1,
+                    slotset: {
+                        $default$: api_flatten([
+                            $cmp.isLoading ? api_element(
+                                'div',
+                                {
+                                    ck: 1
+                                },
+                                []
+                            ) : null,
+                            $cmp.haveLoadedItems
+                                ? api_iterator($cmp.menuItems, function(item) {
+                                    return api_text('x');
+                                })
+                                : []
+                        ])
+                    }
+                })
+            ]
+        )
     ];
 }

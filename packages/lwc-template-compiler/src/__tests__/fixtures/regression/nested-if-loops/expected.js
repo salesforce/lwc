@@ -10,8 +10,16 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         ? api_flatten([
               api_text('Outer'),
               api_iterator($cmp.items, function(item) {
-                  return api_element('p', {}, [api_text('Inner')]);
-              })
+                  return api_element(
+                        'p',
+                        {
+                            ck: 1
+                        },
+                        [
+                          api_text('Inner')
+                        ]
+                    );
+                })
           ])
         : [];
 }

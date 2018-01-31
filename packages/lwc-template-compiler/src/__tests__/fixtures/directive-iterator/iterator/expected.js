@@ -9,7 +9,9 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'section',
-            {},
+            {
+                ck: 3
+            },
             api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
                 return api_element(
                     'div',
@@ -17,13 +19,19 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         attrs: {
                             'data-islast': xLast,
                             'data-isfirst': xFirst
-                        }
+                        },
+                        ck: 2
                     },
                     [
-                        api_element('span', {}, [
-                            api_text('Row: '),
-                            api_dynamic(xIndex)
-                        ]),
+                        api_element(
+                            'span',
+                            {
+                                ck: 1
+                            }, [
+                                api_text('Row: '),
+                                api_dynamic(xIndex)
+                            ]
+                        ),
                         api_text('. Value: '),
                         api_dynamic(xValue)
                     ]

@@ -5,15 +5,31 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'section',
-            {},
+            {
+                ck: 5
+            },
             api_flatten([
                 slot0 || [
-                    api_element('p', {}, [
-                        api_text('Default slot other content')
-                    ])
+                    api_element(
+                        'p',
+                        {
+                            ck: 1
+                        },
+                        [
+                            api_text('Default slot other content')
+                        ]
+                    )
                 ],
                 slot1 || [
-                    api_element('p', {}, [api_text('Default slot content')])
+                    api_element(
+                        'p',
+                        {
+                            ck: 3
+                        },
+                        [
+                            api_text('Default slot content')
+                        ]
+                    )
                 ]
             ])
         )

@@ -12,11 +12,20 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: {
                 s2: true
             },
+            ck: 1,
             slotset: {
                 $default$: $cmp.isTrue
                     ? api_iterator($cmp.items, function(item) {
-                          return api_element('p', {}, [api_text('X')]);
-                      })
+                        return api_element(
+                            'p',
+                            {
+                                ck: 1
+                            },
+                            [
+                                api_text('X')
+                            ]
+                        );
+                    })
                     : []
             }
         })
