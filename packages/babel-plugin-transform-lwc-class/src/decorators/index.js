@@ -49,7 +49,7 @@ function getLwcDecorators(importSpecifiers) {
     }, []).map(({ name, reference }) => {
         // Get the decorator from the identifier
         // If the the decorator is:
-        //   - an identifier @track : the decorator is the parent of the indentifier
+        //   - an identifier @track : the decorator is the parent of the identifier
         //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
         let decorator = reference.parentPath.isDecorator() ?
             reference.parentPath:
@@ -145,6 +145,14 @@ module.exports = function decoratorVisitor({ types: t }) {
 
             removeDecorators(decorators);
             removeImportSpecifiers(decoratorImportSpecifiers);
+        },
+
+        Decorator(path) {
+            const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map(transform => transform.name);
+
+            throw path.parentPath.buildCodeFrameError(
+                `Invalid decorator usage. Supported decorators (${AVAILABLE_DECORATORS.join(', ')}) should be imported from "${LWC_PACKAGE_ALIAS}"`,
+            );
         }
     }
 }

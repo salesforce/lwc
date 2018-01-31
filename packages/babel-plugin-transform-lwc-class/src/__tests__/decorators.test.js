@@ -3,19 +3,18 @@ const test = require('./utils/test-transform').test(
 );
 
 describe('decorators', () => {
-    test('should ignore decorators not imported from engine', `
+    test('should throw if a decorator is not imported from engine', `
         export default class Test {
             @api
-            @track
             test() {}
         }
-    `, `
-        export default class Test {
-            @api
-            @track
-            test() {}
+    `, undefined, {
+        message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "engine"',
+        loc: {
+            line: 10,
+            column: 0
         }
-    `);
+    });
 
     test('throws if a decorator is used as a function', `
         import { track } from 'engine';
