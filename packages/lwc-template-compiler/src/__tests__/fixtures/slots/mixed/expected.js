@@ -12,7 +12,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'div',
             {
-                ck: 2
+                ck: 3
             },
             [
                 api_custom_element('x-b', _xB, {
@@ -22,7 +22,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             $cmp.isLoading ? api_element(
                                 'div',
                                 {
-                                    ck: 1
+                                    ck: 2
                                 },
                                 []
                             ) : null,

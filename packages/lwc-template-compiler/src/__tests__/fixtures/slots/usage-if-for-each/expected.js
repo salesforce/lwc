@@ -19,7 +19,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         return api_element(
                             'p',
                             {
-                                ck: 1
+                                ck: 2
                             },
                             [
                                 api_text('X')

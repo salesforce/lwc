@@ -51,13 +51,13 @@ function transform(
     root: IRNode,
     codeGen: CodeGen,
     state: State,
+    generateKey: () => number = getKeyGenerator(),
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
     stack.push(
         t.arrayExpression([]),
     );
-    const generateKey = getKeyGenerator();
 
     traverse(root, {
         text: {
@@ -171,7 +171,7 @@ function transform(
             slots.push(
                 t.objectProperty(
                     t.stringLiteral(key),
-                    transform(slotRoot, codeGen, state),
+                    transform(slotRoot, codeGen, state, generateKey),
                 ),
             );
         });
@@ -408,7 +408,8 @@ function transform(
 
         // Key property on VNode
         if (forKey) {
-            data.push(t.objectProperty(t.identifier('key'), forKey));
+            const { expression: forKeyExpression } = bindExpression(forKey, element);
+            data.push(t.objectProperty(t.identifier('key'), forKeyExpression));
         }
         data.push(t.objectProperty(t.identifier('ck'), t.numericLiteral(generateKey())));
 
