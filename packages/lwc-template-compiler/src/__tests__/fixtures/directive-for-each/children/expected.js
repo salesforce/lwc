@@ -12,14 +12,23 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 classMap: {
                     s1: true
-                }
+                },
+                ck: 2,
             },
             api_flatten([
                 api_text('Other Child'),
                 api_iterator($cmp.items, function(item) {
                     return api_text('X');
                 }),
-                api_element('p', {}, [api_text('Last child')])
+                api_element(
+                    'p',
+                    {
+                        ck: 1
+                    },
+                    [
+                        api_text('Last child')
+                    ]
+                )
             ])
         ),
         api_element(
@@ -27,15 +36,32 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 classMap: {
                     s2: true
-                }
+                },
+                ck: 5
             },
             api_flatten([
                 api_text('Other Child'),
                 $cmp.isTrue
                     ? api_iterator($cmp.items, function(item) {
                           return [
-                              api_element('p', {}, [api_text('X1')]),
-                              api_element('p', {}, [api_text('X2')])
+                              api_element(
+                                'p',
+                                {
+                                    ck: 3
+                                },
+                                [
+                                    api_text('X1')
+                                ]
+                            ),
+                            api_element(
+                                'p',
+                                {
+                                    ck: 4
+                                },
+                                [
+                                    api_text('X2')
+                                ]
+                            )
                           ];
                       })
                     : []
@@ -46,12 +72,27 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 classMap: {
                     s3: true
-                }
+                },
+                ck: 8
             },
             api_flatten([
-                api_element('p', {}, [api_text('Last child')]),
+                api_element(
+                    'p',
+                    {
+                        ck: 6
+                    },
+                    [
+                        api_text('Last child')
+                    ]
+                ),
                 api_iterator($cmp.items, function(item) {
-                    return api_element('div', {}, []);
+                    return api_element(
+                        'div',
+                        {
+                            ck: 7
+                        },
+                        []
+                    );
                 })
             ])
         ),
@@ -60,11 +101,28 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 classMap: {
                     s4: true
-                }
+                },
+                ck: 11
             },
             [
-                api_element('p', {}, [api_text('Other child1')]),
-                api_element('p', {}, [api_text('Other child2')])
+                api_element(
+                    'p',
+                    {
+                        ck: 9
+                    },
+                    [
+                        api_text('Other child1')
+                    ]
+                ),
+                api_element(
+                    'p',
+                    {
+                        ck: 10
+                    },
+                    [
+                        api_text('Other child2')
+                    ]
+                )
             ]
         )
     ];

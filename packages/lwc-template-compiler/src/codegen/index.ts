@@ -42,6 +42,7 @@ import {
     isSlot,
     shouldFlatten,
     destructuringAssignmentFromObject,
+    getKeyGenerator,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -56,6 +57,7 @@ function transform(
     stack.push(
         t.arrayExpression([]),
     );
+    const generateKey = getKeyGenerator();
 
     traverse(root, {
         text: {
@@ -408,6 +410,7 @@ function transform(
         if (forKey) {
             data.push(t.objectProperty(t.identifier('key'), forKey));
         }
+        data.push(t.objectProperty(t.identifier('ck'), t.numericLiteral(generateKey())));
 
         // Event handler
         if (on) {

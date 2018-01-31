@@ -5,13 +5,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                className: $cmp.foo.c
+                className: $cmp.foo.c,
+                ck: 2
             },
             [
                 api_element(
                     'p',
                     {
-                        className: $cmp.bar.c
+                        className: $cmp.bar.c,
+                        ck: 1
                     },
                     []
                 )

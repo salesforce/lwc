@@ -9,22 +9,51 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'section',
-            {},
+            {
+                ck: 5
+            },
             api_iterator($cmp.items, function(item) {
                 return [
-                    api_element('p', {}, [api_text('1'), api_dynamic(item)]),
-                    api_element('p', {}, [
-                        api_text('2'),
-                        api_dynamic(item.foo)
-                    ]),
-                    api_element('p', {}, [
-                        api_text('3'),
-                        api_dynamic($cmp.other)
-                    ]),
-                    api_element('p', {}, [
-                        api_text('4'),
-                        api_dynamic($cmp.other.foo)
-                    ])
+                    api_element(
+                        'p',
+                        {
+                            ck: 1
+                        },
+                        [
+                            api_text('1'),
+                            api_dynamic(item)
+                        ]
+                    ),
+                    api_element(
+                        'p',
+                        {
+                            ck: 2
+                        },
+                        [
+                            api_text('2'),
+                            api_dynamic(item.foo)
+                        ]
+                    ),
+                    api_element(
+                        'p',
+                        {
+                            ck: 3
+                        },
+                        [
+                            api_text('3'),
+                            api_dynamic($cmp.other)
+                        ]
+                    ),
+                    api_element(
+                        'p',
+                        {
+                            ck: 4
+                        },
+                        [
+                            api_text('4'),
+                            api_dynamic($cmp.other.foo)
+                        ]
+                    )
                 ];
             })
         )

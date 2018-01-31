@@ -8,7 +8,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 attrs: {
                     title: ''
-                }
+                },
+                ck: 1
             },
             []
         ),
@@ -16,7 +17,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             props: {
                 content: '',
                 visible: true
-            }
+            },
+            ck: 2
         })
     ];
 }

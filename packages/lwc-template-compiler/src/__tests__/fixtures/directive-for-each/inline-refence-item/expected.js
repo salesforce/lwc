@@ -4,14 +4,19 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'ul',
-            {},
+            {
+                ck: 2
+            },
             api_iterator($cmp.items, function(item) {
                 return api_element(
                     'li',
                     {
-                        className: item.x
+                        className: item.x,
+                        ck: 1
                     },
-                    [api_dynamic(item)]
+                    [
+                        api_dynamic(item)
+                    ]
                 );
             })
         )

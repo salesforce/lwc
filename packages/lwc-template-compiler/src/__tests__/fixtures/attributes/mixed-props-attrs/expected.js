@@ -9,7 +9,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_custom_element('ns-foo', _nsFoo, {
             props: {
                 d: $cmp.p.foo
-            }
+            },
+            ck: 1
         }),
         api_element(
             'a',
@@ -24,7 +25,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     href: '/foo',
                     title: 'test',
                     tabindex: 'test'
-                }
+                },
+                ck: 2
             },
             []
         ),
@@ -42,7 +44,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 fooBar: 'x',
                 foo: 'bar',
                 bgcolor: 'blue'
-            }
+            },
+            ck: 3
         }),
         api_element(
             'svg',
@@ -52,7 +55,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 },
                 attrs: {
                     focusable: 'true'
-                }
+                },
+                ck: 5
             },
             [
                 api_element(
@@ -60,7 +64,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     {
                         attrs: {
                             'xlink:href': 'xx'
-                        }
+                        },
+                        ck: 4
                     },
                     []
                 )
@@ -73,14 +78,16 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             props: {
                 bgcolor: 'x'
-            }
+            },
+            ck: 6
         }),
         api_element(
             'table',
             {
                 attrs: {
                     bgcolor: 'x'
-                }
+                },
+                ck: 7
             },
             []
         ),
@@ -93,7 +100,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             props: {
                 bar: 'test',
                 min: '3'
-            }
+            },
+            ck: 8
         }),
         api_element(
             'div',
@@ -101,7 +109,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 className: $cmp.foo,
                 attrs: {
                     'aria-hidden': 'hidden'
-                }
+                },
+                ck: 9
             },
             []
         )
