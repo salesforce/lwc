@@ -1,9 +1,9 @@
-const transformTest = require('./utils/test-transform').transformTest(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('Element import', () => {
-    transformTest('throw an error if the component class is anonymous', `
+    pluginTest('throw an error if the component class is anonymous', `
         import { Element } from 'engine';
 
         export default class extends Element {}
@@ -17,7 +17,7 @@ describe('Element import', () => {
         }
     });
 
-    transformTest('allow to remap the import to Element', `
+    pluginTest('allow to remap the import to Element', `
         import { Element as Component } from 'engine';
 
         export default class Test extends Component {}
@@ -40,7 +40,7 @@ describe('Element import', () => {
 });
 
 describe('render method', () => {
-    transformTest('inject render method', `
+    pluginTest('inject render method', `
         import { Element } from "engine";
         export default class Test extends Element {}
     `, {
@@ -59,7 +59,7 @@ describe('render method', () => {
         }
     });
 
-    transformTest(`keep the render method if present`, `
+    pluginTest(`keep the render method if present`, `
         import { Element } from "engine";
         export default class Test extends Element {
             render() {}
@@ -75,7 +75,7 @@ describe('render method', () => {
         }
     });
 
-    transformTest('only inject render in the exported class', `
+    pluginTest('only inject render in the exported class', `
         import { Element } from 'engine';
 
         class Test1 extends Element {}
@@ -102,7 +102,7 @@ describe('render method', () => {
 });
 
 describe('metadata', () => {
-    transformTest('class jsdoc single line (and declarationLoc)', `
+    pluginTest('class jsdoc single line (and declarationLoc)', `
         import { Element } from 'engine';
         /** Foo doc */
         export default class Foo extends Element {
@@ -115,7 +115,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class jsdoc', `
+    pluginTest('class jsdoc', `
         import { Element } from 'engine';
         /**
          * Foo doc
@@ -130,7 +130,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class jsdoc multiline', `
+    pluginTest('class jsdoc multiline', `
         import { Element } from 'engine';
         /**
          * multi
@@ -146,7 +146,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class jsdoc multi comments', `
+    pluginTest('class jsdoc multi comments', `
         import { Element } from 'engine';
         /** first */
         /** last */
@@ -160,7 +160,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class jsdoc empty', `
+    pluginTest('class jsdoc empty', `
         import { Element } from 'engine';
         /** */
         export default class Foo extends Element {
@@ -171,7 +171,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class no-jsdoc /**/', `
+    pluginTest('class no-jsdoc /**/', `
         import { Element } from 'engine';
         /* not a jsdoc */
         export default class Foo extends Element {
@@ -182,7 +182,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('class no-jsdoc //', `
+    pluginTest('class no-jsdoc //', `
         import { Element } from 'engine';
         // not a jsdoc
         export default class Foo extends Element {

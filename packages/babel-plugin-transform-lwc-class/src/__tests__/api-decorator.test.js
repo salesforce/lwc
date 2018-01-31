@@ -1,9 +1,9 @@
-const transformTest = require('./utils/test-transform').transformTest(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('Public Props', () => {
-    transformTest('transforms public props', `
+    pluginTest('transforms public props', `
         import { api } from 'engine';
         export default class Test {
             @api test = 1;
@@ -26,7 +26,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('transform nested classes', `
+    pluginTest('transform nested classes', `
         import { api } from 'engine';
         export default class Outer {
             @api outer;
@@ -59,7 +59,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('transforms public getters', `
+    pluginTest('transforms public getters', `
         import { api } from 'engine';
         export default class Test {
             @api get publicGetter() {
@@ -83,7 +83,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('transforms public getter/setter', `
+    pluginTest('transforms public getter/setter', `
         import { api } from 'engine';
         export default class Test {
             @api get something() {
@@ -115,7 +115,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if setter is not associated with a getter', `
+    pluginTest('throws error if setter is not associated with a getter', `
         import { api } from 'engine';
         export default class Test {
             @api set publicSetter(value) {
@@ -132,7 +132,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('transform pairs of setter and getter', `
+    pluginTest('transform pairs of setter and getter', `
         import { api } from 'engine';
         export default class Test {
             _a = true;
@@ -179,7 +179,7 @@ describe('Public Props', () => {
         }
     })
 
-    transformTest(`transform complex attributes`, `
+    pluginTest(`transform complex attributes`, `
         import { api } from 'engine';
         export default class Text {
             @api publicProp;
@@ -231,7 +231,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if default value is true', `
+    pluginTest('throws error if default value is true', `
         import { api } from 'engine';
         export default class Test {
             @api publicProp = true;
@@ -246,7 +246,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name is "is"', `
+    pluginTest('throws error if property name is "is"', `
         import { api } from 'engine';
         export default class Test {
             @api is;
@@ -261,7 +261,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name prefixed with "on"', `
+    pluginTest('throws error if property name prefixed with "on"', `
         import { api } from 'engine';
         export default class Test {
             @api onChangeHandler;
@@ -276,7 +276,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('does not throw error if property name is "data"', `
+    pluginTest('does not throw error if property name is "data"', `
         import { api } from 'engine';
         export default class Test {
             @api data;
@@ -294,7 +294,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name prefixed with "data"', `
+    pluginTest('throws error if property name prefixed with "data"', `
         import { api } from 'engine';
         export default class Test {
             @api dataFooBar;
@@ -309,7 +309,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name prefixed with "aria"', `
+    pluginTest('throws error if property name prefixed with "aria"', `
         import { api } from 'engine';
         export default class Test {
             @api ariaDescribedby;
@@ -324,7 +324,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name conflicts with global html attribute name', `
+    pluginTest('throws error if property name conflicts with global html attribute name', `
         import { api } from 'engine';
         export default class Test {
             @api slot;
@@ -339,7 +339,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws error if property name is "part"', `
+    pluginTest('throws error if property name is "part"', `
         import { api } from 'engine';
         export default class Test {
             @api part;
@@ -354,7 +354,7 @@ describe('Public Props', () => {
         }
     });
 
-    transformTest('throws when combined with @track', `
+    pluginTest('throws when combined with @track', `
         import { api, track } from 'engine';
         export default class Test {
             @track
@@ -373,7 +373,7 @@ describe('Public Props', () => {
 });
 
 describe('Public Methods', () => {
-    transformTest('transforms public methods', `
+    pluginTest('transforms public methods', `
         import { api } from 'engine';
         export default class Test {
             @api foo() {}
@@ -389,7 +389,7 @@ describe('Public Methods', () => {
         }
     });
 
-    transformTest('Does not allow computed api getters and setters', `
+    pluginTest('Does not allow computed api getters and setters', `
         import { api } from 'engine';
         export default class ComputedAPIProp extends Element {
             @api set [x](value) {}
@@ -407,7 +407,7 @@ describe('Public Methods', () => {
 });
 
 describe('metadata', () => {
-    transformTest('has @api properties', `
+    pluginTest('has @api properties', `
         import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {
@@ -429,7 +429,7 @@ describe('metadata', () => {
         }
     });
 
-    transformTest('no @api properties', `
+    pluginTest('no @api properties', `
         import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {

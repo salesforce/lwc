@@ -1,9 +1,9 @@
-const transformTest = require('./utils/test-transform').transformTest(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('Wired field', () => {
-    transformTest('transforms wired field', `
+    pluginTest('transforms wired field', `
         import { wire } from 'engine';
         export default class Test {
             @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
@@ -24,7 +24,7 @@ describe('Wired field', () => {
         }
     });
 
-    transformTest('decorator expects 2 parameters', `
+    pluginTest('decorator expects 2 parameters', `
         import { wire } from 'engine';
         export default class Test {
             @wire() innerRecord;
@@ -39,7 +39,7 @@ describe('Wired field', () => {
         }
     });
 
-    transformTest('decorator expects a function identifier as first parameter', `
+    pluginTest('decorator expects a function identifier as first parameter', `
         import { wire } from 'engine';
         import { record } from 'data-service';
         export default class Test {
@@ -61,7 +61,7 @@ describe('Wired field', () => {
         }
     });
 
-    transformTest('decorator expects an imported identifier as first parameter', `
+    pluginTest('decorator expects an imported identifier as first parameter', `
         import { wire } from 'engine';
         const RECORD = "record"
         export default class Test {
@@ -77,7 +77,7 @@ describe('Wired field', () => {
         }
     });
 
-    transformTest('decorator expects an oject as second parameter', `
+    pluginTest('decorator expects an oject as second parameter', `
         import { wire } from 'engine';
         export default class Test {
             @wire('record', '$recordId', ['Account', 'Rate']) innerRecord;
@@ -94,7 +94,7 @@ describe('Wired field', () => {
 });
 
 describe('Wired method', () => {
-    transformTest('transforms wired method', `
+    pluginTest('transforms wired method', `
         import { wire } from 'engine';
         export default class Test {
             @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
@@ -118,7 +118,7 @@ describe('Wired method', () => {
         }
     });
 
-    transformTest('throws when wired method is combined with @api', `
+    pluginTest('throws when wired method is combined with @api', `
         import { api, wire } from 'engine';
         export default class Test {
             @api
@@ -135,7 +135,7 @@ describe('Wired method', () => {
         }
     });
 
-    transformTest('throws when wired property is combined with @api', `
+    pluginTest('throws when wired property is combined with @api', `
         import { api, wire } from 'engine';
         export default class Test {
             @api
@@ -152,7 +152,7 @@ describe('Wired method', () => {
         }
     });
 
-    transformTest('throws when wired property is combined with @track', `
+    pluginTest('throws when wired property is combined with @track', `
         import { track, wire } from 'engine';
         export default class Test {
             @track
@@ -169,7 +169,7 @@ describe('Wired method', () => {
         }
     });
 
-    transformTest('throws when using 2 wired decorators', `
+    pluginTest('throws when using 2 wired decorators', `
         import { wire } from 'engine';
         export default class Test {
             @wire('record', { recordId: '$recordId', fields: ['Address'] })

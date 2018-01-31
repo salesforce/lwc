@@ -1,7 +1,5 @@
 const babel = require('babel-core');
 
-const test = it;
-
 const baseConfig = {
     babelrc: false,
     filename: 'test.js',
@@ -41,7 +39,7 @@ function prettify(str) {
         .join('\n');
 }
 
-function makeTransformTest(plugin, opts = {}) {
+function pluginTest(plugin, opts = {}) {
     const testTransform = transform(plugin, opts);
 
     const transformTest = function(actual, expected) {
@@ -65,14 +63,12 @@ function makeTransformTest(plugin, opts = {}) {
         }
     }
 
-    const transformTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
-    transformTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
-    transformTester.skip = (name) => test.skip(name);
+    const pluginTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
+    pluginTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
+    pluginTester.skip = (name) => test.skip(name);
 
-    return transformTester;
+    return pluginTester;
 }
 
-
-
-module.exports.transformTest = makeTransformTest;
+module.exports.pluginTest = pluginTest;
 module.exports.transform = transform;

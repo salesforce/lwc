@@ -1,9 +1,9 @@
-const transformTest = require('./utils/test-transform').transformTest(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('decorators', () => {
-    transformTest('should throw if a decorator is not imported from engine', `
+    pluginTest('should throw if a decorator is not imported from engine', `
         export default class Test {
             @api
             test() {}
@@ -18,7 +18,7 @@ describe('decorators', () => {
         }
     });
 
-    transformTest('throws if a decorator is used as a function', `
+    pluginTest('throws if a decorator is used as a function', `
         import { track } from 'engine';
         track(true)
     `, {
@@ -31,9 +31,9 @@ describe('decorators', () => {
         }
     });
 
-    transformTest('throws if a decorator is dereferenced', `
+    pluginTest('throws if a decorator is dereferenced', `
         import { track } from 'engine';
-        const trok = track;
+        const trock = track;
         export default class Test {
             @trock field
         }
@@ -47,7 +47,7 @@ describe('decorators', () => {
         }
     });
 
-    transformTest('throws if a decorator is not used on class properties', `
+    pluginTest('throws if a decorator is not used on class properties', `
         import { track } from 'engine';
         @track
         class foo {}
