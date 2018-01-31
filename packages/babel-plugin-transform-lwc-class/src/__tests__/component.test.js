@@ -90,9 +90,9 @@ describe('render method', () => {
                 class Test1 extends Element {}
 
                 export default class Test2 extends Element {
-                render() {
-                    return _tmpl;
-                }
+                    render() {
+                        return _tmpl;
+                    }
 
                 }
                 Test2.style = _tmpl.style;

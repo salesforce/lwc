@@ -77,7 +77,7 @@ describe('Wired field', () => {
         }
     });
 
-    pluginTest('decorator expects an oject as second parameter', `
+    pluginTest('decorator expects an object as second parameter', `
         import { wire } from 'engine';
         export default class Test {
             @wire('record', '$recordId', ['Account', 'Rate']) innerRecord;
@@ -174,7 +174,7 @@ describe('Wired method', () => {
         export default class Test {
             @wire('record', { recordId: '$recordId', fields: ['Address'] })
             @wire('record', { recordId: '$recordId', fields: ['Name'] })
-            wiredWithTrack
+            multipleWire
         }
     `, {
         error: {
