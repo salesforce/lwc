@@ -1,109 +1,136 @@
-const test = require('./utils/test-transform').test(
+const transformTest = require('./utils/test-transform').transformTest(
     require('../index')
 );
 
 describe('Element import', () => {
-    test('throw an error if the component class is anonymous', `
+    transformTest('throw an error if the component class is anonymous', `
         import { Element } from 'engine';
 
         export default class extends Element {}
-    `, undefined, {
-        message: `test.js: LWC component class can't be an anonymous.`,
-        loc: {
-            line: 3,
-            column: 15
+    `, {
+        error: {
+            message: `test.js: LWC component class can't be an anonymous.`,
+            loc: {
+                line: 3,
+                column: 15
+            }
         }
     });
 
-    test('allow to remap the import to Element', `
+    transformTest('allow to remap the import to Element', `
         import { Element as Component } from 'engine';
 
         export default class Test extends Component {}
-    `, `
-        import _tmpl from './test.html';
-        import { Element as Component } from 'engine';
+    `, {
+        output: {
+            code: `
+                import _tmpl from './test.html';
+                import { Element as Component } from 'engine';
 
-        export default class Test extends Component {
-          render() {
-            return _tmpl;
-          }
+                export default class Test extends Component {
+                render() {
+                    return _tmpl;
+                }
 
+                }
+                Test.style = _tmpl.style;
+            `
         }
-        Test.style = _tmpl.style;
-    `);
+    });
 });
 
 describe('render method', () => {
-    test('inject render method', `
+    transformTest('inject render method', `
         import { Element } from "engine";
         export default class Test extends Element {}
-    `, `
-        import _tmpl from "./test.html";
-        import { Element } from "engine";
-        export default class Test extends Element {
-          render() {
-            return _tmpl;
-          }
+    `, {
+        output: {
+            code: `
+                import _tmpl from "./test.html";
+                import { Element } from "engine";
+                export default class Test extends Element {
+                render() {
+                    return _tmpl;
+                }
 
+                }
+                Test.style = _tmpl.style;
+            `
         }
-        Test.style = _tmpl.style;
-    `);
+    });
 
-    test(`keep the render method if present`, `
+    transformTest(`keep the render method if present`, `
         import { Element } from "engine";
         export default class Test extends Element {
             render() {}
         }
-    `, `
-        import { Element } from "engine";
-        export default class Test extends Element {
-            render() {}
+    `, {
+        output: {
+            code: `
+                import { Element } from "engine";
+                export default class Test extends Element {
+                    render() {}
+                }
+            `
         }
-    `);
+    });
 
-    test('only inject render in the exported class', `
+    transformTest('only inject render in the exported class', `
         import { Element } from 'engine';
 
         class Test1 extends Element {}
 
         export default class Test2 extends Element {}
-    `, `
-        import _tmpl from './test.html';
-        import { Element } from 'engine';
+    `, {
+        output: {
+            code: `
+                import _tmpl from './test.html';
+                import { Element } from 'engine';
 
-        class Test1 extends Element {}
+                class Test1 extends Element {}
 
-        export default class Test2 extends Element {
-          render() {
-            return _tmpl;
-          }
+                export default class Test2 extends Element {
+                render() {
+                    return _tmpl;
+                }
 
+                }
+                Test2.style = _tmpl.style;
+            `
         }
-        Test2.style = _tmpl.style;
-    `)
+    })
 });
 
 describe('metadata', () => {
-    test('class jsdoc single line (and declarationLoc)', `
+    transformTest('class jsdoc single line (and declarationLoc)', `
         import { Element } from 'engine';
         /** Foo doc */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
-            doc: 'Foo doc', declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
+    `, {
+        output: {
+            metadata: {
+                doc: 'Foo doc', declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
+            }
+        }
     });
 
-    test('class jsdoc', `
+    transformTest('class jsdoc', `
         import { Element } from 'engine';
         /**
          * Foo doc
          */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
-            doc: 'Foo doc'
+    `, {
+        output: {
+            metadata: {
+                doc: 'Foo doc'
+            }
+        }
     });
-    test('class jsdoc multiline', `
+
+    transformTest('class jsdoc multiline', `
         import { Element } from 'engine';
         /**
          * multi
@@ -111,37 +138,58 @@ describe('metadata', () => {
          */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
-            doc: 'multi\nline'
+    `, {
+        output: {
+            metadata: {
+                doc: 'multi\nline'
+            }
+        }
     });
-    test('class jsdoc multi comments', `
+
+    transformTest('class jsdoc multi comments', `
         import { Element } from 'engine';
         /** first */
         /** last */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
-            doc: 'last'
+    `, {
+        output: {
+            metadata: {
+                doc: 'last'
+            }
+        }
     });
-    test('class jsdoc empty', `
+
+    transformTest('class jsdoc empty', `
         import { Element } from 'engine';
         /** */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
+    `, {
+        output: {
+            metadata: {}
+        }
     });
-    test('class no-jsdoc /**/', `
+
+    transformTest('class no-jsdoc /**/', `
         import { Element } from 'engine';
         /* not a jsdoc */
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
+    `, {
+        output: {
+            metadata: {}
+        }
     });
-    test('class no-jsdoc //', `
+
+    transformTest('class no-jsdoc //', `
         import { Element } from 'engine';
         // not a jsdoc
         export default class Foo extends Element {
         }
-    `, undefined, undefined, {
+    `, {
+        output: {
+            metadata: {}
+        }
     });
 });

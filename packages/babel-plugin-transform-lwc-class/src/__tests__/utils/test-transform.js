@@ -41,45 +41,38 @@ function prettify(str) {
         .join('\n');
 }
 
-function makeTest(plugin, opts = {}) {
+function makeTransformTest(plugin, opts = {}) {
     const testTransform = transform(plugin, opts);
 
-    const pluginTest = function(name, source, expectedSource, expectedError, expectedMetadata) {
-        test(name, () => {
-            let res;
-            let err;
+    const transformTest = function(actual, expected) {
+        if (expected.error) {
+            let transformError;
 
             try {
-                res = testTransform(source);
+                testTransform(actual);
             } catch (error) {
-                err = error;
+                transformError = error;
             }
 
-            if (err) {
-                /* istanbul ignore next */
-                if (!expectedError) {
-                    throw err;
-                }
+            expect(transformError).toMatchObject(errorFromObject(expected.error));
+        } else if (expected.output) {
+            const output = testTransform(actual);
 
-                expect(err).toMatchObject(errorFromObject(expectedError));
-            } else {
-                if (expectedSource) {
-                    expect(prettify(res.code)).toBe(prettify(expectedSource));
-                }
-                if (expectedMetadata) {
-                    expect(res.metadata).toMatchObject(expectedMetadata);
-                }
-            }
-        });
+            expect(output.code).toBe(output.code);
+            expect(output.metadata).toEqual(output.metadata);
+        } else {
+            throw new TypeError(`Transform test expect an object with either error or output.`);
+        }
     }
 
-    /* istanbul ignore next */
-    pluginTest.skip = (name) => test.skip(name);
+    const transformTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
+    transformTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
+    transformTester.skip = (name) => test.skip(name);
 
-    return pluginTest;
+    return transformTester;
 }
 
 
 
-module.exports.test = makeTest;
+module.exports.transformTest = makeTransformTest;
 module.exports.transform = transform;

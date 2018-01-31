@@ -14,7 +14,7 @@ function validateConflict(path, decorators) {
 
 function isBooleanPropDefaultTrue(property) {
     const propertyValue = property.node.value;
-    return propertyValue && propertyValue.name === "BooleanLiteral" && propertyValue.value;
+    return propertyValue && propertyValue.type === 'BooleanLiteral' && propertyValue.value;
 }
 
 function validatePropertyValue(property) {
