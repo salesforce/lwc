@@ -9,7 +9,9 @@ function tmpl$1($api, $cmp, $slotset, $ctx) {
 
     return [api_element(
         "div",
-        {},
+        {
+            ck: 1
+        },
         [api_dynamic($cmp.x)]
     )];
 }
@@ -36,7 +38,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         {
             classMap: {
                 container: true
-            }
+            },
+            ck: 2
         },
         [api_custom_element(
             "x-foo",
@@ -44,7 +47,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 props: {
                     x: "1"
-                }
+                },
+                ck: 1
             }
         )]
     )];
