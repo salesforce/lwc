@@ -1,6 +1,7 @@
 import * as api from '../api';
 import { Element } from "../html-element";
 import { createElement } from './../main';
+import { RenderAPI } from '../api';
 
 describe('api', () => {
     describe('#c()', () => {
@@ -232,34 +233,37 @@ describe('api', () => {
     });
 
     describe('#t()', () => {
-        function html($api) {
-            return [$api.t('miami')];
-        }
-        class Foo extends Element {
-            render() {
-                return html;
+        it('should produce a text node', () => {
+            function html($api) {
+                return [$api.t('miami')];
             }
-        }
-        const elm = createElement('x-foo', { is: Foo });
-        document.body.appendChild(elm);
-        // TODO: once we switch to shadow DOM this test will have to be adjusted
-        expect(elm.textContent).toEqual('miami');
+            class Foo extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            // TODO: once we switch to shadow DOM this test will have to be adjusted
+            expect(elm.textContent).toEqual('miami');
+        });
     });
 
     describe('#p()', () => {
-        function html($api) {
-            console.error($api.p('miami'));
-            return [$api.p('miami')];
-        }
-        class Foo extends Element {
-            render() {
-                return html;
+        it('should produce a comment', () => {
+            function html($api) {
+                return [$api.p('miami')];
             }
-        }
-        const elm = createElement('x-foo', { is: Foo });
-        document.body.appendChild(elm);
-        // TODO: once we switch to shadow DOM this test will have to be adjusted
-        expect(elm.innerHTML).toEqual('<!--miami-->');
+            class Foo extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            // TODO: once we switch to shadow DOM this test will have to be adjusted
+            expect(elm.innerHTML).toEqual('<!--miami-->');
+        });
     });
 
     describe('#d()', () => {
@@ -268,6 +272,49 @@ describe('api', () => {
 
     describe('#b()', () => {
         // TBD
+    });
+
+    describe('#k()', () => {
+        it('should combine keys', () => {
+            let k1, k2, k3, k4, k5;
+            function html($api) {
+                const o = {};
+                k1 = $api.k(123, 345);
+                k2 = $api.k(345, "678");
+                k3 = $api.k(678, o);
+                k4 = $api.k(678, o);
+                k5 = $api.k(678, {});
+                return [];
+            }
+            class Foo extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            expect(k1).toEqual('123:345');
+            expect(k2).toEqual('345:678');
+            expect(k3).toEqual(k4);
+            expect(k3 === k5).toEqual(false);
+        });
+        it('should throw for invalid objects', () => {
+            expect.assertions(3);
+            function html($api: RenderAPI) {
+                const o = {};
+                expect(() => $api.k(123, null)).toThrow();
+                expect(() => $api.k(123, undefined)).toThrow();
+                expect(() => $api.k(123, function () {})).toThrow();
+                return [];
+            }
+            class Foo extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+        });
     });
 
 });
