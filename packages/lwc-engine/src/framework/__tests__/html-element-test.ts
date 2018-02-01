@@ -44,8 +44,7 @@ describe('html-element', () => {
             expect(element.getAttributeNS('x', 'foo')).toBe('bar');
         });
 
-        it('should throw an error if element is being constructed', () => {
-            expect.assertions(1);
+        it('should throw an error if attempting to call setAttributeNS during construction', () => {
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -54,7 +53,7 @@ describe('html-element', () => {
                     }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
                 }
             }
-            const element = createElement('x-foo', { is: MyComponent });
+            createElement('x-foo', { is: MyComponent });
         });
     });
 
@@ -95,8 +94,7 @@ describe('html-element', () => {
             expect(element.getAttribute('foo')).toBe('bar');
         });
 
-        it('should throw an error if element is being constructed', () => {
-            expect.assertions(1);
+        it('should throw an error if attempting to call setAttribute during construction', () => {
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -105,7 +103,7 @@ describe('html-element', () => {
                     }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
                 }
             }
-            const element = createElement('x-foo', { is: MyComponent });
+            createElement('x-foo', { is: MyComponent });
         });
     });
 

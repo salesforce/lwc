@@ -111,42 +111,37 @@ class LWCElement implements Component {
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
-        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
         }
         // use cached setAttributeNS, because elm.setAttribute throws
         // when not called in template
-        return setAttributeNS.call(elm, ns, attrName, value);
-    }
+        return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
+    },
 
     removeAttributeNS(ns: string, attrName: string): void {
-        const elm = getLinkedElement(this);
         // use cached removeAttributeNS, because elm.setAttribute throws
         // when not called in template
-        return removeAttributeNS.call(elm, ns, attrName);
-    }
+        return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
+    },
 
     removeAttribute(attrName: string): void {
-        const elm = getLinkedElement(this);
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
-        return removeAttribute.call(elm, attrName);
-    }
+        return removeAttribute.call(getLinkedElement(this), attrName);
+    },
 
     setAttribute(attrName: string, value: any): void {
-        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
         }
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
-        return setAttribute.call(elm, attrName, value);
-    }
+        return setAttribute.call(getLinkedElement(this), attrName, value);
+    },
 
     getAttributeNS(ns: string, attrName: string) {
-        const elm = getLinkedElement(this);
-        return getAttributeNS.call(elm, ns, attrName);
+        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
     },
 
     getAttribute(attrName: string): string | null {
@@ -171,9 +166,9 @@ class LWCElement implements Component {
             }
         }
 
-        const elm = getLinkedElement(this);
-        return getAttribute.apply(elm, ArraySlice.call(arguments));
+        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
     }
+
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
