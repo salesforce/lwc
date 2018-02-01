@@ -8,19 +8,20 @@ describe('module/events', () => {
 
     it('attaches click event handler to element', function() {
         let result: Event[] = [], cmp: Component;
+        function html($api: RenderAPI) {
+            return [
+                $api.h('div', {on: {click(ev: Event) { result.push(ev); }}}, [
+                    $api.h('a', {}, [t('Click my parent')]),
+                ])
+            ];
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
                 cmp = this;
             }
             render() {
-                return function($api: RenderAPI) {
-                    return [
-                        $api.h('div', {on: {click(ev: Event) { result.push(ev); }}}, [
-                            $api.h('a', {}, [t('Click my parent')]),
-                        ])
-                    ];
-                };
+                return html;
             }
         }
         const elm = createElement('x-foo', { is: MyComponent });
@@ -31,6 +32,24 @@ describe('module/events', () => {
 
     it('does not attach new listener', function() {
         let result: Number[] = [], component: Component, second = false;
+        function html($api: RenderAPI, $cmp: Component) {
+            const c = $cmp.counter;
+            // using the same key
+            if (c === 0) {
+                return [
+                    $api.h('div', {key: 1, on: {click: $api.b($cmp.clickOne)}}, [
+                        $api.h('a', {}, [t('Click my parent')]),
+                    ])
+                ];
+            } else if (c === 1) {
+                second = true;
+                return [
+                    $api.h('div', {key: 1, on:  {click: $api.b($cmp.clickTwo)}}, [
+                        $api.h('a', {}, [t('Click my parent')]),
+                    ])
+                ];
+            }
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
@@ -38,24 +57,7 @@ describe('module/events', () => {
                 this.counter = 0;
             }
             render() {
-                const c = this.counter;
-                return function($api: RenderAPI, $cmp: Component) {
-                    // using the same key
-                    if (c === 0) {
-                        return [
-                            $api.h('div', {key: 1, on: {click: $api.b($cmp.clickOne)}}, [
-                                $api.h('a', {}, [t('Click my parent')]),
-                            ])
-                        ];
-                    } else if (c === 1) {
-                        second = true;
-                        return [
-                            $api.h('div', {key: 1, on:  {click: $api.b($cmp.clickTwo)}}, [
-                                $api.h('a', {}, [t('Click my parent')]),
-                            ])
-                        ];
-                    }
-                };
+                return html;
             }
             clickOne(ev: Event) { result.push(1); }
             clickTwo(ev: Event) { result.push(2); }
@@ -74,6 +76,24 @@ describe('module/events', () => {
 
     it('should reuse the listener', function() {
         let result: Number[] = [], component: Component, second = false;
+        function html($api: RenderAPI, $cmp: Component) {
+            const c = $cmp.counter;
+            // using different keys
+            if (c === 0) {
+                return [
+                    $api.h('p', {key: 1, on: {click: $api.b($cmp.clicked)}}, [
+                        $api.h('a', {}, [t('Click my parent')]),
+                    ])
+                ];
+            } else if (c === 1) {
+                second = true;
+                return [
+                    $api.h('div', {key: 2, on:  {click: $api.b($cmp.clicked)}}, [
+                        $api.h('a', {}, [t('Click my parent')]),
+                    ])
+                ];
+            }
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
@@ -81,24 +101,7 @@ describe('module/events', () => {
                 this.counter = 0;
             }
             render() {
-                const c = this.counter;
-                return function($api: RenderAPI, $cmp: Component) {
-                    // using different keys
-                    if (c === 0) {
-                        return [
-                            $api.h('p', {key: 1, on: {click: $api.b($cmp.clicked)}}, [
-                                $api.h('a', {}, [t('Click my parent')]),
-                            ])
-                        ];
-                    } else if (c === 1) {
-                        second = true;
-                        return [
-                            $api.h('div', {key: 2, on:  {click: $api.b($cmp.clicked)}}, [
-                                $api.h('a', {}, [t('Click my parent')]),
-                            ])
-                        ];
-                    }
-                };
+                return html;
             }
             clicked(ev: Event) { result.push(1); }
         }
@@ -116,19 +119,20 @@ describe('module/events', () => {
 
     it('must not expose the virtual node to the event handler', function() {
         let result: any[] = [], cmp: Component;
+        function html($api: RenderAPI, $cmp: Component) {
+            return [
+                $api.h('div', {on: {click: $api.b($cmp.clicked)}}, [
+                    $api.h('a', {}, [t('Click my parent')]),
+                ])
+            ];
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
                 cmp = this;
             }
             render() {
-                return function($api: RenderAPI, $cmp: Component) {
-                    return [
-                        $api.h('div', {on: {click: $api.b($cmp.clicked)}}, [
-                            $api.h('a', {}, [t('Click my parent')]),
-                        ])
-                    ];
-                };
+                return html;
             }
             clicked() {
                 result.push(this);
@@ -146,17 +150,18 @@ describe('module/events', () => {
     it('attaches click event handler to custom element', function() {
         let result: Event[] = [], cmp: Component;
         class MyChild extends Element {}
+        function html($api: RenderAPI) {
+            return [
+                $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}})
+            ];
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
                 cmp = this;
             }
             render() {
-                return function($api: RenderAPI) {
-                    return [
-                        $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}})
-                    ];
-                };
+                return html;
             }
         }
         const elm = createElement('x-foo', { is: MyComponent });
@@ -168,17 +173,18 @@ describe('module/events', () => {
     it('attaches custom event handler to custom element', function() {
         let result: Event[] = [], cmp: Component;
         class MyChild extends Element {}
+        function html($api: RenderAPI) {
+            return [
+                $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}})
+            ];
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
                 cmp = this;
             }
             render() {
-                return function($api: RenderAPI) {
-                    return [
-                        $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}})
-                    ];
-                };
+                return html;
             }
         }
         const elm = createElement('x-foo', { is: MyComponent });

@@ -89,6 +89,9 @@ describe('services', () => {
                     lifecycleLog.push('service disconnected callback');
                 }
             });
+            function html() {
+                return [];
+            }
             class MyComponent extends Element {
                 connectedCallback() {
                     lifecycleLog.push('component connected callback');
@@ -104,9 +107,7 @@ describe('services', () => {
 
                 render() {
                     lifecycleLog.push('component render method');
-                    return function tmpl() {
-                        return [];
-                    };
+                    return html;
                 }
             }
 

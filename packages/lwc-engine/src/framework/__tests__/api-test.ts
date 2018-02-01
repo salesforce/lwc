@@ -86,11 +86,12 @@ describe('api', () => {
         });
 
         it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
+            function html($api) {
+                return [$api.c('span', Bar, { attrs: { is: "x-bar" } })];
+            }
             class Foo extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('span', Bar, { attrs: { is: "x-bar" } })];
-                    };
+                    return html;
                 }
             }
             class Bar extends Element {
@@ -231,11 +232,12 @@ describe('api', () => {
     });
 
     describe('#t()', () => {
+        function html($api) {
+            return [$api.t('miami')];
+        }
         class Foo extends Element {
             render() {
-                return function($api) {
-                    return [$api.t('miami')];
-                };
+                return html;
             }
         }
         const elm = createElement('x-foo', { is: Foo });
@@ -245,12 +247,13 @@ describe('api', () => {
     });
 
     describe('#p()', () => {
+        function html($api) {
+            console.error($api.p('miami'));
+            return [$api.p('miami')];
+        }
         class Foo extends Element {
             render() {
-                return function($api) {
-                    console.error($api.p('miami'));
-                    return [$api.p('miami')];
-                };
+                return html;
             }
         }
         const elm = createElement('x-foo', { is: Foo });

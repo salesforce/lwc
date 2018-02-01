@@ -5,11 +5,12 @@ import { createElement } from "../upgrade";
 
 describe('piercing', function() {
     it('should set property on pierced object successfully', function() {
+        function html($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyComponent extends Element  {
             render() {
-                return ($api) => {
-                    return [$api.h('div', {}, [])];
-                };
+                return html;
             }
         }
 
@@ -24,11 +25,12 @@ describe('piercing', function() {
     });
 
     it('should delete property on pierced object successfully', function() {
+        function html($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyComponent extends Element  {
             render() {
-                return ($api) => {
-                    return [$api.h('div', {}, [])];
-                };
+                return html;
             }
         }
 

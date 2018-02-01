@@ -35,13 +35,16 @@ describe('vm', () => {
                     vm2 = this[ViewModelReflection];
                 }
             }
+            function html($api) {
+                return [$api.c('x-bar', ChildComponent4, {})];
+            }
             class MyComponent4 extends Element {
                 constructor() {
                     super();
                     vm1 = this[ViewModelReflection];
                 }
                 render() {
-                    return ($api) => [$api.c('x-bar', ChildComponent4, {})];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent4 });
@@ -63,13 +66,16 @@ describe('vm', () => {
                     counter++;
                 }
             }
+            function html($api) {
+                return [$api.c('x-bar', ChildComponent5, {})];
+            }
             class MyComponent5 extends Element {
                 constructor() {
                     super();
                     vm1 = this[ViewModelReflection];
                 }
                 render() {
-                    return ($api) => [$api.c('x-bar', ChildComponent5, {})];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent5 });

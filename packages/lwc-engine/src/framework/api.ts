@@ -102,9 +102,9 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-        children.forEach((vnode) => {
-            if (vnode != null) {
-                assert.vnode(vnode);
+        children.forEach((childVnode) => {
+            if (childVnode != null) {
+                assert.vnode(childVnode);
             }
         });
     }
@@ -226,10 +226,10 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            vnodes.forEach((vnode) => {
-                if (!isNull(vnode) && isObject(vnode) && !isUndefined(vnode.sel) && vnode.sel.indexOf('-') > 0 && isUndefined(vnode.key)) {
+            vnodes.forEach((childVnode) => {
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && childVnode.sel.indexOf('-') > 0 && isUndefined(childVnode.key)) {
                     // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "<${vnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }
             });
         }

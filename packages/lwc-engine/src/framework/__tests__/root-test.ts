@@ -1,6 +1,6 @@
 import { Root, wrapIframeWindow } from "../root";
 import { Element } from "../html-element";
-import * as api from "../api";
+import { h } from "../api";
 import { unwrap } from '../membrane';
 import { createElement } from "../upgrade";
 import { ViewModelReflection } from "../def";
@@ -33,9 +33,10 @@ describe('root', () => {
         });
 
         it('should allow searching for elements from template', () => {
+            function html($api) { return [$api.h('p', {}, [])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -47,9 +48,12 @@ describe('root', () => {
         });
 
         it('should allow searching for one element from template', () => {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -61,10 +65,11 @@ describe('root', () => {
         });
 
         it('should ignore elements from other owner', () => {
-            const vnodeFromAnotherOwner = api.h('p', {}, []);
+            const vnodeFromAnotherOwner = h('p', {}, []);
+            function html() { return [vnodeFromAnotherOwner]; }
             class MyComponent extends Element {
                 render() {
-                    return () => [vnodeFromAnotherOwner];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -76,10 +81,11 @@ describe('root', () => {
         });
 
         it('should ignore element from other owner', () => {
-            const vnodeFromAnotherOwner = api.h('p', {}, []);
+            const vnodeFromAnotherOwner = h('p', {}, []);
+            function html() { return [vnodeFromAnotherOwner]; }
             class MyComponent extends Element {
                 render() {
-                    return () => [vnodeFromAnotherOwner];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -203,12 +209,15 @@ describe('root', () => {
 
         describe('unwrapping', function () {
             it('should return original object', function () {
+                function html($api) {
+                    return [$api.h('iframe', { src: 'https://salesforce.com' }, [])];
+                }
                 class MyComponent extends Element {
                     getContentWindow() {
                         return this.root.querySelector('iframe').contentWindow;
                     }
                     render() {
-                        return () => [api.h('iframe', { src: 'https://salesforce.com' }, [])]
+                        return html;
                     }
                 }
                 MyComponent.publicMethods = ['getContentWindow'];
@@ -224,9 +233,10 @@ describe('root', () => {
     describe('membrane', () => {
 
         it('should querySelector on element from template', () => {
+            function html($api) { return [$api.h('ul', {}, [$api.h('li', {}, [])])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [$api.h('li', {}, [])])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -240,9 +250,10 @@ describe('root', () => {
         });
 
         it('should querySelectorAll on element from template', () => {
+            function html($api) { return [$api.h('ul', {}, [$api.h('li', {}, [])])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [$api.h('li', {}, [])])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -256,9 +267,10 @@ describe('root', () => {
         });
 
         it('should ignore extraneous elements', () => {
+            function html($api) { return [$api.h('ul', {}, [])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -275,9 +287,10 @@ describe('root', () => {
         });
 
         it('should not throw error if querySelector does not match any elements', () => {
+            function html($api) { return [$api.h('ul', {}, [])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [])];
+                    return html;
                 }
             }
 
@@ -291,9 +304,10 @@ describe('root', () => {
         });
 
         it('should return null if querySelector does not match any elements', () => {
+            function html($api) { return [$api.h('ul', {}, [])]; }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [])];
+                    return html;
                 }
             }
 
@@ -305,9 +319,12 @@ describe('root', () => {
         });
 
         it('should not throw error if querySelectorAll does not match any elements', () => {
+            function html($api) {
+                return [$api.h('ul', {}, [])];
+            }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('ul', {}, [])];
+                    return html;
                 }
             }
 
@@ -321,9 +338,12 @@ describe('root', () => {
         });
 
         it('should allow walking back to the shadow root', () => {
+            function html($api) {
+                return [$api.h('div', {}, [])];
+            }
             class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('div', {}, [])];
+                    return html;
                 }
             }
 

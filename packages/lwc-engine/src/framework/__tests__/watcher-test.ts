@@ -20,6 +20,10 @@ describe('watcher', () => {
 
         it('should rerender the component if any reactive prop changes', () => {
             let counter = 0;
+            function html($api, $cmp) {
+                $cmp.x;
+                return [];
+            }
             class MyComponent2 extends Element {
                 render() {
                     counter++;
@@ -28,10 +32,7 @@ describe('watcher', () => {
                     // we are deferring this decision from now.
                     // In the case of the slots, since they are only accessible from within the template,
                     // the same rule applies, but without an observable difference.
-                    return function html($api, $cmp) {
-                        $cmp.x;
-                        return [];
-                    };
+                    return html;
                 }
             }
             MyComponent2.publicProps = { x: 1 };
@@ -63,13 +64,20 @@ describe('watcher', () => {
 
         it('should rerender the component if any reactive slot changes', () => {
             let counter = 0;
+            function html1($api, $cmp, $slotset) {
+                return $slotset.x || [];
+            }
             class Child extends Element {
                 render() {
                     counter++;
-                    return function html($api, $cmp, $slotset) {
-                        return $slotset.x || [];
-                    };
+                    return html1;
                 }
+            }
+            function html2($api, $cmp) {
+                const r = $cmp.round;
+                return [$api.c('x-child', Child, {
+                    slotset: r === 0 ? {} : { x: [$api.h('p', {}, [])] }
+                })];
             }
             class MyComponent4 extends Element {
                 constructor() {
@@ -77,12 +85,7 @@ describe('watcher', () => {
                     this.round = 0;
                 }
                 render() {
-                    const r = this.round;
-                    return function html($api) {
-                        return [$api.c('x-child', Child, {
-                            slotset: r === 0 ? {} : { x: [$api.h('p', {}, [])] }
-                        })];
-                    };
+                    return html2;
                 }
             }
             MyComponent4.track = { round: 1 };
@@ -102,15 +105,16 @@ describe('watcher', () => {
                     counter++;
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', Child, data)];
+            }
             class MyComponent4 extends Element {
                 constructor() {
                     super();
                     data = this.data = { slotset: {} };
                 }
                 render() {
-                    return function html($api) {
-                        return [$api.c('x-child', Child, data)];
-                    };
+                    return html;
                 }
             }
             MyComponent4.track = { data: 1 };
@@ -125,6 +129,10 @@ describe('watcher', () => {
         it('should rerender the component if tracked property changes', () => {
             let counter = 0;
             let state;
+            function html($api, $cmp) {
+                $cmp.state.x;
+                return [];
+            }
             class MyComponent6 extends Element {
                 state = { x: 0 };
                 constructor() {
@@ -133,10 +141,7 @@ describe('watcher', () => {
                 }
                 render() {
                     counter++;
-                    return function html($api, $cmp) {
-                        $cmp.state.x;
-                        return [];
-                    };
+                    return html;
                 }
             }
             MyComponent6.track = { state: 1 };
@@ -171,12 +176,13 @@ describe('watcher', () => {
         });
 
         it('should prevent any mutation during the rendering phase', () => {
+            function html($api, $cmp) {
+                $cmp.state.x = 1;
+            }
             class MyComponent8 extends Element {
                 state = { x: 0 };
                 render() {
-                    return function html($api, $cmp) {
-                        $cmp.state.x = 1;
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent8 });
@@ -186,6 +192,12 @@ describe('watcher', () => {
         it('should compute reactive state per rendering', () => {
             let counter = 0;
             let state;
+            function html($api, $cmp) {
+                if (counter === 1) {
+                    $cmp.state.x;
+                }
+                return [];
+            }
             class MyComponent9 extends Element {
                 state = { x: 0 };
                 constructor() {
@@ -194,12 +206,7 @@ describe('watcher', () => {
                 }
                 render() {
                     counter++;
-                    return function html($api, $cmp) {
-                        if (counter === 1) {
-                            $cmp.state.x;
-                        }
-                        return [];
-                    };
+                    return html;
                 }
             }
             MyComponent9.track = { state: 1 };
@@ -218,6 +225,10 @@ describe('watcher', () => {
 
         it('should mark public prop as reactive even if it is used via a getter', () => {
             let counter = 0;
+            function html($api, $cmp) {
+                $cmp.foo;
+                return [];
+            }
             class MyComponent2 extends Element {
                 get foo() {
                     return this.x;
@@ -229,10 +240,7 @@ describe('watcher', () => {
                     // we are deferring this decision from now.
                     // In the case of the slots, since they are only accessible from within the template,
                     // the same rule applies, but without an observable difference.
-                    return function html($api, $cmp) {
-                        $cmp.foo;
-                        return [];
-                    };
+                    return html;
                 }
             }
             MyComponent2.publicProps = { x: 1 };

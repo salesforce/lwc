@@ -37,8 +37,8 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
 
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
-    const querySelector = piercingHook(vm.membrane as Membrane, elm, 'querySelector', elm.querySelector);
-    return querySelector.call(elm, selector);
+    const piercedQuerySelector = piercingHook(vm.membrane as Membrane, elm, 'querySelector', elm.querySelector);
+    return piercedQuerySelector.call(elm, selector);
 }
 
 export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
@@ -48,8 +48,8 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
     }
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
-    const querySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
-    return querySelectorAll.call(elm, selector);
+    const piercedQuerySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
+    return piercedQuerySelectorAll.call(elm, selector);
 }
 
 export class Root implements ShadowRoot {
@@ -167,7 +167,7 @@ export function wrapIframeWindow(win: Window) {
         get window() {
             return win.window;
         },
-    }
+    };
 }
 
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation

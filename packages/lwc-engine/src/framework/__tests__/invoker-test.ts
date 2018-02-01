@@ -37,13 +37,16 @@ describe('invoker', () => {
 
         it('should invoke connectedCallback() before any child is inserted into the dom', () => {
             let counter = 0;
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             class MyComponent1 extends Element {
                 connectedCallback() {
                     counter++;
                     expect(this.root.querySelectorAll('p').length).toBe(0);
                 }
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -59,12 +62,15 @@ describe('invoker', () => {
                     stack.push('child');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', Child, {})];
+            }
             class MyComponent1 extends Element {
                 connectedCallback() {
                     stack.push('parent');
                 }
                 render() {
-                    return ($api) => [$api.c('x-child', Child, {})];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -79,12 +85,15 @@ describe('invoker', () => {
                     stack.push('child');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', Child, {})];
+            }
             class MyComponent1 extends Element {
                 disconnectedCallback() {
                     stack.push('parent');
                 }
                 render() {
-                    return ($api) => [$api.c('x-child', Child, {})];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -96,6 +105,9 @@ describe('invoker', () => {
         it('should invoke disconnectedCallback() after it was removed from the dom', () => {
             let counter = 0;
             let rcounter = 0;
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             class MyComponent2 extends Element {
                 disconnectedCallback() {
                     counter++;
@@ -103,7 +115,7 @@ describe('invoker', () => {
                 }
                 render() {
                     rcounter++;
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent2 });
@@ -117,13 +129,16 @@ describe('invoker', () => {
 
         it('should invoke renderedCallback() sync after every change after all child are inserted', () => {
             let counter = 0;
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     counter++;
                     expect(this.root.querySelectorAll('p').length).toBe(1);
                 }
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
@@ -139,13 +154,15 @@ describe('invoker', () => {
                     cycle.push('child');
                 }
             }
-
+            function html($api) {
+                return [$api.c('x-foo', Child, {})];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     cycle.push('parent');
                 }
                 render() {
-                    return ($api) => [$api.c('x-foo', Child, {})];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
@@ -155,21 +172,22 @@ describe('invoker', () => {
 
         it('should invoke renderedCallback() after render after every change after all child are inserted', () => {
             let lifecycle: string[] = [];
+            function html($api: any, $cmp: any) {
+                return [
+                    $api.h('p', {
+                        attrs: {
+                            title: $cmp.foo
+                        }
+                    }, [])
+                ];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     lifecycle.push('rendered');
                 }
                 render() {
                     lifecycle.push('render');
-                    return ($api: any, $cmp: any) => {
-                        return [
-                            $api.h('p', {
-                                attrs: {
-                                    title: $cmp.foo
-                                }
-                            }, [])
-                        ];
-                    };
+                    return html;
                 }
             }
             MyComponent3.publicProps = {
@@ -227,14 +245,14 @@ describe('invoker', () => {
                     (undefined).foo;
                 }
             }
-
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h(
+                    "section", {}, [$api.c("x-bar", MyComponent2, {})]
+                )];
+            }
             class MyComponent1 extends Element {
                 render() {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
-                        return [$api.h(
-                            "section", {}, [$api.c("x-bar", MyComponent2, {})]
-                        )];
-                    };
+                    return html;
                 }
             }
 

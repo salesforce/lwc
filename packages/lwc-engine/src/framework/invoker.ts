@@ -16,7 +16,8 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     const { context, component } = vm;
     const ctx = currentContext;
     establishContext(context);
-    let result, error;
+    let result;
+    let error;
     try {
         // TODO: membrane proxy for all args that are objects
         result = fn.apply(component, args);
@@ -37,7 +38,8 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
-    let component, error;
+    let component;
+    let error;
     try {
         component = new Ctor();
     } catch (e) {
@@ -63,7 +65,8 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     const vmBeingRenderedInception = vmBeingRendered;
     isRendering = true;
     vmBeingRendered = vm;
-    let result, error;
+    let result;
+    let error;
     try {
         const html = render.call(component);
         if (isFunction(html)) {

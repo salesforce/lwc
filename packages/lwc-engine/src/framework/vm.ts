@@ -189,8 +189,7 @@ export function patchErrorBoundaryVm(errorBoundaryVm: VM) {
         assert.isTrue(errorBoundaryVm.elm instanceof HTMLElement, `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`);
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
-    // remove empty nodes
-    const children = renderComponent(errorBoundaryVm).filter((child) => child);
+    const children = renderComponent(errorBoundaryVm);
     const { elm, children: oldCh } = errorBoundaryVm;
     errorBoundaryVm.isScheduled = false;
     errorBoundaryVm.children = children; // caching the new children collection
@@ -294,12 +293,15 @@ function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any)
     invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
 }
 
-function resetShadowRoot(vm: VM) {
+export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
     const { elm, children: oldCh } = vm;
     vm.children = EmptyArray;
+    if (oldCh.length === 0) {
+        return; // optimization for the common case
+    }
 
     try {
         // patch function mutates vnodes by adding the element reference,
@@ -386,10 +388,9 @@ export function getComponentStack(vm: VM): string {
     const wcStack: string[] = [];
     let elm: HTMLElement | null = vm.elm;
     do {
-        // @ts-ignore
-        const vm = elm[ViewModelReflection];
-        if (!isUndefined(vm)) {
-            ArrayPush.call(wcStack, vm.component.toString());
+        const currentVm: VM | undefined = elm[ViewModelReflection];
+        if (!isUndefined(currentVm)) {
+            ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
         elm = elm.parentElement;
     } while (!isNull(elm));

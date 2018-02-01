@@ -17,14 +17,16 @@ describe('decorators/api.ts', () => {
                     config: 0
                 }
             };
-
+            function html($api) {
+                return [$api.c('x-component', MyComponent, {})];
+            }
             class Parent extends Element {
                 constructor() {
                     super();
                     this.parentGetter = 'parentgetter';
                 }
                 render() {
-                    return ($api) => [$api.c('x-component', MyComponent, {})];
+                    return html;
                 }
             }
 
@@ -87,11 +89,12 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow access to public props from outside and from templates', function() {
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h('div', {}, [$api.d($cmp.x)])];
+            }
             class MyComponent extends Element  {
                 render() {
-                    return ($api, $cmp, $slotset, $ctx) => {
-                        return [$api.h('div', {}, [$api.d($cmp.x)])];
-                    };
+                    return html;
                 }
             }
 
@@ -123,14 +126,16 @@ describe('decorators/api.ts', () => {
                     config: 1
                 }
             };
-
+            function html($api) {
+                return [$api.c('x-component', MyComponent, {})];
+            }
             class Parent extends Element {
                 get parentGetter() {
                     return 'parentgetter';
                 }
 
                 render() {
-                    return ($api) => [$api.c('x-component', MyComponent, {})];
+                    return html;
                 }
             }
 
@@ -210,15 +215,16 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow access simple getters from outside and from templates', function() {
+            function html ($api, $cmp, $slotset, $ctx) {
+                return [$api.h('div', {}, [$api.d($cmp.validity)])];
+            }
             class MyComponent extends Element  {
                 get validity() {
                     return 'foo';
                 }
 
                 render() {
-                    return ($api, $cmp, $slotset, $ctx) => {
-                        return [$api.h('div', {}, [$api.d($cmp.validity)])];
-                    };
+                    return html;
                 }
             }
 

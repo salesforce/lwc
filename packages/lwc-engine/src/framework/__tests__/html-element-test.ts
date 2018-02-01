@@ -348,13 +348,14 @@ describe('html-element', () => {
 
         it('should log console error when user land code changes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ];
-                    };
+                    return html;
                 }
             }
             class Child extends Element {}
@@ -371,13 +372,14 @@ describe('html-element', () => {
 
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ];
-                    };
+                    return html;
                 }
             }
             class Child extends Element {}
@@ -419,14 +421,14 @@ describe('html-element', () => {
 
         it('should correctly set child attribute ', () => {
             let childTitle = null;
-
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ];
-                    };
+                    return html;
                 }
             }
 
@@ -463,23 +465,25 @@ describe('html-element', () => {
     describe('#querySelector()', () => {
         it('should allow searching for the passed element', () => {
             let childFromOwner: VNode, childComponent: Component;
+            function html1() {
+                return [childFromOwner];
+            }
             class Child extends Element {
                 constructor() {
                     super();
                     childComponent = this;
                 }
                 render() {
-                    return function html() {
-                        return [childFromOwner];
-                    };
+                    return html1;
                 }
+            }
+            function html2($api) {
+                childFromOwner = $api.h('p', {}, []);
+                return [$api.c('x-child', Child, {})];
             }
             class MyComponent extends Element {
                 render() {
-                    return function html($api) {
-                        childFromOwner = $api.h('p', {}, []);
-                        return [$api.c('x-child', Child, {})];
-                    };
+                    return html2;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -489,9 +493,12 @@ describe('html-element', () => {
         });
 
         it('should ignore element from template', () => {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             };
             const elm = createElement('x-foo', { is: def });
@@ -500,9 +507,12 @@ describe('html-element', () => {
         });
 
         it('should not throw an error if element does not exist', () => {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             };
             const elm = createElement('x-foo', { is: def });
@@ -513,9 +523,12 @@ describe('html-element', () => {
         });
 
         it('should return null if element does not exist', function() {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             };
             const elm = createElement('x-foo', { is: def });
@@ -528,23 +541,25 @@ describe('html-element', () => {
 
         it('should allow searching for passed elements', () => {
             let childFromOwner: VNode, childComponent: Component;
+            function html1() {
+                return [childFromOwner];
+            }
             class Child extends Element {
                 constructor() {
                     super();
                     childComponent = this;
                 }
                 render() {
-                    return function html() {
-                        return [childFromOwner];
-                    };
+                    return html1;
                 }
+            }
+            function html2($api) {
+                childFromOwner = $api.h('p', {}, []);
+                return [$api.c('x-child', Child, {})];
             }
             class MyComponent extends Element {
                 render() {
-                    return function html($api) {
-                        childFromOwner = $api.h('p', {}, []);
-                        return [$api.c('x-child', Child, {})];
-                    };
+                    return html2;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -554,9 +569,12 @@ describe('html-element', () => {
         });
 
         it('should ignore elements from template', () => {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             };
             const elm = createElement('x-foo', { is: def });
@@ -565,9 +583,12 @@ describe('html-element', () => {
         });
 
         it('should not throw an error if no nodes are found', () => {
+            function html($api) {
+                return [$api.h('p', {}, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return ($api) => [$api.h('p', {}, [])];
+                    return html;
                 }
             };
             const elm = createElement('x-foo', { is: def });
