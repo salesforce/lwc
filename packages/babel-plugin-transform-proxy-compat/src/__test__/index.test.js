@@ -5,13 +5,15 @@ const path = require('path');
 const babel = require('babel-core');
 const proxyCompat = require('proxy-compat');
 
-const transfromRaptorCompat = require('../index');
+const transformRaptorCompat = require('../index');
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 const FIXTURES = [
     'key-operations',
     'array-operations',
     'intrinsics',
+    'no-compat-pragma',
+    'no-compat-pragma-multiple',
 ];
 
 function unpad(src) {
@@ -25,7 +27,7 @@ test('Validate config property', () => {
     expect(() => {
         babel.transform('', {
             plugins: [
-                [transfromRaptorCompat, {
+                [transformRaptorCompat, {
                     resolveProxyCompat: {
                         unknown: 'window.MyGlobalProxy'
                     }
@@ -33,14 +35,14 @@ test('Validate config property', () => {
             ]
         });
     }).toThrow(
-        /Unexcepted resolveProxyCompat option/
+        /Unexpected resolveProxyCompat option/
     );
 });
 
 test('APIs retrieval from global', () => {
     const config = {
         plugins: [
-            [transfromRaptorCompat, {
+            [transformRaptorCompat, {
                 resolveProxyCompat: {
                     global: 'window.MyGlobalProxy'
                 }
@@ -59,7 +61,7 @@ test('APIs retrieval from global', () => {
 test('APIs retrieval from module', () => {
     const config = {
         plugins: [
-            [transfromRaptorCompat, {
+            [transformRaptorCompat, {
                 resolveProxyCompat: {
                     module: 'my-proxy-compat'
                 }
@@ -76,10 +78,10 @@ test('APIs retrieval from module', () => {
     ));
 });
 
-test('APIs retrieval from independant modules', () => {
+test('APIs retrieval from independent modules', () => {
     const config = {
         plugins: [
-            [transfromRaptorCompat, {
+            [transformRaptorCompat, {
                 resolveProxyCompat: {
                     independent: 'my-proxy-compat'
                 }
@@ -95,6 +97,34 @@ test('APIs retrieval from independant modules', () => {
     ));
 });
 
+test('Should not stop other transforms if pragma is found', () => {
+    const reverseIdentifierPlugin = {
+        visitor: {
+            Identifier(path) {
+                path.node.name = path.node.name.split('').reverse().join('');
+            }
+        }
+    };
+
+    const config = {
+        plugins: [
+            transformRaptorCompat,
+            reverseIdentifierPlugin
+        ]
+    };
+
+    const { code } = babel.transform(unpad(`
+        /* proxy-compat-disable */
+        console.log(foo.bar);
+    `), config);
+
+    expect(unpad(code)).toBe(unpad(`
+        /* proxy-compat-disable */
+        elosnoc.gol(oof.rab);
+    `));
+});
+
+
 describe('Compat transform fixtures', () => {
     for (let fixture of FIXTURES) {
         test(`${fixture}`, () => {
@@ -103,7 +133,7 @@ describe('Compat transform fixtures', () => {
 
             const { code } = babel.transform(actual, {
                 plugins: [
-                    [transfromRaptorCompat]
+                    [transformRaptorCompat]
                 ]
             });
 
