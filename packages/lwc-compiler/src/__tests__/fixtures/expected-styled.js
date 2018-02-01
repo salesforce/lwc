@@ -22,7 +22,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     c: api_custom_element
   } = $api;
 
-  return [api_element("div", {}, []), api_custom_element("x-foo", _xFoo, {})];
+  return [api_element("div", {
+        ck: 1
+    }, []), api_custom_element("x-foo", _xFoo, {
+        ck: 2
+    })];
 }
 
 if (style) {

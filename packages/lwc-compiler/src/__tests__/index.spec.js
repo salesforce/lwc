@@ -85,7 +85,9 @@ describe('transform', () => {
                     h: api_element
                 } = $api;
 
-                return [api_element("div", {}, [api_text("Hello")])];
+                return [api_element("div", {
+                    ck: 1
+                }, [api_text("Hello")])];
             }
 
             if (style) {

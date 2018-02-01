@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element
   } = $api;
 
-  return [api_element("section", {}, [])];
+  return [api_element("section", {
+      ck: 1
+    }, [])];
 }
 
 if (style) {
