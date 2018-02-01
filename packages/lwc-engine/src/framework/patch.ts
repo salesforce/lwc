@@ -44,8 +44,8 @@ export const htmlDomApi: DOMAPI = {
     createComment(text: string): Comment {
         return createComment.call(document, text);
     },
-    insertBefore(parentNode: Node, newNode: Node, referenceNode: Node | null) {
-        insertBefore.call(parentNode, newNode, referenceNode);
+    insertBefore(parent: Node, newNode: Node, referenceNode: Node | null) {
+        insertBefore.call(parent, newNode, referenceNode);
     },
     removeChild(node: Node, child: Node) {
         removeChild.call(node, child);

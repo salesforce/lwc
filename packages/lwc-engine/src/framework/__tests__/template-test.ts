@@ -3,8 +3,9 @@ import * as globalApi from '../api';
 import { Element } from "../html-element";
 import { createElement } from './../main';
 import { ViewModelReflection } from '../def';
+import { Template } from '../template';
 
-function createCustomComponent(html, slotset?) {
+function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
         render() {
             return html;
@@ -107,6 +108,11 @@ describe('template', () => {
         it('should not prevent or cache a getter calling another getter', () => {
             let counter = 0;
             let vnode;
+            function html($api, $cmp) {
+                $cmp.x;
+                $cmp.y;
+                return [];
+            }
             class MyComponent extends Element {
                 get x() {
                     counter += 1;
@@ -115,13 +121,10 @@ describe('template', () => {
                 }
                 get y() {
                     counter += 1;
+                    return;
                 }
                 render() {
-                    return function(api, cmp) {
-                        cmp.x;
-                        cmp.y;
-                        return [];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -245,6 +248,10 @@ describe('template', () => {
 
         it('should not create a proxy for methods used from tempalte', () => {
             let x, y;
+            function html($api, $cmp) {
+                y = $cmp.x;
+                return [];
+            }
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -252,10 +259,7 @@ describe('template', () => {
                 }
                 x() {}
                 render() {
-                    return function($api, $cmp) {
-                        y = $cmp.x;
-                        return [];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });

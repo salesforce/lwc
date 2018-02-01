@@ -120,6 +120,9 @@ describe('Events on Custom Elements', () => {
 
     it('should add event listeners in constructor when created via createElement', function() {
         let count = 0;
+        function html($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyComponent extends Element {
             constructor() {
                 super();
@@ -128,9 +131,7 @@ describe('Events on Custom Elements', () => {
                 });
             }
             render() {
-                return function($api) {
-                    return [$api.h('div', {}, [])];
-                };
+                return html;
             }
             run() {
                 const div = this.root.querySelector('div');
@@ -146,6 +147,9 @@ describe('Events on Custom Elements', () => {
 
     it('should add event listeners in connectedCallback when created via createElement', function() {
         let count = 0;
+        function html($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('c-event', function() {
@@ -153,9 +157,7 @@ describe('Events on Custom Elements', () => {
                 });
             }
             render() {
-                return function($api) {
-                    return [$api.h('div', {}, [])];
-                };
+                return html;
             }
             run() {
                 const div = this.root.querySelector('div');
@@ -172,6 +174,9 @@ describe('Events on Custom Elements', () => {
 
     it('should add event listeners in connectedCallback when created via render', function() {
         let count = 0;
+        function html1($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyChild extends Element {
             connectedCallback() {
                 this.addEventListener('c-event', function() {
@@ -179,9 +184,7 @@ describe('Events on Custom Elements', () => {
                 });
             }
             render() {
-                return function($api) {
-                    return [$api.h('div', {}, [])];
-                };
+                return html1;
             }
             run() {
                 const div = this.root.querySelector('div');
@@ -189,12 +192,12 @@ describe('Events on Custom Elements', () => {
             }
         }
         MyChild.publicMethods = ['run'];
-
+        function html2($api) {
+            return [$api.c('x-child', MyChild, {})];
+        }
         class MyComponent extends Element {
             render() {
-                return function($api) {
-                    return [$api.c('x-child', MyChild, {})];
-                };
+                return html2;
             }
             run() {
                 const child = this.root.querySelector('x-child');
@@ -211,6 +214,9 @@ describe('Events on Custom Elements', () => {
 
     it('should add event listeners in constructor when created via render', function() {
         let count = 0;
+        function html1($api) {
+            return [$api.h('div', {}, [])];
+        }
         class MyChild extends Element {
             constructor() {
                 super();
@@ -219,9 +225,7 @@ describe('Events on Custom Elements', () => {
                 });
             }
             render() {
-                return function($api) {
-                    return [$api.h('div', {}, [])];
-                };
+                return html1;
             }
             run() {
                 const div = this.root.querySelector('div');
@@ -229,12 +233,12 @@ describe('Events on Custom Elements', () => {
             }
         }
         MyChild.publicMethods = ['run'];
-
+        function html2($api) {
+            return [$api.c('x-child', MyChild, {})];
+        }
         class MyComponent extends Element {
             render() {
-                return function($api) {
-                    return [$api.c('x-child', MyChild, {})];
-                };
+                return html2;
             }
             run() {
                 const child = this.root.querySelector('x-child');

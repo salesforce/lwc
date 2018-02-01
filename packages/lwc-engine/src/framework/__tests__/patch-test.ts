@@ -44,7 +44,10 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order at insertion', () => {
             const calls = [];
-
+            function html($api) {
+                calls.push('root:render');
+                return [$api.c('x-child', Child, {})];
+            }
             class Root extends Element {
                 constructor() {
                     super();
@@ -54,10 +57,7 @@ describe('patch', () => {
                     calls.push('root:connectedCallback');
                 }
                 render() {
-                    return function($api) {
-                        calls.push('root:render');
-                        return [$api.c('x-child', Child, {})];
-                    };
+                    return html;
                 }
                 renderedCallback() {
                     calls.push('root:renderedCallback');
@@ -97,7 +97,12 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order on update', () => {
             const calls = [];
-
+            function html($api, $cmp) {
+                calls.push('root:render');
+                return $cmp.state.show
+                    ? [$api.c('x-child', Child, {})]
+                    : [];
+            }
             class Root extends Element {
                 state = {
                     show: false
@@ -106,12 +111,7 @@ describe('patch', () => {
                     this.state.show = true;
                 }
                 render() {
-                    return function($api, $cmp) {
-                        calls.push('root:render');
-                        return $cmp.state.show
-                            ? [$api.c('x-child', Child, {})]
-                            : [];
-                    };
+                    return html;
                 }
                 renderedCallback() {
                     calls.push('root:renderedCallback');
@@ -155,6 +155,9 @@ describe('patch', () => {
         });
 
         it('should rehydrate when state is updated in renderedCallback', function() {
+            function html($api, $cmp) {
+                return [$api.h('span', {}, [$api.t($cmp.state.foo)])];
+            }
             class MyComponent extends Element {
                 state = {
                     foo: 'bar'
@@ -170,9 +173,7 @@ describe('patch', () => {
                 }
 
                 render() {
-                    return function($api, $cmp) {
-                        return [$api.h('span', {}, [$api.t($cmp.state.foo)])];
-                    };
+                    return html;
                 }
             }
             MyComponent.track = { state: 1 };

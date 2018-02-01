@@ -19,7 +19,9 @@ function update(oldVnode: VNode, vnode: VNode) {
         assert.invariant(isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','), `vnode.data.props cannot change shape.`);
     }
 
-    let key: string, cur: any, old: any;
+    let key: string;
+    let cur: any;
+    let old: any;
     const elm = vnode.elm as Element;
     const vm = elm[ViewModelReflection];
     oldProps = isUndefined(oldProps) ? EmptyObject : oldProps;

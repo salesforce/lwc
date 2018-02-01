@@ -85,7 +85,8 @@ export function getMapFromClassName(className: string): Record<string, boolean> 
     }
     map = {};
     let start = 0;
-    let i, len = className.length;
+    let i;
+    const len = className.length;
     for (i = 0; i < len; i++) {
         if (className.charCodeAt(i) === SPACE_CHAR) {
             if (i > start) {

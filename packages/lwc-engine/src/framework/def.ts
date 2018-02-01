@@ -394,23 +394,23 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         setAttribute: {
             value: setAttributePatched,
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         removeAttribute: {
             value: removeAttributePatched,
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
     };
     // expose getters and setters for each public props on the Element
@@ -424,7 +424,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(key),
-            configurable: true, //TODO issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         };
     }
     return descriptors;
@@ -500,7 +500,7 @@ function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsD
     if (!observedAttributes || !observedAttributes.length) {
         return EmptyObject;
     }
-    return observedAttributes.reduce((observedAttributes: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
+    return observedAttributes.reduce((reducer: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
         if (process.env.NODE_ENV !== 'production') {
             const propName = getPropNameFromAttrName(attrName);
             // Check if it is a user defined public property
@@ -514,8 +514,8 @@ function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsD
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
             }
         }
-        observedAttributes[attrName] = 1;
-        return observedAttributes;
+        reducer[attrName] = 1;
+        return reducer;
     }, create(null));
 }
 

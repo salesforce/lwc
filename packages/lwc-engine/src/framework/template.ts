@@ -6,7 +6,7 @@ import { prepareForAttributeMutationFromTemplate } from './def';
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
-import { Slotset, VM } from "./vm";
+import { Slotset, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { Component } from "./component";
 
@@ -127,6 +127,9 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     const { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
     // reset the cache momizer for template when needed
     if (html !== cmpTemplate) {
+        if (!isUndefined(cmpTemplate)) {
+            resetShadowRoot(vm);
+        }
         applyTokenToHost(vm, html);
 
         vm.cmpTemplate = html;

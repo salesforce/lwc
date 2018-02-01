@@ -90,7 +90,9 @@ describe('component', function() {
                     config: 1
                 }
             };
-
+            function html($api) {
+                return [$api.c('x-component', MyComponent, {})];
+            }
             class Parent extends Element {
                 value = 'salad';
                 get lunch() {
@@ -98,7 +100,7 @@ describe('component', function() {
                 }
 
                 render() {
-                    return ($api) => [$api.c('x-component', MyComponent, {})];
+                    return html;
                 }
             }
 
@@ -126,14 +128,15 @@ describe('component', function() {
                     config: 0
                 }
             };
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 callChildM() {
                     value = this.root.querySelector('x-child').m;
                 }
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
             }
             MyComponent.publicMethods = ['callChildM'];
@@ -164,6 +167,9 @@ describe('component', function() {
         });
 
         it('should be render reactive', function() {
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h('div', {}, [$api.d($cmp.validity)])];
+            }
             class MyComponent extends Element  {
                 state = { value: 0 };
 
@@ -176,9 +182,7 @@ describe('component', function() {
                 }
 
                 render() {
-                    return ($api, $cmp, $slotset, $ctx) => {
-                        return [$api.h('div', {}, [$api.d($cmp.validity)])];
-                    };
+                    return html;
                 }
             }
 
@@ -237,11 +241,12 @@ describe('component', function() {
                     config: 3
                 }
             };
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 render() {
-                    return ($api) => {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
                 run() {
                     this.root.querySelector('x-child').breakfast = 'eggs';
@@ -382,21 +387,22 @@ describe('component', function() {
     describe('styles', function() {
         it('should handle string styles', function() {
             let calledCSSText = false;
+            function html($api, $cmp) {
+                return [$api.h(
+                    "section",
+                    {
+                        style: $cmp.state.customStyle
+                    },
+                    []
+                )];
+            }
             class MyComponent extends Element  {
                 state = {
                     customStyle: 'color: red'
                 };
 
                 render() {
-                    return function tmpl($api, $cmp) {
-                        return [$api.h(
-                            "section",
-                            {
-                                style: $cmp.state.customStyle
-                            },
-                            []
-                        )];
-                    };
+                    return html;
                 }
             }
 
@@ -418,21 +424,22 @@ describe('component', function() {
 
         it('should handle undefined properly', function() {
             let calledCSSTextWithUndefined = false;
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h(
+                    "section",
+                    {
+                        style: $cmp.state.customStyle
+                    },
+                    []
+                )];
+            }
             class MyComponent extends Element  {
                 state = {
                     customStyle: undefined
                 };
 
                 render() {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
-                        return [$api.h(
-                            "section",
-                            {
-                                style: $cmp.state.customStyle
-                            },
-                            []
-                        )];
-                    };
+                    return html;
                 }
             }
 
@@ -455,21 +462,22 @@ describe('component', function() {
         });
 
         it('should handle null properly', function() {
+            function html($api, $cmp) {
+                return [$api.h(
+                    "section",
+                    {
+                        style: $cmp.state.customStyle
+                    },
+                    []
+                )];
+            }
             class MyComponent extends Element  {
                 state = {
                     customStyle: null
                 };
 
                 render() {
-                    return function tmpl($api, $cmp) {
-                        return [$api.h(
-                            "section",
-                            {
-                                style: $cmp.state.customStyle
-                            },
-                            []
-                        )];
-                    };
+                    return html;
                 }
             }
 
@@ -480,6 +488,15 @@ describe('component', function() {
 
         it('should diff between style objects and strings correctly', function() {
             let called = false;
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h(
+                    "section",
+                    {
+                        style: $cmp.state.customStyle
+                    },
+                    []
+                )];
+            }
             class MyComponent extends Element  {
                 state = {
                     customStyle: {
@@ -488,15 +505,7 @@ describe('component', function() {
                 };
 
                 render() {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
-                        return [$api.h(
-                            "section",
-                            {
-                                style: $cmp.state.customStyle
-                            },
-                            []
-                        )];
-                    };
+                    return html;
                 }
             }
             MyComponent.track = { state: 1 };
@@ -581,14 +590,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 callChildM() {
                     this.root.querySelector('x-child').m();
                 }
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
             }
             MyComponent.publicMethods = ['callChildM'];
@@ -609,14 +619,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 getChildAttribute() {
                     this.root.querySelector('x-child').getAttribute('title');
                 }
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
             }
             MyComponent.publicMethods = ['getChildAttribute'];
@@ -636,14 +647,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 setChildAttribute() {
                     this.root.querySelector('x-child').setAttribute('title', 'foo');
                 }
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
             }
             MyComponent.publicMethods = ['setChildAttribute'];
@@ -663,14 +675,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
+            function html($api) {
+                return [$api.c('x-child', MyChild, {})];
+            }
             class MyComponent extends Element  {
                 removeChildAttribute() {
                     this.root.querySelector('x-child').removeAttribute('title');
                 }
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', MyChild, {})];
-                    };
+                    return html;
                 }
             }
             MyComponent.publicMethods = ['removeChildAttribute'];

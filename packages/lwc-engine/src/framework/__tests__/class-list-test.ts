@@ -7,11 +7,12 @@ describe('class-list', () => {
     describe('integration', () => {
         it('should support outer className', () => {
             class ChildComponent extends Element {}
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { className: 'foo' })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -22,11 +23,12 @@ describe('class-list', () => {
 
         it('should support outer classMap', () => {
             class ChildComponent extends Element {}
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -41,11 +43,12 @@ describe('class-list', () => {
                     this.classList.add('foo');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { className: 'bar  baz' })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { className: 'bar  baz' })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -60,11 +63,12 @@ describe('class-list', () => {
                     this.classList.remove('foo');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { className: 'foo' })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -79,11 +83,12 @@ describe('class-list', () => {
                     this.classList.add('foo');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { className: 'foo   foo' })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { className: 'foo   foo' })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
@@ -98,11 +103,12 @@ describe('class-list', () => {
                     this.classList.add('foo');
                 }
             }
+            function html($api) {
+                return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } })];
+            }
             class MyComponent extends Element {
                 render() {
-                    return function($api) {
-                        return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } })];
-                    };
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent });
