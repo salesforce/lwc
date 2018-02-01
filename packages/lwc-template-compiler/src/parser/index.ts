@@ -370,6 +370,7 @@ export default function parse(source: string, state: State): {
             if (keyAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
             }
+
             element.forKey = keyAttribute.value;
         }
     }
