@@ -18,6 +18,7 @@ export interface RenderAPI {
     p(text: string): VComment;
     d(value: any): VNode | null;
     b(fn: EventListener): EventListener;
+    k(compilerKey: number, iteratorValue: any): number | string;
 }
 
 const CHAR_S = 115;
@@ -306,4 +307,36 @@ export function b(fn: EventListener): EventListener {
         // TODO: only if the event is `composed` it can be dispatched
         invokeComponentCallback(vm, fn, [event]);
     };
+}
+
+const objToKeyMap: WeakMap<any, number> = new WeakMap();
+let globalKey: number = 0;
+
+// [k]ind function
+export function k(compilerKey: number, obj: any): number | string | void {
+    switch (typeof obj) {
+        case 'number':
+            // TODO: when obj is a numeric key, we might be able to use some
+            // other strategy to combine two numbers into a new unique number
+        case 'string':
+            return compilerKey + ':' + obj;
+        case 'object':
+            let objKey = objToKeyMap.get(obj);
+            if (isUndefined(objKey)) {
+                objKey = globalKey++;
+                objToKeyMap.set(obj, objKey);
+            }
+            return compilerKey + ':' + objKey;
+        default:
+            // we don't know how to build a key here, and using the compilerKey
+            // along might have undesirable effects, so better to throw in dev-mode
+            // and pray in prod.
+            if (process.env.NODE_ENV !== 'production') {
+                // @ts-ignore
+                assert.throw(`Invalid iterator key with type \`${typeof obj}\`,
+                    ${obj} should be a number or string value instead, otherwise
+                    we do not have a way to identify each individual elements in
+                    the iteration in ${vmBeingRendered}.`);
+            }
+    }
 }
