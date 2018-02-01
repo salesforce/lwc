@@ -40,20 +40,20 @@ Test.wire = {
 
     pluginTest('decorator expects a function identifier as first parameter', `
         import { wire } from 'engine';
-        import { record } from 'data-service';
+        import { getRecord } from 'data-service';
         export default class Test {
-            @wire(record, {}) innerRecord;
+            @wire(getRecord, {}) innerRecord;
         }
     `, {
         output: {
             code: `
-import { record } from 'data-service';
+import { getRecord } from 'data-service';
 export default class Test {}
 Test.wire = {
   innerRecord: {
     params: {},
     static: {},
-    adapter: record
+    adapter: getRecord
   }
 };`
         }

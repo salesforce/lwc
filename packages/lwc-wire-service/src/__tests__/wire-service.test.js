@@ -62,7 +62,7 @@ describe("wire-service.js", () => {
         });
         it("returns with a known adapter id", () => {
             const wireDef = { type: "known" };
-            target.getAdapter(wireDef, "target");
+            expect(target.getAdapter(wireDef, "target")).toBeDefined();
         });
         it("throws with an unknown function identifier adapter id", () => {
             const unknownFunc = () => {};
@@ -73,7 +73,7 @@ describe("wire-service.js", () => {
         });
         it("returns with a known function identifier adapter id", () => {
             const wireDef = { adapter: knownFunc };
-            target.getAdapter(wireDef, "target");
+            expect(target.getAdapter(wireDef, "target")).toBeDefined();
         });
     });
 
