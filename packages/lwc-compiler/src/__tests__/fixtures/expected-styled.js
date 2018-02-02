@@ -23,9 +23,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
 
   return [api_element("div", {
-        ck: 1
+        key: 1
     }, []), api_custom_element("x-foo", _xFoo, {
-        ck: 2
+        key: 2
     })];
 }
 

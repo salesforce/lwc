@@ -6,7 +6,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   var api_element = __getKey($api, 'h');
 
   return [api_element("section", {
-      ck: 1
+      key: 1
     }, [])];
 }
 

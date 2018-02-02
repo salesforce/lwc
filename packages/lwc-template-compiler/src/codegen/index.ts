@@ -406,6 +406,7 @@ function transform(
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
+        // Key property on VNode
         const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
             const { expression: forKeyExpression } = bindExpression(forKey, element);

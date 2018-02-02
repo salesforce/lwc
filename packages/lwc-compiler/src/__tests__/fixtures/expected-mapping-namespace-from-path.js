@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   } = $api;
 
   return [api_element("p", {
-      ck: 1
+      key: 1
   }, [api_text("CMP1")])];
 }
 

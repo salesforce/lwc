@@ -86,7 +86,7 @@ describe('transform', () => {
                 } = $api;
 
                 return [api_element("div", {
-                    ck: 1
+                    key: 1
                 }, [api_text("Hello")])];
             }
 
