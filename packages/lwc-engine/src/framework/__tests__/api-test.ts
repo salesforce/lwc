@@ -109,23 +109,24 @@ describe('api', () => {
 
     describe('#h()', () => {
         it('should convert className to a classMap property', () => {
-            const vnode = api.h('p', { className: 'foo' }, []);
+            const vnode = api.h('p', { key: 0, className: 'foo' }, []);
             expect(vnode.data.class).toEqual({ foo: true });
         });
 
         it('should allow null entries in children', () => {
-            const vnode = api.h('p', {}, [null]);
+            const vnode = api.h('p', { key: 0 }, [null]);
             expect(vnode.children).toEqual([null]);
         });
 
         it('should split classNames on white spaces', () => {
-            const vnode = api.h('p', { className: 'foo bar   baz' }, []);
+            const vnode = api.h('p', { key: 0, className: 'foo bar   baz' }, []);
             expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
         it('should throw if the vnode contains both a computed className and a classMap', () => {
             expect(() => {
                 api.h('p', {
+                    key: 0,
                     className: 'foo',
                     classMap: { foo: true }
                 }, []);
@@ -134,7 +135,7 @@ describe('api', () => {
 
         it('should throw for anything other than vnode and null', () => {
             expect(() => {
-                api.h('p', {}, ['text']);
+                api.h('p', { key: 0 }, ['text']);
             });
 
             expect(() => {
@@ -146,7 +147,7 @@ describe('api', () => {
             const styleMap = {
                 color: 'red'
             };
-            const vnode = api.h('p', { styleMap }, []);
+            const vnode = api.h('p', { key: 0, styleMap }, []);
 
             expect(vnode.data.style).toEqual({
                 color: 'red'
@@ -155,7 +156,7 @@ describe('api', () => {
 
         it('assign correct style value when style is present', () => {
             const style = 'color:red';
-            const vnode = api.h('p', { style }, []);
+            const vnode = api.h('p', { key: 0, style }, []);
 
             expect(vnode.data.style).toBe('color:red');
         });
@@ -164,7 +165,7 @@ describe('api', () => {
             const style = {
                 color: 'red'
             };
-            const vnode = api.h('p', { style }, []);
+            const vnode = api.h('p', { key: 0, style }, []);
 
             expect(vnode.data.style).toBe('[object Object]');
         });
@@ -297,23 +298,6 @@ describe('api', () => {
             expect(k2).toEqual('345:678');
             expect(k3).toEqual(k4);
             expect(k3 === k5).toEqual(false);
-        });
-        it('should throw for invalid objects', () => {
-            expect.assertions(3);
-            function html($api: RenderAPI) {
-                const o = {};
-                expect(() => $api.k(123, null)).toThrow();
-                expect(() => $api.k(123, undefined)).toThrow();
-                expect(() => $api.k(123, function () {})).toThrow();
-                return [];
-            }
-            class Foo extends Element {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
         });
     });
 

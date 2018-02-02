@@ -478,7 +478,7 @@ describe('html-element', () => {
                 }
             }
             function html2($api) {
-                childFromOwner = $api.h('p', {}, []);
+                childFromOwner = $api.h('p', { key: 0 }, []);
                 return [$api.c('x-child', Child, {})];
             }
             class MyComponent extends Element {
@@ -494,7 +494,7 @@ describe('html-element', () => {
 
         it('should ignore element from template', () => {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             const def = class MyComponent extends Element {
                 render() {
@@ -508,7 +508,7 @@ describe('html-element', () => {
 
         it('should not throw an error if element does not exist', () => {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             const def = class MyComponent extends Element {
                 render() {
@@ -524,7 +524,7 @@ describe('html-element', () => {
 
         it('should return null if element does not exist', function() {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             const def = class MyComponent extends Element {
                 render() {
@@ -554,7 +554,7 @@ describe('html-element', () => {
                 }
             }
             function html2($api) {
-                childFromOwner = $api.h('p', {}, []);
+                childFromOwner = $api.h('p', { key: 0 }, []);
                 return [$api.c('x-child', Child, {})];
             }
             class MyComponent extends Element {
@@ -570,7 +570,7 @@ describe('html-element', () => {
 
         it('should ignore elements from template', () => {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             const def = class MyComponent extends Element {
                 render() {
@@ -584,7 +584,7 @@ describe('html-element', () => {
 
         it('should not throw an error if no nodes are found', () => {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             const def = class MyComponent extends Element {
                 render() {

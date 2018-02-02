@@ -76,7 +76,7 @@ describe('watcher', () => {
             function html2($api, $cmp) {
                 const r = $cmp.round;
                 return [$api.c('x-child', Child, {
-                    slotset: r === 0 ? {} : { x: [$api.h('p', {}, [])] }
+                    slotset: r === 0 ? {} : { x: [$api.h('p', { key: 0 }, [])] }
                 })];
             }
             class MyComponent4 extends Element {

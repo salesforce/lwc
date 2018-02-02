@@ -33,7 +33,7 @@ describe('root', () => {
         });
 
         it('should allow searching for elements from template', () => {
-            function html($api) { return [$api.h('p', {}, [])]; }
+            function html($api) { return [$api.h('p', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -49,7 +49,7 @@ describe('root', () => {
 
         it('should allow searching for one element from template', () => {
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -65,7 +65,7 @@ describe('root', () => {
         });
 
         it('should ignore elements from other owner', () => {
-            const vnodeFromAnotherOwner = h('p', {}, []);
+            const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
             function html() { return [vnodeFromAnotherOwner]; }
             class MyComponent extends Element {
                 render() {
@@ -81,7 +81,7 @@ describe('root', () => {
         });
 
         it('should ignore element from other owner', () => {
-            const vnodeFromAnotherOwner = h('p', {}, []);
+            const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
             function html() { return [vnodeFromAnotherOwner]; }
             class MyComponent extends Element {
                 render() {
@@ -210,7 +210,7 @@ describe('root', () => {
         describe('unwrapping', function () {
             it('should return original object', function () {
                 function html($api) {
-                    return [$api.h('iframe', { src: 'https://salesforce.com' }, [])];
+                    return [$api.h('iframe', { key: 0, src: 'https://salesforce.com' }, [])];
                 }
                 class MyComponent extends Element {
                     getContentWindow() {
@@ -233,7 +233,7 @@ describe('root', () => {
     describe('membrane', () => {
 
         it('should querySelector on element from template', () => {
-            function html($api) { return [$api.h('ul', {}, [$api.h('li', {}, [])])]; }
+            function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -250,7 +250,7 @@ describe('root', () => {
         });
 
         it('should querySelectorAll on element from template', () => {
-            function html($api) { return [$api.h('ul', {}, [$api.h('li', {}, [])])]; }
+            function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -267,7 +267,7 @@ describe('root', () => {
         });
 
         it('should ignore extraneous elements', () => {
-            function html($api) { return [$api.h('ul', {}, [])]; }
+            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -287,7 +287,7 @@ describe('root', () => {
         });
 
         it('should not throw error if querySelector does not match any elements', () => {
-            function html($api) { return [$api.h('ul', {}, [])]; }
+            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -304,7 +304,7 @@ describe('root', () => {
         });
 
         it('should return null if querySelector does not match any elements', () => {
-            function html($api) { return [$api.h('ul', {}, [])]; }
+            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {
                     return html;
@@ -320,7 +320,7 @@ describe('root', () => {
 
         it('should not throw error if querySelectorAll does not match any elements', () => {
             function html($api) {
-                return [$api.h('ul', {}, [])];
+                return [$api.h('ul', { key: 0 }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -339,7 +339,7 @@ describe('root', () => {
 
         it('should allow walking back to the shadow root', () => {
             function html($api) {
-                return [$api.h('div', {}, [])];
+                return [$api.h('div', { key: 0 }, [])];
             }
             class MyComponent extends Element {
                 render() {

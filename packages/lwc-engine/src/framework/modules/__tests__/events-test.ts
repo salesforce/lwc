@@ -10,8 +10,8 @@ describe('module/events', () => {
         let result: Event[] = [], cmp: Component;
         function html($api: RenderAPI) {
             return [
-                $api.h('div', {on: {click(ev: Event) { result.push(ev); }}}, [
-                    $api.h('a', {}, [t('Click my parent')]),
+                $api.h('div', {key: 1, on: {click(ev: Event) { result.push(ev); }}}, [
+                    $api.h('a', { key: 0 }, [t('Click my parent')]),
                 ])
             ];
         }
@@ -38,14 +38,14 @@ describe('module/events', () => {
             if (c === 0) {
                 return [
                     $api.h('div', {key: 1, on: {click: $api.b($cmp.clickOne)}}, [
-                        $api.h('a', {}, [t('Click my parent')]),
+                        $api.h('a', {key: 0}, [t('Click my parent')]),
                     ])
                 ];
             } else if (c === 1) {
                 second = true;
                 return [
                     $api.h('div', {key: 1, on:  {click: $api.b($cmp.clickTwo)}}, [
-                        $api.h('a', {}, [t('Click my parent')]),
+                        $api.h('a', {key: 0}, [t('Click my parent')]),
                     ])
                 ];
             }
@@ -81,15 +81,15 @@ describe('module/events', () => {
             // using different keys
             if (c === 0) {
                 return [
-                    $api.h('p', {key: 1, on: {click: $api.b($cmp.clicked)}}, [
-                        $api.h('a', {}, [t('Click my parent')]),
+                    $api.h('p', { key: 1, on: {click: $api.b($cmp.clicked)}}, [
+                        $api.h('a', { key: 0 }, [t('Click my parent')]),
                     ])
                 ];
             } else if (c === 1) {
                 second = true;
                 return [
-                    $api.h('div', {key: 2, on:  {click: $api.b($cmp.clicked)}}, [
-                        $api.h('a', {}, [t('Click my parent')]),
+                    $api.h('div', { key: 2, on:  {click: $api.b($cmp.clicked)}}, [
+                        $api.h('a', { key: 3 }, [t('Click my parent')]),
                     ])
                 ];
             }
@@ -121,8 +121,8 @@ describe('module/events', () => {
         let result: any[] = [], cmp: Component;
         function html($api: RenderAPI, $cmp: Component) {
             return [
-                $api.h('div', {on: {click: $api.b($cmp.clicked)}}, [
-                    $api.h('a', {}, [t('Click my parent')]),
+                $api.h('div', {key: 0, on: {click: $api.b($cmp.clicked)}}, [
+                    $api.h('a', {key: 1}, [t('Click my parent')]),
                 ])
             ];
         }

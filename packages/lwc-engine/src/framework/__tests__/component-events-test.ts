@@ -121,7 +121,7 @@ describe('Events on Custom Elements', () => {
     it('should add event listeners in constructor when created via createElement', function() {
         let count = 0;
         function html($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', { key: 0}, [])];
         }
         class MyComponent extends Element {
             constructor() {
@@ -148,7 +148,7 @@ describe('Events on Custom Elements', () => {
     it('should add event listeners in connectedCallback when created via createElement', function() {
         let count = 0;
         function html($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', { key: 0 }, [])];
         }
         class MyComponent extends Element {
             connectedCallback() {
@@ -175,7 +175,7 @@ describe('Events on Custom Elements', () => {
     it('should add event listeners in connectedCallback when created via render', function() {
         let count = 0;
         function html1($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', { key: 0 }, [])];
         }
         class MyChild extends Element {
             connectedCallback() {
@@ -215,7 +215,7 @@ describe('Events on Custom Elements', () => {
     it('should add event listeners in constructor when created via render', function() {
         let count = 0;
         function html1($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', { key: 0 }, [])];
         }
         class MyChild extends Element {
             constructor() {

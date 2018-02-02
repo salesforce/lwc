@@ -5,7 +5,7 @@ import { Template } from "../../template";
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
         const tmpl = $api => [
-            $api.h('section', {}, [ $api.t('test') ]),
+            $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         tmpl.token = 'test';
 
@@ -23,12 +23,12 @@ describe('modules/token', () => {
 
     it('removes children element tokens if the template has no token', () => {
         const styledTmpl = $api => [
-            $api.h('section', {}, [ $api.t('test') ]),
+            $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmpl.token = 'test';
 
         const unstyledTmpl = $api => [
-            $api.h('section', {}, [ $api.t('test') ]),
+            $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
 
         class Component extends Element {
@@ -57,12 +57,12 @@ describe('modules/token', () => {
 
     it('replace children element tokens when swapping template', () => {
         const styledTmplA: Template = $api => [
-            $api.h('section', {}, [ $api.t('test') ]),
+            $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplA.token = 'testA';
 
         const styledTmplB: Template = $api => [
-            $api.h('section', {}, [ $api.t('test') ]),
+            $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplB.token = 'testB';
 

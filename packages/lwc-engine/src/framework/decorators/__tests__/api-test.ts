@@ -90,7 +90,7 @@ describe('decorators/api.ts', () => {
 
         it('should allow access to public props from outside and from templates', function() {
             function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', {}, [$api.d($cmp.x)])];
+                return [$api.h('div', { key: 0 }, [$api.d($cmp.x)])];
             }
             class MyComponent extends Element  {
                 render() {
@@ -216,7 +216,7 @@ describe('decorators/api.ts', () => {
 
         it('should allow access simple getters from outside and from templates', function() {
             function html ($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', {}, [$api.d($cmp.validity)])];
+                return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
             }
             class MyComponent extends Element  {
                 get validity() {

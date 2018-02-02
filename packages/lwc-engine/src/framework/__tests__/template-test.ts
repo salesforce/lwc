@@ -41,7 +41,7 @@ describe('template', () => {
                     $slotset = $s;
                     return [];
                 },
-                { x: [globalApi.h('p', {}, [])] },
+                { x: [globalApi.h('p', { key: 0 }, [])] },
             );
             expect(() => $slotset.x).toThrow('Cannot perform \'get\' on a proxy that has been revoked');
             expect(() => {
@@ -52,7 +52,7 @@ describe('template', () => {
         it('should render arrays correctly', function() {
             const elm = createCustomComponent(function($api, $cmp) {
                 return $api.i(['a', 'b'], function(value) {
-                    return $api.h('div', {}, [
+                    return $api.h('div', { key: 0 }, [
                         $api.t(value)
                     ]);
                 });
@@ -68,7 +68,7 @@ describe('template', () => {
             set.add('b');
             const elm = createCustomComponent(function($api, $cmp) {
                 return $api.i(set, function(value) {
-                    return $api.h('div', {}, [
+                    return $api.h('div', { key: 0 }, [
                         $api.t(value)
                     ]);
                 });
@@ -139,7 +139,7 @@ describe('template', () => {
                         slotset.x = [];
                         return [];
                     },
-                    { x: [globalApi.h('p', {}, [])] },
+                    { x: [globalApi.h('p', { key: 0 }, [])] },
                 ),
             ).toThrow();
         });
@@ -165,7 +165,7 @@ describe('template', () => {
                 createCustomComponent(function(api, cmp, slotset) {
                     delete slotset.x;
                     return [];
-                }, { x: [ globalApi.h('p', {}, []) ] });
+                }, { x: [ globalApi.h('p', { key: 0 }, []) ] });
             }).toThrow();
         });
 
