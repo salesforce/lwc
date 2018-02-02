@@ -380,4 +380,72 @@ describe('template', () => {
             });
         });
     });
+
+    describe('recycling', () => {
+        it('should only occur if the same template is rendered', () => {
+            function html($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            let div: HTMLElement;
+            let counter = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.x = 0;
+                }
+                render() {
+                    return html;
+                }
+                renderedCallback() {
+                    counter++;
+                    div = this.root.querySelector('div');
+                }
+            }
+            MyComponent.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            div.id = 'miami';
+            elm.x = 2;
+            return Promise.resolve().then(() => {
+                expect(counter).toBe(2);
+                expect(div.id).toBe('miami'); // this means the element was reused
+            });
+        });
+
+        it('should not occur if the template is swapped', () => {
+            function html1($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            function html2($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            let div: HTMLElement;
+            let counter = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.x = 0;
+                }
+                render() {
+                    return this.x === 0 ? html1: html2;
+                }
+                renderedCallback() {
+                    counter++;
+                    div = this.root.querySelector('div');
+                }
+            }
+            MyComponent.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            div.id = 'miami';
+            elm.x = 2;
+            return Promise.resolve().then(() => {
+                expect(counter).toBe(2);
+                expect(div.id).toBe(""); // this means the element was not reused
+            });
+        });
+    });
 });
