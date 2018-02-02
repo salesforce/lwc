@@ -3,7 +3,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
 
     return [
         api_element('section', {
-            ck: 2
+            key: 2
         },
         [
             api_element(
@@ -13,7 +13,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         title: 'x',
                         'aria-hidden': 'x'
                     },
-                    ck: 1
+                    key: 1
                 },
                 [api_text('x')]
             )

@@ -1,0 +1,10 @@
+<template>
+    <section>
+        <template iterator:x={items}>
+            <div data-islast={x.last} data-isfirst={x.first}><span>Row: {x.index}</span>. Value: {x.value}</div>
+            <template if:true={isTrue}>
+                <div>Text</div>
+            </template>
+        </template>
+    </section>
+</template>

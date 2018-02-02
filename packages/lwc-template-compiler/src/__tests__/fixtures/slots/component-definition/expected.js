@@ -5,7 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
 
     return [
         api_custom_element('x-foo', _xFoo, {
-            ck: 1,
+            key: 1,
             slotset: {
                 $default$: slot0 || []
             }

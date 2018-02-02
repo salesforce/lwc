@@ -10,7 +10,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     bar: true,
                     'baz-fiz': true
                 },
-                ck: 1
+                key: 1
             },
             []
         )

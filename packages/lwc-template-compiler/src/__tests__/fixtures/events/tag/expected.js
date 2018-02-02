@@ -5,13 +5,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'section', {
-                ck: 3
+                key: 3
             },
             [
                 api_element(
                     'div',
                     {
-                        ck: 1,
+                        key: 1,
                         on: {
                             click: _m0 || ($ctx._m0 = api_bind($cmp.handleClick))
                         }
@@ -21,7 +21,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'div',
                     {
-                        ck: 2,
+                        key: 2,
                         on: {
                             press: _m1 || ($ctx._m1 = api_bind($cmp.handlePress))
                         }

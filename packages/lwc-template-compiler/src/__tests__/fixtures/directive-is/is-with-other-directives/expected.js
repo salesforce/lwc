@@ -6,13 +6,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'table',
             {
-                ck: 3
+                key: 3
             },
             [
                 api_element(
                     'tbody',
                     {
-                        ck: 2
+                        key: 2
                     },
                     api_iterator($cmp.rows, function(row) {
                         return row.visible
@@ -20,7 +20,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                 attrs: {
                                     is: 'ns-row'
                                 },
-                                ck: 1
+                                key: 1
                             })
                             : null;
                     })

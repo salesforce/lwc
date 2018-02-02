@@ -10,13 +10,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'ul',
             {
-                ck: 2
+                key: 2
             },
             api_iterator($cmp.items, function(item, index) {
                 return api_element(
                     'li',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_dynamic(index),

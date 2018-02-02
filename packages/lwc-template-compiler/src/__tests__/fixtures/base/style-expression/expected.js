@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             'section',
             {
                 style: $cmp.customStyle,
-                ck: 1
+                key: 1
             },
             []
         )

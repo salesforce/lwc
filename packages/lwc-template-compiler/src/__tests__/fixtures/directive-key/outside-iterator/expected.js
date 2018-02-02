@@ -5,8 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'div',
             {
-                key: $cmp.keyGetter,
-                ck: 1
+                key: $cmp.keyGetter
             },
             []
         )

@@ -5,7 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 2
+                key: 2
             },
             [
                 api_element(
@@ -14,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         attrs: {
                             local: 'x',
                         },
-                        ck: 1
+                        key: 1
                     },
                     []
                 )

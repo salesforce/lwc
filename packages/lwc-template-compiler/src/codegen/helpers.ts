@@ -12,6 +12,23 @@ export function getKeyGenerator() {
     return () => counter++;
 }
 
+// Returns the immediate iterator parent if it exists.
+// Traverses up until it finds an element with forOf, or
+// a non-template element without a forOf.
+export function getIteratorParent(element: IRElement): IRElement | null {
+    const parent = element.parent;
+    if (!parent) {
+        return null;
+    }
+
+    if (parent.forOf) {
+        return parent;
+    } else if (parent.tag.toLowerCase() === 'template') {
+        return getIteratorParent(parent);
+    }
+    return null;
+}
+
 export function getMemberExpressionRoot(
     expression: t.MemberExpression,
 ): t.Identifier {

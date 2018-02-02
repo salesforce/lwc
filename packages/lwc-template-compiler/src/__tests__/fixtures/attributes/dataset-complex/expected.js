@@ -3,7 +3,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
 
     return [
         api_element('section', {
-            ck: 2
+            key: 2
         },
         [
             api_element(
@@ -12,7 +12,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     attrs: {
                         'data--bar-baz': 'xyz'
                     },
-                    ck: 1
+                    key: 1
                 },
                 []
             )

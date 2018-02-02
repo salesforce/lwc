@@ -7,11 +7,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 2
+                key: 2
             },
             [
                 api_custom_element('ns-foo', _nsFoo, {
-                    ck: 1,
+                    key: 1,
                     on: {
                         foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
                     }

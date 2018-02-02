@@ -12,17 +12,17 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'div',
             {
-                ck: 3
+                key: 3
             },
             [
                 api_custom_element('x-b', _xB, {
-                    ck: 1,
+                    key: 1,
                     slotset: {
                         $default$: api_flatten([
                             $cmp.isLoading ? api_element(
                                 'div',
                                 {
-                                    ck: 2
+                                    key: 2
                                 },
                                 []
                             ) : null,

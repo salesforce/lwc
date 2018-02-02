@@ -5,7 +5,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 1
+                key: 1
             },
             [
                 $cmp.isTrue ? api_dynamic($cmp.foo) : null,

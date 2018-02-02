@@ -8,7 +8,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 json:
                     '[{"column":"ID","value":"5e","operator":"equals","f":true}]'
             },
-            ck: 1
+            key: 1
         })
     ];
 }

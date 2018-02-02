@@ -6,13 +6,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 9
+                key: 9
             },
             api_flatten([
                 api_element(
                     'p',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_text('Before header')
@@ -22,7 +22,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'p',
                     {
-                        ck: 3
+                        key: 3
                     },
                     [
                         api_text('In')
@@ -31,7 +31,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'p',
                     {
-                        ck: 4
+                        key: 4
                     },
                     [
                         api_text('between')
@@ -41,7 +41,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     api_element(
                         'p',
                         {
-                            ck: 5
+                            key: 5
                         },
                         [
                             api_text('Default body')
@@ -52,7 +52,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     api_element(
                         'p',
                         {
-                            ck: 7
+                            key: 7
                         },
                         [
                             api_text('Default footer')

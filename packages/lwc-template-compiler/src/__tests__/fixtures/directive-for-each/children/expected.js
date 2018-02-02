@@ -13,7 +13,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 classMap: {
                     s1: true
                 },
-                ck: 2,
+                key: 2,
             },
             api_flatten([
                 api_text('Other Child'),
@@ -23,7 +23,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'p',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_text('Last child')
@@ -37,7 +37,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 classMap: {
                     s2: true
                 },
-                ck: 5
+                key: 5
             },
             api_flatten([
                 api_text('Other Child'),
@@ -47,7 +47,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                               api_element(
                                 'p',
                                 {
-                                    ck: 3
+                                    key: 3
                                 },
                                 [
                                     api_text('X1')
@@ -56,7 +56,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             api_element(
                                 'p',
                                 {
-                                    ck: 4
+                                    key: 4
                                 },
                                 [
                                     api_text('X2')
@@ -73,13 +73,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 classMap: {
                     s3: true
                 },
-                ck: 8
+                key: 8
             },
             api_flatten([
                 api_element(
                     'p',
                     {
-                        ck: 6
+                        key: 6
                     },
                     [
                         api_text('Last child')
@@ -89,7 +89,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     return api_element(
                         'div',
                         {
-                            ck: 7
+                            key: 7
                         },
                         []
                     );
@@ -102,13 +102,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 classMap: {
                     s4: true
                 },
-                ck: 11
+                key: 11
             },
             [
                 api_element(
                     'p',
                     {
-                        ck: 9
+                        key: 9
                     },
                     [
                         api_text('Other child1')
@@ -117,7 +117,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'p',
                     {
-                        ck: 10
+                        key: 10
                     },
                     [
                         api_text('Other child2')

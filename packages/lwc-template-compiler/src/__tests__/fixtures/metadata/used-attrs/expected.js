@@ -5,13 +5,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 2
+                key: 2
             },
             [
                 api_element(
                     'p',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_dynamic($cmp.obj.sub)

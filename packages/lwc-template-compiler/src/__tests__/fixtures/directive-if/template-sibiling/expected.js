@@ -4,13 +4,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     return [
         api_element(
             'section', {
-                ck: 4
+                key: 4
             },
             [
                 api_element(
                     'p',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_text('1')
@@ -19,7 +19,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 $cmp.bar ? api_element(
                     'p',
                     {
-                        ck: 2
+                        key: 2
                     },
                     [
                         api_text('2')
@@ -28,7 +28,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'p',
                     {
-                        ck: 3
+                        key: 3
                     },
                     [
                         api_text('3')

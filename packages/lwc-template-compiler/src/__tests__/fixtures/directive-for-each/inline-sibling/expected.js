@@ -11,7 +11,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'ul',
             {
-                ck: 3
+                key: 3
             },
             api_flatten([
                 api_iterator($cmp.items, function(item) {
@@ -19,7 +19,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         'li',
                         {
                             className: item.x,
-                            ck: 1
+                            key: 1
                         },
                         [api_dynamic(item)]
                     );
@@ -27,7 +27,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_element(
                     'li',
                     {
-                        ck: 2
+                        key: 2
                     },
                     [
                         api_text('Last')

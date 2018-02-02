@@ -6,13 +6,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 3
+                key: 3
             },
             slot0 || [
                 api_element(
                     'p',
                     {
-                        ck: 1
+                        key: 1
                     },
                     [
                         api_text('Test slot content')

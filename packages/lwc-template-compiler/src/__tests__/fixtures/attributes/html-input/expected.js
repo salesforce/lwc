@@ -13,7 +13,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 props: {
                     checked: true
                 },
-                ck: 1
+                key: 1
             },
             []
         )

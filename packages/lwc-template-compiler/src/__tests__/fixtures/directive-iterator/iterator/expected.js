@@ -3,14 +3,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         t: api_text,
         d: api_dynamic,
         h: api_element,
-        i: api_iterator
+        k: api_key,
+        i: api_iterator,
     } = $api;
 
     return [
         api_element(
             'section',
             {
-                ck: 3
+                key: 3
             },
             api_iterator($cmp.items, function(xValue, xIndex, xFirst, xLast) {
                 return api_element(
@@ -20,13 +21,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             'data-islast': xLast,
                             'data-isfirst': xFirst
                         },
-                        ck: 2
+                        key: api_key(2, xValue)
                     },
                     [
                         api_element(
                             'span',
                             {
-                                ck: 1
+                                key: 1
                             }, [
                                 api_text('Row: '),
                                 api_dynamic(xIndex)

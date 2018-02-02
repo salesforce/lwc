@@ -6,11 +6,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                ck: 4
+                key: 4
             },
             [
                 api_custom_element('ns-cmp', _nsCmp, {
-                    ck: 1,
+                    key: 1,
                     slotset: {
                         $default$: [
                             $cmp.isTrue
@@ -20,7 +20,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                         attrs: {
                                             slot: true
                                         },
-                                        ck: 2
+                                        key: 2
                                     },
                                     [api_text('S1')]
                                 )
@@ -31,7 +31,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                     attrs: {
                                         slot: true
                                     },
-                                    ck: 3
+                                    key: 3
                                 },
                                 [api_text('S2')]
                             )

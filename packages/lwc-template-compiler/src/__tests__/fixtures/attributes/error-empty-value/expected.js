@@ -9,7 +9,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                     title: ''
                 },
-                ck: 1
+                key: 1
             },
             []
         ),
@@ -18,7 +18,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 content: '',
                 visible: true
             },
-            ck: 2
+            key: 2
         })
     ];
 }
