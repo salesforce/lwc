@@ -1,55 +1,69 @@
-const test = require('./utils/test-transform').test(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('Wired field', () => {
-    test('transform track decorator field', `
+    pluginTest('transform track decorator field', `
+        import { track } from 'engine';
         export default class Test {
             @track record;
         }
-    `,`
-        export default class Test {}
-        Test.track = {
-            record: 1
-        };
-    `);
+    `, {
+        output: {
+            code: `
+                export default class Test {}
+                Test.track = {
+                    record: 1
+                };
+            `
+        }
+    });
 
-    test('transform track decorator preserve intial value', `
+    pluginTest('transform track decorator preserve intial value', `
+        import { track } from 'engine';
         export default class Test {
             @track record = {
                 value: 'test'
             };
         }
-    `,`
-        export default class Test {
-            constructor() {
-                this.record = {
-                    value: 'test'
+    `, {
+        output: {
+            code: `
+                export default class Test {
+                    constructor() {
+                        this.record = {
+                            value: 'test'
+                        };
+                    }
+
+                }
+                Test.track = {
+                    record: 1
                 };
-            }
-
+            `
         }
-        Test.track = {
-            record: 1
-        };
-    `);
+    });
 
 
-    test('throws if track decorator is applied to a getter', `
+    pluginTest('throws if track decorator is applied to a getter', `
+        import { track } from 'engine';
         export default class Test {
             @track get record() {
                 return 'test';
             }
         }
-    `, undefined, {
-        message: 'test.js: @track decorator can only be applied to class properties.',
-        loc: {
-            line: 2,
-            column: 11
+    `, {
+        error: {
+            message: 'test.js: @track decorator can only be applied to class properties.',
+            loc: {
+                line: 2,
+                column: 11
+            }
         }
     });
 
-    test('throws if track decorator is applied to a setter', `
+    pluginTest('throws if track decorator is applied to a setter', `
+        import { track } from 'engine';
         export default class Test {
             _record;
 
@@ -57,15 +71,18 @@ describe('Wired field', () => {
                 this._record = value;
             }
         }
-    `, undefined, {
-        message: 'test.js: @track decorator can only be applied to class properties.',
-        loc: {
-            line: 4,
-            column: 11
+    `, {
+        error: {
+            message: 'test.js: @track decorator can only be applied to class properties.',
+            loc: {
+                line: 4,
+                column: 11
+            }
         }
     });
 
-    test('throws if track decorator is applied to a class method', `
+    pluginTest('throws if track decorator is applied to a class method', `
+        import { track } from 'engine';
         export default class Test {
             _record;
 
@@ -73,11 +90,13 @@ describe('Wired field', () => {
                 this._record = value;
             }
         }
-    `, undefined, {
-        message: 'test.js: @track decorator can only be applied to class properties.',
-        loc: {
-            line: 4,
-            column: 11
+    `, {
+        error: {
+            message: 'test.js: @track decorator can only be applied to class properties.',
+            loc: {
+                line: 4,
+                column: 11
+            }
         }
     });
 });

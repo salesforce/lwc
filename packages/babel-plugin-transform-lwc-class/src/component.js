@@ -1,52 +1,28 @@
 const { basename } = require('path');
-const { findClassMethod, findClassProperty, staticClassProperty } = require('./utils');
 const commentParser = require('comment-parser');
-
-const RAPTOR_PACKAGE_ALIAS = 'engine';
-const BASE_RAPTOR_COMPONENT_CLASS = 'Element';
-
-const LABELS_CLASS_PROPERTY_NAME = 'labels';
-const STYLE_CLASS_PROPERTY_NAME = 'style';
-const COMPONENT_RENDER_METHOD_NAME = 'render';
-
-const MISSPELLED_LIFECYCLE_METHODS = {
-    'renderCallback'     : 'renderedCallback',
-    'connectCallback'    : 'connectedCallback',
-    'disconnectCallback' : 'disconnectedCallback'
-};
+const { findClassMethod, findClassProperty, staticClassProperty, getImportSpecifiers } = require('./utils');
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t, }) {
     return {
-        ImportDeclaration(path, state) {
-            // Check if importing engine
-            const isRaptorImport = path.get('source').isStringLiteral({
-                value: RAPTOR_PACKAGE_ALIAS
-            });
+        Program(path, state) {
+            const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
 
-            if (!isRaptorImport) {
-                return;
-            }
-
-            // Find the Element identifier from the imported identifier
-            const baseComponentClassImport = path.get('specifiers').find(path => (
-                 path.get('imported').isIdentifier({
-                    name: BASE_RAPTOR_COMPONENT_CLASS
-                })
+            // Store on state local identifiers referencing engine base component
+            state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (
+                name === LWC_PACKAGE_EXPORTS.BASE_COMPONENT
+            )).map(({ path }) => (
+                path.get('local')
             ));
-
-            if (baseComponentClassImport) {
-                state.raptorBaseClassImport = baseComponentClassImport.get('local');
-            }
         },
         Class(path, state) {
-            const isRaptorComponent = state.raptorBaseClassImport &&
-            isClassRaptorComponentClass(path, state.raptorBaseClassImport);
+            const isComponent = isComponentClass(path, state.componentBaseClassImports);
 
-            if (isRaptorComponent) {
+            if (isComponent) {
                 const classRef = path.node.id;
                 if (!classRef) {
                     throw path.buildCodeFrameError(
-                        `Raptor component class can't be an anonymous.`
+                        `LWC component class can't be an anonymous.`
                     );
                 }
 
@@ -65,7 +41,7 @@ module.exports = function ({ types: t, }) {
                     state.file.metadata.declarationLoc = { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
 
                     // Import and wire template to the component if the class has no render method
-                    if (!findClassMethod(classBody, COMPONENT_RENDER_METHOD_NAME)) {
+                    if (!findClassMethod(classBody, LWC_COMPONENT_PROPERTIES.RENDER)) {
                         wireTemplateToClass(state, classBody);
                     }
                 }
@@ -73,21 +49,23 @@ module.exports = function ({ types: t, }) {
         },
     };
 
-    function isClassRaptorComponentClass(classPath, raptorBaseClassImport) {
+    function isComponentClass(classPath, componentBaseClassImports) {
         const superClass = classPath.get('superClass');
 
         return superClass.isIdentifier()
-            && classPath.scope.bindingIdentifierEquals(
-                superClass.node.name,
-                raptorBaseClassImport.node
-            );
+            && componentBaseClassImports.some(componentBaseClassImport => (
+                classPath.scope.bindingIdentifierEquals(
+                    superClass.node.name,
+                    componentBaseClassImport.node
+                )
+            ));
     }
 
     function isDefaultExport(path) {
         return path.parentPath.isExportDefaultDeclaration();
     }
 
-    function getBaseName({ opts, file }) {
+    function getBaseName({ file }) {
         const classPath = file.opts.filename;
         return basename(classPath, '.js');
     }
@@ -102,13 +80,13 @@ module.exports = function ({ types: t, }) {
 
         const styleProperty = staticClassProperty(
             t,
-            STYLE_CLASS_PROPERTY_NAME,
-            t.memberExpression(templateIdentifier, t.identifier(STYLE_CLASS_PROPERTY_NAME)),
+            LWC_COMPONENT_PROPERTIES.STYLE,
+            t.memberExpression(templateIdentifier, t.identifier(LWC_COMPONENT_PROPERTIES.STYLE)),
         );
 
         const renderMethod = t.classMethod(
             'method',
-            t.identifier(COMPONENT_RENDER_METHOD_NAME),
+            t.identifier(LWC_COMPONENT_PROPERTIES.RENDER),
             [],
             t.blockStatement([
                 t.returnStatement(templateIdentifier),

@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, track } from 'engine';
 
 export default class BoundaryChildBoundaryAltViewThrow extends Element {
     @track state = { error: false, title: "initial" };

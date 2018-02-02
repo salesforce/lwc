@@ -39,25 +39,28 @@ function staticClassProperty(types, name, expression) {
     return classProperty;
 }
 
-const API_DECORATOR = 'api';
-const TRACK_DECORATOR = 'track';
-const WIRE_DECORATOR = 'wire';
+function getImportsStatements(path, sourceName) {
+    const programPath = path.isProgram() ?
+        path :
+        path.findParent(node => node.isProgram());
 
-function isWireDecorator(path) {
-    return path.get('expression').isCallExpression() &&
-        path.get('expression.callee').isIdentifier({ name: WIRE_DECORATOR });
+    return programPath.get('body').filter(node => (
+        node.isImportDeclaration() &&
+        node.get('source').isStringLiteral({ value: sourceName })
+    ));
 }
 
-function isAPIDecorator(path) {
-    return path.get('expression').isIdentifier({
-        name: API_DECORATOR
-    });
-}
+function getImportSpecifiers(path, sourceName) {
+    const engineImports = getImportsStatements(path, sourceName);
 
-function isTrackDecorator(path) {
-    return path.get('expression').isIdentifier({
-        name: TRACK_DECORATOR
-    });
+    return engineImports.reduce((acc, importStatement) => {
+        // Flat-map the specifier list for each import statement
+        return [...acc, ...importStatement.get('specifiers')];
+    }, []).reduce((acc, specifier) => {
+        // Get the list of specifiers with their name
+        const imported = specifier.get('imported').node.name;
+        return [...acc, { name: imported, path: specifier }];
+    }, []);
 }
 
 module.exports = {
@@ -65,8 +68,6 @@ module.exports = {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
-    isAPIDecorator,
-    isTrackDecorator,
-    isWireDecorator,
     staticClassProperty,
+    getImportSpecifiers,
 };
