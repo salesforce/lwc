@@ -1,6 +1,6 @@
 {
   "name": "lwc-engine",
-  "version": "0.17.11",
+  "version": "0.17.13",
   "description": "Raptor Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
