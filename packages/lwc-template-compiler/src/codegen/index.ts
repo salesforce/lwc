@@ -13,7 +13,6 @@ import {
 import {
     bindExpression,
     rewriteIteratorToArguments,
-    getIteratorIdentifier,
 } from '../shared/scope';
 
 import {
@@ -44,7 +43,6 @@ import {
     shouldFlatten,
     destructuringAssignmentFromObject,
     getKeyGenerator,
-    getIteratorParent,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -408,22 +406,17 @@ function transform(
             data.push(t.objectProperty(t.identifier('props'), propsObj));
         }
 
-        // Key property on VNode
-        let iteratorParent;
+        const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
             const { expression: forKeyExpression } = bindExpression(forKey, element);
-            data.push(t.objectProperty(t.identifier('key'), forKeyExpression));
-        } else if(iteratorParent = getIteratorParent(element)) {
-            const forOf = iteratorParent.forOf!;
-            const identifier = t.identifier(`${forOf.iterator.name}Value`);
             data.push(
                 t.objectProperty(
                     t.identifier('key'),
-                    codeGen.genKey(t.numericLiteral(generateKey()), identifier)
+                    codeGen.genKey(compilerKey, forKeyExpression)
                 )
-            )
+            );
         } else {
-            data.push(t.objectProperty(t.identifier('key'), t.numericLiteral(generateKey())));
+            data.push(t.objectProperty(t.identifier('key'), compilerKey));
         }
 
 

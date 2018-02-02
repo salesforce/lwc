@@ -1,6 +1,7 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         t: api_text,
+        k: api_key,
         h: api_element,
         i: api_iterator,
         f: api_flatten
@@ -13,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                   return api_element(
                         'p',
                         {
-                            key: 1
+                            key: api_key(1, item)
                         },
                         [
                           api_text('Inner')

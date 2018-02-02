@@ -10,7 +10,7 @@ const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 const BASE_CONFIG = {};
 
 describe('fixtures', () => {
-    const fixtures = glob.sync(path.resolve(FIXTURE_DIR, 'directive-key/**/*.html'));
+    const fixtures = glob.sync(path.resolve(FIXTURE_DIR, '**/*.html'));
 
     for (const caseEntry of fixtures) {
         const caseFolder = path.dirname(caseEntry);

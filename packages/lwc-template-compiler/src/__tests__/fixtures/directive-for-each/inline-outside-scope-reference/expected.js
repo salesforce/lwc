@@ -1,5 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { d: api_dynamic, h: api_element, i: api_iterator } = $api;
+    const { d: api_dynamic, h: api_element, k: api_key, i: api_iterator } = $api;
 
     return [
         api_element(
@@ -14,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         classMap: {
                             'my-list': true
                         },
-                        key: 3
+                        key: api_key(3, item)
                     },
                     [
                         api_element(

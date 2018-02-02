@@ -4,6 +4,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         b: api_bind,
         h: api_element,
         d: api_dynamic,
+        k: api_key,
         i: api_iterator
     } = $api;
 
@@ -28,7 +29,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 return api_element(
                     'li',
                     {
-                        key: 3
+                        key: api_key(3, task)
                     },
                     [
                         api_dynamic(task.title),

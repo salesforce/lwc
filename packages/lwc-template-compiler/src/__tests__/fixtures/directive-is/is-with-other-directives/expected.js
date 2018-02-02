@@ -1,6 +1,6 @@
 import _nsRow from 'ns-row';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { c: api_custom_element, i: api_iterator, h: api_element } = $api;
+    const { k: api_key, c: api_custom_element, i: api_iterator, h: api_element } = $api;
 
     return [
         api_element(
@@ -20,7 +20,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                 attrs: {
                                     is: 'ns-row'
                                 },
-                                key: 1
+                                key: api_key(1, row)
                             })
                             : null;
                     })
