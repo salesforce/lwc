@@ -90,8 +90,33 @@ function expandModuleDirectories({ moduleDirectories, rootDir } = {}) {
     return nodeModulePaths(rootDir || __dirname, { moduleDirectory: moduleDirectories });
 }
 
+function resolveModules(modules, opts) {
+    if (Array.isArray(modules)) {
+        modules.forEach((modulePath) => resolveModules(modulePath, opts));
+    } else {
+        const { mappings, visited, moduleRoot, lwcConfig } = opts;
+        if (typeof modules === 'string') {
+            const packageEntries = resolveModulesInDir(path.join(moduleRoot, modules), lwcConfig);
+            Object.keys(packageEntries).forEach((moduleName) => {
+                if (!hasModuleBeenVisited(moduleName, visited)) {
+                    mappings[moduleName] = packageEntries[moduleName];
+                    visited.add(moduleName);
+                }
+            });
+        } else {
+            Object.keys(modules).forEach((moduleName) => {
+                if (!hasModuleBeenVisited(moduleName, visited)) {
+                    const modulePath = path.join(moduleRoot, modules[moduleName]);
+                    mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
+                    visited.add(moduleName);
+                }
+            });
+        }
+    }
+}
+
 function resolveLwcNpmModules(options = {}) {
-    const VISITED = new Set();
+    const visited = new Set();
     const modulePaths = expandModuleDirectories(options);
 
     return modulePaths.reduce((m, nodeModulesDir) => {
@@ -100,30 +125,7 @@ function resolveLwcNpmModules(options = {}) {
             const lwcConfig = loadLwcConfig(moduleRoot);
 
             if (lwcConfig) {
-                let { modules } = lwcConfig;
-                if (typeof modules === 'string') {
-                    modules = [modules];
-                }
-
-                if (Array.isArray(modules)) {
-                    modules.forEach((modulePath) => {
-                        const packageEntries = resolveModulesInDir(path.join(moduleRoot, modulePath), lwcConfig);
-                        Object.keys(packageEntries).forEach((moduleName) => {
-                            if (!hasModuleBeenVisited(moduleName, VISITED)) {
-                                mappings[moduleName] = packageEntries[moduleName];
-                                VISITED.add(moduleName);
-                            }
-                        });
-                    });
-                } else {
-                    Object.keys(modules).forEach((moduleName) => {
-                        if (!hasModuleBeenVisited(moduleName, VISITED)) {
-                            const modulePath = path.join(moduleRoot, modules[moduleName]);
-                            mappings[moduleName] = { moduleSpecifier: moduleName, entry: modulePath };
-                            VISITED.add(moduleName);
-                        }
-                    });
-                }
+                resolveModules(lwcConfig.modules, {mappings, visited, moduleRoot, lwcConfig });
             }
 
             return mappings;
