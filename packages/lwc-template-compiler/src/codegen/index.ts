@@ -409,6 +409,7 @@ function transform(
         // Key property on VNode
         const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
+            // If element has user-supplied `key` or is in iterator, call `api.k`
             const { expression: forKeyExpression } = bindExpression(forKey, element);
             data.push(
                 t.objectProperty(
@@ -417,6 +418,8 @@ function transform(
                 )
             );
         } else {
+            // If stand alone element with no user-defined key
+            // member expression
             data.push(t.objectProperty(t.identifier('key'), compilerKey));
         }
 
