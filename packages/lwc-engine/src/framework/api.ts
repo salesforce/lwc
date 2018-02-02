@@ -8,6 +8,7 @@ import { ComponentConstructor, markComponentAsDirty } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
+import { unwrap } from "./membrane";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -98,6 +99,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
+        assert.isTrue(data.key, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
         assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
         assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);
@@ -323,22 +325,16 @@ export function k(compilerKey: number, obj: any): number | string | void {
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
-            let objKey = objToKeyMap.get(obj);
+            if (isNull(obj)) {
+                return;
+            }
+            // Slow path. We get here when element is inside iterator
+            // but no key is specified.
+            let objKey = objToKeyMap.get(unwrap(obj));
             if (isUndefined(objKey)) {
                 objKey = globalKey++;
                 objToKeyMap.set(obj, objKey);
             }
             return compilerKey + ':' + objKey;
-        default:
-            // we don't know how to build a key here, and using the compilerKey
-            // along might have undesirable effects, so better to throw in dev-mode
-            // and pray in prod.
-            if (process.env.NODE_ENV !== 'production') {
-                // @ts-ignore
-                assert.throw(`Invalid iterator key with type \`${typeof obj}\`,
-                    ${obj} should be a number or string value instead, otherwise
-                    we do not have a way to identify each individual elements in
-                    the iteration in ${vmBeingRendered}.`);
-            }
     }
 }
