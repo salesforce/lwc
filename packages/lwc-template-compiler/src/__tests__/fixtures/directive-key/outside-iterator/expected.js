@@ -1,12 +1,11 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { h: api_element } = $api;
+    const { k: api_key, h: api_element } = $api;
 
     return [
         api_element(
-            'section',
+            'div',
             {
-                style: $cmp.customStyle,
-                key: 1
+                key: api_key(1, $cmp.keyGetter)
             },
             []
         )
