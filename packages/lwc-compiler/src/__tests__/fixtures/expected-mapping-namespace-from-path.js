@@ -8,7 +8,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     h: api_element
   } = $api;
 
-  return [api_element("p", {}, [api_text("CMP1")])];
+  return [api_element("p", {
+      key: 1
+  }, [api_text("CMP1")])];
 }
 
 if (style) {

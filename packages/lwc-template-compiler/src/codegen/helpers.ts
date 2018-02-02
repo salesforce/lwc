@@ -7,6 +7,10 @@ import { IRElement } from '../shared/types';
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
 }
+export function getKeyGenerator() {
+    let counter = 1;
+    return () => counter++;
+}
 
 export function getMemberExpressionRoot(
     expression: t.MemberExpression,

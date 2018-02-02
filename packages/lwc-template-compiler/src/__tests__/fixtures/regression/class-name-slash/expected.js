@@ -9,7 +9,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             props: {
                 xClass: 'bar'
-            }
+            },
+            key: 1
         })
     ];
 }

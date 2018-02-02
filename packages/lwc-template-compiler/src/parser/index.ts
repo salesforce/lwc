@@ -23,6 +23,7 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
+    keyExpression,
 } from './expression';
 
 import {
@@ -104,12 +105,12 @@ export default function parse(source: string, state: State): {
 
                 applyForEach(element);
                 applyIterator(element);
-                applyKey(element);
                 applyIf(element);
                 applyStyle(element);
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
+                applyKey(element);
 
                 parent = element;
                 stack.push(element);
@@ -373,6 +374,9 @@ export default function parse(source: string, state: State): {
 
             element.forKey = keyAttribute.value;
         }
+
+        element.forKey = keyExpression(element);
+
     }
 
     function applyComponent(element: IRElement) {

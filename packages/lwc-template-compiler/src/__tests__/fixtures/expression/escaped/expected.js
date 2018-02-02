@@ -7,7 +7,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 props: {
                     value: '{value}'
-                }
+                },
+                key: 1
             },
             []
         )

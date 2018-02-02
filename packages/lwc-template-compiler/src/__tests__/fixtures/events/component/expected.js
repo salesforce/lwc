@@ -4,12 +4,19 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
 
     const { _m0 } = $ctx;
     return [
-        api_element('section', {}, [
-            api_custom_element('ns-foo', _nsFoo, {
-                on: {
-                    foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
-                }
-            })
-        ])
+        api_element(
+            'section',
+            {
+                key: 2
+            },
+            [
+                api_custom_element('ns-foo', _nsFoo, {
+                    key: 1,
+                    on: {
+                        foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
+                    }
+                })
+            ]
+        )
     ];
 }
