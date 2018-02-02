@@ -3,6 +3,31 @@ const pluginTest = require('./utils/test-transform').pluginTest(
 );
 
 describe('Element import', () => {
+    pluginTest('throws if using default import on engine', `
+        import engine from 'engine';
+    `, {
+        error: {
+            message: `test.js: Invalid import. "engine" doesn't have default export.`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+
+    pluginTest('throws if using namespace import on engine', `
+        import * as engine from 'engine';
+        export default class extends engine.Element {}
+    `, {
+        error: {
+            message: `test.js: Invalid import. Namespace imports are not allowed on "engine", instead use named imports "import { Element } from 'engine'".`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+
     pluginTest('throw an error if the component class is anonymous', `
         import { Element } from 'engine';
 

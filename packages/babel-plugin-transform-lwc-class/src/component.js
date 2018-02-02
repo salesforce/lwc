@@ -1,12 +1,12 @@
 const { basename } = require('path');
 const commentParser = require('comment-parser');
-const { findClassMethod, findClassProperty, staticClassProperty, getImportSpecifiers } = require('./utils');
-const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const { findClassMethod, findClassProperty, staticClassProperty, getEngineImportSpecifiers } = require('./utils');
+const { LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 
-module.exports = function ({ types: t, }) {
+module.exports = function ({ types: t }) {
     return {
         Program(path, state) {
-            const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
+            const engineImportSpecifiers = getEngineImportSpecifiers(path);
 
             // Store on state local identifiers referencing engine base component
             state.componentBaseClassImports = engineImportSpecifiers.filter(({ name }) => (

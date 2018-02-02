@@ -1,3 +1,5 @@
+const { LWC_PACKAGE_ALIAS } = require('./constants');
+
 function findClassMethod(path, name, properties = {}) {
     path.assertClassBody();
 
@@ -39,24 +41,36 @@ function staticClassProperty(types, name, expression) {
     return classProperty;
 }
 
-function getImportsStatements(path, sourceName) {
+function getEngineImportsStatements(path) {
     const programPath = path.isProgram() ?
         path :
         path.findParent(node => node.isProgram());
 
     return programPath.get('body').filter(node => (
         node.isImportDeclaration() &&
-        node.get('source').isStringLiteral({ value: sourceName })
+        node.get('source').isStringLiteral({ value: LWC_PACKAGE_ALIAS })
     ));
 }
 
-function getImportSpecifiers(path, sourceName) {
-    const engineImports = getImportsStatements(path, sourceName);
+function getEngineImportSpecifiers(path) {
+    const imports = getEngineImportsStatements(path);
 
-    return engineImports.reduce((acc, importStatement) => {
+
+    return imports.reduce((acc, importStatement) => {
         // Flat-map the specifier list for each import statement
         return [...acc, ...importStatement.get('specifiers')];
     }, []).reduce((acc, specifier) => {
+        // Validate engine import specifier
+        if (specifier.isImportNamespaceSpecifier()) {
+            throw specifier.buildCodeFrameError(
+                `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { Element } from '${LWC_PACKAGE_ALIAS}'".`,
+            );
+        } else if (specifier.isImportDefaultSpecifier()) {
+            throw specifier.buildCodeFrameError(
+                `Invalid import. "${LWC_PACKAGE_ALIAS}" doesn't have default export.`,
+            );
+        }
+
         // Get the list of specifiers with their name
         const imported = specifier.get('imported').node.name;
         return [...acc, { name: imported, path: specifier }];
@@ -69,5 +83,5 @@ module.exports = {
     isGetterClassMethod,
     isSetterClassMethod,
     staticClassProperty,
-    getImportSpecifiers,
+    getEngineImportSpecifiers,
 };
