@@ -44,7 +44,9 @@ const hook: Hooks = {
         if (vm.cmpSlots !== oldVNode.data.slotset && !vm.isDirty) {
             markComponentAsDirty(vm);
         }
-        renderVM(vm);
+        if (vm.isDirty) {
+            renderVM(vm);
+        }
     },
     insert(vnode: VNode) {
         const vm = getCustomElementVM(vnode.elm as HTMLElement);
