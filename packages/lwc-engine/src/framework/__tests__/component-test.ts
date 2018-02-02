@@ -168,7 +168,7 @@ describe('component', function() {
 
         it('should be render reactive', function() {
             function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', {}, [$api.d($cmp.validity)])];
+                return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
             }
             class MyComponent extends Element  {
                 state = { value: 0 };
@@ -391,6 +391,7 @@ describe('component', function() {
                 return [$api.h(
                     "section",
                     {
+                        key: 0,
                         style: $cmp.state.customStyle
                     },
                     []
@@ -428,6 +429,7 @@ describe('component', function() {
                 return [$api.h(
                     "section",
                     {
+                        key: 0,
                         style: $cmp.state.customStyle
                     },
                     []
@@ -466,6 +468,7 @@ describe('component', function() {
                 return [$api.h(
                     "section",
                     {
+                        key: 0,
                         style: $cmp.state.customStyle
                     },
                     []
@@ -492,6 +495,7 @@ describe('component', function() {
                 return [$api.h(
                     "section",
                     {
+                        key: 0,
                         style: $cmp.state.customStyle
                     },
                     []

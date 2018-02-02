@@ -99,7 +99,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
         assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
-        assert.isTrue(data.key, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
+        assert.isTrue(('key' in data) || !!data.key, ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`);
         // checking reserved internal data properties
         assert.invariant(data.class === undefined, `vnode.data.class should be undefined when calling h().`);
         assert.isFalse(data.className && data.classMap, `vnode.data.className and vnode.data.classMap ambiguous declaration.`);

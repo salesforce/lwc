@@ -38,7 +38,7 @@ describe('invoker', () => {
         it('should invoke connectedCallback() before any child is inserted into the dom', () => {
             let counter = 0;
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             class MyComponent1 extends Element {
                 connectedCallback() {
@@ -106,7 +106,7 @@ describe('invoker', () => {
             let counter = 0;
             let rcounter = 0;
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             class MyComponent2 extends Element {
                 disconnectedCallback() {
@@ -130,7 +130,7 @@ describe('invoker', () => {
         it('should invoke renderedCallback() sync after every change after all child are inserted', () => {
             let counter = 0;
             function html($api) {
-                return [$api.h('p', {}, [])];
+                return [$api.h('p', { key: 0 }, [])];
             }
             class MyComponent3 extends Element {
                 renderedCallback() {
@@ -175,6 +175,7 @@ describe('invoker', () => {
             function html($api: any, $cmp: any) {
                 return [
                     $api.h('p', {
+                        key: 0,
                         attrs: {
                             title: $cmp.foo
                         }
@@ -247,7 +248,7 @@ describe('invoker', () => {
             }
             function html($api, $cmp, $slotset, $ctx) {
                 return [$api.h(
-                    "section", {}, [$api.c("x-bar", MyComponent2, {})]
+                    "section", { key: 0 }, [$api.c("x-bar", MyComponent2, {})]
                 )];
             }
             class MyComponent1 extends Element {

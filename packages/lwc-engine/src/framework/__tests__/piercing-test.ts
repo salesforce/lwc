@@ -6,7 +6,9 @@ import { createElement } from "../upgrade";
 describe('piercing', function() {
     it('should set property on pierced object successfully', function() {
         function html($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', {
+                key: 0,
+            }, [])];
         }
         class MyComponent extends Element  {
             render() {
@@ -26,7 +28,9 @@ describe('piercing', function() {
 
     it('should delete property on pierced object successfully', function() {
         function html($api) {
-            return [$api.h('div', {}, [])];
+            return [$api.h('div', {
+                key: 0,
+            }, [])];
         }
         class MyComponent extends Element  {
             render() {

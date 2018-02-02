@@ -156,7 +156,7 @@ describe('patch', () => {
 
         it('should rehydrate when state is updated in renderedCallback', function() {
             function html($api, $cmp) {
-                return [$api.h('span', {}, [$api.t($cmp.state.foo)])];
+                return [$api.h('span', { key: 0 }, [$api.t($cmp.state.foo)])];
             }
             class MyComponent extends Element {
                 state = {
