@@ -10,7 +10,7 @@ describe('resolve-lwc-npm-modules', () => {
 
         const lwcModules = lwcResolver.resolveLwcNpmModules(resolverOptions);
         const lwcModuleNames = Object.keys(lwcModules);
-        expect(lwcModuleNames).toHaveLength(3);
-        expect(lwcModuleNames).toContain('alias-fake-package', 'fake-module1', 'fake-module2');
+        expect(lwcModuleNames).toHaveLength(4);
+        expect(lwcModuleNames).toContain('alias-fake-package', 'fake-module1', 'fake-module2', 'other-resource');
     })
 });
