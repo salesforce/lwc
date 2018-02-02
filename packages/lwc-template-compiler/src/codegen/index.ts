@@ -419,7 +419,7 @@ function transform(
             );
         } else {
             // If stand alone element with no user-defined key
-            // member expression
+            // member expression id
             data.push(t.objectProperty(t.identifier('key'), compilerKey));
         }
 
