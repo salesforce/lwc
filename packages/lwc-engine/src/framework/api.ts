@@ -330,10 +330,11 @@ export function k(compilerKey: number, obj: any): number | string | void {
             }
             // Slow path. We get here when element is inside iterator
             // but no key is specified.
-            let objKey = objToKeyMap.get(unwrap(obj));
+            const unwrapped = unwrap(obj);
+            let objKey = objToKeyMap.get(unwrapped);
             if (isUndefined(objKey)) {
                 objKey = globalKey++;
-                objToKeyMap.set(obj, objKey);
+                objToKeyMap.set(unwrapped, objKey);
             }
             return compilerKey + ':' + objKey;
     }
