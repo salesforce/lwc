@@ -3,7 +3,7 @@ const wire = require('./wire');
 const track = require('./track');
 
 const { LWC_PACKAGE_ALIAS, DECORATOR_TYPES } = require('../constants');
-const { getImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
+const { getEngineImportSpecifiers, isClassMethod, isSetterClassMethod, isGetterClassMethod } = require('../utils');
 
 const DECORATOR_TRANSFORMS = [
     api,
@@ -121,7 +121,7 @@ function removeImportSpecifiers(specifiers) {
 module.exports = function decoratorVisitor({ types: t }) {
     return {
         Program(path, state) {
-            const engineImportSpecifiers = getImportSpecifiers(path, LWC_PACKAGE_ALIAS);
+            const engineImportSpecifiers = getEngineImportSpecifiers(path);
             const decoratorImportSpecifiers = engineImportSpecifiers.filter(({ name }) => (
                 isLwcDecoratorName(name)
             ));
