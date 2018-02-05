@@ -38,7 +38,7 @@ class LWCElement implements Component {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vmBeingConstructed);
             assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
-            const { attributeChangedCallback, def: { observedAttrs } } = vmBeingConstructed;
+            const { def: { observedAttrs, attributeChangedCallback } } = vmBeingConstructed;
             if (observedAttrs.length && isUndefined(attributeChangedCallback)) {
                 assert.logError(`${vmBeingConstructed} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
             }
@@ -47,12 +47,7 @@ class LWCElement implements Component {
         const { elm, def } = vm;
         const component = this as Component;
         vm.component = component;
-        // caching all callbacks to match WC semantics
-        vm.connectedCallback = component.connectedCallback;
-        vm.disconnectedCallback = component.disconnectedCallback;
-        vm.renderedCallback = component.renderedCallback;
-        vm.errorCallback = component.errorCallback;
-        vm.attributeChangedCallback = component.attributeChangedCallback;
+        // TODO: eventually the render method should be a static property on the ctor instead
         // catching render method to match other callbacks
         vm.render = component.render;
         // linking elm and its component with VM
