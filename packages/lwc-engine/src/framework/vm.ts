@@ -25,7 +25,7 @@ export interface Slotset {
 }
 
 export interface VMElement extends HTMLElement {
-    readonly [ViewModelReflection]: VM;
+    [ViewModelReflection]: VM;
 }
 
 export interface VM {
@@ -221,7 +221,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         if (!isUndefined(error)) {
             const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
             if (isUndefined(errorBoundaryVm)) {
-                throw error;
+                throw error; // tslint:disable-line
             }
             recoverFromLifecyleError(vm, errorBoundaryVm, error);
 
@@ -272,7 +272,7 @@ function flushRehydrationQueue() {
                 }
                 // rethrowing the original error will break the current tick, but since the next tick is
                 // already scheduled, it should continue patching the rest.
-                throw error;
+                throw error; // tslint:disable-line
             }
             // we only recover if error boundary is present in the hierarchy
             recoverFromLifecyleError(vm, errorBoundaryVm, error);
@@ -335,7 +335,6 @@ export function isNodeOwnedByVM(vm: VM, node: Node): boolean {
         assert.invariant(node instanceof Node, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
         assert.childNode(vm.elm, node, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${vm}`);
     }
-    // @ts-ignore
     return node[OwnerKey] === vm.uid;
 }
 
@@ -347,7 +346,6 @@ export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
     }
     const { elm } = vm;
     // TODO: we need to walk the parent path here as well, in case they passed it via slots multiple times
-    // @ts-ignore
     return node[OwnerKey] === elm[OwnerKey];
 }
 
@@ -373,7 +371,6 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let vm: VM;
 
     while (!isNull(elm)) {
-        // @ts-ignore
         vm = elm[ViewModelReflection];
         if (!isUndefined(vm) && !isUndefined(vm.errorCallback)) {
             return vm;

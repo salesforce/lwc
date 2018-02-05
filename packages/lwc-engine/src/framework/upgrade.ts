@@ -63,7 +63,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
     // Create element with correct tagName
-    const element: VMElement = document.createElement(tagName);
+    const element = (document.createElement(tagName) as VMElement);
     createVM(sel, element);
     // Handle insertion and removal from the DOM
     element[ConnectingSlot] = () => {

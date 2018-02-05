@@ -21,14 +21,14 @@ function updateClass(oldVnode: VNode, vnode: VNode) {
     let name: string;
     oldClass = isUndefined(oldClass) ? EmptyObject : oldClass;
 
-    for (name in oldClass) {
+    for (name in (oldClass as any)) {
         // remove only if it is not in the new class collection and it is not set from within the instance
         if (isUndefined(klass[name])) {
             classList.remove(name);
         }
     }
     for (name in klass) {
-        if (isUndefined(oldClass[name])) {
+        if (isUndefined((oldClass as any)[name])) {
             classList.add(name);
         }
     }

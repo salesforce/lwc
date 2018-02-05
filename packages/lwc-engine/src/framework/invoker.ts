@@ -28,7 +28,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context
-            throw error;
+            throw error; // tslint:disable-line
         }
     }
     return result;
@@ -49,7 +49,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context
-            throw error;
+            throw error; // tslint:disable-line
         }
     }
     return component as Component;
@@ -85,7 +85,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context
-            throw error;
+            throw error; // tslint:disable-line
         }
     }
     return result || [];

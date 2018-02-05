@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf, isUndefined } from "./language";
 
 export type Callback = () => void;
 
@@ -32,11 +32,11 @@ export function addCallbackToNextTick(callback: Callback) {
 }
 
 const CAMEL_REGEX = /-([a-z])/g;
-const attrNameToPropNameMap = create(null);
+const attrNameToPropNameMap: Record<string, string> = create(null);
 
 export function getPropNameFromAttrName(attrName: string): string {
     let propName = attrNameToPropNameMap[attrName];
-    if (!propName && isString(attrName)) {
+    if (isUndefined(propName)) {
         propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
         attrNameToPropNameMap[attrName] = propName;
     }

@@ -29,12 +29,12 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
     } = elm;
 
     let key: string;
-    oldAttrs = oldAttrs || EmptyObject;
+    oldAttrs = isUndefined(oldAttrs) ? EmptyObject : oldAttrs;
 
     // update modified attributes, add new attributes
     for (key in attrs) {
         const cur = attrs[key];
-        const old = oldAttrs[key];
+        const old = (oldAttrs as any)[key];
         if (old !== cur) {
             if (process.env.NODE_ENV !== 'production') {
                 prepareForAttributeMutationFromTemplate(elm, key);

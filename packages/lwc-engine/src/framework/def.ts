@@ -331,12 +331,11 @@ function assertPublicAttributeColission(vm: VM, attrName: string) {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const lowercasedAttrName = isString(attrName) ? attrName.toLocaleLowerCase() : null;
-    const propName = getPropNameFromAttrName(lowercasedAttrName);
+    const propName = isString(attrName) ? getPropNameFromAttrName(attrName.toLocaleLowerCase()) : null;
     const { def: { props: propsConfig } } = vm;
 
-    if (propsConfig && propsConfig[propName]) {
-        assert.logError(`Invalid attribute "${lowercasedAttrName}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+    if (propsConfig && propName && propsConfig[propName]) {
+        assert.logError(`Invalid attribute "${attrName.toLocaleLowerCase()}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
     }
 }
 
@@ -469,7 +468,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
                     msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
                     msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                 }
-                console.error(msg.join('\n'));
+                console.error(msg.join('\n')); // tslint:disable-line
             }
         }
 

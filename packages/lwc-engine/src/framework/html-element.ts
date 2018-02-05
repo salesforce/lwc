@@ -9,6 +9,7 @@ import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
+import { isString } from "./language";
 
 const {
     getAttribute,
@@ -29,6 +30,7 @@ export interface ComposableEvent extends Event {
 
 // This should be as performant as possible, while any initialization should be done lazily
 class LWCElement implements Component {
+    [ViewModelReflection]: VM;
     constructor() {
         if (isNull(vmBeingConstructed)) {
             throw new ReferenceError();
@@ -38,7 +40,7 @@ class LWCElement implements Component {
             assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
             const { attributeChangedCallback, def: { observedAttrs } } = vmBeingConstructed;
             if (observedAttrs.length && isUndefined(attributeChangedCallback)) {
-                console.warn(`${vmBeingConstructed} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
+                assert.logError(`${vmBeingConstructed} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
             }
         }
         const vm = vmBeingConstructed;
@@ -106,23 +108,24 @@ class LWCElement implements Component {
         }
         removeComponentEventListener(vm, type, listener);
     }
-    getAttribute(attrName: string): string | null {
+    getAttribute(attrName: string | null | undefined): string | null {
         const vm = getCustomElementVM(this);
 
         // logging errors for experimentals and special attributes
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
-
-            const propName = getPropNameFromAttrName(attrName);
-            const { def: { props: publicPropsConfig } } = vm;
-            if (publicPropsConfig[propName]) {
-                throw new ReferenceError(`Attribute "${attrName}" corresponds to public property ${propName} from ${vm}. Instead use \`this.${propName}\`. Only use \`getAttribute()\` to access global HTML attributes.`);
-            } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
-                const { error, experimental } = GlobalHTMLProperties[propName];
-                if (error) {
-                    assert.logError(error);
-                } else if (experimental) {
-                    assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
+            if (isString(attrName)) {
+                const propName = getPropNameFromAttrName(attrName);
+                const { def: { props: publicPropsConfig } } = vm;
+                if (propName && publicPropsConfig[propName]) {
+                    throw new ReferenceError(`Attribute "${attrName}" corresponds to public property ${propName} from ${vm}. Instead use \`this.${propName}\`. Only use \`getAttribute()\` to access global HTML attributes.`);
+                } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
+                    const { error, experimental } = GlobalHTMLProperties[propName];
+                    if (error) {
+                        assert.logError(error);
+                    } else if (experimental) {
+                        assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
+                    }
                 }
             }
         }
@@ -260,7 +263,7 @@ if (process.env.NODE_ENV !== 'production') {
                         msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
                     }
                 }
-                console.log(msg.join('\n'));
+                console.log(msg.join('\n')); // tslint:disable-line
                 return; // explicit undefined
             },
             enumerable: false,

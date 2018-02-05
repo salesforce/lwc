@@ -3,7 +3,7 @@ import { Template } from "./template";
 const TopLevelContextSymbol = Symbol();
 
 export interface Context {
-    readonly [TopLevelContextSymbol]?: boolean;
+    [TopLevelContextSymbol]?: boolean;
     tplToken?: string;
     tplCache?: Template | undefined;
     [key: string]: any;
