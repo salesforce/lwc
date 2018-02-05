@@ -34,11 +34,11 @@ declare module 'engine' {
          */
         constructor();
         /**
-         * Called when the component is inserted in a document
+         * Called when the element is inserted into a document
          */
         connectedCallback(): void;
         /**
-         * Called when the component is removed from a document
+         * Called when the element is removed from a document
          */
         disconnectedCallback(): void;
         /**
@@ -46,9 +46,13 @@ declare module 'engine' {
          */
         renderedCallback(): void;
         /**
-         * Called when an attribute is changed, appened, removed or replaced on the element
+         * Called when an attribute is changed, appended, removed or replaced on the element
          */
         attributeChangedCallback(attributeName: string, oldValue: any, newValue: any): void;
+        /**
+         * Called when a descendant component throws an error in one of its lifecycle hooks
+         */
+        errorCallback(error: any, stack: string): void;
         /**
          * Specifies the observed attributes
          */
