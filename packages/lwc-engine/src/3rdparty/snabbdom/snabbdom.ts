@@ -1,6 +1,6 @@
 /* global Node */
 import {Hooks, InsertHook, VNode, VNodes, Key, VText, VComment,
-        Module, VElement, VFragment, DOMAPI, PreHook, CreateHook, UpdateHook, DestroyHook, RemoveHook, PostHook} from 'snabbdom/types';
+        Module, VElement, VFragment, DOMAPI, PreHook, CreateHook, UpdateHook, DestroyHook, RemoveHook, PostHook} from './types';
 
 const { isArray } = Array;
 
@@ -37,7 +37,7 @@ function defaultCompareFn(vnode1: VNode, vnode2: VNode): boolean {
 }
 
 function isVNode(vnode: any): vnode is VNode {
-  return vnode != null && vnode !== undefined;
+  return vnode != null;
 }
 
 function isElementVNode(vnode: VNode): vnode is VElement {
