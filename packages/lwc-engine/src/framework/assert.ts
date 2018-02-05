@@ -21,7 +21,7 @@ const assert = {
         }
     },
     vnode(vnode: VNode) {
-        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode, `${vnode} is not a vnode.`);
+        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode && "nt" in vnode, `${vnode} is not a vnode.`);
     },
     vm(vm: VM) {
         assert.isTrue(vm && "component" in vm, `${vm} is not a vm.`);
