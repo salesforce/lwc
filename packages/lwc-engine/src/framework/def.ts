@@ -24,6 +24,7 @@ import {
     isObject,
     isUndefined,
     ArraySlice,
+    isNull,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
@@ -68,9 +69,14 @@ export interface ComponentDef {
     methods: MethodDef;
     observedAttrs: ObservedAttrsDef;
     descriptors: PropertyDescriptorMap;
+    connectedCallback?: () => void;
+    disconnectedCallback?: () => void;
+    renderedCallback?: () => void;
+    errorCallback?: ErrorCallback;
+    attributeChangedCallback?: AttributeChangedCallback;
 }
 import {
-    ComponentConstructor, getCustomElementComponent
+    ComponentConstructor, getCustomElementComponent, ErrorCallback, AttributeChangedCallback
  } from './component';
 
 export const ViewModelReflection = Symbol();
@@ -179,12 +185,24 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         }
     }
 
+    let {
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+        attributeChangedCallback,
+    } = proto;
     const superProto = getPrototypeOf(Ctor);
-    if (superProto !== BaseElement) {
-        const superDef = getComponentDef(superProto);
+    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
+    if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
         wire = (superDef.wire || wire) ? assign(create(null), superDef.wire, wire) : undefined;
+        connectedCallback = connectedCallback || superDef.connectedCallback;
+        disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
+        renderedCallback = renderedCallback || superDef.renderedCallback;
+        errorCallback  = errorCallback || superDef.errorCallback;
+        attributeChangedCallback = attributeChangedCallback || superDef.attributeChangedCallback;
     }
 
     const descriptors = createDescriptorMap(props, methods);
@@ -197,6 +215,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         methods,
         observedAttrs,
         descriptors,
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+        attributeChangedCallback,
     };
 
     if (process.env.NODE_ENV !== 'production') {

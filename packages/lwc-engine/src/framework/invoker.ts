@@ -92,7 +92,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
 }
 
 export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { attributeChangedCallback } = vm;
+    const { attributeChangedCallback } = vm.def;
     if (isUndefined(attributeChangedCallback)) { return; }
     invokeComponentCallback(vm, attributeChangedCallback, [attrName, oldValue, newValue]);
 }

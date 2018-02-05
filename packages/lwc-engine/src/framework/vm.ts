@@ -45,11 +45,6 @@ export interface VM {
     cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
     render?: () => void | Template;
-    connectedCallback?: () => void;
-    disconnectedCallback?: () => void;
-    renderedCallback?: () => void;
-    errorCallback?: (error: any, stack: string) => void;
-    attributeChangedCallback?: (attrName: string, oldValue: any, newValue: any) => void;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
@@ -74,7 +69,7 @@ export function addInsertionIndex(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
-    const { connectedCallback } = vm;
+    const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         invokeComponentCallback(vm, connectedCallback);
     }
@@ -90,7 +85,7 @@ export function removeInsertionIndex(vm: VM) {
     if (disconnected) {
         invokeServiceHook(vm, disconnected);
     }
-    const { disconnectedCallback } = vm;
+    const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         invokeComponentCallback(vm, disconnectedCallback);
     }
@@ -242,7 +237,7 @@ function processPostPatchCallbacks(vm: VM) {
     if (rendered) {
         invokeServiceHook(vm, rendered);
     }
-    const { renderedCallback } = vm;
+    const { renderedCallback } = vm.def;
     if (!isUndefined(renderedCallback)) {
         invokeComponentCallback(vm, renderedCallback);
     }
@@ -288,7 +283,7 @@ function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any)
         error.wcStack = getComponentStack(failedVm);
     }
     resetShadowRoot(failedVm); // remove offenders
-    const { errorCallback } = errorBoundaryVm;
+    const { errorCallback } = errorBoundaryVm.def;
     // error boundaries must have an ErrorCallback
     invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
 }
@@ -372,7 +367,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
 
     while (!isNull(elm)) {
         vm = elm[ViewModelReflection];
-        if (!isUndefined(vm) && !isUndefined(vm.errorCallback)) {
+        if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
         // TODO: if shadowDOM start preventing this walking process, we will
