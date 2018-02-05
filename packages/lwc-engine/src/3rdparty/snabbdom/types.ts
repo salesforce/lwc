@@ -14,22 +14,22 @@ export interface DOMAPI {
 
 // import {AttachData} from './helpers/attachto'
 // import {VNodeStyle} from './modules/style'
-  export type VNodeStyle = Record<string, string> & {
-    delayed?: Record<string, string>
-    remove?: Record<string, string>
-  }
+export type VNodeStyle = Record<string, string> & {
+  delayed?: Record<string, string>
+  remove?: Record<string, string>
+};
 // import {On} from './modules/eventlisteners'
-  export type On = {
-    [N in keyof HTMLElementEventMap]?: (ev: HTMLElementEventMap[N]) => void
-  } & {
-    [event: string]: EventListener
-  };
+export type On = {
+  [N in keyof HTMLElementEventMap]?: (ev: HTMLElementEventMap[N]) => void
+} & {
+  [event: string]: EventListener
+};
 // import {Attrs} from './modules/attributes'
-  export type Attrs = Record<string, string | number | boolean>
+export type Attrs = Record<string, string | number | boolean>;
 // import {Classes} from './modules/class'
-  export type Classes = Record<string, boolean>
+export type Classes = Record<string, boolean>;
 // import {Props} from './modules/props'
-  export type Props = Record<string, any>;
+export type Props = Record<string, any>;
 // import {Dataset} from './modules/dataset'
 // import {Hero} from './modules/hero'
 
