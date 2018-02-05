@@ -1,20 +1,19 @@
 # LWC Performance Timing
 
-> TODO: add information about the stage of the proposal.
+## Status
 
-## Context
+_first draft_
 
-**Challenges:**
+## Goals
 
-* For people that doesn't have an extended knowledge of Raptor rendering lifecycle, it can be hard to read and analyse performance profiles
-* Browsers like IE11 doesn't offer the capability to view the generated profile as a flamechart. It's requires to put markers in the components code to identify potential performance bottlenecks.
-* Measuring programatically where we spend time rendering a component tree, requires to parser to parse chrome logs / timeline to retrieve timing information.
+* Provide better tooling to speedup a LWC based application by surfacing performance timing information about the engine and the components.
+* Allow programmatic access to the timing information for automated performance testing.
+* Provide an equivalent support on all the supported browsers.
 
-**Goals:**
+## Challenges
 
-* Improve performance investigation productivity.
-* Fill the gap between the different browsers.
-* Allow programatic access to the timing information for automated performance test.
+* It can be hard to analyse performance profile of LWC based applications. Reading the call stack and understanding the why a component get rendered requires a deep knowledge of LWC lifecycle and rendering.
+* Browsers like IE11 doesn't offer the capability to view the generated performance profile as a flamechart. In order to optimize on such browser, markers should be added to component code. While this approach works well to measure user-land code, it doesn't give information of the engine and rendering performance.
 
 ## Existing implementations
 
@@ -43,16 +42,30 @@ Before releasing the timing marks, React offered the capability to introspect pe
     * `Perf.printOperations(measurements)`: print time for DOM operations
     * `Perf.printDOM(measurements)`: print generated DOM
 
+**Observed lifecycle hooks:** `render` and sum of all the lifecycle hooks
+**Implementation**: [ReactPerf.js](https://github.com/facebook/react/blob/d6e70586b77d4d52c4046b007b8a619e4463058c/src/renderers/shared/ReactPerf.js)
+
 You can find more detail in the React documentation: [performance tools](https://reactjs.org/docs/perf.html)
 
 ### Vue
 
-After React anouncement, In version `2.2.3`, Vue added support for markers ([config](https://vuejs.org/v2/api/#performance)). This functionality is also disabled by default, and can be turned on using a global config flag `Vue.config.performance = true;` in `DEV` mode. Originally the functionality was enabled by default, it then get disabled because of the performance impact [issue#5174](https://github.com/vuejs/vue/issues/5174). See example at: https://l4xqw3qn5z.codesandbox.io/
+After React announcement, In version `2.2.3`, Vue added support for markers ([config](https://vuejs.org/v2/api/#performance)). This functionality is also disabled by default, and can be turned on using a global config flag `Vue.config.performance = true;` in `DEV` mode. Originally the functionality was enabled by default, it then get disabled because of the performance impact [issue#5174](https://github.com/vuejs/vue/issues/5174). See example at: https://l4xqw3qn5z.codesandbox.io/
 
 **Observed lifecycle hooks:** `init`, `render`, `patch`
 **Implementation:** [perf.js](https://github.com/vuejs/vue/blob/master/src/core/util/perf.js)
 
-### Implementation
+## Proposal
+
+### What?
+
+In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `render`, `attributeChangedCallback`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
+
+### Where?
+In order to put the measurement in place around the following hooks, it would require to the marks directly in the engine. Using services would have been preferable in order to break the coupling. Since the current service API doesn't expose pre/post hooks for each life cycle event, it make it impossible to measure the actual lifecycle event duration.
+
+### How?
+
+#### Measurement
 
 In both framework, the timing marks is based on [`performance.mark`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark) and [`performance.measure`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/measure). The following snippet is extracted from Vue implementation:
 
@@ -69,21 +82,40 @@ const measure = (name, startTag, endTag) => {
 };
 
 /** init.js */
-mark('vue-perf-start:init');
+mark('lwc-perf-start:render');
 
-// ... Do the init work ...
+// ... Do the render work ...
 
-mark('vue-perf-end:init');
-measure('init', 'vue-perf-start:init', 'vue-perf-end:init');
+mark('lwc-perf-end:render');
+measure('render', 'lwc-perf-start:render', 'lwc-perf-end:render');
 ```
 
-The Chrome devetool timeline surface the `performance.measure`s as a flamechart above the javascript callstack. Firefox and Safari doesn't display the performance measures in the timeline. IE11 and Edge shows markers in a waterfall manner in their timeline.
+The Chrome devtool timeline surface the `performance.measure`s as a flamechart above the javascript callstack. Firefox and Safari doesn't display the performance measures in the timeline. IE11 and Edge shows markers in a waterfall manner in their timeline.
 
-**Consuming programatically markers:**
+Adding performance `marks` and `measures` has a visible impact on performance. Because of the overhead on IE11, **the performance markers should be disabled by default** and only turned on when requested.
 
-The `PerformanceObserver` API is used to observe performance events. The `PerformanceObserver` constructor accepts a callback methods invoked when a performance event is recorded. An instance of the `PerformanceObserver` start listening to performance events after calling the `observe` method with a list of [entry type](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry/entryType) to listen. 
+| # marks | Chrome | Firefox | Safari | IE11   |
+|---------|--------|---------|--------|--------|
+| 1000    | 3.5    | 1.8     | 2.3    | 15.2   |
+| 100000  | 352.5  | 166.3   | 85.5   | 1454.6 |
 
-Even if this API is not available in IE11, it's possible to create a polyfill specifically for `performance.mark` and `performance.measure`. 
+> Test: https://jsfiddle.net/hd4mzwwo/
+
+#### Enablement
+
+Turning on the performance timing via a global config appears to be preferable. The main config advantage of the global config is that it can be turned on programmatically (extension, tools, external system).
+
+```js
+import { config } from 'engine';
+
+config.performanceTiming = true;
+```
+
+#### Consumption
+
+The `PerformanceObserver` API is used to observe performance events. The `PerformanceObserver` constructor accepts a callback methods invoked when a performance event is recorded. An instance of the `PerformanceObserver` start listening to performance events after calling the `observe` method with a list of [entry type](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceEntry/entryType) to listen.
+
+Even if this API is not available in IE11, it's possible to create a polyfill specifically for `performance.mark` and `performance.measure`.
 
 ```js
 const observer = new PerformanceObserver(list => {
@@ -95,46 +127,4 @@ observer.observe({
 });
 ```
 
-After running some tests, it appears the `PerformanceObserver` doesn't have a maximum buffer size.
-
-**Measuring performance impact:**
-
-Test: https://jsfiddle.net/hd4mzwwo/
-
-Adding performance `marks` and `measures` has a visible impact on performance
-
-=> Chrome
-
-1 0
-10 0
-100 0.4000000189989805
-1000 3.499999991618097
-10000 36.20000003138557
-100000 352.5000000372529
-
-=> Firefox
-
-1 0.040000000000020464
-10 0.19999999999998863
-100 0.19999999999998863
-1000 1.8199999999999932
-10000 16.54000000000002
-100000 166.28000000000003
-
-=> Safari
-
-1 0 
-10 0 
-100 0 
-1000 2 
-10000 9.999999999999943 
-100000 85 
-
-=> IE11
-
-1 0.036655870291014025
-10 0.2664881770155887
-100 1.3628652574195143
-1000 15.220250462230524
-10000 145.58098821293836
-100000 1454.5833767094466
+**Note:** After running some tests, it appears the `PerformanceObserver` doesn't have a maximum buffer size.
