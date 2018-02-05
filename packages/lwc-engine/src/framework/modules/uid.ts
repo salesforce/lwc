@@ -7,7 +7,6 @@ function updateUID(oldVnode: VNode, vnode: VNode) {
     if (uid === oldUid) {
         return;
     }
-    // @ts-ignore
     (vnode.elm as Element)[OwnerKey] = uid;
 }
 

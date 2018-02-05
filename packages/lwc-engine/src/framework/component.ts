@@ -19,7 +19,7 @@ import { EmptyObject } from "./utils";
 export type ErrorCallback = (error: any, stack: string) => void;
 export type AttributeChangedCallback = (attrName: string, oldValue: any, newValue: any) => void;
 export interface Component {
-    readonly [ViewModelReflection]: VM;
+    [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
     readonly root: ShadowRoot;
     render?: () => void | Template;

@@ -7,6 +7,7 @@ import { EmptyObject } from "../utils";
 import { isBeingConstructed } from "../component";
 import { VM, VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
+import { isUndefined } from "../language";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
@@ -24,7 +25,7 @@ export function prepareForPropUpdate(vm: VM) {
 }
 
 // TODO: how to allow symbols as property keys?
-export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
         get(this: VMElement): any {
             const vm = getCustomElementVM(this);
@@ -76,11 +77,11 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
             }
         },
-        enumerable: descriptor ? descriptor.enumerable : true,
+        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
     });
 }
 
-export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     const { get, set, enumerable } = descriptor || EmptyObject;
     defineProperty(proto, key, {
         get(this: VMElement): any {

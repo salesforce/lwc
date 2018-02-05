@@ -61,7 +61,7 @@ function validateSlots(vm: VM, html: any) {
             assert.isTrue(isArray(cmpSlots[slotName]) && cmpSlots[slotName].length > 0, `Slots can only be set to a non-empty array, instead received ${toString(cmpSlots[slotName])} for slot ${slotName} in ${vm}.`);
             if (ArrayIndexOf.call(slots, slotName) === -1) {
                 // TODO: this should never really happen because the compiler should always validate
-                console.warn(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
+                assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);
             }
         }
     }
@@ -74,7 +74,7 @@ function validateFields(vm: VM, html: any) {
         const { ids = [] } = html;
         ids.forEach((propName: string) => {
             if (!(propName in component)) {
-                console.warn(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
+                assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
             } else if (hasOwnProperty.call(component, propName)) {
                 if (process.env.NODE_ENV !== 'production') {
                     assert.fail(`${component}'s template is accessing \`this.${toString(propName)}\` directly, which is considered a private field. Instead access it via a getter or make it reactive by moving it to \`this.state.${toString(propName)}\`.`);

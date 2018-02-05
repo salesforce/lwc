@@ -40,7 +40,7 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
 
         for (name in newStyle) {
             const cur = newStyle[name];
-            if (cur !== oldStyle[name]) {
+            if (cur !== (oldStyle as any)[name]) {
                 if (name.charCodeAt(0) === DashCharCode && name.charCodeAt(1) === DashCharCode) {
                     // if the name is prefied with --, it will be considered a variable, and setProperty() is needed
                     style.setProperty(name, cur);

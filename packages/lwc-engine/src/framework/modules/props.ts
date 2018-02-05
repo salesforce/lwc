@@ -28,7 +28,7 @@ function update(oldVnode: VNode, vnode: VNode) {
 
     for (key in props) {
         cur = props[key];
-        old = oldProps[key];
+        old = (oldProps as any)[key];
 
         if (process.env.NODE_ENV !== 'production') {
             if (old !== cur && !(key in elm)) {
@@ -40,7 +40,7 @@ function update(oldVnode: VNode, vnode: VNode) {
         if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
             if (process.env.NODE_ENV !== 'production') {
                 if (elm[key] === cur && old !== undefined) {
-                    console.warn(`Unneccessary update of property "${key}" in ${elm}.`);
+                    console.warn(`Unneccessary update of property "${key}" in ${elm}.`); // tslint:disable-line
                 }
             }
             if (!isUndefined(vm)) {

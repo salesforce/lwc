@@ -2,7 +2,7 @@ import assert from "./assert";
 import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { getMapFromClassName, EmptyArray } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, VM, VMElement } from "./vm";
 import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty } from "./component";
 
@@ -55,7 +55,7 @@ const hook: Hooks = {
         renderVM(vm);
     },
     create(oldVNode: VNode, vnode: VNode) {
-        createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
+        createVM(vnode.sel as string, vnode.elm as VMElement, vnode.data.slotset);
     },
     remove(vnode: VNode, removeCallback) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));
@@ -72,8 +72,8 @@ function addNS(vnode: VElement) {
     // TODO: review why `sel` equal `foreignObject` should get this `ns`
     data.ns = NamespaceAttributeForSVG;
     if (isArray(children) && sel !== 'foreignObject') {
-        for (let i = 0, n = children.length; i < n; ++i) {
-            const childNode = children[i];
+        for (let j = 0, n = children.length; j < n; ++j) {
+            const childNode = children[j];
             if (childNode != null && isVElement(childNode)) {
                 addNS(childNode);
             }
@@ -119,7 +119,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
     data.style = styleMap || (style && style + '');
     data.token = getCurrentTplToken();
     data.uid = getCurrentOwnerId();
-    let text, elm;
+    let text, elm; // tslint:disable-line
     const vnode: VElement = {
         nt: ELEMENT_NODE,
         tag: sel,
@@ -163,7 +163,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData): VEl
 
     // hack to allow component authors to force the usage of the "is" attribute in their components
     const { forceTagName } = Ctor;
-    let tag = sel, text, elm;
+    let tag = sel, text, elm; // tslint:disable-line
     if (!isUndefined(attrs) && !isUndefined(attrs.is)) {
         tag = sel;
         sel = attrs.is as string;
@@ -203,10 +203,8 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        // @ts-ignore
         assert.isFalse(isUndefined(iterable[SymbolIterator]), `Invalid template iteration for value \`${iterable}\` in ${vmBeingRendered}, it requires an array-like object, not \`null\` or \`undefined\`.`);
     }
-    // @ts-ignore
     const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
@@ -214,7 +212,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     }
 
     let next = iterator.next();
-    let i = 0;
+    let j = 0;
     let { value, done: last } = next;
     while (last === false) {
         // implementing a look-back-approach because we need to know if the element is the last
@@ -222,7 +220,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         last = next.done;
 
         // template factory logic based on the previous collected value
-        const vnode = factory(value, i, i === 0, last);
+        const vnode = factory(value, j, j === 0, last);
         if (isArray(vnode)) {
             ArrayPush.apply(list, vnode);
         } else {
@@ -240,7 +238,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         }
 
         // preparing next value
-        i += 1;
+        j += 1;
         value = next.value;
     }
     return list;
@@ -255,8 +253,8 @@ export function f(items: any[]): any[] {
     }
     const len = items.length;
     const flattened: Array<VNode|null|number|string> = [];
-    for (let i = 0; i < len; i += 1) {
-        const item = items[i];
+    for (let j = 0; j < len; j += 1) {
+        const item = items[j];
         if (isArray(item)) {
             ArrayPush.apply(flattened, item);
         } else {
@@ -268,7 +266,7 @@ export function f(items: any[]): any[] {
 
 // [t]ext node
 export function t(text: string): VText {
-    let sel, data = {}, children, key, elm;
+    let sel, data = {}, children, key, elm; // tslint:disable-line
     return {
         nt: TEXT_NODE,
         sel,
@@ -281,7 +279,7 @@ export function t(text: string): VText {
 }
 
 export function p(text: string): VComment {
-    let sel = '!', data = {}, children, key, elm;
+    let sel = '!', data = {}, children, key, elm; // tslint:disable-line
     return {
         nt: COMMENT_NODE,
         sel,

@@ -14,12 +14,12 @@ import { Replicable, Membrane } from "./membrane";
 import { TargetSlot } from './membrane';
 const { querySelector, querySelectorAll } = Element.prototype;
 
-function getLinkedElement(root: Root): HTMLElement {
+function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
 }
 
 export interface ShadowRoot {
-    readonly [ViewModelReflection]: VM;
+    [ViewModelReflection]: VM;
     readonly mode: string;
     readonly innerHTML: string;
     readonly host: Component;
@@ -53,6 +53,7 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
 }
 
 export class Root implements ShadowRoot {
+    [ViewModelReflection]: VM;
     constructor(vm: VM) {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);

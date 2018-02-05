@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { isArray, isObject, defineProperty } from "../language";
+import { isArray, isObject, defineProperty, isUndefined } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { subscribeToSetHook, notifyListeners } from "../watcher";
@@ -14,7 +14,7 @@ export default function track() {
 }
 
 // TODO: how to allow symbols as property keys?
-export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
         get(this: VMElement): any {
             const vm = getCustomElementVM(this);
@@ -52,7 +52,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 }
             }
         },
-        enumerable: descriptor ? descriptor.enumerable : true,
+        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
         configurable: false,
     });
 }
