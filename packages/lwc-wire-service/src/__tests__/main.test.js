@@ -28,5 +28,10 @@ describe("main.js", () => {
                 disconnected: expect.any(Function)
             }));
         });
+        it("allows wire service to addWireAdapter", () => {
+            const register = jest.fn();
+            const wireService = registerWireService(register, mockAdapters);
+            expect(wireService.addWireAdapter).toBeDefined();
+        });
     });
 });

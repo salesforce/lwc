@@ -42,4 +42,10 @@ const wireService = {
 export default function registerWireService(register, ...adapterGenerators) {
     setWireAdapters(adapterGenerators);
     register(wireService);
+
+    return {
+        addWireAdapter: (adapter) => {
+            ADAPTERS.set(adapter.name, adapter);
+        }
+    };
 }
