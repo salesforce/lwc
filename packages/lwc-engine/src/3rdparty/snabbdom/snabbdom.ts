@@ -165,9 +165,9 @@ export function init(modules: Array<Partial<Module>>, api: DOMAPI,
       return;
     }
     for (j = 0; j < children.length; ++j) {
-      i = children[j];
-      if (!isTextVNode(i)) {
-        invokeDestroyHook(i);
+      const n = children[j];
+      if (isVNode(n) && !isTextVNode(n)) {
+        invokeDestroyHook(n);
       }
     }
   }
