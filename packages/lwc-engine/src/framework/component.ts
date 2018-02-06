@@ -8,7 +8,7 @@ import {
 } from "./invoker";
 import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
 import { invokeServiceHook, Services } from "./services";
-import { pierce } from "./piercing";
+import { pierce, piercingHook } from "./piercing";
 import { getComponentDef } from './def';
 
 /*eslint-disable*/
@@ -163,7 +163,9 @@ export function dispatchComponentEvent(vm: VM, event: Event): boolean {
         uninterrupted = false;
         stopImmediatePropagation.call(this);
     }
-    const e = pierce(vm, event);
+    // Pierce event so locker service has a chance to wrap
+    pierce(vm, event);
+    const e = piercingHook(vm.membrane, component, "Event", event);
     for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
         // TODO: only if the event is `composed` it can be dispatched
         invokeComponentCallback(vm, handlers[i], component, [e]);
