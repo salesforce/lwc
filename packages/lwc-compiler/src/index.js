@@ -100,7 +100,8 @@ export function transformBundle(src, options) {
         const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
         const rollupMinify = minifyPlugin(options);
         const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
-        const result = rollupMinify.transformBundle(resultReplace.code);
+        const result = rollupMinify.transformBundle(resultReplace ? resultReplace.code : src);
+
         src = result.code;
     }
 
