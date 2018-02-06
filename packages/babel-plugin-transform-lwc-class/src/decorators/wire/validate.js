@@ -33,7 +33,8 @@ function validateWireParameters(path) {
 function validateUsageWithOtherDecorators(path, decorators) {
     decorators.forEach(decorator => {
         if (path !== decorator.path
-            && decorator.name === WIRE_DECORATOR) {
+            && decorator.name === WIRE_DECORATOR
+            && decorator.path.parentPath.node === path.parentPath.node) {
             throw path.buildCodeFrameError('Method or property can only have 1 @wire decorator');
         }
         if ((decorator.name === API_DECORATOR || decorator.name === TRACK_DECORATOR)
