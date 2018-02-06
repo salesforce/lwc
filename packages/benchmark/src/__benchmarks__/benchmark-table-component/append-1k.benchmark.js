@@ -1,16 +1,15 @@
 import { createElement } from 'engine';
-import Table from 'benchmark-table';
+import Table from 'benchmark-table-component';
+
 import { Store } from '../../table-store';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
-const tableName = 'benchmark-table';
-
-benchmark(`${tableName}/clear/1k`, () => {
+benchmark(`benchmark-table-component/append/1k`, () => {
     let tableElement;
     let store;
 
     before(async () => {
-        tableElement = createElement(tableName, { is: Table });
+        tableElement = createElement('benchmark-table-component', { is: Table });
         await insertTableComponent(tableElement);
 
         store = new Store();
@@ -19,7 +18,8 @@ benchmark(`${tableName}/clear/1k`, () => {
     });
 
     run(() => {
-        tableElement.rows = [];
+        store.add();
+        tableElement.rows = store.data;
     });
 
     after(() => {

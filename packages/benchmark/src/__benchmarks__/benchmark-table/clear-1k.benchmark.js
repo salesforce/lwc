@@ -1,16 +1,15 @@
 import { createElement } from 'engine';
 import Table from 'benchmark-table';
+
 import { Store } from '../../table-store';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
-const tableName = 'benchmark-table';
-
-benchmark(`${tableName}/update-10th/1k`, () => {
+benchmark(`benchmark-table/clear/1k`, () => {
     let tableElement;
     let store;
 
     before(async () => {
-        tableElement = createElement(tableName, { is: Table });
+        tableElement = createElement('benchmark-table', { is: Table });
         await insertTableComponent(tableElement);
 
         store = new Store();
@@ -19,8 +18,7 @@ benchmark(`${tableName}/update-10th/1k`, () => {
     });
 
     run(() => {
-        store.update();
-        tableElement.rows = store.data;
+        tableElement.rows = [];
     });
 
     after(() => {

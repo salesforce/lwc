@@ -1,16 +1,15 @@
 import { createElement } from 'engine';
 import Table from 'benchmark-table';
+
 import { Store } from '../../table-store';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
-const tableName = 'benchmark-table';
-
-benchmark(`${tableName}/add/1k`, () => {
+benchmark(`benchmark-table/append/1k`, () => {
     let tableElement;
     let store;
 
     before(async () => {
-        tableElement = createElement(tableName, { is: Table });
+        tableElement = createElement('benchmark-table', { is: Table });
         await insertTableComponent(tableElement);
 
         store = new Store();

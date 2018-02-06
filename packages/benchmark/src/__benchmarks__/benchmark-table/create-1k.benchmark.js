@@ -1,14 +1,14 @@
 import { createElement } from 'engine';
 import Table from 'benchmark-table';
+
 import { Store } from '../../table-store';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
-const tableName = 'benchmark-table';
-
-benchmark(`${tableName}/create/1k`, () => {
+benchmark(`benchmark-table/create/1k`, () => {
     let tableElement;
+
     before(() => {
-        tableElement = createElement(tableName, { is: Table });
+        tableElement = createElement('benchmark-table', { is: Table });
         return insertTableComponent(tableElement);
     });
 
