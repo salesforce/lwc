@@ -1,6 +1,6 @@
 {
   "name": "benchmark",
-  "version": "0.17.13",
+  "version": "0.17.14",
   "private": true,
   "scripts": {
     "clean": "rimraf dist/",
@@ -18,7 +18,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "html-webpack-plugin": "^2.30.1",
-    "lwc-compiler": "0.17.13",
+    "lwc-compiler": "0.17.14",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "pem": "^1.12.3",
@@ -32,7 +32,7 @@
     "@best/store-aws": "0.0.7",
     "best-cli": "0.0.7",
     "isomorphic-fetch": "^2.2.1",
-    "lwc-engine": "0.17.13",
-    "rollup-plugin-lwc-compiler": "0.17.13"
+    "lwc-engine": "0.17.14",
+    "rollup-plugin-lwc-compiler": "0.17.14"
   }
 }
