@@ -33,9 +33,7 @@ function mergeMetadata(metadata) {
 export default function bundle(entry, options = {}) {
     const environment = options.env.NODE_ENV || process.env.NODE_ENV;
     const plugins = [
-        rollupPluginReplace({
-            'process.env.NODE_ENV': JSON.stringify(environment),
-        }),
+        rollupPluginReplace({ 'process.env.NODE_ENV': JSON.stringify(environment) }),
         rollupModuleResolver(options),
         rollupTransfrom(options)
     ];

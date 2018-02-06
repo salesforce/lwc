@@ -1,7 +1,7 @@
 {
-  "name": "raptor",
+  "name": "lwc",
   "private": true,
-  "description": "Raptor",
+  "description": "Lightning Web Components",
   "scripts": {
     "prepare": "yarn run build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
@@ -15,12 +15,13 @@
     "build:engine": "lerna run build --scope lwc-engine",
     "start": "yarn build:artifacts && lerna run build --scope lwc-integration && lerna run start --scope lwc-integration",
     "release": "yarn prepare && lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' && yarn changelog",
-    "release:canary": "yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary --yes",
+    "release:beta": "yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary=beta --yes",
     "release:internal": "yarn prepare && lerna publish --exact --force-publish=* --skip-git --repo-version `node -pe \"require('./lerna.json').version\"` --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
-    "release:internalcanary": "yarn prepare && lerna publish --canary --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
+    "release:internalbeta": "yarn prepare && lerna publish --canary=beta --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
     "changelog": "yarn changelog:generate && yarn changelog:publish",
     "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "changelog:publish": "git add CHANGELOG.md && git commit -m 'docs(changelog): publish release changelog' && git push"
+
   },
   "repository": {
     "type": "git",
