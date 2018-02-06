@@ -59,7 +59,7 @@ After React announcement, In version `2.2.3`, Vue added support for markers ([co
 
 ### What?
 
-In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `render`, `attributeChangedCallback`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
+In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `render`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
 
 ### Where?
 In order to put the measurement in place around the following hooks, it would require to put marks directly in the engine. Using services would have been preferable in order to break the coupling. Since the current service API doesn't expose pre/post hooks for each life cycle event, it make it impossible to measure the actual lifecycle event duration.
