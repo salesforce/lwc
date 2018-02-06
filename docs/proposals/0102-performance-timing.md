@@ -2,7 +2,8 @@
 
 ## Status
 
-_first draft_
+- Start Date: 2018-02-05
+- RFC PR: TBD
 
 ## Goals
 
