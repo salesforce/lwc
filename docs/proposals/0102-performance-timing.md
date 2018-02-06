@@ -13,8 +13,8 @@
 
 ## Challenges
 
-* It can be hard to analyse performance profile of LWC based applications. Reading the call stack and understanding the why a component get rendered requires a deep knowledge of LWC lifecycle and rendering.
-* Browsers like IE11 doesn't offer the capability to view the generated performance profile as a flamechart. In order to optimize on such browser, markers should be added to component code. While this approach works well to measure user-land code, it doesn't give information of the engine and rendering performance.
+* It can be hard to analyse performance profile of LWC based applications. Reading the call stack and understanding why a component get rendered requires a deep knowledge of LWC lifecycle and rendering.
+* Browsers like IE11 don't offer the capability to view the generated performance profile as a flamechart. In order to optimize on such browser, markers should be added to component code. While this approach works well to measure user-land code, it doesn't give information of the engine and rendering performance.
 
 ## Existing implementations
 
@@ -62,7 +62,7 @@ After React announcement, In version `2.2.3`, Vue added support for markers ([co
 In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `render`, `attributeChangedCallback`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
 
 ### Where?
-In order to put the measurement in place around the following hooks, it would require to the marks directly in the engine. Using services would have been preferable in order to break the coupling. Since the current service API doesn't expose pre/post hooks for each life cycle event, it make it impossible to measure the actual lifecycle event duration.
+In order to put the measurement in place around the following hooks, it would require to put marks directly in the engine. Using services would have been preferable in order to break the coupling. Since the current service API doesn't expose pre/post hooks for each life cycle event, it make it impossible to measure the actual lifecycle event duration.
 
 ### How?
 
