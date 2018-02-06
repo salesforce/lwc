@@ -2,7 +2,7 @@
   "name": "proxy-compat-build",
   "version": "0.17.13",
   "main": "dist/umd/compat.js",
-  "description": "Compatibility layer for Raptor (IE11 support for Proxys and ES6+ polyfills)",
+  "description": "Compatibility layer for LWC (IE11 support for Proxys and ES6+ polyfills)",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.26.0",
