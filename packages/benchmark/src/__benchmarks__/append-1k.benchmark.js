@@ -11,7 +11,6 @@ const tagNameMapping = {
 };
 
 Object.keys(tagNameMapping).forEach(tagName => {
-    console.log('ici')
 
     benchmark(`${tagName}/append/1k`, () => {
         let tableElement;
