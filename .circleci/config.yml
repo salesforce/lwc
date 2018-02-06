@@ -11,7 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       - run: yarn install
 
@@ -20,7 +20,7 @@ jobs:
             - node_modules
             - packages/*/node_modules
             - yarn.lock
-          key: yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Unit Tests
@@ -37,8 +37,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ .Branch }}-
 
       - run: yarn install
       - run:
@@ -56,8 +56,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ .Branch }}-
 
       - run: yarn install
       - run:
@@ -80,8 +80,8 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v4-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ .Branch }}-
 
       - run:
           name: Setup dynamic environment variables
