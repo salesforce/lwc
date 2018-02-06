@@ -6,10 +6,12 @@ import transformFile from './transform';
 import { MODES, ALL_MODES, isCompat, isProd } from './modes';
 import { zipObject, isUndefined, isString } from './utils';
 
+import replacePlugin from "rollup-plugin-replace";
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";
 import compatPlugin from "./rollup-plugins/compat";
+
 export { default as templateCompiler } from 'lwc-template-compiler';
 
 const DEFAULT_NAMESPACE = 'x';
@@ -95,8 +97,10 @@ export function transformBundle(src, options) {
     const mode = options.mode;
 
     if (isProd(mode)) {
-        const plugin = minifyPlugin(options);
-        const result = plugin.transformBundle(src);
+        const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
+        const rollupMinify = minifyPlugin(options);
+        const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
+        const result = rollupMinify.transformBundle(resultReplace.code);
         src = result.code;
     }
 
