@@ -18,13 +18,12 @@ describe('resgression test', () => {
 
 describe('smoke test for babel transform', () => {
     it('should transpile none stage-4 syntax features in none-compat', async () => {
-        debugger;
-            const { code } = await compile(
-                fixturePath('namespaced_folder/babel/babel.js'),
-                {
-                    mode: 'dev'
-                }
-            );
+        const { code } = await compile(
+            fixturePath('namespaced_folder/babel/babel.js'),
+            {
+                mode: 'dev'
+            }
+        );
 
         expect(pretify(code)).toBe(
             pretify(readFixture('expected-babel.js')),

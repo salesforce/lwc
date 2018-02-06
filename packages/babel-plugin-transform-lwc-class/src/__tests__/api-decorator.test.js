@@ -411,11 +411,19 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: { 
-                apiMethods: [], 
-                apiProperties: [
-                    { name: "todo" },
-                    { name: "index" }
+            metadata: {
+                decorators: [
+                    {
+                        type: 'api',
+                        decorations: [
+                            { "name": "todo", "type": "property" },
+                            { "name": "index", "type": "property" }
+                        ]
+                    },
+                    {
+                        type: 'wire',
+                        decorations: []
+                    }
                 ],
                 declarationLoc: {
                     end: { column: 1, line: 13 },
@@ -450,8 +458,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: {
                     end: { column: 1, line: 12 },
                     start: { column: 0, line: 3 }

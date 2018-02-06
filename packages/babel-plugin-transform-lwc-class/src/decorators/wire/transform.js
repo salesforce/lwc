@@ -55,7 +55,7 @@ function buildWireConfigValue(t, wiredValues) {
             wireConfig.push(
                 t.objectProperty(
                     t.identifier('adapter'),
-                    t.identifier(wiredValue.adapter)
+                    t.identifier(wiredValue.adapter.name)
                 )
             )
         }
@@ -76,7 +76,16 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
+function getWiredStaticMetadata(staticPath) {
+    const ret  = {};
+    staticPath.map(s => {
+        ret[s.key.name] = s.value.elements.map(e => e.value);
+    });
+    return ret;
+}
+
 module.exports = function transform(t, klass, decorators) {
+    const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments');
 
@@ -96,8 +105,19 @@ module.exports = function transform(t, klass, decorators) {
         if (id.isStringLiteral()) {
             wiredValue.type = id.node.value;
         } else if (id.isIdentifier()) {
-            wiredValue.adapter = id.node.name;
+            wiredValue.adapter = {
+                name: id.node.name,
+                reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
+            }
         }
+
+        metadata.push({
+            name: wiredValue.propertyName,
+            adapter: wiredValue.adapter,
+            params: wiredValue.params.map(p => p.value.value),
+            static: getWiredStaticMetadata(wiredValue.static),
+            type: isClassMethod ? 'method' : 'property'
+        });
 
         return wiredValue;
     });
@@ -112,4 +132,9 @@ module.exports = function transform(t, klass, decorators) {
             )
         );
     }
+
+    return {
+        type: 'wire',
+        decorations: metadata
+    };
 }

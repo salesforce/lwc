@@ -354,3 +354,55 @@ describe('node env', function () {
         );
     });
 });
+
+describe('metadata output', () => {
+    it('decorators and references', async () => {
+        const { code, metadata } = await compile('/x/foo/foo.js', {
+            mapNamespaceFromPath: true,
+            sources: {
+                '/x/foo/foo.js': readFixture(
+                    'metadata/metadata.js',
+                ),
+                '/x/foo/foo.html': readFixture(
+                    'metadata/metadata.html',
+                ),
+            },
+        });
+
+        expect(pretify(code)).toBe(
+            pretify(readFixture('expected-sources-metadata.js')),
+        );
+
+        expect(metadata).toEqual({ 
+            bundleDependencies: ['engine', 'todo', '@schema/foo.bar'],
+            decorators: [
+                {
+                    type: 'api',
+                    decorations: [
+                        { type: 'property', name: 'publicProp' },
+                        { type: 'method', args: ['name'], name: 'publicMethod' }
+                    ]
+                },
+                {
+                    type: 'wire',
+                    decorations: [
+                        {
+                            type: 'property',
+                            adapter: { name: 'getTodo', reference: 'todo' },
+                            name: 'wiredProp',
+                            params: [],
+                            static: {}
+                        },
+                        {
+                            type: 'method',
+                            adapter: { name: 'getHello', reference: '@schema/foo.bar' },
+                            name: 'wiredMethod',
+                            params: ['publicProp'],
+                            static: { 'fields': ['one', 'two'] }
+                        }
+                    ]
+                }
+            ]
+        });
+    });
+});
