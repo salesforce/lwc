@@ -13,6 +13,12 @@ function getLinkedElement(root: Root): HTMLElement {
     return root[ViewModelReflection].vnode.elm;
 }
 
+// Temporary export for locker, will be removed once the shadow-dom polyfil is available
+export function isNodeOwnedByComponent(component: Component, node: Node) {
+    const vm: VM = component[ViewModelReflection];
+    return isNodeOwnedByVM(vm, node);
+}
+
 export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | null {
     const vm = shadowRoot[ViewModelReflection];
 
@@ -165,7 +171,7 @@ register({
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
-            if (value === querySelector) {
+            /* if (value === querySelector) {
                 // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
                 return callback((selector: string): Node | null => getFirstMatch(vm, target, selector));
@@ -174,7 +180,7 @@ register({
                 // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
                 return callback((selector: string): NodeList => getAllMatches(vm, target, selector));
-            }
+            } */
             if (isParentNodeKeyword(key)) {
                 if (value === elm) {
                     // walking up via parent chain might end up in the shadow root element
