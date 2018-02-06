@@ -1,5 +1,22 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.13...v) (2018-02-02)
+# [](https://github.com/salesforce/lwc/compare/v0.17.14...v) (2018-02-06)
+
+
+
+<a name="0.17.14"></a>
+## [0.17.14](https://github.com/salesforce/lwc/compare/v0.17.13...v0.17.14) (2018-02-06)
+
+
+### Bug Fixes
+
+* **rollup-plugin-lwc-compiler:** Fix peer-dependencies ([#59](https://github.com/salesforce/lwc/issues/59)) ([90fb663](https://github.com/salesforce/lwc/commit/90fb663))
+* **transform-lwc-class:** Restrict import specifiers on engine ([#57](https://github.com/salesforce/lwc/issues/57)) ([bbb75de](https://github.com/salesforce/lwc/commit/bbb75de))
+
+
+### Features
+
+* **babel-plugin-transform-lwc-class:** Transform imported decorators ([#49](https://github.com/salesforce/lwc/issues/49)) ([172c75b](https://github.com/salesforce/lwc/commit/172c75b))
+* **rollup-plugin-lwc-compiler:** Default replace for prod mode ([#64](https://github.com/salesforce/lwc/issues/64)) ([7f92064](https://github.com/salesforce/lwc/commit/7f92064))
 
 
 
@@ -70,12 +87,7 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
-
-
-
-<a name="0.17.3"></a>
-## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
 
 
 

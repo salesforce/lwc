@@ -11,7 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       - run: yarn install
 
@@ -20,7 +20,7 @@ jobs:
             - node_modules
             - packages/*/node_modules
             - yarn.lock
-          key: yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          key: yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Unit Tests
@@ -37,7 +37,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           - yarn-v3-{{ .Branch }}-
 
       - run: yarn install
@@ -56,7 +56,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           - yarn-v3-{{ .Branch }}-
 
       - run: yarn install
@@ -80,7 +80,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
           - yarn-v3-{{ .Branch }}-
 
       - run:
