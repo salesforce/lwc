@@ -11,7 +11,8 @@
       "ci",
       "chore",
       "revert",
-      "proposal"
+      "proposal",
+      "wip"
    ],
    "scope":{
       "required":false,
