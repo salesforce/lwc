@@ -11,18 +11,17 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    constructor() {
-                        this.test = 1;
-                    }
+export default class Test {
+  constructor() {
+    this.test = 1;
+  }
 
-                }
-                Test.publicProps = {
-                    test: {
-                        config: 0
-                    }
-                };
-            `,
+}
+Test.publicProps = {
+  test: {
+    config: 0
+  }
+};`,
         }
     });
 
@@ -38,24 +37,23 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Outer {
-                    constructor() {
-                        var _class, _temp;
+export default class Outer {
+  constructor() {
+    var _class, _temp;
 
-                        this.a = (_temp = _class = class {}, _class.publicProps = {
-                            innerA: {
-                                config: 0
-                            }
-                        }, _temp);
-                    }
+    this.a = (_temp = _class = class {}, _class.publicProps = {
+      innerA: {
+        config: 0
+      }
+    }, _temp);
+  }
 
-                }
-                Outer.publicProps = {
-                    outer: {
-                        config: 0
-                    }
-                };
-            `
+}
+Outer.publicProps = {
+  outer: {
+    config: 0
+  }
+};`
         }
     });
 
@@ -69,17 +67,16 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    get publicGetter() {
-                        return 1;
-                    }
-                }
-                Test.publicProps = {
-                    publicGetter: {
-                        config: 1
-                    }
-                };
-            `
+export default class Test {
+  get publicGetter() {
+    return 1;
+  }
+}
+Test.publicProps = {
+  publicGetter: {
+    config: 1
+  }
+};`
         }
     });
 
@@ -97,21 +94,19 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    get something() {
-                        return this.s;
-                    }
-
-                    set something(value) {
-                        this.s = value;
-                    }
-                }
-                Test.publicProps = {
-                    something: {
-                        config: 3
-                    }
-                };
-            `
+export default class Test {
+  get something() {
+    return this.s;
+  }
+  set something(value) {
+    this.s = value;
+  }
+}
+Test.publicProps = {
+  something: {
+    config: 3
+  }
+};`
         }
     });
 
@@ -147,35 +142,33 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    constructor() {
-                        this._a = true;
-                        this._b = false;
-                    }
+export default class Test {
+  constructor() {
+    this._a = true;
+    this._b = false;
+  }
 
-                    get a() {
-                        return this._a;
-                    }
-                    set a(value) {
-                        this._a = value;
-                    }
-
-                    get b() {
-                        return this._b;
-                    }
-                    set b(value) {
-                        this._b = value;
-                    }
-                }
-                Test.publicProps = {
-                    a: {
-                        config: 3
-                    },
-                    b: {
-                        config: 3
-                    }
-                };
-            `
+  get a() {
+    return this._a;
+  }
+  set a(value) {
+    this._a = value;
+  }
+  get b() {
+    return this._b;
+  }
+  set b(value) {
+    this._b = value;
+  }
+}
+Test.publicProps = {
+  a: {
+    config: 3
+  },
+  b: {
+    config: 3
+  }
+};`
         }
     })
 
@@ -199,35 +192,32 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Text {
-                    get aloneGet() {}
+export default class Text {
+  get aloneGet() {}
+  get myget() {}
+  set myget(x) {
+    return 1;
+  }
+  m1() {}
+  m2() {}
 
-                    get myget() {}
-                    set myget(x) {
-                        return 1;
-                    }
-
-                    m1() {}
-                    m2() {}
-
-                    static get ctorGet() {
-                        return 1;
-                    }
-                }
-                Text.ctor = "ctor";
-                Text.publicProps = {
-                    publicProp: {
-                        config: 0
-                    },
-                    aloneGet: {
-                        config: 1
-                    },
-                    myget: {
-                        config: 3
-                    }
-                };
-                Text.publicMethods = ["m1"];
-            `
+  static get ctorGet() {
+    return 1;
+  }
+}
+Text.ctor = "ctor";
+Text.publicProps = {
+  publicProp: {
+    config: 0
+  },
+  aloneGet: {
+    config: 1
+  },
+  myget: {
+    config: 3
+  }
+};
+Text.publicMethods = ["m1"];`
         }
     });
 
@@ -284,13 +274,12 @@ describe('Public Props', () => {
     `, {
         output: {
             code: `
-                export default class Test {}
-                Test.publicProps = {
-                    data: {
-                        config: 0
-                    }
-                };
-            `
+export default class Test {}
+Test.publicProps = {
+  data: {
+    config: 0
+  }
+};`
         }
     });
 
@@ -381,11 +370,10 @@ describe('Public Methods', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    foo() {}
-                }
-                Test.publicMethods = ['foo'];
-            `
+export default class Test {
+  foo() {}
+}
+Test.publicMethods = ['foo'];`
         }
     });
 
@@ -423,8 +411,16 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: {
-                apiProperties: [{ name: 'todo' }, { name: 'index' }]
+            metadata: { 
+                apiMethods: [], 
+                apiProperties: [
+                    { name: "todo" },
+                    { name: "index" }
+                ],
+                declarationLoc: {
+                    end: { column: 1, line: 13 },
+                    start: { column: 0, line: 3 }
+                }
             }
         }
     });
@@ -445,7 +441,12 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiProperties: []
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: {
+                    end: { column: 1, line: 12 },
+                    start: { column: 0, line: 3 }
+                }
             }
         }
     });

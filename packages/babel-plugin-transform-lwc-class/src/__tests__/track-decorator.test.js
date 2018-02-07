@@ -11,11 +11,10 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                export default class Test {}
-                Test.track = {
-                    record: 1
-                };
-            `
+export default class Test {}
+Test.track = {
+  record: 1
+};`
         }
     });
 
@@ -29,18 +28,17 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    constructor() {
-                        this.record = {
-                            value: 'test'
-                        };
-                    }
+export default class Test {
+  constructor() {
+    this.record = {
+      value: 'test'
+    };
+  }
 
-                }
-                Test.track = {
-                    record: 1
-                };
-            `
+}
+Test.track = {
+  record: 1
+};`
         }
     });
 

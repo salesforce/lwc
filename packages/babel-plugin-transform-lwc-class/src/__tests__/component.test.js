@@ -48,18 +48,15 @@ describe('Element import', () => {
         export default class Test extends Component {}
     `, {
         output: {
-            code: `
-                import _tmpl from './test.html';
-                import { Element as Component } from 'engine';
+            code: `import _tmpl from './test.html';
+import { Element as Component } from 'engine';
+export default class Test extends Component {
+  render() {
+    return _tmpl;
+  }
 
-                export default class Test extends Component {
-                render() {
-                    return _tmpl;
-                }
-
-                }
-                Test.style = _tmpl.style;
-            `
+}
+Test.style = _tmpl.style;`
         }
     });
 });
@@ -70,17 +67,15 @@ describe('render method', () => {
         export default class Test extends Element {}
     `, {
         output: {
-            code: `
-                import _tmpl from "./test.html";
-                import { Element } from "engine";
-                export default class Test extends Element {
-                render() {
-                    return _tmpl;
-                }
+            code: `import _tmpl from "./test.html";
+import { Element } from "engine";
+export default class Test extends Element {
+  render() {
+    return _tmpl;
+  }
 
-                }
-                Test.style = _tmpl.style;
-            `
+}
+Test.style = _tmpl.style;`
         }
     });
 
@@ -91,12 +86,10 @@ describe('render method', () => {
         }
     `, {
         output: {
-            code: `
-                import { Element } from "engine";
-                export default class Test extends Element {
-                    render() {}
-                }
-            `
+            code: `import { Element } from "engine";
+export default class Test extends Element {
+  render() {}
+}`
         }
     });
 
@@ -108,20 +101,16 @@ describe('render method', () => {
         export default class Test2 extends Element {}
     `, {
         output: {
-            code: `
-                import _tmpl from './test.html';
-                import { Element } from 'engine';
+            code: `import _tmpl from './test.html';
+import { Element } from 'engine';
+class Test1 extends Element {}
+export default class Test2 extends Element {
+  render() {
+    return _tmpl;
+  }
 
-                class Test1 extends Element {}
-
-                export default class Test2 extends Element {
-                    render() {
-                        return _tmpl;
-                    }
-
-                }
-                Test2.style = _tmpl.style;
-            `
+}
+Test2.style = _tmpl.style;`
         }
     })
 });
@@ -135,7 +124,10 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                doc: 'Foo doc', declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
+                apiMethods: [], 
+                apiProperties: [],
+                doc: 'Foo doc',
+                declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
             }
         }
     });
@@ -150,7 +142,10 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                doc: 'Foo doc'
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } }, 
+                doc: "Foo doc"
             }
         }
     });
@@ -166,6 +161,9 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } }, 
                 doc: 'multi\nline'
             }
         }
@@ -180,7 +178,10 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                doc: 'last'
+                apiMethods: [], 
+                apiProperties: [], 
+                declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
+                doc: "last"
             }
         }
     });
@@ -192,7 +193,14 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: {}
+            metadata: {
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: {
+                    end: { column: 1, line: 4 },
+                    start: { column: 0, line: 3 }
+                }
+            }
         }
     });
 
@@ -203,7 +211,14 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: {}
+            metadata: {
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: {
+                    end: { column: 1, line: 4 },
+                    start: { column: 0, line: 3 }
+                }
+            }
         }
     });
 
@@ -214,7 +229,14 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: {}
+            metadata: {
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: {
+                    end: { column: 1, line: 4 },
+                    start: { column: 0, line: 3 }
+                }
+            }
         }
     });
 });

@@ -12,15 +12,14 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                export default class Test {}
-                Test.wire = {
-                    innerRecord: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Account", 'Rate'] },
-                        type: "record"
-                    }
-                };
-            `
+export default class Test {}
+Test.wire = {
+  innerRecord: {
+    params: { recordId: "recordId" },
+    static: { fields: ["Account", 'Rate'] },
+    type: "record"
+  }
+};`
         }
     });
 
@@ -48,16 +47,15 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                import { record } from 'data-service';
-                export default class Test {}
-                Test.wire = {
-                    innerRecord: {
-                        params: {},
-                        static: {},
-                        adapter: record
-                    }
-                };
-            `
+import { record } from 'data-service';
+export default class Test {}
+Test.wire = {
+  innerRecord: {
+    params: {},
+    static: {},
+    adapter: record
+  }
+};`
         }
     });
 
@@ -154,20 +152,19 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                export default class Test {}
-                Test.wire = {
-                    wired1: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Address"] },
-                        type: "record"
-                    },
-                    wired2: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Name"] },
-                        type: "record"
-                    }
-                };
-            `
+export default class Test {}
+Test.wire = {
+  wired1: {
+    params: { recordId: 'recordId' },
+    static: { fields: ['Address'] },
+    type: 'record'
+  },
+  wired2: {
+    params: { recordId: 'recordId' },
+    static: { fields: ['Name'] },
+    type: 'record'
+  }
+};`
         }
     });
 });
@@ -182,18 +179,17 @@ describe('Wired method', () => {
     `, {
         output: {
             code: `
-                export default class Test {
-                    innerRecordMethod() {}
-                }
-                Test.wire = {
-                    innerRecordMethod: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Account", 'Rate'] },
-                        type: "record",
-                        method: 1
-                    }
-                };
-            `
+export default class Test {
+  innerRecordMethod() {}
+}
+Test.wire = {
+  innerRecordMethod: {
+    params: { recordId: "recordId" },
+    static: { fields: ["Account", 'Rate'] },
+    type: "record",
+    method: 1
+  }
+};`
         }
     });
 
