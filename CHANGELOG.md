@@ -1,5 +1,27 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.14...v) (2018-02-06)
+# [](https://github.com/salesforce/lwc/compare/v0.17.15...v) (2018-02-07)
+
+
+
+<a name="0.17.15"></a>
+## [0.17.15](https://github.com/salesforce/lwc/compare/v0.17.14...v0.17.15) (2018-02-07)
+
+
+### Bug Fixes
+
+* **compiler:** allow multiple [@wire](https://github.com/wire) for different properties or methods ([#72](https://github.com/salesforce/lwc/issues/72)) ([d9223fd](https://github.com/salesforce/lwc/commit/d9223fd))
+
+
+### Features
+
+* **benchmark:** Upgrade Best ([9d7cc6f](https://github.com/salesforce/lwc/commit/9d7cc6f))
+* **lwc:** Upgrade yarn ([66f2773](https://github.com/salesforce/lwc/commit/66f2773))
+
+
+### Performance Improvements
+
+* **benchmarks:** Migrate remaining benchmark to best ([#67](https://github.com/salesforce/lwc/issues/67)) ([1c05721](https://github.com/salesforce/lwc/commit/1c05721))
+* **benchmarks:** Upgrade best ([#73](https://github.com/salesforce/lwc/issues/73)) ([f815d7b](https://github.com/salesforce/lwc/commit/f815d7b))
 
 
 
