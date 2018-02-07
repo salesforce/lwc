@@ -117,19 +117,19 @@ class LWCElement implements Component {
         // use cached setAttributeNS, because elm.setAttribute throws
         // when not called in template
         return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
-    },
+    }
 
     removeAttributeNS(ns: string, attrName: string): void {
         // use cached removeAttributeNS, because elm.setAttribute throws
         // when not called in template
         return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
-    },
+    }
 
     removeAttribute(attrName: string): void {
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
         return removeAttribute.call(getLinkedElement(this), attrName);
-    },
+    }
 
     setAttribute(attrName: string, value: any): void {
         if (process.env.NODE_ENV !== 'production') {
@@ -138,11 +138,11 @@ class LWCElement implements Component {
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
         return setAttribute.call(getLinkedElement(this), attrName, value);
-    },
+    }
 
     getAttributeNS(ns: string, attrName: string) {
         return getAttributeNS.call(getLinkedElement(this), ns, attrName);
-    },
+    }
 
     getAttribute(attrName: string): string | null {
         const vm = this[ViewModelReflection];
