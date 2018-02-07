@@ -1,87 +1,102 @@
 import assert from "./assert";
-import { ViewModelReflection } from "./def";
-import { ArrayFilter, defineProperty } from "./language";
-import { isBeingConstructed } from "./component";
-import { OwnerKey, isNodeOwnedByVM } from "./vm";
+import { ViewModelReflection, ComponentDef } from "./def";
+import { ArrayFilter, defineProperty, isNull } from "./language";
+import { isBeingConstructed, getCustomElementComponent } from "./component";
+import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
 import { pierce, piercingHook } from "./piercing";
+import { Context } from "./context";
+import { Component } from "./component";
+import { VNodeData } from "../3rdparty/snabbdom/types";
+import { getCustomElementVM } from "./html-element";
+import { Replicable, Membrane } from "./membrane";
 
 import { TargetSlot } from './membrane';
 const { querySelector, querySelectorAll } = Element.prototype;
 
-function getLinkedElement(root: Root): HTMLElement {
-    return root[ViewModelReflection].vnode.elm;
+function getLinkedElement(root: ShadowRoot): HTMLElement {
+    return getCustomElementVM(root).elm;
 }
 
-export function shadowRootQuerySelector (shadowRoot: ShadowRoot, selector: string): MembraneObject | null {
-    const vm = shadowRoot[ViewModelReflection];
+export interface ShadowRoot {
+    [ViewModelReflection]: VM;
+    readonly mode: string;
+    readonly innerHTML: string;
+    readonly host: Component;
+    querySelector(selector: string): HTMLElement | null;
+    querySelectorAll(selector: string): HTMLElement[];
+    toString(): string;
+}
+
+export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
+    const vm = getCustomElementVM(shadowRoot);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+        assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
 
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
-    const querySelector = piercingHook(vm.membrane, elm, 'querySelector', elm.querySelector);
-    return querySelector.call(elm, selector);
+    const piercedQuerySelector = piercingHook(vm.membrane as Membrane, elm, 'querySelector', elm.querySelector);
+    return piercedQuerySelector.call(elm, selector);
 }
 
-export function shadowRootQuerySelectorAll (shadowRoot: ShadowRoot, selector: string): MembraneObject {
-    const vm = shadowRoot[ViewModelReflection];
+export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
+    const vm = getCustomElementVM(shadowRoot);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no content has been rendered yet.`);
+        assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
-    const querySelectorAll = piercingHook(vm.membrane, elm, 'querySelectorAll', elm.querySelectorAll);
-    return querySelectorAll.call(elm, selector);
+    const piercedQuerySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
+    return piercedQuerySelectorAll.call(elm, selector);
 }
 
-export function Root(vm: VM): ShadowRoot {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+export class Root implements ShadowRoot {
+    [ViewModelReflection]: VM;
+    constructor(vm: VM) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+        }
+        defineProperty(this, ViewModelReflection, {
+            value: vm,
+        });
     }
-
-    defineProperty(this, ViewModelReflection, {
-        value: vm,
-        writable: false,
-        enumerable: false,
-        configurable: false,
-    });
-}
-
-Root.prototype = {
     get mode(): string {
         return 'closed';
-    },
+    }
     get host(): Component {
-        return this[ViewModelReflection].component;
-    },
-    querySelector(selector: string): MembraneObject | null {
+        return getCustomElementVM(this).component as Component;
+    }
+    get innerHTML(): string {
+        // TODO: should we add this only in dev mode? or wrap this in dev mode?
+        throw new Error();
+    }
+    querySelector(selector: string): HTMLElement | null {
         const node = shadowRootQuerySelector(this, selector);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = this[ViewModelReflection];
-            if (!node && vm.component.querySelector(selector)) {
-                assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+            const component = getCustomElementComponent(this);
+            if (isNull(node) && component.querySelector(selector)) {
+                assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         }
         return node;
-    },
-    querySelectorAll(selector: string): MembraneObject {
+    }
+    querySelectorAll(selector: string): HTMLElement[] {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = this[ViewModelReflection];
-            if (nodeList.length === 0 && vm.component.querySelectorAll(selector).length) {
-                assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${vm.component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+            const component = getCustomElementComponent(this);
+            if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
+                assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
             }
         }
         return nodeList;
-    },
-    toString(): string {
-        const vm = this[ViewModelReflection];
-        return `Current ShadowRoot for ${vm.component}`;
     }
-};
+    toString(): string {
+        const component = getCustomElementComponent(this);
+        return `Current ShadowRoot for ${component}`;
+    }
+}
 
 function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     const nodeList = querySelectorAll.call(elm, selector);
@@ -100,7 +115,7 @@ function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
     return pierce(vm , filteredNodes);
 }
 
-function isParentNodeKeyword(key: string | Symbol): boolean {
+function isParentNodeKeyword(key: PropertyKey): boolean {
     return (key === 'parentNode' || key === 'parentElement');
 }
 
@@ -153,14 +168,14 @@ export function wrapIframeWindow(win: Window) {
         get window() {
             return win.window;
         },
-    }
+    };
 }
 
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
-    piercing(component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (value?: any) => void) {
+    piercing(component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
         const vm: VM = component[ViewModelReflection];
-        const { elm } = (vm.vnode as ComponentVNode); // eslint-disable-line no-undef
+        const { elm } = vm;
         if (value) {
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
@@ -168,12 +183,12 @@ register({
             if (value === querySelector) {
                 // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): Node | null => getFirstMatch(vm, target, selector));
+                return callback((selector: string): Node | null => getFirstMatch(vm, target as Element, selector));
             }
             if (value === querySelectorAll) {
                 // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
                 // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): NodeList => getAllMatches(vm, target, selector));
+                return callback((selector: string): NodeList => getAllMatches(vm, target as Element, selector));
             }
             if (isParentNodeKeyword(key)) {
                 if (value === elm) {

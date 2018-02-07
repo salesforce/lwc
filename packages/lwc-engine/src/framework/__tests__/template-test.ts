@@ -1,19 +1,20 @@
 import * as target from '../template';
-import * as api from "../api";
-import { patch } from '../patch';
+import * as globalApi from '../api';
 import { Element } from "../html-element";
 import { createElement } from './../main';
+import { ViewModelReflection } from '../def';
+import { Template } from '../template';
 
-function createCustomComponent(html, slotset?) {
-    let vnode;
+function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
         render() {
             return html;
         }
     }
-    const elm = document.createElement('x-foo');
-    vnode = api.c('x-foo', MyComponent, { slotset });
-    return patch(elm, vnode);
+    const elm = createElement('x-foo', { is: MyComponent });
+    elm[ViewModelReflection].cmpSlots = slotset;
+    document.body.appendChild(elm);
+    return elm;
 }
 
 describe('template', () => {
@@ -27,7 +28,7 @@ describe('template', () => {
                 $memoizer = $m;
                 return [];
             });
-            expect($api).toBe(api);
+            expect($api).toBe(globalApi);
             expect($cmp && typeof $cmp === 'object').toBe(true);
             expect($slotset && typeof $slotset === 'object').toBe(true);
             expect($memoizer).toEqual({});
@@ -36,45 +37,45 @@ describe('template', () => {
         it('should revoke slotset proxy', () => {
             let $slotset;
             createCustomComponent(
-                function($a, $c, $s) {
+                function($api, $c, $s) {
                     $slotset = $s;
                     return [];
                 },
-                { x: [api.h('p', {}, [])] },
+                { x: [globalApi.h('p', { key: 0 }, [])] },
             );
             expect(() => $slotset.x).toThrow('Cannot perform \'get\' on a proxy that has been revoked');
             expect(() => {
-                $slotset.foo
+                $slotset.foo;
             }).toThrow();
         });
 
-        it('should render arrays correctly', function () {
-            const vnode = createCustomComponent(function ($api, $cmp) {
-                return $api.i(['a', 'b'], function (value) {
-                    return $api.h('div', {}, [
+        it('should render arrays correctly', function() {
+            const elm = createCustomComponent(function($api, $cmp) {
+                return $api.i(['a', 'b'], function(value) {
+                    return $api.h('div', { key: 0 }, [
                         $api.t(value)
-                    ])
-                })
+                    ]);
+                });
             });
-            expect(vnode.elm.querySelectorAll('div').length).toBe(2);
-            expect(vnode.elm.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(vnode.elm.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div').length).toBe(2);
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
-        it('should render sets correctly', function () {
+        it('should render sets correctly', function() {
             const set = new Set();
             set.add('a');
             set.add('b');
-            const vnode = createCustomComponent(function ($api, $cmp) {
-                return $api.i(set, function (value) {
-                    return $api.h('div', {}, [
+            const elm = createCustomComponent(function($api, $cmp) {
+                return $api.i(set, function(value) {
+                    return $api.h('div', { key: 0 }, [
                         $api.t(value)
-                    ])
-                })
+                    ]);
+                });
             });
-            expect(vnode.elm.querySelectorAll('div').length).toBe(2);
-            expect(vnode.elm.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(vnode.elm.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div').length).toBe(2);
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         // this test depends on the memoization
@@ -107,6 +108,11 @@ describe('template', () => {
         it('should not prevent or cache a getter calling another getter', () => {
             let counter = 0;
             let vnode;
+            function html($api, $cmp) {
+                $cmp.x;
+                $cmp.y;
+                return [];
+            }
             class MyComponent extends Element {
                 get x() {
                     counter += 1;
@@ -115,29 +121,25 @@ describe('template', () => {
                 }
                 get y() {
                     counter += 1;
+                    return;
                 }
                 render() {
-                    return function (api, cmp) {
-                        cmp.x;
-                        cmp.y;
-                        return [];
-                    };
+                    return html;
                 }
             }
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
             expect(counter).toBe(3);
         });
 
         it('should throw when attempting to set a property member of slotset', () => {
             expect(() =>
                 createCustomComponent(
-                    function(api, cmp, slotset) {
+                    function($api, cmp, slotset) {
                         slotset.x = [];
                         return [];
                     },
-                    { x: [api.h('p', {}, [])] },
+                    { x: [globalApi.h('p', { key: 0 }, [])] },
                 ),
             ).toThrow();
         });
@@ -154,23 +156,21 @@ describe('template', () => {
                     return template;
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, {});
-            expect(() => patch(elm, vnode)).toThrow();
+            const elm = createElement('x-foo', { is: MyComponent });
+            expect(() => document.body.appendChild(elm)).toThrow();
         });
 
         it('should throw when attempting to delete a property member of slotset', () => {
             expect(() => {
-                createCustomComponent(function (api, cmp, slotset) {
+                createCustomComponent(function(api, cmp, slotset) {
                     delete slotset.x;
                     return [];
-                }, { x: [ api.h('p', {}, []) ] });
+                }, { x: [ globalApi.h('p', { key: 0 }, []) ] });
             }).toThrow();
         });
 
         it('should support switching templates', () => {
             let counter = 0;
-            let vnode;
             let value;
             function html1(api, cmp, slotset, memoizer) {
                 memoizer.m0 = memoizer.m0 || cmp.x;
@@ -192,28 +192,28 @@ describe('template', () => {
                 }
             }
             MyComponent2.publicProps = { x: true };
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', MyComponent2, { props: { x: 'one' } });
-            patch(elm, vnode); // insertion
-            const vnode1 = api.c('x-foo', MyComponent2, { props: { x: 'two' } });
-            patch(vnode, vnode1); // reaction
-            expect(counter).toBe(2);
-            expect(value).toBe('two');
+            const elm = createElement('x-foo', { is: MyComponent2 });
+            elm.x = 'one';
+            document.body.appendChild(elm);
+            elm.x = 'two';
+            return Promise.resolve().then(_ => {
+                expect(counter).toBe(2);
+                expect(value).toBe('two');
+            });
         });
 
         it('should support array of vnode', () => {
             let vnode;
-            function html() {
-                return [api.t('some text')];
+            function html($api) {
+                return [$api.t('some text')];
             }
             class MyComponent3 extends Element {
                 render() {
                     return html;
                 }
             }
-            const elm = document.createElement('x-foo');
-            vnode = api.c('x-foo', MyComponent3, {});
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent3 });
+            document.body.appendChild(elm);
             expect(elm.textContent).toBe('some text');
         });
 
@@ -226,51 +226,32 @@ describe('template', () => {
                 }
             }
             MyComponent.publicProps = { x: true };
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-            expect(elm.x).toBe(vnode.vm.component.x);
+            const elm = createElement('x-foo', { is: MyComponent });
+            expect(elm.x).toBe(elm[ViewModelReflection].component.x);
             expect(elm.x).not.toBe(x);
             expect(elm.x).toEqual(x);
         });
 
-        it('should profixied property objects', () => {
+        it('should proxify property objects', () => {
             const x = [1, 2, 3];
-            class MyComponentParent extends Element {
-                state = { x: undefined };
-                constructor() {
-                    super();
-                    this.state.x = x;
+            class MyComponent extends Element {}
+            MyComponent.publicProps = {
+                x: {
+                    config: 0
                 }
-
-                get stateX() {
-                    return this.state.x;
-                }
-
-                render () {
-                    return function ($api, $cmp) {
-                        return [
-                            $api.c('x-child', MyComponentChild, { props: { x: $cmp.state.x }})
-                        ]
-                    }
-                }
-            }
-            MyComponentParent.publicProps = { stateX: {
-                config: 1
-            } };
-            MyComponentParent.track = { state: 1 }
-            class MyComponentChild extends Element {}
-            MyComponentChild.publicProps = { x: true };
-            const elm1 = createElement('x-parent', { is: MyComponentParent });
-            document.body.appendChild(elm1);
-            const elm2 = elm1.querySelector('x-child');
-            expect(elm2.x).not.toBe(x);
-            expect(elm1.stateX).toBe(elm2.x);
-            expect(x).toEqual(elm2.x);
+            };
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.x = x;
+            expect(elm.x).not.toBe(x);
+            expect(elm.x).toEqual(x);
         });
 
-        it('should not profixied or bound methods', () => {
+        it('should not create a proxy for methods used from tempalte', () => {
             let x, y;
+            function html($api, $cmp) {
+                y = $cmp.x;
+                return [];
+            }
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -278,16 +259,11 @@ describe('template', () => {
                 }
                 x() {}
                 render() {
-                    return function ($api, $cmp) {
-                        y = $cmp.x;
-                        return [];
-                    }
+                    return html;
                 }
             }
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, {});
-            patch(elm, vnode);
-
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
             expect(typeof x).toBe("function");
             expect(x).toBe(y);
         });
@@ -401,6 +377,74 @@ describe('template', () => {
             return Promise.resolve().then(() => {
                 expect(cmp.hasAttribute('tokenA')).toBe(false);
                 expect(cmp.hasAttribute('tokenB')).toBe(true);
+            });
+        });
+    });
+
+    describe('recycling', () => {
+        it('should only occur if the same template is rendered', () => {
+            function html($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            let div: HTMLElement;
+            let counter = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.x = 0;
+                }
+                render() {
+                    return html;
+                }
+                renderedCallback() {
+                    counter++;
+                    div = this.root.querySelector('div');
+                }
+            }
+            MyComponent.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            div.id = 'miami';
+            elm.x = 2;
+            return Promise.resolve().then(() => {
+                expect(counter).toBe(2);
+                expect(div.id).toBe('miami'); // this means the element was reused
+            });
+        });
+
+        it('should not occur if the template is swapped', () => {
+            function html1($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            function html2($api, $cmp) {
+                $cmp.x; // reaction
+                return [$api.h('div', { key: 0 }, [])]
+            }
+            let div: HTMLElement;
+            let counter = 0;
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    this.x = 0;
+                }
+                render() {
+                    return this.x === 0 ? html1: html2;
+                }
+                renderedCallback() {
+                    counter++;
+                    div = this.root.querySelector('div');
+                }
+            }
+            MyComponent.publicProps = { x: 1 };
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            div.id = 'miami';
+            elm.x = 2;
+            return Promise.resolve().then(() => {
+                expect(counter).toBe(2);
+                expect(div.id).toBe(""); // this means the element was not reused
             });
         });
     });

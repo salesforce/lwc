@@ -1,5 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
+import { ComponentConstructor } from "../component";
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
@@ -8,7 +9,7 @@ describe('upgrade', () => {
             type MyComponentElement = HTMLElement & {
                 x: any,
                 y: any;
-            }
+            };
             const def = class MyComponent extends Element {
                 x: any;
                 y: any;
@@ -21,8 +22,8 @@ describe('upgrade', () => {
                 static publicProps = {
                     x: true,
                     y: true
-                }
-            }
+                };
+            };
             const elm: MyComponentElement = createElement('x-foo', { is: def }) as MyComponentElement;
             expect(x).toEqual(elm.x);
             expect(y).toEqual(elm.y);
@@ -31,7 +32,7 @@ describe('upgrade', () => {
         });
 
         it('should proxify any value before setting a property', () => {
-            const def = class MyComponent extends Element {}
+            const def = class MyComponent extends Element {};
             def.publicProps = { x: 1 };
             const elm = createElement('x-foo', { is: def });
             const o = { foo: 1 };

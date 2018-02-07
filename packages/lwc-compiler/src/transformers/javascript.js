@@ -1,5 +1,5 @@
 import { transform } from 'babel-core';
-import raptorClassTransformPlugin from 'babel-plugin-transform-lwc-class';
+import lwcClassTransformPlugin from 'babel-plugin-transform-lwc-class';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 
@@ -8,7 +8,7 @@ export default function(code, options) {
 
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [
-            raptorClassTransformPlugin,
+            lwcClassTransformPlugin,
             ...BABEL_PLUGINS_BASE,
         ],
         filename,

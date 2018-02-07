@@ -1,5 +1,3 @@
-import * as target from '../patch';
-import * as api from "../api";
 import { Element } from "../html-element";
 import { createElement } from "../main";
 
@@ -46,7 +44,10 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order at insertion', () => {
             const calls = [];
-
+            function html($api) {
+                calls.push('root:render');
+                return [$api.c('x-child', Child, {})];
+            }
             class Root extends Element {
                 constructor() {
                     super();
@@ -56,10 +57,7 @@ describe('patch', () => {
                     calls.push('root:connectedCallback');
                 }
                 render() {
-                    return function($api) {
-                        calls.push('root:render');
-                        return [$api.c('x-child', Child, {})];
-                    };
+                    return html;
                 }
                 renderedCallback() {
                     calls.push('root:renderedCallback');
@@ -99,7 +97,12 @@ describe('patch', () => {
 
         it('should call the lifecycle hooks in the right order on update', () => {
             const calls = [];
-
+            function html($api, $cmp) {
+                calls.push('root:render');
+                return $cmp.state.show
+                    ? [$api.c('x-child', Child, {})]
+                    : [];
+            }
             class Root extends Element {
                 state = {
                     show: false
@@ -108,12 +111,7 @@ describe('patch', () => {
                     this.state.show = true;
                 }
                 render() {
-                    return function($api, $cmp) {
-                        calls.push('root:render');
-                        return $cmp.state.show
-                            ? [$api.c('x-child', Child, {})]
-                            : [];
-                    };
+                    return html;
                 }
                 renderedCallback() {
                     calls.push('root:renderedCallback');
@@ -152,15 +150,18 @@ describe('patch', () => {
                     'child:render',
                     'child:renderedCallback',
                     'root:renderedCallback'
-                ])
+                ]);
             });
         });
 
-        it('should rehydrate when state is updated in renderedCallback', function () {
+        it('should rehydrate when state is updated in renderedCallback', function() {
+            function html($api, $cmp) {
+                return [$api.h('span', { key: 0 }, [$api.t($cmp.state.foo)])];
+            }
             class MyComponent extends Element {
                 state = {
                     foo: 'bar'
-                }
+                };
                 renderedCallback() {
                     if (this.state.foo !== 'second') {
                         this.state.foo = 'modified';
@@ -172,22 +173,20 @@ describe('patch', () => {
                 }
 
                 render() {
-                    return function ($api, $cmp) {
-                        return [$api.h('span', {}, [$api.t($cmp.state.foo)])];
-                    }
+                    return html;
                 }
             }
             MyComponent.track = { state: 1 };
             MyComponent.publicMethods = [
                 'triggerRender'
-            ]
+            ];
 
             const element = createElement('x-parent', { is: MyComponent });
             document.body.appendChild(element);
 
             return Promise.resolve().then(() => {
                 element.triggerRender('first');
-                return Promise.resolve()
+                return Promise.resolve();
             })
             .then(() => {
                 element.triggerRender('second');
@@ -216,12 +215,10 @@ describe('patch', () => {
                     chars += 'rendered-2:';
                 }
             }
-            const elm1 = document.createElement('x-foo');
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            target.patch(elm1, vnode1);
-            const elm2 = document.createElement('x-bar');
-            const vnode2 = api.c('x-bar', MyComponent2, {});
-            target.patch(elm2, vnode2);
+            const elm1 = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm1);
+            const elm2 = createElement('x-bar', { is: MyComponent2 });
+            document.body.appendChild(elm2);
             expect(chars).toBe('^connected-1:rendered-1:connected-2:rendered-2:');
         });
 
@@ -238,12 +235,9 @@ describe('patch', () => {
                     chars += 'rendered:';
                 }
             }
-            const elm1 = document.createElement('x-foo');
+            const elm1 = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm1);
-            const vnode1 = api.c('x-foo', MyComponent1, {});
-            target.patch(elm1, vnode1);
-            const vnode2 = api.h('div', {}, []);
-            target.patch(vnode1, vnode2);\
+            document.body.removeChild(elm1);
             expect(chars).toBe('^connected:rendered:disconnected:');
         });
 

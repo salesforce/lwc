@@ -9,7 +9,8 @@ type RenderPrimitive =
     | 'customElement'
     | 'bind'
     | 'text'
-    | 'dynamic';
+    | 'dynamic'
+    | 'key';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -26,6 +27,7 @@ const RENDER_APIS: {
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
     dynamic: { name: 'd', alias: 'api_dynamic' },
+    key: { name: 'k', alias: 'api_key' },
 };
 
 const SLOT_ID_PREFIX = 'slot';
@@ -81,6 +83,10 @@ export default class CodeGen {
 
     genFlatten(children: t.Expression[]) {
         return this._renderApiCall(RENDER_APIS.flatten, children);
+    }
+
+    genKey(compilerKey: t.NumericLiteral, value: t.Expression) {
+        return this._renderApiCall(RENDER_APIS.key, [compilerKey, value]);
     }
 
     getSlotId(name: string) {

@@ -1,15 +1,17 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { d: api_dynamic, h: api_element, i: api_iterator } = $api;
+    const { d: api_dynamic, k: api_key, h: api_element, i: api_iterator } = $api;
 
     return [
         api_element(
             'ul',
-            {},
+            {
+                key: 2
+            },
             api_iterator($cmp.items, function(item) {
                 return api_element(
                     'li',
                     {
-                        key: item.key
+                        key: api_key(1, item.key),
                     },
                     [api_dynamic(item.value)]
                 );

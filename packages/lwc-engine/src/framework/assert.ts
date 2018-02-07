@@ -1,3 +1,6 @@
+import { VM } from "./vm";
+import { VNode } from "../3rdparty/snabbdom/types";
+
 const compareDocumentPosition = Node.prototype.compareDocumentPosition;
 const { DOCUMENT_POSITION_CONTAINS } = Node;
 
@@ -18,7 +21,7 @@ const assert = {
         }
     },
     vnode(vnode: VNode) {
-        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode, `${vnode} is not a vnode.`);
+        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode && "nt" in vnode, `${vnode} is not a vnode.`);
     },
     vm(vm: VM) {
         assert.isTrue(vm && "component" in vm, `${vm} is not a vm.`);
@@ -30,7 +33,7 @@ const assert = {
         try {
             throw new Error(msg);
         } catch (e) {
-            console.error(e);
+            console.error(e); // tslint:disable-line
         }
     },
     logWarning(msg: string) {
@@ -38,7 +41,7 @@ const assert = {
             throw new Error(msg);
         } catch (e) {
             const stackTraceLines: string[] = e.stack.split('\n');
-            console.group(`Warning: ${msg}`);
+            console.group(`Warning: ${msg}`); // tslint:disable-line
             stackTraceLines.filter((trace) => {
                  // Chrome adds the error message as the first item in the stack trace
                  // So we filter it out to prevent logging it twice.
@@ -48,9 +51,9 @@ const assert = {
                 // We need to format this as a string,
                 // because Safari will detect that the string
                 // is a stack trace line item and will format it as so
-                console.log('%s', trace.trim());
+                console.log('%s', trace.trim()); // tslint:disable-line
             });
-            console.groupEnd();
+            console.groupEnd(); // tslint:disable-line
         }
     },
     childNode(container: Node, node: Node, msg: string) {

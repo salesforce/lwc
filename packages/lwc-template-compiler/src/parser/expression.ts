@@ -9,6 +9,7 @@ import {
     TemplateExpression,
     TemplateIdentifier,
     IRNode,
+    IRElement,
 } from '../shared/types';
 
 import {
@@ -90,4 +91,54 @@ export function parseIdentifier(source: string): TemplateIdentifier {
     } else {
         throw new Error(`Invalid indentifier`);
     }
+}
+
+
+// Returns the immediate iterator parent if it exists.
+// Traverses up until it finds an element with forOf, or
+// a non-template element without a forOf.
+export function getIteratorParent(element: IRElement): IRElement | null {
+    const parent = element.parent;
+    if (!parent) {
+        return null;
+    }
+
+    if (parent.forOf) {
+        return parent;
+    } else if (parent.tag.toLowerCase() === 'template') {
+        return getIteratorParent(parent);
+    }
+    return null;
+}
+
+export function getForEachParent(element: IRElement): IRElement | null {
+    if (element.forEach) {
+        return element;
+    }
+
+    const parent = element.parent;
+    if (parent && parent.tag.toLowerCase() === 'template') {
+        return getForEachParent(parent);
+    }
+
+    return null;
+}
+
+export function keyExpression(element: IRElement) {
+    let iteratorParent;
+    let forEachParent;
+    const { forKey } = element;
+    if (forKey) {
+        return forKey;
+    }
+    if (iteratorParent = getIteratorParent(element)) {
+        return types.memberExpression(
+            iteratorParent.forOf!.iterator,
+            types.identifier('value')
+        )
+    } else if (forEachParent = getForEachParent(element)) {
+        return forEachParent.forEach!.item;
+    }
+
+    return forKey;
 }
