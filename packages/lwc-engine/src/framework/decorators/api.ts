@@ -1,11 +1,13 @@
 import assert from "../assert";
-import { isArray, isUndefined, create, getOwnPropertyDescriptor, defineProperty, isObject, isNull } from "../language";
+import { defineProperty, isObject, isNull, isTrue } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { subscribeToSetHook, notifyListeners } from "../watcher";
 import { EmptyObject } from "../utils";
-import { ViewModelReflection } from "../def";
 import { isBeingConstructed } from "../component";
+import { VM, VMElement } from "../vm";
+import { getCustomElementVM } from "../html-element";
+import { isUndefined } from "../language";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
@@ -23,10 +25,10 @@ export function prepareForPropUpdate(vm: VM) {
 }
 
 // TODO: how to allow symbols as property keys?
-export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
-        get(): any {
-            const vm: VM = this[ViewModelReflection];
+        get(this: VMElement): any {
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
@@ -39,17 +41,17 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             if (isRendering) {
                 // this is needed because the proxy used by template is not sufficient
                 // for public props accessed from within a getter in the component.
-                subscribeToSetHook(vmBeingRendered, this, key);
+                subscribeToSetHook(vmBeingRendered as VM, this, key);
             }
             return vm.cmpProps[key];
         },
-        set(newValue: any) {
-            const vm = this[ViewModelReflection];
+        set(this: VMElement, newValue: any) {
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            if (vm.vnode.isRoot || isBeingConstructed(vm)) {
+            if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
                 const observable = isObservable(newValue);
                 newValue = observable ? getReactiveProxy(newValue) : newValue;
@@ -75,29 +77,29 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
             }
         },
-        enumerable: descriptor ? descriptor.enumerable : true,
+        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
     });
 }
 
-export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor): PropertyDescriptor {
+export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     const { get, set, enumerable } = descriptor || EmptyObject;
     defineProperty(proto, key, {
-        get(): any {
+        get(this: VMElement): any {
             if (process.env.NODE_ENV !== 'production') {
-                const vm: VM = this[ViewModelReflection];
+                const vm = getCustomElementVM(this);
                 assert.vm(vm);
             }
             if (get) {
                 return get.call(this);
             }
         },
-        set(newValue: any) {
-            const vm = this[ViewModelReflection];
+        set(this: VMElement, newValue: any) {
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            if (vm.vnode.isRoot || isBeingConstructed(vm)) {
+            if (vm.isRoot || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
                 const observable = isObservable(newValue);
                 newValue = observable ? getReactiveProxy(newValue) : newValue;

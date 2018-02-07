@@ -1,6 +1,6 @@
-import * as api from "../api";
 import { createElement } from "../main";
 import { Element } from "../html-element";
+import { ViewModelReflection } from "../def";
 
 describe('invoker', () => {
 
@@ -35,16 +35,18 @@ describe('invoker', () => {
             }).toThrow();
         });
 
-        it('should invoke connectedCallback() after all child are inserted into the dom', () => {
+        it('should invoke connectedCallback() before any child is inserted into the dom', () => {
             let counter = 0;
-            const child = api.h('p', {}, []);
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             class MyComponent1 extends Element {
                 connectedCallback() {
                     counter++;
-                    expect(elm.childNodes[0]).toBe(child.elm);
+                    expect(this.root.querySelectorAll('p').length).toBe(0);
                 }
                 render() {
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -60,13 +62,15 @@ describe('invoker', () => {
                     stack.push('child');
                 }
             }
-            const child = api.c('x-child', Child, {});
+            function html($api) {
+                return [$api.c('x-child', Child, {})];
+            }
             class MyComponent1 extends Element {
                 connectedCallback() {
                     stack.push('parent');
                 }
                 render() {
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -81,13 +85,15 @@ describe('invoker', () => {
                     stack.push('child');
                 }
             }
-            const child = api.c('x-child', Child, {});
+            function html($api) {
+                return [$api.c('x-child', Child, {})];
+            }
             class MyComponent1 extends Element {
                 disconnectedCallback() {
                     stack.push('parent');
                 }
                 render() {
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
@@ -99,7 +105,9 @@ describe('invoker', () => {
         it('should invoke disconnectedCallback() after it was removed from the dom', () => {
             let counter = 0;
             let rcounter = 0;
-            const child = api.h('p', {}, []);
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             class MyComponent2 extends Element {
                 disconnectedCallback() {
                     counter++;
@@ -107,7 +115,7 @@ describe('invoker', () => {
                 }
                 render() {
                     rcounter++;
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent2 });
@@ -116,44 +124,45 @@ describe('invoker', () => {
             expect(counter).toBe(1);
             expect(rcounter).toBe(1);
             expect(document.body.childNodes.length).toBe(0);
-            expect.assertions(4)
+            expect.assertions(4);
         });
 
         it('should invoke renderedCallback() sync after every change after all child are inserted', () => {
             let counter = 0;
-            const child = api.h('p', {}, []);
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     counter++;
-                    expect(elm.childNodes[0]).toBe(child.elm);
+                    expect(this.root.querySelectorAll('p').length).toBe(1);
                 }
                 render() {
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
             expect(counter).toBe(1);
+            expect.assertions(2);
         });
 
         it('should invoke parent renderedCallback() sync after every change after all child renderedCallback', () => {
             const cycle = [];
             class Child extends Element {
-                renderedCallback () {
+                renderedCallback() {
                     cycle.push('child');
                 }
-                render () {
-                    return () => []
-                }
             }
-
-            const child = api.c('x-foo', Child, {});
+            function html($api) {
+                return [$api.c('x-foo', Child, {})];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     cycle.push('parent');
                 }
                 render() {
-                    return () => [child];
+                    return html;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
@@ -162,22 +171,24 @@ describe('invoker', () => {
         });
 
         it('should invoke renderedCallback() after render after every change after all child are inserted', () => {
-            let lifecycle: Array<string> = [];
+            let lifecycle: string[] = [];
+            function html($api: any, $cmp: any) {
+                return [
+                    $api.h('p', {
+                        key: 0,
+                        attrs: {
+                            title: $cmp.foo
+                        }
+                    }, [])
+                ];
+            }
             class MyComponent3 extends Element {
                 renderedCallback() {
                     lifecycle.push('rendered');
                 }
                 render() {
                     lifecycle.push('render');
-                    return ($api: any, $cmp: any) => {
-                        return [
-                            api.h('p', {
-                                attrs: {
-                                    title: $cmp.foo
-                                }
-                            }, [])
-                        ]
-                    };
+                    return html;
                 }
             }
             MyComponent3.publicProps = {
@@ -196,19 +207,16 @@ describe('invoker', () => {
         });
 
         it('should invoke renderedCallback() sync after connectedCallback and render', () => {
-            const lifecycle: Array<string> = [];
-            const child = api.h('p', {}, []);
+            const lifecycle: string[] = [];
             class MyComponent3 extends Element {
                 renderedCallback() {
                     lifecycle.push('rendered');
-                    expect(elm.childNodes[0]).toBe(child.elm);
                 }
-                connectedCallback () {
+                connectedCallback() {
                     lifecycle.push('connected');
                 }
                 render() {
                     lifecycle.push('render');
-                    return () => [child];
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent3 });
@@ -238,14 +246,14 @@ describe('invoker', () => {
                     (undefined).foo;
                 }
             }
-
+            function html($api, $cmp, $slotset, $ctx) {
+                return [$api.h(
+                    "section", { key: 0 }, [$api.c("x-bar", MyComponent2, {})]
+                )];
+            }
             class MyComponent1 extends Element {
                 render() {
-                    return function tmpl($api, $cmp, $slotset, $ctx) {
-                        return [$api.h(
-                            "section", {}, [$api.c("x-bar", MyComponent2, {})]
-                        )];
-                    };
+                    return html;
                 }
             }
 
@@ -255,6 +263,26 @@ describe('invoker', () => {
             } catch (e) {
                 expect(e.wcStack).toBe('<x-foo>\n\t<x-bar>');
             }
+        });
+
+        it('should remove listener in disconnectedCallback()', () => {
+            expect.assertions(1);
+            function fn(event: Event) {
+                expect(event.bubbles).toBe(true);
+            }
+            class MyComponent1 extends Element {
+                connectedCallback() {
+                    this.addEventListener('click', fn);
+                }
+                disconnectedCallback() {
+                    this.removeEventListener('click', fn);
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent1 });
+            document.body.appendChild(elm);
+            elm.click();
+            document.body.removeChild(elm);
+            elm.click();
         });
     });
 });

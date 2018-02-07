@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 
     return [api_element(
         "section",
-        {},
+        {
+            key: 1
+        },
         [api_text("Test")]
     )];
 }

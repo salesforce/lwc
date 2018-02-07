@@ -1,20 +1,18 @@
 import assert from "./assert";
-import { OwnerKey } from "./vm";
+import { OwnerKey, VM } from "./vm";
 import { Services } from "./services";
 import { getReplica, Membrane } from "./membrane";
 
-/* eslint-disable */
 import { Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
-/* eslint-enable */
 
-export function piercingHook(membrane: Membrane, target: Replicable, key: string | Symbol, value: any): any {
-    const { handler: { vm } } = membrane;
+export function piercingHook(membrane: Membrane, target: Replicable, key: PropertyKey, value: any): any {
+    const { vm } = membrane.handler as PiercingMembraneHandler;
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
     const { piercing } = Services;
     if (piercing) {
-        const { component, vnode: { data }, def, context } = vm;
+        const { component, data, def, context } = vm;
         let result = value;
         let next = true;
         const callback = (newValue?: any) => {
@@ -29,32 +27,32 @@ export function piercingHook(membrane: Membrane, target: Replicable, key: string
 }
 
 export class PiercingMembraneHandler implements MembraneHandler {
-    vm: VM; // eslint-disable-line no-undef
+    vm: VM;
     constructor(vm: VM) {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
         this.vm = vm;
     }
-    get(membrane: Membrane, target: Replicable, key: string | Symbol): any {
+    get(membrane: Membrane, target: Replicable, key: PropertyKey): any {
         if (key === OwnerKey) {
             return undefined;
         }
-        let value = target[key];
+        const value = target[key];
         return piercingHook(membrane, target, key, value);
     }
     set(membrane: Membrane, target: Replicable, key: string, newValue: any): boolean {
         target[key] = newValue;
         return true;
     }
-    deleteProperty(membrane: Membrane, target: Replicable, key: string | Symbol): boolean {
+    deleteProperty(membrane: Membrane, target: Replicable, key: PropertyKey): boolean {
         delete target[key];
         return true;
     }
-    apply(membrane: Membrane, targetFn: ReplicableFunction, thisArg: any, argumentsList: Array<any>): any {
+    apply(membrane: Membrane, targetFn: ReplicableFunction, thisArg: any, argumentsList: any[]): any {
         return getReplica(membrane, targetFn.apply(thisArg, argumentsList));
     }
-    construct(membrane: Membrane, targetFn: ReplicableFunction, argumentsList: Array<any>, newTarget: any): any {
+    construct(membrane: Membrane, targetFn: ReplicableFunction, argumentsList: any[], newTarget: any): any {
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(newTarget, `construct handler expects a 3rd argument with a newly created object that will be ignored in favor of the wrapped constructor.`);
         }
