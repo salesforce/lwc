@@ -3,7 +3,7 @@
   "version": "0.17.14",
   "private": true,
   "scripts": {
-    "start": "best",
+    "start": "best"
   },
   "devDependencies": {
     "@best/runner-headless": "0.0.10",

@@ -87,7 +87,6 @@ jobs:
           name: Setup dynamic environment variables
           command:
               echo '
-              export PATH=./node_modules/.bin:$PATH
               export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
               export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
               export TARGET_COMMIT=${CIRCLE_SHA1}
@@ -108,7 +107,7 @@ jobs:
 
       - run:
           name: Comparing Benchmarks
-          command: cd packages/benchmark/ && best --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          command: cd packages/benchmark/ && yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 workflows:
   version: 2
