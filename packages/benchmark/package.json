@@ -3,7 +3,8 @@
   "version": "0.17.14",
   "private": true,
   "scripts": {
-    "start": "best"
+    "start": "best",
+    "test": "echo 'No unit test in this package'"
   },
   "devDependencies": {
     "@best/runner-headless": "0.0.10",
