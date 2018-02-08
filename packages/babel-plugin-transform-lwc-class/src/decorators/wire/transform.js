@@ -76,10 +76,12 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
-function getWiredStaticMetadata(staticPath) {
+function getWiredStaticMetadata(properties) {
     const ret  = {};
-    staticPath.map(s => {
-        ret[s.key.name] = s.value.elements.map(e => e.value);
+    properties.forEach(s => {
+        if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
+            ret[s.key.name] = s.value.elements.map(e => e.value);
+        }
     });
     return ret;
 }
