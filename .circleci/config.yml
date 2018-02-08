@@ -13,7 +13,7 @@ jobs:
           keys:
           - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
 
       - save_cache:
           paths:
