@@ -11,16 +11,16 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run: yarn install --frozen-lockfile
 
       - save_cache:
           paths:
+            - ~/.cache/yarn
             - node_modules
             - packages/*/node_modules
-            - yarn.lock
-          key: yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: yarn-v3-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Unit Tests
@@ -37,8 +37,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -56,8 +55,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -80,8 +78,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run:
           name: Setup dynamic environment variables
