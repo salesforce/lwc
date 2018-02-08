@@ -17,17 +17,17 @@ function rollupWarningOverride(warning) {
 }
 
 function mergeMetadata(metadata) {
-    const dependencies = metadata.rollupDependencies;
+    const dependencies = new Map(metadata.rollupDependencies.map(d => ([d, 'module'])));
     const decorators = [];
 
     for (let i in metadata) {
-        dependencies.push(...(metadata[i].templateDependencies || []));
+        (metadata[i].templateDependencies || []).forEach(td => (dependencies.set(td, 'component')));
         decorators.push(...(metadata[i].decorators || []));
     }
 
     return {
         decorators,
-        bundleDependencies: Array.from(new Set(dependencies)),
+        references: Array.from(dependencies).map(d => ({name: d[0], type: d[1]}))
     };
 }
 

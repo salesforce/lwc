@@ -1,13 +1,14 @@
+import _xBar from 'x-bar';
 import { Element } from 'engine';
 import { getTodo } from 'todo';
 import { getHello } from '@schema/foo.bar';
 const style = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
     const {
-        h: api_element
+        c: api_custom_element
     } = $api;
-    return [api_element("section", {}, [])];
-    }
+    return [api_custom_element("x-bar", _xBar, {})];
+}
 if (style) {
     const tagName = 'x-foo';
     const token = 'x-foo_foo';

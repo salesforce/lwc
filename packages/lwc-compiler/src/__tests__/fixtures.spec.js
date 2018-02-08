@@ -102,8 +102,11 @@ describe('compile from file system', () => {
             ),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                {name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -116,8 +119,11 @@ describe('compile from file system', () => {
             pretify(readFixture('expected-mapping-namespace-from-path.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 });
@@ -140,8 +146,11 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-sources-namespaced.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -163,8 +172,11 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-sources-namespaced-format.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -198,8 +210,11 @@ describe('compile from in-memory', () => {
             pretify(readFixture('expected-relative-import.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 });
@@ -218,8 +233,11 @@ describe('mode generation', () => {
             pretify(readFixture('expected-prod-mode.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -237,7 +255,10 @@ describe('mode generation', () => {
         );
 
         expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -254,8 +275,11 @@ describe('mode generation', () => {
             pretify(readFixture('expected-prod_compat-mode.js')),
         );
 
-        expect(metadata).toMatchObject({
-            bundleDependencies: ['engine'],
+        expect(metadata).toEqual({
+            decorators: [],
+            references: [
+                { name: 'engine', type: 'module' }
+            ]
         });
     });
 
@@ -282,8 +306,11 @@ describe('mode generation', () => {
                 pretify(readFixture(`expected-${mode}-mode.js`)),
             );
 
-            expect(metadata).toMatchObject({
-                bundleDependencies: ['engine'],
+            expect(metadata).toEqual({
+                decorators: [],
+                references: [
+                    { name: 'engine', type: 'module' }
+                ]
             });
         }
     });
@@ -373,8 +400,7 @@ describe('metadata output', () => {
             pretify(readFixture('expected-sources-metadata.js')),
         );
 
-        expect(metadata).toEqual({ 
-            bundleDependencies: ['engine', 'todo', '@schema/foo.bar'],
+        expect(metadata).toEqual({
             decorators: [
                 {
                     type: 'api',
@@ -402,6 +428,12 @@ describe('metadata output', () => {
                         }
                     ]
                 }
+            ],
+            references: [
+                { name: 'x-bar', type: 'component' },
+                { name: 'engine', type: 'module' },
+                { name: 'todo', type: 'module' },
+                { name: '@schema/foo.bar', type: 'module' }
             ]
         });
     });
