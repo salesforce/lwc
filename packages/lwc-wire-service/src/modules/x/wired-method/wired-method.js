@@ -9,7 +9,7 @@ export default class WiredMethod extends Element {
             this.state.error = error;
             this.state.Name = undefined;
         } else {
-            this.state.Name = data.Name;
+            this.state.Name =    data.Name;
             this.state.error = undefined;
         }
     }
