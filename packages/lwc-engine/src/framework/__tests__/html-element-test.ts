@@ -7,6 +7,187 @@ import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 
 describe('html-element', () => {
+    describe('#setAttributeNS()', () => {
+        it('should set attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttributeNS('x', 'foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {})]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.setFoo();
+            expect(child.hasAttributeNS('x', 'foo')).toBe(true);
+            expect(child.getAttributeNS('x', 'foo')).toBe('bar');
+        });
+
+        it('should set attribute on host element', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttributeNS('x', 'foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setFoo();
+            expect(element.hasAttributeNS('x', 'foo')).toBe(true);
+            expect(element.getAttributeNS('x', 'foo')).toBe('bar');
+        });
+
+        it('should throw an error if attempting to call setAttributeNS during construction', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    expect(() => {
+                        this.setAttributeNS('x', 'foo', 'bar');
+                    }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
+                }
+            }
+            createElement('x-foo', { is: MyComponent });
+        });
+    });
+
+    describe('#setAttribute()', () => {
+        it('should set attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttribute('foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {})]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.setFoo();
+            expect(child.hasAttribute('foo')).toBe(true);
+            expect(child.getAttribute('foo')).toBe('bar');
+        });
+
+        it('should set attribute on host element', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttribute('foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setFoo();
+            expect(element.hasAttribute('foo')).toBe(true);
+            expect(element.getAttribute('foo')).toBe('bar');
+        });
+
+        it('should throw an error if attempting to call setAttribute during construction', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    expect(() => {
+                        this.setAttribute('foo', 'bar');
+                    }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
+                }
+            }
+            createElement('x-foo', { is: MyComponent });
+        });
+    });
+
+    describe('#removeAttributeNS()', () => {
+        it('should remove namespaced attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {
+                            attrs: {
+                                'x:title': 'foo',
+                            }
+                        })]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.removeTitle();
+            expect(child.hasAttributeNS('x', 'title')).toBe(false);
+        });
+
+        it('should remove attribute on host element', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setAttributeNS('x', 'title', 'foo');
+            element.removeTitle();
+            expect(element.hasAttributeNS('x', 'title')).toBe(false);
+        });
+    });
+
+    describe('#removeAttribute()', () => {
+        it('should remove attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttribute('title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {
+                            attrs: {
+                                title: 'foo',
+                            }
+                        })]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.removeTitle();
+            expect(child.hasAttribute('title')).toBe(false);
+        });
+
+        it('should remove attribute on host element', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttribute('title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.title = 'foo';
+            element.removeTitle();
+            expect(element.hasAttribute('title')).toBe(false);
+        });
+    });
 
     describe('#getBoundingClientRect()', () => {
         it('should throw during construction', () => {
@@ -45,6 +226,20 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
             expect(elm.classList.contains('foo')).toBe(true);
+        });
+    });
+
+    describe('#getAttributeNS()', () => {
+        it('should return correct attribute value', () => {
+            class MyComponent extends Element {
+                getXTitle() {
+                    return this.getAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['getXTitle'];
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttributeNS('x', 'title', 'foo');
+            expect(elm.getXTitle()).toBe('foo');
         });
     });
 

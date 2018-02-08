@@ -13,6 +13,11 @@ import { isString } from "./language";
 
 const {
     getAttribute,
+    getAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+    setAttribute,
+    setAttributeNS,
 } = Element.prototype;
 
 function getLinkedElement(cmp: Component): HTMLElement {
@@ -91,6 +96,7 @@ class LWCElement implements Component {
         }
         addComponentEventListener(vm, type, listener);
     }
+
     removeEventListener(type: string, listener: EventListener) {
         const vm = getCustomElementVM(this);
 
@@ -103,11 +109,45 @@ class LWCElement implements Component {
         }
         removeComponentEventListener(vm, type, listener);
     }
-    getAttribute(attrName: string | null | undefined): string | null {
-        const vm = getCustomElementVM(this);
 
+    setAttributeNS(ns: string, attrName: string, value: any): void {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+        }
+        // use cached setAttributeNS, because elm.setAttribute throws
+        // when not called in template
+        return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
+    }
+
+    removeAttributeNS(ns: string, attrName: string): void {
+        // use cached removeAttributeNS, because elm.setAttribute throws
+        // when not called in template
+        return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
+    }
+
+    removeAttribute(attrName: string): void {
+        // use cached removeAttribute, because elm.setAttribute throws
+        // when not called in template
+        return removeAttribute.call(getLinkedElement(this), attrName);
+    }
+
+    setAttribute(attrName: string, value: any): void {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+        }
+        // use cached setAttribute, because elm.setAttribute throws
+        // when not called in template
+        return setAttribute.call(getLinkedElement(this), attrName, value);
+    }
+
+    getAttributeNS(ns: string, attrName: string) {
+        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
+    }
+
+    getAttribute(attrName: string): string | null {
         // logging errors for experimentals and special attributes
         if (process.env.NODE_ENV !== 'production') {
+            const vm = this[ViewModelReflection];
             assert.vm(vm);
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
@@ -125,9 +165,9 @@ class LWCElement implements Component {
             }
         }
 
-        const elm = getLinkedElement(this);
-        return elm.getAttribute.apply(elm, ArraySlice.call(arguments));
+        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
     }
+
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
