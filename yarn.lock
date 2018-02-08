@@ -104,7 +104,7 @@
   version "0.0.11"
   resolved "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.0.11/3e48cc62adee824eab508c76fde976b578f00b1a.tgz#3e48cc62adee824eab508c76fde976b578f00b1a"
 
-"@best/runner-headless@~0.0.11":
+"@best/runner-headless@0.0.11":
   version "0.0.11"
   resolved "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.0.11/c44ced4ad2cac87f0e625a00f6277ca8a3bb4eb1.tgz#c44ced4ad2cac87f0e625a00f6277ca8a3bb4eb1"
   dependencies:
