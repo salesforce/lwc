@@ -3,7 +3,7 @@ import { createElement } from "../../upgrade";
 import track from "../track";
 
 describe('track.ts', () => {
-    describe('integration', () => {
+    describe.only('integration', () => {
         it('should support setting a tracked property in constructor', () => {
             expect.assertions(3);
 
@@ -43,7 +43,7 @@ describe('track.ts', () => {
             elm.injectFoo(o);
         });
 
-        it('should make tracked properties reactive', () => {
+        it.only('should make tracked properties reactive', () => {
             let counter = 0;
             class MyComponent extends Element {
                 injectFoo(v) {

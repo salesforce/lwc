@@ -10,7 +10,8 @@
     "test": "jest --coverage --no-cache --maxWorkers=2",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
   },
   "devDependencies": {
     "eslint": "^4.13.0",

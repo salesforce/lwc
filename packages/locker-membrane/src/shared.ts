@@ -1,52 +1,49 @@
+const { isArray } = Array;
+
 const {
-    defineProperty,
-    getOwnPropertyNames,
-    isExtensible,
-    getOwnPropertyDescriptor,
     getPrototypeOf,
-    preventExtensions,
-    setPrototypeOf
 } = Object;
 
-const {
-    hasOwnProperty
-} = Object.prototype;
-
-const ArrayMap = Array.prototype.map;
-const isArray = Array.isArray;
-
-function isNull(obj: any): boolean {
-    return obj === null;
-}
-
-function isObject(obj: any): boolean {
-    return typeof obj === 'object';
-}
-
-function isFunction(obj: any): boolean {
-    return typeof obj === 'function';
-}
-
 export {
-    defineProperty,
-    getOwnPropertyNames,
-    isExtensible,
-    getOwnPropertyDescriptor,
-    getPrototypeOf,
-    preventExtensions,
-    ArrayMap,
     isArray,
-    isNull,
-    isObject,
-    isFunction,
-    setPrototypeOf,
-    hasOwnProperty
+};
+
+const ObjectDotPrototype = Object.prototype;
+
+const OtS = {}.toString;
+export function toString(obj: any): string {
+    if (obj && obj.toString) {
+        return obj.toString();
+    } else if (typeof obj === 'object') {
+        return OtS.call(obj);
+    } else {
+        return obj + '';
+    }
 }
 
-export function isReplicable(value: any): value is Replicable {
-    const type = typeof value;
-    return value && (type === 'object' || type === 'function') && !(value instanceof HTMLIFrameElement);
+export function isUndefined(obj: any): obj is undefined {
+    return obj === undefined;
 }
 
-export const OriginalTargetSlot = Symbol();
-export const MembraneHandlerSlot = Symbol();
+export const TargetSlot = Symbol();
+
+// TODO: we are using a funky and leaky abstraction here to try to identify if
+// the proxy is a compat proxy, and define the unwrap method accordingly.
+// @ts-ignore
+const { getKey } = Proxy;
+
+export const unwrap = getKey ?
+    (replicaOrAny: any): any => (replicaOrAny && getKey(replicaOrAny, TargetSlot)) || replicaOrAny
+    : (replicaOrAny: any): any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
+
+
+export function isObservable(value: any): boolean {
+    if (!value) {
+        return false;
+    }
+    if (isArray(value)) {
+        return true;
+    }
+    const proto = getPrototypeOf(value);
+    return (proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null);
+}
