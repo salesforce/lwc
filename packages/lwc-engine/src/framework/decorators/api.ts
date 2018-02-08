@@ -49,6 +49,11 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
+                if (process.env.NODE_ENV !== 'production') {
+                    if (reactiveMembrane.getProxy(newValue) !== newValue && !isNull(newValue) && isObject(newValue)) {
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+                    }
+                }
                 newValue = reactiveMembrane.getProxy(newValue);
             } else {
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);
@@ -93,6 +98,11 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             }
             if (vm.isRoot || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
+                if (process.env.NODE_ENV !== 'production') {
+                    if (reactiveMembrane.getProxy(newValue) !== newValue && !isNull(newValue) && isObject(newValue)) {
+                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
+                    }
+                }
                 newValue = reactiveMembrane.getProxy(newValue);
             } else {
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);

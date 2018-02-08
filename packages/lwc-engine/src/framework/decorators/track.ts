@@ -32,6 +32,11 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
             }
             newValue = reactiveMembrane.getProxy(newValue);
             if (newValue !== vm.cmpTrack[key]) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (reactiveMembrane.getProxy(newValue) !== newValue && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                        assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                    }
+                }
                 vm.cmpTrack[key] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
