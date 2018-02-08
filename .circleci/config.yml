@@ -13,9 +13,10 @@ jobs:
           keys:
           - yarn-v3-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
+      - run: yarn check --integrity
+
       - run: yarn install
 
-      - run: yarn check --integrity
 
       - save_cache:
           paths:
