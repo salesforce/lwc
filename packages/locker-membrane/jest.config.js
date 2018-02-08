@@ -14,8 +14,8 @@ module.exports = {
             statements: 75
         }
     },
-    projects: [
-        './scripts/jest/standard.config.js',
-        './scripts/jest/compat.config.js'
-    ]
+    rootDir: './',
+    transform: {
+    '.(ts)': require.resolve('ts-jest/preprocessor.js')
+    }
 };

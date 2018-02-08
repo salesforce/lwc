@@ -54,4 +54,11 @@ export class ReactiveMembrane {
         }
         return value;
     }
+
+    getReadOnlyProxy(value: any) {
+        if (isObservable(value)) {
+            return getReactiveState(this, value).readOnly;
+        }
+        return value;
+    }
 }

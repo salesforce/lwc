@@ -7,7 +7,7 @@ import { VMElement, VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { ReactiveMembrane } from 'locker-membrane';
 
-const membrane = new ReactiveMembrane({
+export const membrane = new ReactiveMembrane({
     propertyMemberChange: notifyMutation,
     propertyMemberAccess: observeMutation,
 });
@@ -27,7 +27,8 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
-            return membrane.getReactiveProxy(vm.cmpTrack)[key];
+            observeMutation(this, key);
+            return vm.cmpTrack[key];
         },
         set(this: VMElement, newValue: any) {
             const vm = getCustomElementVM(this);
@@ -35,7 +36,19 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            membrane.getReactiveProxy(vm.cmpTrack)[key] = newValue;
+            newValue = membrane.getReactiveProxy(newValue);
+            if (newValue !== vm.cmpTrack[key]) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                        assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                    }
+                }
+                vm.cmpTrack[key] = newValue;
+                if (vm.idx > 0) {
+                    // perf optimization to skip this step if not in the DOM
+                    notifyMutation(this, key);
+                }
+            }
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
         configurable: false,
