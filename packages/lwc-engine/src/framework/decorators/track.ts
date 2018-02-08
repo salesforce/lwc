@@ -1,16 +1,10 @@
 import assert from "../assert";
 import { isArray, isObject, defineProperty, isUndefined } from "../language";
-import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement, VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
-import { ReactiveMembrane } from 'locker-membrane';
-
-export const membrane = new ReactiveMembrane({
-    propertyMemberChange: notifyMutation,
-    propertyMemberAccess: observeMutation,
-});
+import { membrane as reactiveMembrane } from './../reactive';
 
 // stub function to prevent misuse of the @track decorator
 export default function track() {
@@ -36,10 +30,11 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            newValue = membrane.getReactiveProxy(newValue);
+            const isObservable = reactiveMembrane.isObservable(newValue);
+            newValue = reactiveMembrane.getReactiveProxy(newValue);
             if (newValue !== vm.cmpTrack[key]) {
                 if (process.env.NODE_ENV !== 'production') {
-                    if (newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                    if (!isObservable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
                         assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 }

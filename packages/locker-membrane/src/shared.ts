@@ -4,7 +4,16 @@ const {
     getPrototypeOf,
 } = Object;
 
+
+
+const {
+    push: ArrayPush,
+    concat: ArrayConcat,
+} = Array.prototype;
+
 export {
+    ArrayPush,
+    ArrayConcat,
     isArray,
 };
 

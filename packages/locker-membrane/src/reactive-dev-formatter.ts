@@ -1,5 +1,4 @@
-import { TargetSlot } from './membrane';
-import { ArrayPush, ArrayConcat } from "./language";
+import { TargetSlot, ArrayPush, ArrayConcat } from './shared';
 
 const { create, getPrototypeOf, getOwnPropertyNames, getOwnPropertySymbols } = Object;
 const { isArray } = Array;

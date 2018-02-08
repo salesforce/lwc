@@ -1,6 +1,11 @@
 import { unwrap, isArray, isObservable } from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
 import { ReadOnlyHandler } from './read-only-handler';
+import { init as initDevFormatter } from './reactive-dev-formatter';
+
+if (process.env.NODE_ENV !== 'production') {
+    initDevFormatter();
+}
 
 interface IReactiveState {
     readOnly: any;
@@ -62,4 +67,10 @@ export class ReactiveMembrane {
         }
         return value;
     }
+
+    isObservable(value: any) {
+        return isObservable(value);
+    }
 }
+
+export { unwrap }
