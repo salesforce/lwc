@@ -134,7 +134,9 @@ export class ReactiveProxyHandler {
         return targetIsExtensible;
     }
     setPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget, prototype: any): any {
-        /* No op */
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error(`Invalid setPrototypeOf invocation for reactive proxy ${toString(this.originalTarget)}. Prototype of reactive objects cannot be changed.`);
+        }
     }
     getPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget): object {
         const { originalTarget } = this;

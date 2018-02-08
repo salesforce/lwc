@@ -30,14 +30,14 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            newValue = reactiveMembrane.getProxy(newValue);
-            if (newValue !== vm.cmpTrack[key]) {
+            const reactiveValue = reactiveMembrane.getProxy(newValue);
+            if (reactiveValue !== vm.cmpTrack[key]) {
                 if (process.env.NODE_ENV !== 'production') {
-                    if (reactiveMembrane.getProxy(newValue) !== newValue && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                    if (reactiveMembrane.getProxy(newValue) !== reactiveValue && newValue !== null && (isObject(newValue) || isArray(newValue))) {
                         assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 }
-                vm.cmpTrack[key] = newValue;
+                vm.cmpTrack[key] = reactiveValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, key);
