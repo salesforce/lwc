@@ -49,6 +49,8 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
+                newValue = reactiveMembrane.getProxy(newValue);
+            } else {
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);
             }
             if (vmBeingUpdated === vm) {
@@ -91,6 +93,8 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             }
             if (vm.isRoot || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
+                newValue = reactiveMembrane.getProxy(newValue);
+            } else {
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);
             }
             if (vmBeingUpdated === vm) {

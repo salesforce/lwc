@@ -30,7 +30,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-            newValue = reactiveMembrane.getReactiveProxy(newValue);
+            newValue = reactiveMembrane.getProxy(newValue);
             if (newValue !== vm.cmpTrack[key]) {
                 vm.cmpTrack[key] = newValue;
                 if (vm.idx > 0) {

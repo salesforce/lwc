@@ -1,10 +1,10 @@
 {
-  "name": "locker-membrane",
+  "name": "reactive-membrane",
   "version": "0.17.15",
-  "description": "Membrane implementation for locker service",
-  "main": "dist/commonjs/locker-membrane.js",
-  "module": "dist/modules/locker-membrane.js",
-  "jsnext:main": "dist/modules/locker-membrane.js",
+  "description": "Reactive Membrane implementation for LWC",
+  "main": "dist/commonjs/reactive-membrane.js",
+  "module": "dist/modules/reactive-membrane.js",
+  "jsnext:main": "dist/modules/reactive-membrane.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
     "test": "jest --coverage --no-cache --maxWorkers=2",

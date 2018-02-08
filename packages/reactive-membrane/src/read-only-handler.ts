@@ -59,16 +59,10 @@ export class ReadOnlyHandler {
         throw new Error();
     }
     apply(shadowTarget: ReactiveMembraneShadowTarget, thisArg: any, argArray: any[]) {
-        const { originalTarget, membrane } = this;
-        thisArg = unwrap(thisArg);
-        const returnValue = originalTarget.apply(thisArg, argArray);
-        return membrane.getReadOnlyProxy(returnValue);
+        /* No op */
     }
     construct(target: ReactiveMembraneShadowTarget, argArray: any, newTarget?: any): any {
-        const { originalTarget: OriginalConstructor, membrane } = this;
-        argArray = ArrayMap.call(argArray, unwrap);
-        const instance = new OriginalConstructor(...argArray);
-        return membrane.getReadOnlyProxy(instance);
+        /* No op */
     }
     has(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         const { membrane, originalTarget } = this;

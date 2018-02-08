@@ -55,9 +55,6 @@ export function isObservable(value: any): boolean {
     if (isArray(value)) {
         return true;
     }
-    if (isFunction(value)) {
-        return true;
-    }
 
     const proto = getPrototypeOf(value);
     return (proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null);
