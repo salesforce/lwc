@@ -89,8 +89,11 @@ export function isNumber(obj: any): obj is number {
 
 const OtS = {}.toString;
 export function toString(obj: any): string {
-    if (obj && typeof obj === 'object' && !obj.toString) {
+    if (obj && obj.toString) {
+        return obj.toString();
+    } else if (typeof obj === 'object') {
         return OtS.call(obj);
+    } else {
+        return obj + '';
     }
-    return obj + '';
 }

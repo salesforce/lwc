@@ -2,7 +2,7 @@ import assert from "../assert";
 import { defineProperty, isObject, isNull, isTrue } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
-import { subscribeToSetHook, notifyListeners } from "../watcher";
+import { observeMutation, notifyMutation } from "../watcher";
 import { EmptyObject } from "../utils";
 import { isBeingConstructed } from "../component";
 import { VM, VMElement } from "../vm";
@@ -38,11 +38,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 }
                 return;
             }
-            if (isRendering) {
-                // this is needed because the proxy used by template is not sufficient
-                // for public props accessed from within a getter in the component.
-                subscribeToSetHook(vmBeingRendered as VM, this, key);
-            }
+            observeMutation(this, key);
             return vm.cmpProps[key];
         },
         set(this: VMElement, newValue: any) {
@@ -69,7 +65,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 // avoid notification of observability while constructing the instance
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
-                    notifyListeners(this, key);
+                    notifyMutation(this, key);
                 }
             } else if (process.env.NODE_ENV !== 'production') {
                 // logic for setting new properties of the element directly from the DOM

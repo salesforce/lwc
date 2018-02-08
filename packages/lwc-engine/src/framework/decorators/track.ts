@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isArray, isObject, defineProperty, isUndefined } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
-import { subscribeToSetHook, notifyListeners } from "../watcher";
+import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement, VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 
@@ -21,11 +21,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
-            if (isRendering) {
-                // this is needed because the proxy used by template is not sufficient
-                // for public props accessed from within a getter in the component.
-                subscribeToSetHook(vmBeingRendered as VM, this, key);
-            }
+            observeMutation(this, key);
             return vm.cmpTrack[key];
         },
         set(this: VMElement, newValue: any) {
@@ -48,7 +44,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 vm.cmpTrack[key] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
-                    notifyListeners(this, key);
+                    notifyMutation(this, key);
                 }
             }
         },
