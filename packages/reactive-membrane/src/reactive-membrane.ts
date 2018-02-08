@@ -24,18 +24,7 @@ interface IReactiveMembraneEventHandlerMap {
 
 
 function invokeDistortion(membrane: ReactiveMembrane, value: any): { value: any, observable: boolean } {
-    const distorted = membrane.distortion(value);
-    const observable = isObservable(distorted);
-    if (process.env.NODE_ENV !== 'production') {
-        if (!isObservable && !isNull(distorted) && isObject(distorted)) {
-            logWarning(`Assigning a non-reactive value ${distorted} to reactive membrane is not common because mutations on that value cannot be observed.`);
-        }
-    }
-
-    return {
-        value: distorted,
-        observable,
-    };
+    return membrane.distortion(value);
 }
 
 function createShadowTarget(value: any): ReactiveMembraneShadowTarget {
@@ -70,39 +59,35 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
 }
 
 export function notifyMutation(membrane: ReactiveMembrane, obj: any, key: PropertyKey) {
-    membrane.eventMap.propertyMemberChange(obj, key);
+    membrane.propertyMemberChange(obj, key);
 }
 
 export function observeMutation(membrane: ReactiveMembrane, obj: any, key: PropertyKey) {
-    membrane.eventMap.propertyMemberAccess(obj, key);
+    membrane.propertyMemberAccess(obj, key);
 }
 
 export class ReactiveMembrane {
     distortion: ReactiveMembraneDistortionCallback;
-    eventMap: IReactiveMembraneEventHandlerMap;
+    propertyMemberChange: ReactiveMembraneEventHander;
+    propertyMemberAccess: ReactiveMembraneEventHander;
     objectGraph: WeakMap<any, IReactiveState> = new WeakMap();
     constructor (distrotion: ReactiveMembraneDistortionCallback, eventMap: IReactiveMembraneEventHandlerMap) {
         this.distortion = distrotion;
-        this.eventMap = eventMap;
+        this.propertyMemberChange = eventMap.propertyMemberChange;
+        this.propertyMemberAccess = eventMap.propertyMemberAccess;
     }
 
     getProxy(value: any) {
-        const {
-            value: distorted,
-            observable: distoredIsObservable
-        } = invokeDistortion(this, value);
-        if (distoredIsObservable) {
+        const distorted = invokeDistortion(this, value);
+        if (isObservable(distorted)) {
             return getReactiveState(this, distorted).reactive;
         }
         return distorted;
     }
 
     getReadOnlyProxy(value: any) {
-        const {
-            value: distorted,
-            observable: distoredIsObservable
-        } = invokeDistortion(this, value);
-        if (distoredIsObservable) {
+        const distorted = invokeDistortion(this, value);
+        if (isObservable(distorted)) {
             return getReactiveState(this, distorted).readOnly;
         }
         return distorted;
