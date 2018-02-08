@@ -79,8 +79,7 @@ function transfromPublicMethods(t, klassBody, apiDecorators) {
 
     return publicMethods.map(({ path }) => ({
         type: 'method',
-        name: path.parentPath.get('key.name').node,
-        args: path.parentPath.get('params').map(paramPath => paramPath.node.name)
+        name: path.parentPath.get('key.name').node
     }));
 }
 

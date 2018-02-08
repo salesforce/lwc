@@ -380,7 +380,7 @@ describe('metadata output', () => {
                     type: 'api',
                     decorations: [
                         { type: 'property', name: 'publicProp' },
-                        { type: 'method', args: ['name'], name: 'publicMethod' }
+                        { type: 'method', name: 'publicMethod' }
                     ]
                 },
                 {
