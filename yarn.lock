@@ -7863,10 +7863,6 @@ slice-ansi@1.0.0:
   dependencies:
     is-fullwidth-code-point "^2.0.0"
 
-snabbdom@^0.5.4:
-  version "0.5.4"
-  resolved "http://npm.lwcjs.org/snabbdom/-/snabbdom-0.5.4.tgz#82d726fd495843d8920d54ac3ca670b7e503375e"
-
 snapdragon-node@^2.0.1:
   version "2.1.1"
   resolved "http://npm.lwcjs.org/snapdragon-node/-/snapdragon-node-2.1.1/6c175f86ff14bdb0724563e8f3c1b021a286853b.tgz#6c175f86ff14bdb0724563e8f3c1b021a286853b"
@@ -8561,6 +8557,10 @@ typescript@^1.8.9:
 typescript@^2.6.2:
   version "2.6.2"
   resolved "http://npm.lwcjs.org/typescript/-/typescript-2.6.2/3c5b6fd7f6de0914269027f03c0946758f7673a4.tgz#3c5b6fd7f6de0914269027f03c0946758f7673a4"
+
+typescript@^2.7.1:
+  version "2.7.1"
+  resolved "http://npm.lwcjs.org/typescript/-/typescript-2.7.1/bb3682c2c791ac90e7c6210b26478a8da085c359.tgz#bb3682c2c791ac90e7c6210b26478a8da085c359"
 
 uglify-es@3.3.4:
   version "3.3.4"
