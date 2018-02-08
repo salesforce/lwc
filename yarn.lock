@@ -2708,9 +2708,9 @@ dateformat@^2.0.0:
   version "2.2.0"
   resolved "http://npm.lwcjs.org/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
 
-deasync@^0.1.10:
-  version "0.1.10"
-  resolved "http://npm.lwcjs.org/deasync/-/deasync-0.1.10.tgz#4e4a6836fbe0477bd5f908308bd2a96557d5d7fe"
+deasync@0.1.12:
+  version "0.1.12"
+  resolved "http://npm.lwcjs.org/deasync/-/deasync-0.1.12/0159492a4133ab301d6c778cf01e74e63b10e549.tgz#0159492a4133ab301d6c778cf01e74e63b10e549"
   dependencies:
     bindings "~1.2.1"
     nan "^2.0.7"
@@ -5657,14 +5657,14 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
-lwc-jest-transformer@^0.17.9:
-  version "0.17.9"
-  resolved "http://npm.lwcjs.org/lwc-jest-transformer/-/lwc-jest-transformer-0.17.9/511b0378a25d311942438f68343ffe6d7a69cb01.tgz#511b0378a25d311942438f68343ffe6d7a69cb01"
+lwc-jest-transformer@0.17.15:
+  version "0.17.15"
+  resolved "http://npm.lwcjs.org/lwc-jest-transformer/-/lwc-jest-transformer-0.17.15/297414590aa68abb093f12419d8901a6a033cf27.tgz#297414590aa68abb093f12419d8901a6a033cf27"
   dependencies:
     babel-core "^6.24.1"
     babel-preset-jest "^22.1.0"
     babel-template "^6.26.0"
-    deasync "^0.1.10"
+    deasync "0.1.12"
 
 macaddress@^0.2.8:
   version "0.2.8"
