@@ -8,6 +8,6 @@ export default function wire() {
     }
 }
 // TODO: how to allow symbols as property keys?
-export function createWiredPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createWiredPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     createTrackedPropertyDescriptor(proto, key, descriptor);
 }

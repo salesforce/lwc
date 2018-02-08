@@ -12,15 +12,14 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                export default class Test {}
-                Test.wire = {
-                    innerRecord: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Account", 'Rate'] },
-                        type: "record"
-                    }
-                };
-            `
+export default class Test {}
+Test.wire = {
+  innerRecord: {
+    params: { recordId: "recordId" },
+    static: { fields: ["Account", 'Rate'] },
+    type: "record"
+  }
+};`
         }
     });
 
@@ -48,16 +47,15 @@ describe('Wired field', () => {
     `, {
         output: {
             code: `
-                import { record } from 'data-service';
-                export default class Test {}
-                Test.wire = {
-                    innerRecord: {
-                        params: {},
-                        static: {},
-                        adapter: record
-                    }
-                };
-            `
+import { record } from 'data-service';
+export default class Test {}
+Test.wire = {
+  innerRecord: {
+    params: {},
+    static: {},
+    adapter: record
+  }
+};`
         }
     });
 
@@ -85,49 +83,6 @@ describe('Wired field', () => {
     `, {
         error: {
             message: 'test.js: @wire expects a configuration object expression as second parameter.',
-            loc: {
-                line: 2,
-                column: 20,
-            },
-        }
-    });
-});
-
-describe('Wired method', () => {
-    pluginTest('transforms wired method', `
-        import { wire } from 'engine';
-        export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
-            innerRecordMethod() {}
-        }
-    `, {
-        output: {
-            code: `
-                export default class Test {
-                    innerRecordMethod() {}
-                }
-                Test.wire = {
-                    innerRecordMethod: {
-                        params: { recordId: "recordId" },
-                        static: { fields: ["Account", 'Rate'] },
-                        type: "record",
-                        method: 1
-                    }
-                };
-            `
-        }
-    });
-
-    pluginTest('throws when wired method is combined with @api', `
-        import { api, wire } from 'engine';
-        export default class Test {
-            @api
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
-            wiredWithApi() {}
-        }
-    `, {
-        error: {
-            message: 'test.js: @wire method or property cannot be used with @api',
             loc: {
                 line: 2,
                 column: 20,
@@ -179,6 +134,75 @@ describe('Wired method', () => {
     `, {
         error: {
             message: 'test.js: Method or property can only have 1 @wire decorator',
+            loc: {
+                line: 2,
+                column: 20,
+            },
+        }
+    });
+
+    pluginTest('should not throw when using 2 separate wired decorators', `
+         import { wire } from 'engine';
+         export default class Test {
+             @wire('record', { recordId: '$recordId', fields: ['Address'] })
+             wired1;
+             @wire('record', { recordId: '$recordId', fields: ['Name'] })
+             wired2;
+        }
+    `, {
+        output: {
+            code: `
+export default class Test {}
+Test.wire = {
+  wired1: {
+    params: { recordId: 'recordId' },
+    static: { fields: ['Address'] },
+    type: 'record'
+  },
+  wired2: {
+    params: { recordId: 'recordId' },
+    static: { fields: ['Name'] },
+    type: 'record'
+  }
+};`
+        }
+    });
+});
+
+describe('Wired method', () => {
+    pluginTest('transforms wired method', `
+        import { wire } from 'engine';
+        export default class Test {
+            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
+            innerRecordMethod() {}
+        }
+    `, {
+        output: {
+            code: `
+export default class Test {
+  innerRecordMethod() {}
+}
+Test.wire = {
+  innerRecordMethod: {
+    params: { recordId: "recordId" },
+    static: { fields: ["Account", 'Rate'] },
+    type: "record",
+    method: 1
+  }
+};`
+        }
+    });
+
+    pluginTest('throws when wired method is combined with @api', `
+        import { api, wire } from 'engine';
+        export default class Test {
+            @api
+            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            wiredWithApi() {}
+        }
+    `, {
+        error: {
+            message: 'test.js: @wire method or property cannot be used with @api',
             loc: {
                 line: 2,
                 column: 20,

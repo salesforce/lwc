@@ -1,18 +1,18 @@
 {
   "name": "benchmark",
-  "version": "0.17.14",
+  "version": "0.17.15",
   "private": true,
   "scripts": {
     "start": "best",
     "test": "echo 'No unit test in this package'"
   },
   "devDependencies": {
-    "@best/runner-headless": "0.0.10",
-    "@best/store-aws": "0.0.10",
-    "best-cli": "0.0.10"
+    "@best/runner-headless": "0.0.11",
+    "@best/store-aws": "0.0.11",
+    "best-cli": "0.0.11"
   },
   "dependencies": {
-    "lwc-engine": "0.17.14",
-    "rollup-plugin-lwc-compiler": "0.17.14"
+    "lwc-engine": "0.17.15",
+    "rollup-plugin-lwc-compiler": "0.17.15"
   }
 }

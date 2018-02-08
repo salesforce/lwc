@@ -5,7 +5,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'section',
             {
-                style: $cmp.customStyle
+                style: $cmp.customStyle,
+                key: 1
             },
             []
         )

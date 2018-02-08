@@ -55,9 +55,12 @@ function pluginTest(plugin, opts = {}) {
             expect(transformError).toMatchObject(errorFromObject(expected.error));
         } else if (expected.output) {
             const output = testTransform(actual);
-
-            expect(output.code).toBe(output.code);
-            expect(output.metadata).toEqual(output.metadata);
+            if (expected.output.code) {
+                expect(output.code).toBe(expected.output.code);
+            }
+            if (expected.output.metadata) {
+                expect(output.metadata).toEqual(expected.output.metadata);
+            }
         } else {
             throw new TypeError(`Transform test expect an object with either error or output.`);
         }

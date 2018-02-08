@@ -42,6 +42,7 @@ import {
     isSlot,
     shouldFlatten,
     destructuringAssignmentFromObject,
+    getKeyGenerator,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -50,6 +51,7 @@ function transform(
     root: IRNode,
     codeGen: CodeGen,
     state: State,
+    generateKey: () => number = getKeyGenerator(),
 ): t.Expression {
 
     const stack = new Stack<t.Expression>();
@@ -169,7 +171,7 @@ function transform(
             slots.push(
                 t.objectProperty(
                     t.stringLiteral(key),
-                    transform(slotRoot, codeGen, state),
+                    transform(slotRoot, codeGen, state, generateKey),
                 ),
             );
         });
@@ -405,9 +407,22 @@ function transform(
         }
 
         // Key property on VNode
+        const compilerKey = t.numericLiteral(generateKey());
         if (forKey) {
-            data.push(t.objectProperty(t.identifier('key'), forKey));
+            // If element has user-supplied `key` or is in iterator, call `api.k`
+            const { expression: forKeyExpression } = bindExpression(forKey, element);
+            data.push(
+                t.objectProperty(
+                    t.identifier('key'),
+                    codeGen.genKey(compilerKey, forKeyExpression)
+                )
+            );
+        } else {
+            // If stand alone element with no user-defined key
+            // member expression id
+            data.push(t.objectProperty(t.identifier('key'), compilerKey));
         }
+
 
         // Event handler
         if (on) {
