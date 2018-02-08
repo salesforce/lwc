@@ -7,7 +7,9 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     const {
         c: api_custom_element
     } = $api;
-    return [api_custom_element("x-bar", _xBar, {})];
+    return [api_custom_element("x-bar", _xBar, {
+        key: 1
+    })];
 }
 if (style) {
     const tagName = 'x-foo';
