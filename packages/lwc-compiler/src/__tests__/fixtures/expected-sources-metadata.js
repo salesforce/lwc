@@ -32,21 +32,21 @@ Metadata.publicProps = {
     }
 };
 Metadata.publicMethods = ["publicMethod"];
-    Metadata.wire = {
-        wiredProp: {
-            params: {},
-            static: {},
-            adapter: getTodo
-        },
-        wiredMethod: {
-            params: { name: "publicProp" },
-            static: { fields: ['one', 'two'] },
-            adapter: getHello,
-            method: 1
-        }
-    };
-    Metadata.style = tmpl.style;
-    const HELLOWORLD = "hello world!";
+Metadata.wire = {
+    wiredProp: {
+        params: {},
+        static: {},
+        adapter: getTodo
+    },
+    wiredMethod: {
+        params: { name: "publicProp" },
+        static: { fields: ['one', 'two'] },
+        adapter: getHello,
+        method: 1
+    }
+};
+Metadata.style = tmpl.style;
+const HELLOWORLD = "hello world!";
 function ohai(name) {
     return "ohai, " + name;
 }
