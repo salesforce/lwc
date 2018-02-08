@@ -1,5 +1,5 @@
 import './../reactive-dev-formatter';
-import { ReactiveMembrane } from './../main';
+import { ReactiveMembrane } from './../reactive-membrane';
 
 describe('reactive dev formatter', function() {
     it('should add an array to window', function() {
@@ -12,7 +12,7 @@ describe('reactive dev formatter', function() {
 
     it('should return correct object when given reactive proxy', function() {
         const el = document.createElement('div');
-        const reactiveMembrane = new ReactiveMembrane({
+        const reactiveMembrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         })

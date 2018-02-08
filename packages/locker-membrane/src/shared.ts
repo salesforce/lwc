@@ -56,3 +56,32 @@ export function isObservable(value: any): boolean {
     const proto = getPrototypeOf(value);
     return (proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null);
 }
+
+export function isObject(obj: any): obj is object {
+    return typeof obj === 'object';
+}
+
+export function logWarning(msg: string) {
+    try {
+        throw new Error(msg);
+    } catch (e) {
+        const stackTraceLines: string[] = e.stack.split('\n');
+        console.group(`Warning: ${msg}`); // tslint:disable-line
+        stackTraceLines.filter((trace) => {
+             // Chrome adds the error message as the first item in the stack trace
+             // So we filter it out to prevent logging it twice.
+            return trace.replace('Error: ', '') !== msg;
+        })
+        .forEach((trace) => {
+            // We need to format this as a string,
+            // because Safari will detect that the string
+            // is a stack trace line item and will format it as so
+            console.log('%s', trace.trim()); // tslint:disable-line
+        });
+        console.groupEnd(); // tslint:disable-line
+    }
+}
+
+export function isNull(obj: any): obj is null {
+    return obj === null;
+}

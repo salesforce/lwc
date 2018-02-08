@@ -1,9 +1,9 @@
-import { ReactiveMembrane } from './../main';
+import { ReactiveMembrane } from './../reactive-membrane';
 
 describe('ReadOnlyHandler', () => {
     it('should always return the same proxy', () => {
         const o = { x: 1 };
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -15,7 +15,7 @@ describe('ReadOnlyHandler', () => {
     });
     it('should never rewrap a previously produced proxy', () => {
         const o = { x: 1 };
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -26,7 +26,7 @@ describe('ReadOnlyHandler', () => {
     });
     it('should rewrap unknown proxy', () => {
         const o = { x: 1 };
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -38,7 +38,7 @@ describe('ReadOnlyHandler', () => {
         const o = Object.freeze({
             foo: {}
         });
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -48,7 +48,7 @@ describe('ReadOnlyHandler', () => {
         }).not.toThrow();
     });
     it('should maintain equality', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -65,7 +65,7 @@ describe('ReadOnlyHandler', () => {
         expect(property.foo.self).toBe(property);
     });
     it('should understand property desc with getter', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -88,7 +88,7 @@ describe('ReadOnlyHandler', () => {
         expect(target.getReadOnlyProxy(desc.get())).toBe(property.foo);
     });
     it('should handle has correctly', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -100,7 +100,7 @@ describe('ReadOnlyHandler', () => {
         expect('foo' in property);
     });
     it('should throw when deleting', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -112,7 +112,7 @@ describe('ReadOnlyHandler', () => {
         }).toThrow();
     });
     it('should handle extensible correctly when target is extensible', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -128,7 +128,7 @@ describe('ReadOnlyHandler', () => {
         expect(Object.isExtensible(wrapped));
     });
     it('preventExtensions should throw', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -142,7 +142,7 @@ describe('ReadOnlyHandler', () => {
         }).toThrow();
     });
     it('defineProperty should throw', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -159,7 +159,7 @@ describe('ReadOnlyHandler', () => {
     });
 
     it('should handle Object.getOwnPropertyNames correctly', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -170,7 +170,7 @@ describe('ReadOnlyHandler', () => {
         expect(Object.getOwnPropertyNames(proxy)).toEqual(['a']);
     });
     it('should handle Object.getOwnPropertyNames when object has symbol', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -183,7 +183,7 @@ describe('ReadOnlyHandler', () => {
         expect(Object.getOwnPropertyNames(proxy)).toEqual(['a']);
     });
     it('should handle Object.getOwnPropertySymbols when object has symbol', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -195,7 +195,7 @@ describe('ReadOnlyHandler', () => {
         expect(Object.getOwnPropertySymbols(proxy)).toEqual([sym]);
     });
     it('should handle Object.getOwnPropertySymbols when object has symbol and key', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -208,7 +208,7 @@ describe('ReadOnlyHandler', () => {
         expect(Object.getOwnPropertySymbols(proxy)).toEqual([sym]);
     });
     it('should handle Object.keys when object has symbol and key', function() {
-        const target = new ReactiveMembrane({
+        const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -222,7 +222,7 @@ describe('ReadOnlyHandler', () => {
     });
 
     it('should maintain equality', () => {
-        const membrane = new ReactiveMembrane({
+        const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -232,7 +232,7 @@ describe('ReadOnlyHandler', () => {
     });
 
     it('should throw on deep mutations', () => {
-        const membrane = new ReactiveMembrane({
+        const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
@@ -248,7 +248,7 @@ describe('ReadOnlyHandler', () => {
             foo: 'bar',
         };
         const accessSpy = jest.fn();
-        const membrane = new ReactiveMembrane({
+        const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: accessSpy,
         });
@@ -266,7 +266,7 @@ describe('ReadOnlyHandler', () => {
             }
         };
         const accessSpy = jest.fn();
-        const membrane = new ReactiveMembrane({
+        const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: accessSpy,
         });

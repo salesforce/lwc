@@ -10,7 +10,7 @@ import {
     ReactiveMembrane,
     notifyMutation,
     observeMutation,
-} from './main';
+} from './reactive-membrane';
 
 export type ShadowTarget = (object | any[]);
 

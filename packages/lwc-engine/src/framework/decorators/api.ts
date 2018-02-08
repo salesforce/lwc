@@ -49,13 +49,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
-                const isObservable = reactiveMembrane.isObservable(newValue);
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);
-                if (process.env.NODE_ENV !== 'production') {
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
-                    }
-                }
             }
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
@@ -97,13 +91,7 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             }
             if (vm.isRoot || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
-                const isObservable = reactiveMembrane.isObservable(newValue);
                 newValue = reactiveMembrane.getReadOnlyProxy(newValue);
-                if (process.env.NODE_ENV !== 'production') {
-                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
-                    }
-                }
             }
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
