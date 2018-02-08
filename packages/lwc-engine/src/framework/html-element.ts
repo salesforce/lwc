@@ -145,10 +145,9 @@ class LWCElement implements Component {
     }
 
     getAttribute(attrName: string): string | null {
-        const vm = this[ViewModelReflection];
-
         // logging errors for experimentals and special attributes
         if (process.env.NODE_ENV !== 'production') {
+            const vm = this[ViewModelReflection];
             assert.vm(vm);
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
