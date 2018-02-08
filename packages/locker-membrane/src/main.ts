@@ -1,5 +1,6 @@
 import { unwrap, isArray, isObservable } from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
+import { ReadOnlyHandler } from './read-only-handler';
 
 interface IReactiveState {
     readOnly: any;
@@ -22,12 +23,12 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
     if (reactiveState) {
         return reactiveState;
     }
-    const handler = new ReactiveProxyHandler(membrane, value);
+    const reactiveHandler = new ReactiveProxyHandler(membrane, value);
+    const readOnlyHandler = new ReadOnlyHandler(membrane, value);
     const shadowTarget = isArray(value) ? [] : {};
-    const reactive = new Proxy(shadowTarget, handler);
     reactiveState = {
-        reactive,
-        readOnly: null,
+        reactive: new Proxy(shadowTarget, reactiveHandler),
+        readOnly: new Proxy(shadowTarget, readOnlyHandler),
     }
     objectGraph.set(value, reactiveState);
     return reactiveState;
