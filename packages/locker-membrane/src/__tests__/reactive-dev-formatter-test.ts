@@ -16,7 +16,7 @@ describe('reactive dev formatter', function() {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         })
-        const proxy = reactiveMembrane.getReactiveProxy({ foo: 'bar', el });
+        const proxy = reactiveMembrane.getProxy({ foo: 'bar', el });
         const result = window.devtoolsFormatters[0].header(proxy);
         expect(result).toEqual([
             'object', {

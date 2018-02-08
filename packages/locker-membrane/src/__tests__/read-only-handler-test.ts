@@ -276,4 +276,68 @@ describe('ReadOnlyHandler', () => {
         expect(accessSpy).toHaveBeenCalledTimes(2);
         expect(accessSpy).toHaveBeenLastCalledWith(obj.foo, 'bar');
     });
+
+    it('should call propertyMemberAccess when accessing function return value', () => {
+        const rv = { x: 1 };
+        const func = function () { return rv; }
+        const memberAccessSpy = jest.fn();
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: memberAccessSpy,
+        });
+
+        const wet = membrane.getReadOnlyProxy(func);
+        wet().x;
+        expect(memberAccessSpy).toHaveBeenLastCalledWith(rv, 'x');
+    });
+
+    it('should call propertyMemberChange when accessing function return value', () => {
+        const rv = { x: 1 };
+        const func = function () { return rv; }
+        const memberChangeSpy = jest.fn();
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: memberChangeSpy,
+            propertyMemberAccess: () => {},
+        });
+
+        const wet = membrane.getReadOnlyProxy(func);
+        expect(() => {
+            wet().x = 'foo';
+        }).toThrow();
+    });
+
+    it('should call propertyMemberAccess when accessing constructor return value', () => {
+        const instance = { x: 1 };
+        function Ctor() {
+            return instance;
+        }
+
+        const memberAccessSpy = jest.fn();
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: memberAccessSpy,
+        });
+
+        const WetCtor = membrane.getReadOnlyProxy(Ctor);
+        new WetCtor().x;
+        expect(memberAccessSpy).toHaveBeenLastCalledWith(instance, 'x');
+    });
+
+    it('should throw when setting function return value', () => {
+        const instance = { x: 1 };
+        function Ctor() {
+            return instance;
+        }
+
+        const memberChangeSpy = jest.fn();
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: memberChangeSpy,
+            propertyMemberAccess: () => {},
+        });
+
+        const WetCtor = membrane.getReadOnlyProxy(Ctor);
+        expect(() => {
+            new WetCtor().x = 'foo';
+        }).toThrow();
+    });
 });

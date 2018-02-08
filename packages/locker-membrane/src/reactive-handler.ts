@@ -4,15 +4,15 @@ import {
     TargetSlot,
     unwrap,
     isObservable,
+    ArrayMap,
 } from './shared';
 
 import {
     ReactiveMembrane,
     notifyMutation,
     observeMutation,
+    ReactiveMembraneShadowTarget,
 } from './reactive-membrane';
-
-export type ShadowTarget = (object | any[]);
 
 const { isArray } = Array;
 const {
@@ -40,13 +40,13 @@ function unwrapDescriptor(descriptor: PropertyDescriptor): PropertyDescriptor {
 
 function wrapDescriptor(membrane: ReactiveMembrane, descriptor: PropertyDescriptor): PropertyDescriptor {
     if ('value' in descriptor) {
-        descriptor.value = isObservable(descriptor.value) ? membrane.getReactiveProxy(descriptor.value) : descriptor.value;
+        descriptor.value = isObservable(descriptor.value) ? membrane.getProxy(descriptor.value) : descriptor.value;
     }
     return descriptor;
 }
 
 
-function lockShadowTarget(membrane: ReactiveMembrane, shadowTarget: ShadowTarget, originalTarget: any): void {
+function lockShadowTarget(membrane: ReactiveMembrane, shadowTarget: ReactiveMembraneShadowTarget, originalTarget: any): void {
     const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     targetKeys.forEach((key: PropertyKey) => {
         let descriptor = getOwnPropertyDescriptor(originalTarget, key) as PropertyDescriptor;
@@ -72,16 +72,16 @@ export class ReactiveProxyHandler {
         this.originalTarget = value;
         this.membrane = membrane;
     }
-    get(shadowTarget: ShadowTarget, key: PropertyKey): any {
+    get(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): any {
         const { originalTarget, membrane } = this;
         if (key === TargetSlot) {
             return originalTarget;
         }
         const value = originalTarget[key];
         observeMutation(membrane, originalTarget, key);
-        return membrane.getReactiveProxy(value);
+        return membrane.getProxy(value);
     }
-    set(shadowTarget: ShadowTarget, key: PropertyKey, value: any): boolean {
+    set(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, value: any): boolean {
         const { originalTarget, membrane } = this;
         const oldValue = originalTarget[key];
         if (oldValue !== value) {
@@ -96,29 +96,34 @@ export class ReactiveProxyHandler {
         }
         return true;
     }
-    deleteProperty(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
+    deleteProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         const { originalTarget, membrane } = this;
         delete originalTarget[key];
         notifyMutation(membrane, originalTarget, key);
         return true;
     }
-    apply(target: any/*, thisArg: any, argArray?: any*/) {
-
+    apply(shadowTarget: ReactiveMembraneShadowTarget, thisArg: any, argArray: any[]) {
+        const { originalTarget, membrane } = this;
+        thisArg = unwrap(thisArg);
+        const returnValue = originalTarget.apply(thisArg, argArray);
+        return membrane.getProxy(returnValue);
     }
-    construct(target: any, argArray: any, newTarget?: any): any {
-
+    construct(target: ReactiveMembraneShadowTarget, argArray: any, newTarget?: any): any {
+        const { originalTarget: OriginalConstructor, membrane } = this;
+        argArray = ArrayMap.call(argArray, unwrap);
+        const instance = new OriginalConstructor(...argArray);
+        return membrane.getProxy(instance);
     }
-
-    has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
+    has(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         const { originalTarget, membrane } = this;
         observeMutation(membrane, originalTarget, key);
         return key in originalTarget;
     }
-    ownKeys(shadowTarget: ShadowTarget): string[] {
+    ownKeys(shadowTarget: ReactiveMembraneShadowTarget): string[] {
         const { originalTarget } = this;
         return ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     }
-    isExtensible(shadowTarget: ShadowTarget): boolean {
+    isExtensible(shadowTarget: ReactiveMembraneShadowTarget): boolean {
         const shadowIsExtensible = isExtensible(shadowTarget);
 
         if (!shadowIsExtensible) {
@@ -134,14 +139,14 @@ export class ReactiveProxyHandler {
 
         return targetIsExtensible;
     }
-    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any {
+    setPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget, prototype: any): any {
 
     }
-    getPrototypeOf(shadowTarget: ShadowTarget): object {
+    getPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget): object {
         const { originalTarget } = this;
         return getPrototypeOf(originalTarget);
     }
-    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
+    getOwnPropertyDescriptor(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
         const { originalTarget, membrane } = this;
 
         // keys looked up via hasOwnProperty need to be reactive
@@ -163,13 +168,13 @@ export class ReactiveProxyHandler {
         }
         return shadowDescriptor || desc;
     }
-    preventExtensions(shadowTarget: ShadowTarget): boolean {
+    preventExtensions(shadowTarget: ReactiveMembraneShadowTarget): boolean {
         const { originalTarget, membrane } = this;
         lockShadowTarget(membrane, shadowTarget, originalTarget);
         preventExtensions(originalTarget);
         return true;
     }
-    defineProperty(shadowTarget: ShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
+    defineProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         const { originalTarget, membrane } = this;
         const { configurable } = descriptor;
 

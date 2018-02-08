@@ -4,15 +4,15 @@ import {
     TargetSlot,
     unwrap,
     isObservable,
+    ArrayMap,
 } from './shared';
 
 import {
     ReactiveMembrane,
     notifyMutation,
     observeMutation,
+    ReactiveMembraneShadowTarget,
 } from './reactive-membrane';
-
-export type ShadowTarget = (object | any[]);
 
 const { isArray } = Array;
 const {
@@ -43,7 +43,7 @@ export class ReadOnlyHandler {
         this.originalTarget = value;
         this.membrane = membrane;
     }
-    get(shadowTarget: ShadowTarget, key: PropertyKey): any {
+    get(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): any {
         const { membrane, originalTarget } = this;
         if (key === TargetSlot) {
             return originalTarget;
@@ -52,32 +52,37 @@ export class ReadOnlyHandler {
         observeMutation(membrane, originalTarget, key);
         return membrane.getReadOnlyProxy(value);
     }
-    set(shadowTarget: ShadowTarget, key: PropertyKey, value: any): boolean {
+    set(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, value: any): boolean {
         throw new Error();
     }
-    deleteProperty(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
+    deleteProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         throw new Error();
     }
-    apply(shadowTarget: ShadowTarget/*, thisArg: any, argArray?: any*/) {
-
+    apply(shadowTarget: ReactiveMembraneShadowTarget, thisArg: any, argArray: any[]) {
+        const { originalTarget, membrane } = this;
+        thisArg = unwrap(thisArg);
+        const returnValue = originalTarget.apply(thisArg, argArray);
+        return membrane.getReadOnlyProxy(returnValue);
     }
-    construct(shadowTarget: ShadowTarget, argArray: any, newTarget?: any): any {
-
+    construct(target: ReactiveMembraneShadowTarget, argArray: any, newTarget?: any): any {
+        const { originalTarget: OriginalConstructor, membrane } = this;
+        argArray = ArrayMap.call(argArray, unwrap);
+        const instance = new OriginalConstructor(...argArray);
+        return membrane.getReadOnlyProxy(instance);
     }
-
-    has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
+    has(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         const { membrane, originalTarget } = this;
         observeMutation(membrane, originalTarget, key);
         return key in originalTarget;
     }
-    ownKeys(shadowTarget: ShadowTarget): string[] {
+    ownKeys(shadowTarget: ReactiveMembraneShadowTarget): string[] {
         const { originalTarget } = this;
         return ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
     }
-    setPrototypeOf(shadowTarget: ShadowTarget, prototype: any): any {
+    setPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget, prototype: any): any {
         throw new Error();
     }
-    getOwnPropertyDescriptor(shadowTarget: ShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
+    getOwnPropertyDescriptor(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
         const { originalTarget, membrane } = this;
 
         // keys looked up via hasOwnProperty need to be reactive
@@ -99,10 +104,10 @@ export class ReadOnlyHandler {
         }
         return shadowDescriptor || desc;
     }
-    preventExtensions(shadowTarget: ShadowTarget): boolean {
+    preventExtensions(shadowTarget: ReactiveMembraneShadowTarget): boolean {
         throw new Error();
     }
-    defineProperty(shadowTarget: ShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
+    defineProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         throw new Error();
     }
 }

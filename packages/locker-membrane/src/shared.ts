@@ -9,11 +9,13 @@ const {
 const {
     push: ArrayPush,
     concat: ArrayConcat,
+    map: ArrayMap,
 } = Array.prototype;
 
 export {
     ArrayPush,
     ArrayConcat,
+    ArrayMap,
     isArray,
 };
 
@@ -53,12 +55,20 @@ export function isObservable(value: any): boolean {
     if (isArray(value)) {
         return true;
     }
+    if (isFunction(value)) {
+        return true;
+    }
+
     const proto = getPrototypeOf(value);
     return (proto === ObjectDotPrototype || proto === null || getPrototypeOf(proto) === null);
 }
 
 export function isObject(obj: any): obj is object {
     return typeof obj === 'object';
+}
+
+export function isFunction(obj: any): obj is Function {
+    return typeof obj === 'function';
 }
 
 export function logWarning(msg: string) {

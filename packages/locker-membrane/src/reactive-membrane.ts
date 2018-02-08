@@ -1,4 +1,4 @@
-import { unwrap, isArray, isObservable, isObject, logWarning, isNull } from './shared';
+import { unwrap, isArray, isObservable, isObject, logWarning, isNull, isFunction } from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
 import { ReadOnlyHandler } from './read-only-handler';
 import { init as initDevFormatter } from './reactive-dev-formatter';
@@ -12,6 +12,7 @@ interface IReactiveState {
     reactive: any;
 }
 
+export type ReactiveMembraneShadowTarget = Object | Array<any> | Function;
 type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
 type ReactiveMembraneDistortionCallback = (value: any) => any;
 
@@ -25,7 +26,6 @@ interface IReactiveMembraneEventHandlerMap {
 function invokeDistortion(membrane: ReactiveMembrane, value: any): { value: any, observable: boolean } {
     const distorted = membrane.distortion(value);
     const observable = isObservable(distorted);
-
     if (process.env.NODE_ENV !== 'production') {
         if (!isObservable && !isNull(distorted) && isObject(distorted)) {
             logWarning(`Assigning a non-reactive value ${distorted} to reactive membrane is not common because mutations on that value cannot be observed.`);
@@ -38,6 +38,18 @@ function invokeDistortion(membrane: ReactiveMembrane, value: any): { value: any,
     };
 }
 
+function createShadowTarget(value: any): ReactiveMembraneShadowTarget {
+    let shadowTarget: ReactiveMembraneShadowTarget | undefined = undefined;
+    if (isArray(value)) {
+        shadowTarget = [];
+    } else if (isObject(value)) {
+        shadowTarget = {};
+    } else if (isFunction(value)) {
+        shadowTarget = function () {}
+    }
+    return shadowTarget as ReactiveMembraneShadowTarget;
+}
+
 
 function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveState {
     const { objectGraph } = membrane;
@@ -48,7 +60,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
     }
     const reactiveHandler = new ReactiveProxyHandler(membrane, value);
     const readOnlyHandler = new ReadOnlyHandler(membrane, value);
-    const shadowTarget = isArray(value) ? [] : {};
+    const shadowTarget = createShadowTarget(value);
     reactiveState = {
         reactive: new Proxy(shadowTarget, reactiveHandler),
         readOnly: new Proxy(shadowTarget, readOnlyHandler),
@@ -74,20 +86,26 @@ export class ReactiveMembrane {
         this.eventMap = eventMap;
     }
 
-    getReactiveProxy(value: any) {
-        const { value: distorted, observable: distoredIsObservable } = invokeDistortion(this, value);
+    getProxy(value: any) {
+        const {
+            value: distorted,
+            observable: distoredIsObservable
+        } = invokeDistortion(this, value);
         if (distoredIsObservable) {
             return getReactiveState(this, distorted).reactive;
         }
-        return value;
+        return distorted;
     }
 
     getReadOnlyProxy(value: any) {
-        const { value: distorted, observable: distoredIsObservable } = invokeDistortion(this, value);
+        const {
+            value: distorted,
+            observable: distoredIsObservable
+        } = invokeDistortion(this, value);
         if (distoredIsObservable) {
             return getReactiveState(this, distorted).readOnly;
         }
-        return value;
+        return distorted;
     }
 }
 
