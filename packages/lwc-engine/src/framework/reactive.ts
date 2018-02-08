@@ -1,7 +1,7 @@
 import assert from "./assert";
 import {
-    subscribeToSetHook,
-    notifyListeners,
+    observeMutation,
+    notifyMutation,
 } from "./watcher";
 import {
     isRendering,
@@ -96,9 +96,7 @@ export class ReactiveProxyHandler {
             return originalTarget;
         }
         const value = originalTarget[key];
-        if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
-        }
+        observeMutation(originalTarget, key);
         const observable = isObservable(value);
         if (process.env.NODE_ENV !== 'production') {
             if (!observable && value !== null && isObject(value)) {
@@ -122,20 +120,20 @@ export class ReactiveProxyHandler {
         const oldValue = originalTarget[key];
         if (oldValue !== value) {
             originalTarget[key] = value;
-            notifyListeners(originalTarget, key);
+            notifyMutation(originalTarget, key);
         } else if (key === 'length' && isArray(originalTarget)) {
             // fix for issue #236: push will add the new index, and by the time length
             // is updated, the internal length is already equal to the new length value
             // therefore, the oldValue is equal to the value. This is the forking logic
             // to support this use case.
-            notifyListeners(originalTarget, key);
+            notifyMutation(originalTarget, key);
         }
         return true;
     }
     deleteProperty(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
         delete originalTarget[key];
-        notifyListeners(originalTarget, key);
+        notifyMutation(originalTarget, key);
         return true;
     }
     apply(target: any/*, thisArg: any, argArray?: any*/) {
@@ -151,12 +149,7 @@ export class ReactiveProxyHandler {
 
     has(shadowTarget: ShadowTarget, key: PropertyKey): boolean {
         const { originalTarget } = this;
-
-        // make reactive
-        if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
-        }
-
+        observeMutation(originalTarget, key);
         return key in originalTarget;
     }
     ownKeys(shadowTarget: ShadowTarget): string[] {
@@ -192,9 +185,7 @@ export class ReactiveProxyHandler {
         const { originalTarget } = this;
 
         // keys looked up via hasOwnProperty need to be reactive
-        if (isRendering) {
-            subscribeToSetHook(vmBeingRendered as VM, originalTarget, key);
-        }
+        observeMutation(originalTarget, key);
 
         let desc = getOwnPropertyDescriptor(originalTarget, key);
         if (isUndefined(desc)) {
@@ -238,7 +229,7 @@ export class ReactiveProxyHandler {
             defineProperty(shadowTarget, key, wrapDescriptor(descriptor));
         }
 
-        notifyListeners(originalTarget, key);
+        notifyMutation(originalTarget, key);
         return true;
     }
 }
