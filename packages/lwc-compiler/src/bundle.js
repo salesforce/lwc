@@ -22,8 +22,6 @@ function mergeMetadata(metadata) {
 
     for (let i in metadata) {
         dependencies.push(...(metadata[i].templateDependencies || []));
-        dependencies.push(...(metadata[i].classDependencies || []));
-
         decorators.push(...(metadata[i].decorators || []));
     }
 
