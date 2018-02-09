@@ -86,6 +86,16 @@ function getWiredStaticMetadata(properties) {
     return ret;
 }
 
+function getWiredParamMetadata(properties) {
+    const ret = {};
+    properties.forEach(p => {
+        if (p.key.type === 'Identifier' && p.value.type === 'StringLiteral') {
+            ret[p.key.name] = p.value.value;
+        }
+    });
+    return ret;
+}
+
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
@@ -116,7 +126,7 @@ module.exports = function transform(t, klass, decorators) {
         metadata.push({
             name: wiredValue.propertyName,
             adapter: wiredValue.adapter,
-            params: wiredValue.params.map(p => p.value.value),
+            params: getWiredParamMetadata(wiredValue.params),
             static: getWiredStaticMetadata(wiredValue.static),
             type: isClassMethod ? 'method' : 'property'
         });

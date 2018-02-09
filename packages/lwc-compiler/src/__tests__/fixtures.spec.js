@@ -416,14 +416,14 @@ describe('metadata output', () => {
                             type: 'property',
                             adapter: { name: 'getTodo', reference: 'todo' },
                             name: 'wiredProp',
-                            params: [],
+                            params: {},
                             static: {}
                         },
                         {
                             type: 'method',
                             adapter: { name: 'getHello', reference: '@schema/foo.bar' },
                             name: 'wiredMethod',
-                            params: ['publicProp'],
+                            params: { name: 'publicProp' },
                             static: { 'fields': ['one', 'two'] }
                         }
                     ]
