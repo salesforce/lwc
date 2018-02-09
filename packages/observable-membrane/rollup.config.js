@@ -11,7 +11,7 @@ const umdDirectory = path.resolve(__dirname, 'dist/umd');
 const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
-const name = 'ReactiveMembrane';
+const name = 'ObservableMembrane';
 
 const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
@@ -40,7 +40,7 @@ function rollupConfig({ formats, prod }) {
         const targetDirectory = format === 'umd' ? umdDirectory :  format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
-            'reactive-membrane',
+            'observable-membrane',
             prod ? '.min' : '',
             '.js'
         ].join('');
