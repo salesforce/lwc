@@ -420,7 +420,16 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 13 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [
+                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
+                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
+                    ]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -446,7 +455,16 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 12 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [
+                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
+                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
+                    ]
+                },
+                usedHelpers: []
             }
         }
     });
