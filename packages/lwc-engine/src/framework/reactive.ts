@@ -1,7 +1,14 @@
-import { ReactiveMembrane } from "observable-membrane";
+import { ReactiveMembrane, unwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
 
-export const membrane = new ReactiveMembrane((value: any) => value, {
+function format(value: any) {
+    return value;
+}
+
+const membrane = new ReactiveMembrane(format, {
     propertyMemberChange: notifyMutation,
     propertyMemberAccess: observeMutation,
 });
+
+
+export { membrane, unwrap }
