@@ -17,7 +17,7 @@ function rollupWarningOverride(warning) {
 }
 
 function mergeMetadata(metadata) {
-    const dependencies = new Map(metadata.rollupDependencies.map(d => ([d, 'module'])));
+    const dependencies = new Map((metadata.rollupDependencies || []).map(d => ([d, 'module'])));
     const decorators = [];
 
     for (let i in metadata) {
