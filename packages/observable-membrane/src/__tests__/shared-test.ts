@@ -27,12 +27,12 @@ describe('#isObservable', function() {
     });
 
     it('should return false for null', function() {
-        const reactive = isObservable(false);
+        const reactive = isObservable(null);
         expect(!reactive);
     });
 
     it('should return false for undefined', function() {
-        const reactive = isObservable(false);
+        const reactive = isObservable(undefined);
         expect(!reactive);
     });
 
