@@ -91,8 +91,10 @@ module.exports = function transform(t, klass, decorators) {
     const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
     Array.prototype.push.apply(apiProperties, apiMethods);
 
-    return  {
-        type: 'api',
-        decorations: apiProperties
-    };
+    if (apiProperties.length > 0) {
+        return {
+            type: 'api',
+            decorations: apiProperties
+        };
+    }
 }

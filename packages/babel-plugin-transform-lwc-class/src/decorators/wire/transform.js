@@ -135,8 +135,10 @@ module.exports = function transform(t, klass, decorators) {
         );
     }
 
-    return {
-        type: 'wire',
-        decorations: metadata
-    };
+    if (metadata.length > 0) {
+        return {
+            type: 'wire',
+            decorations: metadata
+        };
+    }
 }

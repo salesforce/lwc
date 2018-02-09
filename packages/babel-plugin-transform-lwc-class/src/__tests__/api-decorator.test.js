@@ -419,10 +419,6 @@ describe('metadata', () => {
                             { "name": "todo", "type": "property" },
                             { "name": "index", "type": "property" }
                         ]
-                    },
-                    {
-                        type: 'wire',
-                        decorations: []
                     }
                 ],
                 declarationLoc: {
