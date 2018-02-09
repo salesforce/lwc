@@ -2,7 +2,7 @@ import assert from "./assert";
 import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { getMapFromClassName, EmptyArray } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM, VMElement } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty } from "./component";
 
@@ -55,7 +55,7 @@ const hook: Hooks = {
         renderVM(vm);
     },
     create(oldVNode: VNode, vnode: VNode) {
-        createVM(vnode.sel as string, vnode.elm as VMElement, vnode.data.slotset);
+        createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
     },
     remove(vnode: VNode, removeCallback) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));

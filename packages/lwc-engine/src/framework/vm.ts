@@ -124,7 +124,7 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-export function createVM(tagName: string, elm: VMElement, cmpSlots?: Slotset) {
+export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
@@ -139,7 +139,7 @@ export function createVM(tagName: string, elm: VMElement, cmpSlots?: Slotset) {
         isDirty: true,
         isRoot,
         def,
-        elm,
+        elm: elm as VMElement,
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
