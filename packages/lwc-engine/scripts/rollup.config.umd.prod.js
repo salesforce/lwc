@@ -4,6 +4,7 @@ const uglify = require('rollup-plugin-uglify');
 const replace = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
 const { minify } = require('uglify-es');
+const nodeResolve = require('rollup-plugin-node-resolve');
 
 const { version } = require('../package.json');
 const { generateTargetName } = require('./engine.rollup.config.util');
@@ -18,6 +19,7 @@ function rollupConfig(config){
     const { format, target, prod } = config;
 
     let plugins = [
+        nodeResolve(),
         typescript({ target: target, typescript: require('typescript') }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         prod && uglify({}, code => minify(code))
