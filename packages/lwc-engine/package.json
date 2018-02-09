@@ -30,12 +30,12 @@
     "typescript": "^2.7.1",
     "uglify-es": "3.3.4"
   },
-  "dependencies": {
-    "observable-membrane": "^0.17.15-alpha.1"
-  },
   "lwc": {
     "modules": {
       "engine": "dist/modules/es2017/engine.js"
     }
+  },
+  "dependencies": {
+    "observable-membrane": "^0.17.15-alpha.1"
   }
 }
