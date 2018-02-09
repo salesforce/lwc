@@ -372,7 +372,7 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
     // attribute change control must be released every time its value is checked
-    resetAttibuteChangeControl();
+    resetAttributeChangeControl();
 }
 
 function isAttrObserved(vm: VM, attrName: string): boolean {
@@ -390,7 +390,7 @@ function isAttributeChangeControlled(attrName: string): boolean {
     return controlledAttributeChange && attrName === controlledAttributeName;
 }
 
-function resetAttibuteChangeControl() {
+function resetAttributeChangeControl() {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();

@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { isUndefined, isFunction, assign } from "./language";
-import { createVM, removeVM, appendVM, renderVM, VMElement } from "./vm";
+import { createVM, removeVM, appendVM, renderVM } from "./vm";
 import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate } from "./def";
 import { ComponentConstructor } from "./component";
 import { getCustomElementVM } from "./html-element";
@@ -63,7 +63,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
     // Create element with correct tagName
-    const element = (document.createElement(tagName) as VMElement);
+    const element = document.createElement(tagName);
     createVM(sel, element);
     // Handle insertion and removal from the DOM
     element[ConnectingSlot] = () => {
