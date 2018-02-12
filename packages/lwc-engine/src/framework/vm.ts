@@ -15,6 +15,7 @@ import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
+import { startMeasure, endMeasure } from "./performance-timing";
 
 export interface HashTable<T> {
     [key: string]: T;
@@ -71,7 +72,15 @@ export function addInsertionIndex(vm: VM) {
     }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
+        if (process.env.NODE_ENV !== 'production') {
+            startMeasure(vm, 'connectedCallback');
+        }
+
         invokeComponentCallback(vm, connectedCallback);
+
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'connectedCallback');
+        }
     }
 }
 
@@ -87,7 +96,15 @@ export function removeInsertionIndex(vm: VM) {
     }
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
+        if (process.env.NODE_ENV !== 'production') {
+            startMeasure(vm, 'disconnectedCallback');
+        }
+
         invokeComponentCallback(vm, disconnectedCallback);
+
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'disconnectedCallback');
+        }
     }
 }
 
@@ -206,6 +223,11 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         return; // nothing to do here
     }
     let error;
+
+    if (process.env.NODE_ENV !== 'production') {
+        startMeasure(vm, 'patch');
+    }
+
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
@@ -213,6 +235,10 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     } catch (e) {
         error = Object(e);
     } finally {
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'patch');
+        }
+
         if (!isUndefined(error)) {
             const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
             if (isUndefined(errorBoundaryVm)) {
@@ -239,7 +265,15 @@ function processPostPatchCallbacks(vm: VM) {
     }
     const { renderedCallback } = vm.def;
     if (!isUndefined(renderedCallback)) {
+        if (process.env.NODE_ENV !== 'production') {
+            startMeasure(vm, 'renderedCallback');
+        }
+
         invokeComponentCallback(vm, renderedCallback);
+
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'renderedCallback');
+        }
     }
 }
 
@@ -284,8 +318,17 @@ function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any)
     }
     resetShadowRoot(failedVm); // remove offenders
     const { errorCallback } = errorBoundaryVm.def;
+
+    if (process.env.NODE_ENV !== 'production') {
+        startMeasure(errorBoundaryVm, 'errorCallback');
+    }
+
     // error boundaries must have an ErrorCallback
     invokeComponentCallback(errorBoundaryVm, errorCallback as ErrorCallback, [error, error.wcStack]);
+
+    if (process.env.NODE_ENV !== 'production') {
+        endMeasure(errorBoundaryVm, 'errorCallback');
+    }
 }
 
 export function resetShadowRoot(vm: VM) {

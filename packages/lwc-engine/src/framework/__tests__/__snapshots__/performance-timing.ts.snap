@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`performance-timing captures all lifecycle hooks 1`] = `
+"<ROOT>
+	<Foo (1)> - constructor
+	<Foo (1)> - connectedCallback
+	<Foo (1)> - renderedCallback
+	<Foo (1)> - disconnectedCallback"
+`;
+
+exports[`performance-timing captures component constructor 1`] = `
+"<ROOT>
+	<Foo (1)> - constructor"
+`;
+
+exports[`performance-timing captures error callback 1`] = `
+"<ROOT>
+	<Foo (1)> - constructor
+	<Foo (1)> - render
+	<Foo (1)> - patch
+		<Bar (2)> - constructor
+		<Bar (2)> - render
+	<Foo (1)> - errorCallback"
+`;
+
+exports[`performance-timing captures nested component tree 1`] = `
+"<ROOT>
+	<Foo (1)> - constructor
+	<Foo (1)> - render
+	<Foo (1)> - patch
+		<Bar (2)> - constructor
+		<Bar (3)> - constructor
+		<Bar (2)> - render
+		<Bar (2)> - patch
+		<Bar (3)> - render
+		<Bar (3)> - patch"
+`;
+
+exports[`performance-timing recovers from errors 1`] = `
+"<ROOT>
+	<Foo (1)> - constructor
+	<Foo (1)> - render"
+`;
+
+exports[`performance-timing skips parent measurement when children component props change 1`] = `
+"<ROOT>
+	<Bar (2)> - render
+	<Bar (2)> - patch
+	<Baz (3)> - render
+	<Baz (3)> - patch"
+`;

@@ -6,6 +6,10 @@ module.exports = {
         '^.+\\.ts$': require.resolve('ts-jest/preprocessor.js'),
     },
 
+    setupFiles: [
+        '<rootDir>/scripts/jest-setup.js',
+    ],
+
     mapCoverage: true,
     collectCoverageFrom: ['src/**/*.ts'],
     coverageReporters: ['lcov', 'text', 'text-summary', 'html'],
