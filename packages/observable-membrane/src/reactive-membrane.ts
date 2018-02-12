@@ -1,4 +1,15 @@
-import { ObjectCreate, unwrap, isArray, isObservable, isObject, logWarning, isNull, isFunction } from './shared';
+import {
+    ObjectCreate,
+    ObjectDefineProperties,
+    ObjectDefineProperty,
+    unwrap,
+    isArray,
+    isObservable,
+    isObject,
+    logWarning,
+    isNull,
+    isFunction
+} from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
 import { ReadOnlyHandler } from './read-only-handler';
 import { init as initDevFormatter } from './reactive-dev-formatter';
@@ -47,11 +58,11 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
         return reactiveState;
     }
 
-    reactiveState = Object.defineProperties(ObjectCreate(null), {
+    reactiveState = ObjectDefineProperties(ObjectCreate(null), {
         shadowTarget: {
             get(this: IReactiveState) {
                 const shadowTarget = createShadowTarget(value);
-                Object.defineProperty(this, 'shadowTarget', { value: shadowTarget });
+                ObjectDefineProperty(this, 'shadowTarget', { value: shadowTarget });
                 return shadowTarget;
             },
             configurable: true,
@@ -61,7 +72,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
                 const { shadowTarget } = this;
                 const reactiveHandler = new ReactiveProxyHandler(membrane, value);
                 const proxy = new Proxy(shadowTarget, reactiveHandler);
-                Object.defineProperty(this, 'reactive', { value: proxy });
+                ObjectDefineProperty(this, 'reactive', { value: proxy });
                 return proxy;
             },
             configurable: true,
@@ -71,7 +82,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
                 const { shadowTarget } = this;
                 const readOnlyHandler = new ReadOnlyHandler(membrane, value);
                 const proxy = new Proxy(shadowTarget, readOnlyHandler);
-                Object.defineProperty(this, 'readOnly', { value: proxy });
+                ObjectDefineProperty(this, 'readOnly', { value: proxy });
                 return proxy;
             },
             configurable: true,

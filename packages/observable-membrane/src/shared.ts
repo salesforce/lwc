@@ -3,6 +3,8 @@ const { isArray } = Array;
 const {
     getPrototypeOf,
     create: ObjectCreate,
+    defineProperty: ObjectDefineProperty,
+    defineProperties: ObjectDefineProperties,
 } = Object;
 
 const {
@@ -17,6 +19,8 @@ export {
     ArrayMap,
     isArray,
     ObjectCreate,
+    ObjectDefineProperty,
+    ObjectDefineProperties,
 };
 
 const ObjectDotPrototype = Object.prototype;
