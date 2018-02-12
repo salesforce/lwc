@@ -1,4 +1,4 @@
-import { unwrap, isArray, isObservable, isObject, logWarning, isNull, isFunction } from './shared';
+import { ObjectCreate, unwrap, isArray, isObservable, isObject, logWarning, isNull, isFunction } from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
 import { ReadOnlyHandler } from './read-only-handler';
 import { init as initDevFormatter } from './reactive-dev-formatter';
@@ -10,9 +10,10 @@ if (process.env.NODE_ENV !== 'production') {
 interface IReactiveState {
     readOnly: any;
     reactive: any;
+    shadowTarget: ReactiveMembraneShadowTarget;
 }
 
-export type ReactiveMembraneShadowTarget = Object | Array<any> | Function;
+export type ReactiveMembraneShadowTarget = Object | Array<any>;
 type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
 type ReactiveMembraneDistortionCallback = (value: any) => any;
 
@@ -33,8 +34,6 @@ function createShadowTarget(value: any): ReactiveMembraneShadowTarget {
         shadowTarget = [];
     } else if (isObject(value)) {
         shadowTarget = {};
-    } else if (isFunction(value)) {
-        shadowTarget = function () {}
     }
     return shadowTarget as ReactiveMembraneShadowTarget;
 }
@@ -47,13 +46,38 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
     if (reactiveState) {
         return reactiveState;
     }
-    const reactiveHandler = new ReactiveProxyHandler(membrane, value);
-    const readOnlyHandler = new ReadOnlyHandler(membrane, value);
-    const shadowTarget = createShadowTarget(value);
-    reactiveState = {
-        reactive: new Proxy(shadowTarget, reactiveHandler),
-        readOnly: new Proxy(shadowTarget, readOnlyHandler),
-    }
+
+    reactiveState = Object.defineProperties(ObjectCreate(null), {
+        shadowTarget: {
+            get(this: IReactiveState) {
+                const shadowTarget = createShadowTarget(value);
+                Object.defineProperty(this, 'shadowTarget', { value: shadowTarget });
+                return shadowTarget;
+            },
+            configurable: true,
+        },
+        reactive: {
+            get(this: IReactiveState) {
+                const { shadowTarget } = this;
+                const reactiveHandler = new ReactiveProxyHandler(membrane, value);
+                const proxy = new Proxy(shadowTarget, reactiveHandler);
+                Object.defineProperty(this, 'reactive', { value: proxy });
+                return proxy;
+            },
+            configurable: true,
+        },
+        readOnly: {
+            get(this: IReactiveState) {
+                const { shadowTarget } = this;
+                const readOnlyHandler = new ReadOnlyHandler(membrane, value);
+                const proxy = new Proxy(shadowTarget, readOnlyHandler);
+                Object.defineProperty(this, 'readOnly', { value: proxy });
+                return proxy;
+            },
+            configurable: true,
+        }
+    }) as IReactiveState;
+
     objectGraph.set(value, reactiveState);
     return reactiveState;
 }

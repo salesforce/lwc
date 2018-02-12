@@ -2,9 +2,8 @@ const { isArray } = Array;
 
 const {
     getPrototypeOf,
+    create: ObjectCreate,
 } = Object;
-
-
 
 const {
     push: ArrayPush,
@@ -17,6 +16,7 @@ export {
     ArrayConcat,
     ArrayMap,
     isArray,
+    ObjectCreate,
 };
 
 const ObjectDotPrototype = Object.prototype;
