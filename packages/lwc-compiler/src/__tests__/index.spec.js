@@ -154,7 +154,15 @@ describe('transform', () => {
             moduleName: 'foo',
         });
         const metadata = result.metadata;
-        expect(metadata.apiProperties).toEqual([{ name: 'todo' }, { name: 'index' }]);
+        expect(metadata.decorators).toEqual([
+            {
+                type: 'api',
+                targets: [
+                    { type: 'property', name: 'todo' },
+                    { type: 'property', name: 'index' }
+                ]
+            }
+        ]);
         expect(metadata.doc).toBe('Foo doc');
         expect(metadata.declarationLoc).toEqual({ start: { line: 4, column: 12 }, end: { line: 14, column: 13 } });
     });

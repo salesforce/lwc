@@ -124,8 +124,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [], 
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: 'Foo doc',
                 marked: [],
@@ -148,8 +147,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } }, 
                 doc: "Foo doc",
                 marked: [],
@@ -173,8 +171,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } }, 
                 doc: 'multi\nline',
                 marked: [],
@@ -196,8 +193,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [], 
-                apiProperties: [], 
+                decorators: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
                 doc: "last",
                 marked: [],
@@ -218,8 +214,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -242,8 +237,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -266,8 +260,7 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }

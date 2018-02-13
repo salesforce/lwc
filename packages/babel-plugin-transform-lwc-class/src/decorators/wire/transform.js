@@ -55,7 +55,7 @@ function buildWireConfigValue(t, wiredValues) {
             wireConfig.push(
                 t.objectProperty(
                     t.identifier('adapter'),
-                    t.identifier(wiredValue.adapter)
+                    t.identifier(wiredValue.adapter.name)
                 )
             )
         }
@@ -76,7 +76,28 @@ function buildWireConfigValue(t, wiredValues) {
     }));
 }
 
+function getWiredStaticMetadata(properties) {
+    const ret  = {};
+    properties.forEach(s => {
+        if (s.key.type === 'Identifier' && s.value.type === 'ArrayExpression') {
+            ret[s.key.name] = s.value.elements.map(e => e.value);
+        }
+    });
+    return ret;
+}
+
+function getWiredParamMetadata(properties) {
+    const ret = {};
+    properties.forEach(p => {
+        if (p.key.type === 'Identifier' && p.value.type === 'StringLiteral') {
+            ret[p.key.name] = p.value.value;
+        }
+    });
+    return ret;
+}
+
 module.exports = function transform(t, klass, decorators) {
+    const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments');
 
@@ -96,8 +117,19 @@ module.exports = function transform(t, klass, decorators) {
         if (id.isStringLiteral()) {
             wiredValue.type = id.node.value;
         } else if (id.isIdentifier()) {
-            wiredValue.adapter = id.node.name;
+            wiredValue.adapter = {
+                name: id.node.name,
+                reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
+            }
         }
+
+        metadata.push({
+            name: wiredValue.propertyName,
+            adapter: wiredValue.adapter,
+            params: getWiredParamMetadata(wiredValue.params),
+            static: getWiredStaticMetadata(wiredValue.static),
+            type: isClassMethod ? 'method' : 'property'
+        });
 
         return wiredValue;
     });
@@ -111,5 +143,12 @@ module.exports = function transform(t, klass, decorators) {
                 buildWireConfigValue(t, wiredValues)
             )
         );
+    }
+
+    if (metadata.length > 0) {
+        return {
+            type: 'wire',
+            targets: metadata
+        };
     }
 }
