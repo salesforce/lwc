@@ -18,11 +18,11 @@ const isUserTimingSupported: boolean =
     typeof performance.measure === 'function' &&
     typeof performance.clearMeasures === 'function';
 
-function getMarkName(vm: VM, phase: MeasurementPhase) {
+function getMarkName(vm: VM, phase: MeasurementPhase): string {
     return `<${vm.def.name} (${vm.uid})> - ${phase}`;
 }
 
-export function startMeasure(vm: VM, phase: MeasurementPhase): void {
+export function startMeasure(vm: VM, phase: MeasurementPhase) {
     if (!isUserTimingSupported) {
         return;
     }
@@ -31,13 +31,12 @@ export function startMeasure(vm: VM, phase: MeasurementPhase): void {
     performance.mark(name);
 }
 
-export function endMeasure(vm: VM, phase: MeasurementPhase): void {
+export function endMeasure(vm: VM, phase: MeasurementPhase) {
     if (!isUserTimingSupported) {
         return;
     }
 
     const name = getMarkName(vm, phase);
-
     performance.measure(name, name);
 
     // Clear the created marks and measure to avoid filling the performance entries buffer.
