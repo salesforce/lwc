@@ -12,7 +12,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     marginRight: '5px',
                     marginTop: '10px',
                     marginBottom: '10px'
-                }
+                },
+                key: 1
             },
             []
         )

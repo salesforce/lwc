@@ -97,7 +97,7 @@ describe('wire.ts', () => {
             });
         });
 
-        it('should not proxify primitive value', function () {
+        it('should not proxify primitive value', function() {
             expect.assertions(1);
 
             class MyComponent extends Element {
@@ -114,7 +114,7 @@ describe('wire.ts', () => {
             elm.injectFoo(1);
         });
 
-        it('should proxify plain arrays', function () {
+        it('should proxify plain arrays', function() {
             expect.assertions(2);
 
             const a = [];
@@ -133,7 +133,7 @@ describe('wire.ts', () => {
             elm.injectFoo(a);
         });
 
-        it('should not proxify exotic objects', function () {
+        it('should not proxify exotic objects', function() {
             expect.assertions(1);
 
             const d = new Date();
@@ -151,7 +151,7 @@ describe('wire.ts', () => {
             elm.injectFoo(d);
         });
 
-        it('should not proxify non-observable object', function () {
+        it('should not proxify non-observable object', function() {
             expect.assertions(1);
 
             const o = Object.create({});
@@ -169,7 +169,7 @@ describe('wire.ts', () => {
             elm.injectFoo(o);
         });
 
-        it('should not throw an error if wire is observable object', function () {
+        it('should not throw an error if wire is observable object', function() {
             class MyComponent extends Element {
                 injectFoo(v) {
                     this.foo = v;
@@ -184,7 +184,7 @@ describe('wire.ts', () => {
             }).not.toThrow();
         });
 
-        it('should throw a wire property is mutated during rendering', function () {
+        it('should throw a wire property is mutated during rendering', function() {
             class MyComponent extends Element {
                 render() {
                     this.foo = 1;
@@ -198,7 +198,6 @@ describe('wire.ts', () => {
         });
 
     });
-
 
     describe('@wire misuse', () => {
         it('should throw when invoking wire as a function', () => {

@@ -85,7 +85,9 @@ describe('transform', () => {
                     h: api_element
                 } = $api;
 
-                return [api_element("div", {}, [api_text("Hello")])];
+                return [api_element("div", {
+                    key: 1
+                }, [api_text("Hello")])];
             }
 
             if (style) {
@@ -132,7 +134,7 @@ describe('transform', () => {
 
     it('javascript metadata', async () => {
         const content = `
-            import { Element } from 'engine';
+            import { Element, api } from 'engine';
             /** Foo doc */
             export default class Foo extends Element {
                 _privateTodo;

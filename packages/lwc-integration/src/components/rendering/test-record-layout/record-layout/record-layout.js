@@ -1,4 +1,4 @@
-import { Element } from "engine";
+import { Element, track } from "engine";
 import { mockState } from "./hardcoded-state";
 
 export default class RecordLayout extends Element {

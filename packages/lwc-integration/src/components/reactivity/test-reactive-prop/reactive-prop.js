@@ -1,5 +1,5 @@
 
-import { Element } from 'engine';
+import { Element, track } from 'engine';
 
 export default class ReactiveProp extends Element {
     @track trackHasOwnProp = {};

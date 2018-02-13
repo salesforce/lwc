@@ -1,12 +1,193 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { OwnerKey } from "../vm";
-import * as api from "../api";
-import { patch } from '../patch';
 import assertLogger from './../assert';
 import { register } from "./../services";
+import { ViewModelReflection } from "../def";
+import { VNode } from "../../3rdparty/snabbdom/types";
+import { Component } from "../component";
 
 describe('html-element', () => {
+    describe('#setAttributeNS()', () => {
+        it('should set attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttributeNS('x', 'foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {})]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.setFoo();
+            expect(child.hasAttributeNS('x', 'foo')).toBe(true);
+            expect(child.getAttributeNS('x', 'foo')).toBe('bar');
+        });
+
+        it('should set attribute on host element', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttributeNS('x', 'foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setFoo();
+            expect(element.hasAttributeNS('x', 'foo')).toBe(true);
+            expect(element.getAttributeNS('x', 'foo')).toBe('bar');
+        });
+
+        it('should throw an error if attempting to call setAttributeNS during construction', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    expect(() => {
+                        this.setAttributeNS('x', 'foo', 'bar');
+                    }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
+                }
+            }
+            createElement('x-foo', { is: MyComponent });
+        });
+    });
+
+    describe('#setAttribute()', () => {
+        it('should set attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttribute('foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {})]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.setFoo();
+            expect(child.hasAttribute('foo')).toBe(true);
+            expect(child.getAttribute('foo')).toBe('bar');
+        });
+
+        it('should set attribute on host element', () => {
+            class MyComponent extends Element {
+                setFoo() {
+                    this.setAttribute('foo', 'bar');
+                }
+            }
+            MyComponent.publicMethods = ['setFoo'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setFoo();
+            expect(element.hasAttribute('foo')).toBe(true);
+            expect(element.getAttribute('foo')).toBe('bar');
+        });
+
+        it('should throw an error if attempting to call setAttribute during construction', () => {
+            class MyComponent extends Element {
+                constructor() {
+                    super();
+                    expect(() => {
+                        this.setAttribute('foo', 'bar');
+                    }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
+                }
+            }
+            createElement('x-foo', { is: MyComponent });
+        });
+    });
+
+    describe('#removeAttributeNS()', () => {
+        it('should remove namespaced attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {
+                            attrs: {
+                                'x:title': 'foo',
+                            }
+                        })]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.removeTitle();
+            expect(child.hasAttributeNS('x', 'title')).toBe(false);
+        });
+
+        it('should remove attribute on host element', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.setAttributeNS('x', 'title', 'foo');
+            element.removeTitle();
+            expect(element.hasAttributeNS('x', 'title')).toBe(false);
+        });
+    });
+
+    describe('#removeAttribute()', () => {
+        it('should remove attribute on host element when element is nested in template', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttribute('title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+
+            class Parent extends Element {
+                render() {
+                    return ($api) => {
+                        return [$api.c('x-foo', MyComponent, {
+                            attrs: {
+                                title: 'foo',
+                            }
+                        })]
+                    }
+                }
+            }
+            const element = createElement('x-foo', { is: Parent });
+            document.body.appendChild(element);
+            const child = element.querySelector('x-foo');
+            child.removeTitle();
+            expect(child.hasAttribute('title')).toBe(false);
+        });
+
+        it('should remove attribute on host element', () => {
+            class MyComponent extends Element {
+                removeTitle() {
+                    this.removeAttribute('title');
+                }
+            }
+            MyComponent.publicMethods = ['removeTitle'];
+            const element = createElement('x-foo', { is: MyComponent });
+            element.title = 'foo';
+            element.removeTitle();
+            expect(element.hasAttribute('title')).toBe(false);
+        });
+    });
 
     describe('#getBoundingClientRect()', () => {
         it('should throw during construction', () => {
@@ -17,7 +198,7 @@ describe('html-element', () => {
                         this.getBoundingClientRect();
                     }).toThrow();
                 }
-            }
+            };
             createElement('x-foo', { is: def });
             expect.assertions(1);
         });
@@ -30,7 +211,7 @@ describe('html-element', () => {
                     super();
                     this.classList.add('foo');
                 }
-            }
+            };
             expect(() => createElement('x-foo', { is: def })).toThrow();
         });
 
@@ -41,10 +222,24 @@ describe('html-element', () => {
                     this.classList.add('foo');
                     expect(this.classList.contains('foo')).toBe(true);
                 }
-            }
+            };
             const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
             expect(elm.classList.contains('foo')).toBe(true);
+        });
+    });
+
+    describe('#getAttributeNS()', () => {
+        it('should return correct attribute value', () => {
+            class MyComponent extends Element {
+                getXTitle() {
+                    return this.getAttributeNS('x', 'title');
+                }
+            }
+            MyComponent.publicMethods = ['getXTitle'];
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttributeNS('x', 'title', 'foo');
+            expect(elm.getXTitle()).toBe('foo');
         });
     });
 
@@ -56,7 +251,7 @@ describe('html-element', () => {
                     super();
                     expect(() => this.getAttribute()).toThrow();
                 }
-            }
+            };
             createElement('x-foo', { is: def });
         });
         it('should throw when attribute name matches a declared public property', () => {
@@ -66,7 +261,7 @@ describe('html-element', () => {
                     super();
                     expect(() => this.getAttribute('foo')).toThrow();
                 }
-            }
+            };
             def.publicProps = { foo: "default value" };
             createElement('x-foo', { is: def });
         });
@@ -79,7 +274,7 @@ describe('html-element', () => {
                     expect(this.getAttribute(undefined)).toBeNull();
                     expect(this.getAttribute("")).toBeNull();
                 }
-            }
+            };
             createElement('x-foo', { is: def });
         });
         it('should be null for non-existing attributes', () => {
@@ -89,14 +284,14 @@ describe('html-element', () => {
                     super();
                     expect(this.getAttribute("foo-bar-baz")).toBeNull();
                 }
-            }
+            };
             createElement('x-foo', { is: def });
         });
 
     });
 
-    describe('#dispatchEvent', function () {
-        it('should pierce dispatch event', function () {
+    describe('#dispatchEvent', function() {
+        it('should pierce dispatch event', function() {
             let callCount = 0;
             register({
                 piercing: (component, data, def, context, target, key, value, callback) => {
@@ -104,7 +299,7 @@ describe('html-element', () => {
                         callCount += 1;
                     }
                 }
-            })
+            });
             class Foo extends Element {
                 connectedCallback() {
                     const event = new CustomEvent('badevent', {
@@ -118,23 +313,23 @@ describe('html-element', () => {
             document.body.appendChild(elm);
             expect(callCount).toBe(1);
         });
-        it('should use custom function pierced for dispatch event', function () {
+        it('should use custom function pierced for dispatch event', function() {
             let event;
             let received;
             let piercedThis;
             let count = 0;
-            const pierced = function (evt) {
+            const pierced = function(evt) {
                 piercedThis = this;
                 received = evt;
                 count += 1;
-            }
+            };
             register({
                 piercing: (component, data, def, context, target, key, value, callback) => {
                     if (value === EventTarget.prototype.dispatchEvent) {
                         callback(pierced);
                     }
                 }
-            })
+            });
             class Foo extends Element {
                 connectedCallback() {
                     event = {
@@ -151,10 +346,10 @@ describe('html-element', () => {
             expect(piercedThis).toBe(elm);
             expect(received).toBe(event);
         });
-        it('should throw when event is dispatched during construction', function () {
+        it('should throw when event is dispatched during construction', function() {
             expect.assertions(1);
             class Foo extends Element {
-                constructor () {
+                constructor() {
                     super();
                     expect(() => {
                         this.dispatchEvent(new CustomEvent('constructorevent'));
@@ -165,80 +360,66 @@ describe('html-element', () => {
             document.body.appendChild(elm);
         });
 
-        it('should log warning when element is not connected', function () {
+        it('should log warning when element is not connected', function() {
             class Foo extends Element {}
-            const elm = document.createElement('x-foo');
-            document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Foo, {});
-            const vnode2 = api.h('div', {}, []);
-            patch(elm, vnode);
-            patch(vnode, vnode2);
-            jest.spyOn(assertLogger, 'logWarning')
+            const elm = createElement('x-foo', { is: Foo });
+            jest.spyOn(assertLogger, 'logWarning');
 
             return Promise.resolve().then(() => {
-                vnode.vm.component.dispatchEvent(new CustomEvent('warning'));
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
                 expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
                 assertLogger.logWarning.mockRestore();
             });
         });
 
-        it('should not log warning when element is connected', function () {
+        it('should not log warning when element is connected', function() {
             class Foo extends Element {}
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Foo, {});
-            const vnode2 = api.h('div', {}, []);
-            patch(elm, vnode);
-            jest.spyOn(assertLogger, 'logWarning')
+            jest.spyOn(assertLogger, 'logWarning');
 
             return Promise.resolve().then(() => {
-                vnode.vm.component.dispatchEvent(new CustomEvent('warning'));
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
                 expect(assertLogger.logWarning).not.toBeCalled();
                 assertLogger.logWarning.mockRestore();
             });
         });
 
-        it('should log warning when event name contains non-alphanumeric lowercase characters', function () {
+        it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
             class Foo extends Element {}
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Foo, {});
-            patch(elm, vnode);
-            jest.spyOn(assertLogger, 'logWarning')
+            jest.spyOn(assertLogger, 'logWarning');
 
             return Promise.resolve().then(() => {
-                vnode.vm.component.dispatchEvent(new CustomEvent('foo1-$'));
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1-$'));
                 expect(assertLogger.logWarning).toBeCalled();
                 assertLogger.logWarning.mockRestore();
             });
         });
 
-        it('should log warning when event name does not start with alphabetic lowercase characters', function () {
+        it('should log warning when event name does not start with alphabetic lowercase characters', function() {
             class Foo extends Element {}
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Foo, {});
-            patch(elm, vnode);
-            jest.spyOn(assertLogger, 'logWarning')
-            return Promise.resolve().then( ()=> {
-                vnode.vm.component.dispatchEvent(new CustomEvent('123'));
+            jest.spyOn(assertLogger, 'logWarning');
+            return Promise.resolve().then( () => {
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('123'));
                 expect(assertLogger.logWarning).toBeCalled();
                 assertLogger.logWarning.mockRestore();
-            })
+            });
         });
 
-        it('should not log warning for alphanumeric lowercase event name', function () {
+        it('should not log warning for alphanumeric lowercase event name', function() {
             class Foo extends Element {}
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', Foo, {});
-            patch(elm, vnode);
-            jest.spyOn(assertLogger, 'logWarning')
-            return Promise.resolve().then( ()=> {
-                vnode.vm.component.dispatchEvent(new CustomEvent('foo1234abc'));
+            jest.spyOn(assertLogger, 'logWarning');
+            return Promise.resolve().then( () => {
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1234abc'));
                 expect(assertLogger.logWarning).not.toBeCalled();
                 assertLogger.logWarning.mockRestore();
-            })
+            });
         });
     });
 
@@ -250,34 +431,34 @@ describe('html-element', () => {
                     super();
                     expect(this.tagName).toBe('X-FOO');
                 }
-            }
+            };
             createElement('x-foo', { is: def });
         });
     });
 
     describe('#tracked', () => {
-        it('should warn if component has untracked state property', function () {
+        it('should warn if component has untracked state property', function() {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
-                state = {}
+                state = {};
             }
             const element = createElement('x-foo', { is: MyComponent });
             expect(assertLogger.logWarning).toHaveBeenCalledWith('Non-trackable component state detected in <x-foo>. Updates to state property will not be reactive. To make state reactive, add @track decorator.');
             assertLogger.logWarning.mockRestore();
         });
-        it('should not warn if component has tracked state property', function () {
+        it('should not warn if component has tracked state property', function() {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
-                state = {}
+                state = {};
             }
             MyComponent.track = { state: 1 };
-            const element = createElement('x-foo', { is: MyComponent });
+            const element = createElement('x-foo-tracked-state', { is: MyComponent });
             expect(assertLogger.logWarning).not.toHaveBeenCalled();
             assertLogger.logWarning.mockRestore();
         });
         it('should be mutable during construction', () => {
             let state;
-            let o = { foo: 1, bar: 2, baz: 1 };
+            const o = { foo: 1, bar: 2, baz: 1 };
             const def = class MyComponent extends Element {
                 state = {
                     foo: undefined,
@@ -290,7 +471,7 @@ describe('html-element', () => {
                     this.state.baz = 3;
                     state = this.state;
                 }
-            }
+            };
             def.track = { state: 1 };
             createElement('x-foo', { is: def });
             expect(state.foo).toBe(1);
@@ -303,20 +484,20 @@ describe('html-element', () => {
         });
         it('should accept member properties', () => {
             let state;
-            let o = { foo: 1 };
+            const o = { foo: 1 };
             const def = class MyComponent extends Element {
                 state = { x: 1, y: o };
                 constructor() {
                     super();
                     state = this.state;
                 }
-            }
+            };
             def.track = { state: 1 };
             createElement('x-foo', { is: def });
             expect({ x: 1, y: o }).toEqual(state);
             expect(state.y).not.toBe(o);
         });
-        it('should not throw an error when assigning observable object', function () {
+        it('should not throw an error when assigning observable object', function() {
             expect.assertions(1);
             class MyComponent extends Element {
                 constructor() {
@@ -339,7 +520,7 @@ describe('html-element', () => {
                     super();
                     expect(this.getAttribute('title')).toBeNull();
                 }
-            }
+            };
             createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
         });
 
@@ -354,7 +535,7 @@ describe('html-element', () => {
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
 
-            return Promise.resolve().then( ()=> {
+            return Promise.resolve().then( () => {
                 expect(userDefinedTabIndexValue).toBe('0');
             });
 
@@ -362,13 +543,14 @@ describe('html-element', () => {
 
         it('should log console error when user land code changes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
+                    return html;
                 }
             }
             class Child extends Element {}
@@ -380,18 +562,19 @@ describe('html-element', () => {
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
-            })
-        })
+            });
+        });
 
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
+                    return html;
                 }
             }
             class Child extends Element {}
@@ -403,10 +586,10 @@ describe('html-element', () => {
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
-            })
-        })
+            });
+        });
 
-        it('should not log error message when attribute is set via createElement', () =>{
+        it('should not log error message when attribute is set via createElement', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends Element {}
             const elm = createElement('x-foo', {is: MyComponent});
@@ -416,11 +599,11 @@ describe('html-element', () => {
             return Promise.resolve().then( () => {
                 expect(assertLogger.logError).not.toBeCalled();
                 assertLogger.logError.mockRestore();
-            })
-        })
+            });
+        });
 
         it('should delete existing attribute prior rendering', () => {
-            const def = class MyComponent extends Element {}
+            const def = class MyComponent extends Element {};
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'parent title');
             elm.removeAttribute('title');
@@ -428,19 +611,19 @@ describe('html-element', () => {
 
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
-            })
+            });
         }),
 
         it('should correctly set child attribute ', () => {
             let childTitle = null;
-
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
             class Parent extends Element {
                 render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
+                    return html;
                 }
             }
 
@@ -457,8 +640,8 @@ describe('html-element', () => {
             return Promise.resolve().then( () => {
                 const childElm = parentElm.querySelector('x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
-            })
-        })
+            });
+        });
     });
 
     describe('#toString()', () => {
@@ -469,129 +652,145 @@ describe('html-element', () => {
                     super();
                     expect(this.toString()).toBe('<x-foo>');
                 }
-            }
+            };
             createElement('x-foo', { is: def });
         });
     });
 
     describe('#querySelector()', () => {
         it('should allow searching for the passed element', () => {
-            const outerp = api.h('p', {}, []);
-            const def = class MyComponent extends Element {
+            let childFromOwner: VNode, childComponent: Component;
+            function html1() {
+                return [childFromOwner];
+            }
+            class Child extends Element {
+                constructor() {
+                    super();
+                    childComponent = this;
+                }
                 render() {
-                    return () => [outerp]
+                    return html1;
                 }
             }
-            const elm = document.createElement('x-foo');
+            function html2($api) {
+                childFromOwner = $api.h('p', { key: 0 }, []);
+                return [$api.c('x-child', Child, {})];
+            }
+            class MyComponent extends Element {
+                render() {
+                    return html2;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                const node = vnode.vm.component.querySelector('p');
-                expect(node.tagName).toBe('P');
-                expect(vnode.vm.uid).not.toBe(node[OwnerKey]);
-            });
+            const node = childComponent.querySelector('p');
+            expect(node.tagName).toBe('P');
         });
 
         it('should ignore element from template', () => {
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return () => [api.h('p', {}, [])]
+                    return html;
                 }
-            }
-            const elm = document.createElement('x-foo');
+            };
+            const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(vnode.vm.component.querySelector('p')).toBeNull();
-            });
+            expect(elm[ViewModelReflection].component.querySelector('p')).toBeNull();
         });
 
         it('should not throw an error if element does not exist', () => {
-            const outerp = api.h('p', {}, []);
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return () => [outerp]
+                    return html;
                 }
-            }
-            const elm = document.createElement('x-foo');
+            };
+            const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(() => {
-                    vnode.vm.component.querySelector('div');
-                }).not.toThrow();
-            });
+            expect(() => {
+                elm[ViewModelReflection].component.querySelector('div');
+            }).not.toThrow();
         });
 
-        it('should return null if element does not exist', function () {
-            const outerp = api.h('p', {}, []);
+        it('should return null if element does not exist', function() {
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return () => [outerp]
+                    return html;
                 }
-            }
-            const elm = document.createElement('x-foo');
+            };
+            const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            expect(vnode.vm.component.querySelector('div')).toBeNull();
+            expect(elm[ViewModelReflection].component.querySelector('div')).toBeNull();
         });
     });
 
     describe('#querySelectorAll()', () => {
 
         it('should allow searching for passed elements', () => {
-            const outerp = api.h('p', {}, []);
-            const def = class MyComponent extends Element {
+            let childFromOwner: VNode, childComponent: Component;
+            function html1() {
+                return [childFromOwner];
+            }
+            class Child extends Element {
+                constructor() {
+                    super();
+                    childComponent = this;
+                }
                 render() {
-                    return () => [outerp]
+                    return html1;
                 }
             }
-            const elm = document.createElement('x-foo');
+            function html2($api) {
+                childFromOwner = $api.h('p', { key: 0 }, []);
+                return [$api.c('x-child', Child, {})];
+            }
+            class MyComponent extends Element {
+                render() {
+                    return html2;
+                }
+            }
+            const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                const nodes = vnode.vm.component.querySelectorAll('p');
-                expect(nodes).toHaveLength(1);
-                expect(vnode.vm.uid).not.toBe(nodes[0][OwnerKey]);
-            });
+            const nodes = childComponent.querySelectorAll('p');
+            expect(nodes).toHaveLength(1);
         });
 
         it('should ignore elements from template', () => {
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return () => [api.h('p', {}, [])]
+                    return html;
                 }
-            }
-            const elm = document.createElement('x-foo');
+            };
+            const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(vnode.vm.component.querySelectorAll('p')).toHaveLength(0);
-            });
+            expect(elm[ViewModelReflection].component.querySelectorAll('p')).toHaveLength(0);
         });
 
         it('should not throw an error if no nodes are found', () => {
-            const outerp = api.h('p', {}, []);
+            function html($api) {
+                return [$api.h('p', { key: 0 }, [])];
+            }
             const def = class MyComponent extends Element {
                 render() {
-                    return () => [outerp]
+                    return html;
                 }
-            }
-            const elm = document.createElement('x-foo');
+            };
+            const elm = createElement('x-foo', { is: def });
             document.body.appendChild(elm);
-            const vnode = api.c('x-foo', def, {});
-            patch(elm, vnode);
-            return Promise.resolve().then(() => {
-                expect(() => {
-                    vnode.vm.component.querySelectorAll('div');
-                }).not.toThrow();
-            });
+            expect(() => {
+                elm[ViewModelReflection].component.querySelectorAll('div');
+            }).not.toThrow();
         });
 
     });
@@ -601,25 +800,23 @@ describe('html-element', () => {
             let a, ctx;
             class MyComponent extends Element  {}
             MyComponent.publicProps = { foo: true };
-            const elm = document.createElement('x-foo');
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.foo = 1;
             document.body.appendChild(elm);
-            const vnode1 = api.c('x-foo', MyComponent, { props: { foo: 1 } });
-            const vnode2 = api.c('x-foo', MyComponent, { props: { foo: 2 } });
-            patch(elm, vnode1);
-            Object.defineProperty(vnode1.vm.component, 'foo', {
-                set: function (value) {
+            Object.defineProperty(elm[ViewModelReflection].component, 'foo', {
+                set(value) {
                     ctx = this;
                     a = value;
                 }
-            })
-            patch(vnode1, vnode2);
+            });
+            elm.foo = 2;
             expect(a).toBe(2);
-            expect(vnode1.vm.component).toBe(ctx);
+            expect(elm[ViewModelReflection].component).toBe(ctx);
         });
     });
 
-    describe('#tabIndex', function () {
-        it('should have a valid value during connectedCallback', function () {
+    describe('#tabIndex', function() {
+        it('should have a valid value during connectedCallback', function() {
             expect.assertions(1);
 
             class MyComponent extends Element {
@@ -628,57 +825,54 @@ describe('html-element', () => {
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
         });
 
-        it('should have a valid value after initial render', function () {
+        it('should have a valid value after initial render', function() {
             class MyComponent extends Element {}
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
 
-
-            return Promise.resolve().then(() => {
-                expect(vnode.vm.component.tabIndex).toBe(3);
-            });
+            expect(elm[ViewModelReflection].component.tabIndex).toBe(3);
         });
 
-        it('should set tabindex correctly', function () {
+        it('should set tabindex correctly', function() {
             class MyComponent extends Element {
-                connectedCallback () {
+                connectedCallback() {
                     this.tabIndex = 2;
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
                 expect(elm.tabIndex).toBe(2);
-                expect(vnode.vm.component.tabIndex).toBe(2);
+                expect(elm[ViewModelReflection].component.tabIndex).toBe(2);
             });
         });
 
-        it('should not trigger attribute changed callback when changed from within', function () {
+        it('should not trigger attribute changed callback when changed from within', function() {
             let callCount = 0;
             class MyComponent extends Element {
                 attributeChangedCallback() {
                     callCount += 1;
                 }
-                connectedCallback () {
+                connectedCallback() {
                     this.tabIndex = 2;
                 }
             }
 
             MyComponent.observedAttributes = ['tabindex'];
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: {  tabindex: 3 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
                 expect(callCount).toBe(1); // one because of the attribute value from outside
@@ -686,55 +880,49 @@ describe('html-element', () => {
             });
         });
 
-        it('should not trigger render cycle', function () {
+        it('should not trigger render cycle', function() {
             let callCount = 0;
             class MyComponent extends Element {
-                connectedCallback () {
+                connectedCallback() {
                     this.tabIndex = 2;
                 }
-                render () {
+                render() {
                     callCount += 1;
                     return () => [];
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
 
             return Promise.resolve().then(() => {
                 expect(callCount).toBe(1);
             });
         });
 
-
-        it('should allow parent component to overwrite internally set tabIndex', function () {
+        it('should allow parent component to overwrite internally set tabIndex', function() {
             class MyComponent extends Element {
-                connectedCallback () {
+                connectedCallback() {
                     this.tabIndex = 2;
                 }
             }
 
-            const elm = document.createElement('x-foo');
-            const vnode = api.c('x-foo', MyComponent, { attrs: { tabindex: 3 } });
-            const vnode2 = api.c('x-foo', MyComponent, { attrs: { tabindex: 4 } });
-            patch(elm, vnode);
+            const elm = createElement('x-foo', { is: MyComponent });
+            elm.setAttribute('tabindex', 3);
+            document.body.appendChild(elm);
+            elm.setAttribute('tabindex', 4);
 
             return Promise.resolve().then(() => {
-                patch(vnode, vnode2);
-
-                return Promise.resolve();
-            })
-            .then(() => {
                 expect(elm.tabIndex).toBe(4);
-                expect(vnode.vm.component.tabIndex).toBe(4);
+                expect(elm[ViewModelReflection].component.tabIndex).toBe(4);
             });
         });
 
-        it('should throw if setting tabIndex during render', function () {
+        it('should throw if setting tabIndex during render', function() {
             expect.assertions(1);
             class MyComponent extends Element {
-                render () {
+                render() {
                     expect(() => {
                         this.tabIndex = 2;
                     }).toThrow();
@@ -746,10 +934,10 @@ describe('html-element', () => {
             document.body.appendChild(elm);
         });
 
-        it('should throw if setting tabIndex during construction', function () {
+        it('should throw if setting tabIndex during construction', function() {
             expect.assertions(1);
             class MyComponent extends Element {
-                constructor () {
+                constructor() {
                     super();
                     expect(() => {
                         this.tabIndex = 2;
@@ -760,12 +948,11 @@ describe('html-element', () => {
         });
     });
 
-
-    describe('life-cycles', function () {
-        it('should guarantee that the element is rendered when inserted in the DOM', function () {
+    describe('life-cycles', function() {
+        it('should guarantee that the element is rendered when inserted in the DOM', function() {
             let rendered = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     rendered++;
                     return () => [];
                 }
@@ -776,10 +963,10 @@ describe('html-element', () => {
             expect(rendered).toBe(1);
         });
 
-        it('should guarantee that the connectedCallback is invoked sync after the element is inserted in the DOM', function () {
+        it('should guarantee that the connectedCallback is invoked sync after the element is inserted in the DOM', function() {
             let called = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     return () => [];
                 }
                 connectedCallback() {
@@ -792,10 +979,10 @@ describe('html-element', () => {
             expect(called).toBe(1);
         });
 
-        it('should guarantee that the connectedCallback is invoked before render after the element is inserted in the DOM', function () {
-            const ops: Array<string> = [];
+        it('should guarantee that the connectedCallback is invoked before render after the element is inserted in the DOM', function() {
+            const ops: string[] = [];
             class MyComponent extends Element {
-                render () {
+                render() {
                     ops.push('render');
                     return () => [];
                 }
@@ -808,10 +995,10 @@ describe('html-element', () => {
             expect(ops).toEqual(['connected', 'render']);
         });
 
-        it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function () {
+        it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function() {
             let called = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     return () => [];
                 }
                 disconnectedCallback() {
@@ -825,10 +1012,10 @@ describe('html-element', () => {
             expect(called).toBe(1);
         });
 
-        it('should not render even if there is a mutation if the element is not in the DOM yet', function () {
+        it('should not render even if there is a mutation if the element is not in the DOM yet', function() {
             let rendered = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     rendered++;
                     this.x; // reactive
                     return () => [];
@@ -842,10 +1029,10 @@ describe('html-element', () => {
             });
         });
 
-        it('should not render if the element was removed from the DOM', function () {
+        it('should not render if the element was removed from the DOM', function() {
             let rendered = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     rendered++;
                     this.x; // reactive
                     return () => [];
@@ -862,12 +1049,12 @@ describe('html-element', () => {
             });
         });
 
-        it('should observe moving the element thru the DOM tree', function () {
+        it('should observe moving the element thru the DOM tree', function() {
             let rendered = 0;
             let connected = 0;
             let disconnected = 0;
             class MyComponent extends Element {
-                render () {
+                render() {
                     rendered++;
                     return () => [];
                 }
@@ -882,7 +1069,7 @@ describe('html-element', () => {
             expect(rendered).toBe(0);
             document.body.appendChild(elm);
             expect(rendered).toBe(1);
-            var div = document.createElement('div');
+            const div = document.createElement('div');
             document.body.appendChild(div);
             div.appendChild(elm);
             expect(rendered).toBe(2);
@@ -890,9 +1077,9 @@ describe('html-element', () => {
             expect(disconnected).toBe(1);
         });
 
-        it('should not throw error when accessing a non-observable property from tracked property when not rendering', function () {
+        it('should not throw error when accessing a non-observable property from tracked property when not rendering', function() {
             class MyComponent extends Element {
-                state = {}
+                state = {};
                 set foo(value) {
                     this.state.foo = value;
                 }
@@ -916,7 +1103,7 @@ describe('html-element', () => {
             }).not.toThrow();
         });
 
-        it('should not log a warning when setting tracked value to null', function () {
+        it('should not log a warning when setting tracked value to null', function() {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
                 state = {};
@@ -926,13 +1113,13 @@ describe('html-element', () => {
                 }
             }
             MyComponent.track = { state: 1 };
-            const elm = createElement('x-foo', { is: MyComponent });
+            const elm = createElement('x-foo-tracked-null', { is: MyComponent });
             document.body.appendChild(elm);
             expect(assertLogger.logWarning).not.toBeCalled();
             assertLogger.logWarning.mockRestore();
         });
 
-        it('should not log a warning when initializing api value to null', function () {
+        it('should not log a warning when initializing api value to null', function() {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
                 foo = null;
@@ -942,7 +1129,7 @@ describe('html-element', () => {
                     config: 0
                 }
             };
-            const elm = createElement('x-foo', { is: MyComponent });
+            const elm = createElement('x-foo-init-api', { is: MyComponent });
             document.body.appendChild(elm);
             expect(assertLogger.logWarning).not.toBeCalled();
             assertLogger.logWarning.mockRestore();

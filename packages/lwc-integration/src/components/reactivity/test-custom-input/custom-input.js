@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, track } from 'engine';
 
 export default class CustomInput extends Element {
     @track value = 30;

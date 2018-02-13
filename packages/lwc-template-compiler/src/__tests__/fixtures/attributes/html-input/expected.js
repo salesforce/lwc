@@ -10,7 +10,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     type: 'checkbox',
                     minLength: '5',
                     maxLength: '10'
-                }
+                },
+                key: 1
             },
             []
         )

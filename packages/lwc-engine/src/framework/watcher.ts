@@ -1,13 +1,22 @@
 import assert from "./assert";
-import { scheduleRehydration } from "./vm";
+import { scheduleRehydration, VM } from "./vm";
 import { markComponentAsDirty } from "./component";
-import { isUndefined, create, ArrayIndexOf, ArrayPush } from "./language";
+import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "./language";
+import { vmBeingRendered, isRendering } from "./invoker";
 
-const TargetToReactiveRecordMap: Map<Object, ReactiveRecord> = new WeakMap();
+interface ReactiveRecord {
+    // TODO: this type definition is missing numbers and symbols as keys
+    [key: string]: VM[];
+}
 
-export function notifyListeners(target: Object, key: string | Symbol) {
+const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
+
+export function notifyMutation(target: object, key: PropertyKey) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(!isRendering, `Mutating property ${toString(key)} of ${toString(target)} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`);
+    }
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
-    if (reactiveRecord) {
+    if (!isUndefined(reactiveRecord)) {
         const value = reactiveRecord[key];
         if (value) {
             const len = value.length;
@@ -25,13 +34,14 @@ export function notifyListeners(target: Object, key: string | Symbol) {
     }
 }
 
-export function subscribeToSetHook(vm: VM, target: Object, key: string | Symbol) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+export function observeMutation(target: object, key: PropertyKey) {
+    if (isNull(vmBeingRendered)) {
+        return; // nothing to subscribe to
     }
-    let reactiveRecord: ReactiveRecord = TargetToReactiveRecordMap.get(target);
+    const vm = vmBeingRendered;
+    let reactiveRecord = TargetToReactiveRecordMap.get(target);
     if (isUndefined(reactiveRecord)) {
-        const newRecord: ReactiveRecord = create(null);
+        const newRecord = create(null) as ReactiveRecord;
         reactiveRecord = newRecord;
         TargetToReactiveRecordMap.set(target, newRecord);
     }

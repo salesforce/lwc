@@ -4,9 +4,9 @@ import { Element } from "../html-element";
 describe('def', () => {
     describe('#getComponentDef()', () => {
         it('should understand empty constructors', () => {
-            const def = class MyComponent extends Element {}
+            const def = class MyComponent extends Element {};
             expect(() => {
-                target.getComponentDef(def)
+                target.getComponentDef(def);
             }).not.toThrow();
         });
 
@@ -22,7 +22,7 @@ describe('def', () => {
         });
 
         it('should throw for stateful components not extending Element', () => {
-            const def = class MyComponent {}
+            const def = class MyComponent {};
             expect(() => target.getComponentDef(def)).toThrow();
         });
 
@@ -91,8 +91,8 @@ describe('def', () => {
 
         it('should throw error when observedAttribute references setter', () => {
             class MyComponent extends Element  {
-                get isRecordDetail () {}
-                set isRecordDetail (value) {}
+                get isRecordDetail() {}
+                set isRecordDetail(value) {}
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['is-record-detail'];
@@ -108,8 +108,8 @@ describe('def', () => {
 
         it('should throw error when observedAttribute references computed prop', () => {
             class MyComponent extends Element  {
-                get isRecordDetail () {}
-                set isRecordDetail (value) {}
+                get isRecordDetail() {}
+                set isRecordDetail(value) {}
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['is-record-detail'];
@@ -155,14 +155,13 @@ describe('def', () => {
             });
         });
 
-
         it('should understand static wire', () => {
             class MyComponent extends Element  {}
             MyComponent.wire = { x: { type: 'record' } };
             expect(target.getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
         });
 
-        it('should infer attribute name from public props', () => {
+        it('should infer config and type from public props without explicitly specifying them', () => {
             function foo() {}
             class MyComponent extends Element  {}
             Object.defineProperties(MyComponent.prototype, {
@@ -177,14 +176,16 @@ describe('def', () => {
             expect(target.getComponentDef(MyComponent).props).toEqual({
                 foo: {
                     config: 1,
+                    type: 'any',
                 },
                 xBar: {
-                    config: 0
+                    config: 0,
+                    type: 'any',
                 }
             });
         });
 
-        it('should inherit props correctly', function () {
+        it('should inherit props correctly', function() {
             function x() {}
             class MySuperComponent extends Element {}
             Object.defineProperties(MySuperComponent.prototype, {
@@ -224,20 +225,24 @@ describe('def', () => {
             expect(target.getComponentDef(MySubComponent).props).toEqual({
                 foo: {
                     config: 1,
+                    type: 'any',
                 },
                 xBar: {
                     config: 3,
+                    type: 'any',
                 },
                 fizz: {
-                    config: 0
+                    config: 0,
+                    type: 'any',
                 },
                 x: {
                     config: 1,
+                    type: 'any',
                 }
             });
         });
 
-        it('should throw if setter is declared without a getter', function () {
+        it('should throw if setter is declared without a getter', function() {
             function x() {}
             class MyComponent extends Element {}
             Object.defineProperties(MyComponent.prototype, {
@@ -255,17 +260,17 @@ describe('def', () => {
             }).toThrow();
         });
 
-        it('should inherit methods correctly', function () {
+        it('should inherit methods correctly', function() {
             class MyComponent extends Element {
-                foo () {}
-                bar () {}
+                foo() {}
+                bar() {}
             }
 
             MyComponent.publicMethods = ['foo', 'bar'];
 
             class MySubComponent extends MyComponent {
-                fizz () {}
-                buzz () {}
+                fizz() {}
+                buzz() {}
             }
 
             MySubComponent.publicMethods = ['fizz', 'buzz'];
@@ -278,7 +283,7 @@ describe('def', () => {
             });
         });
 
-        it('should not inherit observedAttrs, it must be a manual process', function () {
+        it('should not inherit observedAttrs, it must be a manual process', function() {
             class MyComponent extends Element {}
             MyComponent.observedAttributes = ['title', 'tabindex'];
 
@@ -318,14 +323,15 @@ describe('def', () => {
             });
         });
 
-        it('should handle publicProps with empty object', function () {
+        it('should handle publicProps with empty object', function() {
             class MyComponent extends Element  {}
             MyComponent.publicProps = {
                 foo: {}
             };
             expect(target.getComponentDef(MyComponent).props).toEqual({
                 foo: {
-                    config: 0
+                    config: 0,
+                    type: 'any',
                 }
             });
         });

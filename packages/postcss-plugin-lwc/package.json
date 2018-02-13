@@ -1,16 +1,24 @@
 {
   "name": "postcss-plugin-lwc",
-  "version": "0.17.10",
-  "main": "src/index.js",
+  "version": "0.17.15",
   "description": "Postcss plugin for LWC style scoping",
+  "main": "dist/commonjs/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
+    "clean": "rimraf coverage dist",
+    "lint": "tslint -t stylish src/**/*",
+    "build": "tsc",
     "test": "jest --maxWorkers=2"
   },
   "dependencies": {
     "postcss": "^6.0.13",
-    "postcss-selector-parser": "3.0.0-rc.0"
+    "postcss-selector-parser": "3.1.1"
   },
   "devDependencies": {
-    "jest": "^21.2.1"
+    "jest": "^21.2.1",
+    "rimraf": "^2.6.1",
+    "ts-jest": "^21.1.2",
+    "tslint": "^5.2.0",
+    "typescript": "^2.6.2"
   }
 }

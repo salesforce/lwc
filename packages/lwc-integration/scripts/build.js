@@ -82,12 +82,13 @@ const globalModules = {
     'babel/helpers/createClass' : 'createClass',
     'babel/helpers/defineProperty': 'defineProperty',
     'babel/helpers/objectDestructuringEmpty': 'objectDestructuringEmpty',
-    'wire-service': 'WireService'
+    'wire-service': 'WireService',
+    'todo': 'Todo'
 };
 
 const baseInputConfig = {
     external: function (id) {
-        if (id.includes('babel/helpers') || id.includes('engine') || id.includes('wire-service')) {
+        if (id.includes('babel/helpers') || id.includes('engine') || id.includes('wire-service') || id.includes('todo')) {
             return true;
         }
     },
@@ -116,6 +117,7 @@ const baseOutputConfig = {
 const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
 const compatPath = path.join(require.resolve('proxy-compat-build/dist/umd/compat_downgrade.js'));
 const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
+const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile
@@ -126,6 +128,7 @@ if (!fs.existsSync(engineModeFile)) {
 fs.copySync(compatPath, path.join(testSharedOutput, 'compat.js'));
 fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
 fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire-service.js'));
+fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 
 // -- Build component tests -----------------------------------------------------=
 

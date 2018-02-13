@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 module.exports = {
     moduleFileExtensions: ['ts', 'js'],
     testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
@@ -9,14 +7,14 @@ module.exports = {
     },
 
     mapCoverage: true,
-    collectCoverageFrom: ['src/framework/*.ts'],
+    collectCoverageFrom: ['src/**/*.ts'],
     coverageReporters: ['lcov', 'text', 'text-summary', 'html'],
     coverageThreshold: {
         global: {
-            branches: 69,
-            functions: 87,
-            lines: 87,
-            statements: 87,
+            branches: 68,
+            functions: 89,
+            lines: 86,
+            statements: 86,
         },
     },
 };

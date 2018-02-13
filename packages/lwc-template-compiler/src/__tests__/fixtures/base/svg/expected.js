@@ -11,7 +11,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                     viewBox: '0 0 5 5',
                     'aria-hidden': 'true'
-                }
+                },
+                key: 2
             },
             [
                 api_element(
@@ -19,7 +20,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     {
                         attrs: {
                             'xlink:href': '/x'
-                        }
+                        },
+                        key: 1
                     },
                     []
                 )

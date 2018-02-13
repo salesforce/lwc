@@ -11,16 +11,16 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
 
       - save_cache:
           paths:
+            - ~/.cache/yarn
             - node_modules
             - packages/*/node_modules
-            - yarn.lock
-          key: yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
+          key: yarn-v3-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Unit Tests
@@ -37,8 +37,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -56,8 +55,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -73,21 +71,19 @@ jobs:
     environment:
       - CUSTOM_BASH_ENV: ~/.bashrc
       - CIRCLE_ENV_BROKEN: $CIRCLE_SHA1
-      - PATH_GIT_APP_CERT: ~/lwc/git_app.pem
+      - GIT_APP_CERT_PATH: ~/lwc/git_app.pem
 
     steps:
       - checkout
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ .Branch }}-{{ checksum "package.json" }}
-          - yarn-v3-{{ .Branch }}-
+          - yarn-v3-{{ checksum "yarn.lock" }}
 
       - run:
           name: Setup dynamic environment variables
           command:
               echo '
-              export PATH=./node_modules/.bin:$PATH
               export PULL_REQUEST=${CIRCLE_PULL_REQUEST}
               export REPO_NAME=${CIRCLE_PROJECT_REPONAME}
               export TARGET_COMMIT=${CIRCLE_SHA1}
@@ -108,7 +104,7 @@ jobs:
 
       - run:
           name: Comparing Benchmarks
-          command: cd packages/benchmark/ && best --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          command: cd packages/benchmark/ && yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 workflows:
   version: 2

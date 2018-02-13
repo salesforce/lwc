@@ -1,10 +1,9 @@
 import assert from "./assert";
-import { patch } from "./patch";
-import { c } from "./api";
 import { isUndefined, isFunction, assign } from "./language";
-import { insert } from "./hook";
-import { removeInsertionIndex, patchShadowRoot } from "./vm";
-import { clearListeners } from "./component";
+import { createVM, removeVM, appendVM, renderVM } from "./vm";
+import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate } from "./def";
+import { ComponentConstructor } from "./component";
+import { getCustomElementVM } from "./html-element";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -43,24 +42,6 @@ assign(Node.prototype, {
     }
 });
 
-// this could happen for two reasons:
-// * it is a root, and was removed manually
-// * the element was appended to another container which requires disconnection to happen first
-export function forceDisconnection(vnode: ComponentVNode) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vnode(vnode);
-        assert.vm(vnode.vm);
-    }
-    const { vm } = vnode;
-    vm.isDirty = true;
-    removeInsertionIndex(vm);
-    clearListeners(vm);
-    // At this point we need to force the removal of all children because
-    // we don't have a way to know that children custom element were removed
-    // from the DOM. Once we move to use realm custom elements, we can remove this.
-    patchShadowRoot(vm, []);
-}
-
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -70,35 +51,41 @@ export function forceDisconnection(vnode: ComponentVNode) {
  * const el = createElement('x-foo', { is: FooCtor });
  *
  * If the value of `is` attribute is not a constructor,
- * then we fallback to the normal Web-Components workflow.
+ * then it throws a TypeError.
  */
-export function createElement(tagName: string, options: any = {}): HTMLElement {
-    const Ctor = isFunction(options.is) ? options.is : null;
-    let vnode: VNode | undefined = undefined;
-    // If we have a Ctor, create our VNode
-    if (Ctor) {
-        vnode = c(tagName, Ctor, {});
-        vnode.isRoot = true;
-        // If Ctor defines forceTagName
-        // vnode.sel will be the tagname we should use
-        tagName = vnode.sel as string;
+export function createElement(sel: string, options: any = {}): HTMLElement {
+    if (isUndefined(options) || !isFunction(options.is)) {
+        throw new TypeError();
     }
-
+    registerComponent(sel, options.is);
+    // extracing the registered constructor just in case we need to force the tagName
+    const Ctor = getCtorByTagName(sel);
+    const { forceTagName } = Ctor as ComponentConstructor;
+    const tagName = isUndefined(forceTagName) ? sel : forceTagName;
     // Create element with correct tagName
     const element = document.createElement(tagName);
-
-    // If we created a vnode
-    if (vnode) {
-        // patch that guy
-        patch(element, vnode as ComponentVNode); // eslint-disable-line no-undef
-        // Handle insertion and removal from the DOM
-        element[ConnectingSlot] = () => {
-            insert(vnode as ComponentVNode); // eslint-disable-line no-undef
-        };
-        element[DisconnectingSlot] = () => {
-            forceDisconnection(vnode as ComponentVNode); // eslint-disable-line no-undef
-        };
-    }
-
+    createVM(sel, element);
+    // Handle insertion and removal from the DOM
+    element[ConnectingSlot] = () => {
+        const vm = getCustomElementVM(element);
+        if (vm.idx > 0) {
+            removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
+        }
+        appendVM(vm);
+        // TODO: this is the kind of awkwardness introduced by "is" attribute
+        // We don't want to do this during construction because it breaks another
+        // WC invariant.
+        if (!isUndefined(forceTagName)) {
+            if (process.env.NODE_ENV !== 'production') {
+                prepareForAttributeMutationFromTemplate(element, 'is');
+            }
+            element.setAttribute('is', sel);
+        }
+        renderVM(vm);
+    };
+    element[DisconnectingSlot] = () => {
+        const vm = getCustomElementVM(element);
+        removeVM(vm);
+    };
     return element;
 }

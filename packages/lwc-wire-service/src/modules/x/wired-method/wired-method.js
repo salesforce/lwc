@@ -1,12 +1,12 @@
-import { Element } from 'engine';
+import { Element, api, track, wire } from 'engine';
 
 export default class WiredMethod extends Element {
     @api propName;
     @track state = {};
     @wire('test', { propName: '$propName', fields: ['Name'] })
-    wiredMethod(err, data) {
-        if (err) {
-            this.state.error = err;
+    wiredMethod({error, data}) {
+        if (error) {
+            this.state.error = error;
             this.state.Name = undefined;
         } else {
             this.state.Name = data.Name;

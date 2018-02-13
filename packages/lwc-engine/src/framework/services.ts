@@ -1,14 +1,22 @@
 import assert from "./assert";
-import { isUndefined, isObject, isArray, create } from "./language";
+import { isUndefined, isObject, isArray, create, ArrayPush } from "./language";
 
-const hooks = ['wiring', 'rendered', 'connected', 'disconnected', 'piercing'];
-
-/* eslint-disable */
 import { Replicable } from "./membrane";
-export type ServiceCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>) => void;
-export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: HashTable<any>, target: Replicable, key: Symbol | string, value: any, callback: (newValue?: any) => void) => void;
-export type ServiceDef = { wiring?: ServiceCallback; connected?: ServiceCallback; disconnected?: ServiceCallback; rendered?: ServiceCallback; piercing?: MembranePiercingCallback; [key: string]: ServiceCallback | MembranePiercingCallback | undefined; };
-/* eslint-enable */
+import { Context } from "./context";
+import { Component } from "./component";
+import { VNodeData } from "../3rdparty/snabbdom/types";
+import { ComponentDef } from "./def";
+import { VM } from "./vm";
+
+export type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
+export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (newValue?: any) => void) => void;
+export interface ServiceDef {
+    wiring?: ServiceCallback;
+    connected?: ServiceCallback;
+    disconnected?: ServiceCallback;
+    rendered?: ServiceCallback;
+    piercing?: MembranePiercingCallback;
+}
 
 export const Services: {
   wiring?: ServiceCallback[];
@@ -16,8 +24,9 @@ export const Services: {
   disconnected?: ServiceCallback[];
   rendered?: ServiceCallback[];
   piercing?: MembranePiercingCallback[];
-  [key: string]: ServiceCallback[] | MembranePiercingCallback[] | undefined;
 } = create(null);
+
+const hooks: Array<keyof ServiceDef> = ['wiring', 'rendered', 'connected', 'disconnected', 'piercing'];
 
 export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {
@@ -30,18 +39,17 @@ export function register(service: ServiceDef) {
             if (isUndefined(l)) {
                 Services[hookName] = l = [];
             }
-
-            l.push(service[hookName]);
+            ArrayPush.call(l, service[hookName]);
         }
     }
 }
 
-export function invokeServiceHook(vm: VM, cbs: Array<ServiceCallback>) {
+export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.isTrue(isArray(cbs) && cbs.length > 0, `Optimize invokeServiceHook() to be invoked only when needed`);
     }
-    const { component, vnode: { data }, def, context } = vm;
+    const { component, data, def, context } = vm;
     for (let i = 0, len = cbs.length; i < len; ++i) {
         cbs[i].call(undefined, component, data, def, context);
     }

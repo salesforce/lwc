@@ -1,27 +1,32 @@
-const test = require('./utils/test-transform').test(
+const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
 describe('Public Props', () => {
-    test('transforms public props', `
+    pluginTest('transforms public props', `
+        import { api } from 'engine';
         export default class Test {
             @api test = 1;
         }
-    `,`
-        export default class Test {
-            constructor() {
-                this.test = 1;
-            }
+    `, {
+        output: {
+            code: `
+export default class Test {
+  constructor() {
+    this.test = 1;
+  }
 
+}
+Test.publicProps = {
+  test: {
+    config: 0
+  }
+};`,
         }
-        Test.publicProps = {
-            test: {
-                config: 0
-            }
-        };
-    `);
+    });
 
-    test('transform nested classes', `
+    pluginTest('transform nested classes', `
+        import { api } from 'engine';
         export default class Outer {
             @api outer;
 
@@ -29,46 +34,54 @@ describe('Public Props', () => {
                 @api innerA;
             }
         }
-    `, `
-        export default class Outer {
-            constructor() {
-                var _class, _temp;
+    `, {
+        output: {
+            code: `
+export default class Outer {
+  constructor() {
+    var _class, _temp;
 
-                this.a = (_temp = _class = class {}, _class.publicProps = {
-                    innerA: {
-                        config: 0
-                    }
-                }, _temp);
-            }
+    this.a = (_temp = _class = class {}, _class.publicProps = {
+      innerA: {
+        config: 0
+      }
+    }, _temp);
+  }
 
+}
+Outer.publicProps = {
+  outer: {
+    config: 0
+  }
+};`
         }
-        Outer.publicProps = {
-            outer: {
-                config: 0
-            }
-        };
-    `);
+    });
 
-    test('transforms public getters', `
+    pluginTest('transforms public getters', `
+        import { api } from 'engine';
         export default class Test {
             @api get publicGetter() {
                 return 1;
             }
         }
-    `, `
-        export default class Test {
-            get publicGetter() {
-                return 1;
-            }
+    `, {
+        output: {
+            code: `
+export default class Test {
+  get publicGetter() {
+    return 1;
+  }
+}
+Test.publicProps = {
+  publicGetter: {
+    config: 1
+  }
+};`
         }
-        Test.publicProps = {
-            publicGetter: {
-                config: 1
-            }
-        };
-    `);
+    });
 
-    test('transforms public getter/setter', `
+    pluginTest('transforms public getter/setter', `
+        import { api } from 'engine';
         export default class Test {
             @api get something() {
                 return this.s;
@@ -78,38 +91,44 @@ describe('Public Props', () => {
                 this.s = value;
             }
         }
-    `, `
-        export default class Test {
-            get something() {
-                return this.s;
-            }
-
-            set something(value) {
-                this.s = value;
-            }
+    `, {
+        output: {
+            code: `
+export default class Test {
+  get something() {
+    return this.s;
+  }
+  set something(value) {
+    this.s = value;
+  }
+}
+Test.publicProps = {
+  something: {
+    config: 3
+  }
+};`
         }
-        Test.publicProps = {
-            something: {
-                config: 3
-            }
-        };
-    `);
+    });
 
-    test('throws error if setter is not associated with a getter', `
+    pluginTest('throws error if setter is not associated with a getter', `
+        import { api } from 'engine';
         export default class Test {
             @api set publicSetter(value) {
                 this.thing = value;
             }
         }
-    `, undefined, {
-        message: 'test.js: @api set publicSetter setter does not have associated getter.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: @api set publicSetter setter does not have associated getter.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('transform pairs of setter and getter', `
+    pluginTest('transform pairs of setter and getter', `
+        import { api } from 'engine';
         export default class Test {
             _a = true;
             _b = false;
@@ -120,38 +139,41 @@ describe('Public Props', () => {
             @api get b () { return this._b; }
             @api set b (value) { this._b = value; }
         }
-    `, `
-        export default class Test {
-            constructor() {
-                this._a = true;
-                this._b = false;
-            }
+    `, {
+        output: {
+            code: `
+export default class Test {
+  constructor() {
+    this._a = true;
+    this._b = false;
+  }
 
-            get a() {
-                return this._a;
-            }
-            set a(value) {
-                this._a = value;
-            }
-
-            get b() {
-                return this._b;
-            }
-            set b(value) {
-                this._b = value;
-            }
+  get a() {
+    return this._a;
+  }
+  set a(value) {
+    this._a = value;
+  }
+  get b() {
+    return this._b;
+  }
+  set b(value) {
+    this._b = value;
+  }
+}
+Test.publicProps = {
+  a: {
+    config: 3
+  },
+  b: {
+    config: 3
+  }
+};`
         }
-        Test.publicProps = {
-            a: {
-                config: 3
-            },
-            b: {
-                config: 3
-            }
-        };
-    `)
+    })
 
-    test(`transform complex attributes`, `
+    pluginTest(`transform complex attributes`, `
+        import { api } from 'engine';
         export default class Text {
             @api publicProp;
             privateProp;
@@ -167,159 +189,187 @@ describe('Public Props', () => {
             static ctor = "ctor";
             static get ctorGet () { return 1}
         }
-    `, `
-        export default class Text {
-            get aloneGet() {}
+    `, {
+        output: {
+            code: `
+export default class Text {
+  get aloneGet() {}
+  get myget() {}
+  set myget(x) {
+    return 1;
+  }
+  m1() {}
+  m2() {}
 
-            get myget() {}
-            set myget(x) {
-                return 1;
-            }
-
-            m1() {}
-            m2() {}
-
-            static get ctorGet() {
-                return 1;
-            }
+  static get ctorGet() {
+    return 1;
+  }
+}
+Text.ctor = "ctor";
+Text.publicProps = {
+  publicProp: {
+    config: 0
+  },
+  aloneGet: {
+    config: 1
+  },
+  myget: {
+    config: 3
+  }
+};
+Text.publicMethods = ["m1"];`
         }
-        Text.ctor = "ctor";
-        Text.publicProps = {
-            publicProp: {
-                config: 0
-            },
-            aloneGet: {
-                config: 1
-            },
-            myget: {
-                config: 3
-            }
-        };
-        Text.publicMethods = ["m1"];
-    `);
+    });
 
-    test('throws error if default value is true', `
+    pluginTest('throws error if default value is true', `
+        import { api } from 'engine';
         export default class Test {
             @api publicProp = true;
         }
-    `, undefined, {
-        message: 'test.js: Boolean public property publicProp must default to false.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Boolean public property must default to false.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name is "is"', `
+    pluginTest('throws error if property name is "is"', `
+        import { api } from 'engine';
         export default class Test {
             @api is;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name is. "is" is a reserved attribute.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name is. "is" is a reserved attribute.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name prefixed with "on"', `
+    pluginTest('throws error if property name prefixed with "on"', `
+        import { api } from 'engine';
         export default class Test {
             @api onChangeHandler;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name onChangeHandler. Properties starting with "on" are reserved for event handlers.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name onChangeHandler. Properties starting with "on" are reserved for event handlers.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('does not throw error if property name is "data"', `
+    pluginTest('does not throw error if property name is "data"', `
+        import { api } from 'engine';
         export default class Test {
             @api data;
         }
-    `, `
-        export default class Test {}
-        Test.publicProps = {
-            data: {
-                config: 0
-            }
-        };
-    `);
+    `, {
+        output: {
+            code: `
+export default class Test {}
+Test.publicProps = {
+  data: {
+    config: 0
+  }
+};`
+        }
+    });
 
-    test('throws error if property name prefixed with "data"', `
+    pluginTest('throws error if property name prefixed with "data"', `
+        import { api } from 'engine';
         export default class Test {
             @api dataFooBar;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name dataFooBar. Properties starting with "data" are reserved attributes.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name dataFooBar. Properties starting with "data" are reserved attributes.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name prefixed with "aria"', `
+    pluginTest('throws error if property name prefixed with "aria"', `
+        import { api } from 'engine';
         export default class Test {
             @api ariaDescribedby;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name ariaDescribedby. Properties starting with "aria" are reserved attributes.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name ariaDescribedby. Properties starting with "aria" are reserved attributes.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name is slot', `
+    pluginTest('throws error if property name is slot', `
         export default class Test {
             @api slot;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name slot. slot is a global HTML attribute, use attributeChangedCallback to observe this attribute.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name slot. slot is a global HTML attribute, use attributeChangedCallback to observe this attribute.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name is accesskey', `
+    pluginTest('throws error if property name is accesskey', `
         export default class Test {
             @api accesskey;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name "accesskey". "accesskey" is a camel cased HTML prop and should be changed to "accessKey".',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name "accesskey". "accesskey" is a camel cased HTML prop and should be changed to "accessKey".',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name is contenteditable', `
+    pluginTest('throws error if property name is contenteditable', `
         export default class Test {
             @api contenteditable;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name "contenteditable". "contenteditable" is a camel cased HTML prop and should be changed to "contentEditable".',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name "contenteditable". "contenteditable" is a camel cased HTML prop and should be changed to "contentEditable".',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws error if property name is tabindex', `
+    pluginTest('throws error if property name is tabindex', `
         export default class Test {
             @api tabindex;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name "tabindex". "tabindex" is a camel cased HTML prop and should be changed to "tabIndex".',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name "tabindex". "tabindex" is a camel cased HTML prop and should be changed to "tabIndex".',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('does not throw error if @api tabIndex specified', `
+    pluginTest('does not throw error if @api tabIndex specified', `
         export default class Test {
             @api tabIndex;
         }
@@ -332,7 +382,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api lang specified', `
+    pluginTest('does not throw error if @api lang specified', `
         export default class Test {
             @api lang;
         }
@@ -345,7 +395,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api hidden specified', `
+    pluginTest('does not throw error if @api hidden specified', `
         export default class Test {
             @api hidden;
         }
@@ -358,7 +408,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api dir specified', `
+    pluginTest('does not throw error if @api dir specified', `
         export default class Test {
             @api dir;
         }
@@ -371,7 +421,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api contentEditable specified', `
+    pluginTest('does not throw error if @api contentEditable specified', `
         export default class Test {
             @api contentEditable;
         }
@@ -384,7 +434,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api accessKey specified', `
+    pluginTest('does not throw error if @api accessKey specified', `
         export default class Test {
             @api accessKey;
         }
@@ -397,7 +447,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api id specified', `
+    pluginTest('does not throw error if @api id specified', `
         export default class Test {
             @api id;
         }
@@ -410,7 +460,7 @@ describe('Public Props', () => {
         };
     `);
 
-    test('does not throw error if @api title specified', `
+    pluginTest('does not throw error if @api title specified', `
         export default class Test {
             @api title;
         }
@@ -423,61 +473,75 @@ describe('Public Props', () => {
         };
     `);
 
-    test('throws error if property name is "part"', `
+    pluginTest('throws error if property name is "part"', `
+        import { api } from 'engine';
         export default class Test {
             @api part;
         }
-    `, undefined, {
-        message: 'test.js: Invalid property name part. "part" is a future reserved attribute for web components.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: Invalid property name part. "part" is a future reserved attribute for web components.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
-    test('throws when combined with @track', `
+    pluginTest('throws when combined with @track', `
+        import { api, track } from 'engine';
         export default class Test {
             @track
             @api
             apiWithTrack = 'foo';
         }
-    `, undefined, {
-        message: 'test.js: @api method or property cannot be used with @track',
-        loc: {
-            line: 2,
-            column: 20,
-        },
+    `, {
+        error: {
+            message: 'test.js: @api method or property cannot be used with @track',
+            loc: {
+                line: 2,
+                column: 20,
+            },
+        }
     });
 });
 
 describe('Public Methods', () => {
-    test('transforms public methods', `
+    pluginTest('transforms public methods', `
+        import { api } from 'engine';
         export default class Test {
             @api foo() {}
         }
-    `, `
-        export default class Test {
-            foo() {}
+    `, {
+        output: {
+            code: `
+export default class Test {
+  foo() {}
+}
+Test.publicMethods = ['foo'];`
         }
-        Test.publicMethods = ["foo"];
-    `);
+    });
 
-    test('Does not allow computed api getters and setters', `
+    pluginTest('Does not allow computed api getters and setters', `
+        import { api } from 'engine';
         export default class ComputedAPIProp extends Element {
             @api set [x](value) {}
             @api get [x]() {}
         }
-    `, undefined, {
-        message: 'test.js: @api cannot be applied to a computed property, getter, setter or method.',
-        loc: {
-            line: 2,
-            column: 9
+    `, {
+        error: {
+            message: 'test.js: @api cannot be applied to a computed property, getter, setter or method.',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 });
 
 describe('metadata', () => {
-    test('has @api properties', `
+    pluginTest('has @api properties', `
+        import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
@@ -490,11 +554,24 @@ describe('metadata', () => {
             @api
             index;
         }
-    `, undefined, undefined, {
-            apiProperties: [{ name: 'todo' }, { name: 'index' }]
+    `, {
+        output: {
+            metadata: {
+                apiMethods: [],
+                apiProperties: [
+                    { name: "todo" },
+                    { name: "index" }
+                ],
+                declarationLoc: {
+                    end: { column: 1, line: 13 },
+                    start: { column: 0, line: 3 }
+                }
+            }
+        }
     });
 
-    test('no @api properties', `
+    pluginTest('no @api properties', `
+        import { api } from 'engine';
         import { Element } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
@@ -506,7 +583,16 @@ describe('metadata', () => {
             }
             index;
         }
-    `, undefined, undefined, {
-        apiProperties: []
+    `, {
+        output: {
+            metadata: {
+                apiMethods: [],
+                apiProperties: [],
+                declarationLoc: {
+                    end: { column: 1, line: 12 },
+                    start: { column: 0, line: 3 }
+                }
+            }
+        }
     });
 });

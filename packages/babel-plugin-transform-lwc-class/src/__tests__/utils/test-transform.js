@@ -1,7 +1,4 @@
 const babel = require('babel-core');
-const unpad = require('./unpad');
-
-const test = it;
 
 const baseConfig = {
     babelrc: false,
@@ -17,7 +14,7 @@ function transform(plugin, opts = {}) {
     }, opts);
 
     return function(source) {
-        return babel.transform(unpad(source), testConfig);
+        return babel.transform(prettify(source), testConfig);
     }
 }
 
@@ -33,43 +30,48 @@ function errorFromObject(obj) {
     return error;
 }
 
-function makeTest(plugin, opts = {}) {
-    const testTransform = transform(plugin, opts);
-
-    const pluginTest = function(name, source, expectedSource, expectedError, expectedMetadata) {
-        test(name, () => {
-            let res;
-            let err;
-
-            try {
-                res = testTransform(source);
-            } catch (error) {
-                err = error;
-            }
-
-            if (err) {
-                /* istanbul ignore next */
-                if (!expectedError) {
-                    throw err;
-                }
-
-                expect(err).toMatchObject(errorFromObject(expectedError));
-            } else {
-                if (expectedSource) {
-                    expect(res.code).toBe(unpad(expectedSource));
-                }
-                if (expectedMetadata) {
-                    expect(res.metadata).toMatchObject(expectedMetadata);
-                }
-            }
-        });
-    }
-
-    /* istanbul ignore next */
-    pluginTest.skip = (name) => test.skip(name);
-
-    return pluginTest;
+function prettify(str) {
+    return str.toString()
+        .replace(/^\s+|\s+$/, '')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length)
+        .join('\n');
 }
 
-module.exports.test = makeTest;
+function pluginTest(plugin, opts = {}) {
+    const testTransform = transform(plugin, opts);
+
+    const transformTest = function(actual, expected) {
+        if (expected.error) {
+            let transformError;
+
+            try {
+                testTransform(actual);
+            } catch (error) {
+                transformError = error;
+            }
+
+            expect(transformError).toMatchObject(errorFromObject(expected.error));
+        } else if (expected.output) {
+            const output = testTransform(actual);
+            if (expected.output.code) {
+                expect(output.code).toBe(expected.output.code);
+            }
+            if (expected.output.metadata) {
+                expect(output.metadata).toEqual(expected.output.metadata);
+            }
+        } else {
+            throw new TypeError(`Transform test expect an object with either error or output.`);
+        }
+    }
+
+    const pluginTester = (name, actual, expected) => test(name, () => transformTest(actual, expected));
+    pluginTester.only = (name, actual, expected) => test.only(name, () => transformTest(actual, expected));
+    pluginTester.skip = (name) => test.skip(name);
+
+    return pluginTester;
+}
+
+module.exports.pluginTest = pluginTest;
 module.exports.transform = transform;

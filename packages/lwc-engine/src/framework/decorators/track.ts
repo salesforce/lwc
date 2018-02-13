@@ -1,10 +1,10 @@
 import assert from "../assert";
-import { isArray, isUndefined, isObject, create, getOwnPropertyDescriptor, defineProperty } from "../language";
+import { isArray, isObject, defineProperty, isUndefined } from "../language";
 import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
-import { subscribeToSetHook, notifyListeners } from "../watcher";
-import { ViewModelReflection } from "../def";
-import { isBeingConstructed } from "../component";
+import { observeMutation, notifyMutation } from "../watcher";
+import { VMElement, VM } from "../vm";
+import { getCustomElementVM } from "../html-element";
 
 // stub function to prevent misuse of the @track decorator
 export default function track() {
@@ -14,22 +14,18 @@ export default function track() {
 }
 
 // TODO: how to allow symbols as property keys?
-export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
-        get(): HashTable<any> {
-            const vm: VM = this[ViewModelReflection];
+        get(this: VMElement): any {
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
-            if (isRendering) {
-                // this is needed because the proxy used by template is not sufficient
-                // for public props accessed from within a getter in the component.
-                subscribeToSetHook(vmBeingRendered, this, key);
-            }
+            observeMutation(this, key);
             return vm.cmpTrack[key];
         },
-        set(newValue: any) {
-            const vm = this[ViewModelReflection];
+        set(this: VMElement, newValue: any) {
+            const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
@@ -48,11 +44,11 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 vm.cmpTrack[key] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
-                    notifyListeners(this, key);
+                    notifyMutation(this, key);
                 }
             }
         },
-        enumerable: descriptor ? descriptor.enumerable : true,
+        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
         configurable: false,
     });
 }

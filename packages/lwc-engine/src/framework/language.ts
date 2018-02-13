@@ -54,7 +54,7 @@ export {
     ArrayIndexOf,
     ArrayPush,
     forEach,
-}
+};
 
 export function isUndefined(obj: any): obj is undefined {
     return obj === undefined;
@@ -66,6 +66,10 @@ export function isNull(obj: any): obj is null {
 
 export function isTrue(obj: any): obj is true {
     return obj === true;
+}
+
+export function isFalse(obj: any): obj is false {
+    return obj === false;
 }
 
 export function isFunction(obj: any): obj is Function {
@@ -85,8 +89,11 @@ export function isNumber(obj: any): obj is number {
 
 const OtS = {}.toString;
 export function toString(obj: any): string {
-    if (obj && typeof obj === 'object' && !obj.toString) {
+    if (obj && obj.toString) {
+        return obj.toString();
+    } else if (typeof obj === 'object') {
         return OtS.call(obj);
+    } else {
+        return obj + '';
     }
-    return obj + '';
 }

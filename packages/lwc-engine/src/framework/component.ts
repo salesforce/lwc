@@ -6,21 +6,47 @@ import {
     vmBeingRendered,
     invokeComponentCallback,
 } from "./invoker";
-import { isArray, isUndefined, create, toString, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
-import { getComponentDef } from './def';
+import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
+import { VM } from "./vm";
+import { VNodes } from "../3rdparty/snabbdom/types";
 
-/*eslint-disable*/
-export interface ComponentClass {
-    publicMethods?: Array<string>;
-    observedAttributes?: Array<string>;
-    prototype: any;
-    name: string;
-    publicProps?: HashTable<PropDef>;
-    wire?: HashTable<WireDef>;
+import { Template } from "./template";
+import { ShadowRoot } from "./root";
+import { EmptyObject } from "./utils";
+export type ErrorCallback = (error: any, stack: string) => void;
+export type AttributeChangedCallback = (attrName: string, oldValue: any, newValue: any) => void;
+export interface Component {
+    [ViewModelReflection]: VM;
+    readonly classList: DOMTokenList;
+    readonly root: ShadowRoot;
+    render?: () => void | Template;
+    connectedCallback?: () => void;
+    disconnectedCallback?: () => void;
+    renderedCallback?: () => void;
+    errorCallback?: ErrorCallback;
+    attributeChangedCallback?: AttributeChangedCallback;
+    [key: string]: any;
 }
-/*eslint-enable*/
+
+// TODO: review this with the compiler output
+export interface ComponentConstructor {
+    new (): Component;
+    readonly name: string;
+    readonly forceTagName?: string;
+    readonly publicMethods?: string[];
+    readonly observedAttributes?: string[];
+    readonly publicProps?: PropsDef;
+    readonly track?: TrackDef;
+    readonly wire?: WireHash;
+    readonly labels?: string[];
+    readonly templateUsedProps?: string[];
+    // support for circular
+    <T>(): T;
+    readonly __circular__?: any;
+}
 
 export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
@@ -30,7 +56,7 @@ export function isBeingConstructed(vm: VM): boolean {
     return vmBeingConstructed === vm;
 }
 
-export function createComponent(vm: VM, Ctor: ComponentClass) {
+export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
@@ -64,7 +90,7 @@ export function linkComponent(vm: VM) {
     }
 }
 
-export function clearListeners(vm: VM) {
+export function clearReactiveListeners(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
@@ -83,10 +109,10 @@ export function clearListeners(vm: VM) {
     }
 }
 
-export function createComponentListener(): EventListener {
+function createComponentListener(vm: VM): EventListener {
     return function handler(event: Event) {
-        dispatchComponentEvent(handler.vm, event);
-    }
+        handleComponentEvent(vm, event);
+    };
 }
 
 export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
@@ -94,25 +120,16 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
         assert.vm(vm);
         assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
     }
-    let { cmpEvents, cmpListener, idx: vmIdx } = vm;
+    let { cmpEvents, cmpListener } = vm;
     if (isUndefined(cmpEvents)) {
         // this piece of code must be in sync with modules/component-events
-        vm.cmpEvents = cmpEvents = create(null);
-        vm.cmpListener = cmpListener = createComponentListener();
-        cmpListener.vm = vm;
+        vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
+        vm.cmpListener = cmpListener = createComponentListener(vm);
     }
     if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
-        // this is not only an optimization, it is also needed to avoid adding the same
-        // listener twice when the initial diffing algo kicks in without an old vm to track
-        // what was already added to the DOM.
-        if (!vm.isDirty || vmIdx > 0) {
-            // if the element is already in the DOM and rendered, we intentionally make a sync mutation
-            // here and also keep track of the mutation for a possible rehydration later on without having
-            // to rehydrate just now.
-            const { vnode: { elm } } = vm;
-            elm.addEventListener(eventName, cmpListener, false);
-        }
+        const { elm } = vm;
+        elm.addEventListener(eventName, cmpListener as EventListener, false);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -143,86 +160,38 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     }
 }
 
-export function dispatchComponentEvent(vm: VM, event: Event): boolean {
+function handleComponentEvent(vm: VM, event: Event) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
+        assert.invariant(vm.cmpEvents && vm.cmpEvents[event.type] && vm.cmpEvents[event.type].length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
     }
 
-    const { cmpEvents, component } = vm;
-    const { type } = event;
-
-    if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(cmpEvents && cmpEvents[type] && cmpEvents[type].length, `dispatchComponentEvent() should only be invoked if there is at least one listener in queue for ${type} on ${vm}.`);
-    }
-
+    const { cmpEvents = EmptyObject } = vm;
+    const { type, stopImmediatePropagation } = event;
     const handlers = cmpEvents[type];
-    let uninterrupted = true;
-    const { stopImmediatePropagation } = event;
-    event.stopImmediatePropagation = function() {
-        uninterrupted = false;
-        stopImmediatePropagation.call(this);
-    }
-    const e = pierce(vm, event);
-    for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
-        // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(vm, handlers[i], component, [e]);
-    }
-    // restoring original methods
-    event.stopImmediatePropagation = stopImmediatePropagation;
-}
-
-export function addComponentSlot(vm: VM, slotName: string, newValue: Array<VNode>) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
-        assert.isTrue(isArray(newValue) && newValue.length > 0, `Slots can only be set to a non-empty array, instead received ${toString(newValue)} for slot ${slotName} in ${vm}.`)
-    }
-    let { cmpSlots } = vm;
-    let oldValue = cmpSlots && cmpSlots[slotName];
-    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
-    // one of those is changed, the vm should be marked as dirty.
-
-    // TODO: Issue #133
-    if (!isArray(newValue)) {
-        newValue = undefined;
-    }
-    if (oldValue !== newValue) {
-        if (isUndefined(cmpSlots)) {
-            vm.cmpSlots = cmpSlots = create(null);
+    if (isArray(handlers)) {
+        let uninterrupted = true;
+        event.stopImmediatePropagation = function() {
+            uninterrupted = false;
+            stopImmediatePropagation.call(event);
+        };
+        const e = pierce(vm, event);
+        for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
+            invokeComponentCallback(vm, handlers[i], [e]);
         }
-        cmpSlots[slotName] = newValue;
-
-        if (!vm.isDirty) {
-            markComponentAsDirty(vm);
-        }
+        // restoring original methods
+        event.stopImmediatePropagation = stopImmediatePropagation;
     }
 }
 
-export function removeComponentSlot(vm: VM, slotName: string) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of slot ${slotName} in ${vm}`);
-    }
-    // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
-    // one of those is changed, the vm should be marked as dirty.
-    const { cmpSlots } = vm;
-    if (cmpSlots && cmpSlots[slotName]) {
-        cmpSlots[slotName] = undefined; // delete will de-opt the cmpSlots, better to set it to undefined
-
-        if (!vm.isDirty) {
-            markComponentAsDirty(vm);
-        }
-    }
-}
-
-export function renderComponent(vm: VM): VNode[] {
+export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
-    clearListeners(vm);
+    clearReactiveListeners(vm);
     const vnodes = invokeComponentRenderMethod(vm);
     vm.isDirty = false;
 
@@ -239,4 +208,11 @@ export function markComponentAsDirty(vm: VM) {
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
     vm.isDirty = true;
+}
+
+export function getCustomElementComponent(elmOrRoot: HTMLElement | ShadowRoot): Component {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(elmOrRoot[ViewModelReflection]);
+    }
+    return (elmOrRoot[ViewModelReflection] as VM).component as Component;
 }

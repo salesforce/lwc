@@ -1,7 +1,9 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf, isUndefined } from "./language";
 
-let nextTickCallbackQueue: Array<Callback> = [];
+export type Callback = () => void;
+
+let nextTickCallbackQueue: Callback[] = [];
 const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
@@ -11,7 +13,7 @@ function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
     }
-    const callbacks: Array<Callback> = nextTickCallbackQueue;
+    const callbacks: Callback[] = nextTickCallbackQueue;
     nextTickCallbackQueue = []; // reset to a new queue
     for (let i = 0, len = callbacks.length; i < len; i += 1) {
         callbacks[i]();
@@ -30,11 +32,11 @@ export function addCallbackToNextTick(callback: Callback) {
 }
 
 const CAMEL_REGEX = /-([a-z])/g;
-const attrNameToPropNameMap = create(null);
+const attrNameToPropNameMap: Record<string, string> = create(null);
 
 export function getPropNameFromAttrName(attrName: string): string {
     let propName = attrNameToPropNameMap[attrName];
-    if (!propName && isString(attrName)) {
+    if (isUndefined(propName)) {
         propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
         attrNameToPropNameMap[attrName] = propName;
     }
@@ -65,25 +67,26 @@ export function getAttrNameFromPropName(propName: string): string {
         default:
             // Few more exceptions where the attribute name matches the property in lowercase.
             if (ArrayIndexOf.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, propName) >= 0) {
-                propName.toLocaleLowerCase()
+                propName.toLocaleLowerCase();
             }
     }
     // otherwise we do the regular canonical transformation.
     return propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
 }
+
 export const usesNativeSymbols = typeof Symbol() === 'symbol';
-export function noop() {}
 
 const classNameToClassMap = create(null);
 
-export function getMapFromClassName(className: string): HashTable<boolean> {
+export function getMapFromClassName(className: string): Record<string, boolean> {
     let map = classNameToClassMap[className];
     if (map) {
         return map;
     }
     map = {};
     let start = 0;
-    let i, len = className.length;
+    let i;
+    const len = className.length;
     for (i = 0; i < len; i++) {
         if (className.charCodeAt(i) === SPACE_CHAR) {
             if (i > start) {

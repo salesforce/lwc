@@ -5,7 +5,9 @@ var style = undefined;
 function tmpl($api, $cmp, $slotset, $ctx) {
   var api_element = __getKey($api, 'h');
 
-  return [api_element("section", {}, [])];
+  return [api_element("section", {
+      key: 1
+    }, [])];
 }
 
 if (style) {
