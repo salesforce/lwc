@@ -89,12 +89,11 @@ module.exports = function transform(t, klass, decorators) {
 
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
     const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
-    Array.prototype.push.apply(apiProperties, apiMethods);
 
     if (apiProperties.length > 0) {
         return {
             type: 'api',
-            targets: apiProperties
+            targets: [...apiProperties, ...apiMethods]
         };
     }
 }
