@@ -11,9 +11,9 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 {
                     attrs: {
                         title: 'x',
-                        'aria-hidden': 'x',
+                        'aria-hidden': 'x'
                     },
-                    key: 1,
+                    key: 1
                 },
                 [api_text('x')]
             )

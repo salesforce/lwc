@@ -38,12 +38,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 'data-xx': 'foo',
                 'aria-hidden': 'hidden',
                 role: 'xx',
+                tabindex: 'bar'
             },
             props: {
                 fooBar: 'x',
                 foo: 'bar',
-                tabIndex: 'bar',
-                bgcolor: 'blue',
+                bgcolor: 'blue'
             },
             key: 3
         }),
@@ -95,11 +95,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             attrs: {
                 bgcolor: 'x',
                 is: 'ns-table',
-                tabindex: "2",
+                tabindex: '2'
             },
             props: {
                 bar: 'test',
-                min: '3',
+                min: '3'
             },
             key: 8
         }),
