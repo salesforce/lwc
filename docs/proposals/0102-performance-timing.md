@@ -3,7 +3,8 @@
 ## Status
 
 - Start Date: 2018-02-05
-- RFC PR: TBD
+- RFC PR: https://github.com/salesforce/lwc/pull/61
+- Issue: TBD
 
 ## Goals
 
@@ -20,11 +21,14 @@
 
 ### React timing marks
 
-In version `v15.4.0`, React added support for marker on the timeline with the different lifecycle events ([changelog](https://reactjs.org/blog/2016/11/16/react-v15.4.0.html#profiling-components-with-chrome-timeline)). This functionality is disabled by default, can only get turned on in `DEV` mode using the `?react_perf` query string. See example at: https://olz8m97rz5.codesandbox.io/?react_perf
+In version `v15.4.0`, React added support for marker on the timeline with the different lifecycle events ([changelog](https://reactjs.org/blog/2016/11/16/react-v15.4.0.html#profiling-components-with-chrome-timeline)). This functionality is disabled by default, can only get turned on in `DEV` mode using the `?react_perf` query string. See example at: https://olz8m97rz5.codesandbox.io/?react_perf.
+
+**Note:** Since v16, the markers are on by default in `DEV` mode.
 
 **Observed lifecycle hooks:**
-_ rendering phases: `mount`, `constructor`, `update`, `commitChanges`
-_ component phases: `componentWillMount`, `componentWillUnmount`, `componentWillReceiveProps`, `shouldComponentUpdate`, `componentWillUpdate`, `componentDidUpdate`, `componentDidMount`, `getChildContext`
+
+* rendering phases: `mount`, `constructor`, `update`, `commitChanges`
+* component phases: `componentWillMount`, `componentWillUnmount`, `componentWillReceiveProps`, `shouldComponentUpdate`, `componentWillUpdate`, `componentDidUpdate`, `componentDidMount`, `getChildContext`
 **Implementation:** [ReactDebugFiberPerf.js](https://github.com/facebook/react/blob/b77b12311f0c66aad9b50f805c53dcc05d2ea75c/packages/react-reconciler/src/ReactDebugFiberPerf.js)
 
 ### React performance tools (deprecated with v16)
@@ -59,7 +63,7 @@ After React announcement, In version `2.2.3`, Vue added support for markers ([co
 
 ### What?
 
-In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `render`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
+In the case of LWC, the following hooks are good candidates for performance timing: `constructor`, `patch`, `connectedCallback`, `renderedCallback`, `errorCallback`, `disconnectedCallback`.
 
 ### Where?
 In order to put the measurement in place around the following hooks, it would require to put marks directly in the engine. Using services would have been preferable in order to break the coupling. Since the current service API doesn't expose pre/post hooks for each life cycle event, it make it impossible to measure the actual lifecycle event duration.
@@ -72,14 +76,14 @@ In both framework, the timing marks is based on [`performance.mark`](https://dev
 
 ```js
 /** perf.js */
-const mark = tag => perf.mark(tag);
+const mark = tag => performance.mark(tag);
 const measure = (name, startTag, endTag) => {
-    perf.measure(name, startTag, endTag);
+    performance.measure(name, startTag, endTag);
 
     // Avoid performance entry buffer overflow
-    perf.clearMarks(startTag);
-    perf.clearMarks(endTag);
-    perf.clearMeasures(name);
+    performance.clearMarks(startTag);
+    performance.clearMarks(endTag);
+    performance.clearMeasures(name);
 };
 
 /** init.js */
@@ -104,13 +108,7 @@ Adding performance `marks` and `measures` has a visible impact on performance. B
 
 #### Enablement
 
-Turning on the performance timing via a global config appears to be preferable. The main config advantage of the global config is that it can be turned on programmatically (extension, tools, external system).
-
-```js
-import { config } from 'engine';
-
-config.performanceTiming = true;
-```
+For now, the performance timing will be enabled by default for all mode except `production`. In `production` mode, the code for performance timing will get stripped from the source code.
 
 #### Consumption
 
