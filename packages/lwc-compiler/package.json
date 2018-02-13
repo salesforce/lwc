@@ -7,8 +7,7 @@
   "license": "ISC",
   "scripts": {
     "clean": "rimraf dist/",
-    "build": "babel src/ --out-dir dist/commonjs",
-    "build:umd": "webpack --progress",
+    "build": "tsc",
     "test": "jest --coverage --maxWorkers=2"
   },
   "devDependencies": {
@@ -61,6 +60,7 @@
     "postcss-plugin-lwc": "0.17.15",
     "rollup": "0.50.0",
     "rollup-plugin-babel": "^3.0.2",
-    "rollup-plugin-replace": "^2.0.0"
+    "rollup-plugin-replace": "^2.0.0",
+    "typescript": "^2.7.1"
   }
 }
