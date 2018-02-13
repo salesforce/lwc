@@ -1,7 +1,7 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign } from "./language";
+import { isUndefined, isFunction, assign, hasOwnProperty } from "./language";
 import { createVM, removeVM, appendVM, renderVM } from "./vm";
-import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate } from "./def";
+import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
 import { getCustomElementVM } from "./html-element";
 
@@ -58,19 +58,21 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         throw new TypeError();
     }
     registerComponent(sel, options.is);
-    // extracing the registered constructor just in case we need to force the tagName
+    // extracting the registered constructor just in case we need to force the tagName
     const Ctor = getCtorByTagName(sel);
     const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
     // Create element with correct tagName
     const element = document.createElement(tagName);
+    if (hasOwnProperty.call(element, ViewModelReflection)) {
+        return element;
+    }
+    // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element);
-    // Handle insertion and removal from the DOM
+    // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
-        if (vm.idx > 0) {
-            removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
-        }
+        removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         // TODO: this is the kind of awkwardness introduced by "is" attribute
         // We don't want to do this during construction because it breaks another

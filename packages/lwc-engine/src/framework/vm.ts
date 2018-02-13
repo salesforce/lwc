@@ -2,7 +2,7 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create } from "./language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
 import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { ViewModelReflection, getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
@@ -94,15 +94,18 @@ export function removeInsertionIndex(vm: VM) {
 export function renderVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isTrue(vm.isDirty, `${vm} must be dirty before renderVM is invoked.`);
     }
-    rehydrate(vm);
+    if (vm.isDirty) {
+        rehydrate(vm);
+    }
 }
 
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isTrue(vm.idx === 0, `${vm} is already inserted.`);
+    }
+    if (vm.idx !== 0) {
+        return; // already appended
     }
     addInsertionIndex(vm);
 }
@@ -110,7 +113,9 @@ export function appendVM(vm: VM) {
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isTrue(vm.idx > 0, `${vm} is not inserted.`);
+    }
+    if (vm.idx === 0) {
+        return; // already removed
     }
     removeInsertionIndex(vm);
     // just in case it comes back, with this we guarantee re-rendering it
@@ -127,6 +132,9 @@ export function removeVM(vm: VM) {
 export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
+    }
+    if (hasOwnProperty.call(elm, ViewModelReflection)) {
+        return; // already created
     }
     const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
