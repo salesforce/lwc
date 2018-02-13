@@ -8,10 +8,7 @@ exports[`performance-timing captures all lifecycle hooks 1`] = `
 	<Foo (1)> - disconnectedCallback"
 `;
 
-exports[`performance-timing captures component constructor 1`] = `
-"<ROOT>
-	<Foo (1)> - constructor"
-`;
+exports[`performance-timing captures component constructor 1`] = `"<ROOT>"`;
 
 exports[`performance-timing captures error callback 1`] = `
 "<ROOT>
