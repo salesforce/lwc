@@ -128,7 +128,7 @@ module.exports = function decoratorVisitor({ types: t }) {
 
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
 
-            state.file.metadata = Object.assign({}, state.metadata, {
+            state.file.metadata = Object.assign({}, state.file.metadata, {
                 apiProperties: [],
                 apiMethods: []
             });
@@ -140,7 +140,7 @@ module.exports = function decoratorVisitor({ types: t }) {
                 // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
                 // last class will be returned
                 const metadata = transform(t, klass, decorators);
-                state.file.metadata = Object.assign({}, state.metadata, metadata);
+                state.file.metadata = Object.assign({}, state.file.metadata, metadata);
             }
 
             removeDecorators(decorators);

@@ -126,8 +126,14 @@ describe('metadata', () => {
             metadata: {
                 apiMethods: [], 
                 apiProperties: [],
+                declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: 'Foo doc',
-                declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }}
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -145,7 +151,13 @@ describe('metadata', () => {
                 apiMethods: [],
                 apiProperties: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } }, 
-                doc: "Foo doc"
+                doc: "Foo doc",
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -164,7 +176,13 @@ describe('metadata', () => {
                 apiMethods: [],
                 apiProperties: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } }, 
-                doc: 'multi\nline'
+                doc: 'multi\nline',
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -181,8 +199,14 @@ describe('metadata', () => {
                 apiMethods: [], 
                 apiProperties: [], 
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
-                doc: "last"
-            }
+                doc: "last",
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
+            },
         }
     });
 
@@ -199,7 +223,13 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -217,7 +247,13 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -235,7 +271,13 @@ describe('metadata', () => {
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [{ imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }]
+                },
+                usedHelpers: []
             }
         }
     });
