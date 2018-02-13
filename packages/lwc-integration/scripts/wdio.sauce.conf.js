@@ -81,9 +81,15 @@ const compatBrowsers = [
 
 const sauce = {
     services: ['sauce'],
+
     user: process.env.SAUCE_USERNAME,
     key: process.env.SAUCE_KEY,
     sauceConnect: true,
+    sauceConnectOpts: {
+        verbose: true,
+        verboseDebugging: true,
+    },
+
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
     capabilities: filterBrowsers()
