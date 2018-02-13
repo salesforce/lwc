@@ -132,9 +132,11 @@ export const GlobalHTMLProperties = {
     },
     tabIndex: {
         attribute: 'tabindex',
+        reflective: true,
     },
     title: {
         attribute: 'title',
+        reflective: true,
     },
     translate: {
         experimental: true,

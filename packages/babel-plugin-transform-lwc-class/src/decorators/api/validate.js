@@ -50,10 +50,6 @@ function validatePropertyName(property) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "aria" are reserved attributes.`
         );
-    } else if (GLOBAL_ATTRIBUTE_SET.has(propertyName)) {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. ${propertyName} is a global HTML attribute, use attributeChangedCallback to observe this attribute.`
-        );
     }
 }
 
