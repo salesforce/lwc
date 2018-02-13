@@ -437,7 +437,7 @@ describe('props and attributes', () => {
         expect(root.children[0].props).toMatchObject({
             bar: { value: 'test' },
             min: { value: '3' },
-            bgcolor: { value: 'x' },
+            bgColor: { value: 'x' },
             tabIndex: { value: '2' },
         });
         expect(root.children[0].attrs).toMatchObject({

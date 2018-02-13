@@ -2,6 +2,7 @@ import _nsFoo from 'ns-foo';
 import _nsBar from 'ns-bar';
 import _nsBuzz from 'ns-buzz';
 import _nsTable from 'ns-table';
+import _nsInput from "ns-input";
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element, h: api_element } = $api;
 
@@ -43,7 +44,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 foo: 'bar',
                 role: 'xx',
                 tabIndex: 'bar',
-                bgcolor: 'blue',
+                bgColor: 'blue',
             },
             key: 3
         }),
@@ -77,7 +78,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 'aria-hidden': 'hidden'
             },
             props: {
-                bgcolor: 'x'
+                bgColor: 'x'
             },
             key: 6
         }),
@@ -96,12 +97,21 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 is: 'ns-table',
             },
             props: {
-                bgcolor: 'x',
+                bgColor: 'x',
                 tabIndex: '2',
                 bar: 'test',
                 min: '3'
             },
             key: 8
+        }),
+        api_custom_element("input", _nsInput, {
+            attrs: {
+                is: "ns-input"
+            },
+            props: {
+                maxLength: "10"
+            },
+            key: 9
         }),
         api_element(
             'div',
@@ -110,7 +120,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                     'aria-hidden': 'hidden'
                 },
-                key: 9
+                key: 10
             },
             []
         )

@@ -16,7 +16,6 @@ import {
     SVG_TAG_SET,
     DATA_ARIA_RE,
     ATTRIBUTE_SET,
-    GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
@@ -210,15 +209,11 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
     return !!validElements &&  (!validElements.length || validElements.includes(tagName));
 }
 
-const attributeToPropertyNameMap: { [key: string]: string } = {
-    tabindex: 'tabIndex',
-}
-
 export function attributeToPropertyName(element: IRElement, attrName: string): string {
     const { tag } = element;
 
-    let propName = (attrName in attributeToPropertyNameMap) ? attributeToPropertyNameMap[attrName] : attrName;
-    if (!SVG_TAG_SET.has(tag) && !isAriaOrDataOrFmkAttribute(attrName) && !isCustomElement(element)) {
+    let propName = attrName;
+    if (!SVG_TAG_SET.has(tag) && !isAriaOrDataOrFmkAttribute(attrName) && isCustomElement(element)) {
         propName = ATTRS_PROPS_TRANFORMS[propName] || propName;
     }
 
