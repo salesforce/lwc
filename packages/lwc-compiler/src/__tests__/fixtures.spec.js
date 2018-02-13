@@ -404,14 +404,14 @@ describe('metadata output', () => {
             decorators: [
                 {
                     type: 'api',
-                    decorations: [
+                    targets: [
                         { type: 'property', name: 'publicProp' },
                         { type: 'method', name: 'publicMethod' }
                     ]
                 },
                 {
                     type: 'wire',
-                    decorations: [
+                    targets: [
                         {
                             type: 'property',
                             adapter: { name: 'getTodo', reference: 'todo' },

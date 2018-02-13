@@ -415,7 +415,7 @@ describe('metadata', () => {
                 decorators: [
                     {
                         type: 'api',
-                        decorations: [
+                        targets: [
                             { "name": "todo", "type": "property" },
                             { "name": "index", "type": "property" }
                         ]

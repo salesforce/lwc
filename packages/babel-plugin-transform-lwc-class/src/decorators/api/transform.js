@@ -94,7 +94,7 @@ module.exports = function transform(t, klass, decorators) {
     if (apiProperties.length > 0) {
         return {
             type: 'api',
-            decorations: apiProperties
+            targets: apiProperties
         };
     }
 }

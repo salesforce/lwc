@@ -157,7 +157,7 @@ describe('transform', () => {
         expect(metadata.decorators).toEqual([
             {
                 type: 'api',
-                decorations: [
+                targets: [
                     { type: 'property', name: 'todo' },
                     { type: 'property', name: 'index' }
                 ]

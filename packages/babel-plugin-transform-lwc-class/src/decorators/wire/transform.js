@@ -148,7 +148,7 @@ module.exports = function transform(t, klass, decorators) {
     if (metadata.length > 0) {
         return {
             type: 'wire',
-            decorations: metadata
+            targets: metadata
         };
     }
 }
