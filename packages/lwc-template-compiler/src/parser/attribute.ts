@@ -172,6 +172,10 @@ function isInputStateAttribute(element: IRElement, attrName: string) {
 }
 
 export function isAttribute(element: IRElement, attrName: string): boolean {
+    if (isCustomElement(element) && (attrName === 'role' || !isAriaOrDataOrFmkAttribute(attrName))) {
+        return false;
+    }
+
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
     if (ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;
