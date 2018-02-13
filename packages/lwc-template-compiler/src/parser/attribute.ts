@@ -15,7 +15,7 @@ import {
 import {
     SVG_TAG_SET,
     DATA_ARIA_RE,
-    ATTRIBUTE_SET,
+    GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     DASHED_TAGNAME_ELEMENT_SET,
@@ -166,17 +166,27 @@ export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
     );
 }
 
+function isCustomElementAttribute(attrName: string): boolean {
+    return (
+        attrName === 'is' ||
+        attrName === 'key' ||
+        attrName === 'slot' ||
+        !!attrName.match(DATA_ARIA_RE)
+    );
+}
+
 function isInputStateAttribute(element: IRElement, attrName: string) {
     return element.tag === 'input' && (attrName === 'value' || attrName === 'checked');
 }
 
 export function isAttribute(element: IRElement, attrName: string): boolean {
-    if (isCustomElement(element) && (attrName === 'role' || !isAriaOrDataOrFmkAttribute(attrName))) {
+    const isCustom = isCustomElement(element);
+    if (isCustom && !isCustomElementAttribute(attrName)) {
         return false;
     }
 
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
-    if (ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
+    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;
     }
 
@@ -194,11 +204,11 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
     }
 
     // Handle general case where only standard element have attribute value.
-    return !isCustomElement(element);
+    return !isCustom;
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
-    if (ATTRIBUTE_SET.has(attrName) ||
+    if (GLOBAL_ATTRIBUTE_SET.has(attrName) ||
         isAriaOrDataOrFmkAttribute(attrName) ||
         SVG_TAG_SET.has(tagName) ||
         DASHED_TAGNAME_ELEMENT_SET.has(tagName)) {
