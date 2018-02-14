@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
-describe('Wired field', () => {
+describe('Transform property', () => {
     pluginTest('transform track decorator field', `
         import { track } from 'engine';
         export default class Test {
@@ -94,6 +94,44 @@ Test.track = {
             loc: {
                 line: 4,
                 column: 11
+            }
+        }
+    });
+});
+
+describe('Metadata', () => {
+    pluginTest('transform track decorator field', `
+        import { Element, track } from 'engine';
+        export default class Test extends Element {
+            @track state;
+        }
+    `, {
+        output: {
+            metadata: {
+                decorators: [
+                    {
+                        type: 'track',
+                        targets: [
+                            { "name": "state", "type": "property" }
+                        ]
+                    }
+                ],
+                declarationLoc: {
+                    end: { column: 1, line: 12 },
+                    start: { column: 0, line: 2 }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Test'], specifiers: [{ exported: "default", kind: "local", local: "Test" }] },
+                    imports: [{
+                        imported: ['Element', 'track'],
+                        source: 'engine', specifiers: [
+                            { imported: 'Element', kind: 'named', local: 'Element' },
+                            { imported: 'track', kind: 'named', local: 'track' },
+                        ]
+                    }]
+                },
+                usedHelpers: []
             }
         }
     });
