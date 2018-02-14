@@ -80,14 +80,15 @@ const compatBrowsers = [
 ];
 
 const sauce = {
-    services: ['sauce'],
     user: process.env.SAUCE_USERNAME,
     key: process.env.SAUCE_KEY,
-    sauceConnect: true,
+
+    sauceConnect: false,
+
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
     capabilities: filterBrowsers()
-}
+};
 
 function filterBrowsers() {
     const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
