@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf, isUndefined } from "./language";
+import { create, seal, ArrayPush, freeze, isFunction, ArrayIndexOf, isUndefined } from "./language";
 
 export type Callback = () => void;
 
