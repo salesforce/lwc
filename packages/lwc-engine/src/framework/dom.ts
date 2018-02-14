@@ -17,6 +17,47 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
+// Global ARIA Attributes
+// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
+export const GlobalARIAProperties = {
+    'aria-autocomplete': true,
+    'aria-checked': true,
+    'aria-current': true,
+    'aria-disabled': true,
+    'aria-expanded': true,
+    'aria-haspopup': true,
+    'aria-hidden': true,
+    'aria-invalid': true,
+    'aria-label': true,
+    'aria-level': true,
+    'aria-multiline': true,
+    'aria-multiselectable': true,
+    'aria-orientation': true,
+    'aria-pressed': true,
+    'aria-readonly': true,
+    'aria-required': true,
+    'aria-selected': true,
+    'aria-sort': true,
+    'aria-valuemax': true,
+    'aria-valuemin': true,
+    'aria-valuenow': true,
+    'aria-valuetext': true,
+    'aria-live': true,
+    'aria-relevant': true,
+    'aria-atomic': true,
+    'aria-busy': true,
+    'aria-dropeffect': true,
+    'aria-dragged': true,
+    'aria-activedescendant': true,
+    'aria-controls': true,
+    'aria-describedby': true,
+    'aria-flowto': true,
+    'aria-labelledby': true,
+    'aria-owns': true,
+    'aria-posinset': true,
+    'aria-setsize': true,
+}
+
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement

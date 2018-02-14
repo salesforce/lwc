@@ -30,11 +30,12 @@ describe('def', () => {
             class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
-            MyComponent.observedAttributes = ['title', 'tabindex'];
+            MyComponent.observedAttributes = ['data-title', 'data-tabindex', 'aria-label'];
 
             expect(target.getComponentDef(MyComponent).observedAttrs).toEqual({
-                title: 1,
-                tabindex: 1,
+                'data-title': 1,
+                'data-tabindex': 1,
+                'aria-label': 1,
             });
         });
 
@@ -61,7 +62,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['contentEditable'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. "contentEditable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
         });
 
         it('should throw error when observedAttribute is kebab case global attribute', () => {
@@ -71,7 +72,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['content-editable'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. "content-editable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
         });
 
         it('should throw error when observedAttribute is camelCased and is public prop', () => {
@@ -130,17 +131,27 @@ describe('def', () => {
             MyComponent.observedAttributes = ['isRecordDetail'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. "isRecordDetail" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
+            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
         });
 
-        it('should not throw error when observedAttribute is a valid global HTML attribute', () => {
+        it('should throw error when observedAttribute is not a data- or aria- attribute', () => {
             class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['contenteditable'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).not.toThrow();
+            }).toThrow();
+        });
+
+        it('should throw when trying to observed a non-standard aria- attribute', () => {
+            class MyComponent extends Element  {
+                attributeChangedCallback() {}
+            }
+            MyComponent.observedAttributes = ['aria-foo'];
+            expect(() => {
+                target.getComponentDef(MyComponent);
+            }).toThrow();
         });
 
         it('should understand static publicMethods', () => {
@@ -285,14 +296,14 @@ describe('def', () => {
 
         it('should not inherit observedAttrs, it must be a manual process', function() {
             class MyComponent extends Element {}
-            MyComponent.observedAttributes = ['title', 'tabindex'];
+            MyComponent.observedAttributes = ['data-title', 'data-tabindex'];
 
             class MySubComponent extends MyComponent {}
-            MySubComponent.observedAttributes = ['title', 'id'];
+            MySubComponent.observedAttributes = ['data-title', 'data-id'];
 
             expect(target.getComponentDef(MySubComponent).observedAttrs).toEqual({
-                title: 1,
-                id: 1
+                'data-title': 1,
+                'data-id': 1
             });
         });
 

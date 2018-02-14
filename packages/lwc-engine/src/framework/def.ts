@@ -26,7 +26,7 @@ import {
     ArraySlice,
     isNull,
 } from "./language";
-import { GlobalHTMLProperties } from "./dom";
+import { GlobalHTMLProperties, GlobalARIAProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
@@ -526,15 +526,11 @@ function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsD
     return observedAttributes.reduce((reducer: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
         if (process.env.NODE_ENV !== 'production') {
             const propName = getPropNameFromAttrName(attrName);
-            // Check if it is a user defined public property
-            if (target.publicProps && target.publicProps[propName]) { // User defined prop
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. To observe mutations of the public property "${propName}" you can define a public getter and setter decorated with @api in component ${target.name}.`);
-            } else if (!observableHTMLAttrs[attrName] && ( GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute)) {
-                // Check for misspellings
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[propName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-            } else if (!observableHTMLAttrs[attrName] && (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1)) {
+            if (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1) {
                 // Attribute is not valid observable HTML Attribute
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.`);
+            } else if (attrName.indexOf('aria-') > -1 && !(attrName in GlobalARIAProperties)) {
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes must be valid "aria-" attributes.`);
             }
         }
         reducer[attrName] = 1;

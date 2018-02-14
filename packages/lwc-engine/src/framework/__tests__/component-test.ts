@@ -28,11 +28,11 @@ describe('component', function() {
                     counter++;
                 }
             }
-            MyComponent.observedAttributes = ['title'];
+            MyComponent.observedAttributes = ['data-title'];
             const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('title', 2);
+            elm.setAttribute('data-title', 2);
             expect(counter).toBe(1);
-            expect(keyValue).toBe('title');
+            expect(keyValue).toBe('data-title');
             expect(oldValue).toBe(null);
             expect(newValue).toBe('2');
         });

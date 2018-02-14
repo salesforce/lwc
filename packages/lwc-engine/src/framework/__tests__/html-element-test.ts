@@ -857,29 +857,6 @@ describe('html-element', () => {
             });
         });
 
-        it('should not trigger attribute changed callback when changed from within', function() {
-            let callCount = 0;
-            class MyComponent extends Element {
-                attributeChangedCallback() {
-                    callCount += 1;
-                }
-                connectedCallback() {
-                    this.tabIndex = 2;
-                }
-            }
-
-            MyComponent.observedAttributes = ['tabindex'];
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('tabindex', 3);
-            document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(callCount).toBe(1); // one because of the attribute value from outside
-                expect(elm.tabIndex).toBe(2);
-            });
-        });
-
         it('should not trigger render cycle', function() {
             let callCount = 0;
             class MyComponent extends Element {
