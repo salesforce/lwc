@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "./../upgrade";
 import { ViewModelReflection } from "../def";
 
@@ -13,7 +13,7 @@ describe('Events on Custom Elements', () => {
     it('attaches click event handler to custom element from within (wc-compat)', function() {
         const result = [];
         function clicked(ev) { result.push(ev); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked);
@@ -28,7 +28,7 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1() { result.push(1); }
         function clicked2() { result.push(2); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked1);
@@ -45,7 +45,7 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1(ev) { result.push(1); ev.stopImmediatePropagation(); }
         function clicked2() { throw new Error('should never reach this listener'); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked1);
@@ -61,7 +61,7 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1(ev) { result.push(1); ev.stopImmediatePropagation(); }
         function clicked2() { throw new Error('should never reach this listener'); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked1);
@@ -76,7 +76,7 @@ describe('Events on Custom Elements', () => {
     it('attaches custom event handler to custom element from within (wc-compat)', function() {
         const result = [];
         function tested(ev) { result.push(ev); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('test', tested);
@@ -90,7 +90,7 @@ describe('Events on Custom Elements', () => {
     it('should expose component as context to the event handler when defined from within (wc-compat)', function() {
         const result = [];
         function clicked() { result.push(this); result.push.apply(result, arguments); }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked);
@@ -106,7 +106,7 @@ describe('Events on Custom Elements', () => {
     it('should not expose the host element via event.target', function() {
         let event: Event;
         function clicked(e: Event) { event = e; }
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('click', clicked);
@@ -123,7 +123,7 @@ describe('Events on Custom Elements', () => {
         function html($api) {
             return [$api.h('div', { key: 0}, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('c-event', function() {
@@ -150,7 +150,7 @@ describe('Events on Custom Elements', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('c-event', function() {
                     count += 1;
@@ -177,7 +177,7 @@ describe('Events on Custom Elements', () => {
         function html1($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             connectedCallback() {
                 this.addEventListener('c-event', function() {
                     count += 1;
@@ -195,7 +195,7 @@ describe('Events on Custom Elements', () => {
         function html2($api) {
             return [$api.c('x-child', MyChild, {})];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html2;
             }
@@ -217,7 +217,7 @@ describe('Events on Custom Elements', () => {
         function html1($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             constructor() {
                 super();
                 this.addEventListener('c-event', function() {
@@ -236,7 +236,7 @@ describe('Events on Custom Elements', () => {
         function html2($api) {
             return [$api.c('x-child', MyChild, {})];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html2;
             }

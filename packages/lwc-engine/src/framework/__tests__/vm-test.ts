@@ -1,5 +1,5 @@
 // import * as target from '../watcher';
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../upgrade";
 import { ViewModelReflection } from "../def";
 import { VM } from "../vm";
@@ -7,20 +7,20 @@ import { VM } from "../vm";
 describe('vm', () => {
     describe('insertion index', () => {
         it('should assign idx=0 (insertion index) during construction', () => {
-            class MyComponent1 extends Element {}
+            class MyComponent1 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent1 });
             expect(elm[ViewModelReflection].idx).toBe(0);
         });
 
         it('should assign idx>0 after insertion', () => {
-            class MyComponent2 extends Element {}
+            class MyComponent2 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent2 });
             document.body.appendChild(elm);
             expect(elm[ViewModelReflection].idx).toBeGreaterThan(0);
         });
 
         it('should assign idx=0 after removal', () => {
-            class MyComponent3 extends Element {}
+            class MyComponent3 extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent3 });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -29,7 +29,7 @@ describe('vm', () => {
 
         it('should assign bigger idx to children', () => {
             let vm1: VM, vm2: VM;
-            class ChildComponent4 extends Element {
+            class ChildComponent4 extends LightningElement {
                 constructor() {
                     super();
                     vm2 = this[ViewModelReflection];
@@ -38,7 +38,7 @@ describe('vm', () => {
             function html($api) {
                 return [$api.c('x-bar', ChildComponent4, {})];
             }
-            class MyComponent4 extends Element {
+            class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
                     vm1 = this[ViewModelReflection];
@@ -57,7 +57,7 @@ describe('vm', () => {
         it('should assign bigger idx on reinsertion, including children idx', () => {
             let vm1: VM, vm2: VM;
             let counter = 0;
-            class ChildComponent5 extends Element {
+            class ChildComponent5 extends LightningElement {
                 constructor() {
                     super();
                     vm2 = this[ViewModelReflection];
@@ -69,7 +69,7 @@ describe('vm', () => {
             function html($api) {
                 return [$api.c('x-bar', ChildComponent5, {})];
             }
-            class MyComponent5 extends Element {
+            class MyComponent5 extends LightningElement {
                 constructor() {
                     super();
                     vm1 = this[ViewModelReflection];

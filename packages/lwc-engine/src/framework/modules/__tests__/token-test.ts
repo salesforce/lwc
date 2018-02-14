@@ -1,4 +1,4 @@
-import { Element } from "../../html-element";
+import { LightningElement } from "../../html-element";
 import { createElement } from "../../upgrade";
 import { Template } from "../../template";
 
@@ -9,7 +9,7 @@ describe('modules/token', () => {
         ];
         tmpl.token = 'test';
 
-        class Component extends Element {
+        class Component extends LightningElement {
             render() {
                 return tmpl;
             }
@@ -31,7 +31,7 @@ describe('modules/token', () => {
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
 
-        class Component extends Element {
+        class Component extends LightningElement {
             tmpl = styledTmpl;
             render() {
                 return this.tmpl;
@@ -66,7 +66,7 @@ describe('modules/token', () => {
         ];
         styledTmplB.token = 'testB';
 
-        class Component extends Element {
+        class Component extends LightningElement {
             tmpl = styledTmplA;
             render() {
                 return this.tmpl;

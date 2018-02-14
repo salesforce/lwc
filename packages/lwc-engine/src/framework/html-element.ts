@@ -34,7 +34,7 @@ export interface ComposableEvent extends Event {
 }
 
 // This should be as performant as possible, while any initialization should be done lazily
-class LWCElement implements Component {
+class LightningElement implements Component {
     [ViewModelReflection]: VM;
     constructor() {
         if (isNull(vmBeingConstructed)) {
@@ -273,10 +273,10 @@ class LWCElement implements Component {
 // Global HTML Attributes
 if (process.env.NODE_ENV !== 'production') {
     getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
-        if (propName in LWCElement.prototype) {
+        if (propName in LightningElement.prototype) {
             return; // no need to redefine something that we are already exposing
         }
-        defineProperty(LWCElement.prototype, propName, {
+        defineProperty(LightningElement.prototype, propName, {
             get() {
                 const vm = getCustomElementVM(this as HTMLElement);
                 const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
@@ -307,10 +307,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 }
 
-freeze(LWCElement);
-seal(LWCElement.prototype);
+freeze(LightningElement);
+seal(LightningElement.prototype);
 
-export { LWCElement as Element };
+export { LightningElement };
 
 export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoot): VM {
     if (process.env.NODE_ENV !== 'production') {

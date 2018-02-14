@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../main";
 
 describe('patch', () => {
@@ -7,7 +7,7 @@ describe('patch', () => {
 
         it('should call connectedCallback syncronously', () => {
             let flag = false;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     flag = true;
                 }
@@ -19,7 +19,7 @@ describe('patch', () => {
 
         it('should call disconnectedCallback syncronously', () => {
             let flag = false;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 disconnectedCallback() {
                     flag = true;
                 }
@@ -32,7 +32,7 @@ describe('patch', () => {
 
         it('should call renderedCallback syncronously', () => {
             let flag = false;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 renderedCallback() {
                     flag = true;
                 }
@@ -48,7 +48,7 @@ describe('patch', () => {
                 calls.push('root:render');
                 return [$api.c('x-child', Child, {})];
             }
-            class Root extends Element {
+            class Root extends LightningElement {
                 constructor() {
                     super();
                     calls.push('root:constructor');
@@ -64,7 +64,7 @@ describe('patch', () => {
                 }
             }
 
-            class Child extends Element {
+            class Child extends LightningElement {
                 constructor() {
                     super();
                     calls.push('child:constructor');
@@ -103,7 +103,7 @@ describe('patch', () => {
                     ? [$api.c('x-child', Child, {})]
                     : [];
             }
-            class Root extends Element {
+            class Root extends LightningElement {
                 state = {
                     show: false
                 };
@@ -120,7 +120,7 @@ describe('patch', () => {
             Root.publicMethods = ['show'];
             Root.track = { state: 1 };
 
-            class Child extends Element {
+            class Child extends LightningElement {
                 constructor() {
                     super();
                     calls.push('child:constructor');
@@ -158,7 +158,7 @@ describe('patch', () => {
             function html($api, $cmp) {
                 return [$api.h('span', { key: 0 }, [$api.t($cmp.state.foo)])];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = {
                     foo: 'bar'
                 };
@@ -199,7 +199,7 @@ describe('patch', () => {
 
         it('should preserve the creation order and the hook order', () => {
             let chars = '^';
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected-1:';
                 }
@@ -207,7 +207,7 @@ describe('patch', () => {
                     chars += 'rendered-1:';
                 }
             }
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected-2:';
                 }
@@ -224,7 +224,7 @@ describe('patch', () => {
 
         it('should disconnect when mounting a different element', () => {
             let chars = '^';
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     chars += 'connected:';
                 }

@@ -1,11 +1,11 @@
-import { Element } from "../../html-element";
+import { LightningElement } from "../../html-element";
 import { createElement } from "../../upgrade";
 import api from "../api";
 
 describe('decorators/api.ts', () => {
     describe('@api x', () => {
         it('should allow inheriting public props', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 constructor() {
                     super();
                     this.breakfast = 'pancakes';
@@ -20,7 +20,7 @@ describe('decorators/api.ts', () => {
             function html($api) {
                 return [$api.c('x-component', MyComponent, {})];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 constructor() {
                     super();
                     this.parentGetter = 'parentgetter';
@@ -44,7 +44,7 @@ describe('decorators/api.ts', () => {
 
         it('should not be consider properties reactive if not used in render', function() {
             let counter = 0;
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 render() {
                     counter++;
                 }
@@ -67,7 +67,7 @@ describe('decorators/api.ts', () => {
 
         it('should consider tracked property reactive if used in render', function() {
             let counter = 0;
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 render() {
                     this.x;
                     counter++;
@@ -92,7 +92,7 @@ describe('decorators/api.ts', () => {
             function html($api, $cmp, $slotset, $ctx) {
                 return [$api.h('div', { key: 0 }, [$api.d($cmp.x)])];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 render() {
                     return html;
                 }
@@ -115,7 +115,7 @@ describe('decorators/api.ts', () => {
 
     describe('@api get/set x', () => {
         it('should allow public getters', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get breakfast() {
                     return 'pancakes';
                 }
@@ -129,7 +129,7 @@ describe('decorators/api.ts', () => {
             function html($api) {
                 return [$api.c('x-component', MyComponent, {})];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 get parentGetter() {
                     return 'parentgetter';
                 }
@@ -153,7 +153,7 @@ describe('decorators/api.ts', () => {
 
         it('should not be consider getter and setters reactive', function() {
             let counter = 0;
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get x() {
                     return 1;
                 }
@@ -182,7 +182,7 @@ describe('decorators/api.ts', () => {
 
         it('should consider tracked property reactive if used via getter and setter', function() {
             let counter = 0;
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get x() {
                     return this.y;
                 }
@@ -218,7 +218,7 @@ describe('decorators/api.ts', () => {
             function html ($api, $cmp, $slotset, $ctx) {
                 return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get validity() {
                     return 'foo';
                 }
@@ -241,7 +241,7 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow calling the getter during construction', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get x() {
                     return 1;
                 }
@@ -265,7 +265,7 @@ describe('decorators/api.ts', () => {
         });
 
         it('should allow calling the setter during construction', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get x() {
                     return 1;
                 }
@@ -291,7 +291,7 @@ describe('decorators/api.ts', () => {
 
     describe('@api foo()', () => {
         it('should allow inheriting public methods', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 x() {
                     return 1;
                 }
@@ -315,7 +315,7 @@ describe('decorators/api.ts', () => {
 
         it('should preserve the context in public methods', function() {
             let args, ctx, that;
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 constructor() {
                     super();
                     that = this;
@@ -340,7 +340,7 @@ describe('decorators/api.ts', () => {
             const originalValue = 0;
             const newValue = 100;
 
-            class XFoo extends Element  {
+            class XFoo extends LightningElement  {
                 constructor() {
                     super();
                     this.counter = originalValue;
@@ -365,7 +365,7 @@ describe('decorators/api.ts', () => {
 
     describe('@api misuse', () => {
         it('should throw when invoking api as a function', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     api();

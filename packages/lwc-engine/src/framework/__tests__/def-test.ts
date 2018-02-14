@@ -1,17 +1,17 @@
 import * as target from "../def";
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
         it('should understand empty constructors', () => {
-            const def = class MyComponent extends Element {};
+            const def = class MyComponent extends LightningElement {};
             expect(() => {
                 target.getComponentDef(def);
             }).not.toThrow();
         });
 
         it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const def = target.getComponentDef(MyComponent);
             expect(() => {
                 def.name = 'something else';
@@ -21,13 +21,13 @@ describe('def', () => {
             expect(def.expando).toBe(1);
         });
 
-        it('should throw for stateful components not extending Element', () => {
+        it('should throw for stateful components not extending LightningElement', () => {
             const def = class MyComponent {};
             expect(() => target.getComponentDef(def)).toThrow();
         });
 
         it('should understand static observedAttributes', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['title', 'tabindex'];
@@ -39,7 +39,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute is kebab case and is public prop', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['is-record-detail'];
@@ -55,7 +55,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute is misspelled global attribute', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['contentEditable'];
@@ -65,7 +65,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute is kebab case global attribute', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['content-editable'];
@@ -75,7 +75,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute is camelCased and is public prop', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['isRecordDetail'];
@@ -90,7 +90,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute references setter', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get isRecordDetail() {}
                 set isRecordDetail(value) {}
                 attributeChangedCallback() {}
@@ -107,7 +107,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute references computed prop', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get isRecordDetail() {}
                 set isRecordDetail(value) {}
                 attributeChangedCallback() {}
@@ -124,7 +124,7 @@ describe('def', () => {
         });
 
         it('should throw error when observedAttribute is not a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['isRecordDetail'];
@@ -134,7 +134,7 @@ describe('def', () => {
         });
 
         it('should not throw error when observedAttribute is a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 attributeChangedCallback() {}
             }
             MyComponent.observedAttributes = ['contenteditable'];
@@ -144,7 +144,7 @@ describe('def', () => {
         });
 
         it('should understand static publicMethods', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 foo() {}
                 bar() {}
             }
@@ -156,14 +156,14 @@ describe('def', () => {
         });
 
         it('should understand static wire', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             expect(target.getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
         });
 
         it('should infer config and type from public props without explicitly specifying them', () => {
             function foo() {}
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             Object.defineProperties(MyComponent.prototype, {
                 foo: { get: foo, configurable: true }
             });
@@ -187,7 +187,7 @@ describe('def', () => {
 
         it('should inherit props correctly', function() {
             function x() {}
-            class MySuperComponent extends Element {}
+            class MySuperComponent extends LightningElement {}
             Object.defineProperties(MySuperComponent.prototype, {
                 x: { get: x, configurable: true }
             });
@@ -244,7 +244,7 @@ describe('def', () => {
 
         it('should throw if setter is declared without a getter', function() {
             function x() {}
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             Object.defineProperties(MyComponent.prototype, {
                 x: { set: x, configurable: true }
             });
@@ -261,7 +261,7 @@ describe('def', () => {
         });
 
         it('should inherit methods correctly', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 foo() {}
                 bar() {}
             }
@@ -284,7 +284,7 @@ describe('def', () => {
         });
 
         it('should not inherit observedAttrs, it must be a manual process', function() {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             MyComponent.observedAttributes = ['title', 'tabindex'];
 
             class MySubComponent extends MyComponent {}
@@ -297,7 +297,7 @@ describe('def', () => {
         });
 
         it('should inherit static wire properly', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { y: { type: 'record' } };
@@ -312,7 +312,7 @@ describe('def', () => {
         });
 
         it('should inherit static wire properly when parent defines same property', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { x: { type: 'subrecord' } };
@@ -324,7 +324,7 @@ describe('def', () => {
         });
 
         it('should handle publicProps with empty object', function() {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.publicProps = {
                 foo: {}
             };

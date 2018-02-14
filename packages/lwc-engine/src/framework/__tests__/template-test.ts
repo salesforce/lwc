@@ -1,12 +1,12 @@
 import * as target from '../template';
 import * as globalApi from '../api';
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from './../main';
 import { ViewModelReflection } from '../def';
 import { Template } from '../template';
 
 function createCustomComponent(html: Template, slotset?) {
-    class MyComponent extends Element {
+    class MyComponent extends LightningElement {
         render() {
             return html;
         }
@@ -82,7 +82,7 @@ describe('template', () => {
         // it('should prevent a getter to be accessed twice in the same render phase', () => {
         //     let counter = 0;
         //     let vnode;
-        //     class MyComponent extends Element {
+        //     class MyComponent extends LightningElement {
         //         get x() {
         //             counter += 1;
         //         }
@@ -113,7 +113,7 @@ describe('template', () => {
                 $cmp.y;
                 return [];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 get x() {
                     counter += 1;
                     this.y; // accessing another getter
@@ -150,7 +150,7 @@ describe('template', () => {
                 return [];
             }
             template.ids = ['x'];
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 x = 1;
                 render() {
                     return template;
@@ -182,7 +182,7 @@ describe('template', () => {
                 value = memoizer.m0;
                 return [];
             }
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 render() {
                     counter++;
                     if (counter === 1) {
@@ -207,7 +207,7 @@ describe('template', () => {
             function html($api) {
                 return [$api.t('some text')];
             }
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 render() {
                     return html;
                 }
@@ -219,7 +219,7 @@ describe('template', () => {
 
         it('should profixied default objects', () => {
             const x = [1, 2, 3];
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.x = x;
@@ -234,7 +234,7 @@ describe('template', () => {
 
         it('should proxify property objects', () => {
             const x = [1, 2, 3];
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             MyComponent.publicProps = {
                 x: {
                     config: 0
@@ -252,7 +252,7 @@ describe('template', () => {
                 y = $cmp.x;
                 return [];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     x = this.x;
@@ -308,7 +308,7 @@ describe('template', () => {
             const styledTmpl: Template = () => [];
             styledTmpl.token = 'token';
 
-            class Component extends Element {
+            class Component extends LightningElement {
                 render() {
                     return styledTmpl;
                 }
@@ -327,7 +327,7 @@ describe('template', () => {
 
             const unstyledTmpl: Template = () => [];
 
-            class Component extends Element {
+            class Component extends LightningElement {
                 tmpl = styledTmpl;
                 render() {
                     return this.tmpl;
@@ -356,7 +356,7 @@ describe('template', () => {
             const styledTmplB: Template = () => [];
             styledTmplB.token = 'tokenB';
 
-            class Component extends Element {
+            class Component extends LightningElement {
                 tmpl = styledTmplA;
                 render() {
                     return this.tmpl;
@@ -389,7 +389,7 @@ describe('template', () => {
             }
             let div: HTMLElement;
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.x = 0;
@@ -424,7 +424,7 @@ describe('template', () => {
             }
             let div: HTMLElement;
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.x = 0;
