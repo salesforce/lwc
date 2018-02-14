@@ -211,10 +211,6 @@
   version "21.1.2"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-21.1.2.tgz#05ebfa64817b626694ced56745a7949281981048"
 
-"@types/jest@^22.1.2":
-  version "22.1.2"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-22.1.2.tgz#813a79ec98221633845627636dbc606f31220dbc"
-
 "@types/node@*":
   version "9.4.6"
   resolved "https://registry.npmjs.org/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"

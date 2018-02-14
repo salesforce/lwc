@@ -40,5 +40,3 @@ export function getFileReferences(
             return [];
     }
 }
-
-// TODO:  id mapping format will most likely require name, namespace, type, and a list of locations.
