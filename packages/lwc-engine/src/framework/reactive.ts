@@ -1,4 +1,5 @@
-import { ReactiveMembrane, unwrap } from "observable-membrane";
+import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
+import { unwrap as membraneUnwrap } from './membrane';
 import { observeMutation, notifyMutation } from "./watcher";
 
 function format(value: any) {
@@ -10,5 +11,23 @@ const membrane = new ReactiveMembrane(format, {
     propertyMemberAccess: observeMutation,
 });
 
+const unwrapMethods = [
+    membraneUnwrap,
+    observableUnwrap
+];
 
-export { membrane, unwrap }
+const { length: unwrapLength } = unwrapMethods;
+
+export function unwrap(value: any): any {
+    for(let i = 0; i < unwrapLength; i += 1) {
+        const current = unwrapMethods[i];
+        const unwrapped = current(value);
+        if (unwrapped !== value) {
+            return unwrapped;
+        }
+    }
+    return value;
+}
+
+
+export { membrane }
