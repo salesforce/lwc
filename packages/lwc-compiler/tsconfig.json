@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "lib": ["dom", "es2017"],
     // Compilation Configuration
     "target": "es2017",
     "module": "es2015",
