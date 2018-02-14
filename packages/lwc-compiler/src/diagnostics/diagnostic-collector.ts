@@ -2,7 +2,6 @@ import { Diagnostic, DiagnosticLevel } from './diagnostic';
 
 export class DiagnosticCollector {
     private diagnostics: Diagnostic[] = [];
-    private severityMap: Map<DiagnosticLevel, number>;
 
     constructor(diagnostics?: Diagnostic[]) {
         if (diagnostics) {

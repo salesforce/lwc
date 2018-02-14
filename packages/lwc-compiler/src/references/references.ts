@@ -8,8 +8,15 @@ import { Reference } from './types';
 import { LwcBundle } from '../lwc-bundle';
 
 export function getBundleReferences(bundle: LwcBundle): Reference[] {
+    console.log("BUNDLE", bundle);
+    if (!bundle || !bundle.sources) {
+        return [];
+    }
+    // TODO: ts is complaining if [filename, source] is used instead of entry
     return Object.entries(bundle.sources).reduce(
-        (refs: Reference[], [filename, source]) => {
+        (refs: Reference[], entry:any) => {
+            const filename = entry[0];
+            const source = entry[1];
             return [...refs, ...getFileReferences(source, filename)];
         },
         [],

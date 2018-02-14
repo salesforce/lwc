@@ -1,4 +1,4 @@
 export interface LwcBundle {
     entry: string;
-    sources: [filename: string]: string;
+    sources: [{ filename: string }];
 }
