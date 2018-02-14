@@ -4,7 +4,7 @@
 
 - Start Date: 2018-02-05
 - RFC PR: https://github.com/salesforce/lwc/pull/61
-- Issue: TBD
+- Implementation PR: https://github.com/salesforce/lwc/pull/98
 
 ## Goals
 

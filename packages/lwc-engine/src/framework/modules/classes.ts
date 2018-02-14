@@ -1,7 +1,7 @@
 import assert from "../assert";
 import { EmptyObject } from "../utils";
 import { isUndefined } from "../language";
-import { Module, VNode } from "../../3rdparty/snabbdom/types";
+import { VNode } from "../../3rdparty/snabbdom/types";
 
 function updateClass(oldVnode: VNode, vnode: VNode) {
     const { elm, data: { class: klass } } = vnode;

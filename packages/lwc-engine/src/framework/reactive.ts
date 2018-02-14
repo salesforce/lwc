@@ -23,7 +23,6 @@ import {
 } from "./language";
 import { TargetSlot, MembraneSlot, unwrap } from "./membrane";
 import { init as initDevFormatter } from './reactive-dev-formatter';
-import { VM } from "./vm";
 
 if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();

@@ -3,7 +3,21 @@ const pluginTest = require('./utils/test-transform').pluginTest(
 );
 
 describe('decorators', () => {
-    pluginTest('should throw if a decorator is not imported from engine', `
+    pluginTest('should throw if an global decorator is used on class field', `
+        export default class Test {
+            @api test = false;
+        }
+    `, {
+        error: {
+            message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "engine"',
+            loc: {
+                line: 10,
+                column: 0
+            }
+        }
+    });
+
+    pluginTest('should throw if an global decorator is used on class methods', `
         export default class Test {
             @api
             test() {}
