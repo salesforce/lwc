@@ -75,7 +75,7 @@ jobs:
 
       - run:
           name: Integration Test - IE11 SauceLabs
-          command: SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
+          command: cd packages/lwc-integration && SAUCE_USERNAME=$SAUCE_USERNAME SAUCE_KEY=$SAUCE_KEY yarn sauce:prod_compat --browsers ie11
 
 
   perf_and_compare:
