@@ -59,6 +59,7 @@ function transformPublicProps(t, klassBody, apiDecorators) {
     return publicProps.filter(({ path }) => (
         path.parentPath.node.kind !== 'get'
     )).map(({ path }) => ({
+        type: 'property',
         name: path.parentPath.get('key.name').node
     }));
 }
@@ -77,6 +78,7 @@ function transfromPublicMethods(t, klassBody, apiDecorators) {
     }
 
     return publicMethods.map(({ path }) => ({
+        type: 'method',
         name: path.parentPath.get('key.name').node
     }));
 }
@@ -88,8 +90,10 @@ module.exports = function transform(t, klass, decorators) {
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
     const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
 
-    return  {
-        apiProperties,
-        apiMethods,
-    };
+    if (apiProperties.length > 0) {
+        return {
+            type: 'api',
+            targets: [...apiProperties, ...apiMethods]
+        };
+    }
 }

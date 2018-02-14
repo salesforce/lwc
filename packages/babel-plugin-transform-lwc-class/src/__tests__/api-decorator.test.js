@@ -412,15 +412,28 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [
-                    { name: "todo" },
-                    { name: "index" }
+                decorators: [
+                    {
+                        type: 'api',
+                        targets: [
+                            { "name": "todo", "type": "property" },
+                            { "name": "index", "type": "property" }
+                        ]
+                    }
                 ],
                 declarationLoc: {
                     end: { column: 1, line: 13 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [
+                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
+                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
+                    ]
+                },
+                usedHelpers: []
             }
         }
     });
@@ -441,12 +454,20 @@ describe('metadata', () => {
     `, {
         output: {
             metadata: {
-                apiMethods: [],
-                apiProperties: [],
+                decorators: [],
                 declarationLoc: {
                     end: { column: 1, line: 12 },
                     start: { column: 0, line: 3 }
-                }
+                },
+                marked: [],
+                modules: {
+                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
+                    imports: [
+                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
+                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
+                    ]
+                },
+                usedHelpers: []
             }
         }
     });

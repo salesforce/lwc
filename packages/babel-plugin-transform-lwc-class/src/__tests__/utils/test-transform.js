@@ -3,9 +3,6 @@ const babel = require('babel-core');
 const baseConfig = {
     babelrc: false,
     filename: 'test.js',
-    parserOpts: {
-        plugins: ['*'],
-    },
 };
 
 function transform(plugin, opts = {}) {
