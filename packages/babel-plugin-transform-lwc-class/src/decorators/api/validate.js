@@ -1,5 +1,11 @@
 const { isApiDecorator } = require('./shared');
-const { GLOBAL_ATTRIBUTE_SET, LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR }, DECORATOR_TYPES } = require('../../constants');
+const {
+    AMBIGIOUS_PROP_SET,
+    DISALLOWED_PROP_SET,
+    GLOBAL_ATTRIBUTE_SET,
+    LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
+    DECORATOR_TYPES
+} = require('../../constants');
 
 function validateConflict(path, decorators) {
     const isPublicFieldTracked = decorators.some(decorator => (
@@ -49,6 +55,14 @@ function validatePropertyName(property) {
     } else if (propertyName.startsWith('aria')) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "aria" are reserved attributes.`
+        );
+    } else if (DISALLOWED_PROP_SET.has(propertyName)) {
+        throw property.buildCodeFrameError(
+            `Invalid property name ${propertyName}. ${propertyName} cannot be defined as a public property.`
+        );
+    } else if (AMBIGIOUS_PROP_SET.has(propertyName)) {
+        throw property.buildCodeFrameError(
+            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming.`
         );
     }
 }

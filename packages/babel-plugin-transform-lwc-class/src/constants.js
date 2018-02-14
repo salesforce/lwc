@@ -3,6 +3,14 @@ const GLOBAL_ATTRIBUTE_SET = new Set([
     'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
 ]);
 
+const AMBIGIOUS_PROP_SET = new Set([
+    'accesskey', 'contenteditable', 'contextmenu', 'tabindex', 'maxlength', 'maxvalue'
+]);
+
+const DISALLOWED_PROP_SET = new Set([
+    'class', 'slot', 'style'
+]);
+
 const LWC_PACKAGE_ALIAS = 'engine';
 
 const LWC_PACKAGE_EXPORTS = {
@@ -29,6 +37,8 @@ const DECORATOR_TYPES = {
 }
 
 module.exports = {
+    AMBIGIOUS_PROP_SET,
+    DISALLOWED_PROP_SET,
     GLOBAL_ATTRIBUTE_SET,
 
     LWC_PACKAGE_ALIAS,

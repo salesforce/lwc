@@ -320,7 +320,7 @@ Test.publicProps = {
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name slot. slot is a global HTML attribute, use attributeChangedCallback to observe this attribute.',
+            message: 'test.js: Invalid property name slot. slot cannot be defined as a public property.',
             loc: {
                 line: 2,
                 column: 9
@@ -411,8 +411,8 @@ describe('metadata', () => {
         }
     `, {
         output: {
-            metadata: { 
-                apiMethods: [], 
+            metadata: {
+                apiMethods: [],
                 apiProperties: [
                     { name: "todo" },
                     { name: "index" }
