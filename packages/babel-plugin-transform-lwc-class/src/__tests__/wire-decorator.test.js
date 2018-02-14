@@ -169,7 +169,7 @@ Test.wire = {
     });
 });
 
-describe('Wired method', () => {
+describe('Transform method', () => {
     pluginTest('transforms wired method', `
         import { wire } from 'engine';
         export default class Test {
