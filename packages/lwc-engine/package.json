@@ -36,6 +36,6 @@
     }
   },
   "dependencies": {
-    "observable-membrane": "^0.17.15-alpha.1"
+    "observable-membrane": "^0.17.15"
   }
 }
