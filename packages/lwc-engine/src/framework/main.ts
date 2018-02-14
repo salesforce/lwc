@@ -9,4 +9,11 @@ export { default as wire } from "./decorators/wire";
 
 // backward compatibility
 // TODO: remove this in 0.19.x
-export { LightningElement as Element } from "./html-element";
+import { LightningElement } from "./html-element";
+import assert from "./assert";
+export class Element extends LightningElement {
+    constructor() {
+        super();
+        assert.logWarning(`Deprecation Notice: \`import { Element } from "engine";\` is now deprecated. Instead, use \`import { LightingElement } from "engine";\``);
+    }
+}
