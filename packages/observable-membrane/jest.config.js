@@ -14,8 +14,7 @@ module.exports = {
             statements: 75
         }
     },
-    rootDir: './',
     transform: {
-    '.(ts)': require.resolve('ts-jest/preprocessor.js')
+    '.ts': require.resolve('ts-jest/preprocessor.js')
     }
 };

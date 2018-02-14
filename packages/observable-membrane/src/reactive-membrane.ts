@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();
 }
 
-interface IReactiveState {
+interface ReactiveState {
     readOnly: any;
     reactive: any;
     shadowTarget: ReactiveMembraneShadowTarget;
@@ -28,7 +28,7 @@ export type ReactiveMembraneShadowTarget = Object | Array<any>;
 type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
 type ReactiveMembraneDistortionCallback = (value: any) => any;
 
-interface IReactiveMembraneEventHandlerMap {
+interface ReactiveMembraneEventHandlerMap {
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
     [key: string]: ReactiveMembraneEventHander;
@@ -50,7 +50,7 @@ function createShadowTarget(value: any): ReactiveMembraneShadowTarget {
 }
 
 
-function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveState {
+function getReactiveState(membrane: ReactiveMembrane, value: any): ReactiveState {
     const { objectGraph } = membrane;
     value = unwrap(value);
     let reactiveState = objectGraph.get(value);
@@ -60,7 +60,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
 
     reactiveState = ObjectDefineProperties(ObjectCreate(null), {
         shadowTarget: {
-            get(this: IReactiveState) {
+            get(this: ReactiveState) {
                 const shadowTarget = createShadowTarget(value);
                 ObjectDefineProperty(this, 'shadowTarget', { value: shadowTarget });
                 return shadowTarget;
@@ -68,7 +68,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
             configurable: true,
         },
         reactive: {
-            get(this: IReactiveState) {
+            get(this: ReactiveState) {
                 const { shadowTarget } = this;
                 const reactiveHandler = new ReactiveProxyHandler(membrane, value);
                 const proxy = new Proxy(shadowTarget, reactiveHandler);
@@ -78,7 +78,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
             configurable: true,
         },
         readOnly: {
-            get(this: IReactiveState) {
+            get(this: ReactiveState) {
                 const { shadowTarget } = this;
                 const readOnlyHandler = new ReadOnlyHandler(membrane, value);
                 const proxy = new Proxy(shadowTarget, readOnlyHandler);
@@ -87,7 +87,7 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): IReactiveStat
             },
             configurable: true,
         }
-    }) as IReactiveState;
+    }) as ReactiveState;
 
     objectGraph.set(value, reactiveState);
     return reactiveState;
@@ -105,8 +105,8 @@ export class ReactiveMembrane {
     distortion: ReactiveMembraneDistortionCallback;
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
-    objectGraph: WeakMap<any, IReactiveState> = new WeakMap();
-    constructor (distrotion: ReactiveMembraneDistortionCallback, eventMap: IReactiveMembraneEventHandlerMap) {
+    objectGraph: WeakMap<any, ReactiveState> = new WeakMap();
+    constructor (distrotion: ReactiveMembraneDistortionCallback, eventMap: ReactiveMembraneEventHandlerMap) {
         this.distortion = distrotion;
         this.propertyMemberChange = eventMap.propertyMemberChange;
         this.propertyMemberAccess = eventMap.propertyMemberAccess;
