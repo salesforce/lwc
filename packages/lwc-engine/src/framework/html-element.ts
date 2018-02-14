@@ -152,9 +152,7 @@ class LWCElement implements Component {
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
                 const { def: { props: publicPropsConfig } } = vm;
-                if (propName && publicPropsConfig[propName]) {
-                    throw new ReferenceError(`Attribute "${attrName}" corresponds to public property ${propName} from ${vm}. Instead use \`this.${propName}\`. Only use \`getAttribute()\` to access global HTML attributes.`);
-                } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
+                if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                     const { error, experimental } = GlobalHTMLProperties[propName];
                     if (error) {
                         assert.logError(error);

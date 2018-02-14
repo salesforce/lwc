@@ -5,4 +5,10 @@ export default class RecordLayoutItem extends Element {
     @api fieldLabel;
     @api fieldApiName;
     @api isInlineEditable = false;
+    @api set role(value) {
+        this.setAttribute('role', value);
+    }
+    @api get role() {
+        return this.getAttribute('role');
+    }
 }
