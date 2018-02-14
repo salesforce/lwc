@@ -77,7 +77,7 @@ const config = {
     // from the same test should run tests.
     //
     // TODO: figure out why tests fail when maxInstances set to anything higher than 1
-    maxInstances: 1,
+    maxInstances: 15,
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
@@ -113,7 +113,7 @@ const config = {
     sync: true,
     //
     // Level of logging verbosity: silent | verbose | command | data | result | error
-    logLevel: 'silent',
+    logLevel: 'verbose',
     //
     // Enables colors for log output.
     coloredLogs: true,

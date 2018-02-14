@@ -88,12 +88,14 @@ const sauce = {
     sauceConnectOpts: {
         verbose: true,
         verboseDebugging: true,
+        vv: true,
+        logger: console.log,
     },
 
     // Use Sauce Lab's "Platform Configurator" to select new browser settings
     // https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/
     capabilities: filterBrowsers()
-}
+};
 
 function filterBrowsers() {
     const isCompat = process.env.MODE && /compat/.test(process.env.MODE);
