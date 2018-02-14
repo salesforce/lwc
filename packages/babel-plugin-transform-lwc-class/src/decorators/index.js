@@ -139,7 +139,6 @@ module.exports = function decoratorVisitor({ types: t }) {
             for (let [klass, decorators] of grouped) {
                 validate(klass, decorators);
 
-
                 // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
                 // last class will be returned
                 const metadata = transform(t, klass, decorators);
