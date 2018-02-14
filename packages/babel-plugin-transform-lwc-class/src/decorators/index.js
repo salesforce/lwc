@@ -96,6 +96,7 @@ function validate(klass, decorators) {
 function transform(t, klass, decorators) {
     return DECORATOR_TRANSFORMS.reduce((metadata, { transform }) => {
         const decoratorMetadata = transform(t, klass, decorators);
+
         if (decoratorMetadata) {
             metadata.push(decoratorMetadata);
         }
@@ -134,8 +135,10 @@ module.exports = function decoratorVisitor({ types: t }) {
             const decorators = getLwcDecorators(decoratorImportSpecifiers);
             state.file.metadata = Object.assign({}, state.file.metadata, { decorators: [] });
             const grouped = groupDecorator(decorators);
+
             for (let [klass, decorators] of grouped) {
                 validate(klass, decorators);
+
 
                 // Note: In the (extremely rare) case of multiple classes in the same file, only the metadata about the
                 // last class will be returned

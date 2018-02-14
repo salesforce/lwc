@@ -100,7 +100,7 @@ Test.track = {
 });
 
 describe('Metadata', () => {
-    pluginTest('transform track decorator field', `
+    pluginTest('gather metadata', `
         import { Element, track } from 'engine';
         export default class Test extends Element {
             @track state;
@@ -117,7 +117,7 @@ describe('Metadata', () => {
                     }
                 ],
                 declarationLoc: {
-                    end: { column: 1, line: 12 },
+                    end: { column: 1, line: 4 },
                     start: { column: 0, line: 2 }
                 },
                 marked: [],
