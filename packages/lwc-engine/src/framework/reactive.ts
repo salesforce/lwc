@@ -6,7 +6,7 @@ function format(value: any) {
     return value;
 }
 
-const membrane = new ReactiveMembrane(format, {
+export const membrane = new ReactiveMembrane(format, {
     propertyMemberChange: notifyMutation,
     propertyMemberAccess: observeMutation,
 });
@@ -28,6 +28,3 @@ export function unwrap(value: any): any {
     }
     return value;
 }
-
-
-export { membrane }
