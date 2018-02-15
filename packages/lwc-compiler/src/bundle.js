@@ -1,5 +1,5 @@
 import { rollup } from 'rollup';
-import rollupPluginReplace from 'rollup-plugin-replace';
+import * as rollupPluginReplace from 'rollup-plugin-replace';
 
 import { isCompat, isProd } from './modes';
 

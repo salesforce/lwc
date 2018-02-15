@@ -35,37 +35,37 @@
 */
 
 // ES2015 support
-import constants from 'babel-plugin-check-es2015-constants';
-import arrowFunctions from 'babel-plugin-transform-es2015-arrow-functions';
-import blockScoped from 'babel-plugin-transform-es2015-block-scoped-functions';
-import blockScoping from 'babel-plugin-transform-es2015-block-scoping';
-import esClasses from 'babel-plugin-transform-es2015-classes';
-import computedProps from 'babel-plugin-transform-es2015-computed-properties';
-import destructuring from 'babel-plugin-transform-es2015-destructuring';
-import duplicatedKeys from 'babel-plugin-transform-es2015-duplicate-keys';
-import forOf from 'babel-plugin-transform-es2015-for-of';
-import strLiterals from 'babel-plugin-transform-es2015-literals';
-import objSuper from 'babel-plugin-transform-es2015-object-super';
-import parameters from 'babel-plugin-transform-es2015-parameters';
-import shorthand from 'babel-plugin-transform-es2015-shorthand-properties';
-import spread from 'babel-plugin-transform-es2015-spread';
-import stickyRegex from 'babel-plugin-transform-es2015-sticky-regex';
-import templateLiterals from 'babel-plugin-transform-es2015-template-literals';
-import typeofSymbol from 'babel-plugin-transform-es2015-typeof-symbol';
-import uniRegex from 'babel-plugin-transform-es2015-unicode-regex';
+import * as constants from 'babel-plugin-check-es2015-constants';
+import * as arrowFunctions from 'babel-plugin-transform-es2015-arrow-functions';
+import * as blockScoped from 'babel-plugin-transform-es2015-block-scoped-functions';
+import * as blockScoping from 'babel-plugin-transform-es2015-block-scoping';
+import * as esClasses from 'babel-plugin-transform-es2015-classes';
+import * as computedProps from 'babel-plugin-transform-es2015-computed-properties';
+import * as destructuring from 'babel-plugin-transform-es2015-destructuring';
+import * as duplicatedKeys from 'babel-plugin-transform-es2015-duplicate-keys';
+import * as forOf from 'babel-plugin-transform-es2015-for-of';
+import * as strLiterals from 'babel-plugin-transform-es2015-literals';
+import * as objSuper from 'babel-plugin-transform-es2015-object-super';
+import * as parameters from 'babel-plugin-transform-es2015-parameters';
+import * as shorthand from 'babel-plugin-transform-es2015-shorthand-properties';
+import * as spread from 'babel-plugin-transform-es2015-spread';
+import * as stickyRegex from 'babel-plugin-transform-es2015-sticky-regex';
+import * as templateLiterals from 'babel-plugin-transform-es2015-template-literals';
+import * as typeofSymbol from 'babel-plugin-transform-es2015-typeof-symbol';
+import * as uniRegex from 'babel-plugin-transform-es2015-unicode-regex';
 
 // Async/Await support
-import asyncGenerator from 'babel-plugin-transform-async-to-generator';
-import regenerator from 'babel-plugin-transform-regenerator';
-import transformRuntime from 'babel-plugin-transform-runtime';
+import * as asyncGenerator from 'babel-plugin-transform-async-to-generator';
+import * as regenerator from 'babel-plugin-transform-regenerator';
+import * as transformRuntime from 'babel-plugin-transform-runtime';
 
 // ES2015+ support
-import trailingCommas from 'babel-plugin-syntax-trailing-function-commas';
-import expOperator from 'babel-plugin-transform-exponentiation-operator';
+import * as trailingCommas from 'babel-plugin-syntax-trailing-function-commas';
+import * as expOperator from 'babel-plugin-transform-exponentiation-operator';
 
 // Non-standard transformations
-import objectRestSpread from 'babel-plugin-transform-object-rest-spread';
-import publicFieldsPlugin from 'babel-plugin-transform-class-properties';
+import * as objectRestSpread from 'babel-plugin-transform-object-rest-spread';
+import * as publicFieldsPlugin from 'babel-plugin-transform-class-properties';
 
 const looseOpts = {
     loose: false,

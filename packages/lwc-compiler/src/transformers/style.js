@@ -1,5 +1,5 @@
-import postcss from 'postcss';
-import cssnano from 'cssnano';
+import * as postcss from 'postcss';
+import * as cssnano from 'cssnano';
 import postcssPluginRaptor from 'postcss-plugin-lwc';
 
 import { isProd } from '../modes';
