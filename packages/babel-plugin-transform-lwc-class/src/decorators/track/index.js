@@ -17,18 +17,19 @@ function validate(klass, decorators) {
 
 function transform(t, klass, decorators) {
     const trackDecorators = decorators.filter(isTrackDecorator);
-
-    const trackConfig = trackDecorators.map(({ path }) => (
-        // Get tracked field names
-        path.parentPath.get('key.name').node
-    )).reduce((acc, fieldName) => {
-        // Transform list of fields to an object
-        acc[fieldName] = TRACK_PROPERTY_VALUE;
-        return acc;
-    }, {});
-
     // Add metadata to class body
     if (trackDecorators.length) {
+        const trackProperties = trackDecorators.map(({ path }) => (
+            // Get tracked field names
+            path.parentPath.get('key.name').node
+        ));
+
+        const trackConfig = trackProperties.reduce((acc, fieldName) => {
+            // Transform list of fields to an object
+            acc[fieldName] = TRACK_PROPERTY_VALUE;
+            return acc;
+        }, {});
+
         klass.get('body').pushContainer(
             'body',
             staticClassProperty(
@@ -37,6 +38,14 @@ function transform(t, klass, decorators) {
                 t.valueToNode(trackConfig)
             )
         );
+
+        return {
+            type: 'track',
+            targets: trackProperties.map(name => ({
+                name,
+                type: 'property',
+            }))
+        };
     }
 }
 
