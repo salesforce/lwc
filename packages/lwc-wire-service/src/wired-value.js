@@ -119,6 +119,7 @@ export class WiredValue {
                     next: value => {
                         // TODO: deprecate (error, data) args
                         if (wireMethod.length === 2) {
+                            // eslint-disable-next-line no-console
                             console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
                             wireMethod.call(this.cmp, null, value);
                         } else {
@@ -128,6 +129,7 @@ export class WiredValue {
                     error: err => {
                         // TODO: deprecate (error, data) args
                         if (wireMethod.length === 2) {
+                            // eslint-disable-next-line no-console
                             console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
                             wireMethod.call(this.cmp, err, undefined);
                         } else {
