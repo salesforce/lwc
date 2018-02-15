@@ -24,7 +24,7 @@
     "jest": "^21.2.1",
     "prettier": "^1.7.3",
     "rimraf": "^2.6.1",
-    "ts-jest": "^21.1.2",
+    "ts-jest": "^22.0.4",
     "tslint": "^5.2.0",
     "typescript": "^2.6.2"
   },

@@ -14,7 +14,8 @@
 
     // Enhance Strictness
     "strict": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
   },
   "include": [
     "src/**/*",

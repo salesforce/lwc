@@ -853,13 +853,6 @@ babel-jest@^21.2.0:
     babel-plugin-istanbul "^4.0.0"
     babel-preset-jest "^21.2.0"
 
-babel-jest@^22.2.2:
-  version "22.2.2"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.2.2/eda38dca284e32cc5257f96a9b51351975de4e04.tgz#eda38dca284e32cc5257f96a9b51351975de4e04"
-  dependencies:
-    babel-plugin-istanbul "^4.1.5"
-    babel-preset-jest "^22.2.0"
-
 babel-loader@^7.1.2:
   version "7.1.2"
   resolved "http://npm.lwcjs.org/babel-loader/-/babel-loader-7.1.2.tgz#f6cbe122710f1aa2af4d881c6d5b54358ca24126"
@@ -886,7 +879,7 @@ babel-plugin-external-helpers@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-istanbul@^4.0.0, babel-plugin-istanbul@^4.1.4, babel-plugin-istanbul@^4.1.5:
+babel-plugin-istanbul@^4.0.0, babel-plugin-istanbul@^4.1.4:
   version "4.1.5"
   resolved "http://npm.lwcjs.org/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.5.tgz#6760cdd977f411d3e175bb064f2bc327d99b2b6e"
   dependencies:
@@ -1343,7 +1336,7 @@ babel-preset-jest@^21.2.0:
     babel-plugin-jest-hoist "^21.2.0"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
-babel-preset-jest@^22.0.1, babel-preset-jest@^22.2.0:
+babel-preset-jest@^22.0.1:
   version "22.2.0"
   resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.2.0/f77b43f06ef4d8547214b2e206cc76a25c3ba0e2.tgz#f77b43f06ef4d8547214b2e206cc76a25c3ba0e2"
   dependencies:
@@ -8582,7 +8575,7 @@ tryit@^1.0.1:
   version "1.0.3"
   resolved "http://npm.lwcjs.org/tryit/-/tryit-1.0.3.tgz#393be730a9446fd1ead6da59a014308f36c289cb"
 
-ts-jest@^21.0.1, ts-jest@^21.1.2:
+ts-jest@^21.0.1:
   version "21.1.2"
   resolved "http://npm.lwcjs.org/ts-jest/-/ts-jest-21.1.2.tgz#3f5aa88125d9f6e9ae07b745e20062d069c22ad9"
   dependencies:

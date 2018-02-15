@@ -1,10 +1,10 @@
 import { Reference } from './types';
 
 import * as postcss from 'postcss';
-import { NodeSource, Rule } from 'postcss';
+import { Rule } from 'postcss';
 
 import * as postcssSelector from 'postcss-selector-parser';
-import { isTag, Tag } from 'postcss-selector-parser';
+import { isTag } from 'postcss-selector-parser';
 
 function isCustomElementSelector(tag: string) {
     return tag.includes('-');

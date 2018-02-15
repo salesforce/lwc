@@ -1,4 +1,4 @@
-import { Reference, ReferenceLocation } from './types';
+import { Reference } from './types';
 import traverse, { NodePath } from 'babel-traverse';
 import * as t from 'babel-types';
 import { parse } from 'babylon';
