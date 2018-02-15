@@ -1,7 +1,8 @@
-/*  eslint-env node */
-
 module.exports = {
-    testMatch: [
-        '**/?(*.)(spec|test).js'
-    ]
-}
+    testRegex: "\\.spec\\.(js|ts)$",
+    transform: {
+        "^.+\\.(js|ts)$": "ts-jest"
+    },
+    moduleFileExtensions: ["ts", "js", "json", "node"],
+};
+

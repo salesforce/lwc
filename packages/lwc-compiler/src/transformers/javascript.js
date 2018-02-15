@@ -1,5 +1,5 @@
 import { transform } from 'babel-core';
-import raptorClassTransformPlugin from 'babel-plugin-transform-lwc-class';
+import * as raptorClassTransformPlugin from 'babel-plugin-transform-lwc-class';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from '../babel-plugins';
 
