@@ -829,13 +829,6 @@ babel-jest@^21.2.0:
     babel-plugin-istanbul "^4.0.0"
     babel-preset-jest "^21.2.0"
 
-babel-jest@^22.2.2:
-  version "22.2.2"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.2.2/eda38dca284e32cc5257f96a9b51351975de4e04.tgz#eda38dca284e32cc5257f96a9b51351975de4e04"
-  dependencies:
-    babel-plugin-istanbul "^4.1.5"
-    babel-preset-jest "^22.2.0"
-
 babel-loader@^7.1.2:
   version "7.1.2"
   resolved "http://npm.lwcjs.org/babel-loader/-/babel-loader-7.1.2.tgz#f6cbe122710f1aa2af4d881c6d5b54358ca24126"
@@ -862,7 +855,7 @@ babel-plugin-external-helpers@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-istanbul@^4.0.0, babel-plugin-istanbul@^4.1.4, babel-plugin-istanbul@^4.1.5:
+babel-plugin-istanbul@^4.0.0, babel-plugin-istanbul@^4.1.4:
   version "4.1.5"
   resolved "http://npm.lwcjs.org/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.5.tgz#6760cdd977f411d3e175bb064f2bc327d99b2b6e"
   dependencies:
@@ -877,10 +870,6 @@ babel-plugin-jest-hoist@^21.2.0:
 babel-plugin-jest-hoist@^22.1.0:
   version "22.1.0"
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.1.0/c1281dd7887d77a1711dc760468c3b8285dde9ee.tgz#c1281dd7887d77a1711dc760468c3b8285dde9ee"
-
-babel-plugin-jest-hoist@^22.2.0:
-  version "22.2.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.2.0/bd34f39d652406669713b8c89e23ef25c890b993.tgz#bd34f39d652406669713b8c89e23ef25c890b993"
 
 babel-plugin-minify-builtins@^0.2.0:
   version "0.2.0"
@@ -1324,13 +1313,6 @@ babel-preset-jest@^22.1.0:
   resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.1.0/ff4e704102f9642765e2254226050561d8942ec9.tgz#ff4e704102f9642765e2254226050561d8942ec9"
   dependencies:
     babel-plugin-jest-hoist "^22.1.0"
-    babel-plugin-syntax-object-rest-spread "^6.13.0"
-
-babel-preset-jest@^22.2.0:
-  version "22.2.0"
-  resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.2.0/f77b43f06ef4d8547214b2e206cc76a25c3ba0e2.tgz#f77b43f06ef4d8547214b2e206cc76a25c3ba0e2"
-  dependencies:
-    babel-plugin-jest-hoist "^22.2.0"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
 babel-preset-minify@~0.2.0:

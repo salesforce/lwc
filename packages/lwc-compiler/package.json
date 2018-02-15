@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
-    "babel-jest": "^22.2.2",
     "jest": "^21.2.1",
     "power-assert": "^1.4.2",
     "rimraf": "^2.6.1",
