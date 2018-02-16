@@ -6,6 +6,8 @@ import {
 import { EmptyObject } from '../utils';
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 
+const { removeAttribute } = Element.prototype;
+
 const DashCharCode = 45;
 
 function updateStyle(oldVnode: VNode, vnode: VNode) {
@@ -23,9 +25,11 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
     }
 
     let name: string;
-    const style = (vnode.elm as HTMLElement).style;
-
-    if (isString(newStyle)) {
+    const elm = (vnode.elm as HTMLElement);
+    const { style } = elm;
+    if (isUndefined(newStyle) || newStyle as any === '') {
+        removeAttribute.call(elm, 'style');
+    } else if (isString(newStyle)) {
         style.cssText = newStyle;
     } else {
         if (!isUndefined(oldStyle)) {
