@@ -1,13 +1,11 @@
 import * as path from 'path';
 
 import bundle from './bundle';
-import transformFile from './transform';
-import { compile as compileSinge} from './compiler';
-
+import { Reference } from './references/types';
+import { getBundleReferences } from './references/references';
 import { MODES, ALL_MODES, isCompat, isProd } from './modes';
-import { zipObject, isUndefined, isString } from './utils';
+import { isUndefined, isString } from './utils';
 
-import * as replacePlugin from "rollup-plugin-replace";
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";
@@ -16,7 +14,6 @@ import compatPlugin from "./rollup-plugins/compat";
 export { default as templateCompiler } from 'lwc-template-compiler';
 
 const DEFAULT_NAMESPACE = 'x';
-const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };
 
 const DEFAULT_COMPILE_OPTIONS = {
     format: 'es',
@@ -28,17 +25,7 @@ const DEFAULT_COMPILE_OPTIONS = {
     },
 };
 
-
-export function compile(entry, options = {}) {
-    if (options.mode === MODES.ALL) {
-        return compileAll(entry, options);
-    } else {
-        //
-        return compileSinge(entry, options);
-    }
-
-}
-export function compileAll(entry, options = {}) {
+export async function compile(entry, options = {}) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
             `Expected a string for entry. Received instead ${entry}`,
@@ -60,7 +47,7 @@ export function compileAll(entry, options = {}) {
     // Extract component namespace and name and add it to option
     // TODO: rename the componentName and componentNamespace APIs, to moduleName and moduleNamespace,
     //       not all the modules are components.
-    const { name, namespace, normalizedName } = getNormalizedName(entry, options);
+    const { name, namespace, normalizedName } =  getNormalizedName(entry, options);
     options.moduleName = name;
     options.moduleNamespace = namespace;
     options.normalizedModuleName = normalizedName;
@@ -72,53 +59,21 @@ export function compileAll(entry, options = {}) {
         ? fsModuleResolver()
         : inMemoryModuleResolver(options);
 
-    if (options.mode !== MODES.ALL) {
-        return bundle(entry, options);
-    } else {
-        // Compile the bundle in all modes at the same time
+    // TODO: add diagnostics here -
+    const references: Reference[] = getBundleReferences(options);
 
-        // TODO: should this be exposed at the compiler level or should the caller call the compiler in all the modes ?
-        //       Because the caller has probalby a better understanding of the current architecture, it can leverage multiple
-        //       processor at the same time!
-        return Promise.all(
-            ALL_MODES.map(mode =>
-                compile(entry, Object.assign({}, options, { mode })),
-            ),
-        ).then(results => {
-            const compilationResult = zipObject(ALL_MODES, results);
-            console.log('compilation result >>>>', compilationResult );
-        });
+    // TODO: do not proceed if diagnostic had error
+    const bundledResult = await bundle(entry, options);
+
+    return {
+        code: bundledResult && bundledResult.code,
+        status: 'ok', // TODO: diagnostics
+        diagnostics: [],
+        references,
+        mode: options.mode,
     }
 }
 
-export function transform(src, id, options) {
-    if (!isString(src)) {
-        throw new Error(`Expect a string for source. Received ${src}`);
-    }
-
-    if (!isString(id)) {
-        throw new Error(`Expect a string for id. Received ${id}`);
-    }
-
-    options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
-
-    return transformFile(src, id, options);
-}
-
-export function transformBundle(src, options) {
-    const mode = options.mode;
-
-    if (isProd(mode)) {
-        const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
-        const rollupMinify = minifyPlugin(options);
-        const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
-        const result = rollupMinify.transformBundle(resultReplace ? resultReplace.code : src);
-
-        src = result.code;
-    }
-
-    return src;
-}
 
 /**
  * Takes a module location and returns it's entry point:
