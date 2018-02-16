@@ -1,7 +1,7 @@
 import assert from "./assert";
-import { isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
-import { getMapFromClassName, EmptyArray } from "./utils";
+import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty } from "./component";
@@ -29,6 +29,42 @@ const NamespaceAttributeForSVG = 'http://www.w3.org/2000/svg';
 const SymbolIterator = Symbol.iterator;
 
 const { ELEMENT_NODE, TEXT_NODE, COMMENT_NODE } = Node;
+
+
+const classNameToClassMap = create(null);
+
+function getMapFromClassName(className: string | undefined): Record<string, boolean> | undefined {
+    if (className === undefined) {
+        return;
+    }
+    let map = classNameToClassMap[className];
+    if (map) {
+        return map;
+    }
+    map = {};
+    let start = 0;
+    let i;
+    const len = className.length;
+    for (i = 0; i < len; i++) {
+        if (className.charCodeAt(i) === SPACE_CHAR) {
+            if (i > start) {
+                map[className.slice(start, i)] = true;
+            }
+            start = i + 1;
+        }
+    }
+
+    if (i > start) {
+        map[className.slice(start, i)] = true;
+    }
+    classNameToClassMap[className] = map;
+    if (process.env.NODE_ENV !== 'production') {
+        // just to make sure that this object never changes as part of the diffing algo
+        freeze(map);
+    }
+    return map;
+}
+
 
 // insert is called after postpatch, which is used somewhere else (via a module)
 // to mark the vm as inserted, that means we cannot use postpatch as the main channel
@@ -91,6 +127,16 @@ function getCurrentTplToken(): string | undefined {
     return vmBeingRendered.context.tplToken;
 }
 
+function normalizeStyleString(value: any): string | undefined {
+    if (value == null || value === false) {
+        return;
+    }
+    if (isString(value)) {
+        return value;
+    }
+    return value + '';
+}
+
 // [h]tml node
 export function h(sel: string, data: VNodeData, children: any[]): VElement {
     if (process.env.NODE_ENV !== 'production') {
@@ -112,9 +158,8 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         });
     }
     const { classMap, className, style, styleMap, key } = data;
-
-    data.class = classMap || (className && getMapFromClassName(className));
-    data.style = styleMap || (style && style + '');
+    data.class = classMap || getMapFromClassName(normalizeStyleString(className));
+    data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();
     data.uid = getCurrentOwnerId();
     let text, elm; // tslint:disable-line
@@ -173,8 +218,8 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData): VEl
     registerComponent(sel, Ctor);
 
     data = { hook, key, slotset, attrs, on, props };
-    data.class = classMap || (className && getMapFromClassName(className));
-    data.style = styleMap || (style && style + '');
+    data.class = classMap || getMapFromClassName(normalizeStyleString(className));
+    data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();
     data.uid = getCurrentOwnerId();
     const vnode: VElement = {
