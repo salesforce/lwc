@@ -30,7 +30,6 @@ const SymbolIterator = Symbol.iterator;
 
 const { ELEMENT_NODE, TEXT_NODE, COMMENT_NODE } = Node;
 
-
 const classNameToClassMap = create(null);
 
 function getMapFromClassName(className: string | undefined): Record<string, boolean> | undefined {
@@ -43,19 +42,19 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     }
     map = {};
     let start = 0;
-    let i;
+    let o;
     const len = className.length;
-    for (i = 0; i < len; i++) {
-        if (className.charCodeAt(i) === SPACE_CHAR) {
-            if (i > start) {
-                map[className.slice(start, i)] = true;
+    for (o = 0; o < len; o++) {
+        if (className.charCodeAt(o) === SPACE_CHAR) {
+            if (o > start) {
+                map[className.slice(start, o)] = true;
             }
-            start = i + 1;
+            start = o + 1;
         }
     }
 
-    if (i > start) {
-        map[className.slice(start, i)] = true;
+    if (o > start) {
+        map[className.slice(start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {
@@ -64,7 +63,6 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     }
     return map;
 }
-
 
 // insert is called after postpatch, which is used somewhere else (via a module)
 // to mark the vm as inserted, that means we cannot use postpatch as the main channel
