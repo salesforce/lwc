@@ -303,6 +303,32 @@ describe('template', () => {
         });
     });
 
+    describe('style', () => {
+        it('should not render empty style attribute to DOM', () => {
+            const tmpl = ($api, $cmp) => {
+                return [$api.h('div', {
+                    key: 1,
+                    style: $cmp.getStyle,
+                }, [])]
+            }
+
+            class MyComponent extends Element {
+                get getStyle() {
+                    return '';
+                }
+                render() {
+                    return tmpl;
+                }
+            }
+
+            const element = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(element);
+
+            // there should not be a style="" attribute in the DOM
+            expect(element.innerHTML).toBe('<div></div>');
+        });
+    })
+
     describe('token', () => {
         it('adds token to the host element if template has a token', () => {
             const styledTmpl: Template = () => [];
