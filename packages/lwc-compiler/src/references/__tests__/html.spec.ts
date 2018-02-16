@@ -2,7 +2,7 @@ import { getReferences } from '../../references/html';
 
 test('simple component', () => {
     expect(
-        getReferences(`<template><x-foo></x-foo></template>`, 'test.js'),
+        getReferences(`<template><x-foo></x-foo></template>`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -27,7 +27,7 @@ test('nested components', () => {
         getReferences(
             `<template><x-foo><x-bar></x-bar></x-foo><x-baz></x-baz></template>`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-bar',

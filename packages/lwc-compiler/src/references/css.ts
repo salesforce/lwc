@@ -1,4 +1,4 @@
-import { Reference } from './types';
+import { Reference, ReferenceReport } from './types';
 
 import * as postcss from 'postcss';
 import { Rule } from 'postcss';
@@ -53,9 +53,8 @@ function getSelectorReferences(
     return references;
 }
 
-export function getReferences(source: string, filename: string): Reference[] {
-    const references: Reference[] = [];
-
+export function getReferences(source: string, filename: string): ReferenceReport {
+    const result: ReferenceReport = { references: [], diagnostics: [] };
     const root = postcss.parse(source, { from: filename });
     root.walkRules(rule => {
         const selectorOffset = getSelectorOffset(rule, source);
@@ -64,8 +63,8 @@ export function getReferences(source: string, filename: string): Reference[] {
             filename,
             selectorOffset,
         );
-        references.push(...ruleReferences);
+        result.references.push(...ruleReferences);
     });
 
-    return references;
+    return result;
 }

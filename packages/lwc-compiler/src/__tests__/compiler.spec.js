@@ -36,7 +36,7 @@ describe('compiler test', () => {
         expect(code).not.toBeUndefined();
     });
 
-    test.only('should return reference object for valid source', async () => {
+    test('should return reference object for valid source', async () => {
         const refSources = {
             sources: {
                 '/x/foo/foo.js': `import resource from '@resource-url/foo';`,

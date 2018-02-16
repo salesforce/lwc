@@ -59,17 +59,19 @@ export async function compile(entry, options = {}) {
         ? fsModuleResolver()
         : inMemoryModuleResolver(options);
 
-    // TODO: add diagnostics here -
-    const references: Reference[] = getBundleReferences(options);
+    const refReport = getBundleReferences(options);
 
-    // TODO: do not proceed if diagnostic had error
-    const bundledResult = await bundle(entry, options);
+    let bundledResult = {};
+    if (!refReport.diagnostics.length) {
+        // TODO: convert bundle to return BundleReport
+        bundledResult = await bundle(entry, options);
+    }
 
     return {
-        code: bundledResult && bundledResult.code,
+        ...bundledResult,
         status: 'ok', // TODO: diagnostics
-        diagnostics: [],
-        references,
+        diagnostics: refReport.diagnostics,
+        references: refReport.references,
         mode: options.mode,
     }
 }

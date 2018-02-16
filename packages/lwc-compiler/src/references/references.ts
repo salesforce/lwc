@@ -3,29 +3,35 @@ import * as path from 'path';
 import { getReferences as getCssReferences } from './css';
 import { getReferences as getHtmlReferences } from './html';
 import { getReferences as getJsReferences } from './javascript';
-import { Reference } from './types';
+import { Reference, ReferenceReport } from './types';
 
 import { LwcBundle } from '../lwc-bundle';
+import { Diagnostic } from '../diagnostics/diagnostic';
 
-export function getBundleReferences(bundle: LwcBundle): Reference[] {
+export function getBundleReferences(bundle: LwcBundle): ReferenceReport {
+    const result: ReferenceReport = { references: [], diagnostics: []};
+
     if (!bundle || !bundle.sources) {
-        return [];
+        return result;
     }
     // TODO: ts is complaining if [filename, source] is used instead of entry
     return Object.entries(bundle.sources).reduce(
-        (refs: Reference[], entry: any) => {
+        (result: ReferenceReport, entry: any) => {
             const filename = entry[0];
             const source = entry[1];
-            return [...refs, ...getFileReferences(source, filename)];
+            const refResult = getFileReferences(source, filename)
+            result.references.push(...refResult.references);
+            result.diagnostics.push(...refResult.diagnostics);
+            return result;
         },
-        [],
+        result,
     );
 }
 
 export function getFileReferences(
     source: string,
     filename: string,
-): Reference[] {
+): ReferenceReport {
     const ext = path.extname(filename);
 
     switch (ext) {
@@ -36,6 +42,6 @@ export function getFileReferences(
         case '.css':
             return getCssReferences(source, filename);
         default:
-            return [];
+            return { references: [], diagnostics: []};
     }
 }

@@ -29,16 +29,16 @@ const DEFAULT_COMPILE_OPTIONS = {
 };
 
 
-export function compile(entry, options = {}) {
-    if (options.mode === MODES.ALL) {
-        return compileAll(entry, options);
-    } else {
-        //
-        return compileSinge(entry, options);
-    }
+// export function compile(entry, options = {}) {
+//     if (options.mode === MODES.ALL) {
+//         return compileAll(entry, options);
+//     } else {
+//         //
+//         return compileSinge(entry, options);
+//     }
 
-}
-export function compileAll(entry, options = {}) {
+// }
+export function compile(entry, options = {}) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
             `Expected a string for entry. Received instead ${entry}`,
@@ -85,8 +85,7 @@ export function compileAll(entry, options = {}) {
                 compile(entry, Object.assign({}, options, { mode })),
             ),
         ).then(results => {
-            const compilationResult = zipObject(ALL_MODES, results);
-            console.log('compilation result >>>>', compilationResult );
+            return zipObject(ALL_MODES, results);
         });
     }
 }
