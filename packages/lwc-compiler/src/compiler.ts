@@ -1,15 +1,12 @@
 import * as path from 'path';
 
 import bundle from './bundle';
-import { Reference } from './references/types';
 import { getBundleReferences } from './references/references';
-import { MODES, ALL_MODES, isCompat, isProd } from './modes';
+import { ALL_MODES, MODES } from './modes';
 import { isUndefined, isString } from './utils';
 
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
-import minifyPlugin from "./rollup-plugins/minify";
-import compatPlugin from "./rollup-plugins/compat";
 
 export { default as templateCompiler } from 'lwc-template-compiler';
 
@@ -25,7 +22,32 @@ const DEFAULT_COMPILE_OPTIONS = {
     },
 };
 
-export async function compile(entry, options = {}) {
+// TODO: keep this behemoth until api is fully convered
+export interface CompilerOptions {
+    format?: string;
+    mode: string;
+    eng?: {},
+    mapNamespaceFromPath?: boolean,
+    resolveProxyCompat?: {},
+    // TODO: below attributes must be renamed; some removed completely once tests pass
+    moduleName?: string,
+    moduleNamespace?: string,
+    normalizedModuleName?: string,
+    sources: [{ filename: string }],
+    moduleResolver?: any,
+    $metadata?: any,
+    componentName?: string,
+    componentNamespace?: string;
+}
+
+// TODO: will need to turn into name, namespace once we change compile param type
+export interface CmpNameNormalizationOptions {
+    componentName?: string,
+    componentNamespace?: string;
+    mapNamespaceFromPath?: boolean,
+}
+
+export async function compile(entry: string, options: CompilerOptions) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
             `Expected a string for entry. Received instead ${entry}`,
@@ -35,7 +57,7 @@ export async function compile(entry, options = {}) {
     entry = normalizeEntryPath(entry);
     options = Object.assign({ entry }, DEFAULT_COMPILE_OPTIONS, options);
 
-    const acceptedModes = Object.keys(MODES).map(mode => MODES[mode]);
+    const acceptedModes = Object.keys(ALL_MODES).map(mode => ALL_MODES[mode]);
     if (!acceptedModes.includes(options.mode)) {
         throw new Error(
             `Expected a mode in ${acceptedModes.join(
@@ -47,9 +69,14 @@ export async function compile(entry, options = {}) {
     // Extract component namespace and name and add it to option
     // TODO: rename the componentName and componentNamespace APIs, to moduleName and moduleNamespace,
     //       not all the modules are components.
-    const { name, namespace, normalizedName } =  getNormalizedName(entry, options);
+    const normalizationParams: CmpNameNormalizationOptions = {
+        componentName: options.componentName,
+        componentNamespace: options.componentNamespace,
+        mapNamespaceFromPath: options.mapNamespaceFromPath,
+    };
+    const { name, namespace, normalizedName } = getNormalizedName(entry, normalizationParams);
     options.moduleName = name;
-    options.moduleNamespace = namespace;
+    options.moduleNamespace = namespace || undefined;
     options.normalizedModuleName = normalizedName;
 
     // Add extra properties needed for the compilation
@@ -59,7 +86,10 @@ export async function compile(entry, options = {}) {
         ? fsModuleResolver()
         : inMemoryModuleResolver(options);
 
-    const refReport = getBundleReferences(options);
+    const refReport = getBundleReferences({
+        entry,
+        sources: options.sources
+    });
 
     let bundledResult = {};
     if (!refReport.diagnostics.length) {
@@ -84,7 +114,7 @@ export async function compile(entry, options = {}) {
  *
  * @param {string} fileName
  */
-function normalizeEntryPath(fileName) {
+function normalizeEntryPath(fileName: string) {
     fileName = path.normalize(fileName.replace(/\/$/, ''));
     const ext = path.extname(fileName);
     return ext
@@ -101,11 +131,11 @@ function normalizeEntryPath(fileName) {
  * @param {string} fileName
  * @param {boolean} mapNamespaceFromPath
  */
-function getNormalizedName(fileName,{ componentName, componentNamespace, mapNamespaceFromPath }) {
+function getNormalizedName(fileName: string, { componentName, componentNamespace, mapNamespaceFromPath }: CmpNameNormalizationOptions) {
     const ext = path.extname(fileName);
     const parts = fileName.split(path.sep);
-
-    const name = componentName || path.basename(parts.pop(), ext);
+    const basename: string = parts.pop() || "";
+    const name = componentName || path.basename(basename, ext);
 
     let namespace;
     if (!isUndefined(componentNamespace)) {

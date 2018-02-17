@@ -1,4 +1,4 @@
-import { Reference, ReferenceReport } from './types';
+import { ReferenceReport } from './types';
 import traverse, { NodePath } from 'babel-traverse';
 import * as t from 'babel-types';
 import { parse } from 'babylon';
@@ -20,20 +20,20 @@ const isResourceUrlSource = isGvpSource(RESOURCE_URL_PREFIX);
 function getGvpId(path: NodePath<t.ImportDeclaration>) {
     const { value } = path.node.source;
     const res = /^@[\w-]+\/(.+)$/.exec(value);
-    return res[1];
+    return res![1];
 }
-function assertGvpSource(path: NodePath<t.ImportDeclaration>) {
+function assertGvpSource(path: NodePath<t.ImportDeclaration>): Diagnostic[]  {
     const { value } = path.node.source;
     const res = /^@[\w-]+\/(.+)$/.exec(value);
     let diagnostics: Diagnostic[] = [];
 
     if (!res) {
-        return diagnostics.push({
-            message: `Unexpected GVP source for ${value}`,
+        diagnostics.push({
+            message: String(`Unexpected GVP source for ${value}`),
             level: DiagnosticLevel.Fatal,
-            filename: path,
+            filename: value,
         });
-    }
+    };
     return diagnostics;
 }
 
@@ -48,10 +48,11 @@ function assertOnlyDefaultImport(
 
     if (hasNamedImport) {
         // TODO: convert into diagnostic
+        const { value } = path.node.source;
         diagnostics.push({
             message: error,
             level: DiagnosticLevel.Fatal,
-            filename: path,
+            filename: value,
         });
         //throw new Error(error);
     }
@@ -74,7 +75,7 @@ function getResourceReferences(
         ...sourceDiagnostics
     ];
 
-    const result = {
+    const result: ReferenceReport = {
         diagnostics,
         references: [],
     };
@@ -115,7 +116,7 @@ function getLabelReferences(
         ...defaultDiagnostics,
         ...sourceDiagnostics
     ];
-    const result = {
+    const result: ReferenceReport = {
         diagnostics,
         references: [],
     };
@@ -155,7 +156,7 @@ function getApexReferences(
         ...defaultDiagnostics,
         ...sourceDiagnostics
     ];
-    const result = {
+    const result: ReferenceReport = {
         diagnostics,
         references: [],
     };
@@ -187,7 +188,7 @@ function sfdcReferencesVisitor(result: ReferenceReport, filename: string) {
         ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
             const { value } = path.node.source;
 
-            let importReferences: ReferenceReport;
+            let importReferences: ReferenceReport | undefined;
 
             if (isResourceUrlSource(value)) {
                 importReferences = getResourceReferences(path, filename);
@@ -198,8 +199,10 @@ function sfdcReferencesVisitor(result: ReferenceReport, filename: string) {
             }
 
             // TODO: check if this is healthy
-            if (!importReferences) {
+            if (importReferences === undefined) {
                 return;
+            } else {
+
             }
 
             const { references, diagnostics } = importReferences;

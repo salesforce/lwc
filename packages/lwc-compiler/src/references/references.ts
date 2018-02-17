@@ -3,10 +3,9 @@ import * as path from 'path';
 import { getReferences as getCssReferences } from './css';
 import { getReferences as getHtmlReferences } from './html';
 import { getReferences as getJsReferences } from './javascript';
-import { Reference, ReferenceReport } from './types';
+import { ReferenceReport } from './types';
 
 import { LwcBundle } from '../lwc-bundle';
-import { Diagnostic } from '../diagnostics/diagnostic';
 
 export function getBundleReferences(bundle: LwcBundle): ReferenceReport {
     const result: ReferenceReport = { references: [], diagnostics: []};
