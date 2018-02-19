@@ -1,6 +1,5 @@
 import { compile as compileBundle} from './compiler';
 import { MODES, isProd } from './modes';
-import transformFile from './transform';
 import * as replacePlugin from "rollup-plugin-replace";
 import minifyPlugin from "./rollup-plugins/minify";
 import { isString } from './utils';
@@ -15,7 +14,7 @@ export function compile(entry, options = {}) {
 }
 
 // TODO: keep here until we move this into its own package to be consumed by rollup-plugin-lwc-compiler
-export function transformFile(src, id, options) {
+export function transform(src, id, options) {
     return transform(src, id, options);
 }
 

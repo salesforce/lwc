@@ -74,7 +74,7 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
 
             // If we don't find the moduleId, just resolve the module name/namespace
             let registry = Object.values(modulePaths).find(r => id === r.entry) || getModuleQualifiedName(id, options);
-            return compiler.transformFile(code, id, {
+            return compiler.transform(code, id, {
                 mode: options.mode,
                 moduleName: registry.moduleName,
                 moduleNamespace: registry.moduleNamespace,
