@@ -11,7 +11,6 @@ import { setWireAdapters, installWiring } from './wire-service';
  * The wire service.
  */
 const wireService = {
-    // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp, data, def, context) => {
         // engine guarantees invocation only if def.wire is defined
         const wiredValues = installWiring(cmp, def);
