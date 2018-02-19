@@ -67,9 +67,22 @@ describe('compiler test', () => {
         const config = {...HEALTHY_CONFIG, ...refSources};
         const result = await compile(HEALTHY_CONFIG.entry, config);
         const { code, diagnostics, status } = result;
-
         expect(status).toBe('error');
         expect(diagnostics[0].level).toBe(0); // fatal
         expect(code).toBeUndefined();
+    });
+    test('diagnostics returns bundler specific error when format is misconfigured', async () => {
+        const refSources = {
+            sources: {
+                '/x/foo/foo.js': `import resource from '@resource-url/foo';`,
+            }
+        };
+        const config = {...HEALTHY_CONFIG, ...refSources, ...{ format: 'bad' }};
+        const result = await compile(HEALTHY_CONFIG.entry, config);
+        const { code, diagnostics, status } = result;
+        expect(code).toBeUndefined();
+        expect(status).toBe('error');
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].message).toBe("Invalid format: bad - valid options are amd, cjs, es, iife, umd");
     });
 });

@@ -5,9 +5,9 @@ import { getReferences as getHtmlReferences } from './html';
 import { getReferences as getJsReferences } from './javascript';
 import { ReferenceReport } from './types';
 
-import { LwcBundle } from '../lwc-bundle';
+import { LwcModule } from '../lwc-module';
 
-export function getBundleReferences(bundle: LwcBundle): ReferenceReport {
+export function getBundleReferences(bundle: LwcModule): ReferenceReport {
     const result: ReferenceReport = { references: [], diagnostics: []};
 
     if (!bundle || !bundle.sources) {

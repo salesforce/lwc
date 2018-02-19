@@ -7,6 +7,7 @@ import rollupModuleResolver from './rollup-plugins/module-resolver';
 import rollupTransfrom from './rollup-plugins/transform';
 import rollupCompat from './rollup-plugins/compat';
 import rollupMinify from './rollup-plugins/minify';
+import { DiagnosticLevel } from './diagnostics/diagnostic';
 
 function rollupWarningOverride(warning) {
     if (warning.code && warning.code === 'UNRESOLVED_IMPORT') {
@@ -82,7 +83,7 @@ export default function bundle(entry, options = {}) {
 function handleFailure(error, filename) {
     // TODO:  do we need location?
     const diagnostic = {
-        level: 'fatal',
+        level: DiagnosticLevel.Fatal,
         filename,
         message: error.message,
     };
