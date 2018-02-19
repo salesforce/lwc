@@ -33,5 +33,10 @@ describe("main.js", () => {
             const wireService = registerWireService(register, mockAdapters);
             expect(wireService.addWireAdapter).toBeDefined();
         });
+        it("allows wire service to unregister wire adapter", () => {
+            const register = jest.fn();
+            const wireService = registerWireService(register, mockAdapters);
+            expect(wireService.unregister).toBeDefined();
+        });
     });
 });

@@ -38,6 +38,8 @@ const wireService = {
  * @param {...Function} adapterGenerators Wire adapter generators. Each function
  * must return an object whose keys are adapter ids, values are the adapter
  * function.
+ * @returns {Object} An object that manges wire adapter registration.
+ * It supports registering and unregistering adapter at run time.
  */
 export default function registerWireService(register, ...adapterGenerators) {
     setWireAdapters(adapterGenerators);
@@ -46,6 +48,9 @@ export default function registerWireService(register, ...adapterGenerators) {
     return {
         addWireAdapter: (adapter) => {
             ADAPTERS.set(adapter.name, adapter);
+        },
+        unregister: (adapterName) => {
+            ADAPTERS.delete(adapterName);
         }
     };
 }
