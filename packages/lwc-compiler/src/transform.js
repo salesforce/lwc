@@ -1,10 +1,50 @@
 import * as path from 'path';
+import { MODES, isProd, isCompat } from './modes';
 
 import styleTransform from './transformers/style';
 import templateTransformer from './transformers/template';
 import javascriptTransformer from './transformers/javascript';
 import compatPluginFactory from "./rollup-plugins/compat";
-import { isCompat } from './modes';
+
+import * as replacePlugin from "rollup-plugin-replace";
+import minifyPlugin from "./rollup-plugins/minify";
+import { isString } from './utils';
+
+const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };
+
+
+//
+export function transform(src, id, options) {
+    if (!isString(src)) {
+        throw new Error(`Expect a string for source. Received ${src}`);
+    }
+
+    if (!isString(id)) {
+        throw new Error(`Expect a string for id. Received ${id}`);
+    }
+
+    options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
+
+    return transformFile(src, id, options);
+}
+
+export function transformBundle(src, options) {
+    const mode = options.mode;
+
+    if (isProd(mode)) {
+        const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
+        const rollupMinify = minifyPlugin(options);
+        const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
+        const result = rollupMinify.transformBundle(resultReplace ? resultReplace.code : src);
+
+        src = result.code;
+    }
+
+    return src;
+}
+
+
+
 
 /**
  * Returns the associted transformer for a specific file
@@ -30,7 +70,7 @@ function getTransformer(fileName) {
 /**
  * Run approriate transformation for the passed source
  */
-export default async function transform(src, id, options) {
+async function transformFile(src, id, options) {
     const transfomer = getTransformer(id);
     const mergedOptions = Object.assign({}, options, { filename: id });
     const result = await Promise.resolve(transfomer( src, mergedOptions));
