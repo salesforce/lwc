@@ -1,12 +1,15 @@
 import * as path from 'path';
 
+//import bundle from './bundle';
 import bundle from './bundle';
 import { getBundleReferences } from './references/references';
+import { DiagnosticCollector } from './diagnostics/diagnostic-collector';
 import { ALL_MODES, MODES } from './modes';
 import { isUndefined, isString } from './utils';
 
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
+import { Diagnostic } from './diagnostics/diagnostic';
 
 export { default as templateCompiler } from 'lwc-template-compiler';
 
@@ -26,9 +29,9 @@ const DEFAULT_COMPILE_OPTIONS = {
 export interface CompilerOptions {
     format?: string;
     mode: string;
-    eng?: {},
+    env?: any,
     mapNamespaceFromPath?: boolean,
-    resolveProxyCompat?: {},
+    resolveProxyCompat?: any,
     // TODO: below attributes must be renamed; some removed completely once tests pass
     moduleName?: string,
     moduleNamespace?: string,
@@ -39,6 +42,16 @@ export interface CompilerOptions {
     componentName?: string,
     componentNamespace?: string;
 }
+
+// TODO: move to bundler.ts once rollup issue is resolved
+export interface BundleReport {
+    status?: string,
+    code?: string,
+    map?: any,
+    metadata?: any,
+    rawMetadata?: any,
+    diagnostics?: Diagnostic[],
+};
 
 // TODO: will need to turn into name, namespace once we change compile param type
 export interface CmpNameNormalizationOptions {
@@ -91,16 +104,22 @@ export async function compile(entry: string, options: CompilerOptions) {
         sources: options.sources
     });
 
-    let bundledResult = {};
-    if (!refReport.diagnostics.length) {
+    const diagnosticCollector = new DiagnosticCollector();
+    diagnosticCollector.addAll(refReport.diagnostics);
+
+    let bundledReport: BundleReport = {};
+    if (!diagnosticCollector.hasError()) {
         // TODO: convert bundle to return BundleReport
-        bundledResult = await bundle(entry, options);
+        bundledReport = await bundle(entry, options);
+        diagnosticCollector.addAll(bundledReport.diagnostics || []);
     }
 
+
+
     return {
-        ...bundledResult,
-        status: 'ok', // TODO: diagnostics
-        diagnostics: refReport.diagnostics,
+        ...bundledReport,
+        status: diagnosticCollector.hasError() ? 'error' : 'ok',
+        diagnostics: diagnosticCollector.getAll(),
         references: refReport.references,
         mode: options.mode,
     }

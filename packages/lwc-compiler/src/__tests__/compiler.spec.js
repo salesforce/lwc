@@ -58,5 +58,18 @@ describe('compiler test', () => {
             ],
         });
     });
+    test('compilation should not contain bundle properties if reference gathering encountered an error', async () => {
+        const refSources = {
+            sources: {
+                'test.js': `import * as MyClass from '@apex/MyClass';`
+            }
+        }
+        const config = {...HEALTHY_CONFIG, ...refSources};
+        const result = await compile(HEALTHY_CONFIG.entry, config);
+        const { code, diagnostics, status } = result;
 
+        expect(status).toBe('error');
+        expect(diagnostics[0].level).toBe(0); // fatal
+        expect(code).toBeUndefined();
+    });
 });

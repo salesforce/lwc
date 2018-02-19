@@ -49,23 +49,6 @@ describe('compile', () => {
             );
         }
     });
-    // TODO: uncomment once compile output format changes
-    // it.only('should return status, diagnostics, references, and bundles', () => {
-    //     const config = {
-    //         sources: {
-    //             '/x/foo/foo.js': VALID_TEST_JS,
-    //         },
-    //         entry: '/x/foo/foo.js',
-    //         moduleName: 'foo',
-    //         moduleNamespace: 'x',
-    //         format: 'whoknows',
-    //     };
-    //     const { status, diagnostics, references, bundles } = compile();
-    //     expect(status).toBe('ok');
-    //     expect(diagnostics.length).toBe(0);
-    //     expect(references.length > 0).toBe(true);
-    //     expect(bundles.length).toBe(1);
-    // });
 });
 
 describe('transform', () => {

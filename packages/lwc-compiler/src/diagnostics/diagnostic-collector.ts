@@ -26,8 +26,9 @@ export class DiagnosticCollector {
     }
 
     public hasError() {
-        return this.diagnostics.some(d => {
-            return d.level <= DiagnosticLevel.Error;
+        const error = this.diagnostics.find(d => {
+            return d.level === DiagnosticLevel.Error || d.level === DiagnosticLevel.Fatal;
         });
+        return !!error;
     }
 }

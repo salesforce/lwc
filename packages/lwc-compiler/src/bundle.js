@@ -52,22 +52,39 @@ export default function bundle(entry, options = {}) {
         input: entry,
         plugins: plugins,
         onwarn: rollupWarningOverride,
-    })
-        .then(bundle => {
-            return bundle.generate({
-                amd: { id: options.normalizedModuleName },
-                interop: false,
-                strict: false,
-                format: options.format,
-                globals: options.globals
-            });
-        })
-        .then(result => {
-            return {
-                code: result.code,
-                map: result.map,
-                metadata: mergeMetadata(options.$metadata),
-                rawMetadata: options.$metadata
-            };
+    }).then(
+        (bundleFn) => {
+            return bundleFn
+                .generate({
+                    amd: { id: options.normalizedModuleName },
+                    interop: false,
+                    strict: false,
+                    format: options.format,
+                    globals: options.globals
+                })
+                .then((result) => {
+                    return {
+                        code: result.code,
+                        map: result.map,
+                        metadata: mergeMetadata(options.$metadata),
+                        rawMetadata: options.$metadata,
+                        diagnostics: []
+                        // TODO: perhaps add format here?
+                    };
+                }, (error) => {
+                    return handleFailure(error, entry);
+                });
+        }, (error) => {
+            return handleFailure(error, entry);
         });
+}
+
+function handleFailure(error, filename) {
+    // TODO:  do we need location?
+    const diagnostic = {
+        level: 'fatal',
+        filename,
+        message: error.message,
+    };
+    return { diagnostics: [diagnostic] };
 }

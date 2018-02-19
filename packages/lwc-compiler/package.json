@@ -61,11 +61,11 @@
     "babel-traverse": "^6.26.0",
     "babylon": "^6.18.0",
     "cssnano": "^3.10.0",
-    "parse5": "^3.0.3",
-    "postcss-selector-parser": "^3.1.1",
     "lwc-template-compiler": "0.17.16",
+    "parse5": "^3.0.3",
     "postcss": "^6.0.13",
     "postcss-plugin-lwc": "0.17.16",
+    "postcss-selector-parser": "^3.1.1",
     "rollup": "0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-replace": "^2.0.0"
