@@ -46,7 +46,7 @@ export default function registerWireService(register, ...adapterGenerators) {
     register(wireService);
 
     return {
-        addWireAdapter: (adapter) => {
+        register: (adapter) => {
             ADAPTERS.set(adapter.name, adapter);
         },
         unregister: (adapterName) => {

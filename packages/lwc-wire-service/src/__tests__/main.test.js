@@ -28,10 +28,10 @@ describe("main.js", () => {
                 disconnected: expect.any(Function)
             }));
         });
-        it("allows wire service to addWireAdapter", () => {
+        it("allows wire service to register wire adapter", () => {
             const register = jest.fn();
             const wireService = registerWireService(register, mockAdapters);
-            expect(wireService.addWireAdapter).toBeDefined();
+            expect(wireService.register).toBeDefined();
         });
         it("allows wire service to unregister wire adapter", () => {
             const register = jest.fn();
