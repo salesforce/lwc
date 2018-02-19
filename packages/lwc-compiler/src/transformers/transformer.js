@@ -1,14 +1,14 @@
 import * as path from 'path';
-import { MODES, isProd, isCompat } from './modes';
+import { MODES, isProd, isCompat } from '../modes';
 
-import styleTransform from './transformers/style';
-import templateTransformer from './transformers/template';
-import javascriptTransformer from './transformers/javascript';
-import compatPluginFactory from "./rollup-plugins/compat";
+import styleTransform from './style';
+import templateTransformer from './template';
+import javascriptTransformer from './javascript';
+import compatPluginFactory from "../rollup-plugins/compat";
 
 import * as replacePlugin from "rollup-plugin-replace";
-import minifyPlugin from "./rollup-plugins/minify";
-import { isString } from './utils';
+import minifyPlugin from "../rollup-plugins/minify";
+import { isString } from '../utils';
 
 const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };
 

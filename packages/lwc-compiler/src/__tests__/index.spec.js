@@ -1,7 +1,7 @@
 /* eslint-env node, jest */
 
 const { compile } = require('../index');
-const { transform } = require('../transform');
+const { transform } = require('../transformers/transformer');
 const { pretify } = require('./utils');
 
 const VALID_TEST_JS = `

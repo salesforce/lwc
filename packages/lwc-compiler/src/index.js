@@ -2,9 +2,8 @@ import { compile as compileBundle} from './compiler';
 import { MODES, isProd } from './modes';
 import * as replacePlugin from "rollup-plugin-replace";
 import minifyPlugin from "./rollup-plugins/minify";
+import { transform, transformBundle } from './transformers/transformer';
 import { isString } from './utils';
-
-import { transform, transformBundle } from './transform';
 
 
 const DEFAULT_TRANSFORM_OPTIONS = { mode: MODES.DEV };
