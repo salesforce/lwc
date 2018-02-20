@@ -55,14 +55,14 @@ export class ReadOnlyHandler {
     set(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, value: any): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot set "${key}" on "${originalTarget}". "${originalTarget}" is read only.`);
+            throw new Error(`Invalid mutation: Cannot set "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }
     deleteProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot delete "${key}" on "${originalTarget}". "${originalTarget}" is read only.`);
+            throw new Error(`Invalid mutation: Cannot delete "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }
@@ -84,7 +84,7 @@ export class ReadOnlyHandler {
     setPrototypeOf(shadowTarget: ReactiveMembraneShadowTarget, prototype: any): any {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read only.`);
+            throw new Error(`Invalid prototype mutation: Cannot set prototype on "${originalTarget}". "${originalTarget}" prototype is read-only.`);
         }
     }
     getOwnPropertyDescriptor(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): PropertyDescriptor | undefined {
@@ -112,13 +112,13 @@ export class ReadOnlyHandler {
     preventExtensions(shadowTarget: ReactiveMembraneShadowTarget): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read only.`);
+            throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`);
         }
     }
     defineProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot defineProperty "${key}" on "${originalTarget}". "${originalTarget}" is read only.`);
+            throw new Error(`Invalid mutation: Cannot defineProperty "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }
