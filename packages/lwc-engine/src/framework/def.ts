@@ -81,18 +81,6 @@ import {
 
 export const ViewModelReflection = Symbol();
 
-let observableHTMLAttrs: ObservedAttrsDef;
-
-if (process.env.NODE_ENV !== 'production') {
-    observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
-        const globalProperty = GlobalHTMLProperties[key];
-        if (globalProperty && globalProperty.attribute) {
-            acc[globalProperty.attribute] = 1;
-        }
-        return acc;
-    }, create(null));
-}
-
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 const COMPUTED_GETTER_MASK = 1;
@@ -525,11 +513,10 @@ function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsD
     }
     return observedAttributes.reduce((reducer: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
         if (process.env.NODE_ENV !== 'production') {
-            const propName = getPropNameFromAttrName(attrName);
-            if (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1) {
+            if (attrName.indexOf('aria-') === -1) {
                 // Attribute is not valid observable HTML Attribute
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.`);
-            } else if (attrName.indexOf('aria-') > -1 && !(attrName in GlobalARIAProperties)) {
+                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes can only contain "aria-" attributes.`);
+            } else if (!(attrName in GlobalARIAProperties)) {
                 assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes must be valid "aria-" attributes.`);
             }
         }

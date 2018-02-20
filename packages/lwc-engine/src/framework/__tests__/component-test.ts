@@ -28,30 +28,11 @@ describe('component', function() {
                     counter++;
                 }
             }
-            MyComponent.observedAttributes = ['data-title'];
+            MyComponent.observedAttributes = ['aria-label'];
             const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('data-title', 2);
+            elm.setAttribute('aria-label', 2);
             expect(counter).toBe(1);
-            expect(keyValue).toBe('data-title');
-            expect(oldValue).toBe(null);
-            expect(newValue).toBe('2');
-        });
-
-        it('should invoke attributeChangeCallback() for data-* attributes', () => {
-            let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
-                attributeChangedCallback(k, o, n) {
-                    oldValue = o;
-                    newValue = n;
-                    keyValue = k;
-                    counter++;
-                }
-            }
-            MyComponent.observedAttributes = ['data-xyz'];
-            const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('data-xyz', 2);
-            expect(counter).toBe(1);
-            expect(keyValue).toBe('data-xyz');
+            expect(keyValue).toBe('aria-label');
             expect(oldValue).toBe(null);
             expect(newValue).toBe('2');
         });

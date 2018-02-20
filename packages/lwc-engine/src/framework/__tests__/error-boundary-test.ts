@@ -569,12 +569,12 @@ describe('error boundary component', () => {
                         throw new Error("Child AttributeChangedCallback Throw");
                     }
                 }
-                BoundaryChild.observedAttributes = ['data-title'];
+                BoundaryChild.observedAttributes = ['aria-label'];
 
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
                     ctor: BoundaryChild,
-                    props: { attrs: { 'data-title': 'child title' }}
+                    props: { attrs: { 'aria-label': 'child title' }}
                 }]);
 
                 const boundaryElm = createElement('x-boundary', {is: Boundary});

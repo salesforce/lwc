@@ -30,11 +30,9 @@ describe('def', () => {
             class MyComponent extends Element  {
                 attributeChangedCallback() {}
             }
-            MyComponent.observedAttributes = ['data-title', 'data-tabindex', 'aria-label'];
+            MyComponent.observedAttributes = ['aria-label'];
 
             expect(target.getComponentDef(MyComponent).observedAttrs).toEqual({
-                'data-title': 1,
-                'data-tabindex': 1,
                 'aria-label': 1,
             });
         });
@@ -62,7 +60,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['contentEditable'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
+            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. Observed attributes can only contain "aria-" attributes.');
         });
 
         it('should throw error when observedAttribute is kebab case global attribute', () => {
@@ -72,7 +70,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['content-editable'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
+            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. Observed attributes can only contain "aria-" attributes.');
         });
 
         it('should throw error when observedAttribute is camelCased and is public prop', () => {
@@ -131,7 +129,7 @@ describe('def', () => {
             MyComponent.observedAttributes = ['isRecordDetail'];
             expect(() => {
                 target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. Observed attributes can only contain "data-" and "aria-" attributes.');
+            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. Observed attributes can only contain "aria-" attributes.');
         });
 
         it('should throw error when observedAttribute is not a data- or aria- attribute', () => {
@@ -296,14 +294,13 @@ describe('def', () => {
 
         it('should not inherit observedAttrs, it must be a manual process', function() {
             class MyComponent extends Element {}
-            MyComponent.observedAttributes = ['data-title', 'data-tabindex'];
+            MyComponent.observedAttributes = ['aria-label'];
 
             class MySubComponent extends MyComponent {}
-            MySubComponent.observedAttributes = ['data-title', 'data-id'];
+            MySubComponent.observedAttributes = ['aria-label'];
 
             expect(target.getComponentDef(MySubComponent).observedAttrs).toEqual({
-                'data-title': 1,
-                'data-id': 1
+                'aria-label': 1,
             });
         });
 

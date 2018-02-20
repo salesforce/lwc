@@ -217,11 +217,11 @@ describe('class-list', () => {
                     this.classList.add('classFromAttibuteChangedCb');
                 }
             };
-            def.observedAttributes = ['data-title'];
+            def.observedAttributes = ['aria-label'];
             def.publicMethods = ['initClassNames'];
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
-            elm.setAttribute('data-title', 'title');
+            elm.setAttribute('aria-label', 'title');
             expect(elm.className).toBe('classFromInit classFromAttibuteChangedCb');
         });
 
@@ -236,11 +236,11 @@ describe('class-list', () => {
                     this.classList.remove('classToRemoveDuringAttributeChangedCb');
                 }
             };
-            def.observedAttributes = ['data-title'];
+            def.observedAttributes = ['aria-label'];
             def.publicMethods = ['initClassNames'];
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
-            elm.setAttribute('data-title', 'title');
+            elm.setAttribute('aria-label', 'title');
             expect(elm.className).toBe('theOnlyClassThatShouldRemain');
         });
 
@@ -297,11 +297,11 @@ describe('class-list', () => {
                     this.classList.add('classFromConnectedCallback');
                 }
             };
-            def.observedAttributes = ['data-title'];
+            def.observedAttributes = ['aria-label'];
             def.publicMethods = ['initClassNames'];
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
-            elm.setAttribute('data-title', 'title');
+            elm.setAttribute('aria-label', 'title');
             document.body.appendChild(elm);
 
             expect(elm.className).toBe('classFromInit classFromAttibuteChangedCb classFromConnectedCallback');
@@ -323,11 +323,11 @@ describe('class-list', () => {
                     this.classList.remove('classToRemoveDuringConnectedCb');
                 }
             };
-            def.observedAttributes = ['data-title'];
+            def.observedAttributes = ['aria-label'];
             def.publicMethods = ['initClassNames'];
             const elm = createElement('x-foo', { is: def });
             elm.initClassNames();
-            elm.setAttribute('data-title', 'title');
+            elm.setAttribute('aria-label', 'title');
             document.body.appendChild(elm);
 
             expect(elm.className).toBe('theOnlyClassThatShouldRemain');

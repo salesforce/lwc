@@ -151,7 +151,6 @@ class LWCElement implements Component {
             assert.vm(vm);
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
-                const { def: { props: publicPropsConfig } } = vm;
                 if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                     const { error, experimental } = GlobalHTMLProperties[propName];
                     if (error) {
