@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 //import bundle from './bundle';
-import bundle from './bundle';
+import { bundle, BundleReport } from './bundler/bundler';
 import { getBundleReferences } from './references/references';
 import { DiagnosticCollector } from './diagnostics/diagnostic-collector';
 import { ALL_MODES, MODES } from './modes';
@@ -55,7 +55,7 @@ export interface CompilerInput {
     mode: string;
 }
 
-// TODO: keep this behemoth until api is fully convered
+// TODO: keep this behemoth until api is fully converted and we come up with bundler options
 export interface CompilerOptions {
     format?: string;
     mode: string;
@@ -71,17 +71,9 @@ export interface CompilerOptions {
     $metadata?: any,
     componentName?: string,
     componentNamespace?: string;
+    globals?: any,
 }
 
-// TODO: move to bundler.ts once rollup issue is resolved
-export interface BundleReport {
-    status?: string,
-    code?: string,
-    map?: any,
-    metadata?: any,
-    rawMetadata?: any,
-    diagnostics?: Diagnostic[],
-};
 
 // TODO: will need to turn into name, namespace once we change compile param type
 export interface CmpNameNormalizationOptions {
@@ -140,7 +132,6 @@ export async function compile(entry: string, options: CompilerOptions) {
 
     let bundledReport: BundleReport = {};
     if (!diagnosticCollector.hasError()) {
-        // TODO: convert bundle to return BundleReport
         bundledReport = await bundle(entry, options);
         diagnosticCollector.addAll(bundledReport.diagnostics || []);
 
