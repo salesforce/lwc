@@ -19,7 +19,7 @@ const unwrapMethods = [
 const { length: unwrapLength } = unwrapMethods;
 
 export function unwrap(value: any): any {
-    for(let i = 0; i < unwrapLength; i += 1) {
+    for (let i = 0; i < unwrapLength; i += 1) {
         const current = unwrapMethods[i];
         const unwrapped = current(value);
         if (unwrapped !== value) {
