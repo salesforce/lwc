@@ -1,4 +1,4 @@
-import { ReactiveMembrane, unwrap } from './../reactive-membrane';
+import { ReactiveMembrane } from './../reactive-membrane';
 
 describe('distortion', () => {
     it('should use distorted value', () => {
@@ -368,7 +368,6 @@ describe('ReactiveHandler', () => {
         });
         const obj = {};
         const nested = {};
-        const handler = {};
         Object.defineProperty(obj, 'foo', {
             value: {
                 nested
