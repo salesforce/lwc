@@ -5,13 +5,17 @@
  * This service is Salesforce-agnostic. The wire adapters must be provided to this module.
  */
 
-import { setWireAdapters, installWiring } from './wire-service';
+import {
+    setWireAdapters,
+    installWiring,
+    registerWireAdapter,
+    unregisterWireAdapter
+} from './wire-service';
 
 /**
  * The wire service.
  */
 const wireService = {
-    // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp, data, def, context) => {
         // engine guarantees invocation only if def.wire is defined
         const wiredValues = installWiring(cmp, def);
@@ -38,8 +42,19 @@ const wireService = {
  * @param {...Function} adapterGenerators Wire adapter generators. Each function
  * must return an object whose keys are adapter ids, values are the adapter
  * function.
+ * @returns {Object} An object that manges wire adapter registration.
+ * It supports registering and unregistering adapter at run time.
  */
 export default function registerWireService(register, ...adapterGenerators) {
     setWireAdapters(adapterGenerators);
     register(wireService);
+
+    return {
+        register: (adapter) => {
+            registerWireAdapter(adapter);
+        },
+        unregister: (adapterName) => {
+            return unregisterWireAdapter(adapterName);
+        }
+    };
 }

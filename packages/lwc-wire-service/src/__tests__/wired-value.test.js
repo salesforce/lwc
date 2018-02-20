@@ -166,7 +166,7 @@ describe("wired-value.js", () => {
             const observer = wiredValue.getObserver();
             observer.next(expected);
             expect(cmp.target.mock.calls).toHaveLength(1);
-            expect(cmp.target.mock.calls[0][0].error).toBe(null);
+            expect(cmp.target.mock.calls[0][0].error).toBe(undefined);
             expect(cmp.target.mock.calls[0][0].data).toBe(expected);
         });
         it("wired method - error invokes method with error, no value", () => {

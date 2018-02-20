@@ -123,7 +123,7 @@ export class WiredValue {
                             console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
                             wireMethod.call(this.cmp, null, value);
                         } else {
-                            wireMethod.call(this.cmp, { data: value, error: null });
+                            wireMethod.call(this.cmp, { data: value });
                         }
                     },
                     error: err => {
@@ -133,7 +133,7 @@ export class WiredValue {
                             console.warn('[DEPRECATE] @wire function no longer supports two arguments (error, data), please update your code to use ({error, data}) instead.');
                             wireMethod.call(this.cmp, err, undefined);
                         } else {
-                            wireMethod.call(this.cmp, { data: undefined, error: err });
+                            wireMethod.call(this.cmp, { error: err });
                         }
                     },
                     complete: () => {

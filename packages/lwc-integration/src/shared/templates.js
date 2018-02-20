@@ -9,14 +9,14 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
-        import { serviceTodo } from 'todo';
+        import { getTodo } from 'todo';
         import registerWireService from 'wire-service';
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
 
         registerWireService(register, () => {
             return {
-                serviceTodo
+                getTodo
             };
         });
 
