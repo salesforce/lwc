@@ -5,7 +5,12 @@
  * This service is Salesforce-agnostic. The wire adapters must be provided to this module.
  */
 
-import { setWireAdapters, installWiring } from './wire-service';
+import {
+    setWireAdapters,
+    installWiring,
+    registerWireAdapter,
+    unregisterWireAdapter
+} from './wire-service';
 
 /**
  * The wire service.
@@ -46,10 +51,10 @@ export default function registerWireService(register, ...adapterGenerators) {
 
     return {
         register: (adapter) => {
-            ADAPTERS.set(adapter.name, adapter);
+            registerWireAdapter(adapter);
         },
         unregister: (adapterName) => {
-            ADAPTERS.delete(adapterName);
+            return unregisterWireAdapter(adapterName);
         }
     };
 }

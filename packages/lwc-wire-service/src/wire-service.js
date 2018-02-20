@@ -241,3 +241,19 @@ export function installWiring(cmp, def) {
 export function setWireAdapters(adapterGenerators) {
     ADAPTERS = buildWireAdapterMap(adapterGenerators);
 }
+
+/**
+ * Sets the wire adapter.
+ * @param {Function} adapter Wire adapter function.
+ */
+export function registerWireAdapter(adapter) {
+    ADAPTERS.set(adapter.name, adapter);
+}
+
+/**
+ * Removes the wire adapter.
+ * @param {String} adapterName Wire adapter function name.
+ */
+export function unregisterWireAdapter(adapterName) {
+    return ADAPTERS.delete(adapterName);
+}

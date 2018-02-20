@@ -30,5 +30,12 @@ describe("main.js", () => {
             const wireService = registerWireService(register, mockAdapters);
             expect(wireService.unregister).toBeDefined();
         });
+        it("runtime wire adapter registration management", () => {
+            const register = jest.fn();
+            const wireService = registerWireService(register, mockAdapters);
+            const foo = () => {};
+            wireService.register(foo);
+            expect(wireService.unregister(foo.name)).toBe(true);
+        });
     });
 });
