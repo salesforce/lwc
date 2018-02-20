@@ -1,10 +1,10 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, freeze, isFunction, isString, ArrayIndexOf, isUndefined } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined } from "./language";
 
 export type Callback = () => void;
 
 let nextTickCallbackQueue: Callback[] = [];
-const SPACE_CHAR = 32;
+export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
@@ -75,34 +75,3 @@ export function getAttrNameFromPropName(propName: string): string {
 }
 
 export const usesNativeSymbols = typeof Symbol() === 'symbol';
-
-const classNameToClassMap = create(null);
-
-export function getMapFromClassName(className: string): Record<string, boolean> {
-    let map = classNameToClassMap[className];
-    if (map) {
-        return map;
-    }
-    map = {};
-    let start = 0;
-    let i;
-    const len = className.length;
-    for (i = 0; i < len; i++) {
-        if (className.charCodeAt(i) === SPACE_CHAR) {
-            if (i > start) {
-                map[className.slice(start, i)] = true;
-            }
-            start = i + 1;
-        }
-    }
-
-    if (i > start) {
-        map[className.slice(start, i)] = true;
-    }
-    classNameToClassMap[className] = map;
-    if (process.env.NODE_ENV !== 'production') {
-        // just to make sure that this object never changes as part of the diffing algo
-        freeze(map);
-    }
-    return map;
-}

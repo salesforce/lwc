@@ -27,7 +27,7 @@ describe("wire-adapters.js", () => {
             const myFunc = () => {};
             const adapter = () => {
                 return { myFunc };
-            }
+            };
             expect(buildWireAdapterMap([adapter]).size).toBe(1);
         });
     });

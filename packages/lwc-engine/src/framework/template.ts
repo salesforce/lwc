@@ -58,7 +58,7 @@ function validateSlots(vm: VM, html: any) {
         const { cmpSlots = EmptySlots } = vm;
         const { slots = EmptyArray } = html;
         for (const slotName in cmpSlots) {
-            assert.isTrue(isArray(cmpSlots[slotName]) && cmpSlots[slotName].length > 0, `Slots can only be set to a non-empty array, instead received ${toString(cmpSlots[slotName])} for slot ${slotName} in ${vm}.`);
+            assert.isTrue(isArray(cmpSlots[slotName]), `Slots can only be set to an array, instead received ${toString(cmpSlots[slotName])} for slot ${slotName} in ${vm}.`);
             if (ArrayIndexOf.call(slots, slotName) === -1) {
                 // TODO: this should never really happen because the compiler should always validate
                 assert.logWarning(`Ignoring unknown provided slot name "${slotName}" in ${vm}. This is probably a typo on the slot attribute.`);

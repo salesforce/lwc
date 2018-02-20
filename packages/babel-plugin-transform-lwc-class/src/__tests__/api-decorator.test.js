@@ -1,8 +1,9 @@
+
 const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
-describe('Public Props', () => {
+describe('Transform property', () => {
     pluginTest('transforms public props', `
         import { api } from 'engine';
         export default class Test {
@@ -29,7 +30,6 @@ Test.publicProps = {
         import { api } from 'engine';
         export default class Outer {
             @api outer;
-
             a = class {
                 @api innerA;
             }
@@ -86,7 +86,6 @@ Test.publicProps = {
             @api get something() {
                 return this.s;
             }
-
             @api set something (value) {
                 this.s = value;
             }
@@ -132,10 +131,8 @@ Test.publicProps = {
         export default class Test {
             _a = true;
             _b = false;
-
             @api get a () { return this._a; }
             @api set a (value) { this._a = value; }
-
             @api get b () { return this._b; }
             @api set b (value) { this._b = value; }
         }
@@ -177,15 +174,11 @@ Test.publicProps = {
         export default class Text {
             @api publicProp;
             privateProp;
-
             @api get aloneGet(){}
-
             @api get myget(){}
             @api set myget(x){ return 1; }
-
             @api m1(){}
             m2(){}
-
             static ctor = "ctor";
             static get ctorGet () { return 1}
         }
@@ -361,7 +354,7 @@ Test.publicProps = {
     });
 });
 
-describe('Public Methods', () => {
+describe('Transform method', () => {
     pluginTest('transforms public methods', `
         import { api } from 'engine';
         export default class Test {
@@ -394,10 +387,11 @@ Test.publicMethods = ['foo'];`
     });
 });
 
-describe('metadata', () => {
-    pluginTest('has @api properties', `
-        import { api } from 'engine';
-        import { Element } from 'engine';
+describe('Metadata', () => {
+    pluginTest(
+        'gather metadata',
+        `
+        import { Element, api } from 'engine';
         export default class Foo extends Element {
             _privateTodo;
             @api get todo () {
@@ -406,69 +400,48 @@ describe('metadata', () => {
             @api set todo (val) {
                 return this._privateTodo = val;
             }
+
             @api
             index;
+
+            @api publicMethod() {}
         }
-    `, {
-        output: {
-            metadata: {
-                decorators: [
-                    {
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
                         type: 'api',
                         targets: [
-                            { "name": "todo", "type": "property" },
-                            { "name": "index", "type": "property" }
-                        ]
-                    }
-                ],
-                declarationLoc: {
-                    end: { column: 1, line: 13 },
-                    start: { column: 0, line: 3 }
+                            { name: 'todo', type: 'property' },
+                            { name: 'index', type: 'property' },
+                            { name: 'publicMethod', type: 'method' },
+                        ],
+                    }],
+                    declarationLoc: {
+                        start: { column: 0, line: 2 },
+                        end: { column: 1, line: 13 },
+                    },
+                    marked: [],
+                    modules: {
+                        exports: {
+                            exported: ['Foo'],
+                            specifiers: [{ exported: 'default', kind: 'local', local: 'Foo' }],
+                        },
+                        imports: [
+                            {
+                                imported: ['Element', 'api'],
+                                source: 'engine',
+                                specifiers: [
+                                    { imported: 'Element', kind: 'named', local: 'Element' },
+                                    { imported: 'api', kind: 'named', local: 'api' },
+                                ],
+                            },
+                        ],
+                    },
+                    usedHelpers: [],
                 },
-                marked: [],
-                modules: {
-                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
-                    imports: [
-                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
-                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
-                    ]
-                },
-                usedHelpers: []
-            }
-        }
-    });
-
-    pluginTest('no @api properties', `
-        import { api } from 'engine';
-        import { Element } from 'engine';
-        export default class Foo extends Element {
-            _privateTodo;
-            get todo () {
-                return this._privateTodo;
-            }
-            set todo (val) {
-                return this._privateTodo = val;
-            }
-            index;
-        }
-    `, {
-        output: {
-            metadata: {
-                decorators: [],
-                declarationLoc: {
-                    end: { column: 1, line: 12 },
-                    start: { column: 0, line: 3 }
-                },
-                marked: [],
-                modules: {
-                    exports: { exported: ['Foo'], specifiers: [{ exported: "default", kind: "local", local: "Foo" }] },
-                    imports: [
-                        { imported: ['api'], source: 'engine', specifiers: [{ imported: 'api', kind: 'named', local: 'api' }] },
-                        { imported: ['Element'], source: 'engine', specifiers: [{ imported: 'Element', kind: 'named', local: 'Element' }] }
-                    ]
-                },
-                usedHelpers: []
-            }
-        }
-    });
+            },
+        },
+    );
 });

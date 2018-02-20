@@ -8,6 +8,7 @@ import { isUndefined, isFunction } from "./language";
 import { getComponentStack, VM } from "./vm";
 import { ComponentConstructor, Component } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
+import { startMeasure, endMeasure } from "./performance-timing";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
@@ -38,6 +39,11 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
+
+    if (process.env.NODE_ENV !== 'production') {
+        startMeasure(vm, 'constructor');
+    }
+
     let component;
     let error;
     try {
@@ -45,6 +51,10 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
     } catch (e) {
         error = Object(e);
     } finally {
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'constructor');
+        }
+
         establishContext(ctx);
         if (error) {
             error.wcStack = getComponentStack(vm);
@@ -67,6 +77,11 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     vmBeingRendered = vm;
     let result;
     let error;
+
+    if (process.env.NODE_ENV !== 'production') {
+        startMeasure(vm, 'render');
+    }
+
     try {
         const html = render.call(component);
         if (isFunction(html)) {
@@ -79,6 +94,11 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     } catch (e) {
         error = Object(e);
     } finally {
+
+        if (process.env.NODE_ENV !== 'production') {
+            endMeasure(vm, 'render');
+        }
+
         establishContext(ctx);
         isRendering = isRenderingInception;
         vmBeingRendered = vmBeingRenderedInception;

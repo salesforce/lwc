@@ -1,5 +1,33 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.15...v) (2018-02-07)
+# [](https://github.com/salesforce/lwc/compare/v0.17.17...v) (2018-02-17)
+# [](https://github.com/salesforce/lwc/compare/v0.17.16...v) (2018-02-15)
+
+
+
+<a name="0.17.17"></a>
+## [0.17.17](https://github.com/salesforce/lwc/compare/v0.17.16...v0.17.17) (2018-02-17)
+
+
+
+<a name="0.17.16"></a>
+## [0.17.16](https://github.com/salesforce/lwc/compare/v0.17.15...v0.17.16) (2018-02-15)
+
+
+### Bug Fixes
+
+* **benchmarks:** Remove snabdom from yarnlock ([#80](https://github.com/salesforce/lwc/issues/80)) ([dbee555](https://github.com/salesforce/lwc/commit/dbee555))
+* **benchmarks:** Upgrade best, dedupe benchmark tests ([#92](https://github.com/salesforce/lwc/issues/92)) ([258f368](https://github.com/salesforce/lwc/commit/258f368))
+* **compiler:** fix test-transform assert ([#77](https://github.com/salesforce/lwc/issues/77)) ([9419c58](https://github.com/salesforce/lwc/commit/9419c58))
+* **compiler:** invalid metadata used in decorator index ([#88](https://github.com/salesforce/lwc/issues/88)) ([93c73fe](https://github.com/salesforce/lwc/commit/93c73fe))
+* **compiler:** Validate decorated properties ([#101](https://github.com/salesforce/lwc/issues/101)) ([d50e217](https://github.com/salesforce/lwc/commit/d50e217))
+
+
+### Features
+
+* **compiler:** compiler metadata ([#76](https://github.com/salesforce/lwc/issues/76)) ([9a57344](https://github.com/salesforce/lwc/commit/9a57344))
+* **engine:** Expose element attribute methods ([#25](https://github.com/salesforce/lwc/issues/25)) ([9d9d7d9](https://github.com/salesforce/lwc/commit/9d9d7d9))
+* **engine:** Implement performance timing ([#98](https://github.com/salesforce/lwc/issues/98)) ([a027300](https://github.com/salesforce/lwc/commit/a027300))
+* **engine:** refactoring abstraction for create, insert, remove and render to support CE ([#97](https://github.com/salesforce/lwc/issues/97)) ([4b3b3d9](https://github.com/salesforce/lwc/commit/4b3b3d9))
 
 
 

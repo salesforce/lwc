@@ -3,6 +3,14 @@
 const { compile, transform } = require('../index');
 const { pretify } = require('./utils');
 
+const VALID_TEST_JS = `
+import label from '@label/mylabel';
+function isTrue() {
+    return label;
+}
+isTrue();
+`.trim();
+
 describe('compile', () => {
     it('should validate entry type', () => {
         expect(() => compile()).toThrow(/Expected a string for entry/);
@@ -29,6 +37,23 @@ describe('compile', () => {
             /in-memory module resolution expects values to be string. Received true for key \/x\/foo\/foo.js/,
         );
     });
+    // TODO: uncomment once compile output format changes
+    // it.only('should return status, diagnostics, references, and bundles', () => {
+    //     const config = {
+    //         sources: {
+    //             '/x/foo/foo.js': VALID_TEST_JS,
+    //         },
+    //         entry: '/x/foo/foo.js',
+    //         moduleName: 'foo',
+    //         moduleNamespace: 'x',
+    //         format: 'whoknows',
+    //     };
+    //     const { status, diagnostics, references, bundles } = compile();
+    //     expect(status).toBe('ok');
+    //     expect(diagnostics.length).toBe(0);
+    //     expect(references.length > 0).toBe(true);
+    //     expect(bundles.length).toBe(1);
+    // });
 });
 
 describe('transform', () => {
