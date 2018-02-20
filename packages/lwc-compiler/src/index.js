@@ -6,7 +6,7 @@ import transformFile from './transform';
 import { MODES, ALL_MODES, isCompat, isProd } from './modes';
 import { zipObject, isUndefined, isString } from './utils';
 
-import replacePlugin from "rollup-plugin-replace";
+import * as replacePlugin from "rollup-plugin-replace";
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";

@@ -93,7 +93,6 @@ export function parseIdentifier(source: string): TemplateIdentifier {
     }
 }
 
-
 // Returns the immediate iterator parent if it exists.
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
@@ -125,20 +124,21 @@ export function getForEachParent(element: IRElement): IRElement | null {
 }
 
 export function keyExpression(element: IRElement) {
-    let iteratorParent;
-    let forEachParent;
     const { forKey } = element;
     if (forKey) {
         return forKey;
     }
-    if (iteratorParent = getIteratorParent(element)) {
+
+    const iteratorParent = getIteratorParent(element);
+    if (iteratorParent) {
         return types.memberExpression(
             iteratorParent.forOf!.iterator,
-            types.identifier('value')
-        )
-    } else if (forEachParent = getForEachParent(element)) {
-        return forEachParent.forEach!.item;
+            types.identifier('value'),
+        );
     }
 
-    return forKey;
+    const forEachParent = getForEachParent(element);
+    if (forEachParent) {
+        return forEachParent.forEach!.item;
+    }
 }

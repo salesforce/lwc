@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
     require('../index')
 );
 
-describe('Wired field', () => {
+describe('Transform property', () => {
     pluginTest('transforms wired field', `
         import { wire } from 'engine';
         export default class Test {
@@ -169,7 +169,7 @@ Test.wire = {
     });
 });
 
-describe('Wired method', () => {
+describe('Transform method', () => {
     pluginTest('transforms wired method', `
         import { wire } from 'engine';
         export default class Test {
@@ -209,4 +209,61 @@ Test.wire = {
             },
         }
     });
+});
+
+describe('Metadata', () => {
+    pluginTest(
+        'gather track metadata',
+        `
+        import { wire } from 'engine';
+
+        export default class Test {
+            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
+            innerRecord;
+
+            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
+            innerRecordMethod() {}
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [{
+                        type: 'wire',
+                        targets: [{
+                            adapter: undefined,
+                            name: 'innerRecord',
+                            params: { recordId: 'recordId' },
+                            static: { fields: ['Account', 'Rate'] },
+                            type: 'property',
+                        },
+                        {
+                            adapter: undefined,
+                            name: 'innerRecordMethod',
+                            params: { recordId: 'recordId' },
+                            static: { fields: ['Account', 'Rate'] },
+                            type: 'method',
+                        }],
+                    }],
+                    marked: [],
+                    modules: {
+                        exports: {
+                            exported: ['Test'],
+                            specifiers: [{ exported: 'default', kind: 'local', local: 'Test' }],
+                        },
+                        imports: [{
+                            imported: ['wire'],
+                            source: 'engine',
+                            specifiers: [{
+                                imported: 'wire',
+                                kind: 'named',
+                                local: 'wire',
+                            }],
+                        }],
+                    },
+                    usedHelpers: [],
+                },
+            },
+        },
+    );
 });
