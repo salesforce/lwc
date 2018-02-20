@@ -25,12 +25,7 @@ exports.todoApp = function (cmpName) {
     `;
 }
 
-const COMPAT = `
-    <script src="/shared/compat.js"></script>
-    <script>
-        for (var h in EngineHelpers.babelHelpers) { window[h] = EngineHelpers.babelHelpers[h] }
-    </script>
-`;
+const COMPAT = ``;
 
 exports.html = function (cmpName, isCompat) {
 

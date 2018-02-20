@@ -28,16 +28,16 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
     return registry;
 }
 
-module.exports = function rollupRaptorCompiler(opts = {}) {
-    const filter = pluginUtils.createFilter(opts.include, opts.exclude);
-    const options = Object.assign({}, DEFAULT_OPTIONS, opts, {
-        mapNamespaceFromPath: Boolean(opts.mapNamespaceFromPath),
+module.exports = function rollupRaptorCompiler(pluginOptions = {}) {
+    const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
+    const options = Object.assign({}, DEFAULT_OPTIONS, pluginOptions, {
+        mapNamespaceFromPath: Boolean(pluginOptions.mapNamespaceFromPath),
     });
 
     let modulePaths = {};
 
     return {
-        name: 'rollup-lwc-compiler',
+        name: 'rollup-plugin-lwc-compiler',
 
         options(opts) {
             const entry = opts.input || opts.entry;
@@ -72,6 +72,10 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
         transform(code, id) {
             if (!filter(id)) return;
 
+            if (path.extname(id) === '') {
+                return { code, map: { mappings: '' } };
+            }
+
             // If we don't find the moduleId, just resolve the module name/namespace
             let registry = Object.values(modulePaths).find(r => id === r.entry) || getModuleQualifiedName(id, options);
             return compiler.transform(code, id, {
@@ -79,7 +83,7 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
                 moduleName: registry.moduleName,
                 moduleNamespace: registry.moduleNamespace,
                 moduleSpecifier: registry.moduleSpecifier,
-                resolveProxyCompat: { global: 'window.Proxy' }
+                resolveProxyCompat: options.resolveProxyCompat
             });
         },
 

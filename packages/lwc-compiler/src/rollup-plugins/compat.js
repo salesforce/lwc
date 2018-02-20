@@ -1,7 +1,6 @@
 import { transform } from 'babel-core';
-import * as raptorCompatTransformPlugin from 'babel-plugin-transform-proxy-compat';
-
-import { BABEL_CONFIG_BASE, BABEL_PLUGINS_COMPAT } from '../babel-plugins';
+import presetCompat from '@babel/preset-compat';
+import { BABEL_CONFIG_BASE } from '../babel-plugins';
 
 /**
  * Rollup plugin transforms for compat mode:
@@ -10,20 +9,13 @@ import { BABEL_CONFIG_BASE, BABEL_PLUGINS_COMPAT } from '../babel-plugins';
  */
 export default function({ resolveProxyCompat }) {
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
-        plugins: [
-            ...BABEL_PLUGINS_COMPAT,
-            [
-                raptorCompatTransformPlugin,
-                {
-                    resolveProxyCompat,
-                },
-            ],
+        presets: [
+            [presetCompat, { proxy: true, resolveProxyCompat }],
         ],
     });
 
     return {
         name: 'compat',
-
         transform(src) {
             const { code, map } = transform(src, config);
             return { code, map };

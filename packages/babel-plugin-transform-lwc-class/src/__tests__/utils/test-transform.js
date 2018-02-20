@@ -1,9 +1,5 @@
-const babel = require('babel-core');
-
-const baseConfig = {
-    babelrc: false,
-    filename: 'test.js',
-};
+const babel = require('@babel/core');
+const baseConfig = { babelrc: false, filename: 'test.js' };
 
 function transform(plugin, opts = {}) {
     const testConfig = Object.assign({}, baseConfig, {
@@ -16,8 +12,7 @@ function transform(plugin, opts = {}) {
 }
 
 function errorFromObject(obj) {
-    const error = new Error(obj.message);
-
+    const error = new SyntaxError(obj.message);
     for (let key in obj) {
         if (key !== 'message') {
             error[key] = obj[key];
@@ -49,7 +44,7 @@ function pluginTest(plugin, opts = {}) {
                 transformError = error;
             }
 
-            expect(transformError).toMatchObject(errorFromObject(expected.error));
+            expect(transformError.toString()).toContain(expected.error.message);
         } else if (expected.output) {
             const output = testTransform(actual);
             if (expected.output.code) {

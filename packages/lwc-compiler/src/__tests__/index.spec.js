@@ -76,7 +76,7 @@ describe('transform', () => {
         `;
 
         const expected = `
-            import _tmpl from './foo.html';
+            import _tmpl from "./foo.html";
             import { Element } from 'engine';
             export default class Foo extends Element {
                 render() {

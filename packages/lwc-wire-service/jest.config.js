@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 module.exports = {
     moduleFileExtensions: ['js', 'html'],
     "moduleNameMapper": {
@@ -11,7 +9,6 @@ module.exports = {
     "transform": {
         "^.+\\.(js|html)$": "lwc-jest-transformer"
     },
-    mapCoverage: true,
     collectCoverageFrom: ['src/*.js', '!**/__tests__/**'],
     coverageReporters: ['lcov', 'text', 'text-summary', 'html'],
     coverageThreshold: {

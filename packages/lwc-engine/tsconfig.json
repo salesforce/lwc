@@ -1,27 +1,6 @@
 {
   "compilerOptions": {
-    // Compilation Configuration
-    "target": "es2017",
-    "module": "es2015",
-    "sourceMap": true,
-    "declaration": true,
-    "rootDir": "src",
-    "outDir": "dist",
-
-    // Environment Configuration
-    "moduleResolution": "node",
-
-    // Enhance Strictness
-    "strict": true,
-    "noUnusedLocals": true,
-    "suppressImplicitAnyIndexErrors": true
-  },
-
-  "include": [
-    "src/**/*"
-  ],
-
-  "exclude": [
-    "src/**/*-test.ts"
-  ]
+    "module": "es6",
+    "noEmitHelpers":  true
+  }
 }
