@@ -56,7 +56,7 @@ export const GlobalARIAProperties = {
     'aria-owns': true,
     'aria-posinset': true,
     'aria-setsize': true,
-}
+};
 
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
