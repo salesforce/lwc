@@ -254,12 +254,12 @@ describe('html-element', () => {
             };
             createElement('x-foo', { is: def });
         });
-        it('should throw when attribute name matches a declared public property', () => {
+        it('should not throw when attribute name matches a declared public property', () => {
             expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => this.getAttribute('foo')).toThrow();
+                    expect(() => this.getAttribute('foo')).not.toThrow();
                 }
             };
             def.publicProps = { foo: "default value" };
