@@ -11,6 +11,7 @@ import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import { Diagnostic } from './diagnostics/diagnostic';
 import { LwcModule } from './lwc-module';
+import { Reference } from './references/types';
 
 export { default as templateCompiler } from 'lwc-template-compiler';
 
@@ -25,6 +26,17 @@ const DEFAULT_COMPILE_OPTIONS = {
         independent: 'proxy-compat',
     },
 };
+
+export interface CompilerOutput {
+    status: string;
+    code?: string;
+    mode: string;
+    references: Reference[];
+    diagnostics: Diagnostic[];
+    map?: any;
+    metadata?: any;
+    rawMetadata?: any;
+}
 
 export interface CompilerInput {
     /** The module to compile */
@@ -78,14 +90,7 @@ export interface CmpNameNormalizationOptions {
     mapNamespaceFromPath?: boolean,
 }
 
-// TODO: this may become the main entry once we change the format.
-// unless we move this function call outside.
-export async function compileModule(config: CompilerInput) {
-    // TODO: input validation
-    const { env, options, mode } = config;
-    const { entry, sources } = config.module;
-    // TODO : convert input into compile call
-}
+
 export async function compile(entry: string, options: CompilerOptions) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
@@ -145,14 +150,14 @@ export async function compile(entry: string, options: CompilerOptions) {
 
 
 
-    return {
+    const result: CompilerOutput = {
         diagnostics: diagnosticCollector.getAll(),
-        format: options.format,
         mode: options.mode,
         references: refReport.references,
         status: diagnosticCollector.hasError() ? 'error' : 'ok',
         ...bundledReport,
-    }
+    };
+    return result;
 }
 
 

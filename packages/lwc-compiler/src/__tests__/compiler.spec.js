@@ -19,7 +19,7 @@ const HEALTHY_CONFIG = {
 };
 
 describe('compiler test', () => {
-    test('should return status, references, diagnostics, code, mode, format', async () => {
+    test('should return status, references, diagnostics, code, mode', async () => {
         const result = await compile(HEALTHY_CONFIG.entry, HEALTHY_CONFIG);
         const {
             status,
@@ -27,12 +27,10 @@ describe('compiler test', () => {
             references,
             diagnostics,
             code,
-            format,
         } = result;
 
         expect(code).toBeDefined();
         expect(diagnostics).toBeDefined();
-        expect(format).toBeDefined();
         expect(mode).toBeDefined();
         expect(references).toBeDefined();
         expect(status).toBeDefined();
