@@ -10,6 +10,7 @@ import { isUndefined, isString } from './utils';
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import { Diagnostic } from './diagnostics/diagnostic';
+import { LwcModule } from './lwc-module';
 
 export { default as templateCompiler } from 'lwc-template-compiler';
 
@@ -24,6 +25,23 @@ const DEFAULT_COMPILE_OPTIONS = {
         independent: 'proxy-compat',
     },
 };
+
+export interface CompilerInput {
+    /** The module to compile */
+    module: LwcModule;
+
+    env?: {
+        [key: string]: string;
+    };
+
+    options: {
+        format: string,
+        mode: string;
+    }
+
+    /** Mandatory mode enum*/
+    mode: string;
+}
 
 // TODO: keep this behemoth until api is fully convered
 export interface CompilerOptions {
@@ -60,6 +78,14 @@ export interface CmpNameNormalizationOptions {
     mapNamespaceFromPath?: boolean,
 }
 
+// TODO: this may become the main entry once we change the format.
+// unless we move this function call outside.
+export async function compileModule(config: CompilerInput) {
+    // TODO: input validation
+    const { env, options, mode } = config;
+    const { entry, sources } = config.module;
+    // TODO : convert input into compile call
+}
 export async function compile(entry: string, options: CompilerOptions) {
     if (isUndefined(entry) || !isString(entry)) {
         throw new Error(
@@ -112,16 +138,20 @@ export async function compile(entry: string, options: CompilerOptions) {
         // TODO: convert bundle to return BundleReport
         bundledReport = await bundle(entry, options);
         diagnosticCollector.addAll(bundledReport.diagnostics || []);
+
+        // diagnostics are saved onto the collector
+        delete bundledReport.diagnostics;
     }
 
 
 
     return {
-        ...bundledReport,
-        status: diagnosticCollector.hasError() ? 'error' : 'ok',
         diagnostics: diagnosticCollector.getAll(),
-        references: refReport.references,
+        format: options.format,
         mode: options.mode,
+        references: refReport.references,
+        status: diagnosticCollector.hasError() ? 'error' : 'ok',
+        ...bundledReport,
     }
 }
 

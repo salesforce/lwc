@@ -19,7 +19,7 @@ const HEALTHY_CONFIG = {
 };
 
 describe('compiler test', () => {
-    test('should return status, references, diagnostics, code, mode', async () => {
+    test('should return status, references, diagnostics, code, mode, format', async () => {
         const result = await compile(HEALTHY_CONFIG.entry, HEALTHY_CONFIG);
         const {
             status,
@@ -27,13 +27,15 @@ describe('compiler test', () => {
             references,
             diagnostics,
             code,
+            format,
         } = result;
 
-        expect(status).not.toBeUndefined();
-        expect(mode).not.toBeUndefined();
-        expect(references).not.toBeUndefined();
-        expect(diagnostics).not.toBeUndefined();
-        expect(code).not.toBeUndefined();
+        expect(code).toBeDefined();
+        expect(diagnostics).toBeDefined();
+        expect(format).toBeDefined();
+        expect(mode).toBeDefined();
+        expect(references).toBeDefined();
+        expect(status).toBeDefined();
     });
 
     test('should return reference object for valid source', async () => {

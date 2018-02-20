@@ -69,8 +69,7 @@ export default function bundle(entry, options = {}) {
                         map: result.map,
                         metadata: mergeMetadata(options.$metadata),
                         rawMetadata: options.$metadata,
-                        diagnostics: []
-                        // TODO: perhaps add format here?
+                        diagnostics: [],
                     };
                 }, (error) => {
                     return handleFailure(error, entry);
