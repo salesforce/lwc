@@ -24,8 +24,13 @@ const GLOBAL_ATTRIBUTE_MAP = new Map([
     ['title', globalAttributeObject('title')],
 ]);
 
+// This set is for attributes that have a camel cased property name
+// For example, div.tabIndex.
+// We do not want users to define @api properties with these names
+// Because the template will never call them. It'll alawys call the camel
+// cased version.
 const AMBIGIOUS_PROP_SET = new Set([
-    'accesskey', 'contenteditable', 'contextmenu', 'tabindex', 'maxlength', 'maxvalue'
+    'bgcolor', 'accesskey', 'contenteditable', 'contextmenu', 'tabindex', 'maxlength', 'maxvalue'
 ]);
 
 const DISALLOWED_PROP_SET = new Set([

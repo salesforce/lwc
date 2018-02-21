@@ -2,6 +2,7 @@ const { isApiDecorator } = require('./shared');
 const {
     AMBIGIOUS_PROP_SET,
     DISALLOWED_PROP_SET,
+    GLOBAL_ATTRIBUTE_MAP,
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
     DECORATOR_TYPES
 } = require('../../constants');
@@ -60,8 +61,9 @@ function validatePropertyName(property) {
             `Invalid property name ${propertyName}. ${propertyName} cannot be defined as a public property.`
         );
     } else if (AMBIGIOUS_PROP_SET.has(propertyName)) {
+        const { propName = propertyName } = GLOBAL_ATTRIBUTE_MAP.get(propertyName) || {};
         throw property.buildCodeFrameError(
-            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming.`
+            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${propName}".`
         );
     }
 }

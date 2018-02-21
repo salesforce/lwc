@@ -291,6 +291,21 @@ Test.publicProps = {
         }
     });
 
+    pluginTest('throws error if property name is ambigious', `
+        import { api } from 'engine';
+        export default class Test {
+            @api tabindex;
+        }
+    `, {
+        error: {
+            message: 'test.js: Ambigious attribute name tabindex. tabindex will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
+            loc: {
+                line: 2,
+                column: 9
+            }
+        }
+    });
+
     pluginTest('throws error if property name prefixed with "aria"', `
         import { api } from 'engine';
         export default class Test {
