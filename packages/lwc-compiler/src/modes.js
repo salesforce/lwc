@@ -1,9 +1,9 @@
 /** Available compilation modes */
 export const MODES = {
-    DEV: 'dev',
-    PROD: 'prod',
-    COMPAT: 'compat',
-    PROD_COMPAT: 'prod_compat',
+    DEV: "dev",
+    PROD: "prod",
+    COMPAT: "compat",
+    PROD_COMPAT: "prod_compat"
 };
 
 /** List of all the modes */
@@ -11,21 +11,28 @@ export const ALL_MODES = [
     MODES.DEV,
     MODES.PROD,
     MODES.COMPAT,
-    MODES.PROD_COMPAT,
+    MODES.PROD_COMPAT
 ];
 
 /**
  * Returns true if the passed mode is a PROD mode
- * @param {string} mode
+ * @param {object} options
  */
-export function isProd(mode) {
-    return mode === MODES.PROD || mode === MODES.PROD_COMPAT;
+export function isProd(options) {
+    if (!options) {
+        return false;
+    }
+    return options.minify || (options.env && options.env.NODE_ENV === "prod");
 }
 
 /**
  * Returns true if the passed mode is a COMPAT mode
- * @param {string} mode
+ * @param {object} options
  */
-export function isCompat(mode) {
-    return mode === MODES.COMPAT || mode === MODES.PROD_COMPAT;
+
+export function isCompat(options) {
+    if (!options) {
+        return false;
+    }
+    return options.compat;
 }

@@ -3,7 +3,7 @@ import compile from 'lwc-template-compiler';
 
 export function getTemplateToken(filename, options) {
     const templateId = path.basename(filename, path.extname(filename));
-    return `${options.moduleNamespace}-${options.moduleName}_${templateId}`;
+    return `${options.namespace}-${options.name}_${templateId}`;
 }
 
 /**
@@ -12,7 +12,7 @@ export function getTemplateToken(filename, options) {
  * the template regardless if there is an actual style or not.
  */
 export default function(src, options) {
-    const { filename, moduleName, moduleNamespace } = options;
+    const { name, namespace, outputConfig } = options;
     const { code: template, metadata, warnings } = compile(src, {});
 
     const fatalError = warnings.find(warning => warning.level === 'error');
@@ -21,8 +21,8 @@ export default function(src, options) {
     }
 
 
-    const token = getTemplateToken(filename, options);
-    const cssName = path.basename(filename, path.extname(filename)) + '.css';
+    const token = getTemplateToken(name, options);
+    const cssName = path.basename(name, path.extname(name)) + '.css';
 
     const code = [
         `import style from './${cssName}'`,
@@ -30,7 +30,7 @@ export default function(src, options) {
         template,
         '',
         `if (style) {`,
-        `   const tagName = '${moduleNamespace}-${moduleName}';`,
+        `   const tagName = '${namespace}-${name}';`,
         `   const token = '${token}';`,
         ``,
         `   tmpl.token = token;`,

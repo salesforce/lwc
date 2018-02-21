@@ -1,88 +1,94 @@
-import { compile } from '../compiler';
-import { pretify, readFixture } from './utils';
+import { compile } from "../compiler";
+import { pretify, readFixture } from "./utils";
+
 const HEALTHY_CONFIG = {
-    sources: {
-        '/x/foo/foo.js': readFixture(
-            'class_and_template/class_and_template.js',
-        ),
-        '/x/foo/foo.html': readFixture(
-            'class_and_template/class_and_template.html',
-        ),
+    outputConfig: {
+        env: {},
+        minify: false,
+        compat: false,
+        format: "amd"
     },
-    entry: '/x/foo/foo.js',
-    moduleName: 'foo',
-    moduleNamespace: 'x',
-    mapNamespaceFromPath: true,
-    format: 'es',
-    mode: 'dev',
-    env: {},
+    name: "/x/foo/foo.js",
+    namespace: "x",
+    files: {
+        "/x/foo/foo.js": readFixture(
+            "class_and_template/class_and_template.js"
+        ),
+        "/x/foo/foo.html": readFixture(
+            "class_and_template/class_and_template.html"
+        )
+    }
 };
 
-describe('compiler test', () => {
-    test('should return status, references, diagnostics, code, mode', async () => {
-        const result = await compile(HEALTHY_CONFIG.entry, HEALTHY_CONFIG);
-        const {
-            status,
-            mode,
-            references,
-            diagnostics,
-            code,
-        } = result;
+describe("compiler test", () => {
+    test("should return success, references, diagnostics, code, mode", async () => {
+        const output = await compile(HEALTHY_CONFIG);
+        const { success, diagnostics, result } = output;
+        const { code, references } = result;
 
         expect(code).toBeDefined();
         expect(diagnostics).toBeDefined();
-        expect(mode).toBeDefined();
         expect(references).toBeDefined();
-        expect(status).toBeDefined();
+        expect(success).toBeDefined();
     });
 
-    test('should return reference object for valid source', async () => {
-        const refSources = {
-            sources: {
-                '/x/foo/foo.js': `import resource from '@resource-url/foo';`,
+    test("should return reference object for valid source", async () => {
+        const files = {
+            files: {
+                "/x/foo/foo.js": `import resource from '@resource-url/foo';`
             }
         };
-        const config = {...HEALTHY_CONFIG, ...refSources};
-        const result = await compile(HEALTHY_CONFIG.entry, config);
+        const config = { ...HEALTHY_CONFIG, ...files };
+
+        const { result } = await compile(config);
         const { references } = result;
         expect(references).toBeDefined();
-        expect(references[0]).toMatchObject(            {
-            id: 'foo',
-            file: '/x/foo/foo.js',
-            type: 'resourceUrl',
+        expect(references[0]).toMatchObject({
+            id: "foo",
+            file: "/x/foo/foo.js",
+            type: "resourceUrl",
             locations: [
                 {
                     start: 36,
-                    length: 3,
-                },
-            ],
+                    length: 3
+                }
+            ]
         });
     });
-    test('compilation should not contain bundle properties if reference gathering encountered an error', async () => {
-        const refSources = {
-            sources: {
-                'test.js': `import * as MyClass from '@apex/MyClass';`
-            }
-        }
-        const config = {...HEALTHY_CONFIG, ...refSources};
-        const result = await compile(HEALTHY_CONFIG.entry, config);
-        const { code, diagnostics, status } = result;
-        expect(status).toBe('error');
+    test("compilation should not contain bundle properties if reference gathering encountered an error", async () => {
+        const files = {
+            files: { "test.js": `import * as MyClass from '@apex/MyClass';` }
+        };
+        const config = { ...HEALTHY_CONFIG, ...files };
+
+        const { result, diagnostics, success } = await compile(config);
+        expect(success).toBe(false);
         expect(diagnostics[0].level).toBe(0); // fatal
-        expect(code).toBeUndefined();
+        expect(result).toBeUndefined();
     });
-    test('diagnostics returns bundler specific error when format is misconfigured', async () => {
+    test("diagnostics returns bundler specific error when format is misconfigured", async () => {
         const refSources = {
-            sources: {
-                '/x/foo/foo.js': `import resource from '@resource-url/foo';`,
+            files: {
+                "/x/foo/foo.js": `import resource from '@resource-url/foo';`
             }
         };
-        const config = {...HEALTHY_CONFIG, ...refSources, ...{ format: 'bad' }};
-        const result = await compile(HEALTHY_CONFIG.entry, config);
-        const { code, diagnostics, status } = result;
-        expect(code).toBeUndefined();
-        expect(status).toBe('error');
+        const config = {
+            ...HEALTHY_CONFIG,
+            ...refSources,
+            outputConfig: {
+                ...HEALTHY_CONFIG.outputConfig,
+                ...{ format: "bad" }
+            }
+        };
+
+        const output = await compile(config);
+        const { result, diagnostics, success } = output;
+        expect(result).toBeUndefined();
+        expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].message).toBe("Invalid format: bad - valid options are amd, cjs, es, iife, umd");
+        expect(
+            diagnostics[0].message ===
+                "Invalid format: bad - valid options are amd, cjs, es, iife, umd"
+        ).toBe(true);
     });
 });

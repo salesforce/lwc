@@ -16,38 +16,23 @@ describe('compile', () => {
     it('should validate entry type', async () => {
         expect.assertions(1);
         try {
-            await compile()
+            await compile({})
         } catch (error){
             expect(error.message).toBe('Expected a string for entry. Received instead undefined');
         }
     });
 
-    it('should validate mode', async () => {
-        expect.assertions(1);
-        try {
-            await compile('/x/foo/foo.js', {
-                mode: 'foo',
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                "Expected a mode in dev, prod, compat, prod_compat. Received instead foo"
-            );
-        }
-    });
-
     it('should validate sources option format', async () => {
         expect.assertions(1);
-        try {
-            await compile('/x/foo/foo.js', {
-                sources: {
-                    '/x/foo/foo.js': true,
-                },
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                "in-memory module resolution expects values to be string. Received true for key \/x\/foo\/foo.js"
-            );
-        }
+        const result = await compile({
+            name: '/x/foo/foo.js',
+            namespace: 'x',
+            files: {},
+        });
+        expect(result.diagnostics[0].message).toBe(
+            'Could not resolve \'/x/foo/foo.js\' from \'undefined\''
+        );
+
     });
 });
 
@@ -82,8 +67,8 @@ describe('transform', () => {
         `;
 
         const { code } = await transform(actual, 'foo.js', {
-            moduleNamespace: 'x',
-            moduleName: 'foo',
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -119,8 +104,8 @@ describe('transform', () => {
         `;
 
         const { code } = await transform(actual, 'foo.html', {
-            moduleNamespace: 'x',
-            moduleName: 'foo',
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -145,8 +130,8 @@ describe('transform', () => {
         `;
 
         const { code } = await transform(actual, 'foo.css', {
-            moduleNamespace: 'x',
-            moduleName: 'foo',
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -170,8 +155,8 @@ describe('transform', () => {
         `;
 
         const result = await transform(content, 'foo.js', {
-            moduleNamespace: 'x',
-            moduleName: 'foo',
+            namespace: 'x',
+            name: 'foo',
         });
         const metadata = result.metadata;
         expect(metadata.decorators).toEqual([

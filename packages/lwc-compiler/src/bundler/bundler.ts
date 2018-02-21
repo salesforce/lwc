@@ -5,11 +5,17 @@ import * as rollupPluginReplace from 'rollup-plugin-replace';
 
 import { isCompat, isProd } from '../modes';
 
+import { inMemoryModuleResolver } from '../module-resolvers/in-memory';
 import rollupModuleResolver from '../rollup-plugins/module-resolver';
 import rollupTransfrom from '../rollup-plugins/transform';
 import rollupCompat from '../rollup-plugins/compat';
 import rollupMinify from '../rollup-plugins/minify';
 import { CompilerOptions } from '../compiler';
+
+const DEFAULT_FORMAT = 'amd';
+const resolveProxyCompat = {
+    independent: 'proxy-compat',
+};
 
 // TODO: type
 function rollupWarningOverride(warning: any) {
@@ -30,6 +36,7 @@ function mergeMetadata(metadata: any) {
         decorators.push(...(metadata[i].decorators || []));
     }
 
+    console.log("META >>>> ", metadata);
     return {
         decorators,
         references: Array.from(dependencies).map(d => ({name: d[0], type: d[1]}))
@@ -57,21 +64,30 @@ export interface BundleReport {
 };
 
 export function bundle(entry: string, options: CompilerOptions) {
-    const environment = options.env.NODE_ENV || process.env.NODE_ENV;
-    const { moduleResolver, $metadata, resolveProxyCompat } = options;
+    const { outputConfig } = options;
+    const env = outputConfig && outputConfig.env;
+    const format = (outputConfig && outputConfig.format) || DEFAULT_FORMAT;
+    const environment = env && env.NODE_ENV || process.env.NODE_ENV;
+    //const $metadata:any  = {};\
+    const $metadata = {};//options.$metadata;
     const plugins = [
         rollupPluginReplace({ 'process.env.NODE_ENV': JSON.stringify(environment) }),
-        rollupModuleResolver({ moduleResolver, $metadata }),
-        rollupTransfrom(options)
+        rollupModuleResolver({ moduleResolver: inMemoryModuleResolver(options.files), $metadata }),
+        rollupTransfrom({ $metadata, options })
     ];
 
-    if (isCompat(options.mode)) { // compat
+    console.log('>>>> Done with plugins: ');
+
+
+    if (isCompat(outputConfig)) { // compat
         plugins.push(rollupCompat({ resolveProxyCompat }));
     }
 
-    if (isProd(options.mode)) {
+    if (isProd(outputConfig)) {
         plugins.push(rollupMinify(options));
     }
+
+    console.log('>>>> rolling with entry: ', entry);
 
     return rollup({
         input: entry,
@@ -79,20 +95,21 @@ export function bundle(entry: string, options: CompilerOptions) {
         onwarn: rollupWarningOverride,
     }).then(
         (bundleFn: any) => {
+            console.log('>>>> done rollup ');
             return bundleFn
                 .generate({
-                    amd: { id: options.normalizedModuleName },
+                    amd: { id: entry },
                     interop: false,
                     strict: false,
-                    format: options.format,
-                    globals: options.globals
+                    format,
                 })
                 .then((result: BundleReport) => {
+                    console.log('>>>> done generate ');
                     return {
                         code: result.code,
                         map: result.map,
-                        metadata: mergeMetadata(options.$metadata),
-                        rawMetadata: options.$metadata,
+                        metadata: mergeMetadata($metadata),
+                        rawMetadata: $metadata,
                         diagnostics: [],
                     };
                 }, (error: any) => {

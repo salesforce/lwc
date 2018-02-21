@@ -1,7 +1,4 @@
-import * as path from "path";
-
-//import bundle from './bundle';
-import { bundle, BundleReport } from "./bundler/bundler";
+import { bundle } from "./bundler/bundler";
 import { getBundleReferences } from "./references/references";
 import { DiagnosticCollector } from "./diagnostics/diagnostic-collector";
 import { Diagnostic } from "./diagnostics/diagnostic";
@@ -22,29 +19,33 @@ export interface CompilerOutput {
 }
 
 export interface OutputConfig {
-    env?: { [name: string]: string }; // NODE_ENV: 'dev'
+    env?: { [name: string]: string }; // NODE_ENV: 'dev/prod/compat/prod_debug'
     minify: boolean;
     compat: boolean;
+    format: string;
 }
 
-// TODO: keep this behemoth until api is fully converted and we come up with bundler options
 export interface CompilerOptions {
     outputConfig: OutputConfig;
-    // TODO: below attributes must be renamed; some removed completely once tests pass
-    name: string; // TODO: name
+    name: string;
     namespace: string;
     files: [{ filename: string }];
 }
 
 export async function compile(options: CompilerOptions) {
-    const { name: entry } = options;
-
-    // TODO: validate input
-    if (isUndefined(entry) || !isString(entry)) {
+    console.log("OPTS: >>>>> ", options);
+    if (isUndefined(options) || isUndefined(options.name) || !isString(options.name)) {
         throw new Error(
-            `Expected a string for entry. Received instead ${entry}`
+            `Expected a string for entry. Received instead ${options.name}`
         );
     }
+
+    if (isUndefined(options.files)) {
+        throw new Error(
+            `Expected an object with files to be compiled`
+        );
+    }
+    const { name } = options;
 
     const compilationOutput: CompilerOutput = {
         diagnostics: [],
@@ -54,16 +55,20 @@ export async function compile(options: CompilerOptions) {
     const diagnosticCollector = new DiagnosticCollector();
 
     const { diagnostics, references } = getBundleReferences(options);
+    console.log("refs >>>>>>: ", references);
 
     // add reference diagnostics
     diagnosticCollector.addAll(diagnostics);
 
     // process bundle only
     if (!diagnosticCollector.hasError()) {
-        const { diagnostics, code, map, metadata } = await bundle(
-            entry,
+        const bundleOuput = await bundle(
+            name,
             options
         );
+
+        const { diagnostics, code, map, metadata } = bundleOuput;
+        console.log(">>>>> BUNDLE: diagnostics", diagnostics);
         diagnosticCollector.addAll(diagnostics);
 
         // process bundling result
@@ -74,6 +79,9 @@ export async function compile(options: CompilerOptions) {
 
     // collect all the diagnostics
     compilationOutput.diagnostics = diagnosticCollector.getAll();
+    compilationOutput.success = !diagnosticCollector.hasError();
+
+    console.log("Final result >>>>>>", compilationOutput);
     return compilationOutput;
 }
 

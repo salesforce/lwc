@@ -45,7 +45,6 @@ export default function({ moduleResolver, $metadata }) {
                             `Could not resolve '${id}' from '${importee}'`
                         );
                     }
-
                     return absPath;
                 });
             }

@@ -23,7 +23,7 @@ export function transform(src, id, options) {
         throw new Error(`Expect a string for id. Received ${id}`);
     }
 
-    options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
+    //options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
 
     return transformFile(src, id, options);
 }
@@ -72,10 +72,11 @@ function getTransformer(fileName) {
  */
 async function transformFile(src, id, options) {
     const transfomer = getTransformer(id);
+    const { outputConfig } = options;
     const mergedOptions = Object.assign({}, options, { filename: id });
     const result = await Promise.resolve(transfomer( src, mergedOptions));
 
-    if (isCompat(options.mode)) {
+    if (isCompat(outputConfig)) {
         const { transform } = compatPluginFactory(mergedOptions);
         return transform(result.code);
     }

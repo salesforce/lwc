@@ -38,8 +38,7 @@ function generateScopedStyle(src) {
  *      export default undefined;
  */
 export default function transformStyle(src, options) {
-    const { mode } = options;
-
+    const { outputConfig } = options;
     const plugins = [
         postcssPluginRaptor({
             token: TOKEN_PLACEHOLDER,
@@ -47,7 +46,7 @@ export default function transformStyle(src, options) {
         }),
     ];
 
-    if (isProd(mode)) {
+    if (isProd(outputConfig)) {
         plugins.push(
             cssnano({
                 svgo: false,

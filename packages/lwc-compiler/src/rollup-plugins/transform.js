@@ -28,8 +28,7 @@ function getTransformer(fileName) {
 /**
  *  Transfrom each file individually
  */
-export default function(options) {
-    const { $metadata } = options;
+export default function({ $metadata, options }) {
 
     return {
         name: 'transform',
