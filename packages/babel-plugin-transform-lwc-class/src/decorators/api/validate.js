@@ -36,11 +36,7 @@ function validatePropertyName(property) {
 
     const propertyName = property.get('key.name').node;
 
-    if (propertyName === 'is') {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. "is" is a reserved attribute.`
-        );
-    } else if (propertyName === 'part') {
+    if (propertyName === 'part') {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. "part" is a future reserved attribute for web components.`
         );
@@ -52,13 +48,9 @@ function validatePropertyName(property) {
         throw property.buildCodeFrameError(
             `Invalid property name ${propertyName}. Properties starting with "data" are reserved attributes.`
         );
-    } else if (propertyName.startsWith('aria')) {
-        throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. Properties starting with "aria" are reserved attributes.`
-        );
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
         throw property.buildCodeFrameError(
-            `Invalid property name ${propertyName}. ${propertyName} cannot be defined as a public property.`
+            `Invalid property name "${propertyName}". "${propertyName}" is a reserved attribute.`
         );
     } else if (AMBIGIOUS_PROP_SET.has(propertyName)) {
         const { propName = propertyName } = GLOBAL_ATTRIBUTE_MAP.get(propertyName) || {};

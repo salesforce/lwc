@@ -236,7 +236,7 @@ Text.publicMethods = ["m1"];`
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name is. "is" is a reserved attribute.',
+            message: 'test.js: Invalid property name "is". "is" is a reserved attribute.',
             loc: {
                 line: 2,
                 column: 9
@@ -306,29 +306,31 @@ Test.publicProps = {
         }
     });
 
-    pluginTest('throws error if property name prefixed with "aria"', `
+    pluginTest('does not throw if property name prefixed with "aria"', `
         import { api } from 'engine';
         export default class Test {
-            @api ariaDescribedby;
+            @api ariaDescribedBy;
         }
     `, {
-        error: {
-            message: 'test.js: Invalid property name ariaDescribedby. Properties starting with "aria" are reserved attributes.',
-            loc: {
-                line: 2,
-                column: 9
-            }
+        output: {
+            code: `
+export default class Test {}
+Test.publicProps = {
+  ariaDescribedBy: {
+    config: 0
+  }
+};`
         }
     });
 
-    pluginTest('throws error if property name conflicts with global html attribute name', `
+    pluginTest('throws error if property name conflicts with disallowed global html attribute name', `
         import { api } from 'engine';
         export default class Test {
             @api slot;
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name slot. slot cannot be defined as a public property.',
+            message: 'test.js: Invalid property name "slot". "slot" is a reserved attribute.',
             loc: {
                 line: 2,
                 column: 9

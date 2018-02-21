@@ -33,8 +33,12 @@ const AMBIGIOUS_PROP_SET = new Set([
     'bgcolor', 'accesskey', 'contenteditable', 'contextmenu', 'tabindex', 'maxlength', 'maxvalue'
 ]);
 
+
+// This set is for attributes that can never be defined
+// by users on their components.
+// We throw for these.
 const DISALLOWED_PROP_SET = new Set([
-    'class', 'slot', 'style'
+    'is', 'class', 'slot', 'style'
 ]);
 
 const LWC_PACKAGE_ALIAS = 'engine';
