@@ -65,7 +65,7 @@ export function bundle(entry: string, options: CompilerOptions) {
         rollupTransfrom(options)
     ];
 
-    if (isCompat(options.mode)) {
+    if (isCompat(options.mode)) { // compat
         plugins.push(rollupCompat({ resolveProxyCompat }));
     }
 

@@ -1,20 +1,16 @@
 import * as path from 'path';
 
+import { CompilerOptions } from '../compiler';
 import { getReferences as getCssReferences } from './css';
 import { getReferences as getHtmlReferences } from './html';
 import { getReferences as getJsReferences } from './javascript';
 import { ReferenceReport } from './types';
 
-import { LwcModule } from '../lwc-module';
-
-export function getBundleReferences(bundle: LwcModule): ReferenceReport {
+export function getBundleReferences({ files }: CompilerOptions): ReferenceReport {
     const result: ReferenceReport = { references: [], diagnostics: []};
 
-    if (!bundle || !bundle.sources) {
-        return result;
-    }
     // TODO: ts is complaining if [filename, source] is used instead of entry
-    return Object.entries(bundle.sources).reduce(
+    return Object.entries(files).reduce(
         (result: ReferenceReport, entry: any) => {
             const filename = entry[0];
             const source = entry[1];

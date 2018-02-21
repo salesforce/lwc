@@ -4,7 +4,6 @@ export const MODES = {
     PROD: 'prod',
     COMPAT: 'compat',
     PROD_COMPAT: 'prod_compat',
-    ALL: 'all',
 };
 
 /** List of all the modes */
