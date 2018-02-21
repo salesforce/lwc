@@ -1,5 +1,5 @@
 import * as target from '../component';
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../upgrade";
 import { ViewModelReflection } from '../def';
 
@@ -17,7 +17,7 @@ describe('component', function() {
     describe('attribute-change-life-cycle', () => {
         it('should invoke attributeChangeCallback() with old value as null the first time', () => {
             let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                 }
@@ -39,7 +39,7 @@ describe('component', function() {
 
         it('should invoke attributeChangeCallback() for data-* attributes', () => {
             let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 attributeChangedCallback(k, o, n) {
                     oldValue = o;
                     newValue = n;
@@ -58,7 +58,7 @@ describe('component', function() {
 
         it('should invoke attributeChangeCallback() for aria-* attributes', () => {
             let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 attributeChangedCallback(k, o, n) {
                     oldValue = o;
                     newValue = n;
@@ -78,7 +78,7 @@ describe('component', function() {
 
     describe('public computed props', () => {
         it('should allow public getters', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 value = 'pancakes';
                 get breakfast() {
                     return this.value;
@@ -93,7 +93,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-component', MyComponent, {})];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 value = 'salad';
                 get lunch() {
                     return this.value;
@@ -120,7 +120,7 @@ describe('component', function() {
             const count = 0;
             let value;
             const propVal = { foo: 'bar' };
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 m = propVal;
             }
             MyChild.publicProps = {
@@ -131,7 +131,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 callChildM() {
                     value = this.root.querySelector('x-child').m;
                 }
@@ -149,7 +149,7 @@ describe('component', function() {
         });
 
         it('should not allow public getters to be set by owner', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 get x() {
                     return 1;
                 }
@@ -170,7 +170,7 @@ describe('component', function() {
             function html($api, $cmp, $slotset, $ctx) {
                 return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 state = { value: 0 };
 
                 get validity() {
@@ -205,7 +205,7 @@ describe('component', function() {
         it('should call public getter with correct context', function() {
             let context;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 value = 'pancakes';
                 get breakfast() {
                     context = this;
@@ -226,7 +226,7 @@ describe('component', function() {
         });
 
         it('should fail to execute setter function when used directly from DOM', function() {
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 value = 'pancakes';
                 get breakfast() {
                     return this.value;
@@ -244,7 +244,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 render() {
                     return html;
                 }
@@ -263,7 +263,7 @@ describe('component', function() {
             let context;
             let component;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 constructor() {
                     super();
                     component = this;
@@ -298,7 +298,7 @@ describe('component', function() {
             let callCount = 0;
             let context;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 value = 'pancakes';
                 get breakfast() {
                     return this.value;
@@ -327,7 +327,7 @@ describe('component', function() {
             let callCount = 0;
             let context;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 value;
                 breakfast = 'pancakes';
                 get breakfast() {
@@ -353,7 +353,7 @@ describe('component', function() {
         });
 
         it('should throw when configured prop is missing getter', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 set breakfast(value) {}
             }
 
@@ -369,7 +369,7 @@ describe('component', function() {
         });
 
         it('should throw when configured prop is missing setter', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
             }
 
             MyComponent.publicProps = {
@@ -397,7 +397,7 @@ describe('component', function() {
                     []
                 )];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 state = {
                     customStyle: 'color: red'
                 };
@@ -435,7 +435,7 @@ describe('component', function() {
                     []
                 )];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 state = {
                     customStyle: undefined
                 };
@@ -474,7 +474,7 @@ describe('component', function() {
                     []
                 )];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 state = {
                     customStyle: null
                 };
@@ -501,7 +501,7 @@ describe('component', function() {
                     []
                 )];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 state = {
                     customStyle: {
                         color: 'red'
@@ -531,7 +531,7 @@ describe('component', function() {
         it('should not invoke function when accessing public method', function() {
             let callCount = 0;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 m() {
                     callCount += 1;
                 }
@@ -546,7 +546,7 @@ describe('component', function() {
         it('should invoke function only once', function() {
             let callCount = 0;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 m() {
                     callCount += 1;
                 }
@@ -561,7 +561,7 @@ describe('component', function() {
         it('should call function with correct context and arguments', function() {
             let context, args;
 
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 m() {
                     context = this;
                     args = Array.prototype.slice.call(arguments);
@@ -576,7 +576,7 @@ describe('component', function() {
         });
 
         it('should express function identity with strict equality', function() {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 m() {
                 }
             }
@@ -588,7 +588,7 @@ describe('component', function() {
 
         it('should allow calling methods when element is referenced with querySelector', function() {
             let count = 0;
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 m() {
                     count += 1;
                 }
@@ -597,7 +597,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 callChildM() {
                     this.root.querySelector('x-child').m();
                 }
@@ -617,7 +617,7 @@ describe('component', function() {
 
         it('should allow calling getAttribute on child when referenced with querySelector', function() {
             let count = 0;
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 m() {
                     count += 1;
                 }
@@ -626,7 +626,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 getChildAttribute() {
                     this.root.querySelector('x-child').getAttribute('title');
                 }
@@ -645,7 +645,7 @@ describe('component', function() {
 
         it('should allow calling setAttribute on child when referenced with querySelector', function() {
             let count = 0;
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 m() {
                     count += 1;
                 }
@@ -654,7 +654,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 setChildAttribute() {
                     this.root.querySelector('x-child').setAttribute('title', 'foo');
                 }
@@ -673,7 +673,7 @@ describe('component', function() {
 
         it('should allow calling removeAttribute on child when referenced with querySelector', function() {
             let count = 0;
-            class MyChild extends Element {
+            class MyChild extends LightningElement {
                 m() {
                     count += 1;
                 }
@@ -682,7 +682,7 @@ describe('component', function() {
             function html($api) {
                 return [$api.c('x-child', MyChild, {})];
             }
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 removeChildAttribute() {
                     this.root.querySelector('x-child').removeAttribute('title');
                 }

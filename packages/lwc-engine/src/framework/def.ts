@@ -30,7 +30,7 @@ import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
-import { Element as BaseElement, getCustomElementVM } from "./html-element";
+import { LightningElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { OwnerKey, VM, VMElement } from "./vm";
@@ -104,7 +104,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
         return false; // null, undefined, or circular prototype definition
     }
     const proto = getPrototypeOf(Ctor);
-    if (proto === BaseElement) {
+    if (proto === LightningElement) {
         return true;
     }
     getComponentDef(proto); // ensuring that the prototype chain is already expanded
@@ -114,7 +114,7 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends LightningElement from "engine". You probably forgot to add the extend clause on the class declaration.`);
         // local to dev block
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
@@ -193,7 +193,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         attributeChangedCallback,
     } = proto;
     const superProto = getPrototypeOf(Ctor);
-    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
+    const superDef: ComponentDef | null = superProto !== LightningElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);

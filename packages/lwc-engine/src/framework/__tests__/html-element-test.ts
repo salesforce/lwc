@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../upgrade";
 import assertLogger from './../assert';
 import { register } from "./../services";
@@ -9,14 +9,14 @@ import { Component } from "../component";
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
         it('should set attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 setFoo() {
                     this.setAttributeNS('x', 'foo', 'bar');
                 }
             }
             MyComponent.publicMethods = ['setFoo'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return ($api) => {
                         return [$api.c('x-foo', MyComponent, {})]
@@ -32,7 +32,7 @@ describe('html-element', () => {
         });
 
         it('should set attribute on host element', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 setFoo() {
                     this.setAttributeNS('x', 'foo', 'bar');
                 }
@@ -45,7 +45,7 @@ describe('html-element', () => {
         });
 
         it('should throw an error if attempting to call setAttributeNS during construction', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -59,14 +59,14 @@ describe('html-element', () => {
 
     describe('#setAttribute()', () => {
         it('should set attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 setFoo() {
                     this.setAttribute('foo', 'bar');
                 }
             }
             MyComponent.publicMethods = ['setFoo'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return ($api) => {
                         return [$api.c('x-foo', MyComponent, {})]
@@ -82,7 +82,7 @@ describe('html-element', () => {
         });
 
         it('should set attribute on host element', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 setFoo() {
                     this.setAttribute('foo', 'bar');
                 }
@@ -95,7 +95,7 @@ describe('html-element', () => {
         });
 
         it('should throw an error if attempting to call setAttribute during construction', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -109,14 +109,14 @@ describe('html-element', () => {
 
     describe('#removeAttributeNS()', () => {
         it('should remove namespaced attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 removeTitle() {
                     this.removeAttributeNS('x', 'title');
                 }
             }
             MyComponent.publicMethods = ['removeTitle'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return ($api) => {
                         return [$api.c('x-foo', MyComponent, {
@@ -135,7 +135,7 @@ describe('html-element', () => {
         });
 
         it('should remove attribute on host element', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 removeTitle() {
                     this.removeAttributeNS('x', 'title');
                 }
@@ -150,14 +150,14 @@ describe('html-element', () => {
 
     describe('#removeAttribute()', () => {
         it('should remove attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 removeTitle() {
                     this.removeAttribute('title');
                 }
             }
             MyComponent.publicMethods = ['removeTitle'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return ($api) => {
                         return [$api.c('x-foo', MyComponent, {
@@ -176,7 +176,7 @@ describe('html-element', () => {
         });
 
         it('should remove attribute on host element', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 removeTitle() {
                     this.removeAttribute('title');
                 }
@@ -191,7 +191,7 @@ describe('html-element', () => {
 
     describe('#getBoundingClientRect()', () => {
         it('should throw during construction', () => {
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -206,7 +206,7 @@ describe('html-element', () => {
 
     describe('#classList()', () => {
         it('should throw when adding classList during construction', () => {
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.classList.add('foo');
@@ -217,7 +217,7 @@ describe('html-element', () => {
 
         it('should have a valid classList during connectedCallback', () => {
             expect.assertions(2);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                     expect(this.classList.contains('foo')).toBe(true);
@@ -231,7 +231,7 @@ describe('html-element', () => {
 
     describe('#getAttributeNS()', () => {
         it('should return correct attribute value', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 getXTitle() {
                     return this.getAttributeNS('x', 'title');
                 }
@@ -246,7 +246,7 @@ describe('html-element', () => {
     describe('#getAttribute()', () => {
         it('should throw when no attribute name is provided', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => this.getAttribute()).toThrow();
@@ -256,7 +256,7 @@ describe('html-element', () => {
         });
         it('should throw when attribute name matches a declared public property', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => this.getAttribute('foo')).toThrow();
@@ -267,7 +267,7 @@ describe('html-element', () => {
         });
         it('should be null for non-valid attribute names', () => {
             expect.assertions(3);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute(null)).toBeNull();
@@ -279,7 +279,7 @@ describe('html-element', () => {
         });
         it('should be null for non-existing attributes', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute("foo-bar-baz")).toBeNull();
@@ -300,7 +300,7 @@ describe('html-element', () => {
                     }
                 }
             });
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 connectedCallback() {
                     const event = new CustomEvent('badevent', {
                         bubbles: true,
@@ -330,7 +330,7 @@ describe('html-element', () => {
                     }
                 }
             });
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 connectedCallback() {
                     event = {
                         type: 'secure',
@@ -348,7 +348,7 @@ describe('html-element', () => {
         });
         it('should throw when event is dispatched during construction', function() {
             expect.assertions(1);
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -361,7 +361,7 @@ describe('html-element', () => {
         });
 
         it('should log warning when element is not connected', function() {
-            class Foo extends Element {}
+            class Foo extends LightningElement {}
             const elm = createElement('x-foo', { is: Foo });
             jest.spyOn(assertLogger, 'logWarning');
 
@@ -373,7 +373,7 @@ describe('html-element', () => {
         });
 
         it('should not log warning when element is connected', function() {
-            class Foo extends Element {}
+            class Foo extends LightningElement {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
@@ -386,7 +386,7 @@ describe('html-element', () => {
         });
 
         it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
-            class Foo extends Element {}
+            class Foo extends LightningElement {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
@@ -399,7 +399,7 @@ describe('html-element', () => {
         });
 
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
-            class Foo extends Element {}
+            class Foo extends LightningElement {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
@@ -411,7 +411,7 @@ describe('html-element', () => {
         });
 
         it('should not log warning for alphanumeric lowercase event name', function() {
-            class Foo extends Element {}
+            class Foo extends LightningElement {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
@@ -426,7 +426,7 @@ describe('html-element', () => {
     describe('#tagName', () => {
         it('should have a valid value during construction', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.tagName).toBe('X-FOO');
@@ -439,7 +439,7 @@ describe('html-element', () => {
     describe('#tracked', () => {
         it('should warn if component has untracked state property', function() {
             jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = {};
             }
             const element = createElement('x-foo', { is: MyComponent });
@@ -448,7 +448,7 @@ describe('html-element', () => {
         });
         it('should not warn if component has tracked state property', function() {
             jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = {};
             }
             MyComponent.track = { state: 1 };
@@ -459,7 +459,7 @@ describe('html-element', () => {
         it('should be mutable during construction', () => {
             let state;
             const o = { foo: 1, bar: 2, baz: 1 };
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 state = {
                     foo: undefined,
                     bar: undefined,
@@ -485,7 +485,7 @@ describe('html-element', () => {
         it('should accept member properties', () => {
             let state;
             const o = { foo: 1 };
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 state = { x: 1, y: o };
                 constructor() {
                     super();
@@ -499,7 +499,7 @@ describe('html-element', () => {
         });
         it('should not throw an error when assigning observable object', function() {
             expect.assertions(1);
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -515,7 +515,7 @@ describe('html-element', () => {
     describe('global HTML Properties', () => {
         it('should always return null', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.getAttribute('title')).toBeNull();
@@ -526,7 +526,7 @@ describe('html-element', () => {
 
         it('should set user specified value during setAttribute call', () => {
             let userDefinedTabIndexValue = -1;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 renderedCallback() {
                     userDefinedTabIndexValue = this.getAttribute("tabindex");
                 }
@@ -548,12 +548,12 @@ describe('html-element', () => {
                     $api.c('x-child', Child, { attrs: { title: 'child title' }})
                 ];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Child extends Element {}
+            class Child extends LightningElement {}
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
@@ -572,12 +572,12 @@ describe('html-element', () => {
                     $api.c('x-child', Child, { attrs: { title: 'child title' }})
                 ];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Child extends Element {}
+            class Child extends LightningElement {}
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
@@ -591,7 +591,7 @@ describe('html-element', () => {
 
         it('should not log error message when attribute is set via createElement', () => {
             jest.spyOn(assertLogger, 'logError');
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', {is: MyComponent});
             elm.setAttribute('tabindex', '0');
             document.body.appendChild(elm);
@@ -603,7 +603,7 @@ describe('html-element', () => {
         });
 
         it('should delete existing attribute prior rendering', () => {
-            const def = class MyComponent extends Element {};
+            const def = class MyComponent extends LightningElement {};
             const elm = createElement('x-foo', { is: def });
             elm.setAttribute('title', 'parent title');
             elm.removeAttribute('title');
@@ -621,13 +621,13 @@ describe('html-element', () => {
                     $api.c('x-child', Child, { attrs: { title: 'child title' }})
                 ];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return html;
                 }
             }
 
-            class Child extends Element {
+            class Child extends LightningElement {
                 renderedCallback() {
                     childTitle = this.getAttribute('title');
                 }
@@ -647,7 +647,7 @@ describe('html-element', () => {
     describe('#toString()', () => {
         it('should produce a nice tag', () => {
             expect.assertions(1);
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(this.toString()).toBe('<x-foo>');
@@ -663,7 +663,7 @@ describe('html-element', () => {
             function html1() {
                 return [childFromOwner];
             }
-            class Child extends Element {
+            class Child extends LightningElement {
                 constructor() {
                     super();
                     childComponent = this;
@@ -676,7 +676,7 @@ describe('html-element', () => {
                 childFromOwner = $api.h('p', { key: 0 }, []);
                 return [$api.c('x-child', Child, {})];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html2;
                 }
@@ -691,7 +691,7 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -705,7 +705,7 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -721,7 +721,7 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -739,7 +739,7 @@ describe('html-element', () => {
             function html1() {
                 return [childFromOwner];
             }
-            class Child extends Element {
+            class Child extends LightningElement {
                 constructor() {
                     super();
                     childComponent = this;
@@ -752,7 +752,7 @@ describe('html-element', () => {
                 childFromOwner = $api.h('p', { key: 0 }, []);
                 return [$api.c('x-child', Child, {})];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html2;
                 }
@@ -767,7 +767,7 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -781,7 +781,7 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -798,7 +798,7 @@ describe('html-element', () => {
     describe('#data layer', () => {
         it('should allow custom instance getter and setter', () => {
             let a, ctx;
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.publicProps = { foo: true };
             const elm = createElement('x-foo', { is: MyComponent });
             elm.foo = 1;
@@ -819,7 +819,7 @@ describe('html-element', () => {
         it('should have a valid value during connectedCallback', function() {
             expect.assertions(1);
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     expect(this.tabIndex).toBe(3);
                 }
@@ -831,7 +831,7 @@ describe('html-element', () => {
         });
 
         it('should have a valid value after initial render', function() {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
@@ -841,7 +841,7 @@ describe('html-element', () => {
         });
 
         it('should set tabindex correctly', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
@@ -859,7 +859,7 @@ describe('html-element', () => {
 
         it('should not trigger attribute changed callback when changed from within', function() {
             let callCount = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 attributeChangedCallback() {
                     callCount += 1;
                 }
@@ -882,7 +882,7 @@ describe('html-element', () => {
 
         it('should not trigger render cycle', function() {
             let callCount = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
@@ -902,7 +902,7 @@ describe('html-element', () => {
         });
 
         it('should allow parent component to overwrite internally set tabIndex', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
@@ -921,7 +921,7 @@ describe('html-element', () => {
 
         it('should throw if setting tabIndex during render', function() {
             expect.assertions(1);
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     expect(() => {
                         this.tabIndex = 2;
@@ -936,7 +936,7 @@ describe('html-element', () => {
 
         it('should throw if setting tabIndex during construction', function() {
             expect.assertions(1);
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect(() => {
@@ -951,7 +951,7 @@ describe('html-element', () => {
     describe('life-cycles', function() {
         it('should guarantee that the element is rendered when inserted in the DOM', function() {
             let rendered = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     return () => [];
@@ -965,7 +965,7 @@ describe('html-element', () => {
 
         it('should guarantee that the connectedCallback is invoked sync after the element is inserted in the DOM', function() {
             let called = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return () => [];
                 }
@@ -981,7 +981,7 @@ describe('html-element', () => {
 
         it('should guarantee that the connectedCallback is invoked before render after the element is inserted in the DOM', function() {
             const ops: string[] = [];
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     ops.push('render');
                     return () => [];
@@ -997,7 +997,7 @@ describe('html-element', () => {
 
         it('should guarantee that the disconnectedCallback is invoked sync after the element is removed from the DOM', function() {
             let called = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return () => [];
                 }
@@ -1014,7 +1014,7 @@ describe('html-element', () => {
 
         it('should not render even if there is a mutation if the element is not in the DOM yet', function() {
             let rendered = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     this.x; // reactive
@@ -1031,7 +1031,7 @@ describe('html-element', () => {
 
         it('should not render if the element was removed from the DOM', function() {
             let rendered = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     this.x; // reactive
@@ -1053,7 +1053,7 @@ describe('html-element', () => {
             let rendered = 0;
             let connected = 0;
             let disconnected = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     rendered++;
                     return () => [];
@@ -1078,7 +1078,7 @@ describe('html-element', () => {
         });
 
         it('should not throw error when accessing a non-observable property from tracked property when not rendering', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = {};
                 set foo(value) {
                     this.state.foo = value;
@@ -1105,7 +1105,7 @@ describe('html-element', () => {
 
         it('should not log a warning when setting tracked value to null', function() {
             jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = {};
                 connectedCallback() {
                     this.state.foo = null;
@@ -1121,7 +1121,7 @@ describe('html-element', () => {
 
         it('should not log a warning when initializing api value to null', function() {
             jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 foo = null;
             }
             MyComponent.publicProps = {

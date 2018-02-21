@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { pierce } from '../piercing';
 import { ViewModelReflection } from "../def";
 import { createElement } from "../upgrade";
@@ -10,7 +10,7 @@ describe('piercing', function() {
                 key: 0,
             }, [])];
         }
-        class MyComponent extends Element  {
+        class MyComponent extends LightningElement  {
             render() {
                 return html;
             }
@@ -32,7 +32,7 @@ describe('piercing', function() {
                 key: 0,
             }, [])];
         }
-        class MyComponent extends Element  {
+        class MyComponent extends LightningElement  {
             render() {
                 return html;
             }

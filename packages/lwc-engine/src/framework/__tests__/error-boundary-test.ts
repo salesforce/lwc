@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../upgrade";
 
 function createBoundaryComponent(elementsToRender) {
@@ -11,7 +11,7 @@ function createBoundaryComponent(elementsToRender) {
             });
         }
     }
-    class Boundary extends Element {
+    class Boundary extends LightningElement {
         getError() {
             return this.error;
         }
@@ -35,7 +35,7 @@ describe('error boundary component', () => {
 
         describe('constructor', () => {
             it('should call errorCallback when boundary child throws inside constructor', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     constructor() {
                         super();
                         throw new Error("Child Constructor Throw");
@@ -53,13 +53,13 @@ describe('error boundary component', () => {
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside constructor', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     constructor() {
                         super();
                         throw new Error("Child Constructor Throw");
                     }
                 }
-                class BoundarySibling extends Element {}
+                class BoundarySibling extends LightningElement {}
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
                     ctor: BoundaryChild
@@ -70,7 +70,7 @@ describe('error boundary component', () => {
                         $api.c('x-boundary-sibling', BoundarySibling, {}),
                     ];
                 }
-                class BoundryHost extends Element {
+                class BoundryHost extends LightningElement {
                     render() {
                         return html;
                     }
@@ -82,11 +82,11 @@ describe('error boundary component', () => {
             }),
 
             it('should unmount enitre subtree up to boundary component if child throws inside constructor', () => {
-                class SecondLevelChild extends Element {}
+                class SecondLevelChild extends LightningElement {}
                 function html($api, $cmp) {
                     return [ $api.c('x-second-level-child', SecondLevelChild, {})];
                 }
-                class FirstLevelChild extends Element {
+                class FirstLevelChild extends LightningElement {
                     constructor() {
                         super();
                         throw new Error("Child Constructor Throw");
@@ -109,15 +109,15 @@ describe('error boundary component', () => {
             }),
 
             it('should throw if error occurs in error boundary constructor', () => {
-                class FirstLevelChild extends Element {}
-                class FirstLevelChildSibling extends Element {}
+                class FirstLevelChild extends LightningElement {}
+                class FirstLevelChildSibling extends LightningElement {}
                 function html($api, $cmp) {
                     return [
                         $api.c('x-first-level-child-sibling', FirstLevelChildSibling, {}),
                         $api.c('x-first-level-child', FirstLevelChild, {})
                     ];
                 }
-                class Boundary extends Element {
+                class Boundary extends LightningElement {
                     constructor() {
                         super();
                         throw new Error();
@@ -138,7 +138,7 @@ describe('error boundary component', () => {
 
         describe('render', () => {
             it('should call errorCallback when boundary child throws inside render', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     render() {
                         throw new Error("Child Render Throw");
                     }
@@ -154,7 +154,7 @@ describe('error boundary component', () => {
             }),
 
             it('should throw when error boundary throws inside render method', () => {
-                class Boundary extends Element {
+                class Boundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -176,12 +176,12 @@ describe('error boundary component', () => {
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside render', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     render() {
                         throw new Error("Child Constructor Throw");
                     }
                 }
-                class BoundarySibling extends Element {}
+                class BoundarySibling extends LightningElement {}
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
                     ctor: BoundaryChild
@@ -192,7 +192,7 @@ describe('error boundary component', () => {
                         $api.c('x-boundary-sibling', BoundarySibling, {}),
                     ];
                 }
-                class BoundryHost extends Element {
+                class BoundryHost extends LightningElement {
                     render() {
                         return html;
                     }
@@ -204,7 +204,7 @@ describe('error boundary component', () => {
             }),
 
             it('should unmount child and its subtree if boundary child throws inside render', () => {
-                class SecondLevelChild extends Element {
+                class SecondLevelChild extends LightningElement {
                     render() {
                         throw new Error("Child Render Throw");
                     }
@@ -212,7 +212,7 @@ describe('error boundary component', () => {
                 function html($api, $cmp) {
                     return [ $api.c('x-second-level-child', SecondLevelChild, {})];
                 }
-                class FirstLevelChild extends Element {
+                class FirstLevelChild extends LightningElement {
                     render() {
                         return html;
                     }
@@ -230,7 +230,7 @@ describe('error boundary component', () => {
             }),
 
             it ('should call errorCallback if slot throws an error inside render', () => {
-                class SlotCmp extends Element {
+                class SlotCmp extends LightningElement {
                     render() {
                         throw Error('Slot cmp throws in render method');
                     }
@@ -238,7 +238,7 @@ describe('error boundary component', () => {
                 function html1($api, $cmp, $slotset) {
                     return $slotset.x;
                 }
-                class ChildWithSlot extends Element {
+                class ChildWithSlot extends LightningElement {
                     render() {
                         return html1;
                     }
@@ -249,7 +249,7 @@ describe('error boundary component', () => {
                     // - Ignoring unknown provided slot name "x" in [object:vm ChildWithSlot (7)]. This is probably a typo on the slot attribute.
                     return [ $api.c('x-child-with-slot', ChildWithSlot, { slotset: { x: [ $api.c('x-slot-cmp', SlotCmp, {})]}}) ];
                 }
-                class BoundaryWithSlot extends Element {
+                class BoundaryWithSlot extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -272,7 +272,7 @@ describe('error boundary component', () => {
 
         describe('renderedCallback', () => {
             it('should call errorCallback when boundary child throws inside renderedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     renderedCallback() {
                         throw new Error("Child RenderedCallback Throw");
                     }
@@ -288,7 +288,7 @@ describe('error boundary component', () => {
             }),
 
             it('should throw an error when error boundary throws inside renderedCallback', () => {
-                class Boundary extends Element {
+                class Boundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -310,7 +310,7 @@ describe('error boundary component', () => {
             }),
 
             it('should unomunt child error boundary component if it throws inside errorCallback', () => {
-                class ChildBoundaryContent extends Element {
+                class ChildBoundaryContent extends LightningElement {
                     renderedCallback() {
                         throw new Error("Child RenderedCallback Throw");
                     }
@@ -318,7 +318,7 @@ describe('error boundary component', () => {
                 function html($api, $cmp) {
                     return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
                 }
-                class ChildErrorBoundary extends Element {
+                class ChildErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -345,7 +345,7 @@ describe('error boundary component', () => {
             });
 
             it('should unmount error boundary child if it throws inside renderedCallback', () => {
-                class ChildErrorBoundary extends Element {
+                class ChildErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -372,7 +372,7 @@ describe('error boundary component', () => {
             }),
 
             it('should invoke parent boundary if child`s immediate boundary fails inside renderedCallback', () => {
-                class ChildBoundaryContent extends Element {
+                class ChildBoundaryContent extends LightningElement {
                     renderedCallback() {
                         throw new Error("Child RenderedCallback Throw");
                     }
@@ -380,7 +380,7 @@ describe('error boundary component', () => {
                 function html($api, $cmp) {
                     return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
                 }
-                class ChildErrorBoundary extends Element {
+                class ChildErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -411,12 +411,12 @@ describe('error boundary component', () => {
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside renderedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     renderedCallback() {
                         throw new Error("Child RenderedCallback Throw");
                     }
                 }
-                class BoundarySibling extends Element {}
+                class BoundarySibling extends LightningElement {}
 
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
@@ -428,7 +428,7 @@ describe('error boundary component', () => {
                         $api.c('x-boundary-sibling', BoundarySibling, {}),
                     ];
                 }
-                class BoundryHost extends Element {
+                class BoundryHost extends LightningElement {
                     render() {
                         return html;
                     }
@@ -440,7 +440,7 @@ describe('error boundary component', () => {
             }),
 
             it('should unmount boundary child and its subtree if child throws inside renderedCallback', () => {
-                class SecondLevelChild extends Element {
+                class SecondLevelChild extends LightningElement {
                     renderedCallback() {
                         throw new Error("Child RenderedCallback Throw");
                     }
@@ -448,7 +448,7 @@ describe('error boundary component', () => {
                 function html($api, $cmp) {
                     return [$api.c('x-second-level-child', SecondLevelChild, {})];
                 }
-                class FirstLevelChild extends Element {
+                class FirstLevelChild extends LightningElement {
                     render() {
                         return html;
                     }
@@ -468,7 +468,7 @@ describe('error boundary component', () => {
 
         describe('connectedCallback', () => {
             it('should call errorCallback when boundary child throws inside connectedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     connectedCallback() {
                         throw new Error("Child ConnectedCallback Throw");
                     }
@@ -485,7 +485,7 @@ describe('error boundary component', () => {
             }),
 
             it('should throw an error when error boundary throws inside connectedCallback', () => {
-                class Boundary extends Element {
+                class Boundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -507,12 +507,12 @@ describe('error boundary component', () => {
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside connectedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     connectedCallback() {
                         throw new Error("Child ConnectedCallback Throw");
                     }
                 }
-                class BoundarySibling extends Element {}
+                class BoundarySibling extends LightningElement {}
 
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
@@ -524,7 +524,7 @@ describe('error boundary component', () => {
                         $api.c('x-boundary-sibling', BoundarySibling, {}),
                     ];
                 }
-                class BoundryHost extends Element {
+                class BoundryHost extends LightningElement {
                     render() {
                         return html;
                     }
@@ -536,7 +536,7 @@ describe('error boundary component', () => {
             }),
 
             it('should unmount boundary child and its subtree if boundary child throws inside connectedCallback', () => {
-                class SecondLevelChild extends Element {
+                class SecondLevelChild extends LightningElement {
                     connectedCallback() {
                         throw new Error("Child ConnectedCallback Throw");
                     }
@@ -544,7 +544,7 @@ describe('error boundary component', () => {
                 function html($api, $cmp) {
                     return [ $api.c('x-second-level-child', SecondLevelChild, {})];
                 }
-                class FirstLevelChild extends Element {
+                class FirstLevelChild extends LightningElement {
                     render() {
                         return html;
                     }
@@ -564,7 +564,7 @@ describe('error boundary component', () => {
 
         describe('attributeChangedCallback', () => {
             it('should call errorCallback when boundary child throws inside attributeChangedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     attributeChangedCallback() {
                         throw new Error("Child AttributeChangedCallback Throw");
                     }
@@ -584,14 +584,14 @@ describe('error boundary component', () => {
             }),
 
             it('should not affect error boundary siblings when boundary child throws inside attributeChangedCallback', () => {
-                class BoundaryChild extends Element {
+                class BoundaryChild extends LightningElement {
                     attributeChangedCallback() {
                         throw new Error("Child AttributeChangedCallback Throw");
                     }
                 }
                 BoundaryChild.observedAttributes = ['title'];
 
-                class BoundarySibling extends Element {}
+                class BoundarySibling extends LightningElement {}
 
                 const Boundary = createBoundaryComponent([{
                     name: 'x-child',
@@ -604,7 +604,7 @@ describe('error boundary component', () => {
                         $api.c('x-boundary-sibling', BoundarySibling, {}),
                     ];
                 }
-                class BoundryHost extends Element {
+                class BoundryHost extends LightningElement {
                     render() {
                         return html;
                     }
@@ -616,7 +616,7 @@ describe('error boundary component', () => {
             }),
 
             it('should unmount child and its subtree if boundary child throws inside attributeChangedCallback', () => {
-                class SecondLevelChild extends Element {
+                class SecondLevelChild extends LightningElement {
                     attributeChangedCallback() {
                         throw new Error("Child ConnectedCallback Throw");
                     }
@@ -631,7 +631,7 @@ describe('error boundary component', () => {
                         )
                     ];
                 }
-                class FirstLevelChild extends Element {
+                class FirstLevelChild extends LightningElement {
                     render() {
                         return html;
                     }
@@ -651,12 +651,12 @@ describe('error boundary component', () => {
 
         describe('error boundary failures in rendering alternative view', () => {
             it('should throw if error boundary fails to render alternative view', () => {
-                class PostErrorChildOffender extends Element {
+                class PostErrorChildOffender extends LightningElement {
                     render() {
                         throw new Error("Post-Failure Child Content Throws in Render");
                     }
                 }
-                class PreErrorChildContent extends Element {
+                class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
@@ -668,7 +668,7 @@ describe('error boundary component', () => {
                         return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
                     }
                 }
-                class AltViewErrorBoundary extends Element {
+                class AltViewErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
                     }
@@ -690,12 +690,12 @@ describe('error boundary component', () => {
             }),
 
             it('should rethrow error to the parent error boundary when child boundary fails to render alternative view', () => {
-                class PostErrorChildOffender extends Element {
+                class PostErrorChildOffender extends LightningElement {
                     render() {
                         throw new Error("Post-Failure Child Content Throws in Render");
                     }
                 }
-                class PreErrorChildContent extends Element {
+                class PreErrorChildContent extends LightningElement {
                     render() {
                         throw new Error("Pre-Failure Child Content Throws in Render");
                     }
@@ -707,7 +707,7 @@ describe('error boundary component', () => {
                         return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
                     }
                 }
-                class AltViewErrorBoundary extends Element {
+                class AltViewErrorBoundary extends LightningElement {
                     getError() {
                         return this.error;
                     }

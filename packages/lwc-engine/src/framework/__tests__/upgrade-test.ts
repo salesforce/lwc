@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from "../upgrade";
 import { ComponentConstructor } from "../component";
 
@@ -10,7 +10,7 @@ describe('upgrade', () => {
                 x: any,
                 y: any;
             };
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 x: any;
                 y: any;
                 constructor() {
@@ -32,7 +32,7 @@ describe('upgrade', () => {
         });
 
         it('should proxify any value before setting a property', () => {
-            const def = class MyComponent extends Element {};
+            const def = class MyComponent extends LightningElement {};
             def.publicProps = { x: 1 };
             const elm = createElement('x-foo', { is: def });
             const o = { foo: 1 };

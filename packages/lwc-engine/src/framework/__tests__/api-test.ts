@@ -1,14 +1,14 @@
 import * as api from '../api';
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { createElement } from './../main';
 import { RenderAPI } from '../api';
 
 describe('api', () => {
     describe('#c()', () => {
-        class Foo extends Element {}
+        class Foo extends LightningElement {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function() { return class extends Element {
+            const factory = function() { return class extends LightningElement {
                 static forceTagName = 'p';
             }; };
             factory.__circular__ = true;
@@ -70,7 +70,7 @@ describe('api', () => {
         });
 
         it('should support forceTagName static definition to force tagname on root node', () => {
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'div';
             }
             const element = createElement('x-foo', { is: Bar });
@@ -81,7 +81,7 @@ describe('api', () => {
         });
 
         it('should not include is attribute when forceTagName is not present on root', () => {
-            class Bar extends Element {}
+            class Bar extends LightningElement {}
             const element = createElement('x-foo', { is: Bar });
             expect(element.hasAttribute('is')).toBe(false);
         });
@@ -90,12 +90,12 @@ describe('api', () => {
             function html($api) {
                 return [$api.c('span', Bar, { attrs: { is: "x-bar" } })];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'div';
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -238,7 +238,7 @@ describe('api', () => {
             function html($api) {
                 return [$api.t('miami')];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
@@ -255,7 +255,7 @@ describe('api', () => {
             function html($api) {
                 return [$api.p('miami')];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
@@ -287,7 +287,7 @@ describe('api', () => {
                 k5 = $api.k(678, {});
                 return [];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }

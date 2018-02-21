@@ -1,4 +1,4 @@
-import { Element } from "../../html-element";
+import { LightningElement } from "../../html-element";
 import { createElement } from "../../upgrade";
 import { Template } from "../../template";
 
@@ -8,7 +8,7 @@ describe('modules/styles', () => {
             $api.h('div', { key: 0, style: 'display: inline' }, [ $api.t('test') ]),
         ];
         let cmp;
-        class Component extends Element {
+        class Component extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -28,7 +28,7 @@ describe('modules/styles', () => {
             $api.h('div', { key: 0, styleMap: { display: 'inline' } }, [ $api.t('test') ]),
         ];
         let cmp;
-        class Component extends Element {
+        class Component extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -48,7 +48,7 @@ describe('modules/styles', () => {
             $api.h('div', { key: 0, style: $cmp.counter % 2 ? 'display: block' : 'display: inline' }, [ $api.t('test') ]),
         ];
         let cmp;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -74,7 +74,7 @@ describe('modules/styles', () => {
             $api.h('div', { key: 0, styleMap: $cmp.counter % 2 ? { position: 'relative' } : { display: 'inline' } }, [ $api.t('test') ]),
         ];
         let cmp;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;

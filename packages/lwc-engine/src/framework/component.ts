@@ -68,7 +68,7 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     vmBeingConstructed = vmBeingConstructedInception;
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+        assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending LightningElement.`);
         const { track } = getComponentDef(Ctor);
         if ('state' in component && (!track || !track.state)) {
             assert.logWarning(`Non-trackable component state detected in ${component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);

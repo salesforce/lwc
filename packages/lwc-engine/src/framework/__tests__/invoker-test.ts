@@ -1,5 +1,5 @@
 import { createElement } from "../main";
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { ViewModelReflection } from "../def";
 
 describe('invoker', () => {
@@ -12,7 +12,7 @@ describe('invoker', () => {
 
         it('should support undefined result from render()', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     counter++;
                     return;
@@ -24,7 +24,7 @@ describe('invoker', () => {
         });
 
         it('should throw if render() returns something that is not a function or a promise or undefined', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return 1;
                 }
@@ -40,7 +40,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     counter++;
                     expect(this.root.querySelectorAll('p').length).toBe(0);
@@ -57,7 +57,7 @@ describe('invoker', () => {
 
         it('should invoke connectedCallback() in a child after connectedCallback() on parent', () => {
             const stack = [];
-            class Child extends Element {
+            class Child extends LightningElement {
                 connectedCallback() {
                     stack.push('child');
                 }
@@ -65,7 +65,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.c('x-child', Child, {})];
             }
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     stack.push('parent');
                 }
@@ -80,7 +80,7 @@ describe('invoker', () => {
 
         it('should invoke disconnectedCallback() in a child after disconnectedCallback() on parent', () => {
             const stack = [];
-            class Child extends Element {
+            class Child extends LightningElement {
                 disconnectedCallback() {
                     stack.push('child');
                 }
@@ -88,7 +88,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.c('x-child', Child, {})];
             }
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 disconnectedCallback() {
                     stack.push('parent');
                 }
@@ -108,7 +108,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 disconnectedCallback() {
                     counter++;
                     expect(elm.parentNode).toBe(null);
@@ -132,7 +132,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 renderedCallback() {
                     counter++;
                     expect(this.root.querySelectorAll('p').length).toBe(1);
@@ -149,7 +149,7 @@ describe('invoker', () => {
 
         it('should invoke parent renderedCallback() sync after every change after all child renderedCallback', () => {
             const cycle = [];
-            class Child extends Element {
+            class Child extends LightningElement {
                 renderedCallback() {
                     cycle.push('child');
                 }
@@ -157,7 +157,7 @@ describe('invoker', () => {
             function html($api) {
                 return [$api.c('x-foo', Child, {})];
             }
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 renderedCallback() {
                     cycle.push('parent');
                 }
@@ -182,7 +182,7 @@ describe('invoker', () => {
                     }, [])
                 ];
             }
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 renderedCallback() {
                     lifecycle.push('rendered');
                 }
@@ -208,7 +208,7 @@ describe('invoker', () => {
 
         it('should invoke renderedCallback() sync after connectedCallback and render', () => {
             const lifecycle: string[] = [];
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 renderedCallback() {
                     lifecycle.push('rendered');
                 }
@@ -226,7 +226,7 @@ describe('invoker', () => {
 
         it('should decorate error thrown with component stack information', () => {
             expect.hasAssertions();
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     (undefined).foo;
                 }
@@ -241,7 +241,7 @@ describe('invoker', () => {
 
         it('should decorate error thrown with component stack information even when nested', () => {
             expect.hasAssertions();
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 connectedCallback() {
                     (undefined).foo;
                 }
@@ -251,7 +251,7 @@ describe('invoker', () => {
                     "section", { key: 0 }, [$api.c("x-bar", MyComponent2, {})]
                 )];
             }
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 render() {
                     return html;
                 }
@@ -270,7 +270,7 @@ describe('invoker', () => {
             function fn(event: Event) {
                 expect(event.bubbles).toBe(true);
             }
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 connectedCallback() {
                     this.addEventListener('click', fn);
                 }

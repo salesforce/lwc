@@ -1,5 +1,5 @@
 import { Root, wrapIframeWindow } from "../root";
-import { Element } from "../html-element";
+import { LightningElement } from "../html-element";
 import { h } from "../api";
 import { unwrap } from '../membrane';
 import { createElement } from "../upgrade";
@@ -19,14 +19,14 @@ describe('root', () => {
     describe('integration', () => {
 
         it('should support this.root.host', () => {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
             expect(vm.component).toBe((vm.component as Component).root.host);
         });
 
         it('should support this.root.mode', () => {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
             expect((vm.component as Component).root.mode).toBe('closed');
@@ -34,7 +34,7 @@ describe('root', () => {
 
         it('should allow searching for elements from template', () => {
             function html($api) { return [$api.h('p', { key: 0 }, [])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -51,7 +51,7 @@ describe('root', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -67,7 +67,7 @@ describe('root', () => {
         it('should ignore elements from other owner', () => {
             const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
             function html() { return [vnodeFromAnotherOwner]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -83,7 +83,7 @@ describe('root', () => {
         it('should ignore element from other owner', () => {
             const vnodeFromAnotherOwner = h('p', { key: 0 }, []);
             function html() { return [vnodeFromAnotherOwner]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -212,7 +212,7 @@ describe('root', () => {
                 function html($api) {
                     return [$api.h('iframe', { key: 0, src: 'https://salesforce.com' }, [])];
                 }
-                class MyComponent extends Element {
+                class MyComponent extends LightningElement {
                     getContentWindow() {
                         return this.root.querySelector('iframe').contentWindow;
                     }
@@ -234,7 +234,7 @@ describe('root', () => {
 
         it('should querySelector on element from template', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -251,7 +251,7 @@ describe('root', () => {
 
         it('should querySelectorAll on element from template', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -268,7 +268,7 @@ describe('root', () => {
 
         it('should ignore extraneous elements', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -288,7 +288,7 @@ describe('root', () => {
 
         it('should not throw error if querySelector does not match any elements', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -305,7 +305,7 @@ describe('root', () => {
 
         it('should return null if querySelector does not match any elements', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -322,7 +322,7 @@ describe('root', () => {
             function html($api) {
                 return [$api.h('ul', { key: 0 }, [])];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -341,7 +341,7 @@ describe('root', () => {
             function html($api) {
                 return [$api.h('div', { key: 0 }, [])];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
