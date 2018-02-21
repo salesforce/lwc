@@ -61,6 +61,24 @@ Test.style = _tmpl.style;`
     });
 });
 
+describe('observedAttributes array', () => {
+    pluginTest('throws if user defined observedAttributes', `
+        import { Element as Component } from 'engine';
+
+        export default class Test extends Component {
+            static observedAttributes = ['foo', 'title', 'tabindex'];
+        }
+    `, {
+        error: {
+            message: `test.js: Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for "foo", "title", "tabIndex" instead.`,
+            loc: {
+                line: 1,
+                column: 7,
+            }
+        }
+    });
+})
+
 describe('render method', () => {
     pluginTest('inject render method', `
         import { Element } from "engine";
@@ -148,7 +166,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
-                declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } }, 
+                declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
                 doc: "Foo doc",
                 marked: [],
                 modules: {
@@ -172,7 +190,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
-                declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } }, 
+                declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
                 doc: 'multi\nline',
                 marked: [],
                 modules: {

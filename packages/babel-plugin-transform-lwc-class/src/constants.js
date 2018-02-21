@@ -1,6 +1,27 @@
-const GLOBAL_ATTRIBUTE_SET = new Set([
-    'role', 'accesskey', 'class', 'contenteditable', 'contextmenu', 'dir', 'draggable', 'dropzone', 'hidden',
-    'id', 'itemprop', 'lang', 'slot', 'spellcheck', 'style', 'tabindex', 'title',
+function globalAttributeObject(propName) {
+    return {
+        propName,
+    }
+}
+
+const GLOBAL_ATTRIBUTE_MAP = new Map([
+    ['role', globalAttributeObject('role')],
+    ['accesskey', globalAttributeObject('accessKey')],
+    ['class', globalAttributeObject('class')],
+    ['contenteditable', globalAttributeObject('contentEditable')],
+    ['contextmenu', globalAttributeObject('contextmenu')],
+    ['dir', globalAttributeObject('dir')],
+    ['draggable', globalAttributeObject('draggable')],
+    ['dropzone', globalAttributeObject('dropzone')],
+    ['hidden', globalAttributeObject('hidden')],
+    ['id', globalAttributeObject('id')],
+    ['itemprop', globalAttributeObject('itemprop')],
+    ['lang', globalAttributeObject('lang')],
+    ['slot', globalAttributeObject('slot')],
+    ['spellcheck', globalAttributeObject('spellcheck')],
+    ['style', globalAttributeObject('style')],
+    ['tabindex', globalAttributeObject('tabIndex')],
+    ['title', globalAttributeObject('title')],
 ]);
 
 const AMBIGIOUS_PROP_SET = new Set([
@@ -39,7 +60,7 @@ const DECORATOR_TYPES = {
 module.exports = {
     AMBIGIOUS_PROP_SET,
     DISALLOWED_PROP_SET,
-    GLOBAL_ATTRIBUTE_SET,
+    GLOBAL_ATTRIBUTE_MAP,
 
     LWC_PACKAGE_ALIAS,
     LWC_PACKAGE_EXPORTS,

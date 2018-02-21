@@ -2,7 +2,6 @@ const { isApiDecorator } = require('./shared');
 const {
     AMBIGIOUS_PROP_SET,
     DISALLOWED_PROP_SET,
-    GLOBAL_ATTRIBUTE_SET,
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
     DECORATOR_TYPES
 } = require('../../constants');
