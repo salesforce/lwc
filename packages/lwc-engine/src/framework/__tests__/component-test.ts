@@ -14,49 +14,6 @@ describe('component', function() {
         });
     });
 
-    describe('attribute-change-life-cycle', () => {
-        it('should invoke attributeChangeCallback() with old value as null the first time', () => {
-            let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                }
-                attributeChangedCallback(k, o, n) {
-                    oldValue = o;
-                    newValue = n;
-                    keyValue = k;
-                    counter++;
-                }
-            }
-            MyComponent.observedAttributes = ['aria-label'];
-            const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('aria-label', 2);
-            expect(counter).toBe(1);
-            expect(keyValue).toBe('aria-label');
-            expect(oldValue).toBe(null);
-            expect(newValue).toBe('2');
-        });
-
-        it('should invoke attributeChangeCallback() for aria-* attributes', () => {
-            let keyValue, oldValue, newValue, counter = 0;
-            class MyComponent extends Element {
-                attributeChangedCallback(k, o, n) {
-                    oldValue = o;
-                    newValue = n;
-                    keyValue = k;
-                    counter++;
-                }
-            }
-            MyComponent.observedAttributes = ['aria-describedby'];
-            const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('aria-describedby', 'xyz');
-            expect(counter).toBe(1);
-            expect(keyValue).toBe('aria-describedby');
-            expect(oldValue).toBe(null);
-            expect(newValue).toBe('xyz');
-        });
-    });
-
     describe('public computed props', () => {
         it('should allow public getters', function() {
             class MyComponent extends Element  {

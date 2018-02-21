@@ -17,7 +17,6 @@ import { Template } from "./template";
 import { ShadowRoot } from "./root";
 import { EmptyObject } from "./utils";
 export type ErrorCallback = (error: any, stack: string) => void;
-export type AttributeChangedCallback = (attrName: string, oldValue: any, newValue: any) => void;
 export interface Component {
     [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
@@ -27,7 +26,6 @@ export interface Component {
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    attributeChangedCallback?: AttributeChangedCallback;
     [key: string]: any;
 }
 
@@ -37,7 +35,6 @@ export interface ComponentConstructor {
     readonly name: string;
     readonly forceTagName?: string;
     readonly publicMethods?: string[];
-    readonly observedAttributes?: string[];
     readonly publicProps?: PropsDef;
     readonly track?: TrackDef;
     readonly wire?: WireHash;

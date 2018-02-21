@@ -110,9 +110,3 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     }
     return result || [];
 }
-
-export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { attributeChangedCallback } = vm.def;
-    if (isUndefined(attributeChangedCallback)) { return; }
-    invokeComponentCallback(vm, attributeChangedCallback, [attrName, oldValue, newValue]);
-}

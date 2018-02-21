@@ -26,13 +26,12 @@ import {
     ArraySlice,
     isNull,
 } from "./language";
-import { GlobalHTMLProperties, GlobalARIAProperties } from "./dom";
+import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
-import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { OwnerKey, VM, VMElement } from "./vm";
 
 declare interface HashTable<T> {
@@ -55,9 +54,6 @@ export interface TrackDef {
 export interface MethodDef {
     [key: string]: 1;
 }
-export interface ObservedAttrsDef {
-    [key: string]: 1;
-}
 export interface WireHash {
     [key: string]: WireDef;
 }
@@ -67,16 +63,14 @@ export interface ComponentDef {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
-    observedAttrs: ObservedAttrsDef;
     descriptors: PropertyDescriptorMap;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    attributeChangedCallback?: AttributeChangedCallback;
 }
 import {
-    ComponentConstructor, getCustomElementComponent, ErrorCallback, AttributeChangedCallback
+    ComponentConstructor, getCustomElementComponent, ErrorCallback
  } from './component';
 
 export const ViewModelReflection = Symbol();
@@ -112,7 +106,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     const name: string = Ctor.name;
     let props = getPublicPropertiesHash(Ctor);
     let methods = getPublicMethodsHash(Ctor);
-    const observedAttrs = getObservedAttributesHash(Ctor);
     let wire = getWireHash(Ctor);
     const track = getTrackHash(Ctor);
 
@@ -178,7 +171,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
-        attributeChangedCallback,
     } = proto;
     const superProto = getPrototypeOf(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
@@ -190,7 +182,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
-        attributeChangedCallback = attributeChangedCallback || superDef.attributeChangedCallback;
     }
 
     const descriptors = createDescriptorMap(props, methods);
@@ -201,13 +192,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
-        observedAttrs,
         descriptors,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
         errorCallback,
-        attributeChangedCallback,
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -215,7 +204,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         freeze(wire);
         freeze(props);
         freeze(methods);
-        freeze(observedAttrs);
         for (const key in def) {
             defineProperty(def, key, {
                 configurable: false,
@@ -270,17 +258,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
-
     setAttribute.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved) {
-        newValue = getAttribute.call(this, attrName);
-        if (oldValue !== newValue) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-    }
 }
 
 function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string, newValue: any) {
@@ -290,17 +268,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
-
     setAttributeNS.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved) {
-        newValue = getAttributeNS.call(this, attrNameSpace, attrName);
-        if (oldValue !== newValue) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-    }
 }
 
 function removeAttributePatched(this: VMElement, attrName: string) {
@@ -310,14 +278,7 @@ function removeAttributePatched(this: VMElement, attrName: string) {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
-
     removeAttribute.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved && oldValue !== null) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
-    }
 }
 
 function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {
@@ -327,14 +288,7 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
-
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved && oldValue !== null) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
-    }
 }
 
 function assertPublicAttributeColission(vm: VM, attrName: string) {
@@ -361,10 +315,6 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
     }
     // attribute change control must be released every time its value is checked
     resetAttributeChangeControl();
-}
-
-function isAttrObserved(vm: VM, attrName: string): boolean {
-    return attrName in vm.def.observedAttrs;
 }
 
 let controlledAttributeChange: boolean = false;
@@ -503,25 +453,6 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
         }
 
         return methodsHash;
-    }, create(null));
-}
-
-function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsDef {
-    const observedAttributes = target.observedAttributes;
-    if (!observedAttributes || !observedAttributes.length) {
-        return EmptyObject;
-    }
-    return observedAttributes.reduce((reducer: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
-        if (process.env.NODE_ENV !== 'production') {
-            if (attrName.indexOf('aria-') === -1) {
-                // Attribute is not valid observable HTML Attribute
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes can only contain "aria-" attributes.`);
-            } else if (!(attrName in GlobalARIAProperties)) {
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. Observed attributes must be valid "aria-" attributes.`);
-            }
-        }
-        reducer[attrName] = 1;
-        return reducer;
     }, create(null));
 }
 

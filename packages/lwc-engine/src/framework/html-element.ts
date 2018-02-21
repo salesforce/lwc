@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, keys, defineProperties, toString } from "./language";
+import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -43,10 +43,6 @@ class LWCElement implements Component {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vmBeingConstructed);
             assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
-            const { def: { observedAttrs, attributeChangedCallback } } = vmBeingConstructed;
-            if (observedAttrs.length && isUndefined(attributeChangedCallback)) {
-                assert.logError(`${vmBeingConstructed} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
-            }
         }
         const vm = vmBeingConstructed;
         const { elm, def } = vm;
