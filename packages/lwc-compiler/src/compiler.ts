@@ -33,7 +33,6 @@ export interface CompilerOptions {
 }
 
 export async function compile(options: CompilerOptions) {
-    console.log("OPTS: >>>>> ", options);
     if (isUndefined(options) || isUndefined(options.name) || !isString(options.name)) {
         throw new Error(
             `Expected a string for entry. Received instead ${options.name}`
@@ -55,7 +54,6 @@ export async function compile(options: CompilerOptions) {
     const diagnosticCollector = new DiagnosticCollector();
 
     const { diagnostics, references } = getBundleReferences(options);
-    console.log("refs >>>>>>: ", references);
 
     // add reference diagnostics
     diagnosticCollector.addAll(diagnostics);
@@ -68,7 +66,6 @@ export async function compile(options: CompilerOptions) {
         );
 
         const { diagnostics, code, map, metadata } = bundleOuput;
-        console.log(">>>>> BUNDLE: diagnostics", diagnostics);
         diagnosticCollector.addAll(diagnostics);
 
         // process bundling result
@@ -81,7 +78,6 @@ export async function compile(options: CompilerOptions) {
     compilationOutput.diagnostics = diagnosticCollector.getAll();
     compilationOutput.success = !diagnosticCollector.hasError();
 
-    console.log("Final result >>>>>>", compilationOutput);
     return compilationOutput;
 }
 

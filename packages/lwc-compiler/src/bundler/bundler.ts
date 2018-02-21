@@ -36,23 +36,11 @@ function mergeMetadata(metadata: any) {
         decorators.push(...(metadata[i].decorators || []));
     }
 
-    console.log("META >>>> ", metadata);
     return {
         decorators,
         references: Array.from(dependencies).map(d => ({name: d[0], type: d[1]}))
     };
 }
-
-// export interface BundleOptions {
-//     $metadata: any,
-//     env: any,
-//     moduleResolver: any,
-//     resolveProxyCompat: any,
-//     mode: string,
-//     format?: string,
-//     globals?: any,
-//     normalizedModuleName: string, // TODO: move normalization to bundle invoker
-// }
 
 export interface BundleReport {
     status?: string,
@@ -68,16 +56,12 @@ export function bundle(entry: string, options: CompilerOptions) {
     const env = outputConfig && outputConfig.env;
     const format = (outputConfig && outputConfig.format) || DEFAULT_FORMAT;
     const environment = env && env.NODE_ENV || process.env.NODE_ENV;
-    //const $metadata:any  = {};\
-    const $metadata = {};//options.$metadata;
+    const $metadata = {};
     const plugins = [
         rollupPluginReplace({ 'process.env.NODE_ENV': JSON.stringify(environment) }),
         rollupModuleResolver({ moduleResolver: inMemoryModuleResolver(options.files), $metadata }),
         rollupTransfrom({ $metadata, options })
     ];
-
-    console.log('>>>> Done with plugins: ');
-
 
     if (isCompat(outputConfig)) { // compat
         plugins.push(rollupCompat({ resolveProxyCompat }));
@@ -87,15 +71,12 @@ export function bundle(entry: string, options: CompilerOptions) {
         plugins.push(rollupMinify(options));
     }
 
-    console.log('>>>> rolling with entry: ', entry);
-
     return rollup({
         input: entry,
         plugins: plugins,
         onwarn: rollupWarningOverride,
     }).then(
         (bundleFn: any) => {
-            console.log('>>>> done rollup ');
             return bundleFn
                 .generate({
                     amd: { id: entry },
@@ -104,7 +85,6 @@ export function bundle(entry: string, options: CompilerOptions) {
                     format,
                 })
                 .then((result: BundleReport) => {
-                    console.log('>>>> done generate ');
                     return {
                         code: result.code,
                         map: result.map,
