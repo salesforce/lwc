@@ -51,8 +51,8 @@ export interface BundleReport {
     diagnostics?: Diagnostic[],
 };
 
-export function bundle(entry: string, options: CompilerOptions) {
-    const { outputConfig } = options;
+export function bundle(options: CompilerOptions) {
+    const { outputConfig, name, namespace } = options;
     const env = outputConfig && outputConfig.env;
     const format = (outputConfig && outputConfig.format) || DEFAULT_FORMAT;
     const environment = env && env.NODE_ENV || process.env.NODE_ENV;
@@ -72,14 +72,14 @@ export function bundle(entry: string, options: CompilerOptions) {
     }
 
     return rollup({
-        input: entry,
+        input: name,
         plugins: plugins,
         onwarn: rollupWarningOverride,
     }).then(
         (bundleFn: any) => {
             return bundleFn
                 .generate({
-                    amd: { id: entry },
+                    amd: { id: namespace + '-' + name },
                     interop: false,
                     strict: false,
                     format,
@@ -93,10 +93,10 @@ export function bundle(entry: string, options: CompilerOptions) {
                         diagnostics: [],
                     };
                 }, (error: any) => {
-                    return handleFailure(error, entry);
+                    return handleFailure(error, name);
                 });
         }, (error: any) => {
-            return handleFailure(error, entry);
+            return handleFailure(error, name);
         });
 }
 

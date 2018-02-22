@@ -4,15 +4,15 @@ const { fixturePath, readFixture, pretify } = require("./utils");
 describe("regression test", () => {
     it("#743 - Object rest spread throwing", async () => {
         const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
-        const expected = `define('/x/foo/foo.js', function () {
+        const expected = `define('x-foo', function () {
             const base = { foo: true };const res = Object.assign({}, base, { bar: false });
             });`;
 
         const { result } = await compile({
-            name: "/x/foo/foo.js",
+            name: "foo",
             namespace: "x",
             files: {
-                "/x/foo/foo.js": actual
+                "foo.js": actual
             }
         });
 

@@ -62,10 +62,7 @@ export async function compile(options: CompilerOptions) {
 
     // process bundle only
     if (!diagnosticCollector.hasError()) {
-        const bundleOuput = await bundle(
-            options.name,
-            options
-        );
+        const bundleOuput = await bundle(options);
 
         const { diagnostics, code, map, metadata } = bundleOuput;
         diagnosticCollector.addAll(diagnostics);
