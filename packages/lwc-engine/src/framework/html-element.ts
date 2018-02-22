@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
+import { getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -10,6 +10,23 @@ import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { isString } from "./language";
+
+interface IPropertyDescriptorsMap {
+    [propName: string]: PropertyDescriptor;
+}
+
+const htmlElementGetters: IPropertyDescriptorsMap = {
+    title: getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!,
+    tabIndex: getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!,
+    accessKey: getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!,
+    id: getOwnPropertyDescriptor(Element.prototype, 'id')!,
+    contentEditable: getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!,
+    dir: getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!,
+    draggable: getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!,
+    hidden: getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!,
+    lang: getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!,
+    role: getOwnPropertyDescriptor(HTMLElement.prototype, 'role')!,
+}
 
 const {
     getAttribute,
