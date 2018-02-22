@@ -1,25 +1,48 @@
+import { readFile } from "fs";
+
 /* eslint-env node, jest */
 
 const { compile } = require("../index");
 const { fixturePath, readFixture, pretify } = require("./utils");
 
+
+const CLASS_AND_TEMPLATE_CONFIG = {
+    outputConfig: {
+        env: {},
+        minify: false,
+        compat: false,
+        format: "amd"
+    },
+    name: "class_and_template",
+    namespace: "x",
+    files: {
+        "class_and_template.js": readFixture(
+            "class_and_template/class_and_template.js"
+        ),
+        "class_and_template.html": readFixture(
+            "class_and_template/class_and_template.html"
+        )
+    }
+};
+
+const NODE_ENV_CONFIG = {
+    name: 'node_env',
+    namespace: 'x',
+    files: {
+        'node_env.js': readFixture("node_env/node_env.js"),
+        'node_env.html': readFixture("node_env/node_env.html"),
+    },
+    outputConfig: { format: 'es' }
+};
+
 describe("validate options", () => {
     it("should validate entry type", async () => {
         expect.assertions(1);
         try {
-            await compile();
-        } catch (error) {
-            expect(error.message).toBe("Expected a string for entry. Received instead undefined");
-        }
-    });
-
-    it("should validate mode", async () => {
-        expect.assertions(1);
-        try {
-            await compile("/x/foo/foo.js", { mode: "foo"});
+            await compile({});
         } catch (error) {
             expect(error.message).toBe(
-                "Expected a mode in dev, prod, compat, prod_compat. Received instead foo"
+                "Expected a string for entry. Received instead undefined"
             );
         }
     });
@@ -27,206 +50,58 @@ describe("validate options", () => {
     it("should validate sources option format", async () => {
         expect.assertions(1);
         try {
-            await compile("/x/foo/foo.js", {
-                sources: {
+            const result = await compile({
+                name: "foo",
+                namespace: "x",
+
+                files: {
                     "/x/foo/foo.js": true
                 }
             });
         } catch (error) {
             expect(error.message).toBe(
                 "in-memory module resolution expects values to be string. Received true for key /x/foo/foo.js"
-            )
+            );
         }
     });
 });
 
-describe('stylesheet', () => {
-    it('should import the associated stylesheet by default', async () => {
-        const { code } = await compile(
-            fixturePath('namespaced_folder/styled/styled.js'),
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-styled.js')),
-        );
-    });
-
-    it('should import compress css in prod mode', async () => {
-        const { code } = await compile(
-            fixturePath('namespaced_folder/styled/styled.js'),
-            {
-                mode: 'prod'
-            }
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture('expected-styled-prod.js')),
-        );
-    });
-});
-
-describe("component name and namespace override", () => {
-    it("should be able to override module name", async () => {
-        const { code } = await compile("/x/foo/foo.js", {
-            componentName: "bar",
-            format: "amd",
-            mode: "prod",
-            sources: {
-                "/x/foo/foo.js": `console.log('foo')`
-            }
+describe("stylesheet", () => {
+    it("should import the associated stylesheet by default", async () => {
+        const { result: { code } } = await compile({
+            name: 'styled',
+            namespace: 'x',
+            files: {
+                "styled.js": readFixture("namespaced_folder/styled/styled.js"),
+                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
+                "styled.css": readFixture("namespaced_folder/styled/styled.css")
+            },
+            outputConfig: { format: 'es' },
         });
-
-        expect(pretify(code)).toBe(
-            pretify(`define('x-bar',function(){console.log('foo')});`)
-        );
+        expect(pretify(code)).toBe(pretify(readFixture("expected-styled.js")));
     });
 
-    it("should be able to override module namespace", async () => {
-        const { code } = await compile("/x/foo/foo.js", {
-            componentNamespace: "bar",
-            format: "amd",
-            mode: "prod",
-            sources: {
-                "/x/foo/foo.js": `console.log('foo')`
-            }
+    it("should import compress css in prod mode", async () => {
+        const { result: { code } } = await compile({
+            name: 'styled',
+            namespace: 'x',
+            files: {
+                "styled.js": readFixture("namespaced_folder/styled/styled.js"),
+                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
+                "styled.css": readFixture("namespaced_folder/styled/styled.css")
+            },
+            outputConfig: { format: 'es', minify: true },
         });
-
-        expect(pretify(code)).toBe(
-            pretify(`define('bar-foo',function(){console.log('foo')});`)
-        );
+        expect(pretify(code)).toBe(pretify(readFixture("expected-styled-prod.js")));
     });
 });
 
-describe("compile from file system", () => {
-    it("compiles module with no option and default namespace", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("namespaced_folder/default/default.js")
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(
-                readFixture(
-                    "expected-compile-with-no-options-and-default-namespace.js"
-                )
-            )
-        );
-
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
-    });
-
-    it("compiles with namespace mapping", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("namespaced_folder/ns1/cmp1/cmp1.js")
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-mapping-namespace-from-path.js"))
-        );
-
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
-    });
-});
-
-describe("compile from in-memory", () => {
-    it("compiles to ESModule by deafult", async () => {
-        const { code, metadata } = await compile("/x/foo/foo.js", {
-            mapNamespaceFromPath: true,
-            sources: {
-                "/x/foo/foo.js": readFixture(
-                    "class_and_template/class_and_template.js"
-                ),
-                "/x/foo/foo.html": readFixture(
-                    "class_and_template/class_and_template.html"
-                )
-            }
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-sources-namespaced.js"))
-        );
-
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
-    });
-
-    it("respects the output format", async () => {
-        const { code, metadata } = await compile("/x/foo/foo.js", {
-            format: "amd",
-            mapNamespaceFromPath: true,
-            sources: {
-                "/x/foo/foo.js": readFixture(
-                    "class_and_template/class_and_template.js"
-                ),
-                "/x/foo/foo.html": readFixture(
-                    "class_and_template/class_and_template.html"
-                )
-            }
-        });
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-sources-namespaced-format.js"))
-        );
-
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
-    });
-
-    it("respects the output format", async () => {
-        const { code, metadata } = await compile(
-            "myns/relative_import/relative_import.js",
-            {
-                format: "amd",
-                mapNamespaceFromPath: true,
-                sources: {
-                    "myns/relative_import/relative_import.html": readFixture(
-                        "relative_import/relative_import.html"
-                    ),
-                    "myns/relative_import/relative_import.js": readFixture(
-                        "relative_import/relative_import.js"
-                    ),
-                    "myns/relative_import/relative.js": readFixture(
-                        "relative_import/relative.js"
-                    ),
-                    "myns/relative_import/other/relative2.js": readFixture(
-                        "relative_import/other/relative2.js"
-                    ),
-                    "myns/relative_import/other/relative3.js": readFixture(
-                        "relative_import/other/relative3.js"
-                    )
-                }
-            }
-        );
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-relative-import.js"))
-        );
-
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
-    });
-});
-
+// TODO: all 3 cases: validation used to have x-class_and_template instead of class_and_template;
+// is this correct since we removed normalized module name, or is our namespace not working properly?
 describe("mode generation", () => {
     it("handles prod mode", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("class_and_template/class_and_template.js"),
-            {
-                format: "amd",
-                mode: "prod"
-            }
-        );
+        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: {minify: true}}};
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-prod-mode.js"))
@@ -239,13 +114,8 @@ describe("mode generation", () => {
     });
 
     it("handles compat mode", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("class_and_template/class_and_template.js"),
-            {
-                format: "amd",
-                mode: "compat"
-            }
-        );
+        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: { compat: true }}};
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-compat-mode.js"))
@@ -258,13 +128,8 @@ describe("mode generation", () => {
     });
 
     it("handles prod-compat mode", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("class_and_template/class_and_template.js"),
-            {
-                format: "amd",
-                mode: "prod_compat"
-            }
-        );
+        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: { compat: true, minify: true }}};
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-prod_compat-mode.js"))
@@ -275,51 +140,13 @@ describe("mode generation", () => {
             references: [{ name: "engine", type: "module" }]
         });
     });
-
-    // WE ARE NOT GOING TO SUPPORT 'ALL' MODE
-    // it('handles all modes', async () => {
-    //     const res = await compile(
-    //         fixturePath('class_and_template/class_and_template.js'),
-    //         {
-    //             format: 'amd',
-    //             mode: 'all',
-    //         },
-    //     );
-
-    //     expect(Object.keys(res)).toEqual([
-    //         'dev',
-    //         'prod',
-    //         'compat',
-    //         'prod_compat',
-    //     ]);
-
-    //     for (let mode of Object.keys(res)) {
-    //         const { code, metadata } = res[mode];
-
-    //         expect(pretify(code)).toBe(
-    //             pretify(readFixture(`expected-${mode}-mode.js`)),
-    //         );
-
-    //         expect(metadata).toEqual({
-    //             decorators: [],
-    //             references: [
-    //                 { name: 'engine', type: 'module' }
-    //             ]
-    //         });
-    //     }
-    // });
 });
 
 describe("node env", function() {
     it("does not remove production code when no NODE_ENV option is specified", async () => {
         const previous = process.env.NODE_ENV;
         process.env.NODE_ENV = undefined;
-        const { code, metadata } = await compile(
-            fixturePath("node_env/node_env.js"),
-            {
-                mode: "dev"
-            }
-        );
+        const { result: { code }} = await compile(NODE_ENV_CONFIG);
         process.env.NODE_ENV = previous;
 
         expect(pretify(code)).toBe(
@@ -330,12 +157,7 @@ describe("node env", function() {
     it("does removes production code when process.env.NODE_ENV is production", async () => {
         const previous = process.env.NODE_ENV;
         process.env.NODE_ENV = "production";
-        const { code, metadata } = await compile(
-            fixturePath("node_env/node_env.js"),
-            {
-                mode: "dev"
-            }
-        );
+        const { result: { code, metadata }} = await compile(NODE_ENV_CONFIG);
         process.env.NODE_ENV = previous;
 
         expect(pretify(code)).toBe(
@@ -344,15 +166,8 @@ describe("node env", function() {
     });
 
     it("removes production code when NODE_ENV option is production", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("node_env/node_env.js"),
-            {
-                mode: "dev",
-                env: {
-                    NODE_ENV: "production"
-                }
-            }
-        );
+        const config = {...NODE_ENV_CONFIG, ...{ outputConfig: { format: 'es', env: { NODE_ENV: 'production'}}}};
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-node-env-prod.js"))
@@ -360,15 +175,8 @@ describe("node env", function() {
     });
 
     it("does not remove production code when in NODE_ENV option is development", async () => {
-        const { code, metadata } = await compile(
-            fixturePath("node_env/node_env.js"),
-            {
-                mode: "dev",
-                env: {
-                    NODE_ENV: "development"
-                }
-            }
-        );
+        const config = {...NODE_ENV_CONFIG, ...{ outputConfig: { format: 'es', env: { NODE_ENV: 'development'}}}};
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-node-env-dev.js"))
@@ -378,12 +186,14 @@ describe("node env", function() {
 
 describe("metadata output", () => {
     it("decorators and references", async () => {
-        const { code, metadata } = await compile("/x/foo/foo.js", {
-            mapNamespaceFromPath: true,
-            sources: {
-                "/x/foo/foo.js": readFixture("metadata/metadata.js"),
-                "/x/foo/foo.html": readFixture("metadata/metadata.html")
-            }
+        const { result: { code, metadata }} = await compile({
+            name: 'foo',
+            namespace: 'x',
+            files: {
+                "foo.js": readFixture("metadata/metadata.js"),
+                "foo.html": readFixture("metadata/metadata.html")
+            },
+            outputConfig: { format: 'es' },
         });
 
         expect(pretify(code)).toBe(

@@ -1,10 +1,12 @@
 const { compile } = require("../index");
 const { fixturePath, readFixture, pretify } = require("./utils");
 
-describe("resgression test", () => {
+describe("regression test", () => {
     it("#743 - Object rest spread throwing", async () => {
         const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
-        const expected = `const base = { foo: true };const res = Object.assign({}, base, { bar: false });`;
+        const expected = `define('/x/foo/foo.js', function () {
+            const base = { foo: true };const res = Object.assign({}, base, { bar: false });
+            });`;
 
         const { result } = await compile({
             name: "/x/foo/foo.js",
@@ -24,8 +26,9 @@ describe("smoke test for babel transform", () => {
                 name: 'babel',
                 namespace: 'x',
                 files: {
-                    'babel.js': fixturePath("namespaced_folder/babel/babel.js")
-                }
+                    'babel.js': readFixture("namespaced_folder/babel/babel.js")
+                },
+                outputConfig: { format: 'es' }
             }
         );
 
@@ -33,14 +36,19 @@ describe("smoke test for babel transform", () => {
     });
 
     it("should transpile back to es5 in compat mode", async () => {
-        const { code } = await compile(
-            fixturePath("namespaced_folder/babel/babel.js"),
-            {
-                mode: "compat"
+        const { result } = await compile({
+            name: 'babel',
+            namespace: 'x',
+            files: {
+                'babel.js': readFixture("namespaced_folder/babel/babel.js")
+            },
+            outputConfig: {
+                compat: true,
+                format: 'es',
             }
-        );
+        });
 
-        expect(pretify(code)).toBe(
+        expect(pretify(result.code)).toBe(
             pretify(readFixture("expected-babel-compat.js"))
         );
     });

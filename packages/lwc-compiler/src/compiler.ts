@@ -44,7 +44,9 @@ export async function compile(options: CompilerOptions) {
             `Expected an object with files to be compiled`
         );
     }
-    const { name } = options;
+
+    // TODO: should this be a controlled error? Currently it throws.
+    validateFilesFormat(options.files);
 
     const compilationOutput: CompilerOutput = {
         diagnostics: [],
@@ -61,7 +63,7 @@ export async function compile(options: CompilerOptions) {
     // process bundle only
     if (!diagnosticCollector.hasError()) {
         const bundleOuput = await bundle(
-            name,
+            options.name,
             options
         );
 
@@ -79,6 +81,19 @@ export async function compile(options: CompilerOptions) {
     compilationOutput.success = !diagnosticCollector.hasError();
 
     return compilationOutput;
+}
+
+function validateFilesFormat(files: [{filename: string}]) {
+    for (let key of Object.keys(files)) {
+        if (files[key] == undefined || typeof files[key] !== 'string') {
+            console.log("")
+            throw new Error(
+                `in-memory module resolution expects values to be string. Received ${files[
+                    key
+                ]} for key ${key}`
+            );
+        }
+    }
 }
 
 export const version = "__VERSION__";

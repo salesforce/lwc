@@ -29,9 +29,8 @@ export function transform(src, id, options) {
 }
 
 export function transformBundle(src, options) {
-    const mode = options.mode;
 
-    if (isProd(mode)) {
+    if (isProd(options)) {
         const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
         const rollupMinify = minifyPlugin(options);
         const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
