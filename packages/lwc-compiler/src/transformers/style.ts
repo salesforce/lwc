@@ -3,6 +3,7 @@ import * as cssnano from 'cssnano';
 import postcssPluginRaptor from 'postcss-plugin-lwc';
 
 import { isProd } from '../modes';
+import { CompilerOptions } from '../options';
 
 const TOKEN_PLACEHOLDER = '__TOKEN__';
 const TAG_NAME_PLACEHOLDER = '__TAG_NAME__';
@@ -12,7 +13,7 @@ const style = undefined;
 export default style;
 `
 
-function generateScopedStyle(src) {
+function generateScopedStyle(src: string) {
     src = src
         .replace(new RegExp(TOKEN_PLACEHOLDER, 'g'), '${token}')
         .replace(new RegExp(TAG_NAME_PLACEHOLDER, 'g'), '${tagName}');
@@ -37,7 +38,7 @@ function generateScopedStyle(src) {
  *
  *      export default undefined;
  */
-export default function transformStyle(src, options) {
+export default function transformStyle(src: string, options: CompilerOptions) {
     const { outputConfig } = options;
     const plugins = [
         postcssPluginRaptor({

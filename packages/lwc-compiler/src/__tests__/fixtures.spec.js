@@ -36,18 +36,40 @@ const NODE_ENV_CONFIG = {
 };
 
 describe("validate options", () => {
-    it("should validate entry type", async () => {
+    it("should validate presence of options", async () => {
+        expect.assertions(1);
+        try {
+            await compile();
+        } catch (error) {
+            expect(error.message).toBe(
+                'Expected options object, received "undefined".'
+            );
+        }
+    });
+
+    it("should validate bundle name option", async () => {
         expect.assertions(1);
         try {
             await compile({});
         } catch (error) {
             expect(error.message).toBe(
-                "Expected a string for entry. Received instead undefined"
+                'Expected a string for name, received "undefined".'
             );
         }
     });
 
-    it("should validate sources option format", async () => {
+    it("should validate bundle namespace option", async () => {
+        expect.assertions(1);
+        try {
+            await compile({ name: 'foo' });
+        } catch (error) {
+            expect(error.message).toBe(
+                'Expected a string for namespace, received "undefined".'
+            );
+        }
+    });
+
+    it("should validate file content", async () => {
         expect.assertions(1);
         try {
             const result = await compile({
@@ -55,19 +77,55 @@ describe("validate options", () => {
                 namespace: "x",
 
                 files: {
-                    "/x/foo/foo.js": true
+                    "foo.js": true
                 }
             });
         } catch (error) {
             expect(error.message).toBe(
-                "in-memory module resolution expects values to be string. Received true for key /x/foo/foo.js"
+                "Unexpected file content for \"foo.js\". Expected a string, received \"true\"."
+            );
+        }
+    });
+
+    it("should validate outputConfig.minify", async () => {
+        expect.assertions(1);
+        try {
+            await compile({
+                name: 'foo',
+                namespace: 'x',
+                files: {},
+                outputConfig: {
+                    minify: 'true'
+                }
+            });
+        } catch (error) {
+            expect(error.message).toBe(
+                'Expected a boolean for outputConfig.minify, received "true".'
+            );
+        }
+    });
+
+    it("should validate outputConfig.compat", async () => {
+        expect.assertions(1);
+        try {
+            await compile({
+                name: 'foo',
+                namespace: 'x',
+                files: {},
+                outputConfig: {
+                    compat: 'true'
+                }
+            });
+        } catch (error) {
+            expect(error.message).toBe(
+                'Expected a boolean for outputConfig.compat, received "true".'
             );
         }
     });
 });
 
 describe("stylesheet", () => {
-    it("should import the associated stylesheet by default", async () => {
+    it.only("should import the associated stylesheet by default", async () => {
         const { result: { code }} = await compile({
             name: 'styled',
             namespace: 'x',

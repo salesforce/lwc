@@ -1,6 +1,6 @@
 {
   "name": "babel-helpers-lwc",
-  "version": "0.17.16",
+  "version": "0.18.0-beta.f1c88f03",
   "main": "dist/engine-helpers.js",
   "description": "Babel helpers + regenerator + other utils for LWC",
   "license": "MIT",

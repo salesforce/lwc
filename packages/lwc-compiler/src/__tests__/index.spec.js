@@ -13,15 +13,6 @@ isTrue();
 `.trim();
 
 describe('compile', () => {
-    it('should validate entry type', async () => {
-        expect.assertions(1);
-        try {
-            await compile({})
-        } catch (error){
-            expect(error.message).toBe('Expected a string for entry. Received instead undefined');
-        }
-    });
-
     it('should validate sources option format', async () => {
         expect.assertions(1);
         const result = await compile({

@@ -1,4 +1,6 @@
 import { transform } from 'babel-core';
+//import { CompilerOptions } from '../compiler';
+
 import * as raptorCompatTransformPlugin from 'babel-plugin-transform-proxy-compat';
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_COMPAT } from '../babel-plugins';

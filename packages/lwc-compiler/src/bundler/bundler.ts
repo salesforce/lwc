@@ -10,7 +10,7 @@ import rollupModuleResolver from '../rollup-plugins/module-resolver';
 import rollupTransfrom from '../rollup-plugins/transform';
 import rollupCompat from '../rollup-plugins/compat';
 import rollupMinify from '../rollup-plugins/minify';
-import { CompilerOptions } from '../compiler';
+import { CompilerOptions } from '../options';
 
 const DEFAULT_FORMAT = 'amd';
 const resolveProxyCompat = {

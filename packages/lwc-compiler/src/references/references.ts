@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import { CompilerOptions } from '../compiler';
+import { CompilerOptions } from '../options';
 import { getReferences as getCssReferences } from './css';
 import { getReferences as getHtmlReferences } from './html';
 import { getReferences as getJsReferences } from './javascript';

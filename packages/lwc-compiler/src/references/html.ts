@@ -1,4 +1,4 @@
-import { Reference, ReferenceReport } from './types';
+import { BundleReference, ReferenceReport } from './types';
 import { SAXParser } from 'parse5';
 import { DiagnosticLevel, Diagnostic } from '../diagnostics/diagnostic';
 
@@ -9,13 +9,13 @@ function isCustomElement(name: string) {
 export function getReferences(source: string, filename: string): ReferenceReport {
     const parser = new SAXParser({ locationInfo: true });
     const result: ReferenceReport = { references: [], diagnostics: [] };
-    const stack: Reference[] = [];
+    const stack: BundleReference[] = [];
 
     parser.on('startTag', (name, attrs, selfClosing, location) => {
         if (!isCustomElement(name)) {
             return result;
         }
-        const startTagRef: Reference = {
+        const startTagRef: BundleReference = {
             id: name,
             type: 'component',
             file: filename,

@@ -1,9 +1,10 @@
 import * as path from 'path';
+import { CompilerOptions } from '../options';
 import compile from 'lwc-template-compiler';
 
-export function getTemplateToken(filename, options) {
-    const templateId = path.basename(filename, path.extname(filename));
-    return `${options.namespace}-${options.name}_${templateId}`;
+export function getTemplateToken(name: string, namespace: string) {
+    const templateId = path.basename(name, path.extname(name));
+    return `${namespace}-${name}_${templateId}`;
 }
 
 /**
@@ -11,8 +12,8 @@ export function getTemplateToken(filename, options) {
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
  */
-export default function(src, options) {
-    const { name, namespace, outputConfig } = options;
+export default function(src: string, options: CompilerOptions) {
+    const { name, namespace } = options;
     const { code: template, metadata, warnings } = compile(src, {});
 
     const fatalError = warnings.find(warning => warning.level === 'error');
@@ -21,7 +22,7 @@ export default function(src, options) {
     }
 
 
-    const token = getTemplateToken(name, options);
+    const token = getTemplateToken(name, namespace);
     const cssName = path.basename(name, path.extname(name)) + '.css';
 
     const code = [

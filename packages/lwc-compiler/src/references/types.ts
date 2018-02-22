@@ -5,13 +5,13 @@ export interface ReferenceLocation {
     start: number;
     length: number;
 }
-export interface Reference {
+export interface BundleReference {
     type: ReferenceType;
     id: string;
     file: string;
     locations: ReferenceLocation[];
 }
 export interface ReferenceReport {
-    references: Reference[];
+    references: BundleReference[];
     diagnostics: Diagnostic[];
 }

@@ -1,3 +1,5 @@
+import { OutputConfig } from './options';
+
 /** Available compilation modes */
 export const MODES = {
     DEV: "dev",
@@ -18,7 +20,7 @@ export const ALL_MODES = [
  * Returns true if the passed mode is a PROD mode
  * @param {object} options
  */
-export function isProd(options) {
+export function isProd(options: OutputConfig) {
     if (!options) {
         return false;
     }
@@ -30,7 +32,7 @@ export function isProd(options) {
  * @param {object} options
  */
 
-export function isCompat(options) {
+export function isCompat(options: OutputConfig) {
     if (!options) {
         return false;
     }

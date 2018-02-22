@@ -1,4 +1,4 @@
-import { Reference, ReferenceReport } from './types';
+import { BundleReference, ReferenceReport } from './types';
 
 import * as postcss from 'postcss';
 import { Rule } from 'postcss';
@@ -26,8 +26,8 @@ function getSelectorReferences(
     selector: string,
     filename: string,
     offset: number,
-): Reference[] {
-    const references: Reference[] = [];
+): BundleReference[] {
+    const references: BundleReference[] = [];
 
     const processor = postcssSelector();
     const root = processor.astSync(selector, { lossless: true });
