@@ -1392,7 +1392,7 @@ describe('html-element', () => {
             });
         });
 
-        describe.only('#dir', () => {
+        describe('#dir', () => {
             it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
@@ -1411,7 +1411,7 @@ describe('html-element', () => {
                 expect(element.dir).toBe('ltr');
             });
 
-            it('should call setter defined in component', () => {
+            it.only('should call setter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
                     set dir(value) {
@@ -1433,7 +1433,12 @@ describe('html-element', () => {
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.dir } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.dir
+                                }
+                            }, [])];
                         }
                     }
                 }
