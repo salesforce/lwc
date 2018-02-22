@@ -33,6 +33,7 @@ import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
+import { Component } from './component';
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -212,6 +213,21 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         }
     }
     return def;
+}
+
+function createAttributeGetter(name: string) {
+    const getter = createGetter(name);
+    return function (this: Component): any {
+        const value = getter.call(this);
+
+        if (process.env.NODE_ENV !== 'production') {
+            const { enumerated } = GlobalHTMLProperties[name];
+            if (enumerated && enumerated[value] !== true) {
+                assert.logWarning(`Incompatible return value for property ${name}. ${name} should return one of ${keys(enumerated).map((k) => { return `"${k}"`; }).join(', ')} but instead returned "${value}".`);
+            }
+        }
+        return value;
+    }
 }
 
 function createGetter(key: string) {
