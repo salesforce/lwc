@@ -1,8 +1,8 @@
 import { bundle } from "./bundler/bundler";
 import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
-import { BundleReference } from "./references/types";
-import { CompilerOptions, validateOptions } from './options';
+import { Reference } from "./references/references";
+import { CompilerOptions, validateOptions, normalizeOptions } from './options';
 
 export { default as templateCompiler } from "lwc-template-compiler";
 
@@ -16,7 +16,7 @@ export interface BundleResult {
     code: string;
     map: null;
     metadata: BundleMetadata;
-    references: BundleReference[];
+    references: Reference[];
 }
 
 export interface BundleMetadata {
@@ -26,15 +26,16 @@ export interface BundleMetadata {
 
 export async function compile(options: CompilerOptions): Promise<CompilerOutput> {
     validateOptions(options);
+    const normalizedOptions = normalizeOptions(options);
 
     let result: BundleResult | undefined;
     const diagnostics: Diagnostic[] = [];
 
-    const bundleReport = getBundleReferences(options);
+    const bundleReport = getBundleReferences(normalizedOptions);
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const bundleOutput = await bundle(options);
+        const bundleOutput = await bundle(normalizedOptions);
         diagnostics.push(...bundleOutput.diagnostics);
 
         if (!hasError(diagnostics)) {

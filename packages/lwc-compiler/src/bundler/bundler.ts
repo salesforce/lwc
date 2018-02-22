@@ -52,6 +52,7 @@ export interface BundleReport {
 };
 
 export function bundle(options: CompilerOptions) {
+
     const { outputConfig, name, namespace } = options;
     const env = outputConfig && outputConfig.env;
     const format = (outputConfig && outputConfig.format) || DEFAULT_FORMAT;

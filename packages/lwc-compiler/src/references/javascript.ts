@@ -1,8 +1,10 @@
-import { ReferenceReport } from './types';
 import traverse, { NodePath } from 'babel-traverse';
 import * as t from 'babel-types';
 import { parse } from 'babylon';
+
 import { Diagnostic, DiagnosticLevel } from '../diagnostics/diagnostic';
+import { ReferenceReport } from './references';
+import { isUndefined } from '../utils';
 
 const APEX_PREFIX = '@apex';
 const LABEL_PREFIX = '@label';
@@ -47,14 +49,12 @@ function assertOnlyDefaultImport(
     let diagnostics: Diagnostic[] = [];
 
     if (hasNamedImport) {
-        // TODO: convert into diagnostic
         const { value } = path.node.source;
         diagnostics.push({
             message: error,
             level: DiagnosticLevel.Fatal,
             filename: value,
         });
-        //throw new Error(error);
     }
     return diagnostics;
 }
@@ -69,7 +69,6 @@ function getResourceReferences(
     );
     const sourceDiagnostics = assertGvpSource(path);
 
-    // collect diagnostics
     const diagnostics = [
         ...defaultDiagnostics,
         ...sourceDiagnostics
@@ -124,7 +123,6 @@ function getLabelReferences(
     if (diagnostics.length > 0) {
         return result;
     }
-
 
     const id = getGvpId(path);
     const { source } = path.node;
@@ -198,26 +196,20 @@ function sfdcReferencesVisitor(result: ReferenceReport, filename: string) {
                 importReferences = getApexReferences(path, filename);
             }
 
-            // TODO: check if this is healthy
-            if (importReferences === undefined) {
-                return;
-            } else {
+            if (!isUndefined(importReferences)) {
+                const { references, diagnostics } = importReferences;
 
-            }
-
-            const { references, diagnostics } = importReferences;
-
-            // don't add references if we have errors
-            if (diagnostics && diagnostics.length) {
-                result.diagnostics.push(...diagnostics);
-            } else {
-                result.references.push(...references);
+                // don't add references if we have errors
+                if (diagnostics && diagnostics.length) {
+                    result.diagnostics.push(...diagnostics);
+                } else {
+                    result.references.push(...references);
+                }
             }
         },
     };
 }
 
-// TODO: return type
 export function getReferences(source: string, filename: string): ReferenceReport {
     const ast = parse(source, {
         sourceFilename: filename,

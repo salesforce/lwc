@@ -2,8 +2,14 @@ import { isBoolean, isString, isUndefined } from "./utils";
 
 export interface OutputConfig {
     env?: { [name: string]: string };
-    minify?: boolean;
     compat?: boolean;
+    minify?: boolean;
+}
+
+export interface NormalizedOutputConfig extends OutputConfig {
+    env: { [name: string]: string };
+    compat: boolean;
+    minify: boolean;
 }
 
 export interface BundleFiles {
@@ -15,6 +21,16 @@ export interface CompilerOptions {
     namespace: string;
     files: BundleFiles;
     outputConfig?: OutputConfig;
+}
+
+export interface NormalizedCompilerOptions extends CompilerOptions {
+    outputConfig: NormalizedOutputConfig,
+}
+
+const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
+    env: {},
+    minify: false,
+    compat: false,
 }
 
 export function validateOptions(options: CompilerOptions) {
@@ -68,4 +84,16 @@ function validateOutputConfig(config: OutputConfig) {
             `Expected a boolean for outputConfig.compat, received "${config.compat}".`
         );
     }
+}
+
+export function normalizeOptions(options: CompilerOptions): NormalizedCompilerOptions {
+    const outputConfig = {
+        ...DEFAULT_OUTPUT_CONFIG,
+        ...options.outputConfig
+    };
+
+    return {
+        ...options,
+        outputConfig,
+    };
 }

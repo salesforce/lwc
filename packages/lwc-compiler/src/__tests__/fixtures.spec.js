@@ -125,7 +125,7 @@ describe("validate options", () => {
 });
 
 describe("stylesheet", () => {
-    it.only("should import the associated stylesheet by default", async () => {
+    it("should import the associated stylesheet by default", async () => {
         const { result: { code }} = await compile({
             name: 'styled',
             namespace: 'x',
