@@ -5,7 +5,6 @@ import { readFile } from "fs";
 const { compile } = require("../index");
 const { fixturePath, readFixture, pretify } = require("./utils");
 
-
 const CLASS_AND_TEMPLATE_CONFIG = {
     outputConfig: {
         env: {},
@@ -26,13 +25,13 @@ const CLASS_AND_TEMPLATE_CONFIG = {
 };
 
 const NODE_ENV_CONFIG = {
-    name: 'node_env',
-    namespace: 'x',
+    name: "node_env",
+    namespace: "x",
     files: {
-        'node_env.js': readFixture("node_env/node_env.js"),
-        'node_env.html': readFixture("node_env/node_env.html"),
+        "node_env.js": readFixture("node_env/node_env.js"),
+        "node_env.html": readFixture("node_env/node_env.html")
     },
-    outputConfig: { format: 'es' }
+    outputConfig: { format: "es" }
 };
 
 describe("validate options", () => {
@@ -61,7 +60,7 @@ describe("validate options", () => {
     it("should validate bundle namespace option", async () => {
         expect.assertions(1);
         try {
-            await compile({ name: 'foo' });
+            await compile({ name: "foo" });
         } catch (error) {
             expect(error.message).toBe(
                 'Expected a string for namespace, received "undefined".'
@@ -82,7 +81,7 @@ describe("validate options", () => {
             });
         } catch (error) {
             expect(error.message).toBe(
-                "Unexpected file content for \"foo.js\". Expected a string, received \"true\"."
+                'Unexpected file content for "foo.js". Expected a string, received "true".'
             );
         }
     });
@@ -91,11 +90,11 @@ describe("validate options", () => {
         expect.assertions(1);
         try {
             await compile({
-                name: 'foo',
-                namespace: 'x',
+                name: "foo",
+                namespace: "x",
                 files: {},
                 outputConfig: {
-                    minify: 'true'
+                    minify: "true"
                 }
             });
         } catch (error) {
@@ -109,11 +108,11 @@ describe("validate options", () => {
         expect.assertions(1);
         try {
             await compile({
-                name: 'foo',
-                namespace: 'x',
+                name: "foo",
+                namespace: "x",
                 files: {},
                 outputConfig: {
-                    compat: 'true'
+                    compat: "true"
                 }
             });
         } catch (error) {
@@ -126,31 +125,37 @@ describe("validate options", () => {
 
 describe("stylesheet", () => {
     it("should import the associated stylesheet by default", async () => {
-        const { result: { code }} = await compile({
-            name: 'styled',
-            namespace: 'x',
+        const { result: { code } } = await compile({
+            name: "styled",
+            namespace: "x",
             files: {
                 "styled.js": readFixture("namespaced_folder/styled/styled.js"),
-                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
+                "styled.html": readFixture(
+                    "namespaced_folder/styled/styled.html"
+                ),
                 "styled.css": readFixture("namespaced_folder/styled/styled.css")
             },
-            outputConfig: { format: 'es' },
+            outputConfig: { format: "es" }
         });
         expect(pretify(code)).toBe(pretify(readFixture("expected-styled.js")));
     });
 
     it("should import compress css in prod mode", async () => {
         const { result: { code } } = await compile({
-            name: 'styled',
-            namespace: 'x',
+            name: "styled",
+            namespace: "x",
             files: {
                 "styled.js": readFixture("namespaced_folder/styled/styled.js"),
-                "styled.html": readFixture("namespaced_folder/styled/styled.html"),
+                "styled.html": readFixture(
+                    "namespaced_folder/styled/styled.html"
+                ),
                 "styled.css": readFixture("namespaced_folder/styled/styled.css")
             },
-            outputConfig: { format: 'es', minify: true },
+            outputConfig: { format: "es", minify: true }
         });
-        expect(pretify(code)).toBe(pretify(readFixture("expected-styled-prod.js")));
+        expect(pretify(code)).toBe(
+            pretify(readFixture("expected-styled-prod.js"))
+        );
     });
 });
 
@@ -158,8 +163,11 @@ describe("stylesheet", () => {
 // is this correct since we removed normalized module name, or is our namespace not working properly?
 describe("mode generation", () => {
     it("handles prod mode", async () => {
-        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: {minify: true}}};
-        const { result: { code, metadata }} = await compile(config);
+        const config = {
+            ...CLASS_AND_TEMPLATE_CONFIG,
+            ...{ outputConfig: { minify: true } }
+        };
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-prod-mode.js"))
@@ -172,8 +180,11 @@ describe("mode generation", () => {
     });
 
     it("handles compat mode", async () => {
-        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: { compat: true }}};
-        const { result: { code, metadata }} = await compile(config);
+        const config = {
+            ...CLASS_AND_TEMPLATE_CONFIG,
+            ...{ outputConfig: { compat: true } }
+        };
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-compat-mode.js"))
@@ -186,8 +197,11 @@ describe("mode generation", () => {
     });
 
     it("handles prod-compat mode", async () => {
-        const config = {...CLASS_AND_TEMPLATE_CONFIG, ...{ outputConfig: { compat: true, minify: true }}};
-        const { result: { code, metadata }} = await compile(config);
+        const config = {
+            ...CLASS_AND_TEMPLATE_CONFIG,
+            ...{ outputConfig: { compat: true, minify: true } }
+        };
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-prod_compat-mode.js"))
@@ -201,31 +215,29 @@ describe("mode generation", () => {
 });
 
 describe("node env", function() {
-    it("does not remove production code when no NODE_ENV option is specified", async () => {
-        const previous = process.env.NODE_ENV;
-        process.env.NODE_ENV = undefined;
-        const { result: { code }} = await compile(NODE_ENV_CONFIG);
-        process.env.NODE_ENV = previous;
+    it('sets env.NODE_ENV to "development" by default', async () => {
+        const config = {
+            name: 'foo',
+            namespace: 'x',
+            files: {
+                'foo.js': 'export const env = process.env.NODE_ENV'
+            },
+            outputConfig: { format: "es" }
+        };
+        const { result: { code, metadata }} = await compile(config);
 
         expect(pretify(code)).toBe(
-            pretify(readFixture("expected-node-env-dev.js"))
+            'const env = "development";\nexport { env };',
         );
-    });
 
-    it("does removes production code when process.env.NODE_ENV is production", async () => {
-        const previous = process.env.NODE_ENV;
-        process.env.NODE_ENV = "production";
-        const { result: { code, metadata }} = await compile(NODE_ENV_CONFIG);
-        process.env.NODE_ENV = previous;
-
-        expect(pretify(code)).toBe(
-            pretify(readFixture("expected-node-env-prod.js"))
-        );
     });
 
     it("removes production code when NODE_ENV option is production", async () => {
-        const config = {...NODE_ENV_CONFIG, ...{ outputConfig: { format: 'es', env: { NODE_ENV: 'production'}}}};
-        const { result: { code, metadata }} = await compile(config);
+        const config = {
+            ...NODE_ENV_CONFIG,
+            outputConfig: { format: "es", env: { NODE_ENV: "production" } }
+        };
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-node-env-prod.js"))
@@ -233,8 +245,11 @@ describe("node env", function() {
     });
 
     it("does not remove production code when in NODE_ENV option is development", async () => {
-        const config = {...NODE_ENV_CONFIG, ...{ outputConfig: { format: 'es', env: { NODE_ENV: 'development'}}}};
-        const { result: { code, metadata }} = await compile(config);
+        const config = {
+            ...NODE_ENV_CONFIG,
+            outputConfig: { format: "es", env: { NODE_ENV: "development" } }
+        };
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-node-env-dev.js"))
@@ -244,14 +259,14 @@ describe("node env", function() {
 
 describe("metadata output", () => {
     it("decorators and references", async () => {
-        const { result: { code, metadata }} = await compile({
-            name: 'foo',
-            namespace: 'x',
+        const { result: { code, metadata } } = await compile({
+            name: "foo",
+            namespace: "x",
             files: {
                 "foo.js": readFixture("metadata/metadata.js"),
                 "foo.html": readFixture("metadata/metadata.html")
             },
-            outputConfig: { format: 'es' },
+            outputConfig: { format: "es" }
         });
 
         expect(pretify(code)).toBe(

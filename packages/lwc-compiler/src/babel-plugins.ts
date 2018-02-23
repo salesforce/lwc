@@ -34,6 +34,10 @@
 * };
 */
 
+
+// BABEL IMPORTS
+import * as babel from 'babel-core';
+
 // ES2015 support
 import * as constants from 'babel-plugin-check-es2015-constants';
 import * as arrowFunctions from 'babel-plugin-transform-es2015-arrow-functions';
@@ -72,12 +76,13 @@ const looseOpts = {
 };
 
 // Base babel configuration
-export const BABEL_CONFIG_BASE = {
+// TODO: Need to remove * on the parserOpts plugin - not advised by babel-core
+export const BABEL_CONFIG_BASE: babel.TransformOptions = ({
     babelrc: false,
     sourceMaps: true,
     parserOpts: { plugins: ['*'] },
     presets: [],
-};
+} as any) as babel.TransformOptions;
 
 // List of plugins applied to all the javascript modules
 export const BABEL_PLUGINS_BASE = [

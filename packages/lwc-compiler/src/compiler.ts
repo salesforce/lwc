@@ -1,4 +1,4 @@
-import { bundle } from "./bundler/bundler";
+import { bundle, BundleReport } from "./bundler/bundler";
 import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";
@@ -35,8 +35,9 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const bundleOutput = await bundle(normalizedOptions);
-        diagnostics.push(...bundleOutput.diagnostics);
+        const bundleOutput: BundleReport = await bundle(normalizedOptions);
+        const bundleDiagnostics: Diagnostic[] = bundleOutput.diagnostics || [];
+        diagnostics.push(...bundleDiagnostics);
 
         if (!hasError(diagnostics)) {
             result = {

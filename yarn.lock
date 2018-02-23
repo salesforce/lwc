@@ -160,18 +160,40 @@
     lodash "^4.17.4"
     url-template "^2.0.8"
 
+"@types/babel-core@^6.25.3":
+  version "6.25.3"
+  resolved "https://registry.npmjs.org/@types/babel-core/-/babel-core-6.25.3.tgz#c7fda09007375ae89942307917ed21ed309a1c2a"
+  dependencies:
+    "@types/babel-generator" "*"
+    "@types/babel-template" "*"
+    "@types/babel-traverse" "*"
+    "@types/babel-types" "*"
+    "@types/babylon" "*"
+
+"@types/babel-generator@*":
+  version "6.25.1"
+  resolved "https://registry.npmjs.org/@types/babel-generator/-/babel-generator-6.25.1.tgz#f86ab3cf132b04597fe6c431d3083aaf1b76b530"
+  dependencies:
+    "@types/babel-types" "*"
+
 "@types/babel-generator@^6.7.14":
   version "6.25.0"
   resolved "https://registry.npmjs.org/@types/babel-generator/-/babel-generator-6.25.0.tgz#8255469aa14712f0d1608b99683cabd5b413d96b"
   dependencies:
     "@types/babel-types" "*"
 
-"@types/babel-template@^6.7.14":
+"@types/babel-template@*", "@types/babel-template@^6.7.14":
   version "6.25.0"
   resolved "https://registry.npmjs.org/@types/babel-template/-/babel-template-6.25.0.tgz#2505d7b55b88f821d98048b4fdf07b3b22563d30"
   dependencies:
     "@types/babel-types" "*"
     "@types/babylon" "*"
+
+"@types/babel-traverse@*":
+  version "6.25.3"
+  resolved "https://registry.npmjs.org/@types/babel-traverse/-/babel-traverse-6.25.3.tgz#34dd69d1e469aee75e20ba00fbc52c7bc717b1c8"
+  dependencies:
+    "@types/babel-types" "*"
 
 "@types/babel-traverse@^6.7.16":
   version "6.25.2"

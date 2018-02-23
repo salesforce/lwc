@@ -7,9 +7,12 @@ export interface OutputConfig {
 }
 
 export interface NormalizedOutputConfig extends OutputConfig {
-    env: { [name: string]: string };
     compat: boolean;
     minify: boolean;
+    env: {
+        NODE_ENV: string;
+        [name: string]: string;
+    };
 }
 
 export interface BundleFiles {
@@ -24,20 +27,22 @@ export interface CompilerOptions {
 }
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
-    outputConfig: NormalizedOutputConfig,
+    outputConfig: NormalizedOutputConfig;
 }
 
-const DEFAULT_OUTPUT_CONFIG: NormalizedOutputConfig = {
+const DEFAULT_OUTPUT_CONFIG = {
     env: {},
     minify: false,
-    compat: false,
-}
+    compat: false
+};
+
+const DEFAULT_OUTPUT_CONFIG_ENV = {
+    NODE_ENV: "development"
+};
 
 export function validateOptions(options: CompilerOptions) {
     if (isUndefined(options)) {
-        throw new TypeError(
-            `Expected options object, received "${options}".`
-        );
+        throw new TypeError(`Expected options object, received "${options}".`);
     }
 
     if (!isString(options.name)) {
@@ -53,9 +58,7 @@ export function validateOptions(options: CompilerOptions) {
     }
 
     if (isUndefined(options.files)) {
-        throw new TypeError(
-            `Expected an object with files to be compiled.`
-        );
+        throw new TypeError(`Expected an object with files to be compiled.`);
     }
 
     for (let key of Object.keys(options.files)) {
@@ -75,25 +78,40 @@ export function validateOptions(options: CompilerOptions) {
 function validateOutputConfig(config: OutputConfig) {
     if (!isUndefined(config.minify) && !isBoolean(config.minify)) {
         throw new TypeError(
-            `Expected a boolean for outputConfig.minify, received "${config.minify}".`
+            `Expected a boolean for outputConfig.minify, received "${
+                config.minify
+            }".`
         );
     }
 
     if (!isUndefined(config.compat) && !isBoolean(config.compat)) {
         throw new TypeError(
-            `Expected a boolean for outputConfig.compat, received "${config.compat}".`
+            `Expected a boolean for outputConfig.compat, received "${
+                config.compat
+            }".`
         );
     }
 }
 
-export function normalizeOptions(options: CompilerOptions): NormalizedCompilerOptions {
-    const outputConfig = {
+export function normalizeOptions(
+    options: CompilerOptions
+): NormalizedCompilerOptions {
+    // merge incoming env value with default
+    const envConfig = options.outputConfig && options.outputConfig.env;
+    const normalizedEnvConfig = {
+        ...DEFAULT_OUTPUT_CONFIG_ENV,
+        ...envConfig,
+    };
+
+    // merge incoming outputConfig value with defaults and normalized values
+    const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
-        ...options.outputConfig
+        ...options.outputConfig,
+        env: normalizedEnvConfig,
     };
 
     return {
         ...options,
-        outputConfig,
+        outputConfig
     };
 }

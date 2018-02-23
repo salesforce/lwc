@@ -2,11 +2,11 @@ export interface Diagnostic {
     /** Level of the diagnostic */
     level: DiagnosticLevel;
 
-    /** Relative path location of the file in the bundle. */
-    filename: string;
-
     /** Error messages that should be outputed */
     message: string;
+
+    /** Relative path location of the file in the bundle. */
+    filename?: string;
 
     /**
      * Location in the code affected by the diagnostic.

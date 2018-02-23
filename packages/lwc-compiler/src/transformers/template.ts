@@ -1,6 +1,7 @@
 import * as path from 'path';
-import { CompilerOptions } from '../options';
+import { NormalizedCompilerOptions } from '../options';
 import compile from 'lwc-template-compiler';
+import { FileTransformer } from './transformer';
 
 export function getTemplateToken(name: string, namespace: string) {
     const templateId = path.basename(name, path.extname(name));
@@ -12,7 +13,8 @@ export function getTemplateToken(name: string, namespace: string) {
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
  */
-export default function(src: string, options: CompilerOptions) {
+
+ const transform: FileTransformer = function(src: string, filename: string, options: NormalizedCompilerOptions) {
     const { name, namespace } = options;
     const { code: template, metadata, warnings } = compile(src, {});
 
@@ -41,3 +43,5 @@ export default function(src: string, options: CompilerOptions) {
 
     return { code, metadata };
 }
+
+export default transform;

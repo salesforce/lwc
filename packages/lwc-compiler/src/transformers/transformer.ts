@@ -1,17 +1,29 @@
-import * as path from 'path';
-import { CompilerOptions } from '../options';
-import { isCompat } from '../modes';
+import * as path from "path";
+import { NormalizedCompilerOptions } from "../options";
 
-import styleTransform from './style';
-import templateTransformer from './template';
-import javascriptTransformer from './javascript';
+import styleTransform from "./style";
+import templateTransformer from "./template";
+import javascriptTransformer from "./javascript";
 import compatPluginFactory from "../rollup-plugins/compat";
 
-import { isString } from '../utils';
+import { isString, isUndefined } from "../utils";
 
+export interface FileTransformerResult {
+    code: string;
+    metadata?: any; // TODO: need type
+    map?: any;
+}
+export interface FileTransformer {
+    (source: string, filename: string, options: NormalizedCompilerOptions):
+        | FileTransformerResult
+        | Promise<FileTransformerResult>;
+}
 
-//
-export function transform(src: string, id: string, options: CompilerOptions) {
+export function transform(
+    src: string,
+    id: string,
+    options: NormalizedCompilerOptions
+) {
     if (!isString(src)) {
         throw new Error(`Expect a string for source. Received ${src}`);
     }
@@ -23,40 +35,38 @@ export function transform(src: string, id: string, options: CompilerOptions) {
     return transformFile(src, id, options);
 }
 
-/**
- * Returns the associted transformer for a specific file
- * @param {string} fileName
- */
-function getTransformer(fileName: string) {
+export function getTransformer(fileName: string): FileTransformer {
     switch (path.extname(fileName)) {
-        case '.html':
+        case ".html":
             return templateTransformer;
 
-        case '.css':
+        case ".css":
             return styleTransform;
 
-        case '.js':
-        case '.ts':
+        case ".js":
             return javascriptTransformer;
 
         default:
-            throw new Error(`No available transformer for ${fileName}`);
+            throw new TypeError(`No available transformer for "${fileName}"`);
     }
 }
 
-/**
- * Run approriate transformation for the passed source
- */
-async function transformFile(src: string, id: string, options: CompilerOptions) {
-    const mergedOptions = Object.assign({}, options, { filename: id });
-
+async function transformFile(
+    src: string,
+    id: string,
+    options: NormalizedCompilerOptions
+): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
-    // TODO??
-    const result = await Promise.resolve(transformer(src, mergedOptions));
+    const result = await transformer(src, id, options);
 
-    if (isCompat(mergedOptions.outputConfig)) {
-        const { transform } = compatPluginFactory({ resolveProxyCompat: undefined });
-        return transform(result.code);
+    if (options.outputConfig.compat) {
+        const { transform } = compatPluginFactory();
+        const { code } = transform(result.code);
+        if (isUndefined(code)) {
+            // TODO: write test for this case
+            throw new Error('babel transform failed to produce code in compat mode');
+        }
+        return { code };
     }
 
     return result;

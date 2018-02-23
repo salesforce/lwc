@@ -66,29 +66,4 @@ describe("compiler test", () => {
         expect(diagnostics[0].level).toBe(0); // fatal
         expect(result).toBeUndefined();
     });
-    test("diagnostics returns bundler specific error when format is misconfigured", async () => {
-        const refSources = {
-            files: {
-                "/x/foo/foo.js": `import resource from '@resource-url/foo';`
-            }
-        };
-        const config = {
-            ...HEALTHY_CONFIG,
-            ...refSources,
-            outputConfig: {
-                ...HEALTHY_CONFIG.outputConfig,
-                ...{ format: "bad" }
-            }
-        };
-
-        const output = await compile(config);
-        const { result, diagnostics, success } = output;
-        expect(result).toBeUndefined();
-        expect(success).toBe(false);
-        expect(diagnostics.length).toBe(1);
-        expect(
-            diagnostics[0].message ===
-                "Invalid format: bad - valid options are amd, cjs, es, iife, umd"
-        ).toBe(true);
-    });
 });

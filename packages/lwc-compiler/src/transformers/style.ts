@@ -1,29 +1,29 @@
-import * as postcss from 'postcss';
-import * as cssnano from 'cssnano';
-import postcssPluginRaptor from 'postcss-plugin-lwc';
+import * as postcss from "postcss";
+import * as cssnano from "cssnano";
+import postcssPluginRaptor from "postcss-plugin-lwc";
 
-import { isProd } from '../modes';
-import { CompilerOptions } from '../options';
+import { NormalizedCompilerOptions } from "../options";
+import { FileTransformerResult } from "./transformer";
 
-const TOKEN_PLACEHOLDER = '__TOKEN__';
-const TAG_NAME_PLACEHOLDER = '__TAG_NAME__';
+const TOKEN_PLACEHOLDER = "__TOKEN__";
+const TAG_NAME_PLACEHOLDER = "__TAG_NAME__";
 
 const EMPTY_CSS_OUTPUT = `
 const style = undefined;
 export default style;
-`
+`;
 
 function generateScopedStyle(src: string) {
     src = src
-        .replace(new RegExp(TOKEN_PLACEHOLDER, 'g'), '${token}')
-        .replace(new RegExp(TAG_NAME_PLACEHOLDER, 'g'), '${tagName}');
+        .replace(new RegExp(TOKEN_PLACEHOLDER, "g"), "${token}")
+        .replace(new RegExp(TAG_NAME_PLACEHOLDER, "g"), "${tagName}");
 
     return [
-        'function style(tagName, token) {',
-        '   return `' + src + '`;',
-        '}',
-        'export default style;'
-    ].join('\n');
+        "function style(tagName, token) {",
+        "   return `" + src + "`;",
+        "}",
+        "export default style;"
+    ].join("\n");
 }
 
 /**
@@ -38,21 +38,24 @@ function generateScopedStyle(src: string) {
  *
  *      export default undefined;
  */
-export default function transformStyle(src: string, options: CompilerOptions) {
-    const { outputConfig } = options;
+export default function transformStyle(
+    src: string,
+    filename: string,
+    { outputConfig }: NormalizedCompilerOptions
+): Promise<FileTransformerResult> {
     const plugins = [
         postcssPluginRaptor({
             token: TOKEN_PLACEHOLDER,
-            tagName: TAG_NAME_PLACEHOLDER,
-        }),
+            tagName: TAG_NAME_PLACEHOLDER
+        })
     ];
 
-    if (isProd(outputConfig)) {
+    if (outputConfig && outputConfig.minify) {
         plugins.push(
             cssnano({
                 svgo: false,
-                preset: ['default'],
-            }),
+                preset: ["default"]
+            })
         );
     }
 
@@ -66,7 +69,7 @@ export default function transformStyle(src: string, options: CompilerOptions) {
 
             return {
                 code,
-                metadata: {},
+                metadata: {}
             };
         });
 }
