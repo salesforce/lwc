@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
+import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -10,6 +10,8 @@ import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { isString } from "./language";
+import { getReactiveProxy, isObservable } from "./reactive";
+import { observeMutation, notifyMutation } from "./watcher";
 
 interface IPropertyDescriptorsMap {
     [propName: string]: PropertyDescriptor;
@@ -26,6 +28,54 @@ const htmlElementGetters: IPropertyDescriptorsMap = {
     hidden: getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!,
     lang: getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!,
     role: getOwnPropertyDescriptor(HTMLElement.prototype, 'role')!,
+}
+
+function reactiveAttribteGet(cmp: any, propName: string) {
+    const vm: VM = cmp[ViewModelReflection];
+    const elm = getLinkedElement(cmp);
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    if (isRendering) {
+        // this is needed because the proxy used by template is not sufficient
+        // for public props accessed from within a getter in the component.
+        observeMutation(cmp, propName);
+    }
+
+    const propDescriptor = htmlElementGetters[propName];
+    if (propDescriptor) {
+        return propDescriptor.get!.call(elm);
+    }
+}
+
+function reactiveAttributeSet(cmp: any, attributeName: string, propName: string, newValue: any) {
+    const vm = cmp[ViewModelReflection];
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
+        assert.isFalse(isBeingConstructed(vm), `Failed to construct '${cmp}': The result must not have attributes.`);
+    }
+
+    const observable = isObservable(newValue);
+    newValue = observable ? getReactiveProxy(newValue) : newValue;
+
+    if (newValue !== vm.cmpTrack[propName]) {
+        if (process.env.NODE_ENV !== 'production') {
+            if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+            }
+        }
+        vm.cmpTrack[propName] = newValue;
+        if (vm.idx > 0) {
+            // perf optimization to skip this step if not in the DOM
+            notifyMutation(cmp, attributeName);
+        }
+    }
+    const elm = getLinkedElement(cmp);
+    const propDescriptor = htmlElementGetters[propName];
+    if (propDescriptor) {
+        propDescriptor.set!.call(elm, newValue);
+    }
 }
 
 const {
@@ -277,6 +327,15 @@ class LWCElement implements Component {
         const { tagName } = elm;
         const is = getAttribute.call(elm, 'is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
+    }
+
+    // Global HTML Props
+    get dir() {
+        return reactiveAttribteGet(this, 'dir');
+    }
+
+    set dir(newValue) {
+        reactiveAttributeSet(this, 'dir', 'dir', newValue);
     }
 }
 

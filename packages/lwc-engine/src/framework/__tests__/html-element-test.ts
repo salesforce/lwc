@@ -1392,8 +1392,8 @@ describe('html-element', () => {
             });
         });
 
-        describe('#dir', () => {
-            it.only('should reflect attribute by default', () => {
+        describe.only('#dir', () => {
+            it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
                 }
@@ -1464,7 +1464,7 @@ describe('html-element', () => {
                 expect(count).toBe(1);
             });
 
-            it('should warn if dir getter returns non-enumerated value', () => {
+            it.only('should warn if dir getter returns non-enumerated value', () => {
                 jest.spyOn(assertLogger, 'logWarning');
                 class MyComponent extends Element {
                     get dir() {
