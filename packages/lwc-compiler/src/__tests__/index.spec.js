@@ -27,8 +27,7 @@ describe('compile', () => {
     });
 });
 
-// TODO: normalize options
-describe.skip('transform', () => {
+describe('transform', () => {
     it('should validate presence of src', () => {
         expect(() => transform()).toThrow(
             /Expect a string for source. Received undefined/,
@@ -61,6 +60,7 @@ describe.skip('transform', () => {
         const { code } = await transform(actual, 'foo.js', {
             namespace: 'x',
             name: 'foo',
+            outputConfig: {},
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -98,6 +98,7 @@ describe.skip('transform', () => {
         const { code } = await transform(actual, 'foo.html', {
             namespace: 'x',
             name: 'foo',
+            outputConfig: {},
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -124,6 +125,7 @@ describe.skip('transform', () => {
         const { code } = await transform(actual, 'foo.css', {
             namespace: 'x',
             name: 'foo',
+            outputConfig: {},
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -149,6 +151,7 @@ describe.skip('transform', () => {
         const result = await transform(content, 'foo.js', {
             namespace: 'x',
             name: 'foo',
+            outputConfig: {},
         });
         const metadata = result.metadata;
         expect(metadata.decorators).toEqual([

@@ -13,7 +13,7 @@ import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
 
 export interface BundleReport {
-    code: string;
+    code?: string;
     diagnostics: Diagnostic[];
     map?: null;
     metadata?: any;

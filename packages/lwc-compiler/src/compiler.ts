@@ -39,7 +39,7 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
         const bundleDiagnostics: Diagnostic[] = bundleOutput.diagnostics || [];
         diagnostics.push(...bundleDiagnostics);
 
-        if (!hasError(diagnostics)) {
+        if (!hasError(diagnostics) && bundleOutput.code) {
             result = {
                 code: bundleOutput.code,
                 map: null,
