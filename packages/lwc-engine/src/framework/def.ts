@@ -217,7 +217,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
 function createAttributeGetter(name: string) {
     const getter = createGetter(name);
-    return function (this: Component): any {
+    return function (this: VMElement): any {
         const value = getter.call(this);
 
         if (process.env.NODE_ENV !== 'production') {
@@ -387,6 +387,12 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
         removeAttributeNS: {
             value: removeAttributeNSPatched,
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+        },
+
+        // Global HTML Attributes
+        dir: {
+            get: createAttributeGetter('dir'),
+            set: createSetter('dir'),
         },
     };
     // expose getters and setters for each public props on the Element

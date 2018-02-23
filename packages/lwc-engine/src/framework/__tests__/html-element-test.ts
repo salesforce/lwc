@@ -1393,7 +1393,7 @@ describe('html-element', () => {
         });
 
         describe('#dir', () => {
-            it('should reflect attribute by default', () => {
+            it.only('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
                 }
@@ -1411,7 +1411,7 @@ describe('html-element', () => {
                 expect(element.dir).toBe('ltr');
             });
 
-            it.only('should call setter defined in component', () => {
+            it('should call setter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
                     set dir(value) {
