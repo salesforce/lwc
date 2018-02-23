@@ -25,6 +25,7 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
+    keys,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";

@@ -80,6 +80,12 @@ export const GlobalHTMLProperties = {
     contentEditable: {
         attribute: 'contenteditable',
         reflective: true,
+        enumerated: {
+            'true': true,
+            'false': true,
+            '': true,
+            'inherit': true,
+        },
     },
     isContentEditable: {
         readOnly: true,
@@ -94,6 +100,11 @@ export const GlobalHTMLProperties = {
     dir: {
         attribute: 'dir',
         reflective: true,
+        enumerated: {
+            '': true,
+            'ltr': true,
+            'rtl': true
+        },
     },
     draggable: {
         attribute: 'draggable',
