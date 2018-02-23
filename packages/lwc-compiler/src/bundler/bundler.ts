@@ -8,12 +8,11 @@ import rollupTransform from "../rollup-plugins/transform";
 import rollupCompat from "../rollup-plugins/compat";
 import rollupMinify from "../rollup-plugins/minify";
 
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions, validateNomralizedOptions } from "../options";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
-
 export interface BundleReport {
-    code?: string;
+    code: string;
     diagnostics: Diagnostic[];
     map?: null;
     metadata?: any;
@@ -32,7 +31,6 @@ interface RollupWarning {
 
 const DEFAULT_FORMAT = "amd";
 
-// TODO: type
 function mergeMetadata(metadata: any) {
     const dependencies = new Map(
         (metadata.rollupDependencies || []).map((d: any) => [d, "module"])
@@ -55,8 +53,6 @@ function mergeMetadata(metadata: any) {
     };
 }
 
-
-
 function handleRollupWarning(diagnostics: Diagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
         diagnostics.push({
@@ -67,7 +63,11 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
     };
 }
 
-export async function bundle(options: NormalizedCompilerOptions): Promise<BundleReport> {
+export async function bundle(
+    options: NormalizedCompilerOptions
+): Promise<BundleReport> {
+    validateNomralizedOptions(options);
+
     const { outputConfig, name, namespace, files } = options;
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
@@ -80,7 +80,7 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         }),
         rollupModuleResolver({
             moduleResolver: inMemoryModuleResolver(files),
-            $metadata
+            $metadata,
         }),
         rollupTransform({ $metadata, options })
     ];
@@ -93,35 +93,24 @@ export async function bundle(options: NormalizedCompilerOptions): Promise<Bundle
         plugins.push(rollupMinify());
     }
 
-    try {
-        const bundle = await rollup({
-            input: name,
-            plugins: plugins,
-            onwarn: handleRollupWarning(diagnostics),
-        });
+    const bundle = await rollup({
+        input: name,
+        plugins: plugins,
+        onwarn: handleRollupWarning(diagnostics)
+    });
 
-        const { code } = await bundle.generate({
-            amd: { id: namespace + "-" + name },
-            interop: false,
-            strict: false,
-            format
-        });
+    const { code } = await bundle.generate({
+        amd: { id: namespace + "-" + name },
+        interop: false,
+        strict: false,
+        format
+    });
 
-        return {
-            code: code,
-            map: null,
-            metadata: mergeMetadata($metadata),
-            rawMetadata: $metadata,
-            diagnostics
-        };
-    } catch (error) {
-        const diagnostic = {
-            level: DiagnosticLevel.Fatal,
-            message: error.message
-        };
-        diagnostics.push(diagnostic);
-        // TODO: catch the result, check for code existence - if not present then we have a fatal
-        //
-        return { diagnostics };
-    }
+    return {
+        code,
+        map: null,
+        metadata: mergeMetadata($metadata),
+        rawMetadata: $metadata,
+        diagnostics
+    };
 }

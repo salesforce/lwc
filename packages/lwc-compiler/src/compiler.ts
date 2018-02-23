@@ -2,7 +2,7 @@ import { bundle, BundleReport } from "./bundler/bundler";
 import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";
-import { CompilerOptions, validateOptions, normalizeOptions } from './options';
+import { CompilerOptions, validateOptions, normalizeOptions } from "./options";
 
 export { default as templateCompiler } from "lwc-template-compiler";
 
@@ -15,16 +15,13 @@ export interface CompilerOutput {
 export interface BundleResult {
     code: string;
     map: null;
-    metadata: BundleMetadata;
+    metadata: any;
     references: Reference[];
 }
 
-export interface BundleMetadata {
-    references: any;
-    decorators: any;
-}
-
-export async function compile(options: CompilerOptions): Promise<CompilerOutput> {
+export async function compile(
+    options: CompilerOptions
+): Promise<CompilerOutput> {
     validateOptions(options);
     const normalizedOptions = normalizeOptions(options);
 
@@ -35,15 +32,18 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const bundleOutput: BundleReport = await bundle(normalizedOptions);
-        const bundleDiagnostics: Diagnostic[] = bundleOutput.diagnostics || [];
+        const { diagnostics, code, metadata }: BundleReport = await bundle(
+            normalizedOptions
+        );
+
+        const bundleDiagnostics: Diagnostic[] = diagnostics;
         diagnostics.push(...bundleDiagnostics);
 
-        if (!hasError(diagnostics) && bundleOutput.code) {
+        if (!hasError(diagnostics)) {
             result = {
-                code: bundleOutput.code,
+                code,
                 map: null,
-                metadata: bundleOutput.metadata,
+                metadata,
                 references: bundleReport.references
             };
         }
@@ -52,12 +52,12 @@ export async function compile(options: CompilerOptions): Promise<CompilerOutput>
     return {
         success: !hasError(diagnostics),
         diagnostics,
-        result,
-    }
+        result
+    };
 }
 
 function hasError(diagnostics: Diagnostic[]) {
     return diagnostics.some(d => {
-        return (d.level <= DiagnosticLevel.Error);
+        return d.level <= DiagnosticLevel.Error;
     });
 }

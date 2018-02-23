@@ -34,95 +34,6 @@ const NODE_ENV_CONFIG = {
     outputConfig: { format: "es" }
 };
 
-describe("validate options", () => {
-    it("should validate presence of options", async () => {
-        expect.assertions(1);
-        try {
-            await compile();
-        } catch (error) {
-            expect(error.message).toBe(
-                'Expected options object, received "undefined".'
-            );
-        }
-    });
-
-    it("should validate bundle name option", async () => {
-        expect.assertions(1);
-        try {
-            await compile({});
-        } catch (error) {
-            expect(error.message).toBe(
-                'Expected a string for name, received "undefined".'
-            );
-        }
-    });
-
-    it("should validate bundle namespace option", async () => {
-        expect.assertions(1);
-        try {
-            await compile({ name: "foo" });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Expected a string for namespace, received "undefined".'
-            );
-        }
-    });
-
-    it("should validate file content", async () => {
-        expect.assertions(1);
-        try {
-            const result = await compile({
-                name: "foo",
-                namespace: "x",
-
-                files: {
-                    "foo.js": true
-                }
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Unexpected file content for "foo.js". Expected a string, received "true".'
-            );
-        }
-    });
-
-    it("should validate outputConfig.minify", async () => {
-        expect.assertions(1);
-        try {
-            await compile({
-                name: "foo",
-                namespace: "x",
-                files: {},
-                outputConfig: {
-                    minify: "true"
-                }
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Expected a boolean for outputConfig.minify, received "true".'
-            );
-        }
-    });
-
-    it("should validate outputConfig.compat", async () => {
-        expect.assertions(1);
-        try {
-            await compile({
-                name: "foo",
-                namespace: "x",
-                files: {},
-                outputConfig: {
-                    compat: "true"
-                }
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Expected a boolean for outputConfig.compat, received "true".'
-            );
-        }
-    });
-});
-
 describe("stylesheet", () => {
     it("should import the associated stylesheet by default", async () => {
         const { result: { code } } = await compile({
@@ -161,7 +72,7 @@ describe("stylesheet", () => {
 
 // TODO: all 3 cases: validation used to have x-class_and_template instead of class_and_template;
 // is this correct since we removed normalized module name, or is our namespace not working properly?
-describe("mode generation", () => {
+describe("compilation mode", () => {
     it("handles prod mode", async () => {
         const config = {
             ...CLASS_AND_TEMPLATE_CONFIG,

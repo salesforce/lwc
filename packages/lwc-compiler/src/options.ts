@@ -40,6 +40,11 @@ const DEFAULT_OUTPUT_CONFIG_ENV = {
     NODE_ENV: "development"
 };
 
+export function validateNomralizedOptions(options: NormalizedCompilerOptions) {
+    validateOptions(options);
+    validateOutputConfig(options.outputConfig);
+}
+
 export function validateOptions(options: CompilerOptions) {
     if (isUndefined(options)) {
         throw new TypeError(`Expected options object, received "${options}".`);
@@ -57,7 +62,7 @@ export function validateOptions(options: CompilerOptions) {
         );
     }
 
-    if (isUndefined(options.files)) {
+    if (isUndefined(options.files) || !Object.keys(options.files).length) {
         throw new TypeError(`Expected an object with files to be compiled.`);
     }
 
