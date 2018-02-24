@@ -270,7 +270,8 @@ function getAttributePatched(this: VMElement, attrName: string): string | null {
 
 function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
-
+    // marking the set is needed for the AOM polyfill
+    vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
@@ -290,7 +291,8 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
 
 function removeAttributePatched(this: VMElement, attrName: string) {
     const vm = getCustomElementVM(this);
-
+    // marking the set is needed for the AOM polyfill
+    vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);
