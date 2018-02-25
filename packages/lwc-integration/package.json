@@ -17,10 +17,10 @@
     "local:compat": "yarn build:compat && MODE=compat wdio ./scripts/wdio.conf.js",
     "local:prod_compat": "yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.conf.js",
     "sauce": "yarn sauce:prod",
-    "sauce:dev": "MODE=dev yarn build && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
-    "sauce:prod": "MODE=prod yarn build && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
-    "sauce:compat": "MODE=compat yarn build && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
-    "sauce:prod_compat": "MODE=prod_compat yarn build && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
+    "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:compat": "MODE=compat yarn build:compat && MODE=compat wdio ./scripts/wdio.sauce.conf.js",
+    "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
     "deepmerge": "^1.5.2",
