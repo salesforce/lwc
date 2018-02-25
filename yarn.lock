@@ -1066,10 +1066,6 @@ babel-helper-explode-assignable-expression@^6.24.1:
     babel-traverse "^6.24.1"
     babel-types "^6.24.1"
 
-babel-helper-flip-expressions@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-helper-flip-expressions/-/babel-helper-flip-expressions-0.3.0/f5b6394bd5219b43cf8f7b201535ed540c6e7fa2.tgz#f5b6394bd5219b43cf8f7b201535ed540c6e7fa2"
-
 babel-helper-function-name@^6.24.1:
   version "6.24.1"
   resolved "http://npm.lwcjs.org/babel-helper-function-name/-/babel-helper-function-name-6.24.1/d3475b8c03ed98242a25b48351ab18399d3580a9.tgz#d3475b8c03ed98242a25b48351ab18399d3580a9"
@@ -1098,14 +1094,6 @@ babel-helper-is-nodes-equiv@^0.0.1:
   version "0.0.1"
   resolved "http://npm.lwcjs.org/babel-helper-is-nodes-equiv/-/babel-helper-is-nodes-equiv-0.0.1/34e9b300b1479ddd98ec77ea0bbe9342dfe39684.tgz#34e9b300b1479ddd98ec77ea0bbe9342dfe39684"
 
-babel-helper-is-void-0@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-helper-is-void-0/-/babel-helper-is-void-0-0.3.0/95570d20bd27b2206f68083ae9980ee7003d8fe7.tgz#95570d20bd27b2206f68083ae9980ee7003d8fe7"
-
-babel-helper-mark-eval-scopes@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-helper-mark-eval-scopes/-/babel-helper-mark-eval-scopes-0.3.0/b4731314fdd7a89091271a5213b4e12d236e29e8.tgz#b4731314fdd7a89091271a5213b4e12d236e29e8"
-
 babel-helper-optimise-call-expression@^6.24.1:
   version "6.24.1"
   resolved "http://npm.lwcjs.org/babel-helper-optimise-call-expression/-/babel-helper-optimise-call-expression-6.24.1/f7a13427ba9f73f8f4fa993c54a97882d1244257.tgz#f7a13427ba9f73f8f4fa993c54a97882d1244257"
@@ -1131,10 +1119,6 @@ babel-helper-remap-async-to-generator@^6.24.1:
     babel-traverse "^6.24.1"
     babel-types "^6.24.1"
 
-babel-helper-remove-or-void@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-helper-remove-or-void/-/babel-helper-remove-or-void-0.3.0/f43c86147c8fcc395a9528cbb31e7ff49d7e16e3.tgz#f43c86147c8fcc395a9528cbb31e7ff49d7e16e3"
-
 babel-helper-replace-supers@^6.24.1:
   version "6.24.1"
   resolved "http://npm.lwcjs.org/babel-helper-replace-supers/-/babel-helper-replace-supers-6.24.1/bf6dbfe43938d17369a213ca8a8bf74b6a90ab1a.tgz#bf6dbfe43938d17369a213ca8a8bf74b6a90ab1a"
@@ -1145,10 +1129,6 @@ babel-helper-replace-supers@^6.24.1:
     babel-template "^6.24.1"
     babel-traverse "^6.24.1"
     babel-types "^6.24.1"
-
-babel-helper-to-multiple-sequence-expressions@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-helper-to-multiple-sequence-expressions/-/babel-helper-to-multiple-sequence-expressions-0.3.0/8da2275ccc26995566118f7213abfd9af7214427.tgz#8da2275ccc26995566118f7213abfd9af7214427"
 
 babel-helpers@^6.24.1:
   version "6.24.1"
@@ -1187,71 +1167,6 @@ babel-plugin-istanbul@^4.1.4, babel-plugin-istanbul@^4.1.5:
 babel-plugin-jest-hoist@^22.4.1:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.1/d712fe5da8b6965f3191dacddbefdbdf4fb66d63.tgz#d712fe5da8b6965f3191dacddbefdbdf4fb66d63"
-
-babel-plugin-minify-builtins@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-builtins/-/babel-plugin-minify-builtins-0.3.0/4740117a6a784063aaf8f092989cf9e4bd484860.tgz#4740117a6a784063aaf8f092989cf9e4bd484860"
-  dependencies:
-    babel-helper-evaluate-path "^0.3.0"
-
-babel-plugin-minify-constant-folding@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-constant-folding/-/babel-plugin-minify-constant-folding-0.3.0/687e40336bd4ddd921e0e197f0006235ac184bb9.tgz#687e40336bd4ddd921e0e197f0006235ac184bb9"
-  dependencies:
-    babel-helper-evaluate-path "^0.3.0"
-
-babel-plugin-minify-dead-code-elimination@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-dead-code-elimination/-/babel-plugin-minify-dead-code-elimination-0.3.0/a323f686c404b824186ba5583cf7996cac81719e.tgz#a323f686c404b824186ba5583cf7996cac81719e"
-  dependencies:
-    babel-helper-evaluate-path "^0.3.0"
-    babel-helper-mark-eval-scopes "^0.3.0"
-    babel-helper-remove-or-void "^0.3.0"
-    lodash.some "^4.6.0"
-
-babel-plugin-minify-flip-comparisons@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-flip-comparisons/-/babel-plugin-minify-flip-comparisons-0.3.0/6627893a409c9f30ef7f2c89e0c6eea7ee97ddc4.tgz#6627893a409c9f30ef7f2c89e0c6eea7ee97ddc4"
-  dependencies:
-    babel-helper-is-void-0 "^0.3.0"
-
-babel-plugin-minify-guarded-expressions@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-guarded-expressions/-/babel-plugin-minify-guarded-expressions-0.3.0/2552d96189ef45d9a463f1a6b5e4fa110703ac8d.tgz#2552d96189ef45d9a463f1a6b5e4fa110703ac8d"
-  dependencies:
-    babel-helper-flip-expressions "^0.3.0"
-
-babel-plugin-minify-infinity@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-infinity/-/babel-plugin-minify-infinity-0.3.0/c5ec0edd433517cf31b3af17077c202beb48bbe7.tgz#c5ec0edd433517cf31b3af17077c202beb48bbe7"
-
-babel-plugin-minify-mangle-names@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-mangle-names/-/babel-plugin-minify-mangle-names-0.3.0/f28561bad0dd2f0380816816bb946e219b3b6135.tgz#f28561bad0dd2f0380816816bb946e219b3b6135"
-  dependencies:
-    babel-helper-mark-eval-scopes "^0.3.0"
-
-babel-plugin-minify-numeric-literals@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-numeric-literals/-/babel-plugin-minify-numeric-literals-0.3.0/b57734a612e8a592005407323c321119f27d4b40.tgz#b57734a612e8a592005407323c321119f27d4b40"
-
-babel-plugin-minify-replace@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.3.0/980125bbf7cbb5a637439de9d0b1b030a4693893.tgz#980125bbf7cbb5a637439de9d0b1b030a4693893"
-
-babel-plugin-minify-simplify@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-simplify/-/babel-plugin-minify-simplify-0.3.0/14574cc74d21c81d3060fafa041010028189f11b.tgz#14574cc74d21c81d3060fafa041010028189f11b"
-  dependencies:
-    babel-helper-flip-expressions "^0.3.0"
-    babel-helper-is-nodes-equiv "^0.0.1"
-    babel-helper-to-multiple-sequence-expressions "^0.3.0"
-
-babel-plugin-minify-type-constructors@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-minify-type-constructors/-/babel-plugin-minify-type-constructors-0.3.0/7f5a86ef322c4746364e3c591b8514eeafea6ad4.tgz#7f5a86ef322c4746364e3c591b8514eeafea6ad4"
-  dependencies:
-    babel-helper-is-void-0 "^0.3.0"
 
 babel-plugin-syntax-async-functions@^6.8.0:
   version "6.13.0"
@@ -1453,55 +1368,11 @@ babel-plugin-transform-exponentiation-operator@^6.22.0:
     babel-plugin-syntax-exponentiation-operator "^6.8.0"
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-inline-consecutive-adds@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.3.0/f07d93689c0002ed2b2b62969bdd99f734e03f57.tgz#f07d93689c0002ed2b2b62969bdd99f734e03f57"
-
-babel-plugin-transform-member-expression-literals@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-member-expression-literals/-/babel-plugin-transform-member-expression-literals-6.9.0/ab07ad52a11ff7d2528c71388e8f901a4499c2b2.tgz#ab07ad52a11ff7d2528c71388e8f901a4499c2b2"
-
-babel-plugin-transform-merge-sibling-variables@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-merge-sibling-variables/-/babel-plugin-transform-merge-sibling-variables-6.9.0/140017e305f8eb4f60d2f2db61154fbd71a9fcdd.tgz#140017e305f8eb4f60d2f2db61154fbd71a9fcdd"
-
-babel-plugin-transform-minify-booleans@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-minify-booleans/-/babel-plugin-transform-minify-booleans-6.9.0/e36ceaa49aadcae70ec98bd9dbccb660719a667a.tgz#e36ceaa49aadcae70ec98bd9dbccb660719a667a"
-
-babel-plugin-transform-property-literals@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-property-literals/-/babel-plugin-transform-property-literals-6.9.0/4ddc12ada888927eacab4daff8a535ebc5de5a61.tgz#4ddc12ada888927eacab4daff8a535ebc5de5a61"
-  dependencies:
-    esutils "^2.0.2"
-
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-regenerator/-/babel-plugin-transform-regenerator-6.26.0/e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f.tgz#e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f"
   dependencies:
     regenerator-transform "^0.10.0"
-
-babel-plugin-transform-regexp-constructors@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-regexp-constructors/-/babel-plugin-transform-regexp-constructors-0.3.0/9bb2c8dd082271a5cb1b3a441a7c52e8fd07e0f5.tgz#9bb2c8dd082271a5cb1b3a441a7c52e8fd07e0f5"
-
-babel-plugin-transform-remove-console@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-remove-console/-/babel-plugin-transform-remove-console-6.9.0/a7b671aab050dd30ef7cf2142b61a7d10efb327f.tgz#a7b671aab050dd30ef7cf2142b61a7d10efb327f"
-
-babel-plugin-transform-remove-debugger@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-remove-debugger/-/babel-plugin-transform-remove-debugger-6.9.0/b465e74b3fbe1970da561fb1331e30aefac3f1fe.tgz#b465e74b3fbe1970da561fb1331e30aefac3f1fe"
-
-babel-plugin-transform-remove-undefined@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-remove-undefined/-/babel-plugin-transform-remove-undefined-0.3.0/03f5f0071867781e9beabbc7b77bf8095fd3f3ec.tgz#03f5f0071867781e9beabbc7b77bf8095fd3f3ec"
-  dependencies:
-    babel-helper-evaluate-path "^0.3.0"
-
-babel-plugin-transform-simplify-comparison-operators@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-simplify-comparison-operators/-/babel-plugin-transform-simplify-comparison-operators-6.9.0/586252fea023cb13f2400a09c0ab178dc0844f0a.tgz#586252fea023cb13f2400a09c0ab178dc0844f0a"
 
 babel-plugin-transform-strict-mode@^6.24.1:
   version "6.24.1"
@@ -1509,10 +1380,6 @@ babel-plugin-transform-strict-mode@^6.24.1:
   dependencies:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
-
-babel-plugin-transform-undefined-to-void@^6.9.0:
-  version "6.9.0"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.9.0/eb5db0554caffe9ded0206468ec0c6c3b332b9d2.tgz#eb5db0554caffe9ded0206468ec0c6c3b332b9d2"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -1555,34 +1422,6 @@ babel-preset-jest@^22.0.1, babel-preset-jest@^22.1.0, babel-preset-jest@^22.4.1:
   dependencies:
     babel-plugin-jest-hoist "^22.4.1"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
-
-babel-preset-minify@~0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/babel-preset-minify/-/babel-preset-minify-0.3.0/7db64afa75f16f6e06c0aa5f25195f6f36784d77.tgz#7db64afa75f16f6e06c0aa5f25195f6f36784d77"
-  dependencies:
-    babel-plugin-minify-builtins "^0.3.0"
-    babel-plugin-minify-constant-folding "^0.3.0"
-    babel-plugin-minify-dead-code-elimination "^0.3.0"
-    babel-plugin-minify-flip-comparisons "^0.3.0"
-    babel-plugin-minify-guarded-expressions "^0.3.0"
-    babel-plugin-minify-infinity "^0.3.0"
-    babel-plugin-minify-mangle-names "^0.3.0"
-    babel-plugin-minify-numeric-literals "^0.3.0"
-    babel-plugin-minify-replace "^0.3.0"
-    babel-plugin-minify-simplify "^0.3.0"
-    babel-plugin-minify-type-constructors "^0.3.0"
-    babel-plugin-transform-inline-consecutive-adds "^0.3.0"
-    babel-plugin-transform-member-expression-literals "^6.9.0"
-    babel-plugin-transform-merge-sibling-variables "^6.9.0"
-    babel-plugin-transform-minify-booleans "^6.9.0"
-    babel-plugin-transform-property-literals "^6.9.0"
-    babel-plugin-transform-regexp-constructors "^0.3.0"
-    babel-plugin-transform-remove-console "^6.9.0"
-    babel-plugin-transform-remove-debugger "^6.9.0"
-    babel-plugin-transform-remove-undefined "^0.3.0"
-    babel-plugin-transform-simplify-comparison-operators "^6.9.0"
-    babel-plugin-transform-undefined-to-void "^6.9.0"
-    lodash.isplainobject "^4.0.6"
 
 babel-register@^6.26.0:
   version "6.26.0"
@@ -1635,6 +1474,171 @@ babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1, babel-types@^6.26
     esutils "^2.0.2"
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
+
+babel7-helper-evaluate-path@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-evaluate-path/-/babel7-helper-evaluate-path-7.0.2/ffbe7630551db87c050669c61f92d5f270e376b6.tgz#ffbe7630551db87c050669c61f92d5f270e376b6"
+
+babel7-helper-flip-expressions@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-flip-expressions/-/babel7-helper-flip-expressions-7.0.2/0aa8d3f406de913395a88b0bb53b8e3290702f5a.tgz#0aa8d3f406de913395a88b0bb53b8e3290702f5a"
+
+babel7-helper-is-void-0@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-is-void-0/-/babel7-helper-is-void-0-7.0.2/fd2f6a3fa4daee8624b0f48be86df4a7cafb1cdf.tgz#fd2f6a3fa4daee8624b0f48be86df4a7cafb1cdf"
+
+babel7-helper-mark-eval-scopes@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-mark-eval-scopes/-/babel7-helper-mark-eval-scopes-7.0.2/2356792426d8002fefea45852b6d902a872c7f9f.tgz#2356792426d8002fefea45852b6d902a872c7f9f"
+
+babel7-helper-remove-or-void@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-remove-or-void/-/babel7-helper-remove-or-void-7.0.2/403c44f778ea2cf9b5baec53234265c3fe21a938.tgz#403c44f778ea2cf9b5baec53234265c3fe21a938"
+
+babel7-helper-to-multiple-sequence-expressions@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-helper-to-multiple-sequence-expressions/-/babel7-helper-to-multiple-sequence-expressions-7.0.2/24e145d7ab1b54002c4947dd85ee0f58829e1374.tgz#24e145d7ab1b54002c4947dd85ee0f58829e1374"
+
+babel7-plugin-minify-builtins@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-builtins/-/babel7-plugin-minify-builtins-7.0.2/c48d09401d08ebb566951d919e23627f955804ac.tgz#c48d09401d08ebb566951d919e23627f955804ac"
+  dependencies:
+    babel-helper-evaluate-path "^0.3.0"
+
+babel7-plugin-minify-constant-folding@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-constant-folding/-/babel7-plugin-minify-constant-folding-7.0.2/0e4023938c2d4a9dd33c5f44dd6e2e1d9a127f30.tgz#0e4023938c2d4a9dd33c5f44dd6e2e1d9a127f30"
+  dependencies:
+    babel7-helper-evaluate-path "7.0.2"
+
+babel7-plugin-minify-dead-code-elimination@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-dead-code-elimination/-/babel7-plugin-minify-dead-code-elimination-7.0.2/69245fc9ec05a627a79eefe2d40be3811d5f067d.tgz#69245fc9ec05a627a79eefe2d40be3811d5f067d"
+  dependencies:
+    babel7-helper-evaluate-path "7.0.2"
+    babel7-helper-mark-eval-scopes "7.0.2"
+    babel7-helper-remove-or-void "7.0.2"
+    lodash.some "^4.6.0"
+
+babel7-plugin-minify-flip-comparisons@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-flip-comparisons/-/babel7-plugin-minify-flip-comparisons-7.0.2/c87c4fb0479706568db13fbd483ca55aa54c7c19.tgz#c87c4fb0479706568db13fbd483ca55aa54c7c19"
+  dependencies:
+    babel7-helper-is-void-0 "7.0.2"
+
+babel7-plugin-minify-guarded-expressions@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-guarded-expressions/-/babel7-plugin-minify-guarded-expressions-7.0.2/61531b9af6352dba9128131e3f07b22633148cc6.tgz#61531b9af6352dba9128131e3f07b22633148cc6"
+  dependencies:
+    babel7-helper-flip-expressions "7.0.2"
+
+babel7-plugin-minify-infinity@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-infinity/-/babel7-plugin-minify-infinity-7.0.2/9a130e55250f7ce28d121947d8d72fd25525cb5d.tgz#9a130e55250f7ce28d121947d8d72fd25525cb5d"
+
+babel7-plugin-minify-mangle-names@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-mangle-names/-/babel7-plugin-minify-mangle-names-7.0.2/44048ad8d624d32fe23c0c96f1ac88ab6a57ca9b.tgz#44048ad8d624d32fe23c0c96f1ac88ab6a57ca9b"
+  dependencies:
+    babel7-helper-mark-eval-scopes "7.0.2"
+
+babel7-plugin-minify-numeric-literals@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-numeric-literals/-/babel7-plugin-minify-numeric-literals-7.0.2/e35b57a600ae0bf25b90ea80acdd7a2a7f4742f9.tgz#e35b57a600ae0bf25b90ea80acdd7a2a7f4742f9"
+
+babel7-plugin-minify-replace@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-replace/-/babel7-plugin-minify-replace-7.0.2/03158d03ccf5ff609ca6e29e11d61c89d8d695eb.tgz#03158d03ccf5ff609ca6e29e11d61c89d8d695eb"
+
+babel7-plugin-minify-simplify@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-simplify/-/babel7-plugin-minify-simplify-7.0.2/01c84d899d9d740148d9abe8f9faf2f86e114379.tgz#01c84d899d9d740148d9abe8f9faf2f86e114379"
+  dependencies:
+    babel-helper-is-nodes-equiv "^0.0.1"
+    babel7-helper-flip-expressions "7.0.2"
+    babel7-helper-to-multiple-sequence-expressions "7.0.2"
+
+babel7-plugin-minify-type-constructors@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-minify-type-constructors/-/babel7-plugin-minify-type-constructors-7.0.2/ff229a18b663b2de67033a2cfcaddd160d6e991e.tgz#ff229a18b663b2de67033a2cfcaddd160d6e991e"
+  dependencies:
+    babel7-helper-is-void-0 "7.0.2"
+
+babel7-plugin-transform-inline-consecutive-adds@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-inline-consecutive-adds/-/babel7-plugin-transform-inline-consecutive-adds-7.0.2/382d6d1f40a4c75b4357e204dc397bc490dfe99c.tgz#382d6d1f40a4c75b4357e204dc397bc490dfe99c"
+
+babel7-plugin-transform-member-expression-literals@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-member-expression-literals/-/babel7-plugin-transform-member-expression-literals-7.0.2/44eb8830504935e6522bf473be3468a5b573a52e.tgz#44eb8830504935e6522bf473be3468a5b573a52e"
+
+babel7-plugin-transform-merge-sibling-variables@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-merge-sibling-variables/-/babel7-plugin-transform-merge-sibling-variables-7.0.2/73398051768096b78c928005b5548bf415886ee3.tgz#73398051768096b78c928005b5548bf415886ee3"
+
+babel7-plugin-transform-minify-booleans@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-minify-booleans/-/babel7-plugin-transform-minify-booleans-7.0.2/9aecb54b4addb47dc56f4a036b93403b4d68a514.tgz#9aecb54b4addb47dc56f4a036b93403b4d68a514"
+
+babel7-plugin-transform-property-literals@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-property-literals/-/babel7-plugin-transform-property-literals-7.0.2/d9a8ecc3f4ed7e8a7c213c833b9dafabef235be7.tgz#d9a8ecc3f4ed7e8a7c213c833b9dafabef235be7"
+  dependencies:
+    esutils "^2.0.2"
+
+babel7-plugin-transform-regexp-constructors@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-regexp-constructors/-/babel7-plugin-transform-regexp-constructors-7.0.2/1fe631c7d6fe96dc003479301a17ef9a8c50ecbb.tgz#1fe631c7d6fe96dc003479301a17ef9a8c50ecbb"
+
+babel7-plugin-transform-remove-console@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-remove-console/-/babel7-plugin-transform-remove-console-7.0.2/b49d2fa99c569be9da4ed8a81398afa6465d6945.tgz#b49d2fa99c569be9da4ed8a81398afa6465d6945"
+
+babel7-plugin-transform-remove-debugger@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-remove-debugger/-/babel7-plugin-transform-remove-debugger-7.0.2/acb2798ea773d39b528d577fcd56351163f87f69.tgz#acb2798ea773d39b528d577fcd56351163f87f69"
+
+babel7-plugin-transform-remove-undefined@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-remove-undefined/-/babel7-plugin-transform-remove-undefined-7.0.2/968a2303711239b2b125d6d3fd712a92945ff99a.tgz#968a2303711239b2b125d6d3fd712a92945ff99a"
+  dependencies:
+    babel7-helper-evaluate-path "7.0.2"
+
+babel7-plugin-transform-simplify-comparison-operators@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-simplify-comparison-operators/-/babel7-plugin-transform-simplify-comparison-operators-7.0.2/92b0444df2a9699d1e9556ced648536d088e8974.tgz#92b0444df2a9699d1e9556ced648536d088e8974"
+
+babel7-plugin-transform-undefined-to-void@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-plugin-transform-undefined-to-void/-/babel7-plugin-transform-undefined-to-void-7.0.2/2ce528d5484727929c9ebd71b8bf9c30e88434f6.tgz#2ce528d5484727929c9ebd71b8bf9c30e88434f6"
+
+babel7-preset-minify@7.0.2:
+  version "7.0.2"
+  resolved "http://npm.lwcjs.org/babel7-preset-minify/-/babel7-preset-minify-7.0.2/b0ee008cdb36235498203dd5fcf0862cce9af83d.tgz#b0ee008cdb36235498203dd5fcf0862cce9af83d"
+  dependencies:
+    babel7-plugin-minify-builtins "7.0.2"
+    babel7-plugin-minify-constant-folding "7.0.2"
+    babel7-plugin-minify-dead-code-elimination "7.0.2"
+    babel7-plugin-minify-flip-comparisons "7.0.2"
+    babel7-plugin-minify-guarded-expressions "7.0.2"
+    babel7-plugin-minify-infinity "7.0.2"
+    babel7-plugin-minify-mangle-names "7.0.2"
+    babel7-plugin-minify-numeric-literals "7.0.2"
+    babel7-plugin-minify-replace "7.0.2"
+    babel7-plugin-minify-simplify "7.0.2"
+    babel7-plugin-minify-type-constructors "7.0.2"
+    babel7-plugin-transform-inline-consecutive-adds "7.0.2"
+    babel7-plugin-transform-member-expression-literals "7.0.2"
+    babel7-plugin-transform-merge-sibling-variables "7.0.2"
+    babel7-plugin-transform-minify-booleans "7.0.2"
+    babel7-plugin-transform-property-literals "7.0.2"
+    babel7-plugin-transform-regexp-constructors "7.0.2"
+    babel7-plugin-transform-remove-console "7.0.2"
+    babel7-plugin-transform-remove-debugger "7.0.2"
+    babel7-plugin-transform-remove-undefined "7.0.2"
+    babel7-plugin-transform-simplify-comparison-operators "7.0.2"
+    babel7-plugin-transform-undefined-to-void "7.0.2"
+    lodash.isplainobject "^4.0.6"
 
 babylon@7.0.0-beta.40, babylon@^7.0.0-beta.40:
   version "7.0.0-beta.40"

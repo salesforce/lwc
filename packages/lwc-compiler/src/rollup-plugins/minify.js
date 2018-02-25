@@ -1,12 +1,10 @@
 import { transform } from 'babel-core';
-import * as minify from 'babel-preset-minify';
+import * as minify from 'babel7-preset-minify';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 
 export const MINIFY_CONFIG = Object.assign({}, BABEL_CONFIG_BASE, {
-    presets: [[minify, {
-        mangle: false // TEMPORARILY: https://github.com/babel/minify/issues/802
-    }]]
+    presets: [[minify, { guards: false, evaluate: false }]]
 });
 
 /**
