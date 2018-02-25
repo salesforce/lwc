@@ -74,17 +74,19 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
 
             // If we don't find the moduleId, just resolve the module name/namespace
             let registry = Object.values(modulePaths).find(r => id === r.entry) || getModuleQualifiedName(id, options);
-            return compiler.transform(code, id, {
-                mode: options.mode,
-                moduleName: registry.moduleName,
-                moduleNamespace: registry.moduleNamespace,
-                moduleSpecifier: registry.moduleSpecifier,
-                resolveProxyCompat: { global: 'window.Proxy' }
-            });
-        },
 
-        transformBundle(code) {
-            return compiler.transformBundle(code, { mode: options.mode });
-        }
+            const { mode } = options;
+
+            const config = {
+                outputConfig: {
+                    compat: !!(mode === 'compat'),
+                    minify: !!(mode === 'prod'),
+                },
+                name: registry.moduleName,
+                namespace: registry.moduleNamespace,
+                resolveProxyCompat: { global: 'window.Proxy' }
+            }
+            return compiler.transform(code, id, config);
+        },
     };
 };
