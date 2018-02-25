@@ -6,7 +6,7 @@
   "module": "dist/modules/es2017/wire-service.js",
   "scripts": {
     "lint": "eslint src playground",
-    "build": "yarn build:es-and-cjs",
+    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
     "build:all": "yarn build:es-and-cjs && yarn build:umd:prod && yarn build:umd:dev",
     "build:umd:dev": "rollup -c rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c rollup.config.umd.prod.js",
