@@ -110,9 +110,10 @@ if (!fs.existsSync(engineModeFile)) {
 }
 
 // copy static files
+fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
 fs.writeFileSync(path.join(testSharedOutput,'downgrade.js'), compatPolyfills.loadDowngrade());
 fs.writeFileSync(path.join(testSharedOutput,'polyfills.js'), compatPolyfills.loadPolyfills());
-fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
+
 fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire-service.js'));
 fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 
