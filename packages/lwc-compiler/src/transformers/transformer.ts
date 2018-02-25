@@ -31,7 +31,6 @@ export function transform(
     if (!isString(id)) {
         throw new Error(`Expect a string for id. Received ${id}`);
     }
-
     return transformFile(src, id, options);
 }
 
@@ -60,11 +59,15 @@ async function transformFile(
     const result = await transformer(src, id, options);
 
     if (options.outputConfig.compat) {
-        const { transform } = compatPluginFactory();
+        const { transform } = compatPluginFactory(
+            options.outputConfig.resolveProxyCompat
+        );
         const { code } = transform(result.code);
         if (isUndefined(code)) {
             // TODO: write test for this case
-            throw new Error('babel transform failed to produce code in compat mode');
+            throw new Error(
+                "babel transform failed to produce code in compat mode"
+            );
         }
         return { code };
     }

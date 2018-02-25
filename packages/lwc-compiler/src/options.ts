@@ -4,6 +4,13 @@ export interface OutputConfig {
     env?: { [name: string]: string };
     compat?: boolean;
     minify?: boolean;
+    resolveProxyCompat?: OutputProxyCompatConfig;
+}
+
+export interface OutputProxyCompatConfig {
+    global?: string,
+    module?: string,
+    independent?: string,
 }
 
 export interface NormalizedOutputConfig extends OutputConfig {
@@ -40,7 +47,7 @@ const DEFAULT_OUTPUT_CONFIG_ENV = {
     NODE_ENV: "development"
 };
 
-export function validateNomralizedOptions(options: NormalizedCompilerOptions) {
+export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
     validateOptions(options);
     validateOutputConfig(options.outputConfig);
 }

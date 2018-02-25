@@ -8,7 +8,7 @@ import rollupTransform from "../rollup-plugins/transform";
 import rollupCompat from "../rollup-plugins/compat";
 import rollupMinify from "../rollup-plugins/minify";
 
-import { NormalizedCompilerOptions, validateNomralizedOptions } from "../options";
+import { NormalizedCompilerOptions, validateNormalizedOptions } from "../options";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
 export interface BundleReport {
@@ -66,7 +66,7 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
 export async function bundle(
     options: NormalizedCompilerOptions
 ): Promise<BundleReport> {
-    validateNomralizedOptions(options);
+    validateNormalizedOptions(options);
 
     const { outputConfig, name, namespace, files } = options;
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
@@ -86,7 +86,7 @@ export async function bundle(
     ];
 
     if (outputConfig.compat) {
-        plugins.push(rollupCompat());
+        plugins.push(rollupCompat(outputConfig.resolveProxyCompat));
     }
 
     if (outputConfig.minify) {
