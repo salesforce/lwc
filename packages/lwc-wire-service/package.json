@@ -29,7 +29,7 @@
     "lwc-jest-transformer": "0.17.15",
     "rollup": "~0.56.2",
     "rollup-plugin-lwc-compiler": "0.17.17",
-    "rollup-plugin-compat": "0.17.27",
+    "rollup-plugin-compat": "0.17.29",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "~3.3.6"

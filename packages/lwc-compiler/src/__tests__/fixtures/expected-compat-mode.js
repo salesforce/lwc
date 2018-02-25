@@ -1,4 +1,4 @@
-define('x-class_and_template', ['proxy-compat/getKey', 'proxy-compat/setKey', 'proxy-compat/callKey', '@babel/compat/helpers/classCallCheck', '@babel/compat/helpers/createClass', '@babel/compat/helpers/possibleConstructorReturn', '@babel/compat/helpers/inherits', 'engine'], function (__getKey, __setKey, __callKey, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
+define('x-class_and_template', ['proxy-compat/getKey', 'proxy-compat/setKey', 'proxy-compat/callKey', 'babel-compat/helpers/classCallCheck', 'babel-compat/helpers/createClass', 'babel-compat/helpers/possibleConstructorReturn', 'babel-compat/helpers/inherits', 'engine'], function (__getKey, __setKey, __callKey, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
 
 var style = undefined;
 

@@ -5,14 +5,23 @@ const rollup = require('rollup');
 const templates = require('../src/shared/templates.js');
 const rollupLwcCompilerPlugin = require('rollup-plugin-lwc-compiler');
 const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const babelPresetCompat = require('babel-preset-compat');
+const compatPolyfills = require('compat-polyfills');
 
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
+
+const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
+const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
+const todoPath = path.join(require.resolve('../src/shared/todo.js'));
+
 const testSufix = '.test.js';
 const testPrefix = 'test-';
+
 const functionalTestDir = path.join(__dirname, '../', 'src/components');
 const functionalTests = fs.readdirSync(functionalTestDir);
+
 const testOutput = path.join(__dirname, '../', 'public');
 const testSharedOutput = path.join(testOutput, 'shared');
 const testEntries = functionalTests.reduce((seed, functionalFolder) => {
@@ -42,12 +51,7 @@ function testCaseComponentResolverPlugin() {
 }
 
 function getTodoApp(testBundle) {
-    return isCompat ?
-        babel.transform(templates.todoApp(testBundle), {
-            presets: [ compatBrowsersPreset ],
-            plugins: [[compatPlugin, { resolveProxyCompat: { global: 'window.Proxy' } }]]}
-        ).code
-        : templates.todoApp(testBundle);
+    return templates.todoApp(testBundle);
 }
 
 function entryPointResolverPlugin() {
@@ -70,6 +74,8 @@ function entryPointResolverPlugin() {
 // -- Rollup config ---------------------------------------------
 
 const globalModules = {
+    'compat-polyfills/downgrade': 'window',
+    'compat-polyfills/polyfills': 'window',
     'engine': 'Engine',
     'wire-service': 'WireService',
     'todo': 'Todo'
@@ -77,9 +83,7 @@ const globalModules = {
 
 const baseInputConfig = {
     external: function (id) {
-        if (id.includes('engine') || id.includes('wire-service') || id.includes('todo')) {
-            return true;
-        }
+        return id in globalModules
     },
     plugins: [
         entryPointResolverPlugin(),
@@ -91,7 +95,7 @@ const baseInputConfig = {
             ignoreFolderName: true,
             allowUnnamespaced: true
         }),
-        isCompat && rollupCompatPlugin({ downgrade: true }),
+        isCompat && rollupCompatPlugin({ downgrade: true, polyfills: true }),
         testCaseComponentResolverPlugin(),
     ].filter(Boolean)
 };
@@ -100,16 +104,14 @@ const baseOutputConfig = { format: 'iife', globals: globalModules };
 
 // -- Build shared artifacts -----------------------------------------------------
 
-const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
-const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
-const todoPath = path.join(require.resolve('../src/shared/todo.js'));
-
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile
         + ".\nGenerate artifacts from the top-level Raptor project first");
 }
 
 // copy static files
+fs.writeFileSync(path.join(testSharedOutput,'downgrade.js'), compatPolyfills.loadDowngrade());
+fs.writeFileSync(path.join(testSharedOutput,'polyfills.js'), compatPolyfills.loadPolyfills());
 fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
 fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire-service.js'));
 fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));

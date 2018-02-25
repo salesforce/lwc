@@ -2,17 +2,17 @@ import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey from 'proxy-compat/callKey';
 import __getKey from 'proxy-compat/getKey';
 import __setKey from 'proxy-compat/setKey';
-import _regeneratorRuntime from '@babel/compat/regenerator';
-import _asyncToGenerator from '@babel/compat/helpers/asyncToGenerator';
-import _createClass from '@babel/compat/helpers/createClass';
-import _typeof from '@babel/compat/helpers/typeof';
-import _taggedTemplateLiteral from '@babel/compat/helpers/taggedTemplateLiteral';
-import _toConsumableArray from '@babel/compat/helpers/toConsumableArray';
-import _slicedToArray from '@babel/compat/helpers/slicedToArray';
-import _defineProperty from '@babel/compat/helpers/defineProperty';
-import _classCallCheck from '@babel/compat/helpers/classCallCheck';
-import _possibleConstructorReturn from '@babel/compat/helpers/possibleConstructorReturn';
-import _inherits from '@babel/compat/helpers/inherits';
+import _regeneratorRuntime from 'babel-compat/regenerator';
+import _asyncToGenerator from 'babel-compat/helpers/asyncToGenerator';
+import _createClass from 'babel-compat/helpers/createClass';
+import _typeof from 'babel-compat/helpers/typeof';
+import _taggedTemplateLiteral from 'babel-compat/helpers/taggedTemplateLiteral';
+import _toConsumableArray from 'babel-compat/helpers/toConsumableArray';
+import _slicedToArray from 'babel-compat/helpers/slicedToArray';
+import _defineProperty from 'babel-compat/helpers/defineProperty';
+import _classCallCheck from 'babel-compat/helpers/classCallCheck';
+import _possibleConstructorReturn from 'babel-compat/helpers/possibleConstructorReturn';
+import _inherits from 'babel-compat/helpers/inherits';
 
 var _templateObject = /*#__PURE__*/ _taggedTemplateLiteral(["wow\na", "b ", ""], ["wow\\na", "b ", ""]),
 _templateObject2 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""]),

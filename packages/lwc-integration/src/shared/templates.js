@@ -25,7 +25,10 @@ exports.todoApp = function (cmpName) {
     `;
 }
 
-const COMPAT = ``;
+const COMPAT = `
+    <script src="../../shared/downgrade.js"></script>
+    <script src="../../shared/polyfills.js"></script>
+`;
 
 exports.html = function (cmpName, isCompat) {
 
@@ -52,9 +55,9 @@ exports.wireServiceHtml = function (cmpName, isCompat) {
         </head>
         <body>
             ${isCompat ? COMPAT : ''}
-            <script src="/shared/engine.js"></script>
-            <script src="/shared/todo.js"></script>
-            <script src="/shared/wire-service.js"></script>
+            <script src="../../shared/engine.js"></script>
+            <script src="../../shared/todo.js"></script>
+            <script src="../../shared/wire-service.js"></script>
             <script src="./${cmpName}.js"></script>
         </body>
     </html>

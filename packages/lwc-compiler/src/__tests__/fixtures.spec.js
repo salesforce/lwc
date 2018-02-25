@@ -42,7 +42,7 @@ describe('stylesheet', () => {
         );
     });
 
-    it.skip('should import compress css in prod mode', async () => {
+    it('should import compress css in prod mode', async () => {
         const { code } = await compile(
             fixturePath('namespaced_folder/styled/styled.js'),
             {
@@ -220,7 +220,7 @@ describe('compile from in-memory', () => {
 });
 
 describe('mode generation', () => {
-    it.skip('handles prod mode', async () => {
+    it('handles prod mode', async () => {
         const { code, metadata } = await compile(
             fixturePath('class_and_template/class_and_template.js'),
             {
@@ -262,7 +262,7 @@ describe('mode generation', () => {
         });
     });
 
-    it.skip('handles prod-compat mode', async () => {
+    it('handles prod-compat mode', async () => {
         const { code, metadata } = await compile(
             fixturePath('class_and_template/class_and_template.js'),
             {
@@ -283,7 +283,7 @@ describe('mode generation', () => {
         });
     });
 
-    it.skip('handles all modes', async () => {
+    it('handles all modes', async () => {
         const res = await compile(
             fixturePath('class_and_template/class_and_template.js'),
             {
