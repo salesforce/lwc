@@ -16,7 +16,6 @@ const footer = `/** version: ${version} */`;
 
 function rollupConfig(config){
     const { format, target, prod } = config;
-    debugger;
     const plugins = [
         rollupTypescriptPlugin({ typescript, target, module: 'es6', sourceMap: false }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),

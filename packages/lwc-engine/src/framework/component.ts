@@ -142,7 +142,6 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
 }
 
 export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
-    debugger;
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
