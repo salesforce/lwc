@@ -6,7 +6,7 @@
     "prepare": "yarn build",
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "echo 'WIP'",
-    "test": "jest test --maxWorkers 2",
+    "test": "jest",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
     "test:performance": "lerna exec --scope benchmark -- best --externalStorage='@best/store-aws'",
     "build": "lerna run build --ignore locker-membrane --ignore benchmark --ignore lwc-integration",
