@@ -1,7 +1,7 @@
 import { rollup } from "rollup";
 import * as rollupPluginReplace from "rollup-plugin-replace";
 
-import { bundleMetadataCollector } from "./meta-collector";
+import { MetadataCollector, ExternalReference } from "./meta-collector";
 import { inMemoryModuleResolver } from "../module-resolvers/in-memory";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
@@ -13,14 +13,25 @@ import {
     NormalizedCompilerOptions,
     validateNormalizedOptions
 } from "../options";
+
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
+
+import {
+    ApiDecorator,
+    TrackDecorator,
+    WireDecorator
+} from "babel-plugin-transform-lwc-class";
 
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
     map?: null;
-    metadata?: any;
-    rawMetadata?: any;
+    metadata?: BundleMetadata;
+}
+
+export interface BundleMetadata {
+    references: ExternalReference[];
+    decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
 }
 
 interface RollupWarning {
@@ -35,7 +46,6 @@ interface RollupWarning {
 
 const DEFAULT_FORMAT = "amd";
 
-
 function handleRollupWarning(diagnostics: Diagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
         diagnostics.push({
@@ -46,29 +56,31 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
     };
 }
 
-
 export async function bundle(
     options: NormalizedCompilerOptions
 ): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
     const { outputConfig, name, namespace, files } = options;
+
+    // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: Diagnostic[] = [];
 
-    const metaCollector = bundleMetadataCollector();
+    const metadataCollector = new MetadataCollector();
+
     const plugins = [
         rollupPluginReplace({
             "process.env.NODE_ENV": JSON.stringify(outputConfig.env.NODE_ENV)
         }),
         rollupModuleResolver({
-            collect: metaCollector.module,
-            moduleResolver: inMemoryModuleResolver(files),
+            metadataCollector,
+            moduleResolver: inMemoryModuleResolver(files)
         }),
         rollupTransform({
-            collect: metaCollector.file,
-            options,
+            metadataCollector,
+            options
         })
     ];
 
@@ -94,9 +106,9 @@ export async function bundle(
     });
 
     return {
+        diagnostics,
         code,
         map: null,
-        metadata: metaCollector.getMetadata(),
-        diagnostics
+        metadata: metadataCollector.getMetadata()
     };
 }

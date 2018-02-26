@@ -49,7 +49,6 @@ describe("transform", () => {
             await transform(`const`, "foo.js", {
                 namespace: "x",
                 name: "foo",
-                outputConfig: {}
             });
         } catch (error) {
             expect(error.message).toBe('foo.js: Unexpected token (1:5)');
@@ -75,7 +74,6 @@ describe("transform", () => {
         const { code } = await transform(actual, "foo.js", {
             namespace: "x",
             name: "foo",
-            outputConfig: {}
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -87,7 +85,6 @@ describe("transform", () => {
             await transform(`<html`, "foo.html", {
                 namespace: "x",
                 name: "foo",
-                outputConfig: {}
             });
         } catch (error) {
             expect(error.message.indexOf('Invalid HTML syntax: eof-in-tag.')).toBe(0);
@@ -126,7 +123,6 @@ describe("transform", () => {
         const { code } = await transform(actual, "foo.html", {
             namespace: "x",
             name: "foo",
-            outputConfig: {}
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -138,7 +134,6 @@ describe("transform", () => {
             await transform(`<`, "foo.css", {
                 namespace: "x",
                 name: "foo",
-                outputConfig: {}
             });
         } catch (error) {
             expect(error.message).toBe("<css input>:1:1: Unknown word");
@@ -166,7 +161,6 @@ describe("transform", () => {
         const { code } = await transform(actual, "foo.css", {
             namespace: "x",
             name: "foo",
-            outputConfig: {}
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -192,7 +186,6 @@ describe("transform", () => {
         const result = await transform(content, "foo.js", {
             namespace: "x",
             name: "foo",
-            outputConfig: {}
         });
 
         const metadata = result.metadata;

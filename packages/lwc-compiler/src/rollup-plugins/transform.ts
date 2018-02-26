@@ -1,13 +1,14 @@
 import { getTransformer } from '../transformers/transformer';
 
 import { NormalizedCompilerOptions } from "../options";
+import { MetadataCollector } from '../bundler/meta-collector';
 
 export default function({
-    collect,
-    options
+    options,
+    metadataCollector,
 }: {
-    collect: any
     options: NormalizedCompilerOptions;
+    metadataCollector?: MetadataCollector
 }) {
     return {
         name: "lwc-file-transform",
@@ -17,9 +18,8 @@ export default function({
                 src,
                 id,
                 options,
+                metadataCollector,
             );
-
-            collect(id, result.metadata);
             return result;
         }
     };

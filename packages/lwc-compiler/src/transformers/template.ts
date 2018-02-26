@@ -2,6 +2,7 @@ import * as path from 'path';
 import { NormalizedCompilerOptions } from '../options';
 import compile from 'lwc-template-compiler';
 import { FileTransformer } from './transformer';
+import { MetadataCollector } from '../bundler/meta-collector';
 
 export function getTemplateToken(name: string, namespace: string) {
     const templateId = path.basename(name, path.extname(name));
@@ -14,7 +15,7 @@ export function getTemplateToken(name: string, namespace: string) {
  * the template regardless if there is an actual style or not.
  */
 
- const transform: FileTransformer = function(src: string, filename: string, options: NormalizedCompilerOptions) {
+ const transform: FileTransformer = function(src: string, filename: string, options: NormalizedCompilerOptions, metadataCollector?: MetadataCollector) {
     const { name, namespace } = options;
     const { code: template, metadata, warnings } = compile(src, {});
 
@@ -26,6 +27,13 @@ export function getTemplateToken(name: string, namespace: string) {
 
     const token = getTemplateToken(name, namespace);
     const cssName = path.basename(name, path.extname(name)) + '.css';
+
+    if (metadataCollector) {
+        (metadata.templateDependencies || []).forEach((id: string) => {
+            metadataCollector.collectReference({ name: id, type: "component" });
+        });
+
+    }
 
     const code = [
         `import style from './${cssName}'`,

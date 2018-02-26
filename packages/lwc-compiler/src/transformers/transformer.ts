@@ -1,5 +1,5 @@
 import * as path from "path";
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from "../options";
 
 import styleTransform from "./style";
 import templateTransformer from "./template";
@@ -7,6 +7,7 @@ import javascriptTransformer from "./javascript";
 import compatPluginFactory from "../rollup-plugins/compat";
 
 import { isString, isUndefined } from "../utils";
+import { MetadataCollector } from "../bundler/meta-collector";
 
 export interface FileTransformerResult {
     code: string;
@@ -14,7 +15,7 @@ export interface FileTransformerResult {
     map?: any;
 }
 export interface FileTransformer {
-    (source: string, filename: string, options: NormalizedCompilerOptions):
+    (source: string, filename: string, options: NormalizedCompilerOptions, metadataCollector?: MetadataCollector):
         | FileTransformerResult
         | Promise<FileTransformerResult>;
 }
@@ -22,7 +23,7 @@ export interface FileTransformer {
 export function transform(
     src: string,
     id: string,
-    options: NormalizedCompilerOptions
+    options: CompilerOptions,
 ) {
     if (!isString(src)) {
         throw new Error(`Expect a string for source. Received ${src}`);
@@ -31,7 +32,8 @@ export function transform(
     if (!isString(id)) {
         throw new Error(`Expect a string for id. Received ${id}`);
     }
-    return transformFile(src, id, options);
+
+    return transformFile(src, id, normalizeOptions(options));
 }
 
 export function getTransformer(fileName: string): FileTransformer {
@@ -50,13 +52,14 @@ export function getTransformer(fileName: string): FileTransformer {
     }
 }
 
-async function transformFile(
+export async function transformFile(
     src: string,
     id: string,
-    options: NormalizedCompilerOptions
+    options: NormalizedCompilerOptions,
+    metadataCollector?: MetadataCollector,
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
-    const result = await transformer(src, id, options);
+    const result = await transformer(src, id, options, metadataCollector);
 
     if (options.outputConfig.compat) {
         const { transform } = compatPluginFactory(
@@ -69,7 +72,7 @@ async function transformFile(
                 "babel transform failed to produce code in compat mode"
             );
         }
-        return { code };
+        return { code }; // No meta?
     }
 
     return result;

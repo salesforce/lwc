@@ -19,7 +19,13 @@ describe("test index entry points", () => {
     });
 
     test("able to invoke transformer", async () => {
-        const { code } = await transform("debugger", "file.js", COMPILER_CONFIG);
+        // transform should normalize options and append outputConfig
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: { "foo.js": "debugger" },
+        };
+        const { code } = await transform("debugger", "file.js", config);
         expect(code).toBe("debugger;");
     });
 

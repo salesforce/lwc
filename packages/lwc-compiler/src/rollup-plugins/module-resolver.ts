@@ -1,4 +1,5 @@
 import * as path from "path";
+import { MetadataCollector } from "../bundler/meta-collector";
 
 const EMPTY_CSS_CONTENT = ``;
 
@@ -23,10 +24,10 @@ function isTemplateCss(id: string, importee: string) {
  * dependencies
  */
 export default function({
-    collect,
+    metadataCollector,
     moduleResolver
 }: {
-    collect: any,
+    metadataCollector: MetadataCollector,
     moduleResolver: any;
 }) {
     return {
@@ -35,7 +36,7 @@ export default function({
         resolveId: function(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {
                 if (shouldRecordDependency(id)) {
-                    collect(id);
+                    metadataCollector.collectReference({ name: id, type: 'module' });
                 }
             } else {
                 const relPath = importee ? path.dirname(importee) : "";

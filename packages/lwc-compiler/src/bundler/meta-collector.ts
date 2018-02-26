@@ -1,38 +1,44 @@
-export function bundleMetadataCollector() {
-    // TODO: import types from babel-plugin-transform
-    const fileMetadata: { references: any; decorators: any[] } = {
-        references: {},
-        decorators: []
-    };
+import {
+    ApiDecorator,
+    TrackDecorator,
+    WireDecorator
+} from "babel-plugin-transform-lwc-class";
+import { BundleMetadata } from "./bundler";
 
-    const moduleReferences: { [name: string]: string } = {};
+export interface ExternalReference {
+    name: string;
+    type: string;
+}
 
-    function module(reference: any) {
-        moduleReferences[reference] = "module";
+export class MetadataCollector {
+    private references: Map<String, ExternalReference>;
+    private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
+
+    constructor() {
+        this.decorators = [];
+        this.references = new Map<string, ExternalReference>();
     }
 
-    function file(reference: string, meta: any) {
-        (meta.templateDependencies || []).forEach((reference: string) => {
-            fileMetadata.references[reference] = "component";
-        });
-        fileMetadata.decorators.push(...(meta.decorators || []));
+    public collectReference(reference: ExternalReference) {
+        const existingRef = this.references.get(reference.name);
+
+        // js file that has corresponding html must be of type 'component'
+        if (!existingRef || existingRef.type !== "component") {
+            this.references.set(reference.name, reference);
+        }
     }
 
-    function getMetadata() {
-        // merge reference maps by overriding
-        // matching reference values from 'module' to 'component'
-        const refMaps = Object.assign(
-            {},
-            moduleReferences,
-            fileMetadata.references
-        );
-
-        const refs = Object.entries(refMaps).map(([name, type]) => {
-            return { name, type };
-        });
-
-        return { references: refs, decorators: fileMetadata.decorators };
+    public collectDecorator(
+        decorator: ApiDecorator | TrackDecorator | WireDecorator
+    ) {
+        this.decorators.push(decorator);
     }
 
-    return { file, module, getMetadata };
+    public getMetadata(): BundleMetadata {
+        const result = {
+            references: [...this.references.values()],
+            decorators: this.decorators
+        };
+        return result;
+    }
 }
