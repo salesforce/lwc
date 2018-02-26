@@ -1,6 +1,7 @@
 import { rollup } from "rollup";
 import * as rollupPluginReplace from "rollup-plugin-replace";
 
+import { bundleMetadataCollector } from "./meta-collector";
 import { inMemoryModuleResolver } from "../module-resolvers/in-memory";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
@@ -8,7 +9,10 @@ import rollupTransform from "../rollup-plugins/transform";
 import rollupCompat from "../rollup-plugins/compat";
 import rollupMinify from "../rollup-plugins/minify";
 
-import { NormalizedCompilerOptions, validateNormalizedOptions } from "../options";
+import {
+    NormalizedCompilerOptions,
+    validateNormalizedOptions
+} from "../options";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
 export interface BundleReport {
@@ -31,27 +35,6 @@ interface RollupWarning {
 
 const DEFAULT_FORMAT = "amd";
 
-function mergeMetadata(metadata: any) {
-    const dependencies = new Map(
-        (metadata.rollupDependencies || []).map((d: any) => [d, "module"])
-    );
-    const decorators = [];
-
-    for (let i in metadata) {
-        (metadata[i].templateDependencies || []).forEach((td: any) =>
-            dependencies.set(td, "component")
-        );
-        decorators.push(...(metadata[i].decorators || []));
-    }
-
-    return {
-        decorators,
-        references: Array.from(dependencies).map(d => ({
-            name: d[0],
-            type: d[1]
-        }))
-    };
-}
 
 function handleRollupWarning(diagnostics: Diagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
@@ -63,6 +46,7 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
     };
 }
 
+
 export async function bundle(
     options: NormalizedCompilerOptions
 ): Promise<BundleReport> {
@@ -72,17 +56,20 @@ export async function bundle(
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
 
     const diagnostics: Diagnostic[] = [];
-    const $metadata = {};
 
+    const metaCollector = bundleMetadataCollector();
     const plugins = [
         rollupPluginReplace({
             "process.env.NODE_ENV": JSON.stringify(outputConfig.env.NODE_ENV)
         }),
         rollupModuleResolver({
+            collect: metaCollector.module,
             moduleResolver: inMemoryModuleResolver(files),
-            $metadata,
         }),
-        rollupTransform({ $metadata, options })
+        rollupTransform({
+            collect: metaCollector.file,
+            options,
+        })
     ];
 
     if (outputConfig.compat) {
@@ -109,8 +96,7 @@ export async function bundle(
     return {
         code,
         map: null,
-        metadata: mergeMetadata($metadata),
-        rawMetadata: $metadata,
+        metadata: metaCollector.getMetadata(),
         diagnostics
     };
 }

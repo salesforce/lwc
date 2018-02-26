@@ -23,21 +23,19 @@ function isTemplateCss(id: string, importee: string) {
  * dependencies
  */
 export default function({
-    moduleResolver,
-    $metadata
+    collect,
+    moduleResolver
 }: {
+    collect: any,
     moduleResolver: any;
-    $metadata: any;
 }) {
-    $metadata.rollupDependencies = [];
-
     return {
         name: "module-resolver",
 
         resolveId: function(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {
                 if (shouldRecordDependency(id)) {
-                    $metadata.rollupDependencies.push(id);
+                    collect(id);
                 }
             } else {
                 const relPath = importee ? path.dirname(importee) : "";

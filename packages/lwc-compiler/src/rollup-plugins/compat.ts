@@ -17,7 +17,6 @@ export default function(proxyCompatOption: OutputProxyCompatConfig | undefined) 
             ]
         ]
     };
-    console.log("proxyCompatOption >>> ", proxyCompatOption);
     return {
         name: "compat",
 

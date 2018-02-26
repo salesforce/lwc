@@ -3,10 +3,10 @@ import { getTransformer } from '../transformers/transformer';
 import { NormalizedCompilerOptions } from "../options";
 
 export default function({
-    $metadata,
+    collect,
     options
 }: {
-    $metadata: any;
+    collect: any
     options: NormalizedCompilerOptions;
 }) {
     return {
@@ -19,7 +19,7 @@ export default function({
                 options,
             );
 
-            $metadata[id] = result.metadata;
+            collect(id, result.metadata);
             return result;
         }
     };
