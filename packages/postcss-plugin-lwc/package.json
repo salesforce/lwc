@@ -5,20 +5,11 @@
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "clean": "rimraf coverage dist",
-    "lint": "tslint -t stylish src/**/*",
-    "build": "tsc",
-    "test": "jest --maxWorkers=2"
+    "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
+    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "dependencies": {
     "postcss": "^6.0.13",
     "postcss-selector-parser": "3.1.1"
-  },
-  "devDependencies": {
-    "jest": "^21.2.1",
-    "rimraf": "^2.6.1",
-    "ts-jest": "^21.1.2",
-    "tslint": "^5.2.0",
-    "typescript": "^2.6.2"
   }
 }
