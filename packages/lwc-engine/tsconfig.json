@@ -2,5 +2,10 @@
   "compilerOptions": {
     "module": "es6",
     "noEmitHelpers":  true
-  }
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src/**/*",
+    "types/*.d.ts"
+  ]
 }
