@@ -131,20 +131,19 @@ __callKey(assert, "equal", _typeof(s), "symbol");
 
 __callKey(assert, "equal", _typeof(_typeof(__getKey(s, "foo"))), "symbol");
 
-typeof s === "string";
+var ts = typeof s === "string";
 
 __callKey(assert, "isNotOk", (typeof o === "undefined" ? "undefined" : _typeof(o)) === "symbol");
 
 __callKey(assert, "notEqual", typeof o === "undefined" ? "undefined" : _typeof(o), "symbol");
 
-__callKey(assert, "notEqual", _typeof(_typeof(__getKey(o, "foo"))), "symbol");
-
-typeof o === "string"; // babel-plugin-transform-es2015-unicode-regex
+__callKey(assert, "notEqual", _typeof(_typeof(__getKey(o, "foo"))), "symbol"); // babel-plugin-transform-es2015-unicode-regex
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-unicode-regex/test/fixtures/unicode-regex/basic/actual.js
 
 var string = "foo💩bar";
 
-var match = __callKey(string, "match", /foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/); // babel-plugin-transform-async-to-generator
+var match = __callKey(string, "match", /foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/);
+__callKey(assert, "notEqual", string, match, ts); // babel-plugin-transform-async-to-generator
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-async-to-generator/test/fixtures/async-to-generator/async/actual.js
 
 
