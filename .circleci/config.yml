@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Run Unit Tests
-          command: yarn test
+          command: yarn test --ci --maxWorkers=2
 
 
   integration_test:
