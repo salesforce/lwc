@@ -12,7 +12,8 @@
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js",
     "types": "../../node_modules/.bin/tsc --noEmit",
-    "lint": "../../node_modules/.bin/tslint -p ./tsconfig.json"
+    "lint": "../../node_modules/.bin/tslint -p ./tsconfig.json",
+    "test": "jest test --maxWorkers 2 --config ../../jest.config.js --projects lwc-engine"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
