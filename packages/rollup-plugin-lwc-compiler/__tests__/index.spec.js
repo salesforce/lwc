@@ -8,51 +8,66 @@ function pretty(str) {
     return prettier.format(str);
 }
 
-const skipTests = [
-    '.babelrc',
-    '.DS_Store',
-    'bundle',
-    'simple_app',
-];
+function fsExpected(fileName) {
+    return fs.readFileSync(path.join(fixturesDir, `${fileName}.js`), 'utf-8');
+}
 
 const fixturesDir = path.join(__dirname, 'fixtures');
+const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 
-describe('emit asserts for: ', () => {
-    fs.readdirSync(fixturesDir).map((caseName) => {
-        if (skipTests.indexOf(caseName) >= 0) return;
-        const fixtureCaseDir = path.join(fixturesDir, caseName);
+describe('default configuration', () => {
+    const rollupOptions = { allowUnnamespaced: true };
 
-        it(`output match: ${caseName}`, () => {
-            const entry = path.join(fixtureCaseDir, caseName + '.js');
-            return doRollup(entry).then(res => {
-                const { code: actual } = res;
-
-                const expected = fs.readFileSync(path.join(fixtureCaseDir, 'expected.js'), 'utf-8');
-                expect(pretty(actual)).toBe(pretty(expected));
-            })
-        });
+    it(`simple app`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_default_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        })
     });
-});
 
-
-describe('emit asserts for simple_app: ', () => {
-    const fixtureCaseDir = path.join(fixturesDir, 'simple_app/src');
-
-    it(`output match:`, () => {
-        const entry = path.join(fixtureCaseDir, 'main.js');
-        return doRollup(entry, { allowUnnamespaced: true } ).then(res => {
-            const { code: actual } = res;
-
-            const expected = fs.readFileSync(path.join(fixturesDir, 'simple_app/expected.js'), 'utf-8');
+    it(`simple component`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_default_config_simple_app');
             expect(pretty(actual)).toBe(pretty(expected));
         })
     });
 });
 
-function doRollup(entry, options = {}) {
+describe('rollup in compat mode', () => {
+    const rollupOptions = { allowUnnamespaced: true, mode: 'compat' };
+
+    it(`simple app`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_compat_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        })
+    });
+});
+
+describe('rollup in prod_compat mode', () => {
+    const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
+
+    it.skip(`simple app`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_prod_compat_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        })
+    });
+});
+
+function doRollup(input, options = {}) {
     return rollup.rollup({
-        input: entry,
-        external: ['engine'],
+        input,
+        external: [
+            'engine',
+            'compat-polyfills/polyfills',
+            'compat-polyfills/downgrade',
+            'proxy-compat',
+        ],
         plugins: [ rollupCompile(options) ],
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
