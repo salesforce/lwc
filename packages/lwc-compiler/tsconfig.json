@@ -6,6 +6,7 @@
     "declaration": true,
     "rootDir": "src",
     "outDir": "dist/commonjs",
+    "declarationDir": "dist/types",
 
     // Environment Configuration
     "moduleResolution": "node",
