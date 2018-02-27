@@ -7,17 +7,12 @@ import { BundleMetadata } from "./bundler";
 
 export interface ExternalReference {
     name: string;
-    type: string;
+    type: "module" | "component";
 }
 
 export class MetadataCollector {
-    private references: Map<String, ExternalReference>;
-    private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
-
-    constructor() {
-        this.decorators = [];
-        this.references = new Map<string, ExternalReference>();
-    }
+    private references: Map<String, ExternalReference> = new Map();
+    private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator> = [];
 
     public collectReference(reference: ExternalReference) {
         const existingRef = this.references.get(reference.name);
@@ -35,10 +30,9 @@ export class MetadataCollector {
     }
 
     public getMetadata(): BundleMetadata {
-        const result = {
-            references: [...this.references.values()],
+        return {
+            references: Array.from(this.references.values()),
             decorators: this.decorators
         };
-        return result;
     }
 }

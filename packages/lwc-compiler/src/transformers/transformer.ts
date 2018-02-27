@@ -1,30 +1,37 @@
 import * as path from "path";
-import { NormalizedCompilerOptions, CompilerOptions, normalizeOptions } from "../options";
+import {
+    NormalizedCompilerOptions,
+    CompilerOptions,
+    normalizeOptions
+} from "../options";
 
-import styleTransform from "./style";
-import templateTransformer from "./template";
+import styleTransform, { StyleMetadata } from "./style";
+import templateTransformer, { TemplateMetadata } from "./template";
 import javascriptTransformer from "./javascript";
 import compatPluginFactory from "../rollup-plugins/compat";
 
 import { isString, isUndefined } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
+import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
 
 export interface FileTransformerResult {
     code: string;
-    metadata?: any; // TODO: need type
-    map?: any;
+    metadata?:
+        | TemplateMetadata
+        | StyleMetadata
+        | lwcClassTransformPlugin.Metadata;
+    map: null;
 }
 export interface FileTransformer {
-    (source: string, filename: string, options: NormalizedCompilerOptions, metadataCollector?: MetadataCollector):
-        | FileTransformerResult
-        | Promise<FileTransformerResult>;
+    (
+        source: string,
+        filename: string,
+        options: NormalizedCompilerOptions,
+        metadataCollector?: MetadataCollector
+    ): FileTransformerResult | Promise<FileTransformerResult>;
 }
 
-export function transform(
-    src: string,
-    id: string,
-    options: CompilerOptions,
-) {
+export function transform(src: string, id: string, options: CompilerOptions) {
     if (!isString(src)) {
         throw new Error(`Expect a string for source. Received ${src}`);
     }
@@ -56,7 +63,7 @@ export async function transformFile(
     src: string,
     id: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector,
+    metadataCollector?: MetadataCollector
 ): Promise<FileTransformerResult> {
     const transformer = getTransformer(id);
     const result = await transformer(src, id, options, metadataCollector);
@@ -72,7 +79,7 @@ export async function transformFile(
                 "babel transform failed to produce code in compat mode"
             );
         }
-        return { code }; // No meta?
+        return { code, map: null };
     }
 
     return result;

@@ -1,8 +1,9 @@
-import * as path from 'path';
-import { NormalizedCompilerOptions } from '../options';
-import compile from 'lwc-template-compiler';
-import { FileTransformer } from './transformer';
-import { MetadataCollector } from '../bundler/meta-collector';
+import * as path from "path";
+import { NormalizedCompilerOptions } from "../options";
+import compile from "lwc-template-compiler";
+import { FileTransformer } from "./transformer";
+import { MetadataCollector } from "../bundler/meta-collector";
+import { CompilationMetadata } from "../../../lwc-template-compiler/dist/types/shared/types";
 
 export function getTemplateToken(name: string, namespace: string) {
     const templateId = path.basename(name, path.extname(name));
@@ -15,41 +16,46 @@ export function getTemplateToken(name: string, namespace: string) {
  * the template regardless if there is an actual style or not.
  */
 
- const transform: FileTransformer = function(src: string, filename: string, options: NormalizedCompilerOptions, metadataCollector?: MetadataCollector) {
+ export type TemplateMetadata = CompilationMetadata;
+
+const transform: FileTransformer = function(
+    src: string,
+    filename: string,
+    options: NormalizedCompilerOptions,
+    metadataCollector?: MetadataCollector
+) {
     const { name, namespace } = options;
     const { code: template, metadata, warnings } = compile(src, {});
 
-    const fatalError = warnings.find(warning => warning.level === 'error');
+    const fatalError = warnings.find(warning => warning.level === "error");
     if (fatalError) {
         throw new Error(fatalError.message);
     }
 
-
     const token = getTemplateToken(name, namespace);
-    const cssName = path.basename(name, path.extname(name)) + '.css';
+    const cssName = path.basename(name, path.extname(name)) + ".css";
 
     if (metadataCollector) {
-        (metadata.templateDependencies || []).forEach((id: string) => {
-            metadataCollector.collectReference({ name: id, type: "component" });
+        metadata.templateDependencies.forEach(name => {
+            metadataCollector.collectReference({ name, type: "component" });
         });
-
     }
 
     const code = [
         `import style from './${cssName}'`,
-        '',
+        "",
         template,
-        '',
+        "",
         `if (style) {`,
         `   const tagName = '${namespace}-${name}';`,
         `   const token = '${token}';`,
         ``,
         `   tmpl.token = token;`,
         `   tmpl.style = style(tagName, token);`,
-        `}`,
-    ].join('\n');
+        `}`
+    ].join("\n");
 
-    return { code, metadata };
-}
+    return { code, map: null };
+};
 
 export default transform;

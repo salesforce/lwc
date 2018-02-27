@@ -1,19 +1,17 @@
-/* eslint-env node */
-
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 const FIXTURE_DIR = path.join(__dirname, 'fixtures');
 
-function fixturePath(location) {
+export function fixturePath(location: string): string {
     return path.join(FIXTURE_DIR, location);
 }
 
-function readFixture(location) {
+export function readFixture(location: string): string {
     return fs.readFileSync(fixturePath(location), 'utf-8');
 }
 
-function pretify(str) {
+export function pretify(str: string): string {
     return str.toString()
         .replace(/^\s+|\s+$/, '')
         .split('\n')
@@ -21,9 +19,3 @@ function pretify(str) {
         .filter(line => line.length)
         .join('\n');
 }
-
-module.exports = {
-    fixturePath,
-    readFixture,
-    pretify
-};

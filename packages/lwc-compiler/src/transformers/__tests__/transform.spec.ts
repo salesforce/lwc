@@ -1,8 +1,8 @@
 /* eslint-env node, jest */
 
-const { compile } = require("../../index");
-const { transform } = require("../../transformers/transformer");
-const { pretify } = require("../../__tests__/utils");
+import { compile } from "../../index";
+import { transform } from "../../transformers/transformer";
+import { pretify } from "../../__tests__/utils";
 
 const VALID_TEST_JS = `
 import label from '@label/mylabel';

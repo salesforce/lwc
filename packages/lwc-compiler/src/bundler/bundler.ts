@@ -25,8 +25,8 @@ import {
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
-    map?: null;
-    metadata?: BundleMetadata;
+    map: null;
+    metadata: BundleMetadata;
 }
 
 export interface BundleMetadata {

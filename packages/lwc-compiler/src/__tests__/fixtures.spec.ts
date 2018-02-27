@@ -1,9 +1,6 @@
 import { readFile } from "fs";
-
-/* eslint-env node, jest */
-
-const { compile } = require("../index");
-const { fixturePath, readFixture, pretify } = require("./utils");
+import { compile } from "../index";
+import { fixturePath, readFixture, pretify } from "./utils";
 
 const CLASS_AND_TEMPLATE_CONFIG = {
     outputConfig: {

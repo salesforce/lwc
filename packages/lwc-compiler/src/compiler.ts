@@ -1,4 +1,4 @@
-import { bundle, BundleReport } from "./bundler/bundler";
+import { bundle, BundleMetadata } from "./bundler/bundler";
 import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";
@@ -15,7 +15,7 @@ export interface CompilerOutput {
 export interface BundleResult {
     code: string;
     map: null;
-    metadata: any;
+    metadata: BundleMetadata;
     references: Reference[];
 }
 
@@ -32,7 +32,7 @@ export async function compile(
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const { diagnostics, code, metadata }: BundleReport = await bundle(
+        const { diagnostics, code, metadata } = await bundle(
             normalizedOptions
         );
 

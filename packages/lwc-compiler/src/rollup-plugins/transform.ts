@@ -1,4 +1,4 @@
-import { getTransformer } from '../transformers/transformer';
+import { getTransformer, FileTransformerResult } from '../transformers/transformer';
 
 import { NormalizedCompilerOptions } from "../options";
 import { MetadataCollector } from '../bundler/meta-collector';
@@ -12,15 +12,14 @@ export default function({
 }) {
     return {
         name: "lwc-file-transform",
-        async transform(src: string, id: string) {
+        async transform(src: string, id: string): Promise<FileTransformerResult> {
             const transform = getTransformer(id);
-            const result = await transform(
+            return await transform(
                 src,
                 id,
                 options,
                 metadataCollector,
             );
-            return result;
         }
     };
 }

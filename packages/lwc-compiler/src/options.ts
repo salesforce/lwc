@@ -1,25 +1,25 @@
 import { isBoolean, isString, isUndefined } from "./utils";
 
+const DEFAULT_OUTPUT_CONFIG = {
+    env: {},
+    minify: false,
+    compat: false
+};
+
+const DEFAULT_OUTPUT_CONFIG_ENV = {
+    NODE_ENV: "development"
+};
+
+export type OutputProxyCompatConfig =
+    | { global: string }
+    | { module: string }
+    | { independent: string };
+
 export interface OutputConfig {
     env?: { [name: string]: string };
     compat?: boolean;
     minify?: boolean;
-    resolveProxyCompat?: OutputProxyCompatConfig;
-}
-
-export interface OutputProxyCompatConfig {
-    global?: string,
-    module?: string,
-    independent?: string,
-}
-
-export interface NormalizedOutputConfig extends OutputConfig {
-    compat: boolean;
-    minify: boolean;
-    env: {
-        NODE_ENV: string;
-        [name: string]: string;
-    };
+    resolveProxyCompat?: OutputProxyCompatConfig; // TODO: bad name - rename ( open a work item )
 }
 
 export interface BundleFiles {
@@ -37,15 +37,14 @@ export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
 }
 
-const DEFAULT_OUTPUT_CONFIG = {
-    env: {},
-    minify: false,
-    compat: false
-};
-
-const DEFAULT_OUTPUT_CONFIG_ENV = {
-    NODE_ENV: "development"
-};
+export interface NormalizedOutputConfig extends OutputConfig {
+    compat: boolean;
+    minify: boolean;
+    env: {
+        NODE_ENV: string;
+        [name: string]: string;
+    };
+}
 
 export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
     validateOptions(options);
@@ -112,14 +111,14 @@ export function normalizeOptions(
     const envConfig = options.outputConfig && options.outputConfig.env;
     const normalizedEnvConfig = {
         ...DEFAULT_OUTPUT_CONFIG_ENV,
-        ...envConfig,
+        ...envConfig
     };
 
     // merge incoming outputConfig value with defaults and normalized values
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig,
-        env: normalizedEnvConfig,
+        env: normalizedEnvConfig
     };
 
     return {

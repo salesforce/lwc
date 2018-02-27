@@ -3,10 +3,8 @@
     "target": "es2017",
     "module": "commonjs",
     "sourceMap": true,
-    // TODO: turn back to true when there are no more js files in the package
-    // "declaration": true,
+    "declaration": true,
     "rootDir": "src",
-    "allowJs": true,
     "outDir": "dist/commonjs",
 
     // Environment Configuration
