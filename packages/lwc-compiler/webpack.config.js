@@ -14,6 +14,14 @@ module.exports = function (/*env*/) {
             path: path.resolve(__dirname, 'dist/umd/'),
             filename: 'compiler.js',
         },
+        resolve: {
+            alias: {
+                // Forcing the resolution of the CommonJS Module instead of the ES Module for the "rollup-plugin-replace".
+                // There is a discrepancy between the 2 "rollup-plugin-replace" artifacts. Let's use the CommonJS one
+                // to be consistent with the behavior when running the compiler in NodeJs.
+                'rollup-plugin-replace': 'rollup-plugin-replace/dist/rollup-plugin-replace.cjs.js',
+            },
+        },
         plugins: [
             new StringReplacePlugin()
         ],
