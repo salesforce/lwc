@@ -31,6 +31,11 @@ export interface CompilerOptions {
     namespace: string;
     files: BundleFiles;
     outputConfig?: OutputConfig;
+
+    // TODO: below must be removed after lwc-compiler consumeres change
+    // attribute names to name/namespace
+    moduleName?: string;
+    moduleNamespace?: string;
 }
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
@@ -107,6 +112,19 @@ function validateOutputConfig(config: OutputConfig) {
 export function normalizeOptions(
     options: CompilerOptions
 ): NormalizedCompilerOptions {
+    // TODO: name normalization should be removed once package consumers
+    // change their compiler/transform invocation parameter attributes
+    // from moduleName/Namespace to name/namespace
+    if (options.moduleName && !options.name) {
+        options.name = options.moduleName;
+    }
+    delete options.moduleName;
+
+    if (options.moduleNamespace && !options.namespace) {
+        options.namespace = options.moduleNamespace;
+    }
+    delete options.moduleNamespace;
+
     // merge incoming env value with default
     const envConfig = options.outputConfig && options.outputConfig.env;
     const normalizedEnvConfig = {
