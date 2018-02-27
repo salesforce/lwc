@@ -4,7 +4,7 @@ import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { EmptyObject } from "../utils";
-import { isBeingConstructed } from "../component";
+import { isBeingConstructed, Component } from "../component";
 import { VM, VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined } from "../language";
@@ -27,7 +27,7 @@ export function prepareForPropUpdate(vm: VM) {
 // TODO: how to allow symbols as property keys?
 export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
-        get(this: VMElement): any {
+        get(this: Component): any {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -41,7 +41,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             observeMutation(this, key);
             return vm.cmpProps[key];
         },
-        set(this: VMElement, newValue: any) {
+        set(this: Component, newValue: any) {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -77,19 +77,17 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
     });
 }
 
-export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
-    const { get, set, enumerable } = descriptor || EmptyObject;
+export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+    const { get, set, enumerable } = descriptor;
     defineProperty(proto, key, {
-        get(this: VMElement): any {
+        get(this: Component): any {
             if (process.env.NODE_ENV !== 'production') {
                 const vm = getCustomElementVM(this);
                 assert.vm(vm);
             }
-            if (get) {
-                return get.call(this);
-            }
+            return get.call(this);
         },
-        set(this: VMElement, newValue: any) {
+        set(this: Component, newValue: any) {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);

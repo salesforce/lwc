@@ -1113,6 +1113,48 @@ describe('html-element', () => {
         });
     });
 
+    describe('Inheritance', () => {
+        it('should inherit public getters and setters correctly', () => {
+            class MyParent extends Element {
+                get foo() {}
+                set foo() {}
+            }
+            MyParent.publicProps = {
+                foo: {
+                    config: 3,
+                }
+            }
+            class MyComponent extends MyParent {
+
+            }
+            expect(() => {
+                createElement('getter-inheritance', { is: MyComponent })
+            }).not.toThrow();
+        });
+
+        it('should call correct inherited public setter', () => {
+            let count = 0;
+            class MyParent extends Element {
+                get foo() {}
+                set foo() {
+                    count += 1;
+                }
+            }
+            MyParent.publicProps = {
+                foo: {
+                    config: 3,
+                }
+            }
+            class MyComponent extends MyParent {
+
+            }
+
+            const elm = createElement('getter-inheritance', { is: MyComponent });
+            elm.foo = 'bar';
+            expect(count).toBe(1);
+        });
+    });
+
     describe('global HTML Properties', () => {
         describe('#lang', () => {
             it('should reflect correct attribute value', () => {
@@ -1393,13 +1435,13 @@ describe('html-element', () => {
         });
 
         describe.only('#dir', () => {
-            it('should reflect attribute by default', () => {
+            it.only('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
                 }
                 const element = createElement('prop-reflect-dir', { is: MyComponent });
                 element.dir = 'ltr';
-                expect(element.getAttribute('dir')).toBe('ltr');
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'dir')).toBe('ltr');
             });
 
             it('should return correct value from getter', () => {
@@ -1416,6 +1458,12 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     set dir(value) {
                         count += 1;
+                    }
+                    get dir() {}
+                }
+                MyComponent.publicProps = {
+                    dir: {
+                        config: 3,
                     }
                 }
                 const element = createElement('prop-setter-dir', { is: MyComponent });
@@ -1459,22 +1507,14 @@ describe('html-element', () => {
                         return 'ltr';
                     }
                 }
+                MyComponent.publicProps = {
+                    dir: {
+                        config: 1,
+                    }
+                }
                 const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
                 expect(element.dir).toBe('ltr');
                 expect(count).toBe(1);
-            });
-
-            it.only('should warn if dir getter returns non-enumerated value', () => {
-                jest.spyOn(assertLogger, 'logWarning');
-                class MyComponent extends Element {
-                    get dir() {
-                        return 'notvalid';
-                    }
-                }
-                const element = createElement('prop-getter-dir-warning', { is: MyComponent });
-                element.dir;
-                expect(assertLogger.logWarning).toHaveBeenCalledWith('Incompatible return value for property dir. dir should return one of "", "ltr", "rtl" but instead returned "notvalid".');
-                assertLogger.logWarning.mockRestore();
             });
 
             it('should be reactive by default', () => {
@@ -1484,7 +1524,12 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { id: $cmp.dir } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.dir
+                                    }
+                                }, [])
                             ];
                         }
                     }

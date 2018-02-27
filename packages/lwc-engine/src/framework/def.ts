@@ -25,7 +25,6 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
-    keys,
 } from "./language";
 import { GlobalHTMLProperties } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
@@ -34,7 +33,6 @@ import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
-import { Component } from './component';
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -81,6 +79,12 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
+
+const HTML_PROPS = {
+    dir: {
+        config: 3,
+    }
+}
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
@@ -186,6 +190,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback  = errorCallback || superDef.errorCallback;
     }
 
+    props = assign(HTML_PROPS, props);
     const descriptors = createDescriptorMap(props, methods);
 
     const def: ComponentDef = {
@@ -214,21 +219,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         }
     }
     return def;
-}
-
-function createAttributeGetter(name: string) {
-    const getter = createGetter(name);
-    return function (this: VMElement): any {
-        const value = getter.call(this);
-
-        if (process.env.NODE_ENV !== 'production') {
-            const { enumerated } = GlobalHTMLProperties[name];
-            if (enumerated && enumerated[value] !== true) {
-                assert.logWarning(`Incompatible return value for property ${name}. ${name} should return one of ${keys(enumerated).map((k) => { return `"${k}"`; }).join(', ')} but instead returned "${value}".`);
-            }
-        }
-        return value;
-    }
 }
 
 function createGetter(key: string) {
@@ -273,7 +263,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        //assertPublicAttributeColission(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -389,12 +379,6 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
             value: removeAttributeNSPatched,
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
-
-        // Global HTML Attributes
-        dir: {
-            get: createAttributeGetter('dir'),
-            set: createSetter('dir'),
-        },
     };
     // expose getters and setters for each public props on the Element
     for (const key in publicProps) {
@@ -435,7 +419,7 @@ function getWireHash(target: ComponentConstructor): WireHash | undefined {
 
 function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
     const props = target.publicProps;
-    if (!props || !getOwnPropertyNames(props).length) {
+    if (!props || !getOwnPropertyNames(props).length || !getOwnPropertyDescriptor(target, 'publicProps')) {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {

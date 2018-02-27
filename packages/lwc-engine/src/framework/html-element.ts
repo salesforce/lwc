@@ -1,9 +1,9 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
+import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
 import { GlobalHTMLProperties } from "./dom";
-import { getPropNameFromAttrName } from "./utils";
+import { getPropNameFromAttrName, EmptyObject } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
@@ -30,52 +30,66 @@ const htmlElementGetters: IPropertyDescriptorsMap = {
     role: getOwnPropertyDescriptor(HTMLElement.prototype, 'role')!,
 }
 
-function reactiveAttribteGet(cmp: any, propName: string) {
-    const vm: VM = cmp[ViewModelReflection];
-    const elm = getLinkedElement(cmp);
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    if (isRendering) {
-        // this is needed because the proxy used by template is not sufficient
-        // for public props accessed from within a getter in the component.
-        observeMutation(cmp, propName);
-    }
+function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: PropertyDescriptor) {
+    const { get, set } = descriptor || EmptyObject;
+    return {
+        enumerable: descriptor.enumerable,
+        configurable: descriptor.configurable,
+        get(this: Component) {
+            const vm: VM = this[ViewModelReflection];
+            const elm = getLinkedElement(this);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
+            if (isRendering) {
+                // this is needed because the proxy used by template is not sufficient
+                // for public props accessed from within a getter in the component.
+                observeMutation(this, propName);
+            }
 
-    const propDescriptor = htmlElementGetters[propName];
-    if (propDescriptor) {
-        return propDescriptor.get!.call(elm);
+            // This check is for jest
+            // because JSDOM doesn't support all
+            // public props
+            if (get) {
+                return get.call(elm);
+            }
+        },
+        set(this: Component, newValue: any) {
+            const vm = this[ViewModelReflection];
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
+                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+            }
+
+            const observable = isObservable(newValue);
+            newValue = observable ? getReactiveProxy(newValue) : newValue;
+
+            if (newValue !== vm.cmpTrack[propName]) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                        assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                    }
+                }
+                vm.cmpTrack[propName] = newValue;
+                if (vm.idx > 0) {
+                    // perf optimization to skip this step if not in the DOM
+                    notifyMutation(this, attrName);
+                }
+            }
+            const elm = getLinkedElement(this);
+            // This check is for jest
+            // because JSDOM doesn't support all
+            // public props
+            if (set) {
+                return set.call(elm, newValue);
+            }
+        }
     }
 }
 
-function reactiveAttributeSet(cmp: any, attributeName: string, propName: string, newValue: any) {
-    const vm = cmp[ViewModelReflection];
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-        assert.isFalse(isBeingConstructed(vm), `Failed to construct '${cmp}': The result must not have attributes.`);
-    }
-
-    const observable = isObservable(newValue);
-    newValue = observable ? getReactiveProxy(newValue) : newValue;
-
-    if (newValue !== vm.cmpTrack[propName]) {
-        if (process.env.NODE_ENV !== 'production') {
-            if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
-                assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
-            }
-        }
-        vm.cmpTrack[propName] = newValue;
-        if (vm.idx > 0) {
-            // perf optimization to skip this step if not in the DOM
-            notifyMutation(cmp, attributeName);
-        }
-    }
-    const elm = getLinkedElement(cmp);
-    const propDescriptor = htmlElementGetters[propName];
-    if (propDescriptor) {
-        propDescriptor.set!.call(elm, newValue);
-    }
+const htmlElementDescriptors = {
+    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!)
 }
 
 const {
@@ -328,16 +342,9 @@ class LWCElement implements Component {
         const is = getAttribute.call(elm, 'is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
     }
-
-    // Global HTML Props
-    get dir() {
-        return reactiveAttribteGet(this, 'dir');
-    }
-
-    set dir(newValue) {
-        reactiveAttributeSet(this, 'dir', 'dir', newValue);
-    }
 }
+
+defineProperties(LWCElement.prototype, htmlElementDescriptors);
 
 // Global HTML Attributes
 if (process.env.NODE_ENV !== 'production') {
