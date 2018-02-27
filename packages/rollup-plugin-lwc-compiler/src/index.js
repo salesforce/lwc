@@ -1,7 +1,3 @@
-import { normalize } from 'path';
-
-/* eslint-env node */
-
 const fs = require('fs');
 const path = require('path');
 const compiler = require('lwc-compiler');
@@ -125,7 +121,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 result = normalizeResult(rollupCompatInstance.transform(result.code, id));
             }
 
-            return { code: result.code map: result.map };
+            return { code: result.code, map: result.map };
 
         },
 
