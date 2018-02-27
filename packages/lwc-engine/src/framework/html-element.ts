@@ -201,15 +201,21 @@ class LWCElement implements Component {
     }
 
     removeAttribute(attrName: string): void {
+        const vm = getCustomElementVM(this);
+        // marking the set is needed for the AOM polyfill
+        vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
-        return removeAttribute.call(getLinkedElement(this), attrName);
+        return removeAttribute.call(vm.elm, attrName);
     }
 
     setAttribute(attrName: string, value: any): void {
+        const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
         }
+        // marking the set is needed for the AOM polyfill
+        vm.overrides[attrName] = 1;
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
         return setAttribute.call(getLinkedElement(this), attrName, value);

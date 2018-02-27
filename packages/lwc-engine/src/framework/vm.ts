@@ -52,6 +52,7 @@ export interface VM {
     component?: Component;
     membrane?: Membrane;
     deps: VM[][];
+    overrides: Record<string, number>;
     toString(): string;
 }
 
@@ -177,6 +178,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         cmpRoot: undefined,
         component: undefined,
         children: EmptyArray,
+        overrides: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };

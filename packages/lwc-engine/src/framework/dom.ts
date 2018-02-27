@@ -58,6 +58,8 @@ export const GlobalARIAProperties = {
     'aria-setsize': true,
 };
 
+const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
+
 // Global HTML Attributes & Properties
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
@@ -95,7 +97,7 @@ export const GlobalHTMLProperties = {
     },
     dataset: {
         readOnly: true,
-        msg: 'Using property "dataset" is an anti-pattern. Instead declare `static observedAttributes = ["data-foo"]` and use `attributeChangedCallback(attrName, oldValue, newValue)` to get a notification each time the attribute changes.',
+        error: 'Using property "dataset" is an anti-pattern. Components should not rely on dataset to implement its internal logic, nor use that as a communication channel.',
     },
     dir: {
         attribute: 'dir',
@@ -152,23 +154,22 @@ export const GlobalHTMLProperties = {
     },
     offsetHeight: {
         readOnly: true,
-        experimental: true,
+        error: OffsetPropertiesError,
     },
     offsetLeft: {
         readOnly: true,
-        experimental: true,
+        error: OffsetPropertiesError,
     },
     offsetParent: {
         readOnly: true,
-        experimental: true,
     },
     offsetTop: {
         readOnly: true,
-        experimental: true,
+        error: OffsetPropertiesError,
     },
     offsetWidth: {
         readOnly: true,
-        experimental: true,
+        error: OffsetPropertiesError,
     },
     properties: {
         readOnly: true,
