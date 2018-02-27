@@ -47,17 +47,16 @@ describe('rollup in compat mode', () => {
     });
 });
 
-describe('rollup in prod_compat mode', () => {
-    const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
-
-    it.skip(`simple app`, () => {
-        const entry = path.join(simpleAppDir, 'main.js');
-        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
-            const expected = fsExpected('expected_prod_compat_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
-        })
-    });
-});
+// describe('rollup in prod_compat mode', () => {
+//     const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
+//     it(`simple app`, () => {
+//         const entry = path.join(simpleAppDir, 'main.js');
+//         return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+//             const expected = fsExpected('expected_prod_compat_config_simple_app');
+//             expect(pretty(actual)).toBe(pretty(expected));
+//         })
+//     });
+// });
 
 function doRollup(input, options = {}) {
     return rollup.rollup({

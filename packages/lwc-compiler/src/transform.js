@@ -4,7 +4,6 @@ import styleTransform from './transformers/style';
 import templateTransformer from './transformers/template';
 import javascriptTransformer from './transformers/javascript';
 import compatPluginFactory from "./rollup-plugins/compat";
-import noopPlugin from "./rollup-plugins/noop";
 import { isCompat } from './modes';
 
 /**
@@ -24,7 +23,7 @@ function getTransformer(fileName) {
             return javascriptTransformer;
 
         default:
-            return noopPlugin;
+            throw new Error(`No available transformer for ${fileName}`);
 
     }
 }

@@ -1,3 +1,5 @@
+import { normalize } from 'path';
+
 /* eslint-env node */
 
 const fs = require('fs');
@@ -29,6 +31,10 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
     return registry;
 }
 
+function normalizeResult(result) {
+    return { code: result.code || result, map: result.map || { mappings: '' } };
+}
+
 /*
     API for rollup-compat plugin:
     {
@@ -39,7 +45,7 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
         polyfills?
     }
  */
-module.exports = function rollupRaptorCompiler(pluginOptions = {}) {
+module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude, mapNamespaceFromPath } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
     const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions, {
@@ -102,23 +108,24 @@ module.exports = function rollupRaptorCompiler(pluginOptions = {}) {
             const moduleEntry = Object.values(modulePaths).find(r => id === r.entry);
             const moduleRegistry =  moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
 
-            let result = await compiler.transform(code, id, {
-                mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
-                moduleName: moduleRegistry.moduleName,
-                moduleNamespace: moduleRegistry.moduleNamespace,
-                moduleSpecifier: moduleRegistry.moduleSpecifier
-            });
+            let result = code;
 
-            if (mode === 'compat' || mode === 'prod_compat') {
-                try {
-                    result = rollupCompatInstance.transform(result.code, id);
-                } catch (e) {
-                    console.log('>>', e);
-                }
+            if (!rollupCompatInstance.knownCompatModule(id)) {
+                result = await compiler.transform(code, id, {
+                    mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
+                    moduleName: moduleRegistry.moduleName,
+                    moduleNamespace: moduleRegistry.moduleNamespace,
+                    moduleSpecifier: moduleRegistry.moduleSpecifier
+                });
             }
 
-            // TODO: Clean this up in rollup-compat-plugin
-            return { code: result.code || result, map: result.map || { mappings: '' } };
+            result = normalizeResult(result);
+
+            if (mode === 'compat' || mode === 'prod_compat') {
+                result = normalizeResult(rollupCompatInstance.transform(result.code, id));
+            }
+
+            return { code: result.code map: result.map };
 
         },
 
