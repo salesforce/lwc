@@ -58,10 +58,6 @@ export const htmlDomApi: DOMAPI = {
     setTextContent,
 };
 
-function vnodeCompareFn(vnode1: VNode, vnode2: VNode): boolean {
-    return vnode1.nt === vnode2.nt && vnode1.key === vnode2.key;
-}
-
 const patchVNode = init([
     // Attrs need to be applied to element before props
     // IE11 will wipe out value on radio inputs if value
@@ -73,7 +69,7 @@ const patchVNode = init([
     events,
     token,
     uid,
-], htmlDomApi, vnodeCompareFn);
+], htmlDomApi);
 
 const patchChildren = patchVNode.children;
 

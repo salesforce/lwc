@@ -1,9 +1,0 @@
-{
-    "extends": "plugin:lwc/recommended",
-    "plugins": ["lwc"],
-    "rules": {
-        "lwc/no-inline-disable": "off",
-        "compat/compat": "off",
-        "jest/no-disabled-tests": "off"
-    }
-}

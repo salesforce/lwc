@@ -11,10 +11,17 @@ function generateTargetName({ format, prod, target, proddebug }){
     ].join('');
 }
 
+function ignoreCircularDependencies({ code, message }) {
+    if (code !== 'CIRCULAR_DEPENDENCY') {
+        throw new Error(message);
+    }
+}
+
 module.exports = {
     COMPAT_SUFFIX,
     DEBUG_SUFFIX,
     PROD_SUFFIX,
-    generateTargetName: generateTargetName
-}
+    generateTargetName,
+    ignoreCircularDependencies
+};
 

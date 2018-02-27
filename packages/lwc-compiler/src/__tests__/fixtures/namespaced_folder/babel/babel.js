@@ -70,16 +70,16 @@ var s = Symbol("s");
 assert.ok(typeof s === "symbol");
 assert.equal(typeof s, "symbol");
 assert.equal(typeof typeof s.foo, "symbol");
-typeof s === "string";
+var ts = typeof s === "string";
 assert.isNotOk(typeof o === "symbol");
 assert.notEqual(typeof o, "symbol");
 assert.notEqual(typeof typeof o.foo, "symbol");
-typeof o === "string";
 
 // babel-plugin-transform-es2015-unicode-regex
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-unicode-regex/test/fixtures/unicode-regex/basic/actual.js
 var string = "foo💩bar";
 var match = string.match(/foo(.)bar/u);
+assert.notEqual(string, match, ts);
 
 // babel-plugin-transform-async-to-generator
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-async-to-generator/test/fixtures/async-to-generator/async/actual.js

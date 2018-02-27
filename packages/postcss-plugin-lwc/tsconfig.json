@@ -1,25 +1,13 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
-    "moduleResolution": "node",
-    "module": "commonjs",
-    "outDir": "dist/commonjs",
-    "declarationDir": "dist/types",
+    "checkJs": false,
+    "allowJs": false,
     "declaration": true,
-
-    "strict": true,
-    "strictFunctionTypes": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "lib": [
-      "es2016"
-    ]
+    "declarationDir": "dist/types",
+    "outDir": "dist/commonjs",
   },
   "include": [
-    "src/**/*",
-  ],
-  "exclude": [
-    "*/__tests__/"
+    "src/**/*.ts",
   ]
 }

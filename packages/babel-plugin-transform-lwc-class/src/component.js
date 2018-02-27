@@ -1,5 +1,6 @@
 const { basename } = require('path');
 const commentParser = require('comment-parser');
+const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, findClassProperty, staticClassProperty, getEngineImportSpecifiers } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 
@@ -56,7 +57,7 @@ module.exports = function ({ types: t }) {
 
                     // Import and wire template to the component if the class has no render method
                     if (!findClassMethod(classBody, LWC_COMPONENT_PROPERTIES.RENDER)) {
-                        wireTemplateToClass(state, classBody);
+                        wireTemplateToClass(path, state, classBody);
                     }
                 }
             }
@@ -89,13 +90,13 @@ module.exports = function ({ types: t }) {
         return basename(classPath, '.js');
     }
 
-    function importDefaultTemplate(state) {
+    function importDefaultTemplate(path, state) {
         const componentName = getBaseName(state);
-        return state.file.addImport(`./${componentName}.html`, 'default', 'tmpl');
+        return moduleImports.addDefault(path,`./${componentName}.html`, { nameHint: 'tmpl' })
     }
 
-    function wireTemplateToClass(state, classBody) {
-        const templateIdentifier = importDefaultTemplate(state);
+    function wireTemplateToClass(path, state, classBody) {
+        const templateIdentifier = importDefaultTemplate(path, state);
 
         const styleProperty = staticClassProperty(
             t,

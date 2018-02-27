@@ -1,40 +1,40 @@
 
 const path = require('path');
-const uglify = require('rollup-plugin-uglify');
 const replace = require('rollup-plugin-replace');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('typescript');
+const rollupTypescriptPlugin = require('rollup-plugin-typescript');
+const rollupUglifyPlugin = require('rollup-plugin-uglify');
 const { minify } = require('uglify-es');
 
 const { version } = require('../package.json');
-const { generateTargetName } = require('./engine.rollup.config.util');
+const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 
 const entry = path.resolve(__dirname, '../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../dist/umd');
-
 const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
 function rollupConfig(config){
     const { format, target, prod } = config;
-
-    let plugins = [
-        typescript({ target: target, typescript: require('typescript') }),
+    const plugins = [
+        rollupTypescriptPlugin({ typescript, target, module: 'es6', sourceMap: false }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-        prod && uglify({}, code => minify(code))
+        prod && rollupUglifyPlugin({}, minify)
     ].filter(p => p);
 
     const targetName = generateTargetName(config);
 
     // sourceMap issue: https://github.com/mjeanroy/rollup-plugin-license/issues/6
     return {
-        name: "Engine",
-        banner: banner,
-        footer: footer,
         input: entry,
         output: {
             file: path.join(outputDir + `/${target}`,  targetName),
             format: format,
+            name: "Engine",
+            banner: banner,
+            footer: footer,
         },
+        onwarn: ignoreCircularDependencies,
         plugins
     }
 }

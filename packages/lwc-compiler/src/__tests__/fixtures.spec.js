@@ -68,7 +68,7 @@ describe('component name and namespace override', () => {
         });
 
         expect(pretify(code)).toBe(
-            pretify(`define('x-bar',function(){console.log('foo')});`),
+            pretify(`define("x-bar",function(){console.log("foo")});`),
         );
     });
 
@@ -83,7 +83,7 @@ describe('component name and namespace override', () => {
         });
 
         expect(pretify(code)).toBe(
-            pretify(`define('bar-foo',function(){console.log('foo')});`),
+            pretify(`define("bar-foo",function(){console.log("foo")});`),
         );
     });
 });
