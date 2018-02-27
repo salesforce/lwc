@@ -1,6 +1,5 @@
 import assert from "../assert";
 import { defineProperty, isObject, isNull, isTrue } from "../language";
-import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { EmptyObject } from "../utils";
@@ -8,6 +7,7 @@ import { isBeingConstructed } from "../component";
 import { VM, VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined } from "../language";
+import { membrane as reactiveMembrane } from "../reactive";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
@@ -49,10 +49,11 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
-                const observable = isObservable(newValue);
-                newValue = observable ? getReactiveProxy(newValue) : newValue;
                 if (process.env.NODE_ENV !== 'production') {
-                    if (!observable && !isNull(newValue) && isObject(newValue)) {
+                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
+                    // Then newValue if newValue is observable (plain object or array)
+                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }
@@ -60,7 +61,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             if (vmBeingUpdated === vm) {
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
-                vm.cmpProps[key] = newValue;
+                vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
 
                 // avoid notification of observability while constructing the instance
                 if (vm.idx > 0) {
@@ -97,10 +98,11 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             }
             if (vm.isRoot || isBeingConstructed(vm)) {
                 vmBeingUpdated = vm;
-                const observable = isObservable(newValue);
-                newValue = observable ? getReactiveProxy(newValue) : newValue;
                 if (process.env.NODE_ENV !== 'production') {
-                    if (!observable && !isNull(newValue) && isObject(newValue)) {
+                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
+                    // Then newValue if newValue is observable (plain object or array)
+                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }
@@ -109,7 +111,7 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
                 if (set) {
-                    set.call(this, newValue);
+                    set.call(this, reactiveMembrane.getReadOnlyProxy(newValue));
                 } else if (process.env.NODE_ENV !== 'production') {
                     assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter decorated with @api.`);
                 }
