@@ -83,6 +83,18 @@ const COMPUTED_SETTER_MASK = 2;
 const HTML_PROPS = {
     dir: {
         config: 3,
+    },
+    id: {
+        config: 3,
+    },
+    accessKey: {
+        config: 3,
+    },
+    title: {
+        config: 3,
+    },
+    lang: {
+        config: 3,
     }
 }
 
@@ -190,7 +202,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback  = errorCallback || superDef.errorCallback;
     }
 
-    props = assign(HTML_PROPS, props);
+    props = assign({}, HTML_PROPS, props);
     const descriptors = createDescriptorMap(props, methods);
 
     const def: ComponentDef = {

@@ -10,7 +10,8 @@
     "build:all": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
     "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
-    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js"
+    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js",
+    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
@@ -24,8 +25,5 @@
     "modules": {
       "engine": "dist/modules/es2017/engine.js"
     }
-  },
-  "dependencies": {
-    "jsdom": "11"
   }
 }

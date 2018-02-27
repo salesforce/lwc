@@ -1117,7 +1117,7 @@ describe('html-element', () => {
         it('should inherit public getters and setters correctly', () => {
             class MyParent extends Element {
                 get foo() {}
-                set foo() {}
+                set foo(value) {}
             }
             MyParent.publicProps = {
                 foo: {
@@ -1136,7 +1136,7 @@ describe('html-element', () => {
             let count = 0;
             class MyParent extends Element {
                 get foo() {}
-                set foo() {
+                set foo(value) {
                     count += 1;
                 }
             }
@@ -1156,32 +1156,23 @@ describe('html-element', () => {
     });
 
     describe('global HTML Properties', () => {
-        describe('#lang', () => {
-            it('should reflect correct attribute value', () => {
+        describe.only('#lang', () => {
+            it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.lang = 'spanglish';
-                expect(element.getAttribute('lang')).toBe('spanglish');
-            });
-
-            it('should reflect attribute', () => {
-                class MyComponent extends Element {
-
-                }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.lang = 'spanglish';
-                expect(element.hasAttribute('lang')).toBe(true);
+                const element = createElement('prop-reflect-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'lang')).toBe('en');
             });
 
             it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.lang = 'spanglish';
-                expect(element.lang).toBe('spanglish');
+                const element = createElement('prop-getter-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(element.lang).toBe('en');
             });
 
             it('should call setter defined in component', () => {
@@ -1190,8 +1181,14 @@ describe('html-element', () => {
                     set lang(value) {
                         count += 1;
                     }
+                    get lang() {}
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-lang', { is: MyComponent });
                 element.lang = {},
                 expect(count).toBe(1);
             });
@@ -1206,13 +1203,18 @@ describe('html-element', () => {
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.lang } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.lang
+                                }
+                            }, [])];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-setter-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.lang = true;
+                element.lang = 'en';
                 return Promise.resolve()
                     .then(() => {
                         expect(count).toBe(1);
@@ -1224,11 +1226,16 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     get lang() {
                         count += 1;
-                        return 'foo';
+                        return 'en';
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.lang).toBe('foo');
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
+                expect(element.lang).toBe('en');
                 expect(count).toBe(1);
             });
 
@@ -1239,18 +1246,23 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { id: $cmp.lang } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.lang
+                                    }
+                                }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.lang = 'spanglish';
+                element.lang = 'en';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('spanglish');
+                        expect(element.querySelector('div')!.id).toBe('en');
                     });
             });
 
@@ -1258,7 +1270,7 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        this.lang = 'spanglish';
+                        this.lang = 'en';
                     }
                 }
                 expect(() => {
@@ -1273,49 +1285,60 @@ describe('html-element', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.hidden = true;
-                expect(element.hasAttribute('hidden')).toBe(true);
+                const element = createElement('prop-reflect-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'lang')).toBe('en');
             });
 
             it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.hidden = true;
-                expect(element.hidden).toBe(true);
+                const element = createElement('prop-getter-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(element.lang).toBe('en');
             });
 
             it('should call setter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    set hidden(value) {
+                    set lang(value) {
                         count += 1;
                     }
+                    get lang() {}
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.hidden = {},
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-lang', { is: MyComponent });
+                element.lang = {},
                 expect(count).toBe(1);
             });
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    set hidden(value) {
+                    set lang(value) {
 
                     }
 
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.hidden } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.lang
+                                }
+                            }, [])];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-setter-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.hidden = true;
+                element.lang = 'en';
                 return Promise.resolve()
                     .then(() => {
                         expect(count).toBe(1);
@@ -1325,13 +1348,18 @@ describe('html-element', () => {
             it('should call getter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    get hidden() {
+                    get lang() {
                         count += 1;
-                        return 'foo';
+                        return 'en';
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.hidden).toBe('foo');
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
+                expect(element.lang).toBe('en');
                 expect(count).toBe(1);
             });
 
@@ -1342,18 +1370,23 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { id: $cmp.dir } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.lang
+                                    }
+                                }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-lang-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.dir = 'ltr';
+                element.lang = 'en';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('ltr');
+                        expect(element.querySelector('div')!.id).toBe('en');
                     });
             });
 
@@ -1361,7 +1394,7 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        this.hidden = true;
+                        this.lang = 'en';
                     }
                 }
                 expect(() => {
@@ -1434,8 +1467,8 @@ describe('html-element', () => {
             });
         });
 
-        describe.only('#dir', () => {
-            it.only('should reflect attribute by default', () => {
+        describe('#dir', () => {
+            it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
                 }
@@ -1563,18 +1596,18 @@ describe('html-element', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.id = 'a',
-                expect(element.getAttribute('id')).toBe('a');
+                const element = createElement('prop-reflect-id', { is: MyComponent });
+                element.id = 'id';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'id')).toBe('id');
             });
 
-            it('should return normalized attribute value', () => {
+            it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.id = {},
-                expect(element.getAttribute('id')).toBe('[object Object]');
+                const element = createElement('prop-getter-id', { is: MyComponent });
+                element.id = 'id';
+                expect(element.id).toBe('id');
             });
 
             it('should call setter defined in component', () => {
@@ -1583,8 +1616,14 @@ describe('html-element', () => {
                     set id(value) {
                         count += 1;
                     }
+                    get id() {}
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                MyComponent.publicProps = {
+                    id: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-id', { is: MyComponent });
                 element.id = {},
                 expect(count).toBe(1);
             });
@@ -1599,13 +1638,18 @@ describe('html-element', () => {
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.id } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.id
+                                }
+                            }, [])];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-setter-id-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.id = {};
+                element.id = 'ltr';
                 return Promise.resolve()
                     .then(() => {
                         expect(count).toBe(1);
@@ -1617,11 +1661,16 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     get id() {
                         count += 1;
-                        return 'foo';
+                        return 'id';
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.id).toBe('foo');
+                MyComponent.publicProps = {
+                    id: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-id-imperative', { is: MyComponent });
+                expect(element.id).toBe('id');
                 expect(count).toBe(1);
             });
 
@@ -1632,33 +1681,37 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { id: $cmp.id } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        title: $cmp.id
+                                    }
+                                }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-id-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.id = 'a';
+                element.id = 'id';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('a');
+                        expect(element.querySelector('div')!.title).toBe('id');
                     });
             });
 
             it('should throw an error when setting default value in constructor', () => {
-                expect.assertions(1);
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        expect(() => {
-                            this.id = 'foo';
-                        }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+                        this.id = 'id';
                     }
                 }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
 
-                createElement('x-foo', { is: MyComponent });
             });
         });
 
@@ -1667,18 +1720,18 @@ describe('html-element', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.accessKey = 'a',
-                expect(element.getAttribute('accesskey')).toBe('a');
+                const element = createElement('prop-reflect-accessKey', { is: MyComponent });
+                element.accessKey = 'accessKey';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe('accessKey');
             });
 
-            it('should return normalized attribute value', () => {
+            it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.accessKey = {},
-                expect(element.getAttribute('accessKey')).toBe('[object Object]');
+                const element = createElement('prop-getter-accessKey', { is: MyComponent });
+                element.accessKey = 'accessKey';
+                expect(element.accessKey).toBe('accessKey');
             });
 
             it('should call setter defined in component', () => {
@@ -1687,8 +1740,14 @@ describe('html-element', () => {
                     set accessKey(value) {
                         count += 1;
                     }
+                    get accessKey() {}
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                MyComponent.publicProps = {
+                    accessKey: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-accessKey', { is: MyComponent });
                 element.accessKey = {},
                 expect(count).toBe(1);
             });
@@ -1703,13 +1762,18 @@ describe('html-element', () => {
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.accessKey } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.accessKey
+                                }
+                            }, [])];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-setter-accessKey-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.accessKey = {};
+                element.accessKey = 'accessKey';
                 return Promise.resolve()
                     .then(() => {
                         expect(count).toBe(1);
@@ -1721,11 +1785,16 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     get accessKey() {
                         count += 1;
-                        return 'foo';
+                        return 'accessKey';
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.accessKey).toBe('foo');
+                MyComponent.publicProps = {
+                    accessKey: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
+                expect(element.accessKey).toBe('accessKey');
                 expect(count).toBe(1);
             });
 
@@ -1736,33 +1805,37 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { accessKey: $cmp.accessKey } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        title: $cmp.accessKey
+                                    }
+                                }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-accessKey-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.accessKey = 'a';
+                element.accessKey = 'accessKey';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.accessKey).toBe('a');
+                        expect(element.querySelector('div')!.title).toBe('accessKey');
                     });
             });
 
             it('should throw an error when setting default value in constructor', () => {
-                expect.assertions(1);
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        expect(() => {
-                            this.title = 'foo';
-                        }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+                        this.accessKey = 'accessKey';
                     }
                 }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
 
-                createElement('x-foo', { is: MyComponent });
             });
         });
 
@@ -1772,18 +1845,18 @@ describe('html-element', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.title = 'foo',
-                expect(element.getAttribute('title')).toBe('foo');
+                const element = createElement('prop-reflect-title', { is: MyComponent });
+                element.title = 'title';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe('title');
             });
 
-            it('should return normalized attribute value', () => {
+            it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.title = {},
-                expect(element.getAttribute('title')).toBe('[object Object]');
+                const element = createElement('prop-getter-title', { is: MyComponent });
+                element.title = 'title';
+                expect(element.title).toBe('title');
             });
 
             it('should call setter defined in component', () => {
@@ -1792,9 +1865,15 @@ describe('html-element', () => {
                     set title(value) {
                         count += 1;
                     }
+                    get title() {}
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.title = 'title';
+                MyComponent.publicProps = {
+                    title: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-title', { is: MyComponent });
+                element.title = {},
                 expect(count).toBe(1);
             });
 
@@ -1808,11 +1887,16 @@ describe('html-element', () => {
                     render() {
                         count += 1;
                         return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.title } }, [])];
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    id: $cmp.title
+                                }
+                            }, [])];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-setter-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
                 element.title = 'title';
                 return Promise.resolve()
@@ -1826,11 +1910,16 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     get title() {
                         count += 1;
-                        return 'foo';
+                        return 'title';
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.title).toBe('foo');
+                MyComponent.publicProps = {
+                    title: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-title-imperative', { is: MyComponent });
+                expect(element.title).toBe('title');
                 expect(count).toBe(1);
             });
 
@@ -1841,33 +1930,37 @@ describe('html-element', () => {
                         return ($api, $cmp) => {
                             renderCount += 1;
                             return [
-                                $api.h('div', { props: { title: $cmp.title } }, [])
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.title
+                                    }
+                                }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('x-foo', { is: MyComponent });
+                const element = createElement('prop-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.title = 'foo';
+                element.title = 'title';
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div').title).toBe('foo');
+                        expect(element.querySelector('div')!.id).toBe('title');
                     });
             });
 
             it('should throw an error when setting default value in constructor', () => {
-                expect.assertions(1);
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        expect(() => {
-                            this.title = 'foo';
-                        }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+                        this.title = 'title';
                     }
                 }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
 
-                createElement('x-foo', { is: MyComponent });
             });
         });
 

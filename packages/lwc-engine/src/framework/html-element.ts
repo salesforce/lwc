@@ -18,16 +18,10 @@ interface IPropertyDescriptorsMap {
 }
 
 const htmlElementGetters: IPropertyDescriptorsMap = {
-    title: getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!,
     tabIndex: getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!,
-    accessKey: getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!,
-    id: getOwnPropertyDescriptor(Element.prototype, 'id')!,
     contentEditable: getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!,
-    dir: getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!,
     draggable: getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!,
     hidden: getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!,
-    lang: getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!,
-    role: getOwnPropertyDescriptor(HTMLElement.prototype, 'role')!,
 }
 
 function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: PropertyDescriptor) {
@@ -74,7 +68,7 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
                 vm.cmpTrack[propName] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
-                    notifyMutation(this, attrName);
+                    notifyMutation(this, propName);
                 }
             }
             const elm = getLinkedElement(this);
@@ -89,7 +83,11 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
 }
 
 const htmlElementDescriptors = {
-    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!)
+    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!),
+    id: getHTMLPropDescriptor('id', 'id', getOwnPropertyDescriptor(Element.prototype, 'id')!),
+    accessKey: getHTMLPropDescriptor('accessKey', 'accesskey', getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!),
+    title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
+    lang: getHTMLPropDescriptor('lang', 'lang', getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!),
 }
 
 const {
