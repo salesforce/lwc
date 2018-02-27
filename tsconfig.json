@@ -1,13 +1,28 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "noEmit": true,
-        "allowJs": true,
-        "checkJs": true
-    },
-    "exclude": [
-      "node_modules",
-      "packages/*/node_modules/",
-      "**/__test__/*.js"
-    ]
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "ES2018",
+    "lib": ["dom", "es2015", "es2016", "es2017", "es2018"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": ["jest", "node"]
+  },
+
+  "exclude": [
+    "**/node_modules",
+    "**/build",
+    "**/__tests__"
+  ]
 }

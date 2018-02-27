@@ -2,7 +2,6 @@ import { rollup } from 'rollup';
 import * as rollupPluginReplace from 'rollup-plugin-replace';
 
 import { isCompat, isProd } from './modes';
-
 import rollupModuleResolver from './rollup-plugins/module-resolver';
 import rollupTransfrom from './rollup-plugins/transform';
 import rollupCompat from './rollup-plugins/compat';

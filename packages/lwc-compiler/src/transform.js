@@ -24,6 +24,7 @@ function getTransformer(fileName) {
 
         default:
             throw new Error(`No available transformer for ${fileName}`);
+
     }
 }
 

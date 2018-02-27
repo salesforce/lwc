@@ -58,9 +58,7 @@ function rollupConfig({ formats, prod }) {
 }
 
 module.exports = [
-
     // DEV & PROD
-    rollupConfig({ formats: ['umd', 'cjs', 'es'] }),
+    rollupConfig({ formats: ['umd', 'cjs', 'es'], prod: false }),
     rollupConfig({ formats: ['umd'], prod: true })
-
 ];

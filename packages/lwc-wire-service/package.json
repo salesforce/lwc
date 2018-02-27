@@ -5,36 +5,34 @@
   "main": "dist/commonjs/es2017/wire-service.js",
   "module": "dist/modules/es2017/wire-service.js",
   "scripts": {
-    "clean": "rimraf dist playground/index.js",
     "lint": "eslint src playground",
-    "build": "npm run build:es-and-cjs && npm run build:umd:prod && npm run build:umd:dev",
+    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
+    "build:all": "yarn build:es-and-cjs && yarn build:umd:prod && yarn build:umd:dev",
     "build:umd:dev": "rollup -c rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c rollup.config.es-and-cjs.js",
     "build:playground": "rollup -c playground/rollup.config.js",
     "serve": "node playground/server.js",
     "start": "concurrently \"yarn run build:playground --watch\" \"yarn run serve\"",
-    "test": "jest --coverage --maxWorkers=2"
+    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "devDependencies": {
-    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "1.6.1",
     "concurrently": "^3.4.0",
     "cross-env": "^3.1.4",
     "deasync": "0.1.12",
     "eslint": "~4.13.0",
     "eslint-plugin-lwc": "^0.2.4",
     "express": "^4.15.2",
-    "jest": "^21.2.1",
     "lwc-compiler": "0.17.17",
     "lwc-engine": "0.17.17",
     "lwc-jest-transformer": "0.17.15",
-    "rimraf": "^2.6.1",
-    "rollup": "0.50.0",
-    "rollup-plugin-babel": "^3.0.3",
+    "rollup": "~0.56.2",
     "rollup-plugin-lwc-compiler": "0.17.17",
+    "rollup-plugin-compat": "0.17.30",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "~3.3.4"
+    "uglify-es": "~3.3.6"
   },
   "lwc": {
     "modules": {

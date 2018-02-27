@@ -3,14 +3,13 @@ import * as path from 'path';
 import bundle from './bundle';
 import transformFile from './transform';
 
-import { MODES, ALL_MODES, isCompat, isProd } from './modes';
+import { MODES, ALL_MODES, isProd } from './modes';
 import { zipObject, isUndefined, isString } from './utils';
 
 import * as replacePlugin from "rollup-plugin-replace";
 import fsModuleResolver from './module-resolvers/fs';
 import inMemoryModuleResolver from './module-resolvers/in-memory';
 import minifyPlugin from "./rollup-plugins/minify";
-import compatPlugin from "./rollup-plugins/compat";
 
 export { default as templateCompiler } from 'lwc-template-compiler';
 
@@ -89,7 +88,6 @@ export function transform(src, id, options) {
     }
 
     options = Object.assign({}, DEFAULT_TRANSFORM_OPTIONS, options);
-
     return transformFile(src, id, options);
 }
 
@@ -128,9 +126,6 @@ function normalizeEntryPath(fileName) {
  * 'foo.js' => ns: default, name: foo
  * '.../foo/foo.js' => ns: default, name: foo
  * '.../myns/foo/foo.js' => ns: myns, name: foo
- *
- * @param {string} fileName
- * @param {boolean} mapNamespaceFromPath
  */
 function getNormalizedName(fileName,{ componentName, componentNamespace, mapNamespaceFromPath }) {
     const ext = path.extname(fileName);
