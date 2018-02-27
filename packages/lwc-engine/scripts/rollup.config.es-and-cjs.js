@@ -1,5 +1,7 @@
 const path = require('path');
 const typescript = require('rollup-plugin-typescript');
+const nodeResolve = require('rollup-plugin-node-resolve');
+
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 const { version } = require('../package.json');
 
@@ -26,7 +28,7 @@ function rollupConfig(config) {
             banner: banner,
             footer: footer,
         },
-        plugins: [ typescript({ target: target, typescript: require('typescript') }) ]
+        plugins: [  nodeResolve(), typescript({ target: target, typescript: require('typescript') }) ]
     }
 }
 

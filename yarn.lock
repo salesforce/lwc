@@ -584,6 +584,10 @@ acorn-jsx@^3.0.0:
   dependencies:
     acorn "^3.0.4"
 
+acorn@^2.4.0:
+  version "2.7.0"
+  resolved "http://npm.lwcjs.org/acorn/-/acorn-2.7.0/ab6e7d9d886aaca8b085bc3312b79a198433f0e7.tgz#ab6e7d9d886aaca8b085bc3312b79a198433f0e7"
+
 acorn@^3.0.4:
   version "3.3.0"
   resolved "http://npm.lwcjs.org/acorn/-/acorn-3.3.0/45e37fb39e8da3f25baee3ff5369e2bb5f22017a.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
@@ -3385,7 +3389,7 @@ estraverse@^4.0.0, estraverse@^4.1.0, estraverse@^4.1.1, estraverse@^4.2.0:
   version "4.2.0"
   resolved "http://npm.lwcjs.org/estraverse/-/estraverse-4.2.0/0dee3fed31fcd469618ce7342099fc1afa0bdb13.tgz#0dee3fed31fcd469618ce7342099fc1afa0bdb13"
 
-estree-walker@^0.2.1:
+estree-walker@^0.2.0, estree-walker@^0.2.1:
   version "0.2.1"
   resolved "http://npm.lwcjs.org/estree-walker/-/estree-walker-0.2.1/bdafe8095383d8414d5dc2ecf4c9173b6db9412e.tgz#bdafe8095383d8414d5dc2ecf4c9173b6db9412e"
 
@@ -5588,6 +5592,12 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "http://npm.lwcjs.org/macaddress/-/macaddress-0.2.8/5904dc537c39ec6dbefeae902327135fa8511f12.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
+magic-string@^0.10.0:
+  version "0.10.2"
+  resolved "http://npm.lwcjs.org/magic-string/-/magic-string-0.10.2/f25f1c3d9e484f0d8ad606d6c2faf404a3b6cf9d.tgz#f25f1c3d9e484f0d8ad606d6c2faf404a3b6cf9d"
+  dependencies:
+    vlq "^0.2.1"
+
 magic-string@^0.22.4:
   version "0.22.4"
   resolved "http://npm.lwcjs.org/magic-string/-/magic-string-0.22.4/31039b4e40366395618c1d6cf8193c53917475ff.tgz#31039b4e40366395618c1d6cf8193c53917475ff"
@@ -7235,9 +7245,26 @@ rollup-plugin-compat@0.17.30:
     compat-polyfills "0.17.30"
     rollup-pluginutils "~2.0.1"
 
+rollup-plugin-inject@^1.4.1:
+  version "1.4.1"
+  resolved "http://npm.lwcjs.org/rollup-plugin-inject/-/rollup-plugin-inject-1.4.1/14825236259485981f6b8118404408acd22b1d54.tgz#14825236259485981f6b8118404408acd22b1d54"
+  dependencies:
+    acorn "^2.4.0"
+    estree-walker "^0.2.0"
+    magic-string "^0.10.0"
+    rollup-pluginutils "^1.2.0"
+
 rollup-plugin-node-resolve@^3.0.0:
   version "3.0.3"
   resolved "http://npm.lwcjs.org/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.3/8f57b253edd00e5b0ad0aed7b7e9cf5982e98fa4.tgz#8f57b253edd00e5b0ad0aed7b7e9cf5982e98fa4"
+  dependencies:
+    builtin-modules "^1.1.0"
+    is-module "^1.0.0"
+    resolve "^1.1.6"
+
+rollup-plugin-node-resolve@^3.0.2:
+  version "3.0.2"
+  resolved "http://npm.lwcjs.org/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-3.0.2/38babc12fd404cc2ba1ff68648fe43fa3ffee6b0.tgz#38babc12fd404cc2ba1ff68648fe43fa3ffee6b0"
   dependencies:
     builtin-modules "^1.1.0"
     is-module "^1.0.0"
@@ -7273,7 +7300,7 @@ rollup-plugin-uglify@~3.0.0:
   dependencies:
     uglify-es "^3.3.7"
 
-rollup-pluginutils@^1.3.1:
+rollup-pluginutils@^1.2.0, rollup-pluginutils@^1.3.1:
   version "1.5.2"
   resolved "http://npm.lwcjs.org/rollup-pluginutils/-/rollup-pluginutils-1.5.2/1e156e778f94b7255bfa1b3d0178be8f5c552408.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
   dependencies:

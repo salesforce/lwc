@@ -1,0 +1,22 @@
+{
+  "name": "observable-membrane",
+  "version": "0.17.17",
+  "description": "Observable Membrane implementation for LWC",
+  "main": "dist/commonjs/observable-membrane.js",
+  "module": "dist/modules/observable-membrane.js",
+  "jsnext:main": "dist/modules/observable-membrane.js",
+  "scripts": {
+    "clean": "rimraf dist/ lib/",
+    "test": "jest --coverage --no-cache --maxWorkers=2",
+    "types": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "devDependencies": {
+    "rollup": "~0.56.2",
+    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "~3.3.6"
+  }
+}

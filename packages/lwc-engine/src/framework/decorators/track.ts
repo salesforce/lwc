@@ -1,10 +1,10 @@
 import assert from "../assert";
 import { isArray, isObject, defineProperty, isUndefined } from "../language";
-import { getReactiveProxy, isObservable } from "../reactive";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
+import { membrane as reactiveMembrane } from './../reactive';
 
 // stub function to prevent misuse of the @track decorator
 export default function track() {
@@ -30,18 +30,17 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
-
-            const observable = isObservable(newValue);
-            newValue = observable ? getReactiveProxy(newValue) : newValue;
-
-            if (newValue !== vm.cmpTrack[key]) {
-
+            const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
+            if (reactiveOrAnyValue !== vm.cmpTrack[key]) {
                 if (process.env.NODE_ENV !== 'production') {
-                    if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                    // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
+                    // Then newValue if newValue is observable (plain object or array)
+                    const isObservable = reactiveOrAnyValue !== newValue;
+                    if (!isObservable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
                         assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 }
-                vm.cmpTrack[key] = newValue;
+                vm.cmpTrack[key] = reactiveOrAnyValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, key);
