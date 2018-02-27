@@ -26,7 +26,15 @@ import {
     ArraySlice,
     isNull,
 } from "./language";
-import { GlobalHTMLProperties } from "./dom";
+import {
+    GlobalHTMLProperties,
+    getAttribute,
+    getAttributeNS,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+} from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
@@ -102,6 +110,10 @@ const HTML_PROPS = {
     draggable: {
         config: 3,
     },
+
+    ariaLabel: {
+        config: 3,
+    }
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
@@ -258,15 +270,6 @@ function createMethodCaller(key: string) {
     };
 }
 
-const {
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS
-} = Element.prototype;
-
 function getAttributePatched(this: VMElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
@@ -279,10 +282,10 @@ function getAttributePatched(this: VMElement, attrName: string): string | null {
 function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
-    vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
+    vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        //assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -300,7 +303,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
 function removeAttributePatched(this: VMElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
-    vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
+    vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeColission(vm, attrName);

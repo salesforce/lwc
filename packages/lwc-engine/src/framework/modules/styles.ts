@@ -5,8 +5,7 @@ import {
 } from './../language';
 import { EmptyObject } from '../utils';
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-
-const { removeAttribute } = Element.prototype;
+import { removeAttribute } from './../dom';
 
 const DashCharCode = 45;
 

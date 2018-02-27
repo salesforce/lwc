@@ -1155,6 +1155,47 @@ describe('html-element', () => {
         });
     });
 
+    describe('Aria Properties', () => {
+        describe.only('#ariaLabel', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-label', { is: MyComponent });
+                element.ariaLabel = 'label';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-label')).toBe('label');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                element.ariaLabel = 'label';
+                expect(element.ariaLabel).toBe('label');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                expect(element.ariaLabel).toBe(null);
+            });
+
+            it.only('should return default value from shadow root when not value is set', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.ariaLabel = 'foo';
+                    }
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.ariaLabel).toBe('foo');
+            });
+        });
+    });
+
     describe('global HTML Properties', () => {
         describe('#lang', () => {
             it('should reflect attribute by default', () => {
@@ -1775,7 +1816,6 @@ describe('html-element', () => {
 
             });
         });
-
 
         describe('#title', () => {
             it('should reflect attribute by default', () => {

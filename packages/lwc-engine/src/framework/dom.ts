@@ -1,3 +1,25 @@
+const {
+    getAttribute,
+    getAttributeNS,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+    querySelector,
+    querySelectorAll,
+} = Element.prototype;
+
+export {
+    getAttribute,
+    getAttributeNS,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+    querySelector,
+    querySelectorAll,
+};
+
 // Few more execptions that are using the attribute name to match the property in lowercase.
 // this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
 // and https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes
@@ -17,46 +39,61 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-// Global ARIA Attributes
+
+// this regular expression is used to transform aria props into aria attributes because
+// that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
+const ARIA_REGEX = /^aria/;
+
+
+export function getAriaAttributeName(propName: string) {
+    return propName.replace(ARIA_REGEX, 'aria-').toLocaleLowerCase()
+}
+
+// TODO: clean up these props (casing, etc.)
+// TODO: move this to another file
+// Global Aria and Role Properties derived from ARIA and Role Attributes with their
+// respective default value.
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
-export const GlobalARIAProperties = {
-    'aria-autocomplete': true,
-    'aria-checked': true,
-    'aria-current': true,
-    'aria-disabled': true,
-    'aria-expanded': true,
-    'aria-haspopup': true,
-    'aria-hidden': true,
-    'aria-invalid': true,
-    'aria-label': true,
-    'aria-level': true,
-    'aria-multiline': true,
-    'aria-multiselectable': true,
-    'aria-orientation': true,
-    'aria-pressed': true,
-    'aria-readonly': true,
-    'aria-required': true,
-    'aria-selected': true,
-    'aria-sort': true,
-    'aria-valuemax': true,
-    'aria-valuemin': true,
-    'aria-valuenow': true,
-    'aria-valuetext': true,
-    'aria-live': true,
-    'aria-relevant': true,
-    'aria-atomic': true,
-    'aria-busy': true,
-    'aria-dropeffect': true,
-    'aria-dragged': true,
-    'aria-activedescendant': true,
-    'aria-controls': true,
-    'aria-describedby': true,
-    'aria-flowto': true,
-    'aria-labelledby': true,
-    'aria-owns': true,
-    'aria-posinset': true,
-    'aria-setsize': true,
+export const GlobalARIAProperties: Record<string, any> = {
+    ariaAutocomplete: null,
+    ariaChecked: null,
+    ariaCurrent: null,
+    ariaDisabled: null,
+    ariaExpanded: null,
+    ariaHasPopUp: null,
+    ariaHidden: null,
+    ariaInvalid: null,
+    ariaLabel: null,
+    ariaLevel: null,
+    ariaMultiline: null,
+    ariaMultiSelectable: null,
+    ariaOrientation: null,
+    ariaPressed: null,
+    ariaReadonly: null,
+    ariaRequired: null,
+    ariaSelected: null,
+    ariaSort: null,
+    ariaValueMax: null,
+    ariaValueMin: null,
+    ariaValueNow: null,
+    ariaValueText: null,
+    ariaLive: null,
+    ariaRelevant: null,
+    ariaAtomic: null,
+    ariaBusy: null,
+    ariaDropEffect: null,
+    ariaDragged: null,
+    ariaActiveDescendant: null,
+    ariaControls: null,
+    ariaDescribedBy: null,
+    ariaFlowTo: null,
+    ariaLabelledBy: null,
+    ariaOwns: null,
+    ariaPosInSet: null,
+    ariaSetSize: null,
+    role: null,
 };
+
 
 const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
 
@@ -82,12 +119,6 @@ export const GlobalHTMLProperties = {
     contentEditable: {
         attribute: 'contenteditable',
         reflective: true,
-        enumerated: {
-            'true': true,
-            'false': true,
-            '': true,
-            'inherit': true,
-        },
     },
     isContentEditable: {
         readOnly: true,
@@ -102,11 +133,6 @@ export const GlobalHTMLProperties = {
     dir: {
         attribute: 'dir',
         reflective: true,
-        enumerated: {
-            '': true,
-            'ltr': true,
-            'rtl': true
-        },
     },
     draggable: {
         attribute: 'draggable',

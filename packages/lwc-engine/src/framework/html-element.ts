@@ -1,8 +1,8 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, defineProperties, toString } from "./language";
-import { GlobalHTMLProperties } from "./dom";
+import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, toString } from "./language";
+import { GlobalHTMLProperties, GlobalARIAProperties, getAriaAttributeName } from "./dom";
 import { getPropNameFromAttrName, EmptyObject } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
@@ -29,17 +29,10 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
                 assert.vm(vm);
             }
             if (isRendering) {
-                // this is needed because the proxy used by template is not sufficient
-                // for public props accessed from within a getter in the component.
                 observeMutation(this, propName);
             }
 
-            // This check is for jest
-            // because JSDOM doesn't support all
-            // public props
-            if (get) {
-                return get.call(elm);
-            }
+            return get.call(elm);
         },
         set(this: Component, newValue: any) {
             const vm = this[ViewModelReflection];
@@ -75,17 +68,48 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
     }
 }
 
-const htmlElementDescriptors = {
-    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!),
+function createAccessibilityDescriptorForHTMLElement (propName: string, attrName: string) {
+    return {
+        get(this: Component) {
+            const vm: VM = this[ViewModelReflection];
+            const elm = getLinkedElement(this);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
+            if (isRendering) {
+                observeMutation(this, propName);
+            }
+
+            return elm.getAttribute(attrName);
+        },
+        set(this: Component, newValue: any) {
+            const vm = this[ViewModelReflection];
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
+                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+            }
+
+            vm.hostAttrs[attrName] = newValue;
+            getLinkedElement(this).setAttribute(attrName, newValue);
+        }
+    }
+}
+
+const htmlElementDescriptors = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaPropertyName) => {
+    seed[ariaPropertyName] = createAccessibilityDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
+    return seed;
+}, {
     id: getHTMLPropDescriptor('id', 'id', getOwnPropertyDescriptor(Element.prototype, 'id')!),
     accessKey: getHTMLPropDescriptor('accessKey', 'accesskey', getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!),
-    title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
-    lang: getHTMLPropDescriptor('lang', 'lang', getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!),
-    hidden: getHTMLPropDescriptor('hidden', 'hidden', getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!),
-    draggable: getHTMLPropDescriptor('draggable', 'draggable', getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!),
     contentEditable: getHTMLPropDescriptor('contentEditable', 'contenteditable', getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!),
+    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!),
+    draggable: getHTMLPropDescriptor('draggable', 'draggable', getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!),
+    hidden: getHTMLPropDescriptor('hidden', 'hidden', getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!),
+    lang: getHTMLPropDescriptor('lang', 'lang', getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!),
     tabIndex: getHTMLPropDescriptor('tabIndex', 'tabindex', getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!),
-}
+    title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
+});
 
 const {
     getAttribute,
@@ -200,7 +224,7 @@ class LWCElement implements Component {
     removeAttribute(attrName: string): void {
         const vm = getCustomElementVM(this);
         // marking the set is needed for the AOM polyfill
-        vm.overrides[attrName] = 1; // marking the set is needed for the AOM polyfill
+        vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
         return removeAttribute.call(vm.elm, attrName);
@@ -212,7 +236,7 @@ class LWCElement implements Component {
             assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
         }
         // marking the set is needed for the AOM polyfill
-        vm.overrides[attrName] = 1;
+        vm.hostAttrs[attrName] = 1;
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
         return setAttribute.call(getLinkedElement(this), attrName, value);
