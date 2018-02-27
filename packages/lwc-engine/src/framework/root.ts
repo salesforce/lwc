@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
-import { ArrayFilter, defineProperty, isNull } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -27,6 +27,83 @@ export interface ShadowRoot {
     querySelectorAll(selector: string): HTMLElement[];
     toString(): string;
 }
+
+const {
+    setAttribute,
+} = Element.prototype;
+
+function createAccessibilityDescriptorForShadowRoot(attrName: string, value: any): PropertyDescriptor {
+    // we use value as the storage mechanism and as the default value for the property
+    return {
+        enumerable: false,
+        get(this: ShadowRoot): any {
+            return value;
+        },
+        set(this: ShadowRoot, newValue: any) {
+            const vm = getCustomElementVM(this);
+            if (!isUndefined(vm.overrides[attrName])) {
+                return;
+            }
+            value = newValue;
+            setAttribute.call(vm.elm, attrName, value);
+        }
+    };
+}
+
+const RootDescriptors: PropertyDescriptorMap = create(null);
+// this regular expression is used to transform aria props into aria attributes because
+// that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
+const ARIA_REGEX = /$aria[A-Z]/;
+
+// TODO: clean up these props (casing, etc.)
+// TODO: move this to another file
+// Global Aria and Role Properties derived from ARIA and Role Attributes with their
+// respective default value.
+// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
+const GlobalARIAProperties: Record<string, any> = {
+    ariaAutocomplete: null,
+    ariaChecked: null,
+    ariaCurrent: null,
+    ariaDisabled: null,
+    ariaExpanded: null,
+    ariaHasPopUp: null,
+    ariaHidden: null,
+    ariaInvalid: null,
+    ariaLabel: null,
+    ariaLevel: null,
+    ariaMultiline: null,
+    ariaMultiSelectable: null,
+    ariaOrientation: null,
+    ariaPressed: null,
+    ariaReadonly: null,
+    ariaRequired: null,
+    ariaSelected: null,
+    ariaSort: null,
+    ariaValueMax: null,
+    ariaValueMin: null,
+    ariaValueNow: null,
+    ariaValueText: null,
+    ariaLive: null,
+    ariaRelevant: null,
+    ariaAtomic: null,
+    ariaBusy: null,
+    ariaDropEffect: null,
+    ariaDragged: null,
+    ariaActiveDescendant: null,
+    ariaControls: null,
+    ariaDescribedBy: null,
+    ariaFlowTo: null,
+    ariaLabelledBy: null,
+    ariaOwns: null,
+    ariaPosInSet: null,
+    ariaSetSize: null,
+    role: null,
+};
+
+// TODO: forEach, replace, toLocaleLowerCase from cached values to avoid poisoning
+// This routine will be a descriptor map for all Aria and Role properties to be added
+// to ShadowRoot prototype to polyfill AOM capabilities.
+getOwnPropertyNames(GlobalARIAProperties).forEach((propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName.replace(ARIA_REGEX, 'aria-').toLocaleLowerCase(), GlobalARIAProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);
@@ -97,6 +174,7 @@ export class Root implements ShadowRoot {
         return `Current ShadowRoot for ${component}`;
     }
 }
+defineProperties(Root.prototype, RootDescriptors);
 
 function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     const nodeList = querySelectorAll.call(elm, selector);
