@@ -14,13 +14,13 @@ describe("main.js", () => {
             }));
         });
         // TODO W-4072588 - support connected + disconnected (repeated) cycles
-        it.skip("registers for connected hook", () => {
-            const register = jest.fn();
-            registerWireService(register, mockAdapters);
-            expect(register).toHaveBeenCalledWith(expect.objectContaining({
-                connected: expect.any(Function)
-            }));
-        });
+        // it("registers for connected hook", () => {
+        //     const register = jest.fn();
+        //     registerWireService(register, mockAdapters);
+        //     expect(register).toHaveBeenCalledWith(expect.objectContaining({
+        //         connected: expect.any(Function)
+        //     }));
+        // });
         it("registers for disconnected hook", () => {
             const register = jest.fn();
             registerWireService(register, mockAdapters);

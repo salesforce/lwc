@@ -22,7 +22,7 @@ const res = Object.assign({}, base, {
 });
 
 describe('smoke test for babel transform', () => {
-    it.only('should transpile none stage-4 syntax features in none-compat', async () => {
+    it('should transpile none stage-4 syntax features in none-compat', async () => {
         const { code } = await compile(
             fixturePath('namespaced_folder/babel/babel.js'),
             {
@@ -38,8 +38,6 @@ describe('smoke test for babel transform', () => {
         const { code } = await compile(
             fixturePath('namespaced_folder/babel/babel.js'), { mode: 'compat' }
         );
-
-        //console.log(code);
 
         expect(pretify(code)).toBe(
             pretify(readFixture('expected-babel-compat.js')),

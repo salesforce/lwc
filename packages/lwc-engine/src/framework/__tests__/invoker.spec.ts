@@ -265,7 +265,7 @@ describe('invoker', () => {
             }
         });
 
-        it.only('should remove listener in disconnectedCallback()', () => {
+        it('should remove listener in disconnectedCallback()', () => {
             expect.assertions(1);
             function fn(event: Event) {
                 expect(event.bubbles).toBe(true);
