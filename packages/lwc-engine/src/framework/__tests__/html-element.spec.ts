@@ -1156,7 +1156,7 @@ describe('html-element', () => {
     });
 
     describe('global HTML Properties', () => {
-        describe.only('#lang', () => {
+        describe('#lang', () => {
             it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
@@ -1285,42 +1285,42 @@ describe('html-element', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('prop-reflect-lang', { is: MyComponent });
-                element.lang = 'en';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'lang')).toBe('en');
+                const element = createElement('prop-reflect-hidden', { is: MyComponent });
+                element.hidden = true;
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'hidden')).toBe('');
             });
 
             it('should return correct value from getter', () => {
                 class MyComponent extends Element {
 
                 }
-                const element = createElement('prop-getter-lang', { is: MyComponent });
-                element.lang = 'en';
-                expect(element.lang).toBe('en');
+                const element = createElement('prop-getter-hidden', { is: MyComponent });
+                element.hidden = true;
+                expect(element.hidden).toBe(true);
             });
 
             it('should call setter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    set lang(value) {
+                    set hidden(value) {
                         count += 1;
                     }
-                    get lang() {}
+                    get hidden() {}
                 }
                 MyComponent.publicProps = {
-                    lang: {
+                    hidden: {
                         config: 3,
                     }
                 }
-                const element = createElement('prop-setter-lang', { is: MyComponent });
-                element.lang = {},
+                const element = createElement('prop-setter-hidden', { is: MyComponent });
+                element.hidden = {},
                 expect(count).toBe(1);
             });
 
             it('should not be reactive when defining own setter', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    set lang(value) {
+                    set hidden(value) {
 
                     }
 
@@ -1330,15 +1330,15 @@ describe('html-element', () => {
                             return [$api.h('div', {
                                 key: 0,
                                 props: {
-                                    title: $cmp.lang
+                                    title: $cmp.hidden
                                 }
                             }, [])];
                         }
                     }
                 }
-                const element = createElement('prop-setter-lang-reactive', { is: MyComponent });
+                const element = createElement('prop-setter-hidden-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.lang = 'en';
+                element.hidden = true;
                 return Promise.resolve()
                     .then(() => {
                         expect(count).toBe(1);
@@ -1348,18 +1348,18 @@ describe('html-element', () => {
             it('should call getter defined in component', () => {
                 let count = 0;
                 class MyComponent extends Element {
-                    get lang() {
+                    get hidden() {
                         count += 1;
-                        return 'en';
+                        return 'hidden';
                     }
                 }
                 MyComponent.publicProps = {
-                    lang: {
+                    hidden: {
                         config: 1,
                     }
                 }
-                const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
-                expect(element.lang).toBe('en');
+                const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
+                expect(element.hidden).toBe('hidden');
                 expect(count).toBe(1);
             });
 
@@ -1373,20 +1373,20 @@ describe('html-element', () => {
                                 $api.h('div', {
                                     key: 0,
                                     props: {
-                                        id: $cmp.lang
+                                        id: $cmp.hidden
                                     }
                                 }, [])
                             ];
                         }
                     }
                 }
-                const element = createElement('prop-lang-reactive', { is: MyComponent });
+                const element = createElement('prop-hidden-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                element.lang = 'en';
+                element.hidden = true;
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('en');
+                        expect(element.querySelector('div')!.id).toBe('true');
                     });
             });
 
@@ -1394,70 +1394,7 @@ describe('html-element', () => {
                 class MyComponent extends Element {
                     constructor() {
                         super();
-                        this.lang = 'en';
-                    }
-                }
-                expect(() => {
-                    createElement('x-foo', { is: MyComponent });
-                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
-
-            });
-        });
-
-        describe('#draggable', () => {
-            it('should call setter defined in component', () => {
-                let count = 0;
-                class MyComponent extends Element {
-                    set draggable(value) {
-                        count += 1;
-                    }
-                }
-                const element = createElement('x-foo', { is: MyComponent });
-                element.draggable = {},
-                expect(count).toBe(1);
-            });
-
-            it('should not be reactive when defining own setter', () => {
-                let count = 0;
-                class MyComponent extends Element {
-                    set draggable(value) {
-
-                    }
-
-                    render() {
-                        count += 1;
-                        return ($api, $cmp) => {
-                            return [$api.h('div', { props: { title: $cmp.draggable } }, [])];
-                        }
-                    }
-                }
-                const element = createElement('x-foo', { is: MyComponent });
-                document.body.appendChild(element);
-                element.draggable = true;
-                return Promise.resolve()
-                    .then(() => {
-                        expect(count).toBe(1);
-                    });
-            });
-
-            it('should call getter defined in component', () => {
-                let count = 0;
-                class MyComponent extends Element {
-                    get draggable() {
-                        count += 1;
-                        return 'foo';
-                    }
-                }
-                const element = createElement('x-foo', { is: MyComponent });
-                expect(element.draggable).toBe('foo');
-                expect(count).toBe(1);
-            });
-
-            it('should throw an error when setting default value in constructor', () => {
-                class MyComponent extends Element {
-                    constructor() {
-                        super();
-                        this.draggable = 'ltr';
+                        this.hidden = true;
                     }
                 }
                 expect(() => {

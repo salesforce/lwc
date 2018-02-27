@@ -57,9 +57,30 @@ describe('def', () => {
                 xBar: {},
             };
             expect(target.getComponentDef(MyComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 1,
                     type: 'any',
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                title: {
+                    config: 3
                 },
                 xBar: {
                     config: 0,
@@ -106,9 +127,30 @@ describe('def', () => {
             };
 
             expect(target.getComponentDef(MySubComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 1,
                     type: 'any',
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                title: {
+                    config: 3
                 },
                 xBar: {
                     config: 3,
@@ -121,7 +163,7 @@ describe('def', () => {
                 x: {
                     config: 1,
                     type: 'any',
-                }
+                },
             });
         });
 
@@ -199,10 +241,31 @@ describe('def', () => {
                 foo: {}
             };
             expect(target.getComponentDef(MyComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 0,
                     type: 'any',
-                }
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                title: {
+                    config: 3
+                },
             });
         });
     });

@@ -332,8 +332,12 @@ Test.publicProps = {
         }
     `, {
         output: {
-            code: `
-export default class Test {}
+            code: `export default class Test {
+  constructor() {
+    this.ariaDescribedBy = void 0;
+  }
+
+}
 Test.publicProps = {
   ariaDescribedBy: {
     config: 0

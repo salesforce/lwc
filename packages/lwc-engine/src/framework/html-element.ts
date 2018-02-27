@@ -17,18 +17,11 @@ interface IPropertyDescriptorsMap {
     [propName: string]: PropertyDescriptor;
 }
 
-const htmlElementGetters: IPropertyDescriptorsMap = {
-    tabIndex: getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!,
-    contentEditable: getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!,
-    draggable: getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!,
-    hidden: getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!,
-}
-
 function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: PropertyDescriptor) {
-    const { get, set } = descriptor || EmptyObject;
+    const { get, set, enumerable, configurable } = descriptor || EmptyObject;
     return {
-        enumerable: descriptor.enumerable,
-        configurable: descriptor.configurable,
+        enumerable,
+        configurable,
         get(this: Component) {
             const vm: VM = this[ViewModelReflection];
             const elm = getLinkedElement(this);
@@ -88,6 +81,10 @@ const htmlElementDescriptors = {
     accessKey: getHTMLPropDescriptor('accessKey', 'accesskey', getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!),
     title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
     lang: getHTMLPropDescriptor('lang', 'lang', getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!),
+    hidden: getHTMLPropDescriptor('hidden', 'hidden', getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!),
+    draggable: getHTMLPropDescriptor('draggable', 'draggable', getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!),
+    contentEditable: getHTMLPropDescriptor('contentEditable', 'contenteditable', getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!),
+    tabIndex: getHTMLPropDescriptor('tabIndex', 'tabindex', getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!),
 }
 
 const {

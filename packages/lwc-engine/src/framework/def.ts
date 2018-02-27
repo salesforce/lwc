@@ -95,7 +95,13 @@ const HTML_PROPS = {
     },
     lang: {
         config: 3,
-    }
+    },
+    hidden: {
+        config: 3,
+    },
+    draggable: {
+        config: 3,
+    },
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
