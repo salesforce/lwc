@@ -2,7 +2,6 @@ import { rollup } from "rollup";
 import * as rollupPluginReplace from "rollup-plugin-replace";
 
 import { MetadataCollector, ExternalReference } from "./meta-collector";
-import { inMemoryModuleResolver } from "../module-resolvers/in-memory";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
 import rollupTransform from "../rollup-plugins/transform";
@@ -61,7 +60,7 @@ export async function bundle(
 ): Promise<BundleReport> {
     validateNormalizedOptions(options);
 
-    const { outputConfig, name, namespace, files } = options;
+    const { outputConfig, name, namespace } = options;
 
     // TODO: remove format option once tests are converted to 'amd' format
     const format = (outputConfig as any).format || DEFAULT_FORMAT;
@@ -76,7 +75,7 @@ export async function bundle(
         }),
         rollupModuleResolver({
             metadataCollector,
-            moduleResolver: inMemoryModuleResolver(files)
+            options,
         }),
         rollupTransform({
             metadataCollector,

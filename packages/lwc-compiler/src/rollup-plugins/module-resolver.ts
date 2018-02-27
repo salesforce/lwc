@@ -1,5 +1,6 @@
 import * as path from "path";
 import { MetadataCollector } from "../bundler/meta-collector";
+import { NormalizedCompilerOptions } from "../options";
 
 const EMPTY_CSS_CONTENT = ``;
 
@@ -19,16 +20,32 @@ function isTemplateCss(id: string, importee: string) {
     );
 }
 
-/**
- * Resolve files in the context of raptor modules and store external
- * dependencies
- */
+function fileExists(
+    fileName: string,
+    { files }: NormalizedCompilerOptions
+): boolean {
+    return files.hasOwnProperty(fileName);
+}
+
+function readFile(
+    fileName: string,
+    options: NormalizedCompilerOptions
+): string {
+    const { files } = options;
+
+    if (fileExists(fileName, options)) {
+        return files[fileName];
+    } else {
+        throw new Error(`No such file ${fileName}`);
+    }
+}
+
 export default function({
     metadataCollector,
-    moduleResolver
+    options
 }: {
-    metadataCollector: MetadataCollector,
-    moduleResolver: any;
+    metadataCollector: MetadataCollector;
+    options: NormalizedCompilerOptions;
 }) {
     return {
         name: "module-resolver",
@@ -36,7 +53,10 @@ export default function({
         resolveId: function(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {
                 if (shouldRecordDependency(id)) {
-                    metadataCollector.collectReference({ name: id, type: 'module' });
+                    metadataCollector.collectReference({
+                        name: id,
+                        type: "module"
+                    });
                 }
             } else {
                 const relPath = importee ? path.dirname(importee) : "";
@@ -46,23 +66,22 @@ export default function({
                     absPath += ".js";
                 }
 
-                return moduleResolver.fileExists(absPath).then((exists: boolean) => {
-                    if (!exists && !isTemplateCss(id, importee)) {
-                        throw new Error(
-                            `Could not resolve '${id}' from '${importee}'`
-                        );
-                    }
-                    return absPath;
-                });
+                if (
+                    !fileExists(absPath, options) &&
+                    !isTemplateCss(id, importee)
+                ) {
+                    throw new Error(
+                        `Could not resolve '${id}' from '${importee}'`
+                    );
+                }
+                return absPath;
             }
         },
 
         load(id: string) {
-            return moduleResolver.fileExists(id).then((exists: boolean) => {
-                return !exists && path.extname(id) === ".css"
-                    ? EMPTY_CSS_CONTENT
-                    : moduleResolver.readFile(id);
-            });
+            return !fileExists(id, options) && path.extname(id) === ".css"
+                ? EMPTY_CSS_CONTENT
+                : readFile(id, options);
         }
     };
 }
