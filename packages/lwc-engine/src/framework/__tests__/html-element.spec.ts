@@ -1156,7 +1156,123 @@ describe('html-element', () => {
     });
 
     describe('Aria Properties', () => {
-        describe.only('#ariaLabel', () => {
+        describe('#role', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-role', { is: MyComponent });
+                element.role = 'tab';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                element.role = 'tab';
+                expect(element.role).toBe('tab');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                expect(element.role).toBe(null);
+            });
+
+            it('should return default value from shadow root when not value is set', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.role).toBe('tab');
+            });
+
+            it('should call setter when defined', () => {
+                let called = 0;
+                class MyComponent extends Element {
+                    get role() {}
+                    set role(value) {
+                        called += 1;
+                    }
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'tab';
+                expect(called).toBe(1);
+            });
+
+            it('should not overwrite role attribute when setter does nothing', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                    get role() {}
+                    set role(value) {}
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'nottab';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+        });
+
+        describe('#ariaChecked', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-checked', { is: MyComponent });
+                element.ariaChecked = 'true';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                element.ariaChecked = 'true';
+                expect(element.ariaChecked).toBe('true');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                expect(element.ariaChecked).toBe(null);
+            });
+
+            it('should return default value from shadow root when not value is set', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.ariaChecked = 'true';
+                    }
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.ariaChecked).toBe('true');
+            });
+        });
+
+        describe('#ariaLabel', () => {
             it('should reflect attribute by default', () => {
                 class MyComponent extends Element {
 
@@ -1183,7 +1299,7 @@ describe('html-element', () => {
                 expect(element.ariaLabel).toBe(null);
             });
 
-            it.only('should return default value from shadow root when not value is set', () => {
+            it('should return default value from shadow root when not value is set', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
                         this.root.ariaLabel = 'foo';

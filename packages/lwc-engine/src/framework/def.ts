@@ -27,6 +27,7 @@ import {
     isNull,
 } from "./language";
 import {
+    GlobalARIAProperties,
     GlobalHTMLProperties,
     getAttribute,
     getAttributeNS,
@@ -88,7 +89,12 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-const HTML_PROPS = {
+const HTML_PROPS = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaPropName: string) => {
+    seed[ariaPropName] = {
+        config: 3,
+    };
+    return seed;
+}, {
     dir: {
         config: 3,
     },
@@ -110,11 +116,7 @@ const HTML_PROPS = {
     draggable: {
         config: 3,
     },
-
-    ariaLabel: {
-        config: 3,
-    }
-}
+});
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];

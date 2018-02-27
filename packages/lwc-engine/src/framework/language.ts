@@ -28,7 +28,15 @@ const {
     forEach,
 } = Array.prototype;
 
+const {
+    replace: StringReplace,
+    toLocaleLowerCase: StringToLocaleLowerCase,
+} = String.prototype;
+
+
 export {
+    StringToLocaleLowerCase,
+    StringReplace,
     freeze,
     seal,
     keys,

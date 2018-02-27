@@ -54,10 +54,9 @@ function createAccessibilityDescriptorForShadowRoot(attrName: string, value: any
 
 const RootDescriptors: PropertyDescriptorMap = create(null);
 
-// TODO: forEach, replace, toLocaleLowerCase from cached values to avoid poisoning
 // This routine will be a descriptor map for all Aria and Role properties to be added
 // to ShadowRoot prototype to polyfill AOM capabilities.
-getOwnPropertyNames(GlobalARIAProperties).forEach((propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(getAriaAttributeName(propName), GlobalARIAProperties[propName]));
+forEach.call(getOwnPropertyNames(GlobalARIAProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(getAriaAttributeName(propName), GlobalARIAProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);

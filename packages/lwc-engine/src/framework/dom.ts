@@ -1,3 +1,8 @@
+import {
+    StringToLocaleLowerCase,
+    StringReplace,
+} from './language';
+
 const {
     getAttribute,
     getAttributeNS,
@@ -46,7 +51,7 @@ const ARIA_REGEX = /^aria/;
 
 
 export function getAriaAttributeName(propName: string) {
-    return propName.replace(ARIA_REGEX, 'aria-').toLocaleLowerCase()
+    return StringToLocaleLowerCase.call(StringReplace.apply(propName, [ARIA_REGEX, 'aria-']));
 }
 
 // TODO: clean up these props (casing, etc.)

@@ -2,7 +2,17 @@ import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
 import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, toString } from "./language";
-import { GlobalHTMLProperties, GlobalARIAProperties, getAriaAttributeName } from "./dom";
+import {
+    GlobalHTMLProperties,
+    GlobalARIAProperties,
+    getAriaAttributeName,
+    getAttribute,
+    getAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+    setAttribute,
+    setAttributeNS,
+} from "./dom";
 import { getPropNameFromAttrName, EmptyObject } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
@@ -10,8 +20,8 @@ import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { isString } from "./language";
-import { getReactiveProxy, isObservable } from "./reactive";
 import { observeMutation, notifyMutation } from "./watcher";
+import { membrane as reactiveMembrane } from "./reactive";
 
 interface IPropertyDescriptorsMap {
     [propName: string]: PropertyDescriptor;
@@ -24,15 +34,17 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
         configurable,
         get(this: Component) {
             const vm: VM = this[ViewModelReflection];
-            const elm = getLinkedElement(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
-            if (isRendering) {
-                observeMutation(this, propName);
+            if (isBeingConstructed(vm)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                }
+                return;
             }
-
-            return get.call(elm);
+            observeMutation(this, propName);
+            return get.call(getLinkedElement(this));
         },
         set(this: Component, newValue: any) {
             const vm = this[ViewModelReflection];
@@ -42,28 +54,20 @@ function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: P
                 assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
             }
 
-            const observable = isObservable(newValue);
-            newValue = observable ? getReactiveProxy(newValue) : newValue;
-
-            if (newValue !== vm.cmpTrack[propName]) {
+            if (newValue !== vm.cmpProps[propName]) {
                 if (process.env.NODE_ENV !== 'production') {
-                    if (!observable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
+                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 }
-                vm.cmpTrack[propName] = newValue;
+                vm.cmpProps[propName] = reactiveMembrane.getReadOnlyProxy(newValue);
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, propName);
                 }
             }
-            const elm = getLinkedElement(this);
-            // This check is for jest
-            // because JSDOM doesn't support all
-            // public props
-            if (set) {
-                return set.call(elm, newValue);
-            }
+            return set.call(getLinkedElement(this), newValue);
         }
     }
 }
@@ -76,9 +80,13 @@ function createAccessibilityDescriptorForHTMLElement (propName: string, attrName
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
-            if (isRendering) {
-                observeMutation(this, propName);
+            if (isBeingConstructed(vm)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                }
+                return;
             }
+            observeMutation(this, propName);
 
             return elm.getAttribute(attrName);
         },
@@ -90,7 +98,19 @@ function createAccessibilityDescriptorForHTMLElement (propName: string, attrName
                 assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
             }
 
-            vm.hostAttrs[attrName] = newValue;
+            if (newValue !== vm.hostAttrs[propName]) {
+                if (process.env.NODE_ENV !== 'production') {
+                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
+                        assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                    }
+                }
+                vm.hostAttrs[propName] = reactiveMembrane.getReadOnlyProxy(newValue);
+                if (vm.idx > 0) {
+                    // perf optimization to skip this step if not in the DOM
+                    notifyMutation(this, propName);
+                }
+            }
             getLinkedElement(this).setAttribute(attrName, newValue);
         }
     }
@@ -110,15 +130,6 @@ const htmlElementDescriptors = getOwnPropertyNames(GlobalARIAProperties).reduce(
     tabIndex: getHTMLPropDescriptor('tabIndex', 'tabindex', getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!),
     title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
 });
-
-const {
-    getAttribute,
-    getAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    setAttribute,
-    setAttributeNS,
-} = Element.prototype;
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;

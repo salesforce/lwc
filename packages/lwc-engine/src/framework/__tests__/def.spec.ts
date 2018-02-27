@@ -60,6 +60,114 @@ describe('def', () => {
                 accessKey: {
                     config: 3
                 },
+                ariaActiveDescendant:{
+                    config: 3,
+                },
+                ariaAtomic: {
+                    config: 3,
+                },
+                ariaAutocomplete: {
+                    config: 3,
+                },
+                ariaBusy: {
+                    config: 3,
+                },
+                ariaChecked: {
+                    config: 3,
+                },
+                ariaControls: {
+                    config: 3,
+                },
+                ariaCurrent: {
+                    config: 3,
+                },
+                ariaDescribedBy: {
+                    config: 3,
+                },
+                ariaDisabled: {
+                    config: 3,
+                },
+                ariaDragged: {
+                    config: 3,
+                },
+                ariaDropEffect: {
+                    config: 3,
+                },
+                ariaExpanded: {
+                    config: 3,
+                },
+                ariaFlowTo: {
+                    config: 3,
+                },
+                ariaHasPopUp: {
+                    config: 3,
+                },
+                ariaHidden: {
+                    config: 3,
+                },
+                ariaInvalid: {
+                    config: 3,
+                },
+                ariaLabel: {
+                    config: 3,
+                },
+                ariaLabelledBy: {
+                    config: 3,
+                },
+                ariaLevel: {
+                    config: 3,
+                },
+                ariaLive: {
+                    config: 3,
+                },
+                ariaMultiSelectable: {
+                    config: 3,
+                },
+                ariaMultiline: {
+                    config: 3,
+                },
+                ariaOrientation: {
+                    config: 3,
+                },
+                ariaOwns: {
+                    config: 3,
+                },
+                ariaPosInSet: {
+                    config: 3,
+                },
+                ariaPressed: {
+                    config: 3,
+                },
+                ariaReadonly: {
+                    config: 3,
+                },
+                ariaRelevant: {
+                    config: 3,
+                },
+                ariaRequired: {
+                    config: 3,
+                },
+                ariaSelected: {
+                    config: 3,
+                },
+                ariaSetSize: {
+                    config: 3,
+                },
+                ariaSort: {
+                    config: 3,
+                },
+                ariaValueMax: {
+                    config: 3,
+                },
+                ariaValueMin: {
+                    config: 3,
+                },
+                ariaValueNow: {
+                    config: 3,
+                },
+                ariaValueText: {
+                    config: 3,
+                },
                 dir: {
                     config: 3
                 },
@@ -78,6 +186,9 @@ describe('def', () => {
                 },
                 lang: {
                     config: 3
+                },
+                role: {
+                    config: 3,
                 },
                 title: {
                     config: 3
@@ -130,6 +241,114 @@ describe('def', () => {
                 accessKey: {
                     config: 3
                 },
+                ariaActiveDescendant:{
+                  config: 3,
+                },
+                ariaAtomic: {
+                  config: 3,
+                },
+                ariaAutocomplete: {
+                  config: 3,
+                },
+                ariaBusy: {
+                  config: 3,
+                },
+                ariaChecked: {
+                  config: 3,
+                },
+                ariaControls: {
+                  config: 3,
+                },
+                ariaCurrent: {
+                  config: 3,
+                },
+                ariaDescribedBy: {
+                  config: 3,
+                },
+                ariaDisabled: {
+                  config: 3,
+                },
+                ariaDragged: {
+                  config: 3,
+                },
+                ariaDropEffect: {
+                  config: 3,
+                },
+                ariaExpanded: {
+                  config: 3,
+                },
+                ariaFlowTo: {
+                  config: 3,
+                },
+                ariaHasPopUp: {
+                  config: 3,
+                },
+                ariaHidden: {
+                  config: 3,
+                },
+                ariaInvalid: {
+                  config: 3,
+                },
+                ariaLabel: {
+                  config: 3,
+                },
+                ariaLabelledBy: {
+                  config: 3,
+                },
+                ariaLevel: {
+                  config: 3,
+                },
+                ariaLive: {
+                  config: 3,
+                },
+                ariaMultiSelectable: {
+                  config: 3,
+                },
+                ariaMultiline: {
+                  config: 3,
+                },
+                ariaOrientation: {
+                  config: 3,
+                },
+                ariaOwns: {
+                  config: 3,
+                },
+                ariaPosInSet: {
+                  config: 3,
+                },
+                ariaPressed: {
+                  config: 3,
+                },
+                ariaReadonly: {
+                  config: 3,
+                },
+                ariaRelevant: {
+                  config: 3,
+                },
+                ariaRequired: {
+                  config: 3,
+                },
+                ariaSelected: {
+                  config: 3,
+                },
+                ariaSetSize: {
+                  config: 3,
+                },
+                ariaSort: {
+                  config: 3,
+                },
+                ariaValueMax: {
+                  config: 3,
+                },
+                ariaValueMin: {
+                  config: 3,
+                },
+                ariaValueNow: {
+                  config: 3,
+                },
+                ariaValueText: {
+                  config: 3,
+                },
                 dir: {
                     config: 3
                 },
@@ -148,6 +367,9 @@ describe('def', () => {
                 },
                 lang: {
                     config: 3
+                },
+                role: {
+                    config: 3,
                 },
                 title: {
                     config: 3
@@ -244,6 +466,114 @@ describe('def', () => {
                 accessKey: {
                     config: 3
                 },
+                ariaActiveDescendant:{
+                    config: 3,
+                },
+                ariaAtomic: {
+                    config: 3,
+                },
+                ariaAutocomplete: {
+                    config: 3,
+                },
+                ariaBusy: {
+                    config: 3,
+                },
+                ariaChecked: {
+                    config: 3,
+                },
+                ariaControls: {
+                    config: 3,
+                },
+                ariaCurrent: {
+                    config: 3,
+                },
+                ariaDescribedBy: {
+                    config: 3,
+                },
+                ariaDisabled: {
+                    config: 3,
+                },
+                ariaDragged: {
+                    config: 3,
+                },
+                ariaDropEffect: {
+                    config: 3,
+                },
+                ariaExpanded: {
+                    config: 3,
+                },
+                ariaFlowTo: {
+                    config: 3,
+                },
+                ariaHasPopUp: {
+                    config: 3,
+                },
+                ariaHidden: {
+                    config: 3,
+                },
+                ariaInvalid: {
+                    config: 3,
+                },
+                ariaLabel: {
+                    config: 3,
+                },
+                ariaLabelledBy: {
+                    config: 3,
+                },
+                ariaLevel: {
+                    config: 3,
+                },
+                ariaLive: {
+                    config: 3,
+                },
+                ariaMultiSelectable: {
+                    config: 3,
+                },
+                ariaMultiline: {
+                    config: 3,
+                },
+                ariaOrientation: {
+                    config: 3,
+                },
+                ariaOwns: {
+                    config: 3,
+                },
+                ariaPosInSet: {
+                    config: 3,
+                },
+                ariaPressed: {
+                    config: 3,
+                },
+                ariaReadonly: {
+                    config: 3,
+                },
+                ariaRelevant: {
+                    config: 3,
+                },
+                ariaRequired: {
+                    config: 3,
+                },
+                ariaSelected: {
+                    config: 3,
+                },
+                ariaSetSize: {
+                    config: 3,
+                },
+                ariaSort: {
+                    config: 3,
+                },
+                ariaValueMax: {
+                    config: 3,
+                },
+                ariaValueMin: {
+                    config: 3,
+                },
+                ariaValueNow: {
+                    config: 3,
+                },
+                ariaValueText: {
+                    config: 3,
+                },
                 dir: {
                     config: 3
                 },
@@ -261,6 +591,9 @@ describe('def', () => {
                     config: 3
                 },
                 lang: {
+                    config: 3
+                },
+                role: {
                     config: 3
                 },
                 title: {
