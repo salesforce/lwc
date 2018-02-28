@@ -35,6 +35,7 @@ import {
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
+    defaultDefHTMLPropertyNames,
 } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
@@ -94,29 +95,10 @@ const HTML_PROPS = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaP
         config: 3,
     };
     return seed;
-}, {
-    dir: {
-        config: 3,
-    },
-    id: {
-        config: 3,
-    },
-    accessKey: {
-        config: 3,
-    },
-    title: {
-        config: 3,
-    },
-    lang: {
-        config: 3,
-    },
-    hidden: {
-        config: 3,
-    },
-    draggable: {
-        config: 3,
-    },
-});
+}, defaultDefHTMLPropertyNames.reduce((seed, propName) => {
+    seed[propName] = { config: 3 };
+    return seed;
+}, {}));
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];

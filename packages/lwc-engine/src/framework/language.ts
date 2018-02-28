@@ -30,12 +30,12 @@ const {
 
 const {
     replace: StringReplace,
-    toLocaleLowerCase: StringToLocaleLowerCase,
+    toLowerCase: StringToLowerCase,
 } = String.prototype;
 
 
 export {
-    StringToLocaleLowerCase,
+    StringToLowerCase,
     StringReplace,
     freeze,
     seal,

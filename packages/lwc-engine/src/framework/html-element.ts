@@ -12,6 +12,7 @@ import {
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
+    defaultDefHTMLPropertyNames,
 } from "./dom";
 import { getPropNameFromAttrName, EmptyObject } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -19,11 +20,12 @@ import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
-import { isString } from "./language";
+import { isString, StringToLowerCase } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { membrane as reactiveMembrane } from "./reactive";
 
-function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: PropertyDescriptor) {
+function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
+    const attrName = StringToLowerCase.call(propName);
     const { get, set, enumerable, configurable } = descriptor || EmptyObject;
     return {
         enumerable,
@@ -115,19 +117,11 @@ function createAccessibilityDescriptorForHTMLElement (propName: string, attrName
 const htmlElementDescriptors = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaPropertyName) => {
     seed[ariaPropertyName] = createAccessibilityDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
     return seed;
-}, {
-    // In standards-based web browsers, the id descriptor lives on Element.prototype
-    // On IE11, however, it lives on HTMLElement.prototype
-    id: getHTMLPropDescriptor('id', 'id', getOwnPropertyDescriptor(Element.prototype, 'id')! || getOwnPropertyDescriptor(HTMLElement.prototype, 'id')!),
-    accessKey: getHTMLPropDescriptor('accessKey', 'accesskey', getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!),
-    contentEditable: getHTMLPropDescriptor('contentEditable', 'contenteditable', getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!),
-    dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!),
-    draggable: getHTMLPropDescriptor('draggable', 'draggable', getOwnPropertyDescriptor(HTMLElement.prototype, 'draggable')!),
-    hidden: getHTMLPropDescriptor('hidden', 'hidden', getOwnPropertyDescriptor(HTMLElement.prototype, 'hidden')!),
-    lang: getHTMLPropDescriptor('lang', 'lang', getOwnPropertyDescriptor(HTMLElement.prototype, 'lang')!),
-    tabIndex: getHTMLPropDescriptor('tabIndex', 'tabindex', getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex')!),
-    title: getHTMLPropDescriptor('title', 'title', getOwnPropertyDescriptor(HTMLElement.prototype, 'title')!),
-});
+}, defaultDefHTMLPropertyNames.reduce((seed, propName) => {
+    const descriptorPrototype = propName === 'id' ? Element.prototype : HTMLElement.prototype;
+    seed[propName] = getHTMLPropDescriptor(propName, getOwnPropertyDescriptor(descriptorPrototype, propName)!);
+    return seed;
+}, {}));
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;

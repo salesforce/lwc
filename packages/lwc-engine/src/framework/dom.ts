@@ -1,5 +1,5 @@
 import {
-    StringToLocaleLowerCase,
+    StringToLowerCase,
     StringReplace,
 } from './language';
 
@@ -24,6 +24,9 @@ export {
     querySelector,
     querySelectorAll,
 };
+
+// These properties get added to LWCElement.prototype publicProps automatically
+export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable'];
 
 // Few more execptions that are using the attribute name to match the property in lowercase.
 // this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
@@ -51,7 +54,7 @@ const ARIA_REGEX = /^aria/;
 
 
 export function getAriaAttributeName(propName: string) {
-    return StringToLocaleLowerCase.call(StringReplace.apply(propName, [ARIA_REGEX, 'aria-']));
+    return StringToLowerCase.call(StringReplace.apply(propName, [ARIA_REGEX, 'aria-']));
 }
 
 // TODO: clean up these props (casing, etc.)
