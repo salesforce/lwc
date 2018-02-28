@@ -35,7 +35,7 @@ export interface Component {
 export interface ComponentConstructor {
     new (): Component;
     readonly name: string;
-    readonly forceTagName?: string;
+    readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
     readonly observedAttributes?: string[];
     readonly publicProps?: PropsDef;

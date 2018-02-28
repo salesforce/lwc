@@ -97,3 +97,11 @@ export function toString(obj: any): string {
         return obj + '';
     }
 }
+
+const {
+    indexOf: StringIndexOf,
+} = String.prototype;
+
+export {
+    StringIndexOf,
+};
