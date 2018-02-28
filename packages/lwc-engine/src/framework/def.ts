@@ -402,7 +402,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
 
 function getTrackHash(target: ComponentConstructor): TrackDef {
     const track = target.track;
-    if (!track || !getOwnPropertyNames(track).length) {
+    if (!track || !getOwnPropertyNames(track).length || !getOwnPropertyDescriptor(target, 'track')) {
         return EmptyObject;
     }
 
@@ -412,7 +412,7 @@ function getTrackHash(target: ComponentConstructor): TrackDef {
 
 function getWireHash(target: ComponentConstructor): WireHash | undefined {
     const wire = target.wire;
-    if (!wire || !getOwnPropertyNames(wire).length) {
+    if (!wire || !getOwnPropertyNames(wire).length || !getOwnPropertyDescriptor(target, 'wire')) {
         return;
     }
 
@@ -451,7 +451,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
 
 function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     const publicMethods = target.publicMethods;
-    if (!publicMethods || !publicMethods.length) {
+    if (!publicMethods || !publicMethods.length || !getOwnPropertyDescriptor(target, 'publicMethods')) {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
