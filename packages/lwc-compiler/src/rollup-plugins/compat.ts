@@ -1,22 +1,15 @@
-import * as babel from "babel-core";
-import * as raptorCompatTransformPlugin from "babel-plugin-transform-proxy-compat";
-
-import { BABEL_CONFIG_BASE, BABEL_PLUGINS_COMPAT } from "../babel-plugins";
+import * as babel from 'babel-core';
+import presetCompat from 'babel-preset-compat';
+import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { OutputProxyCompatConfig } from "../options";
 
 export default function(proxyCompatOption: OutputProxyCompatConfig | undefined) {
-    const config = {
-        ...BABEL_CONFIG_BASE,
-        plugins: [
-            ...BABEL_PLUGINS_COMPAT,
-            [
-                raptorCompatTransformPlugin,
-                {
-                    resolveProxyCompat: proxyCompatOption || { independent: "proxy-compat" }
-                }
-            ]
-        ]
-    };
+    const config = Object.assign({}, BABEL_CONFIG_BASE, {
+        presets: [
+            [presetCompat, { proxy: true, resolveProxyCompat: proxyCompatOption || { independent: "proxy-compat" } }],
+        ],
+    });
+
     return {
         name: "compat",
 

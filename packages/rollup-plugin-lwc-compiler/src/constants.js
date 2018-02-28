@@ -1,9 +1,9 @@
 /* eslint-env node */
 
 const DEFAULT_NS = 'x';
-
+const DEFAULT_MODE = 'dev';
 const DEFAULT_OPTIONS = {
-    mode: 'dev',
+    mode: DEFAULT_MODE,
     resolveFromSource: true,
     resolveFromPackages: true,
 };
@@ -11,4 +11,5 @@ const DEFAULT_OPTIONS = {
 module.exports = {
     DEFAULT_NS,
     DEFAULT_OPTIONS,
+    DEFAULT_MODE
 };

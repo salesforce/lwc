@@ -13,7 +13,7 @@ describe('Set Prototype Of', () => {
         assert.deepEqual(element.getText(), 'true');
     });
 
-    it('should have set proxy prototype correctly', function () {
+    it.skip('should have set proxy prototype correctly', function () {
         const element = browser.element('#proxy-is-document');
         assert.ok(element);
         assert.deepEqual(element.getText(), 'true');

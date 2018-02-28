@@ -1,18 +1,22 @@
-/* eslint-env node */
+const fs = require("fs");
+const path = require("path");
+const compiler = require("lwc-compiler");
+const pluginUtils = require("rollup-pluginutils");
+const lwcResolver = require("lwc-module-resolver");
+const rollupCompatPlugin = require("rollup-plugin-compat").default;
 
-const fs = require('fs');
-const path = require('path');
-const compiler = require('lwc-compiler');
-const pluginUtils = require('rollup-pluginutils');
-const lwcResolver = require('lwc-module-resolver');
-
-const { DEFAULT_NS, DEFAULT_OPTIONS } = require('./constants');
+const { DEFAULT_NS, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
 function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
-    const registry = { entry: file, moduleSpecifier: null, moduleName: null, moduleNamespace: DEFAULT_NS };
+    const registry = {
+        entry: file,
+        moduleSpecifier: null,
+        moduleName: null,
+        moduleNamespace: DEFAULT_NS
+    };
     const fileName = path.basename(file, path.extname(file));
     const rootParts = path.dirname(file).split(path.sep);
-    const nameParts = fileName.split('-');
+    const nameParts = fileName.split("-");
     const validModuleName = nameParts.length > 1;
 
     if (mapNamespaceFromPath) {
@@ -20,7 +24,7 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
         registry.moduleNamespace = rootParts.pop();
     } else if (validModuleName) {
         registry.moduleNamespace = nameParts.shift();
-        registry.moduleName = nameParts.join('-');
+        registry.moduleName = nameParts.join("-");
     } else {
         registry.moduleName = fileName;
     }
@@ -28,23 +32,53 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
     return registry;
 }
 
-module.exports = function rollupRaptorCompiler(opts = {}) {
-    const filter = pluginUtils.createFilter(opts.include, opts.exclude);
-    const options = Object.assign({}, DEFAULT_OPTIONS, opts, {
-        mapNamespaceFromPath: Boolean(opts.mapNamespaceFromPath),
-    });
+function normalizeResult(result) {
+    return { code: result.code || result, map: result.map || { mappings: "" } };
+}
 
-    let modulePaths = {};
+/*
+    API for rollup-compat plugin:
+    {
+        disableProxyTransform?: boolean,
+        onlyProxyTransform?: boolean,
+        downgrade?: boolean,
+        resolveProxyCompat?
+        polyfills?
+    }
+ */
+module.exports = function rollupLwcCompiler(pluginOptions = {}) {
+    const { include, exclude, mapNamespaceFromPath } = pluginOptions;
+    const filter = pluginUtils.createFilter(include, exclude);
+    const mergedPluginOptions = Object.assign(
+        {},
+        DEFAULT_OPTIONS,
+        pluginOptions,
+        {
+            mapNamespaceFromPath: Boolean(mapNamespaceFromPath)
+        }
+    );
+    const { mode, compat } = mergedPluginOptions;
+
+    // We will compose compat plugin on top of this one
+    const rollupCompatInstance = rollupCompatPlugin(compat);
+
+    // Closure to store the resolved modules
+    const modulePaths = {};
 
     return {
-        name: 'rollup-lwc-compiler',
+        name: "rollup-plugin-lwc-compiler",
 
-        options(opts) {
-            const entry = opts.input || opts.entry;
-            const entryDir = options.rootDir || path.dirname(entry);
-            const externalPaths = options.resolveFromPackages ? lwcResolver.resolveLwcNpmModules(options) : {};
-            const sourcePaths = options.resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, options): {};
-            modulePaths = Object.assign({}, externalPaths, sourcePaths);
+        options(rollupOptions) {
+            const entry = rollupOptions.input || rollupOptions.entry;
+            const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
+            const externalPaths = mergedPluginOptions.resolveFromPackages
+                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
+                : {};
+            const sourcePaths = mergedPluginOptions.resolveFromSource
+                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
+                : {};
+            Object.assign(modulePaths, externalPaths, sourcePaths);
+            rollupCompatInstance.options(rollupOptions);
         },
 
         resolveId(importee, importer) {
@@ -54,39 +88,55 @@ module.exports = function rollupRaptorCompiler(opts = {}) {
             }
 
             // Normalize relative import to absolute import
-            if (importee.startsWith('.') && importer) {
-                const normalizedPath = path.resolve(path.dirname(importer), importee);
+            if (importee.startsWith(".") && importer) {
+                const normalizedPath = path.resolve(
+                    path.dirname(importer),
+                    importee
+                );
                 return pluginUtils.addExtension(normalizedPath);
             }
+
+            // Check if compat needs to resolve this file
+            return rollupCompatInstance.resolveId(importee, importer);
         },
 
         load(id) {
             const exists = fs.existsSync(id);
-            const isCSS = path.extname(id) === '.css';
+            const isCSS = path.extname(id) === ".css";
 
             if (!exists && isCSS) {
-                return '';
+                return "";
             }
+
+            // Check if compat knows how to load this file
+            return rollupCompatInstance.load(id);
         },
 
-        transform(code, id) {
-            if (!filter(id)) return;
+        async transform(code, id) {
+            if (!filter(id)) {
+                return;
+            }
+
+            if (path.extname(id) === "") {
+                return { code, map: { mappings: "" } };
+            }
 
             // If we don't find the moduleId, just resolve the module name/namespace
-            let registry = Object.values(modulePaths).find(r => id === r.entry) || getModuleQualifiedName(id, options);
-
-            const { mode } = options;
+            let registry =
+                Object.values(modulePaths).find(r => id === r.entry) ||
+                getModuleQualifiedName(id, mergedPluginOptions);
 
             const config = {
                 outputConfig: {
-                    compat: !!(mode === 'compat'),
-                    minify: !!(mode === 'prod'),
+                    compat: !!(mode === "compat"),
+                    minify: !!(mode === "prod")
                 },
                 name: registry.moduleName,
                 namespace: registry.moduleNamespace,
-                resolveProxyCompat: { global: 'window.Proxy' }
-            }
+                moduleSpecifier: registry.moduleSpecifier,
+                resolveProxyCompat: mergedPluginOptions.resolveProxyCompat
+            };
             return compiler.transform(code, id, config);
-        },
+        }
     };
 };

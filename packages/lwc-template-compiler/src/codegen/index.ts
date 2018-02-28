@@ -414,15 +414,14 @@ function transform(
             data.push(
                 t.objectProperty(
                     t.identifier('key'),
-                    codeGen.genKey(compilerKey, forKeyExpression)
-                )
+                    codeGen.genKey(compilerKey, forKeyExpression),
+                ),
             );
         } else {
             // If stand alone element with no user-defined key
             // member expression id
             data.push(t.objectProperty(t.identifier('key'), compilerKey));
         }
-
 
         // Event handler
         if (on) {

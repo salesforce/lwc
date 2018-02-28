@@ -9,7 +9,7 @@ function isRelativeImport(id: string) {
 }
 
 function shouldRecordDependency(id: string) {
-    return !id.startsWith("babel/helpers/") && !id.startsWith("proxy-compat/");
+    return !id.startsWith('babel-compat/') && !id.startsWith('proxy-compat/');
 }
 
 function isTemplateCss(id: string, importee: string) {

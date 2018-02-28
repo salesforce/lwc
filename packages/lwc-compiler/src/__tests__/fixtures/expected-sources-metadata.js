@@ -18,6 +18,10 @@ if (style) {
     tmpl.style = style(tagName, token);
 }
 class Metadata extends Element {
+    constructor(...args) {
+        var _temp;
+        return _temp = super(...args), this.publicProp = void 0, this.wiredProp = void 0, _temp;
+    }
     publicMethod(name) {
         return "hello" + name;
     }
@@ -39,8 +43,12 @@ Metadata.wire = {
         adapter: getTodo
     },
     wiredMethod: {
-        params: { name: "publicProp" },
-        static: { fields: ['one', 'two'] },
+        params: {
+          name: "publicProp"
+        },
+        static: {
+          fields: ['one', 'two']
+        },
         adapter: getHello,
         method: 1
     }
@@ -50,5 +58,5 @@ const HELLOWORLD = "hello world!";
 function ohai(name) {
     return "ohai, " + name;
 }
-export { HELLOWORLD, ohai };
 export default Metadata;
+export { HELLOWORLD, ohai };
