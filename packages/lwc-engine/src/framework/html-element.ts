@@ -116,7 +116,9 @@ const htmlElementDescriptors = getOwnPropertyNames(GlobalARIAProperties).reduce(
     seed[ariaPropertyName] = createAccessibilityDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
     return seed;
 }, {
-    id: getHTMLPropDescriptor('id', 'id', getOwnPropertyDescriptor(Element.prototype, 'id')!),
+    // In standards-based web browsers, the id descriptor lives on Element.prototype
+    // On IE11, however, it lives on HTMLElement.prototype
+    id: getHTMLPropDescriptor('id', 'id', getOwnPropertyDescriptor(Element.prototype, 'id')! || getOwnPropertyDescriptor(HTMLElement.prototype, 'id')!),
     accessKey: getHTMLPropDescriptor('accessKey', 'accesskey', getOwnPropertyDescriptor(HTMLElement.prototype, 'accessKey')!),
     contentEditable: getHTMLPropDescriptor('contentEditable', 'contenteditable', getOwnPropertyDescriptor(HTMLElement.prototype, 'contentEditable')!),
     dir: getHTMLPropDescriptor('dir', 'dir', getOwnPropertyDescriptor(HTMLElement.prototype, 'dir')!),
