@@ -13,6 +13,7 @@ import {
 } from '../shared/types';
 
 import {
+    DATA_RE,
     SVG_TAG_SET,
     DATA_ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
@@ -171,7 +172,7 @@ function isCustomElementAttribute(attrName: string): boolean {
         attrName === 'is' ||
         attrName === 'key' ||
         attrName === 'slot' ||
-        !!attrName.match(DATA_ARIA_RE)
+        !!attrName.match(DATA_RE)
     );
 }
 

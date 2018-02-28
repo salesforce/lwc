@@ -20,6 +20,7 @@ const ATTRIBUTE_NAME_CHAR = [
     '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
 ].join('');
 export const DATA_ARIA_RE = new RegExp('^(data|aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
+export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
 export const SVG_TAG_SET = new Set([
     'svg', 'animate', 'circle', 'clippath', 'cursor', 'defs', 'desc', 'ellipse', 'filter',

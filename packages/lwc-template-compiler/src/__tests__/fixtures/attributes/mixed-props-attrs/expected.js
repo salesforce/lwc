@@ -37,9 +37,9 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             attrs: {
                 'data-xx': 'foo',
-                'aria-hidden': 'hidden',
             },
             props: {
+                ariaHidden: 'hidden',
                 fooBar: 'x',
                 foo: 'bar',
                 role: 'xx',
@@ -74,11 +74,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         ),
         api_custom_element('div', _nsBuzz, {
             attrs: {
-                is: 'ns-buzz',
-                'aria-hidden': 'hidden'
+                is: 'ns-buzz'
             },
             props: {
-                bgColor: 'x'
+                bgColor: 'x',
+                ariaHidden: 'hidden'
             },
             key: 6
         }),
