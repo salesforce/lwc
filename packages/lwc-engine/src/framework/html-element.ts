@@ -23,10 +23,6 @@ import { isString } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { membrane as reactiveMembrane } from "./reactive";
 
-interface IPropertyDescriptorsMap {
-    [propName: string]: PropertyDescriptor;
-}
-
 function getHTMLPropDescriptor(propName: string, attrName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor || EmptyObject;
     return {
