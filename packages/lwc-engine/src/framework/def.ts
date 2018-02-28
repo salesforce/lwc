@@ -31,7 +31,7 @@ import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName } from "./utils";
+import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName } from "./utils";
 import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { OwnerKey, VM, VMElement } from "./vm";
 
@@ -559,6 +559,9 @@ export function getCtorByTagName(tagName: string): ComponentConstructor | undefi
 }
 
 export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
+    if (process.env.NODE_ENV !== 'production') {
+        assertValidForceTagName(Ctor);
+    }
     if (!isUndefined(TagNameToCtor[tagName])) {
         if (TagNameToCtor[tagName] === Ctor) {
             return;
