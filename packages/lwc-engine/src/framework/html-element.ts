@@ -69,7 +69,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     }
 }
 
-function createAccessibilityPropertyDescriptorForHTMLElement (propName: string, attrName: string) {
+function getAOMPropDescriptor(propName: string, attrName: string) {
     return {
         get(this: Component) {
             const vm: VM = this[ViewModelReflection];
@@ -122,7 +122,7 @@ function createAccessibilityPropertyDescriptorForHTMLElement (propName: string, 
 }
 
 const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), (seed, ariaPropertyName) => {
-    seed[ariaPropertyName] = createAccessibilityPropertyDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
+    seed[ariaPropertyName] = getAOMPropDescriptor(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
     return seed;
 }, ArrayReduce.call(defaultDefHTMLPropertyNames, (seed, propName) => {
     const descriptorPrototype = propName === 'id' ? Element.prototype : HTMLElement.prototype;

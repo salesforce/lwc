@@ -91,15 +91,14 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-const HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), (seed, ariaPropName: string) => {
-    seed[ariaPropName] = {
-        config: 3,
-    };
-    return seed;
-}, ArrayReduce.call(defaultDefHTMLPropertyNames, (seed, propName) => {
+
+function propertiesReducer(seed: any, propName: string) {
     seed[propName] = { config: 3 };
     return seed;
-}, {}));
+}
+
+const reducedDefaultHTMLPropertyNames = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
+const HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
@@ -205,7 +204,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback  = errorCallback || superDef.errorCallback;
     }
 
-    props = assign({}, HTML_PROPS, props);
+    props = assign(create(null), HTML_PROPS, props);
     const descriptors = createDescriptorMap(props, methods);
 
     const def: ComponentDef = {

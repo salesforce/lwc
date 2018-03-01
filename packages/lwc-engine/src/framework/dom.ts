@@ -53,13 +53,10 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
 
-
 export function getAriaAttributeName(propName: string) {
-    return StringToLowerCase.call(StringReplace.apply(propName, [ARIA_REGEX, 'aria-']));
+    return StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
 }
 
-// TODO: clean up these props (casing, etc.)
-// TODO: move this to another file
 // Global Aria and Role Properties derived from ARIA and Role Attributes with their
 // respective default value.
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
