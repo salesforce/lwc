@@ -256,6 +256,11 @@ function createMethodCaller(key: string) {
 }
 
 function getAttributePatched(this: VMElement, attrName: string): string | null {
+    if (process.env.NODE_ENV !== 'production') {
+        const vm = getCustomElementVM(this);
+        assertPublicAttributeColission(vm, attrName);
+    }
+
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
@@ -265,6 +270,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -274,6 +280,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
     }
     setAttributeNS.apply(this, ArraySlice.call(arguments));
 }
@@ -284,6 +291,7 @@ function removeAttributePatched(this: VMElement, attrName: string) {
     vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -293,8 +301,22 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeColission(vm, attrName);
     }
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
+}
+
+function assertPublicAttributeColission(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const propName = isString(attrName) ? getPropNameFromAttrName(attrName.toLocaleLowerCase()) : null;
+    const { def: { props: propsConfig } } = vm;
+
+    if (propsConfig && propName && propsConfig[propName]) {
+        assert.logError(`Invalid attribute "${attrName.toLocaleLowerCase()}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+    }
 }
 
 function assertTemplateMutationViolation(vm: VM, attrName: string) {
