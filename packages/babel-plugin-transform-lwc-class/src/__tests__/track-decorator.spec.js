@@ -103,27 +103,40 @@ Test.track = {
 });
 
 describe('Metadata', () => {
-    pluginTest('gather metadata', `
+    pluginTest(
+        'gather metadata',
+        `
         import { Element, track } from 'engine';
         export default class Test extends Element {
             @track state;
         }
-    `, {
-        output: {
-            metadata: {
-                decorators: [
-                    {
-                        type: 'track',
-                        targets: [
-                            { "name": "state", "type": "property" }
-                        ]
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [
+                        {
+                            type: "track",
+                            targets: [{ name: "state", type: "property" }]
+                        }
+                    ],
+                    classMembers: [
+                        {
+                            type: "property",
+                            name: "state",
+                            loc: {
+                                start: { line: 3, column: 0 },
+                                end: { line: 3, column: 13 }
+                            },
+                            decorator: "track"
+                        }
+                    ],
+                    declarationLoc: {
+                        end: { column: 1, line: 4 },
+                        start: { column: 0, line: 2 }
                     }
-                ],
-                declarationLoc: {
-                    end: { column: 1, line: 4 },
-                    start: { column: 0, line: 2 }
                 }
             }
         }
-    });
+    );
 });

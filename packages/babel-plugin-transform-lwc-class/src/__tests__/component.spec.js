@@ -128,6 +128,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
                 doc: 'Foo doc',
             }
@@ -145,6 +146,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
                 doc: "Foo doc",
             }
@@ -163,6 +165,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
                 doc: 'multi\nline',
             }
@@ -179,6 +182,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
                 doc: "last",
             },
@@ -194,6 +198,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -211,6 +216,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -228,6 +234,7 @@ describe('metadata', () => {
         output: {
             metadata: {
                 decorators: [],
+                classMembers: [],
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -235,4 +242,123 @@ describe('metadata', () => {
             }
         }
     });
+
+    pluginTest('json in comment', `
+        import { Element } from 'engine';
+        /** { one: "1", two: '2', array: [1, 2, 3]} */
+        export default class Foo extends Element {
+        }
+    `, {
+        output: {
+            metadata: {
+                decorators: [],
+                classMembers: [],
+                declarationLoc: {
+                    end: { column: 1, line: 4 },
+                    start: { column: 0, line: 3 }
+                },
+                doc: "{ one: \"1\", two: '2', array: [1, 2, 3]}",
+            }
+        }
+    });
+
+    pluginTest(
+        "tooling metadata",
+        `
+        import { Element, api, track } from 'engine';
+        // not a jsdoc
+        export default class Foo extends Element {
+            @track state;
+            /** property-comment */ @api publicProp;
+            /** method-comment */ @api publicMethod() {}
+            privateProp;
+            privateMethod() {}
+            _privateTodo;
+            @api get todo () {return this._privateTodo;}
+            @api set todo (val) {return this._privateTodo = val;}
+        }
+    `,
+        {
+            output: {
+                metadata: {
+                    decorators: [
+                        {
+                            type: "api",
+                            targets: [
+                                { type: "property", name: "publicProp" },
+                                { type: "property", name: "todo" },
+                                { type: "method", name: "publicMethod" }
+                            ]
+                        },
+                        {
+                            type: "track",
+                            targets: [
+                                { type: "property", name: "state" }
+                            ]
+                        }
+                    ],
+                    classMembers: [
+                        {
+                            type: "property",
+                            name: "state",
+                            loc: {
+                                start: { line: 4, column: 0 },
+                                end: { line: 4, column: 13 }
+                            },
+                            decorator: "track"
+                        },
+                        {
+                            type: "property",
+                            name: "publicProp",
+                            loc: {
+                                start: { line: 5, column: 24 },
+                                end: { line: 5, column: 40 }
+                            },
+                            doc: "property-comment",
+                            decorator: "api"
+                        },
+                        {
+                            type: "method",
+                            name: "publicMethod",
+                            loc: {
+                                start: { line: 6, column: 22 },
+                                end: { line: 6, column: 44 }
+                            },
+                            doc: "method-comment",
+                            decorator: "api"
+                        },
+                        {
+                            type: "property",
+                            name: "privateProp",
+                            loc: {
+                                start: { line: 7, column: 0 },
+                                end: { line: 7, column: 12 }
+                            }
+                        },
+                        {
+                            type: "method",
+                            name: "privateMethod",
+                            loc: {
+                                start: { line: 8, column: 0 },
+                                end: { line: 8, column: 18 }
+                            }
+                        },
+                        {
+                            type: "property",
+                            name: "todo",
+                            loc: {
+                                start: { line: 10, column: 0 },
+                                end: { line: 10, column: 44 }
+                            },
+                            decorator: "api"
+                        }
+                    ],
+                    declarationLoc: {
+                        start: { line: 3, column: 0 },
+                        end: { line: 12, column: 1 }
+                    }
+                }
+            }
+        }
+    );
 });

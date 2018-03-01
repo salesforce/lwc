@@ -144,9 +144,16 @@ module.exports = function decoratorVisitor({ types: t }) {
                 const metadata = transform(t, klass, decorators);
                 state.file.metadata.decorators.push(...metadata);
             }
+            state.decorators = decorators;
+            state.decoratorImportSpecifiers = decoratorImportSpecifiers;
+        },
 
-            removeDecorators(decorators);
-            removeImportSpecifiers(decoratorImportSpecifiers);
+        Class(path, state) {
+            // don't remove decorators until metadata.js had the chance to visit the Class node
+            removeDecorators(state.decorators);
+            removeImportSpecifiers(state.decoratorImportSpecifiers);
+            state.decorators = [];
+            state.decoratorImportSpecifiers = [];
         },
 
         Decorator(path) {

@@ -1,7 +1,6 @@
 const { basename } = require('path');
-const commentParser = require('comment-parser');
 const moduleImports = require("@babel/helper-module-imports");
-const { findClassMethod, findClassProperty, staticClassProperty, getEngineImportSpecifiers } = require('./utils');
+const { findClassMethod, staticClassProperty, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 
 module.exports = function ({ types: t }) {
@@ -27,44 +26,16 @@ module.exports = function ({ types: t }) {
                     );
                 }
 
-                const classBody = path.get('body');
-
                 if (isDefaultExport(path)) {
-                    const declaration = path.parentPath.node;
-                    if (declaration.leadingComments) {
-                        const lastComment = declaration.leadingComments[declaration.leadingComments.length - 1].value;
-                        const sanitized = sanitizeComment(lastComment);
-                        if (sanitized) {
-                            state.file.metadata.doc = sanitized;
-                        }
-                    }
-                    const loc = declaration.loc;
-                    state.file.metadata.declarationLoc = { start: { line: loc.start.line, column: loc.start.column }, end: { line: loc.end.line, column: loc.end.column } };
-
                     // Import and wire template to the component if the class has no render method
+                    const classBody = path.get('body');
                     if (!findClassMethod(classBody, LWC_COMPONENT_PROPERTIES.RENDER)) {
                         wireTemplateToClass(path, state, classBody);
                     }
                 }
             }
-        },
+        }
     };
-
-    function isComponentClass(classPath, componentBaseClassImports) {
-        const superClass = classPath.get('superClass');
-
-        return superClass.isIdentifier()
-            && componentBaseClassImports.some(componentBaseClassImport => (
-                classPath.scope.bindingIdentifierEquals(
-                    superClass.node.name,
-                    componentBaseClassImport.node
-                )
-            ));
-    }
-
-    function isDefaultExport(path) {
-        return path.parentPath.isExportDefaultDeclaration();
-    }
 
     function getBaseName({ file }) {
         const classPath = file.opts.filename;
@@ -98,14 +69,5 @@ module.exports = function ({ types: t }) {
             renderMethod,
             styleProperty,
         ]);
-    }
-
-    function sanitizeComment(comment) {
-        comment = comment.trim();
-        if (comment.length > 0 && comment.charAt(0) === '*') {
-            const parsed = commentParser('/*' + comment + '*/');
-            return (parsed && parsed.length > 0) ? parsed[0].source : null;
-        }
-        return null; // ignoring non-JSDoc comments
     }
 }

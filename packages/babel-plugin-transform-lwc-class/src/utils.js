@@ -55,7 +55,6 @@ function getEngineImportsStatements(path) {
 function getEngineImportSpecifiers(path) {
     const imports = getEngineImportsStatements(path);
 
-
     return imports.reduce((acc, importStatement) => {
         // Flat-map the specifier list for each import statement
         return [...acc, ...importStatement.get('specifiers')];
@@ -77,6 +76,22 @@ function getEngineImportSpecifiers(path) {
     }, []);
 }
 
+function isComponentClass(classPath, componentBaseClassImports) {
+    const superClass = classPath.get('superClass');
+
+    return superClass.isIdentifier()
+        && componentBaseClassImports.some(componentBaseClassImport => (
+            classPath.scope.bindingIdentifierEquals(
+                superClass.node.name,
+                componentBaseClassImport.node
+            )
+        ));
+}
+
+function isDefaultExport(path) {
+    return path.parentPath.isExportDefaultDeclaration();
+}
+
 module.exports = {
     findClassMethod,
     isClassMethod,
@@ -84,4 +99,6 @@ module.exports = {
     isSetterClassMethod,
     staticClassProperty,
     getEngineImportSpecifiers,
+    isComponentClass,
+    isDefaultExport,
 };

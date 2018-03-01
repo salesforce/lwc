@@ -1,4 +1,5 @@
 const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
+const metadata = require('./metadata');
 const component = require('./component');
 const decorators = require('./decorators');
 
@@ -18,6 +19,7 @@ module.exports = function ({ types, traverse }) {
             parserOpts.plugins.push('classProperties');
         },
         visitor: mergeVisitors([
+            metadata({ types }),
             decorators({ types }),
             component({ types }),
             {
