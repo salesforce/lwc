@@ -25,10 +25,10 @@ describe("transform", () => {
         );
     });
 
-    it("should throw if invalid resolveProxyCompat value is specified", async () => {
+    it("should throw if invalid resolveProxyCompat value is specified in compat mode", async () => {
         expect.assertions(1);
         try {
-            await transform(`debugger`, "foo.js", {
+            const result = await transform(`debugger`, "foo.js", {
                 namespace: "x",
                 name: "foo",
                 outputConfig: {
@@ -38,7 +38,9 @@ describe("transform", () => {
                     },
                 }
             });
+            console.log("RESULT: ", result);
         } catch (error) {
+            console.log(error);
             expect(error.message).toBe('unknown: Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"');
         }
     });
@@ -54,7 +56,7 @@ describe("transform", () => {
             expect(error.message).toBe('foo.js: Unexpected token (1:5)');
         }
     });
-    it("should apply transformation for valid javascript file", async () => {
+    it.only("should apply transformation for valid javascript file", async () => {
         const actual = `
             import { Element } from 'engine';
             export default class Foo extends Element {}

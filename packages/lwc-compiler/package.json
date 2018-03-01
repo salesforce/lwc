@@ -12,8 +12,8 @@
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "7.0.0-beta.40",
-    "@babel/plugin-proposal-object-rest-spread": "7.0.0-beta.40",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.40",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.40",
     "babel-preset-compat": "0.17.30",
     "babel7-preset-minify": "7.0.2",
     "cssnano": "^3.10.0",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/babel-core": "^6.25.3",
-    "@types/source-map": "^0.5.7",
+    "@types/chokidar": "^1.7.5",
     "string-replace-webpack-plugin": "0.1.3",
     "ts-jest": "^21.2.4",
     "tslint": "^5.2.0",

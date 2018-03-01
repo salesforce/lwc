@@ -14,7 +14,7 @@ export default function() {
     return {
         name: 'minify',
 
-        transformBundle(src) {
+        transformBundle(src: string) {
             const { code, map } = transform(src, MINIFY_CONFIG);
             return { code, map };
         },

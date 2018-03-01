@@ -16,8 +16,8 @@ export default function(
         plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
         filename
     });
-
     const transformed = babel.transform(code, config);
+
     if (!transformed.code) {
         throw new Error("javascript babel transform did not produce code."); // TODO: create test coverage.
     }
