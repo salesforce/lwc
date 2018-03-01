@@ -12,10 +12,10 @@ Support dynamic (lazy or promise based) component creation that runs in the same
 
 Today, there are only 2 ways to create a LWC component instance:
 
- * Invoking `LWC.createElement()`, which returns a new DOM Element with the public API of the underlaying component instance, creating a brand new fiber.
+ * Invoking `engine.createElement()`, which returns a new DOM Element with the public API of the underlaying component instance, creating a brand new fiber.
  * Use a `<template>` tag in a component, which creates a new component under the hood that runs on the same fiber as the owner component, and therefore it is subject to the invariants of the diffing algo.
 
-The problem is that to create a component programatically, you have to use `LWC.createElement()`, which implies creating a new fiber, which is sometimes undesirable because the developer will have to observe the owner state, and pipe all values into the children element manually, which also implies that there will be at multiple invocations to the patch mechanism (one per fiber).
+The problem is that to create a component programatically, you have to use `engine.createElement()`, which implies creating a new fiber, which is sometimes undesirable because the developer will have to observe the owner state, and pipe all values into the children element manually, which also implies that there will be at multiple invocations to the patch mechanism (one per fiber).
 
 ## Open questions
 

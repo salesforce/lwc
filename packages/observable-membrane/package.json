@@ -7,7 +7,7 @@
   "jsnext:main": "dist/modules/observable-membrane.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "DIR=`pwd` && cd ../../ && jest $DIR",
+    "test": "echo 'Testing observable membrane...' && DIR=`pwd` && cd ../../ && jest $DIR",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c",
