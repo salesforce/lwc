@@ -9,11 +9,11 @@ describe('api', () => {
 
         it('should call the Ctor factory for circular dependencies', () => {
             const factory = function() { return class extends Element {
-                static forceTagName = 'p';
+                static forceTagName = 'input';
             }; };
             factory.__circular__ = true;
             const vnode = api.c('x-foo', factory, { className: 'foo' });
-            expect(vnode.tag).toBe('p');
+            expect(vnode.tag).toBe('input');
         });
 
         it('should convert className to a classMap property', () => {
@@ -71,11 +71,11 @@ describe('api', () => {
 
         it('should support forceTagName static definition to force tagname on root node', () => {
             class Bar extends Element {
-                static forceTagName = 'div';
+                static forceTagName = 'input';
             }
             const element = createElement('x-foo', { is: Bar });
             document.body.appendChild(element);
-            expect(element.tagName).toBe('DIV');
+            expect(element.tagName).toBe('INPUT');
             // the "is" attribute is only inserted after the element is connected
             expect(element.getAttribute('is')).toBe('x-foo');
         });
@@ -88,7 +88,7 @@ describe('api', () => {
 
         it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
             function html($api) {
-                return [$api.c('span', Bar, { attrs: { is: "x-bar" } })];
+                return [$api.c('button', Bar, { attrs: { is: "x-bar" } })];
             }
             class Foo extends Element {
                 render() {
@@ -96,13 +96,31 @@ describe('api', () => {
                 }
             }
             class Bar extends Element {
-                static forceTagName = 'div';
+                static forceTagName = 'input';
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const span = elm.querySelector('span') as Element;
-            expect(span.tagName).toEqual('SPAN');
+            const span = elm.querySelector('button') as Element;
+            expect(span.tagName).toEqual('BUTTON');
             expect(span.getAttribute('is')).toEqual('x-bar');
+        });
+
+        it('should throw when forceTagName cannot have a shadow root attached to it', () => {
+            class Bar extends Element {
+                static forceTagName = 'div'; // it can't be a div
+            }
+            expect(() => {
+                createElement('x-foo', { is: Bar });
+            }).toThrow();
+        });
+
+        it('should throw when forceTagName cannot have a shadow root attached to it', () => {
+            class Bar extends Element {
+                static forceTagName = 'x-bar'; // it can't be a custom element name
+            }
+            expect(() => {
+                createElement('x-foo', { is: Bar });
+            }).toThrow();
         });
 
     });

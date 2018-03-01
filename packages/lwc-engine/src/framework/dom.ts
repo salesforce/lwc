@@ -1,4 +1,5 @@
 import {
+    ArrayIndexOf,
     StringToLowerCase,
     StringReplace,
 } from './language';
