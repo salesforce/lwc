@@ -17,7 +17,7 @@ function isTemplateCss(id, importee) {
 }
 
 /**
- * Resolve files in the context of raptor modules and store external
+ * Resolve files in the context of LWC modules and store external
  * dependencies
  */
 export default function({ moduleResolver, $metadata }) {

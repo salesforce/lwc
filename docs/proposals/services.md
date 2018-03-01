@@ -42,7 +42,7 @@ Each of the hooks provided via the registration process will be invoked for each
 
 The available hooks are:
 
-* `declared(Ctor, def)`: Invoked once, the first time a component declaration is inspected by the raptor engine during the internal call to `getComponentDef(Ctor)`. As a result, the `declared` hook will be invoked right after by passing the component declaration (`Ctor`) and the default definition (`def`) of the component declaration after the engine inspects it. This `def` object is mutable and can be used by the service to store more metadata about the declaration.
+* `declared(Ctor, def)`: Invoked once, the first time a component declaration is inspected by the LWC engine during the internal call to `getComponentDef(Ctor)`. As a result, the `declared` hook will be invoked right after by passing the component declaration (`Ctor`) and the default definition (`def`) of the component declaration after the engine inspects it. This `def` object is mutable and can be used by the service to store more metadata about the declaration.
 * `constructed(cmp, data, def, context)`: invoked after the component instance is created by invoking its constructor.
 * `connected(cmp, data, def, context)`: invoked after the component instance is appended to the DOM.
 * `disconnected(cmp, data, def, context)`: invoked after the component instance is removed from the DOM.

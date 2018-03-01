@@ -8,7 +8,7 @@ _drafted_
 
 * the HOST element is the public api of the component.
 * creation and render are the critial paths, no membrane implementation is allowed during crital path execution.
-* raptor elements and HTML elements cannot be propagated as properties.
+* LWC elements and HTML elements cannot be propagated as properties.
 
 ## Matching the semantics of the shadow DOM with closed mode
 

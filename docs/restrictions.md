@@ -1,6 +1,6 @@
 # Raptor Restrictions
 
-This document describes a series of restrictions, and limitations of Raptor Elements, and why they are in place. This is mostly intended for authors of raptor components.
+This document describes a series of restrictions, and limitations of Raptor Elements, and why they are in place. This is mostly intended for authors of LWC components.
 
 ## Constructor
 

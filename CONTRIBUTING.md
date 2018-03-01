@@ -148,7 +148,7 @@ yarn test
 
 If you've never created a pull request before, follow [these
 instructions][creating-a-pull-request].
-Pull request title must be formatted according to [Commit Message Guidelines](#commit). 
+Pull request title must be formatted according to [Commit Message Guidelines](#commit).
 Pull request samples can be found [here](https://github.com/salesforce/lwc/pulls)
 
 ### Update the pull request
@@ -170,7 +170,7 @@ _note: If more changes are needed as part of the pull request, just keep committ
 
 Git commit messages have to be formatted according to a well defined set of rules.  This leads to **more
 readable messages** that are easy to follow when looking through the **project history**.  In addition,
-these git commit messages are used to **generate the LWC change log**. It is important to keep in mind that malformed messages won't be reflected in the change log file. 
+these git commit messages are used to **generate the LWC change log**. It is important to keep in mind that malformed messages won't be reflected in the change log file.
 
 #### Commit Message Format
 Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
@@ -222,27 +222,6 @@ Must be one of the following:
 
 #### Commit Scope
 The scope should be the name of the npm package affected (as perceived by person reading changelog generated from commit messages.
-
-The following is the list of supported scopes:
-
-* **babel-helpers**
-* **babel-plugin-transform-proxy-compat**
-* **babal-plugin-transform-lwc-class**
-* **benchmark**
-* **compiler**
-* **engine**
-* **helper-fixture**
-* **integration**
-* **language-service**
-* **locker-membrane**
-* **module-resolver**
-* **npm-resolver**
-* **template-compiler**
-* **wire-service**
-* **postcss-plugin**
-* **proxy-compat**
-* **rollup-plugin-lwc-compiler**
-* **upgrade**
 
 There are currently a few exceptions to the "use package name" rule:
 

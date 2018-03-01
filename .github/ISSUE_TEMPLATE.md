@@ -1,13 +1,13 @@
 ### Description
 
 #### Steps to Reproduce
-<!-- 
+<!--
 If LWC specific issue, update playground link with your example
 -->
 http://playground.sfdc.es/projects/edit
 
 
-<!-- 
+<!--
 If Aura / interop issue, please create an issue and pull request in Aura repo
 Example: https://git.soma.salesforce.com/aura/aura/pull/1523
  -->
@@ -25,7 +25,7 @@ Example: https://git.soma.salesforce.com/aura/aura/pull/1523
 <!--
 Node project
 package.json
-versions < 0.17: "raptor-engine": "0.16.8"
+versions < 0.17: "lwc-engine": "0.16.8"
 versions >= 0.17: "lwc-engine": "0.17.2"
 
 To get LWC version in Aura environment,

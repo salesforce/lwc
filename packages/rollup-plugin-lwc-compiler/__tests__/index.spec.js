@@ -15,18 +15,17 @@ function fsExpected(fileName) {
 const fixturesDir = path.join(__dirname, 'fixtures');
 const simpleAppDir = path.join(fixturesDir, 'simple_app/src');
 
+jest.mock('compat-polyfills', () => {
+    return {
+        loadPolyfills() { return "/* MOCK POLYFILLS SRC */" },
+        loadDowngrade() {  return "/* MOCK DOWNGRADE SRC */" }
+    };
+});
+
 describe('default configuration', () => {
     const rollupOptions = { allowUnnamespaced: true };
 
     it(`simple app`, () => {
-        const entry = path.join(simpleAppDir, 'main.js');
-        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
-            const expected = fsExpected('expected_default_config_simple_app');
-            expect(pretty(actual)).toBe(pretty(expected));
-        })
-    });
-
-    it(`simple component`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, rollupOptions).then(({ code: actual }) => {
             const expected = fsExpected('expected_default_config_simple_app');
@@ -39,6 +38,7 @@ describe('rollup in compat mode', () => {
     const rollupOptions = { allowUnnamespaced: true, mode: 'compat' };
 
     it(`simple app`, () => {
+        debugger;
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, rollupOptions).then(({ code: actual }) => {
             const expected = fsExpected('expected_compat_config_simple_app');
@@ -47,26 +47,21 @@ describe('rollup in compat mode', () => {
     });
 });
 
-// describe('rollup in prod_compat mode', () => {
-//     const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
-//     it(`simple app`, () => {
-//         const entry = path.join(simpleAppDir, 'main.js');
-//         return doRollup(entry, rollupOptions).then(({ code: actual }) => {
-//             const expected = fsExpected('expected_prod_compat_config_simple_app');
-//             expect(pretty(actual)).toBe(pretty(expected));
-//         })
-//     });
-// });
+describe('rollup in prod_compat mode', () => {
+    const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
+    it(`simple app`, () => {
+        const entry = path.join(simpleAppDir, 'main.js');
+        return doRollup(entry, rollupOptions).then(({ code: actual }) => {
+            const expected = fsExpected('expected_prod_compat_config_simple_app');
+            expect(pretty(actual)).toBe(pretty(expected));
+        })
+    });
+});
 
 function doRollup(input, options = {}) {
     return rollup.rollup({
         input,
-        external: [
-            'engine',
-            'compat-polyfills/polyfills',
-            'compat-polyfills/downgrade',
-            'proxy-compat',
-        ],
+        external: [ 'engine' ],
         plugins: [ rollupCompile(options) ],
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
@@ -74,6 +69,10 @@ function doRollup(input, options = {}) {
             }
         }
     }).then(bundle => (
-        bundle.generate({ format: 'es' })
+        bundle.generate({
+            format: 'iife',
+            name: 'test',
+            output: { globals: { engine: 'engine' } }
+        })
     ));
 }

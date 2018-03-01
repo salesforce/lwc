@@ -28,7 +28,7 @@ span {
 `;
 
 postcss([
-    raptorPlugin({
+    lwcPlugin({
         tagName: 'x-btn',
         token: 'x-btn_tmpl'
     })
