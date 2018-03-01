@@ -1,5 +1,5 @@
 import * as babel from 'babel-core';
-import presetCompat from 'babel-preset-compat';
+import * as presetCompat from 'babel-preset-compat';
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 import { OutputProxyCompatConfig } from "../options";
 

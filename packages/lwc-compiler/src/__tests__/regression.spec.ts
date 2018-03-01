@@ -2,7 +2,7 @@ import { compile } from "../index";
 import { fixturePath, readFixture, pretify } from "./utils";
 
 describe("regression test", () => {
-    it.only("#743 - Object rest spread throwing", async () => {
+    it("#743 - Object rest spread throwing", async () => {
         const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
         const expected = `define('x-foo', function () {
             const base = {
