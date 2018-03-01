@@ -14,7 +14,7 @@ if(isUndefined(getOwnPropertyDescriptor(Element.prototype, 'id'))) {
             return idDescriptorGet.call(this);
         },
         set(this: HTMLElement, value: any) {
-            return idDescriptorSet.call(this);
+            return idDescriptorSet.call(this, value);
         }
     })
 }
