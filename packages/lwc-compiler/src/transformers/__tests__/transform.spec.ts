@@ -34,14 +34,14 @@ describe("transform", () => {
                 outputConfig: {
                     compat: true,
                     resolveProxyCompat: {
-                        badkey: 'hello'
-                    },
+                        badkey: "hello"
+                    }
                 }
             });
-            console.log("RESULT: ", result);
         } catch (error) {
-            console.log(error);
-            expect(error.message).toBe('unknown: Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"');
+            expect(error.message).toBe(
+                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
+            );
         }
     });
 
@@ -50,10 +50,13 @@ describe("transform", () => {
         try {
             await transform(`const`, "foo.js", {
                 namespace: "x",
-                name: "foo",
+                name: "foo"
             });
         } catch (error) {
-            expect(error.message).toBe('foo.js: Unexpected token (1:5)');
+            // TODO: Figure out how to disable error message from containing snippet of code with failing token.
+            expect(
+                error.message.indexOf("foo.js: Unexpected token (1:5)")
+            ).toBe(0);
         }
     });
     it("should apply transformation for valid javascript file", async () => {
@@ -63,7 +66,7 @@ describe("transform", () => {
         `;
 
         const expected = `
-            import _tmpl from './foo.html';
+            import _tmpl from "./foo.html";
             import { Element } from 'engine';
             export default class Foo extends Element {
                 render() {
@@ -75,21 +78,23 @@ describe("transform", () => {
 
         const { code } = await transform(actual, "foo.js", {
             namespace: "x",
-            name: "foo",
+            name: "foo"
         });
-
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it("should throw when invalid tempalte file is specified", async () => {
+    it("should throw when invalid template file is specified", async () => {
         expect.assertions(1);
         try {
             await transform(`<html`, "foo.html", {
                 namespace: "x",
-                name: "foo",
+                name: "foo"
             });
         } catch (error) {
-            expect(error.message.indexOf('Invalid HTML syntax: eof-in-tag.')).toBe(0);
+            // TODO: Figure out how to disable error message from containing snippet of code with failing token.
+            expect(
+                error.message.indexOf("Invalid HTML syntax: eof-in-tag.")
+            ).toBe(0);
         }
     });
 
@@ -124,7 +129,7 @@ describe("transform", () => {
 
         const { code } = await transform(actual, "foo.html", {
             namespace: "x",
-            name: "foo",
+            name: "foo"
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -135,7 +140,7 @@ describe("transform", () => {
         try {
             await transform(`<`, "foo.css", {
                 namespace: "x",
-                name: "foo",
+                name: "foo"
             });
         } catch (error) {
             expect(error.message).toBe("<css input>:1:1: Unknown word");
@@ -162,7 +167,7 @@ describe("transform", () => {
 
         const { code } = await transform(actual, "foo.css", {
             namespace: "x",
-            name: "foo",
+            name: "foo"
         });
 
         expect(pretify(code)).toBe(pretify(expected));
@@ -187,7 +192,7 @@ describe("transform", () => {
 
         const result = await transform(content, "foo.js", {
             namespace: "x",
-            name: "foo",
+            name: "foo"
         });
 
         const metadata = result.metadata;

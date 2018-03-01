@@ -2,10 +2,15 @@ import { compile } from "../index";
 import { fixturePath, readFixture, pretify } from "./utils";
 
 describe("regression test", () => {
-    it("#743 - Object rest spread throwing", async () => {
+    it.only("#743 - Object rest spread throwing", async () => {
         const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
         const expected = `define('x-foo', function () {
-            const base = { foo: true };const res = Object.assign({}, base, { bar: false });
+            const base = {
+                foo: true
+            };
+            const res = Object.assign({}, base, {
+                bar: false
+            });
             });`;
 
         const { result } = await compile({
@@ -13,9 +18,8 @@ describe("regression test", () => {
             namespace: "x",
             files: {
                 "foo.js": actual
-            }
+            },
         });
-
         expect(pretify(result.code)).toBe(pretify(expected));
     });
 });

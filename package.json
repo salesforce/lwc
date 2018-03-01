@@ -42,7 +42,8 @@
     "source-map": "^0.7.2",
     "ts-jest": "~22.0.4",
     "tslint": "~5.9.1",
-    "typescript": "2.7.2"
+    "typescript": "2.7.2",
+    "validate-commit-msg": "^2.14.0"
   },
   "config": {
     "commitizen": {

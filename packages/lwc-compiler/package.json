@@ -7,6 +7,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "clean": "rimraf dist/",
     "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
     "build:umd": "webpack --progress",
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
