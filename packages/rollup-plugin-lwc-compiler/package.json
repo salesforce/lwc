@@ -15,7 +15,7 @@
     "glob": "^7.1.2",
     "lwc-module-resolver": "0.17.17",
     "rollup-pluginutils": "^2.0.1",
-    "rollup-plugin-compat": "0.17.30"
+    "rollup-plugin-compat": "0.17.31"
   },
   "peerDependencies": {
     "lwc-compiler": "~0.17.17",

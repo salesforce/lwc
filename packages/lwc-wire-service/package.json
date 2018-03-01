@@ -7,9 +7,7 @@
   "scripts": {
     "lint": "eslint src playground",
     "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
-    "build:all": "yarn build:es-and-cjs && yarn build:umd:prod && yarn build:umd:dev",
     "build:umd:dev": "rollup -c rollup.config.umd.dev.js",
-    "build:umd:prod": "rollup -c rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c rollup.config.es-and-cjs.js",
     "build:playground": "rollup -c playground/rollup.config.js",
     "serve": "node playground/server.js",
@@ -29,10 +27,8 @@
     "lwc-jest-transformer": "0.17.15",
     "rollup": "~0.56.2",
     "rollup-plugin-lwc-compiler": "0.17.17",
-    "rollup-plugin-compat": "0.17.30",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "~3.3.6"
+    "rollup-plugin-compat": "0.17.31",
+    "rollup-plugin-node-resolve": "^3.0.0"
   },
   "lwc": {
     "modules": {

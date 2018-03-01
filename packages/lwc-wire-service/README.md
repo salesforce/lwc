@@ -13,7 +13,7 @@ export default class WiredComponent extends Element {
 }
 ```
 
-Refer to the [Raptor developer guide](https://raptor.sfdc.es/guide/data.html) for full documentation.
+Refer to the [Raptor developer guide](https://docs.lwcjs.org/guide/data.html) for full documentation.
 
 ## Build & run the playground
 

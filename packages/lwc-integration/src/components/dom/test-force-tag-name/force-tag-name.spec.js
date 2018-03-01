@@ -1,5 +1,5 @@
 const assert = require('assert');
-describe('Issue 572: [brain-dump] problems with accessibility and semantic markup in raptor', () => {
+describe('Issue 572: [brain-dump] problems with accessibility and semantic markup in lwc', () => {
     const URL = 'http://localhost:4567/force-tag-name';
     let element;
 

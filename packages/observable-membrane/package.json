@@ -7,7 +7,7 @@
   "jsnext:main": "dist/modules/observable-membrane.js",
   "scripts": {
     "clean": "rimraf dist/ lib/",
-    "test": "jest --coverage --no-cache --maxWorkers=2",
+    "test": "DIR=`pwd` && cd ../../ && jest $DIR",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c",
@@ -15,8 +15,6 @@
   },
   "devDependencies": {
     "rollup": "~0.56.2",
-    "rollup-plugin-typescript": "^0.8.1",
-    "rollup-plugin-uglify": "^2.0.1",
-    "uglify-es": "~3.3.6"
+    "rollup-plugin-typescript": "^0.8.1"
   }
 }

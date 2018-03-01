@@ -45,8 +45,8 @@ Like `Fluent`, we want to provide a set of standard built-in functions that can 
 
 * DATETIME(): [Same as in Fluent](http://projectfluent.io/fluent/guide/functions.html#function-parameters)
 * NUMBER(): [Same as in Fluent](http://projectfluent.io/fluent/guide/functions.html#function-parameters)
-* PLURAL(): raptor specific to support pluralization.
-* NOUN(): raptor specific to support labeling.
+* PLURAL(): LWC specific to support pluralization.
+* NOUN(): LWC specific to support labeling.
 
 ##### PLURAL() built-in function
 

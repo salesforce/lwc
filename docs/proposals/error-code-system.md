@@ -43,9 +43,9 @@ if (!condition) {
 }
 ```
 
-**5.** raptorProdInvariant.js is the replacement for invariant code in production, that accepts errorCode, arguments, and builds raptor error url. ex: https://raptor.sfdc.es/docs/error-decoder.html?id=1001&arg1='foo'&arg2='bar'.
+**5.** lwcProdInvariant.js is the replacement for invariant code in production, that accepts errorCode, arguments, and builds lwc error url. ex: https://lwc.sfdc.es/docs/error-decoder.html?id=1001&arg1='foo'&arg2='bar'.
 
-**6.** ErrorDecoderComponent is a Raptor component that lives at 'https://raptor.sfdc.es/docs/error-decoder.html'. This page takes parameters like raptor version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page.
+**6.** ErrorDecoderComponent is an LWC component that lives at 'https://lwc.sfdc.es/docs/error-decoder.html'. This page takes parameters like lwc version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page.
 
 Sample code to use instead of assertions:
 
@@ -71,7 +71,7 @@ engine/errors/
 
 Pros:
 - Easy to locate related messages in a smaller subset of errors vs one large errors file
-- Easy to maintain/serve different file versions ( for different raptor versions ) in our ErrorDecoderComponent
+- Easy to maintain/serve different file versions ( for different LWC versions ) in our ErrorDecoderComponent
 - Error Keys are less verbose since each file represents a namespace
 
 **b.** there is one common error file. Root level keys represent individual parts of the engine ex:

@@ -10,12 +10,12 @@ Support dynamic (lazy or promise based) component creation that runs in the same
 
 ## The Problem
 
-Today, there are only 2 ways to create a Raptor component instance:
+Today, there are only 2 ways to create a LWC component instance:
 
- * Invoking `Raptor.createElement()`, which returns a new DOM Element with the public API of the underlaying component instance, creating a brand new fiber.
+ * Invoking `LWC.createElement()`, which returns a new DOM Element with the public API of the underlaying component instance, creating a brand new fiber.
  * Use a `<template>` tag in a component, which creates a new component under the hood that runs on the same fiber as the owner component, and therefore it is subject to the invariants of the diffing algo.
 
-The problem is that to create a component programatically, you have to use `Raptor.createElement()`, which implies creating a new fiber, which is sometimes undesirable because the developer will have to observe the owner state, and pipe all values into the children element manually, which also implies that there will be at multiple invocations to the patch mechanism (one per fiber).
+The problem is that to create a component programatically, you have to use `LWC.createElement()`, which implies creating a new fiber, which is sometimes undesirable because the developer will have to observe the owner state, and pipe all values into the children element manually, which also implies that there will be at multiple invocations to the patch mechanism (one per fiber).
 
 ## Open questions
 
@@ -60,7 +60,7 @@ Pros:
 
 Cons:
  * How to guarantee that all custom elements used by the newly create elements are available?
- * Expands the API footprint of raptor, now we need to offer a bunch of new APIs to support this.
+ * Expands the API footprint of LWC, now we need to offer a bunch of new APIs to support this.
  * It is going to be a very low level API. Probably no suitable for external customers.
  * Almost equivalent to expose api.* to user-land.
  * Might require some logic from compiler to be available in engine (e.g.: attrs vs props).

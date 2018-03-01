@@ -16,7 +16,7 @@ The AssemblyScript implementation stores its errors in json file in following fo
 This JSON [file is then parsed to create a typescript file](https://github.com/AssemblyScript/assemblyscript/blob/master/src/diagnosticMessages.generated.ts), which is then referenced in their invariant-equivalent function call ex:
 ```this.report(declaration.name, typescript.DiagnosticsEx.Type_expected); ```
 
-### Raptor version
+### LWC version
 Now that AssemblyScript summary has been stated, here is our Proposal:
 
 **1.** As with [proposal #1](error-code-system.md) , an assert statement will be replaced with invariant( condition, errorMessage, arguments )
@@ -66,9 +66,9 @@ if (!condition) {
 }
 ```
 
-**5.** raptorProdInvariant.js is the replacement for invariant code in production, that accepts errorCode, arguments, and builds raptor error url. ex: https://raptor.sfdc.es/docs/error-decoder.html?id=1001&arg1='foo'&arg2='bar'.
+**5.** lwcProdInvariant.js is the replacement for invariant code in production, that accepts errorCode, arguments, and builds lwc error url. ex: https://lwc.sfdc.es/docs/error-decoder.html?id=1001&arg1='foo'&arg2='bar'.
 
-**6.** ErrorDecoderComponent is a Raptor component that lives at 'https://raptor.sfdc.es/docs/error-decoder.html'. This page takes parameters like raptor version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page.
+**6.** ErrorDecoderComponent is an LWC component that lives at 'https://lwc.sfdc.es/docs/error-decoder.html'. This page takes parameters like lwc version and errorCode. Our documentation site will need to have support for adding the latest codes.json to the error decoder page.
 
 
 
