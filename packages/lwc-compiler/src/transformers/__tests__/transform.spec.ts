@@ -56,7 +56,7 @@ describe("transform", () => {
             expect(error.message).toBe('foo.js: Unexpected token (1:5)');
         }
     });
-    it.only("should apply transformation for valid javascript file", async () => {
+    it("should apply transformation for valid javascript file", async () => {
         const actual = `
             import { Element } from 'engine';
             export default class Foo extends Element {}
