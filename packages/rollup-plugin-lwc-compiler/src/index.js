@@ -117,26 +117,28 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return;
             }
 
-            if (path.extname(id) === "") {
-                return { code, map: { mappings: "" } };
+            // If we don't find the moduleId, just resolve the module name/namespace
+            const moduleEntry = Object.values(modulePaths).find(r => id === r.entry);
+            const moduleRegistry =  moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
+
+            let result = code;
+
+            if (!rollupCompatInstance.knownCompatModule(id)) {
+                result = await compiler.transform(code, id, {
+                    mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
+                    moduleName: moduleRegistry.moduleName,
+                    moduleNamespace: moduleRegistry.moduleNamespace,
+                    moduleSpecifier: moduleRegistry.moduleSpecifier
+                });
             }
 
-            // If we don't find the moduleId, just resolve the module name/namespace
-            let registry =
-                Object.values(modulePaths).find(r => id === r.entry) ||
-                getModuleQualifiedName(id, mergedPluginOptions);
+            result = normalizeResult(result);
 
-            const config = {
-                outputConfig: {
-                    compat: !!(mode === "compat"),
-                    minify: !!(mode === "prod")
-                },
-                name: registry.moduleName,
-                namespace: registry.moduleNamespace,
-                moduleSpecifier: registry.moduleSpecifier,
-                resolveProxyCompat: mergedPluginOptions.resolveProxyCompat
-            };
-            return compiler.transform(code, id, config);
-        }
+            if (mode === 'compat' || mode === 'prod_compat') {
+                result = normalizeResult(rollupCompatInstance.transform(result.code, id));
+            }
+
+            return { code: result.code, map: result.map };
+        },
     };
 };
