@@ -26,6 +26,7 @@ const {
     push: ArrayPush,
     map: ArrayMap,
     forEach,
+    reduce: ArrayReduce,
 } = Array.prototype;
 
 const {
@@ -35,6 +36,7 @@ const {
 
 
 export {
+    ArrayReduce,
     StringToLowerCase,
     StringReplace,
     freeze,

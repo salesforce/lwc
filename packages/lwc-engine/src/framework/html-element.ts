@@ -4,7 +4,7 @@ import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, remo
 import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, toString } from "./language";
 import {
     GlobalHTMLProperties,
-    GlobalARIAProperties,
+    GlobalAOMProperties,
     getAriaAttributeName,
     getAttribute,
     getAttributeNS,
@@ -20,7 +20,7 @@ import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
-import { isString, StringToLowerCase } from "./language";
+import { ArrayReduce, isString, StringToLowerCase , isNull } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { membrane as reactiveMembrane } from "./reactive";
 
@@ -42,7 +42,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
                 return;
             }
             observeMutation(this, propName);
-            return get.call(getLinkedElement(this));
+            return get.call(vm.elm);
         },
         set(this: Component, newValue: any) {
             const vm = this[ViewModelReflection];
@@ -54,9 +54,8 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
 
             if (newValue !== vm.cmpProps[propName]) {
                 if (process.env.NODE_ENV !== 'production') {
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                    if (isObject(newValue)) {
+                        assert.logWarning(`Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive.`);
                     }
                 }
                 vm.cmpProps[propName] = reactiveMembrane.getReadOnlyProxy(newValue);
@@ -65,12 +64,12 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
                     notifyMutation(this, propName);
                 }
             }
-            return set.call(getLinkedElement(this), newValue);
+            return set.call(vm.elm, newValue);
         }
     }
 }
 
-function createAccessibilityDescriptorForHTMLElement (propName: string, attrName: string) {
+function createAccessibilityPropertyDescriptorForHTMLElement (propName: string, attrName: string) {
     return {
         get(this: Component) {
             const vm: VM = this[ViewModelReflection];
@@ -86,7 +85,7 @@ function createAccessibilityDescriptorForHTMLElement (propName: string, attrName
             }
             observeMutation(this, propName);
 
-            return elm.getAttribute(attrName);
+            return getAttribute.call(elm, attrName);
         },
         set(this: Component, newValue: any) {
             const vm = this[ViewModelReflection];
@@ -96,28 +95,36 @@ function createAccessibilityDescriptorForHTMLElement (propName: string, attrName
                 assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
             }
 
-            if (newValue !== vm.hostAttrs[propName]) {
-                if (process.env.NODE_ENV !== 'production') {
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
-                        assert.logWarning(`Property "${propName}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
-                    }
+            if (newValue !== vm.cmpProps[propName]) {
+                if (isObject(newValue)) {
+                    assert.logWarning(`Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive.`);
                 }
-                vm.hostAttrs[propName] = reactiveMembrane.getReadOnlyProxy(newValue);
+                vm.cmpProps[propName] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, propName);
                 }
             }
-            getLinkedElement(this).setAttribute(attrName, newValue);
+            const { elm } = vm;
+            if (isNull(newValue)) {
+                const { cmpRoot } = vm;
+                vm.hostAttrs[attrName] = undefined;
+                const defaultValue = cmpRoot[propName];
+                if (isNull(defaultValue)) {
+                    removeAttribute.call(elm, attrName)
+                }
+                setAttribute.call(elm, attrName, cmpRoot[propName]);
+            } else {
+                setAttribute.call(elm, attrName, newValue);
+            }
         }
     }
 }
 
-const htmlElementDescriptors = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaPropertyName) => {
-    seed[ariaPropertyName] = createAccessibilityDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
+const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), (seed, ariaPropertyName) => {
+    seed[ariaPropertyName] = createAccessibilityPropertyDescriptorForHTMLElement(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
     return seed;
-}, defaultDefHTMLPropertyNames.reduce((seed, propName) => {
+}, ArrayReduce.call(defaultDefHTMLPropertyNames, (seed, propName) => {
     const descriptorPrototype = propName === 'id' ? Element.prototype : HTMLElement.prototype;
     seed[propName] = getHTMLPropDescriptor(propName, getOwnPropertyDescriptor(descriptorPrototype, propName)!);
     return seed;

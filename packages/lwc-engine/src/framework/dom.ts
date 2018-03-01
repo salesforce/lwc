@@ -62,7 +62,7 @@ export function getAriaAttributeName(propName: string) {
 // Global Aria and Role Properties derived from ARIA and Role Attributes with their
 // respective default value.
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
-export const GlobalARIAProperties: Record<string, any> = {
+export const GlobalAOMProperties: Record<string, any> = {
     ariaAutocomplete: null,
     ariaChecked: null,
     ariaCurrent: null,

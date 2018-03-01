@@ -25,9 +25,10 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
+    ArrayReduce,
 } from "./language";
 import {
-    GlobalARIAProperties,
+    GlobalAOMProperties,
     GlobalHTMLProperties,
     getAttribute,
     getAttributeNS,
@@ -90,12 +91,12 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-const HTML_PROPS = getOwnPropertyNames(GlobalARIAProperties).reduce((seed, ariaPropName: string) => {
+const HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), (seed, ariaPropName: string) => {
     seed[ariaPropName] = {
         config: 3,
     };
     return seed;
-}, defaultDefHTMLPropertyNames.reduce((seed, propName) => {
+}, ArrayReduce.call(defaultDefHTMLPropertyNames, (seed, propName) => {
     seed[propName] = { config: 3 };
     return seed;
 }, {}));
@@ -384,7 +385,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
 
 function getTrackHash(target: ComponentConstructor): TrackDef {
     const track = target.track;
-    if (!track || !getOwnPropertyNames(track).length || !getOwnPropertyDescriptor(target, 'track')) {
+    if (!getOwnPropertyDescriptor(target, 'track') || !track || !getOwnPropertyNames(track).length) {
         return EmptyObject;
     }
 
@@ -394,7 +395,7 @@ function getTrackHash(target: ComponentConstructor): TrackDef {
 
 function getWireHash(target: ComponentConstructor): WireHash | undefined {
     const wire = target.wire;
-    if (!wire || !getOwnPropertyNames(wire).length || !getOwnPropertyDescriptor(target, 'wire')) {
+    if (!getOwnPropertyDescriptor(target, 'wire') || !wire || !getOwnPropertyNames(wire).length) {
         return;
     }
 
@@ -404,7 +405,7 @@ function getWireHash(target: ComponentConstructor): WireHash | undefined {
 
 function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
     const props = target.publicProps;
-    if (!props || !getOwnPropertyNames(props).length || !getOwnPropertyDescriptor(target, 'publicProps')) {
+    if (!getOwnPropertyDescriptor(target, 'publicProps') || !props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
@@ -433,7 +434,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
 
 function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     const publicMethods = target.publicMethods;
-    if (!publicMethods || !publicMethods.length || !getOwnPropertyDescriptor(target, 'publicMethods')) {
+    if (!getOwnPropertyDescriptor(target, 'publicMethods') || !publicMethods || !publicMethods.length) {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {

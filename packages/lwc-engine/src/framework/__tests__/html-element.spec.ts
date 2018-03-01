@@ -1229,7 +1229,46 @@ describe('html-element', () => {
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
                 document.body.appendChild(element);
                 element.role = 'nottab';
-                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+                expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+
+            it('should reflect role from root when element value is set to null', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                }
+                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'nottab';
+                return Promise.resolve().then(() => {
+                    element.role = null;
+                    return Promise.resolve().then(() => {
+                        expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+                    });
+                });
+            });
+
+            it('should remove role attribute from element when root and value is null', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                    clearRole() {
+                        this.root.role = null;
+                    }
+                }
+                MyComponent.publicMethods = ['clearRole'];
+                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                //element.role = 'nottab';
+                return Promise.resolve().then(() => {
+                    element.role = null;
+                    element.clearRole();
+                    return Promise.resolve().then(() => {
+                        expect(HTMLElement.prototype.hasAttribute.call(element, 'role')).toBe(false);
+                    });
+                });
             });
         });
 
