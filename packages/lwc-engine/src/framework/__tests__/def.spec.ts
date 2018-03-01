@@ -190,6 +190,9 @@ describe('def', () => {
                 role: {
                     config: 3,
                 },
+                tabIndex: {
+                    config: 3
+                },
                 title: {
                     config: 3
                 },
@@ -370,6 +373,9 @@ describe('def', () => {
                 },
                 role: {
                     config: 3,
+                },
+                tabIndex: {
+                    config: 3
                 },
                 title: {
                     config: 3
@@ -594,6 +600,9 @@ describe('def', () => {
                     config: 3
                 },
                 role: {
+                    config: 3
+                },
+                tabIndex: {
                     config: 3
                 },
                 title: {

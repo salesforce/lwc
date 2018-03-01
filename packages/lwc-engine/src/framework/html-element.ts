@@ -327,25 +327,6 @@ class LWCElement implements Component {
         const elm = getLinkedElement(this);
         return elm.tagName + ''; // avoiding side-channeling
     }
-    get tabIndex(): number {
-        const elm = getLinkedElement(this);
-        return elm.tabIndex;
-    }
-    set tabIndex(value: number) {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isRendering, `Setting property "tabIndex" of ${toString(value)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
-            if (isBeingConstructed(vm)) {
-                assert.fail(`Setting property "tabIndex" during the construction process of ${vm} is invalid.`);
-            }
-        }
-
-        if (isBeingConstructed(vm)) {
-            return;
-        }
-        const elm = getLinkedElement(this);
-        elm.tabIndex = value;
-    }
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
