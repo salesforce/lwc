@@ -19,7 +19,7 @@ const ATTRIBUTE_NAME_CHAR = [
     '\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD',
     '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040',
 ].join('');
-export const DATA_ARIA_RE = new RegExp('^(data|aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
+export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
 export const SVG_TAG_SET = new Set([
@@ -63,6 +63,44 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     maxlength: 'maxLength',
     usemap: 'useMap',
     for: 'htmlFor',
+
+    // Aria
+    'aria-autocomplete': 'ariaAutocomplete',
+    'aria-checked': 'ariaChecked',
+    'aria-current': 'ariaCurrent',
+    'aria-disabled': 'ariaDisabled',
+    'aria-expanded': 'ariaExpanded',
+    'aria-haspopup': 'ariaHasPopUp',
+    'aria-hidden': 'ariaHidden',
+    'aria-invalid': 'ariaInvalid',
+    'aria-label': 'ariaLabel',
+    'aria-level': 'ariaLevel',
+    'aria-multiline': 'ariaMultiline',
+    'aria-multiselectable': 'ariaMultiSelectable',
+    'aria-orientation': 'ariaOrientation',
+    'aria-pressed': 'ariaPressed',
+    'aria-readonly': 'ariaReadonly',
+    'aria-required': 'ariaRequired',
+    'aria-selected': 'ariaSelected',
+    'aria-sort': 'ariaSort',
+    'aria-valuemax': 'ariaValueMax',
+    'aria-valuemin': 'ariaValueMin',
+    'aria-valuenow': 'ariaValueNow',
+    'aria-valuetext': 'ariaValueText',
+    'aria-live': 'ariaLive',
+    'aria-relevant': 'ariaRelevant',
+    'aria-atomic': 'ariaAtomic',
+    'aria-busy': 'ariaBusy',
+    'aria-dropeffect': 'ariaDropEffect',
+    'aria-dragged': 'ariaDragged',
+    'aria-activedescendant': 'ariaActiveDescendant',
+    'aria-controls': 'ariaControls',
+    'aria-describedby': 'ariaDescribedBy',
+    'aria-flowto': 'ariaFlowTo',
+    'aria-labelledby': 'ariaLabelledBy',
+    'aria-owns': 'ariaOwns',
+    'aria-posinset': 'ariaPosInSet',
+    'aria-setsize': 'ariaSetSize',
 };
 
 export const HTML_TAG_BLACKLIST: { [tagname: string]: boolean } = {

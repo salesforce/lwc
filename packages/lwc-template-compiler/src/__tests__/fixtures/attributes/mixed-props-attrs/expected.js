@@ -39,6 +39,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 'data-xx': 'foo',
             },
             props: {
+                ariaDescribedBy: 'describedby',
                 ariaHidden: 'hidden',
                 fooBar: 'x',
                 foo: 'bar',
