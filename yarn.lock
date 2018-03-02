@@ -5881,13 +5881,6 @@ lwc-jest-transformer@0.17.15:
     babel-template "^6.26.0"
     deasync "0.1.12"
 
-lwc-module-resolver@0.18.0-beta.f1c88f03:
-  version "0.18.0-beta.f1c88f03"
-  resolved "http://npm.lwcjs.org/lwc-module-resolver/-/lwc-module-resolver-0.18.0-beta.f1c88f03/12e6c2c6d01f0000b81c61a99ba212e2baa6f25e.tgz#12e6c2c6d01f0000b81c61a99ba212e2baa6f25e"
-  dependencies:
-    glob "^7.1.2"
-    resolve "1.5.0"
-
 lwc-template-compiler@0.18.0-beta.f1c88f03:
   version "0.18.0-beta.f1c88f03"
   resolved "http://npm.lwcjs.org/lwc-template-compiler/-/lwc-template-compiler-0.18.0-beta.f1c88f03/4c1e08cda5eba53761e0a829bd7899da8c1557b2.tgz#4c1e08cda5eba53761e0a829bd7899da8c1557b2"
@@ -7566,14 +7559,6 @@ rollup-plugin-compat@0.17.30:
     babel-preset-compat "0.17.30"
     compat-polyfills "0.17.30"
     rollup-pluginutils "~2.0.1"
-
-rollup-plugin-lwc-compiler@0.18.0-beta.f1c88f03:
-  version "0.18.0-beta.f1c88f03"
-  resolved "http://npm.lwcjs.org/rollup-plugin-lwc-compiler/-/rollup-plugin-lwc-compiler-0.18.0-beta.f1c88f03/dce985c87045ae12c7b8f8c33204a6590b029316.tgz#dce985c87045ae12c7b8f8c33204a6590b029316"
-  dependencies:
-    glob "^7.1.2"
-    lwc-module-resolver "0.18.0-beta.f1c88f03"
-    rollup-pluginutils "^2.0.1"
 
 rollup-plugin-node-resolve@^3.0.0:
   version "3.0.3"

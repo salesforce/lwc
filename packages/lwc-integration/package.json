@@ -32,7 +32,7 @@
     "minimist": "^1.2.0",
     "rimraf": "^2.6.1",
     "rollup": "0.50.0",
-    "rollup-plugin-lwc-compiler": "0.18.0-beta.f1c88f03",
+    "rollup-plugin-lwc-compiler": "0.17.17",
     "rollup-plugin-compat": "0.17.30",
     "compat-polyfills": "0.17.30",
     "babel-preset-compat": "0.17.30",

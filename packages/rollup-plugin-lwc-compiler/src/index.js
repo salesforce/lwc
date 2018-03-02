@@ -117,9 +117,16 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return;
             }
 
+            if (path.extname(id) === "") {
+                return { code, map: { mappings: "" } };
+            }
+
             // If we don't find the moduleId, just resolve the module name/namespace
-            const moduleEntry = Object.values(modulePaths).find(r => id === r.entry);
-            const moduleRegistry =  moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
+            const moduleEntry = Object.values(modulePaths).find(
+                r => id === r.entry
+            );
+            const moduleRegistry =
+                moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
 
             let result = code;
 
@@ -134,11 +141,13 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
             result = normalizeResult(result);
 
-            if (mode === 'compat' || mode === 'prod_compat') {
-                result = normalizeResult(rollupCompatInstance.transform(result.code, id));
+            if (mode === "compat" || mode === "prod_compat") {
+                result = normalizeResult(
+                    rollupCompatInstance.transform(result.code, id)
+                );
             }
 
             return { code: result.code, map: result.map };
-        },
+        }
     };
 };
