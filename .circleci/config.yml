@@ -23,8 +23,12 @@ jobs:
           key: yarn-v3-{{ checksum "yarn.lock" }}
 
       - run:
+          name: Run Linting
+          command: yarn lint
+
+      - run:
           name: Run Unit Tests
-          command: yarn test
+          command: yarn test --ci --maxWorkers=2
 
 
   integration_test:

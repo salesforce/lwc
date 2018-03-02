@@ -1,5 +1,4 @@
-const classProperty = require('babel-plugin-transform-class-properties');
-
+const classProperty = require('@babel/plugin-proposal-class-properties')["default"];
 const component = require('./component');
 const decorators = require('./decorators');
 
@@ -11,7 +10,7 @@ const decorators = require('./decorators');
 module.exports = function ({ types, traverse }) {
     const { merge: mergeVisitors } = traverse.visitors;
 
-    const { visitor: classPropertyVisitor } = classProperty({ types });
+    const { visitor: classPropertyVisitor } = classProperty({ types }, { loose: true });
 
     return {
         manipulateOptions(opts, parserOpts) {

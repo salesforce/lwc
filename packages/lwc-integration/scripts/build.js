@@ -1,33 +1,37 @@
 const fs = require('fs-extra');
 const path = require('path');
-const babel = require('babel-core');
+const babel = require('@babel/core');
 const rollup = require('rollup');
-const lwcCompilerPlugin = require('rollup-plugin-lwc-compiler');
-const compatPlugin = require('babel-plugin-transform-proxy-compat');
 const templates = require('../src/shared/templates.js');
-const { compatBrowsersPreset } = require('../../../scripts/babel-config-util');
+const rollupLwcCompilerPlugin = require('rollup-plugin-lwc-compiler');
+const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const babelPresetCompat = require('babel-preset-compat');
+const compatPolyfills = require('compat-polyfills');
 
 // -- Build Config -------------------------------------------
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
+
+const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
+const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
+const todoPath = path.join(require.resolve('../src/shared/todo.js'));
+
 const testSufix = '.test.js';
 const testPrefix = 'test-';
+
 const functionalTestDir = path.join(__dirname, '../', 'src/components');
 const functionalTests = fs.readdirSync(functionalTestDir);
+
+const testOutput = path.join(__dirname, '../', 'public');
+const testSharedOutput = path.join(testOutput, 'shared');
 const testEntries = functionalTests.reduce((seed, functionalFolder) => {
     const testsFolder = path.join(functionalTestDir, functionalFolder);
     const tests = fs.readdirSync(testsFolder).map((test) => {
         const testPath = path.join(testsFolder, test, `${test}${testSufix}`);
-        return {
-            path: testPath,
-            namespace: functionalFolder,
-            name: getTestName(testPath),
-        };
+        return { path: testPath, namespace: functionalFolder, name: getTestName(testPath) };
     });
     return seed.concat(tests);
 }, []);
-const testOutput = path.join(__dirname, '../', 'public');
-const testSharedOutput = path.join(testOutput, 'shared');
 
 // -- Plugins & Helpers -------------------------------------
 
@@ -47,12 +51,7 @@ function testCaseComponentResolverPlugin() {
 }
 
 function getTodoApp(testBundle) {
-    return isCompat ?
-        babel.transform(templates.todoApp(testBundle), {
-            presets: [ compatBrowsersPreset ],
-            plugins: [[compatPlugin, { resolveProxyCompat: { global: 'window.Proxy' } }]]}
-        ).code
-        : templates.todoApp(testBundle);
+    return templates.todoApp(testBundle);
 }
 
 function entryPointResolverPlugin() {
@@ -75,49 +74,35 @@ function entryPointResolverPlugin() {
 // -- Rollup config ---------------------------------------------
 
 const globalModules = {
+    'compat-polyfills/downgrade': 'window',
+    'compat-polyfills/polyfills': 'window',
     'engine': 'Engine',
-    'babel/helpers/classCallCheck': 'classCallCheck',
-    'babel/helpers/possibleConstructorReturn': 'possibleConstructorReturn',
-    'babel/helpers/inherits' : 'inherits',
-    'babel/helpers/createClass' : 'createClass',
-    'babel/helpers/defineProperty': 'defineProperty',
-    'babel/helpers/objectDestructuringEmpty': 'objectDestructuringEmpty',
     'wire-service': 'WireService',
     'todo': 'Todo'
 };
 
 const baseInputConfig = {
     external: function (id) {
-        if (id.includes('babel/helpers') || id.includes('engine') || id.includes('wire-service') || id.includes('todo')) {
-            return true;
-        }
+        return id in globalModules
     },
     plugins: [
         entryPointResolverPlugin(),
-        lwcCompilerPlugin({
-            mode,
+        rollupLwcCompilerPlugin({
+            mode: 'dev',
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
             mapNamespaceFromPath: false,
             ignoreFolderName: true,
-            resolveProxyCompat: { global: 'window.Proxy' },
-            globals: globalModules,
             allowUnnamespaced: true
         }),
+        isCompat && rollupCompatPlugin({ downgrade: true, polyfills: true }),
         testCaseComponentResolverPlugin(),
-    ]
+    ].filter(Boolean)
 };
-const baseOutputConfig = {
-    format: 'iife',
-    globals: globalModules
-};
+
+const baseOutputConfig = { format: 'iife', globals: globalModules };
 
 // -- Build shared artifacts -----------------------------------------------------
-
-const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
-const compatPath = path.join(require.resolve('proxy-compat-build/dist/umd/compat_downgrade.js'));
-const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire-service.js`));
-const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
 if (!fs.existsSync(engineModeFile)) {
     throw new Error("Compat version of engine not generated in expected location: " + engineModeFile
@@ -125,8 +110,10 @@ if (!fs.existsSync(engineModeFile)) {
 }
 
 // copy static files
-fs.copySync(compatPath, path.join(testSharedOutput, 'compat.js'));
 fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
+fs.writeFileSync(path.join(testSharedOutput,'downgrade.js'), compatPolyfills.loadDowngrade());
+fs.writeFileSync(path.join(testSharedOutput,'polyfills.js'), compatPolyfills.loadPolyfills());
+
 fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire-service.js'));
 fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 
@@ -135,10 +122,8 @@ fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 testEntries.reduce(async (promise, test) => {
     await promise;
     const { name: testName, path: testEntry, namespace: testNamespace } = test;
-    const bundle = await rollup.rollup({
-        ...baseInputConfig,
-        input: testEntry
-    });
+    console.log(`Building integration test: ${testName}`);
+    const bundle = await rollup.rollup({ ...baseInputConfig, input: testEntry });
 
     const result = await bundle.write({
         ...baseOutputConfig,

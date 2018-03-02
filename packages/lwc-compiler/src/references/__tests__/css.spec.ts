@@ -1,7 +1,7 @@
 import { getReferences } from '../../references/css';
 
 test('single selector', () => {
-    expect(getReferences(`x-foo { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -18,7 +18,7 @@ test('single selector', () => {
 
 test('single selector with attributes', () => {
     expect(
-        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js'),
+        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -35,7 +35,7 @@ test('single selector with attributes', () => {
 });
 
 test('selector chain', () => {
-    expect(getReferences(`header x-foo { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`header x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -52,7 +52,7 @@ test('selector chain', () => {
 
 test('selector list', () => {
     expect(
-        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js'),
+        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -80,7 +80,7 @@ test('selector list', () => {
 });
 
 test('multiline selector list', () => {
-    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -111,7 +111,7 @@ test('ugly selector list', () => {
         getReferences(
             `      x-foo, p      .foo,  \nx-bar {\n  color  : red ;\n }`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -143,7 +143,7 @@ test('multiple rules', () => {
         getReferences(
             `x-foo {\ncolor: red;\n }\n \nx-bar {\ncolor: red;\n}`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -172,7 +172,7 @@ test('multiple rules', () => {
 
 
 test('single selector', () => {
-    expect(getReferences(`x-foo { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -189,7 +189,7 @@ test('single selector', () => {
 
 test('single selector with attributes', () => {
     expect(
-        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js'),
+        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -206,7 +206,7 @@ test('single selector with attributes', () => {
 });
 
 test('selector chain', () => {
-    expect(getReferences(`header x-foo { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`header x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -223,7 +223,7 @@ test('selector chain', () => {
 
 test('selector list', () => {
     expect(
-        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js'),
+        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -251,7 +251,7 @@ test('selector list', () => {
 });
 
 test('multiline selector list', () => {
-    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js')).toEqual([
+    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -282,7 +282,7 @@ test('ugly selector list', () => {
         getReferences(
             `      x-foo, p      .foo,  \nx-bar {\n  color  : red ;\n }`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -314,7 +314,7 @@ test('multiple rules', () => {
         getReferences(
             `x-foo {\ncolor: red;\n }\n \nx-bar {\ncolor: red;\n}`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-foo',

@@ -146,12 +146,17 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         assert.vm(vm);
         assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
     }
-    const { cmpEvents } = vm;
+    const { cmpEvents, elm } = vm;
     if (cmpEvents) {
         const handlers = cmpEvents[eventName];
         const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
-            ArraySplice.call(cmpEvents[eventName], pos, 1);
+            if (handlers.length === 1) {
+                elm.removeEventListener(eventName, (vm.cmpListener as EventListener));
+                (cmpEvents as any)[eventName] = undefined;
+            } else {
+                ArraySplice.call(cmpEvents[eventName], pos, 1);
+            }
             return;
         }
     }
@@ -164,7 +169,10 @@ function handleComponentEvent(vm: VM, event: Event) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
-        assert.invariant(vm.cmpEvents && vm.cmpEvents[event.type] && vm.cmpEvents[event.type].length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
+        const eventType = event.type;
+        const cmpEvents = vm.cmpEvents;
+        const cmpEventsType = cmpEvents && cmpEvents[eventType];
+        assert.invariant(vm.cmpEvents && !isUndefined(cmpEventsType) && cmpEventsType.length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
     }
 
     const { cmpEvents = EmptyObject } = vm;

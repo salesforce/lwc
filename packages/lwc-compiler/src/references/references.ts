@@ -1,41 +1,70 @@
-import * as path from 'path';
+import * as path from "path";
 
-import { getReferences as getCssReferences } from './css';
-import { getReferences as getHtmlReferences } from './html';
-import { getReferences as getJsReferences } from './javascript';
-import { Reference } from './types';
+import { CompilerOptions } from "../options";
+import { Diagnostic } from "../diagnostics/diagnostic";
 
-import { LwcBundle } from '../lwc-bundle';
+import { getReferences as getCssReferences } from "./css";
+import { getReferences as getHtmlReferences } from "./html";
+import { getReferences as getJsReferences } from "./javascript";
 
-export function getBundleReferences(bundle: LwcBundle): Reference[] {
-    if (!bundle || !bundle.sources) {
-        return [];
+export interface ReferenceLocation {
+    start: number;
+    length: number;
+}
+
+export interface Reference {
+    type: ReferenceType;
+    id: string;
+    file: string;
+    locations: ReferenceLocation[];
+}
+
+export interface ReferenceReport {
+    references: Reference[];
+    diagnostics: Diagnostic[];
+}
+
+export type ReferenceType =
+    | "resourceUrl"
+    | "label"
+    | "apexClass"
+    | "apexMethod"
+    | "sobjectClass"
+    | "sobjectField"
+    | "component";
+
+export function getBundleReferences({
+    files
+}: CompilerOptions): ReferenceReport {
+    const references: Reference[] = [];
+    const diagnostics: Diagnostic[] = [];
+
+    for (const [filename, content] of Object.entries(files)) {
+        const refResult = getFileReferences(content, filename);
+        references.push(...refResult.references);
+        diagnostics.push(...refResult.diagnostics);
     }
-    // TODO: ts is complaining if [filename, source] is used instead of entry
-    return Object.entries(bundle.sources).reduce(
-        (refs: Reference[], entry: any) => {
-            const filename = entry[0];
-            const source = entry[1];
-            return [...refs, ...getFileReferences(source, filename)];
-        },
-        [],
-    );
+
+    return {
+        references,
+        diagnostics
+    };
 }
 
 export function getFileReferences(
     source: string,
-    filename: string,
-): Reference[] {
+    filename: string
+): ReferenceReport {
     const ext = path.extname(filename);
 
     switch (ext) {
-        case '.html':
+        case ".html":
             return getHtmlReferences(source, filename);
-        case '.js':
+        case ".js":
             return getJsReferences(source, filename);
-        case '.css':
+        case ".css":
             return getCssReferences(source, filename);
         default:
-            return [];
+            return { references: [], diagnostics: [] };
     }
 }
