@@ -1,6 +1,0 @@
-{
-  "compilerOptions": {
-    "module": "es6",
-    "noEmitHelpers":  true
-  }
-}

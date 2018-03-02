@@ -280,7 +280,7 @@ if (process.env.NODE_ENV !== 'production') {
             get() {
                 const vm = getCustomElementVM(this as HTMLElement);
                 const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
-                const msg = [];
+                const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
                 if (error) {
                     msg.push(error);

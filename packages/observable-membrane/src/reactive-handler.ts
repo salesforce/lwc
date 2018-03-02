@@ -4,7 +4,6 @@ import {
     TargetSlot,
     unwrap,
     isObservable,
-    ArrayMap,
 } from './shared';
 
 import {
@@ -44,7 +43,6 @@ function wrapDescriptor(membrane: ReactiveMembrane, descriptor: PropertyDescript
     }
     return descriptor;
 }
-
 
 function lockShadowTarget(membrane: ReactiveMembrane, shadowTarget: ReactiveMembraneShadowTarget, originalTarget: any): void {
     const targetKeys = ArrayConcat.call(getOwnPropertyNames(originalTarget), getOwnPropertySymbols(originalTarget));
