@@ -11,6 +11,7 @@ import {
     setAttribute,
     setAttributeNS,
     GlobalHTMLPropDescriptors,
+    AOMAttrNameToPropNameMap,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -18,7 +19,7 @@ import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
-import { ArrayReduce, isString, isFunction } from "./language";
+import { ArrayReduce, isString, isFunction, hasOwnProperty } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
@@ -89,6 +90,19 @@ function querySelectorAllFromComponent(cmp: Component, selectors: string): NodeL
 
 export interface ComposableEvent extends Event {
     composed: boolean;
+}
+
+export function removeAriaAttribute(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    if (hasOwnProperty.call(AOMAttrNameToPropNameMap, attrName)) {
+        const propName = AOMAttrNameToPropNameMap[attrName];
+        const shadowValue = vm.cmpRoot![propName];
+        if (shadowValue !== null) {
+            setAttribute.call(vm.elm, attrName, shadowValue);
+        }
+    }
 }
 
 // This should be as performant as possible, while any initialization should be done lazily
@@ -185,7 +199,9 @@ class LWCElement implements Component {
         vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
-        return removeAttribute.call(vm.elm, attrName);
+        const rv = removeAttribute.call(vm.elm, attrName);
+        removeAriaAttribute(vm, attrName);
+        return rv;
     }
 
     setAttribute(attrName: string, value: any): void {

@@ -40,7 +40,7 @@ import {
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
-import { Element as BaseElement, getCustomElementVM } from "./html-element";
+import { Element as BaseElement, getCustomElementVM, removeAriaAttribute } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
 
@@ -293,6 +293,7 @@ function removeAttributePatched(this: VMElement, attrName: string) {
         assertPublicAttributeColission(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
+    removeAriaAttribute(vm, attrName);
 }
 
 function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {

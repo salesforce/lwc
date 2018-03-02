@@ -1272,6 +1272,21 @@ describe('html-element', () => {
                     });
                 });
             });
+
+            describe('AOM shim', () => {
+                it('getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.role = 'tab'
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    element.setAttribute('role', 'button');
+                    element.removeAttribute('role');
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+                });
+            });
         });
 
         describe('#ariaChecked', () => {
@@ -1312,6 +1327,34 @@ describe('html-element', () => {
                 expect(element.ariaChecked).toBe(null);
                 // checking for the internal polyfill value as well
                 expect(HTMLElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+            });
+
+            describe('AOM shim', () => {
+                it('internal getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.ariaChecked = 'true';
+                            this.setAttribute('aria-checked', 'false');
+                            this.removeAttribute('aria-checked');
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+                });
+
+                it('external getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.ariaChecked = 'true'
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    element.setAttribute('aria-checked', 'false');
+                    element.removeAttribute('aria-checked');
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+                });
             });
         });
 
