@@ -88,14 +88,17 @@ const baseInputConfig = {
     plugins: [
         entryPointResolverPlugin(),
         rollupLwcCompilerPlugin({
-            mode: 'dev',
+            mode,
             exclude: `**/*${testSufix}`,
             resolveFromPackages: false,
             mapNamespaceFromPath: false,
             ignoreFolderName: true,
-            allowUnnamespaced: true
+            allowUnnamespaced: true,
+            compat: { // In order to build faster we manually add compat artifacts later
+                downgrade: false,
+                polyfills: false
+            }
         }),
-        isCompat && rollupCompatPlugin({ downgrade: true, polyfills: true }),
         testCaseComponentResolverPlugin(),
     ].filter(Boolean)
 };
