@@ -1,4 +1,3 @@
-import './polyfills.ts';
 export { createElement } from "./upgrade";
 export { getComponentDef } from "./def";
 export { Element } from "./html-element";

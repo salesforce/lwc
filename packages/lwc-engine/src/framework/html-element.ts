@@ -4,7 +4,6 @@ import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, remo
 import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, toString } from "./language";
 import {
     GlobalHTMLProperties,
-    GlobalAOMProperties,
     getAriaAttributeName,
     getAttribute,
     getAttributeNS,
@@ -12,7 +11,7 @@ import {
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
-    defaultDefHTMLPropertyNames,
+    GlobalHTMLPropDescriptors,
 } from "./dom";
 import { getPropNameFromAttrName, EmptyObject } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -20,13 +19,12 @@ import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
-import { ArrayReduce, isString, StringToLowerCase , isNull } from "./language";
+import { ArrayReduce, isString, StringToLowerCase } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { membrane as reactiveMembrane } from "./reactive";
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const attrName = StringToLowerCase.call(propName);
-    const { get, set, enumerable, configurable } = descriptor || EmptyObject;
+    const { get, set, enumerable, configurable } = descriptor;
     return {
         enumerable,
         configurable,
@@ -50,15 +48,11 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
                 assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+                assert.invariant(!isObject(newValue) || isNull(newValue), `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`);
             }
 
             if (newValue !== vm.cmpProps[propName]) {
-                if (process.env.NODE_ENV !== 'production') {
-                    if (isObject(newValue)) {
-                        assert.logWarning(`Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive.`);
-                    }
-                }
-                vm.cmpProps[propName] = reactiveMembrane.getReadOnlyProxy(newValue);
+                vm.cmpProps[propName] = newValue;
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, propName);
@@ -69,66 +63,10 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     }
 }
 
-function getAOMPropDescriptor(propName: string, attrName: string) {
-    return {
-        get(this: Component) {
-            const vm: VM = this[ViewModelReflection];
-            const elm = getLinkedElement(this);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            if (isBeingConstructed(vm)) {
-                if (process.env.NODE_ENV !== 'production') {
-                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
-                }
-                return;
-            }
-            observeMutation(this, propName);
-
-            return getAttribute.call(elm, attrName);
-        },
-        set(this: Component, newValue: any) {
-            const vm = this[ViewModelReflection];
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
-                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
-            }
-
-            if (newValue !== vm.cmpProps[propName]) {
-                if (isObject(newValue)) {
-                    assert.logWarning(`Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive.`);
-                }
-                vm.cmpProps[propName] = newValue;
-                if (vm.idx > 0) {
-                    // perf optimization to skip this step if not in the DOM
-                    notifyMutation(this, propName);
-                }
-            }
-            const { elm } = vm;
-            if (isNull(newValue)) {
-                const { cmpRoot } = vm;
-                vm.hostAttrs[attrName] = undefined;
-                const defaultValue = cmpRoot[propName];
-                if (isNull(defaultValue)) {
-                    removeAttribute.call(elm, attrName)
-                }
-                setAttribute.call(elm, attrName, cmpRoot[propName]);
-            } else {
-                setAttribute.call(elm, attrName, newValue);
-            }
-        }
-    }
-}
-
-const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), (seed, ariaPropertyName) => {
-    seed[ariaPropertyName] = getAOMPropDescriptor(ariaPropertyName, getAriaAttributeName(ariaPropertyName))
+const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPropDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
+    seed[propName] = getHTMLPropDescriptor(propName, GlobalHTMLPropDescriptors[propName]);
     return seed;
-}, ArrayReduce.call(defaultDefHTMLPropertyNames, (seed, propName) => {
-    const descriptorPrototype = propName === 'id' ? Element.prototype : HTMLElement.prototype;
-    seed[propName] = getHTMLPropDescriptor(propName, getOwnPropertyDescriptor(descriptorPrototype, propName)!);
-    return seed;
-}, {}));
+}, {});
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;

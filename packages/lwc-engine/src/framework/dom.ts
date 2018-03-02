@@ -2,7 +2,17 @@ import {
     ArrayIndexOf,
     StringToLowerCase,
     StringReplace,
+    create,
+    hasOwnProperty,
+    forEach,
+    getOwnPropertyNames,
+    getOwnPropertyDescriptor,
+    isUndefined,
 } from './language';
+import { isObject, isNull } from 'util';
+import assert from './assert';
+import { getCustomElementVM } from './html-element';
+import { ViewModelReflection } from './def';
 
 const {
     getAttribute,
@@ -242,3 +252,54 @@ export const GlobalHTMLProperties = {
 
 // TODO: complete this list with Node properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Node
+
+
+export const AOMAttrNameToPropNameMap: Record<string, string> = create(null);
+export const GlobalHTMLPropDescriptors: PropertyDescriptorMap = create(null);
+
+// Synthetic creation of all AOM property descriptors
+forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
+    const attrName = getAriaAttributeName(propName);
+    AOMAttrNameToPropNameMap[attrName] = propName;
+
+    let value = null; // internal slot for the value
+
+    function get(this: HTMLElement) {
+        return value;
+    }
+    function set(this: HTMLElement, newValue: any) {
+        value = isNull(newValue) ? null : newValue + ''; // storing the normalized new value
+        // TODO: fallback to the root's AOM default semantics
+        const vm = getCustomElementVM(this);
+        if (isNull(value)) {
+            newValue = vm.component.root[propName];
+            vm.hostAttrs[attrName] = undefined;
+        } else {
+            vm.hostAttrs[attrName] = 1;
+        }
+        if (isNull(newValue)) {
+            removeAttribute.call(this, attrName);
+        } else {
+            setAttribute.call(this, attrName, newValue);
+        }
+    }
+    // TODO: eventually this descriptors should come from HTMLElement.prototype.*
+    GlobalHTMLPropDescriptors[propName] = {
+        set,
+        get,
+        configurable: true,
+        enumerable: true,
+    }
+});
+
+forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+    const descriptor = getOwnPropertyDescriptor(HTMLElement.prototype, propName);
+    if (!isUndefined(descriptor)) {
+        GlobalHTMLPropDescriptors[propName] = descriptor;
+    }
+});
+
+if (isUndefined(GlobalHTMLPropDescriptors.id)) {
+    // In IE11, id property is on Element.prototype instead of HTMLElement
+    GlobalHTMLPropDescriptors.id = getOwnPropertyDescriptor(Element.prototype, 'id');
+}
