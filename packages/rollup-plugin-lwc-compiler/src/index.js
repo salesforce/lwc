@@ -64,7 +64,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             const externalPaths = mergedPluginOptions.resolveFromPackages ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions) : {};
             const sourcePaths = mergedPluginOptions.resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions): {};
             Object.assign(modulePaths, externalPaths, sourcePaths);
-            rollupCompatInstance.options(rollupOptions);
         },
 
         resolveId(importee, importer) {
@@ -126,6 +125,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
         },
 
         transformBundle(code) {
+            code = rollupCompatInstance.transformBundle(code);
             return compiler.transformBundle(code, { mode });
         }
     };

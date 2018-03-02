@@ -76,7 +76,7 @@ function parse(styleString: string): any {
                 const { value, property } = declaration;
 
                 if (SPECIAL_PROPS[property]) {
-                    const special:any = SPECIAL_PROPS[property];
+                    const special: any = SPECIAL_PROPS[property];
                     const matches = special.regex.exec(value as string);
                     if (matches) {
                         if (typeof special.map === 'function') {

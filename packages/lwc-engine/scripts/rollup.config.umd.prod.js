@@ -3,10 +3,8 @@ const path = require('path');
 const replace = require('rollup-plugin-replace');
 const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
-const rollupUglifyPlugin = require('rollup-plugin-uglify');
-const { minify } = require('uglify-es');
 const nodeResolve = require('rollup-plugin-node-resolve');
-
+const babelMinify = require('babel-minify');
 const { version } = require('../package.json');
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 
@@ -15,13 +13,21 @@ const outputDir = path.resolve(__dirname, '../dist/umd');
 const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
+function inlineMinifyPlugin() {
+    return {
+        transformBundle(code) {
+            return babelMinify(code);
+        }
+    };
+}
+
 function rollupConfig(config){
     const { format, target, prod } = config;
     let plugins = [
         nodeResolve(),
         rollupTypescriptPlugin({ typescript, target, module: 'es6', sourceMap: false }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
-        prod && rollupUglifyPlugin({}, minify)
+        prod && inlineMinifyPlugin({})
     ].filter(p => p);
 
     const targetName = generateTargetName(config);

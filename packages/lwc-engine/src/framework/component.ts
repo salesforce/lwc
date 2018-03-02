@@ -167,8 +167,8 @@ function handleComponentEvent(vm: VM, event: Event) {
         assert.vm(vm);
         assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
         const eventType = event.type;
-        const cmpEvents = vm.cmpEvents;
-        const cmpEventsType = cmpEvents && cmpEvents[eventType];
+        const cmpEvt = vm.cmpEvents;
+        const cmpEventsType = cmpEvt && cmpEvt[eventType];
         assert.invariant(vm.cmpEvents && !isUndefined(cmpEventsType) && cmpEventsType.length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
     }
 

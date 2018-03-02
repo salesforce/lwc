@@ -6,9 +6,6 @@ import {
     isArray,
     isObservable,
     isObject,
-    logWarning,
-    isNull,
-    isFunction
 } from './shared';
 import { ReactiveProxyHandler } from './reactive-handler';
 import { ReadOnlyHandler } from './read-only-handler';
@@ -18,22 +15,21 @@ if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();
 }
 
-interface ReactiveState {
+export interface ReactiveState {
     readOnly: any;
     reactive: any;
     shadowTarget: ReactiveMembraneShadowTarget;
 }
 
-export type ReactiveMembraneShadowTarget = Object | Array<any>;
-type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
-type ReactiveMembraneDistortionCallback = (value: any) => any;
+export type ReactiveMembraneShadowTarget = Object | any[];
+export type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
+export type ReactiveMembraneDistortionCallback = (value: any) => any;
 
-interface ReactiveMembraneEventHandlerMap {
+export interface ReactiveMembraneEventHandlerMap {
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
     [key: string]: ReactiveMembraneEventHander;
 }
-
 
 function invokeDistortion(membrane: ReactiveMembrane, value: any): { value: any, observable: boolean } {
     return membrane.distortion(value);
@@ -48,7 +44,6 @@ function createShadowTarget(value: any): ReactiveMembraneShadowTarget {
     }
     return shadowTarget as ReactiveMembraneShadowTarget;
 }
-
 
 function getReactiveState(membrane: ReactiveMembrane, value: any): ReactiveState {
     const { objectGraph } = membrane;
@@ -106,7 +101,7 @@ export class ReactiveMembrane {
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
     objectGraph: WeakMap<any, ReactiveState> = new WeakMap();
-    constructor (distrotion: ReactiveMembraneDistortionCallback, eventMap: ReactiveMembraneEventHandlerMap) {
+    constructor(distrotion: ReactiveMembraneDistortionCallback, eventMap: ReactiveMembraneEventHandlerMap) {
         this.distortion = distrotion;
         this.propertyMemberChange = eventMap.propertyMemberChange;
         this.propertyMemberAccess = eventMap.propertyMemberAccess;
@@ -129,4 +124,4 @@ export class ReactiveMembrane {
     }
 }
 
-export { unwrap }
+export { unwrap };

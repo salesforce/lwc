@@ -1,5 +1,5 @@
 import { init } from "../3rdparty/snabbdom/snabbdom";
-import { VNode, DOMAPI } from "../3rdparty/snabbdom/types";
+import { DOMAPI } from "../3rdparty/snabbdom/types";
 import props from "./modules/props";
 import attrs from "./modules/attrs";
 import styles from "./modules/styles";

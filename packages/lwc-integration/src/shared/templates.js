@@ -14,7 +14,7 @@ exports.todoApp = function (cmpName) {
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
 
-        registerWireService(register, () => {
+        registerWireService(register, function () {
             return {
                 serviceTodo
             };

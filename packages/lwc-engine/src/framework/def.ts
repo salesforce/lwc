@@ -91,7 +91,6 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-
 function propertiesReducer(seed: any, propName: string) {
     seed[propName] = { config: 3 };
     return seed;
@@ -434,7 +433,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
             const globalHTMLProperty = GlobalHTMLProperties[propName];
             if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
                 const { error, attribute, experimental } = globalHTMLProperty;
-                const msg = [];
+                const msg: string[] = [];
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {

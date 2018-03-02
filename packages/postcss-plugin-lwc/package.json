@@ -5,7 +5,7 @@
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
+    "build": "echo 'Building postcss plugin...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "dependencies": {

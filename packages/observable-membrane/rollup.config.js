@@ -2,8 +2,7 @@
 
 const path = require('path');
 const typescript = require('rollup-plugin-typescript');
-const uglify = require('rollup-plugin-uglify');
-
+const babelMinify = require('babel-minify');
 const { version } = require('./package.json');
 
 const input = path.resolve(__dirname, 'src/main.ts');
@@ -23,18 +22,20 @@ const baseRollupConfig = {
     footer,
 };
 
+
+function inlineMinifyPlugin() {
+    return {
+        transformBundle(code) {
+            return babelMinify(code);
+        }
+    };
+}
+
 function rollupConfig({ formats, prod }) {
-    const plugins = [];
-
-    plugins.push(typescript({
-        target: 'es5',
-        typescript: require('typescript'),
-    }));
-
-    if (prod) {
-        const { minify } = require('uglify-es');
-        plugins.push(uglify({}, code => minify(code)));
-    }
+    const plugins = [
+        typescript({ target: 'es5', typescript: require('typescript') }),
+        prod && inlineMinifyPlugin({})
+    ].filter(Boolean);
 
     const output = formats.map(format => {
         const targetDirectory = format === 'umd' ? umdDirectory :  format === 'es' ? modulesDirectory : commonJSDirectory;

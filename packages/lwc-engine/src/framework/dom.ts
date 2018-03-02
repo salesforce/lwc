@@ -58,7 +58,6 @@ export const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
     'useMap',
 ];
 
-
 // this regular expression is used to transform aria props into aria attributes because
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
@@ -109,7 +108,6 @@ export const GlobalAOMProperties: Record<string, any> = {
     ariaSetSize: null,
     role: null,
 };
-
 
 const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
 
@@ -253,7 +251,6 @@ export const GlobalHTMLProperties = {
 // TODO: complete this list with Node properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Node
 
-
 export const AOMAttrNameToPropNameMap: Record<string, string> = create(null);
 export const GlobalHTMLPropDescriptors: PropertyDescriptorMap = create(null);
 
@@ -289,7 +286,7 @@ forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
         get,
         configurable: true,
         enumerable: true,
-    }
+    };
 });
 
 forEach.call(defaultDefHTMLPropertyNames, (propName) => {
