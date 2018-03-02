@@ -117,10 +117,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
                 return;
             }
 
-            if (path.extname(id) === "") {
-                return { code, map: { mappings: "" } };
-            }
-
             // If we don't find the moduleId, just resolve the module name/namespace
             const moduleEntry = Object.values(modulePaths).find(
                 r => id === r.entry
