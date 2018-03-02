@@ -1,4 +1,4 @@
-import assert from'./assert';
+import assert from './assert';
 import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { unwrap as membraneUnwrap } from './membrane';
 import { observeMutation, notifyMutation } from "./watcher";
@@ -36,4 +36,4 @@ export function dangerousObjectMutation(obj: any): any {
         assert.logWarning(`Dangerously Mutating Object ${obj}. This object was passed to you from a parent component, and should not be mutated here. This will be removed in the near future.`);
     }
     return membrane.getProxy(unwrap(obj));
-};
+}
