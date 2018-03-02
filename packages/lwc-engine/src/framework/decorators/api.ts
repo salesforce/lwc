@@ -2,11 +2,10 @@ import assert from "../assert";
 import { defineProperty, isObject, isNull, isTrue } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
-import { EmptyObject } from "../utils";
 import { isBeingConstructed, Component } from "../component";
-import { VM, VMElement } from "../vm";
+import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
-import { isUndefined } from "../language";
+import { isUndefined, isFunction } from "../language";
 import { membrane as reactiveMembrane } from "../reactive";
 
 // stub function to prevent misuse of the @api decorator
@@ -80,6 +79,12 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
 
 export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable } = descriptor;
+    if (!isFunction(get)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Invalid attempt to create public property descriptor ${key} in ${proto}. It is missing the getter declaration with @api get ${key}() {} syntax.`);
+        }
+        throw new TypeError();
+    }
     defineProperty(proto, key, {
         get(this: Component): any {
             if (process.env.NODE_ENV !== 'production') {

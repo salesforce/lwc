@@ -1,10 +1,9 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { isObject, isArray, getOwnPropertyDescriptor, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, toString } from "./language";
+import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull } from "./language";
 import {
     GlobalHTMLProperties,
-    getAriaAttributeName,
     getAttribute,
     getAttributeNS,
     removeAttribute,
@@ -13,18 +12,29 @@ import {
     setAttributeNS,
     GlobalHTMLPropDescriptors,
 } from "./dom";
-import { getPropNameFromAttrName, EmptyObject } from "./utils";
+import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
-import { ArrayReduce, isString, StringToLowerCase } from "./language";
+import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
-    const attrName = StringToLowerCase.call(propName);
     const { get, set, enumerable, configurable } = descriptor;
+    if (!isFunction(get)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`);
+        }
+        throw new TypeError();
+    }
+    if (!isFunction(set)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`);
+        }
+        throw new TypeError();
+    }
     return {
         enumerable,
         configurable,
@@ -60,7 +70,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             }
             return set.call(vm.elm, newValue);
         }
-    }
+    };
 }
 
 const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPropDescriptors), (seed: PropertyDescriptorMap, propName: string) => {

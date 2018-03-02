@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
-import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -35,23 +35,28 @@ export interface ShadowRoot {
     toString(): string;
 }
 
-function createAccessibilityDescriptorForShadowRoot(attrName: string, value: any): PropertyDescriptor {
+function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
     // we use value as the storage mechanism and as the default value for the property
     return {
         enumerable: false,
         get(this: ShadowRoot): any {
-            return value;
+            const vm = getCustomElementVM(this);
+            if (!hasOwnProperty.call(vm.rootProps, propName)) {
+                return defaultValue;
+            }
+            return vm.rootProps[propName];
         },
         set(this: ShadowRoot, newValue: any) {
             const vm = getCustomElementVM(this);
-            value = newValue;
+            vm.rootProps[propName] = newValue;
             if (!isUndefined(vm.hostAttrs[attrName])) {
                 return;
             }
-            if (isNull(value)) {
-                return removeAttribute.call(vm.elm, attrName);
+            if (isNull(newValue)) {
+                removeAttribute.call(vm.elm, attrName);
+                return;
             }
-            setAttribute.call(vm.elm, attrName, value);
+            setAttribute.call(vm.elm, attrName, newValue);
         }
     };
 }
@@ -60,7 +65,7 @@ const RootDescriptors: PropertyDescriptorMap = create(null);
 
 // This routine will be a descriptor map for all AOM properties to be added
 // to ShadowRoot prototype to polyfill AOM capabilities.
-forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(getAriaAttributeName(propName), GlobalAOMProperties[propName]));
+forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAriaAttributeName(propName), GlobalAOMProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);

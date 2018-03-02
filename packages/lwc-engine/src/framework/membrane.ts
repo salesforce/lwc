@@ -21,7 +21,8 @@ export interface MembraneHandler {
 }
 
 export const TargetSlot = Symbol();
-export const MembraneSlot = Symbol();
+
+const MembraneSlot = Symbol();
 
 export function isReplicable(value: any): boolean {
     const type = typeof value;

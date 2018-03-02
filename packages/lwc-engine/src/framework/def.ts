@@ -31,7 +31,6 @@ import {
     GlobalAOMProperties,
     GlobalHTMLProperties,
     getAttribute,
-    getAttributeNS,
     setAttribute,
     setAttributeNS,
     removeAttribute,
@@ -42,8 +41,11 @@ import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName } from "./utils";
+import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
+
+// TODO: refactor all the references to this
+export { ViewModelReflection } from "./utils";
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -83,8 +85,6 @@ export interface ComponentDef {
 import {
     ComponentConstructor, getCustomElementComponent, ErrorCallback
  } from './component';
-
-export const ViewModelReflection = Symbol();
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -147,7 +147,8 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
                     assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
                 }
             }
-            createPublicAccessorDescriptor(proto, propName, descriptor);
+            // if it is configured as an accessor it must have a descriptor
+            createPublicAccessorDescriptor(proto, propName, descriptor as PropertyDescriptor);
         } else {
             createPublicPropertyDescriptor(proto, propName, descriptor);
         }

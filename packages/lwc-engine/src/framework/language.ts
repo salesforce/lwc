@@ -34,7 +34,6 @@ const {
     toLowerCase: StringToLowerCase,
 } = String.prototype;
 
-
 export {
     ArrayReduce,
     StringToLowerCase,

@@ -38,6 +38,8 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: HashTable<any>;
+    // TODO: make this type more restrictive once we know more about it
+    rootProps: Record<string, string | null | boolean>;
     cmpState?: HashTable<any>;
     cmpSlots?: Slotset;
     cmpTrack: HashTable<any>;
@@ -169,6 +171,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
+        rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots,
