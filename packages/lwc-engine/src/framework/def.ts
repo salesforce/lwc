@@ -481,7 +481,7 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
         if (process.env.NODE_ENV !== 'production') {
             if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
                 const { error, attribute, experimental } = GlobalHTMLProperties[propName];
-                const msg = [];
+                const msg: any[] = [];
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {

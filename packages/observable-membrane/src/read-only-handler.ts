@@ -1,28 +1,20 @@
 import {
-    toString,
     isUndefined,
     TargetSlot,
-    unwrap,
     isObservable,
-    ArrayMap,
 } from './shared';
 
 import {
     ReactiveMembrane,
-    notifyMutation,
     observeMutation,
     ReactiveMembraneShadowTarget,
 } from './reactive-membrane';
 
-const { isArray } = Array;
 const {
-    getPrototypeOf,
-    isExtensible,
     getOwnPropertyDescriptor,
     getOwnPropertyNames,
     getOwnPropertySymbols,
     defineProperty,
-    preventExtensions,
 } = Object;
 
 const {
@@ -114,6 +106,7 @@ export class ReadOnlyHandler {
             const { originalTarget } = this;
             throw new Error(`Invalid mutation: Cannot preventExtensions on ${originalTarget}". "${originalTarget} is read-only.`);
         }
+        return false;
     }
     defineProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         if (process.env.NODE_ENV !== 'production') {
