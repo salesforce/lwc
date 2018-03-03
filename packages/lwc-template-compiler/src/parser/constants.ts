@@ -50,19 +50,21 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
 ]);
 
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
-    accesskey: 'accessKey',
-    readonly: 'readOnly',
-    tabindex: 'tabIndex',
-    bgcolor: 'bgColor',
-    colspan: 'colSpan',
-    rowspan: 'rowSpan',
-    contentEditable: 'contentEditable',
-    datetime: 'dateTime',
-    formaction: 'formAction',
-    ismap: 'isMap',
-    maxlength: 'maxLength',
-    usemap: 'useMap',
-    for: 'htmlFor',
+    // These have to be quoted because aria- attributes below are quoted
+    // Our linting doesn't like to mix quoted and un-quoted property names
+    'accesskey': 'accessKey',
+    'readonly': 'readOnly',
+    'tabindex': 'tabIndex',
+    'bgcolor': 'bgColor',
+    'colspan': 'colSpan',
+    'rowspan': 'rowSpan',
+    'contentEditable': 'contentEditable',
+    'datetime': 'dateTime',
+    'formaction': 'formAction',
+    'ismap': 'isMap',
+    'maxlength': 'maxLength',
+    'usemap': 'useMap',
+    'for': 'htmlFor',
 
     // Aria
     'aria-autocomplete': 'ariaAutocomplete',
