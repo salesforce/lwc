@@ -1,3 +1,4 @@
+import assert from './assert';
 import {
     StringToLowerCase,
     StringReplace,
@@ -10,6 +11,7 @@ import {
     isNull,
 } from './language';
 import { ViewModelReflection } from "./utils";
+import { VM } from './vm';
 
 const {
     getAttribute,
@@ -61,6 +63,21 @@ const ARIA_REGEX = /^aria/;
 
 export function getAriaAttributeName(propName: string) {
     return StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
+}
+
+export function attemptAriaAttributeFallback(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    if (hasOwnProperty.call(AOMAttrNameToPropNameMap, attrName)) {
+        vm.hostAttrs[attrName] = undefined; // marking the set is needed for the AOM polyfill
+        const propName = AOMAttrNameToPropNameMap[attrName];
+        const shadowValue = vm.cmpRoot![propName];
+        vm.hostAttrs[propName] = 0;
+        if (shadowValue !== null) {
+            setAttribute.call(vm.elm, attrName, shadowValue);
+        }
+    }
 }
 
 // Global Aria and Role Properties derived from ARIA and Role Attributes with their

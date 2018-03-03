@@ -54,7 +54,7 @@ export interface VM {
     component?: Component;
     membrane?: Membrane;
     deps: VM[][];
-    hostAttrs: Record<string, number>;
+    hostAttrs: Record<string, number | undefined>;
     toString(): string;
 }
 
