@@ -1,11 +1,26 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.17...v) (2018-02-17)
-# [](https://github.com/salesforce/lwc/compare/v0.17.16...v) (2018-02-15)
+# [](https://github.com/salesforce/lwc/compare/v0.17.18...v) (2018-03-03)
 
 
 
-<a name="0.17.17"></a>
-## [0.17.17](https://github.com/salesforce/lwc/compare/v0.17.16...v0.17.17) (2018-02-17)
+<a name="0.17.18"></a>
+## [0.17.18](https://github.com/salesforce/lwc/compare/v0.17.16...v0.17.18) (2018-03-03)
+
+
+### Bug Fixes
+
+* **compiler:** Fix compiler bundle ([#117](https://github.com/salesforce/lwc/issues/117)) ([5a5b641](https://github.com/salesforce/lwc/commit/5a5b641))
+* **engine:** 0.17.17 cherry pick ([#114](https://github.com/salesforce/lwc/issues/114)) ([9cf4cdd](https://github.com/salesforce/lwc/commit/9cf4cdd)), closes [#113](https://github.com/salesforce/lwc/issues/113)
+* **engine:** fixes [#90](https://github.com/salesforce/lwc/issues/90): prevent invalid values in forceTagName ([#126](https://github.com/salesforce/lwc/issues/126)) ([a992b99](https://github.com/salesforce/lwc/commit/a992b99))
+* **rollup-plugin-lwc-compiler:** Allow rollup in COMPAT mode ([#121](https://github.com/salesforce/lwc/issues/121)) ([4afb73a](https://github.com/salesforce/lwc/commit/4afb73a))
+* Integration test for compat ([#134](https://github.com/salesforce/lwc/issues/134)) ([d2e2432](https://github.com/salesforce/lwc/commit/d2e2432))
+
+
+### Features
+
+* **compiler:** migrate referential integrity into lwc-compiler ([#109](https://github.com/salesforce/lwc/issues/109)) ([029e879](https://github.com/salesforce/lwc/commit/029e879))
+* **engine:** Read-only escape hatch ([#128](https://github.com/salesforce/lwc/issues/128)) ([2fd26af](https://github.com/salesforce/lwc/commit/2fd26af))
+* **git:** enforce commit message validation ([#78](https://github.com/salesforce/lwc/issues/78)) ([745e44e](https://github.com/salesforce/lwc/commit/745e44e))
 
 
 
@@ -137,7 +152,12 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
+
+
+
+<a name="0.17.3"></a>
+## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
 
 
 
