@@ -32,7 +32,7 @@ export interface CompilerOptions {
     files: BundleFiles;
     outputConfig?: OutputConfig;
 
-    // TODO: below must be removed after lwc-compiler consumeres change
+    // TODO: below must be removed after lwc-compiler consumErs change
     // attribute names to name/namespace
     moduleName?: string;
     moduleNamespace?: string;

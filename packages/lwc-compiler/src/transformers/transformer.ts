@@ -87,15 +87,3 @@ export async function transformFile(
 
     return result;
 }
-
-export function transformBundle(src: string, options: any) {
-    const mode = options && options.mode;
-    let result = undefined;
-    if (mode === 'prod' || mode === 'prod_compat') {
-        const rollupReplace = replacePlugin({ 'process.env.NODE_ENV': JSON.stringify('production') });
-        const resultReplace = rollupReplace.transform(src, '$__tmpBundleSrc');
-        const output = minifyPlugin().transformBundle(resultReplace ? resultReplace.code : src);
-        result = output.code;
-    }
-    return result || src;
-}
