@@ -450,20 +450,51 @@ describe('Metadata', () => {
         {
             output: {
                 metadata: {
-                    decorators: [{
-                        type: 'api',
-                        targets: [
-                            { name: 'todo', type: 'property' },
-                            { name: 'index', type: 'property' },
-                            { name: 'publicMethod', type: 'method' },
-                        ],
-                    }],
+                    decorators: [
+                        {
+                            type: "api",
+                            targets: [
+                                { name: "todo", type: "property" },
+                                { name: "index", type: "property" },
+                                { name: "publicMethod", type: "method" }
+                            ]
+                        }
+                    ],
+                    classMembers: [
+                        {
+                            type: "property",
+                            name: "todo",
+                            loc: {
+                                start: { line: 4, column: 0 },
+                                end: { line: 6, column: 1 }
+                            },
+                            decorator: "api"
+                        },
+                        {
+                            type: "property",
+                            name: "index",
+                            loc: {
+                                start: { line: 10, column: 0 },
+                                end: { line: 11, column: 6 }
+                            },
+                            decorator: "api"
+                        },
+                        {
+                            type: "method",
+                            name: "publicMethod",
+                            loc: {
+                                start: { line: 12, column: 0 },
+                                end: { line: 12, column: 22 }
+                            },
+                            decorator: "api"
+                        }
+                    ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 13 },
+                        end: { column: 1, line: 13 }
                     }
-                },
-            },
-        },
+                }
+            }
+        }
     );
 });
