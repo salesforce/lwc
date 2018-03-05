@@ -1,4 +1,4 @@
-import { transform } from 'babel-core';
+import { transform } from '@babel/core';
 import presetCompat from 'babel-preset-compat';
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
 

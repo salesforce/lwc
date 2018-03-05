@@ -1,4 +1,4 @@
-import { transform } from 'babel-core';
+import { transform } from '@babel/core';
 import * as minify from 'babel-preset-minify';
 
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
