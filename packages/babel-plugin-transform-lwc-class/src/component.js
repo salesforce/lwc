@@ -1,7 +1,7 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, staticClassProperty, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
-const { LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
