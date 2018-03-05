@@ -75,14 +75,13 @@ export async function transformFile(
         const compatPlugin = compatPluginFactory(
             options.outputConfig.resolveProxyCompat
         );
-        const { code } = compatPlugin.transform(result.code);
-        if (isUndefined(code)) {
-            // TODO: write test for this case
+        const compatResult = compatPlugin.transform(result.code);
+        if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
             throw new Error(
                 "babel transform failed to produce code in compat mode"
             );
         }
-        return { code, map: null };
+        return { code: compatResult.code, map: null };
     }
 
     return result;

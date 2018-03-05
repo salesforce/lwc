@@ -32,8 +32,10 @@ export interface CompilerOptions {
     files: BundleFiles;
     outputConfig?: OutputConfig;
 
-    // TODO: below must be removed after lwc-compiler consumErs change
-    // attribute names to name/namespace
+    // TODO: below must be removed after lwc-compiler consumers change
+    // attribute names to name/namespace. As for now, allowing these
+    // attribute so that options normalization function can convert them to
+    // name/namespace.
     moduleName?: string;
     moduleNamespace?: string;
 }
@@ -114,7 +116,7 @@ export function normalizeOptions(
 ): NormalizedCompilerOptions {
     // TODO: name normalization should be removed once package consumers
     // change their compiler/transform invocation parameter attributes
-    // from moduleName/Namespace to name/namespace
+    // from moduleName/moduleNamespace to name/namespace
     if (options.moduleName && !options.name) {
         options.name = options.moduleName;
     }

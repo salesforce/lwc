@@ -16,13 +16,13 @@ export default function(
         plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
         filename
     });
-    const transformed = babel.transform(code, config);
+    const result = babel.transform(code, config);
 
-    if (!transformed.code) {
-        throw new Error("javascript babel transform did not produce code."); // TODO: create test coverage.
+    if (!result || !result.code) {
+        throw new Error("javascript babel transform did not produce code.");
     }
 
-    const metadata: lwcClassTransformPlugin.Metadata = (transformed as any)
+    const metadata: lwcClassTransformPlugin.Metadata = (result as any)
         .metadata;
 
     if (metadataCollector) {
@@ -30,7 +30,7 @@ export default function(
     }
 
     return {
-        code: transformed.code,
+        code: result.code,
         map: null,
         metadata,
     };

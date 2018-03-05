@@ -53,7 +53,7 @@ describe("transform", () => {
                 name: "foo"
             });
         } catch (error) {
-            // TODO: Figure out how to disable error message from containing snippet of code with failing token.
+            // TODO: Figure out how to disable error message code snippet for failing token.
             expect(
                 error.message.indexOf("foo.js: Unexpected token (1:5)")
             ).toBe(0);
@@ -91,7 +91,7 @@ describe("transform", () => {
                 name: "foo"
             });
         } catch (error) {
-            // TODO: Figure out how to disable error message from containing snippet of code with failing token.
+            // TODO: Figure out how to disable error message code snippet for failing token.
             expect(
                 error.message.indexOf("Invalid HTML syntax: eof-in-tag.")
             ).toBe(0);

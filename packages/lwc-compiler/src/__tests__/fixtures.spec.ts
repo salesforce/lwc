@@ -67,8 +67,6 @@ describe("stylesheet", () => {
     });
 });
 
-// TODO: all 3 cases: validation used to have x-class_and_template instead of class_and_template;
-// is this correct since we removed normalized module name, or is our namespace not working properly?
 describe("compilation mode", () => {
     it("handles prod mode", async () => {
         const config = {
