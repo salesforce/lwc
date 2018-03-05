@@ -90,7 +90,7 @@ module.exports = function transform(t, klass, decorators) {
     const apiProperties = transformPublicProps(t, klassBody, apiDecorators);
     const apiMethods = transfromPublicMethods(t, klassBody, apiDecorators);
 
-    if (apiProperties.length > 0) {
+    if ((apiProperties.length + apiMethods.length) > 0) {
         return {
             type: 'api',
             targets: [...apiProperties, ...apiMethods]
