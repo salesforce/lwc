@@ -33,17 +33,18 @@
 *     modules: false,
 * };
 */
-
-import transformPublicFields from '@babel/plugin-proposal-class-properties';
-import transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
+import * as transformPublicFields from '@babel/plugin-proposal-class-properties';
+import * as transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
 
 // Base babel configuration
+// TODO: Need to remove * on the parserOpts plugin - not advised by babel-core
 export const BABEL_CONFIG_BASE = {
     babelrc: false,
     sourceMaps: true,
     parserOpts: { plugins: ['*'] },
     presets: [],
 };
+
 
 // List of plugins applied to all the javascript modules
 export const BABEL_PLUGINS_BASE = [
