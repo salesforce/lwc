@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.18...v) (2018-03-03)
+# [](https://github.com/salesforce/lwc/compare/v0.17.19...v) (2018-03-05)
+
+
+
+<a name="0.17.19"></a>
+## [0.17.19](https://github.com/salesforce/lwc/compare/v0.17.18...v0.17.19) (2018-03-05)
+
+
+### Bug Fixes
+
+* Babel version mismatch + adding missing dependencies ([#135](https://github.com/salesforce/lwc/issues/135)) ([055f92e](https://github.com/salesforce/lwc/commit/055f92e))
 
 
 
