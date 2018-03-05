@@ -73,7 +73,6 @@ export function attemptAriaAttributeFallback(vm: VM, attrName: string) {
         vm.hostAttrs[attrName] = undefined; // marking the set is needed for the AOM polyfill
         const propName = AOMAttrNameToPropNameMap[attrName];
         const shadowValue = vm.cmpRoot![propName];
-        vm.hostAttrs[propName] = 0;
         if (shadowValue !== null) {
             setAttribute.call(vm.elm, attrName, shadowValue);
         }
