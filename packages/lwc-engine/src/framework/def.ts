@@ -258,7 +258,7 @@ function createMethodCaller(key: string) {
 function getAttributePatched(this: VMElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
 
     return getAttribute.apply(this, ArraySlice.call(arguments));
@@ -270,7 +270,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -280,7 +280,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
     setAttributeNS.apply(this, ArraySlice.call(arguments));
 }
@@ -290,7 +290,7 @@ function removeAttributePatched(this: VMElement, attrName: string) {
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
     attemptAriaAttributeFallback(vm, attrName);
@@ -301,12 +301,12 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function assertPublicAttributeColission(vm: VM, attrName: string) {
+function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();

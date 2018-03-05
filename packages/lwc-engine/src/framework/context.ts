@@ -1,6 +1,6 @@
 import { Template } from "./template";
 
-const TopLevelContextSymbol = Symbol();
+export const TopLevelContextSymbol = Symbol();
 
 export interface Context {
     [TopLevelContextSymbol]?: boolean;
