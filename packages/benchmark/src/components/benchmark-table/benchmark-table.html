@@ -2,7 +2,7 @@
     <table>
         <tbody>
             <template for:each={rows} for:item="row">
-                <tr class={row.className}>
+                <tr key={row.id} class={row.className}>
                     <td>{row.id}</td>
                     <td><a onclick={handleSelect}>{row.label}</a></td>
                     <td><a onclick={handleRemove}>Remove</a></td>
