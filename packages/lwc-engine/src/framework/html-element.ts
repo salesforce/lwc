@@ -205,7 +205,7 @@ class LWCElement implements Component {
     }
 
     getAttribute(attrName: string): string | null {
-        // logging errors for experimentals and special attributes
+        // logging errors for experimental and special attributes
         if (process.env.NODE_ENV !== 'production') {
             const vm = this[ViewModelReflection];
             assert.vm(vm);

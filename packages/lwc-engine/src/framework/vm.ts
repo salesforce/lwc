@@ -257,9 +257,9 @@ function patchShadowRoot(vm: VM, children: VNodes) {
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // tslint:disable-line
             }
-            recoverFromLifecyleError(vm, errorBoundaryVm, error);
+            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
 
-            // syncronously render error boundary's alternative view
+            // synchronously render error boundary's alternative view
             // to recover in the same tick
             if (errorBoundaryVm.isDirty) {
                 patchErrorBoundaryVm(errorBoundaryVm);
@@ -317,7 +317,7 @@ function flushRehydrationQueue() {
                 throw error; // tslint:disable-line
             }
             // we only recover if error boundary is present in the hierarchy
-            recoverFromLifecyleError(vm, errorBoundaryVm, error);
+            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
             if (errorBoundaryVm.isDirty) {
                 patchErrorBoundaryVm(errorBoundaryVm);
             }
@@ -325,7 +325,7 @@ function flushRehydrationQueue() {
     }
 }
 
-function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
+function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
     if (isUndefined(error.wcStack)) {
         error.wcStack = getComponentStack(failedVm);
     }

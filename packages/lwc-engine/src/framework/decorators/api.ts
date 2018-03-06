@@ -51,8 +51,8 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 if (process.env.NODE_ENV !== 'production') {
                     // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
                     // Then newValue if newValue is observable (plain object or array)
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
+                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }
@@ -104,8 +104,8 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
                 if (process.env.NODE_ENV !== 'production') {
                     // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
                     // Then newValue if newValue is observable (plain object or array)
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
+                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }

@@ -209,7 +209,7 @@ export function renderComponent(vm: VM): VNodes {
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
+        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
     vm.isDirty = true;
