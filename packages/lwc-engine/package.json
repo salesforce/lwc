@@ -7,12 +7,11 @@
   "typings": "types/engine.d.ts",
   "scripts": {
     "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
-    "test": "echo 'Running lwc-engine tests...' && DIR=`pwd` && cd ../../ && jest $DIR",
+    "test": "echo 'Running lwc-engine tests...' && DIR=`pwd` && cd ../../ && yarn test $DIR",
     "build:all": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
     "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
-    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js",
-    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
+    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",

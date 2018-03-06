@@ -8,7 +8,6 @@ import { ComponentConstructor, markComponentAsDirty } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { unwrap } from "./reactive";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -255,6 +254,11 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let next = iterator.next();
     let j = 0;
     let { value, done: last } = next;
+    if (process.env.NODE_ENV !== 'production') {
+        // var is intentional here, function level scoping is required.
+        var keyMap = {};
+    }
+
     while (last === false) {
         // implementing a look-back-approach because we need to know if the element is the last
         next = iterator.next();
@@ -271,9 +275,14 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach((childVnode) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && childVnode.sel.indexOf('-') > 0 && isUndefined(childVnode.key)) {
-                    // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
+                    if (isUndefined(childVnode.key)) {
+                        // TODO - it'd be nice to log the owner component rather than the iteration children
+                        assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    } else if (keyMap[childVnode.key!] === 1) {
+                        assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
+                    }
+                    keyMap[childVnode.key!] = 1;
                 }
             });
         }
@@ -352,10 +361,7 @@ export function b(fn: EventListener): EventListener {
     };
 }
 
-const objToKeyMap: WeakMap<any, number> = new WeakMap();
-let globalKey: number = 0;
-
-// [k]ind function
+// [k]ey function
 export function k(compilerKey: number, obj: any): number | string | void {
     switch (typeof obj) {
         case 'number':
@@ -364,17 +370,6 @@ export function k(compilerKey: number, obj: any): number | string | void {
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
-            if (isNull(obj)) {
-                return;
-            }
-            // Slow path. We get here when element is inside iterator
-            // but no key is specified.
-            const unwrapped = unwrap(obj);
-            let objKey = objToKeyMap.get(unwrapped);
-            if (isUndefined(objKey)) {
-                objKey = globalKey++;
-                objToKeyMap.set(unwrapped, objKey);
-            }
-            return compilerKey + ':' + objKey;
+            throw new Error(`Invalid key value ${obj}. Key must be a string or number.`);
     }
 }

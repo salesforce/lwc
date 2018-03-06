@@ -50,6 +50,9 @@ describe('template', () => {
         });
 
         it('should render arrays correctly', function() {
+            function tmpl($a, $c, $s, $m) {
+                return
+            }
             const elm = createCustomComponent(function($api, $cmp) {
                 return $api.i(['a', 'b'], function(value) {
                     return $api.h('div', { key: 0 }, [
