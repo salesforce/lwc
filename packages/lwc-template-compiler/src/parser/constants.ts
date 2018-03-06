@@ -52,7 +52,6 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
 export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     // These have to be quoted because aria- attributes below are quoted
     // Our linting doesn't like to mix quoted and un-quoted property names
-    'accept-charset': ' acceptCharset',
     'accesskey': 'accessKey',
     'readonly': 'readOnly',
     'tabindex': 'tabIndex',
