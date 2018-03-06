@@ -254,9 +254,9 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let next = iterator.next();
     let j = 0;
     let { value, done: last } = next;
+    let keyMap;
     if (process.env.NODE_ENV !== 'production') {
-        // var is intentional here, function level scoping is required.
-        var keyMap = {};
+        keyMap = {};
     }
 
     while (last === false) {
