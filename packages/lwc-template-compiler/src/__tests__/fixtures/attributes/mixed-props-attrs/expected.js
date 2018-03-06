@@ -110,6 +110,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 is: "ns-input"
             },
             props: {
+                minLength: "3",
                 maxLength: "10"
             },
             key: 9

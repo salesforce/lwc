@@ -63,6 +63,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'formaction': 'formAction',
     'ismap': 'isMap',
     'maxlength': 'maxLength',
+    'minlength': 'minLength',
     'usemap': 'useMap',
     'for': 'htmlFor',
 
