@@ -2,7 +2,7 @@
     <div>
         <span>Plain push</span>
         <ul id="push-list-plain">
-            <li for:each={plainPush} for:item="item">
+            <li key={item} for:each={plainPush} for:item="item">
                 {item}
             </li>
         </ul>
@@ -10,7 +10,7 @@
     <div>
         <span>Plain push with proxy item</span>
         <ul id="push-list">
-            <li for:each={plainPushWithProxy} for:item="item">
+            <li key={item.title} for:each={plainPushWithProxy} for:item="item">
                 {item.title}
             </li>
         </ul>
@@ -19,7 +19,7 @@
     <div>
         <span>Plain concat</span>
         <ul id="concat-list-plain">
-            <li for:each={plainConcat} for:item="item">
+            <li key={item} for:each={plainConcat} for:item="item">
                 {item}
             </li>
         </ul>
@@ -27,7 +27,7 @@
     <div>
         <span>Plain concat with proxy item</span>
         <ul id="concat-list-proxy">
-            <li for:each={plainConcatWithProxy} for:item="item">
+            <li key={item.title} for:each={plainConcatWithProxy} for:item="item">
                 {item.title}
             </li>
         </ul>
