@@ -13,8 +13,9 @@ import {
 } from '../shared/types';
 
 import {
+    DATA_RE,
     SVG_TAG_SET,
-    DATA_ARIA_RE,
+    ARIA_RE,
     GLOBAL_ATTRIBUTE_SET,
     ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
@@ -156,13 +157,36 @@ export function removeAttribute(el: IRElement, pattern: string | RegExp): void {
     ));
 }
 
+function isAriaAttribute(attrName: string): boolean {
+    return attrName === 'role' || ARIA_RE.test(attrName);
+}
+
 export function isAriaOrDataOrFmkAttribute(attrName: string): boolean {
     return (
-        attrName === 'role' ||
+        isAriaAttribute(attrName) ||
+        isFmkAttribute(attrName) ||
+        isDataAttribute(attrName)
+    );
+}
+
+function isDataAttribute(attrName: string): boolean {
+    return !!attrName.match(DATA_RE);
+}
+
+function isFmkAttribute(attrName: string): boolean {
+    return (
+        attrName === 'is' ||
+        attrName === 'key' ||
+        attrName === 'slot'
+    );
+}
+
+function isCustomElementAttribute(attrName: string): boolean {
+    return (
         attrName === 'is' ||
         attrName === 'key' ||
         attrName === 'slot' ||
-        !!attrName.match(DATA_ARIA_RE)
+        !!attrName.match(DATA_RE)
     );
 }
 
@@ -171,6 +195,11 @@ function isInputStateAttribute(element: IRElement, attrName: string) {
 }
 
 export function isAttribute(element: IRElement, attrName: string): boolean {
+    const isCustom = isCustomElement(element);
+    if (isCustom && !isCustomElementAttribute(attrName)) {
+        return false;
+    }
+
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
     if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;
@@ -190,7 +219,7 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
     }
 
     // Handle general case where only standard element have attribute value.
-    return !isCustomElement(element);
+    return !isCustom;
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
@@ -205,11 +234,21 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
     return !!validElements &&  (!validElements.length || validElements.includes(tagName));
 }
 
-export function attributeToPropertyName(element: IRElement, attrName: string): string {
+function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
     const { tag } = element;
+    const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
+    const isSvgTag = SVG_TAG_SET.has(tag);
 
+    return (
+        !isSvgTag &&
+        isCustomElement(element) &&
+        !isDataAttributeOrFmk
+    );
+}
+
+export function attributeToPropertyName(element: IRElement, attrName: string): string {
     let propName = attrName;
-    if (!SVG_TAG_SET.has(tag) && !isAriaOrDataOrFmkAttribute(attrName) && !isCustomElement(element)) {
+    if (shouldCamelCaseAttribute(element, attrName)) {
         propName = ATTRS_PROPS_TRANFORMS[propName] || propName;
     }
 

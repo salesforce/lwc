@@ -2,11 +2,10 @@ import assert from "../assert";
 import { defineProperty, isObject, isNull, isTrue } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
-import { EmptyObject } from "../utils";
-import { isBeingConstructed } from "../component";
-import { VM, VMElement } from "../vm";
+import { isBeingConstructed, Component } from "../component";
+import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
-import { isUndefined } from "../language";
+import { isUndefined, isFunction } from "../language";
 import { membrane as reactiveMembrane } from "../reactive";
 
 // stub function to prevent misuse of the @api decorator
@@ -27,7 +26,7 @@ export function prepareForPropUpdate(vm: VM) {
 // TODO: how to allow symbols as property keys?
 export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
     defineProperty(proto, key, {
-        get(this: VMElement): any {
+        get(this: Component): any {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -41,7 +40,7 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             observeMutation(this, key);
             return vm.cmpProps[key];
         },
-        set(this: VMElement, newValue: any) {
+        set(this: Component, newValue: any) {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -52,8 +51,8 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 if (process.env.NODE_ENV !== 'production') {
                     // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
                     // Then newValue if newValue is observable (plain object or array)
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
+                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }
@@ -78,19 +77,23 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
     });
 }
 
-export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
-    const { get, set, enumerable } = descriptor || EmptyObject;
+export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+    const { get, set, enumerable } = descriptor;
+    if (!isFunction(get)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Invalid attempt to create public property descriptor ${key} in ${proto}. It is missing the getter declaration with @api get ${key}() {} syntax.`);
+        }
+        throw new TypeError();
+    }
     defineProperty(proto, key, {
-        get(this: VMElement): any {
+        get(this: Component): any {
             if (process.env.NODE_ENV !== 'production') {
                 const vm = getCustomElementVM(this);
                 assert.vm(vm);
             }
-            if (get) {
-                return get.call(this);
-            }
+            return get.call(this);
         },
-        set(this: VMElement, newValue: any) {
+        set(this: Component, newValue: any) {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -101,8 +104,8 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
                 if (process.env.NODE_ENV !== 'production') {
                     // reactiveMembrane.getProxy(newValue) will return a different value (proxy)
                     // Then newValue if newValue is observable (plain object or array)
-                    const isObservble = reactiveMembrane.getProxy(newValue) !== newValue;
-                    if (!isObservble && !isNull(newValue) && isObject(newValue)) {
+                    const isObservable = reactiveMembrane.getProxy(newValue) !== newValue;
+                    if (!isObservable && !isNull(newValue) && isObject(newValue)) {
                         assert.logWarning(`Assigning a non-reactive value ${newValue} to member property ${key} of ${vm} is not common because mutations on that value cannot be observed.`);
                     }
                 }

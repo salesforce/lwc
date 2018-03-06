@@ -17,7 +17,6 @@ import { Template } from "./template";
 import { ShadowRoot } from "./root";
 import { EmptyObject } from "./utils";
 export type ErrorCallback = (error: any, stack: string) => void;
-export type AttributeChangedCallback = (attrName: string, oldValue: any, newValue: any) => void;
 export interface Component {
     [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
@@ -27,7 +26,6 @@ export interface Component {
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    attributeChangedCallback?: AttributeChangedCallback;
     [key: string]: any;
 }
 
@@ -37,7 +35,6 @@ export interface ComponentConstructor {
     readonly name: string;
     readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
-    readonly observedAttributes?: string[];
     readonly publicProps?: PropsDef;
     readonly track?: TrackDef;
     readonly wire?: WireHash;
@@ -212,7 +209,7 @@ export function renderComponent(vm: VM): VNodes {
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
+        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
     vm.isDirty = true;

@@ -26,9 +26,18 @@ const {
     push: ArrayPush,
     map: ArrayMap,
     forEach,
+    reduce: ArrayReduce,
 } = Array.prototype;
 
+const {
+    replace: StringReplace,
+    toLowerCase: StringToLowerCase,
+} = String.prototype;
+
 export {
+    ArrayReduce,
+    StringToLowerCase,
+    StringReplace,
     freeze,
     seal,
     keys,

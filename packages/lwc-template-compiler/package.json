@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
+    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
   },
   "devDependencies": {
     "@types/babel-generator": "^6.25.1",

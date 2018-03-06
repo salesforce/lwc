@@ -8,6 +8,7 @@ export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
+export const ViewModelReflection = Symbol();
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {

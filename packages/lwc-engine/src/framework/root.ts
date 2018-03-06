@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
-import { ArrayFilter, defineProperty, isNull } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -12,7 +12,14 @@ import { getCustomElementVM } from "./html-element";
 import { Replicable, Membrane } from "./membrane";
 
 import { TargetSlot } from './membrane';
-const { querySelector, querySelectorAll } = Element.prototype;
+import {
+    querySelector,
+    querySelectorAll,
+    GlobalAOMProperties,
+    getAriaAttributeName,
+    setAttribute,
+    removeAttribute
+} from './dom';
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -27,6 +34,38 @@ export interface ShadowRoot {
     querySelectorAll(selector: string): HTMLElement[];
     toString(): string;
 }
+
+function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
+    // we use value as the storage mechanism and as the default value for the property
+    return {
+        enumerable: false,
+        get(this: ShadowRoot): any {
+            const vm = getCustomElementVM(this);
+            if (!hasOwnProperty.call(vm.rootProps, propName)) {
+                return defaultValue;
+            }
+            return vm.rootProps[propName];
+        },
+        set(this: ShadowRoot, newValue: any) {
+            const vm = getCustomElementVM(this);
+            vm.rootProps[propName] = newValue;
+            if (!isUndefined(vm.hostAttrs[attrName])) {
+                return;
+            }
+            if (isNull(newValue)) {
+                removeAttribute.call(vm.elm, attrName);
+                return;
+            }
+            setAttribute.call(vm.elm, attrName, newValue);
+        }
+    };
+}
+
+const RootDescriptors: PropertyDescriptorMap = create(null);
+
+// This routine will be a descriptor map for all AOM properties to be added
+// to ShadowRoot prototype to polyfill AOM capabilities.
+forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAriaAttributeName(propName), GlobalAOMProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);
@@ -97,6 +136,7 @@ export class Root implements ShadowRoot {
         return `Current ShadowRoot for ${component}`;
     }
 }
+defineProperties(Root.prototype, RootDescriptors);
 
 function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     const nodeList = querySelectorAll.call(elm, selector);

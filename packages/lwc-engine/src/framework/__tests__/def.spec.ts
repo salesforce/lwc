@@ -26,123 +26,6 @@ describe('def', () => {
             expect(() => target.getComponentDef(def)).toThrow();
         });
 
-        it('should understand static observedAttributes', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['title', 'tabindex'];
-
-            expect(target.getComponentDef(MyComponent).observedAttrs).toEqual({
-                title: 1,
-                tabindex: 1,
-            });
-        });
-
-        it('should throw error when observedAttribute is kebab case and is public prop', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 0
-                }
-            };
-
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute is misspelled global attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['contentEditable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. "contentEditable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should throw error when observedAttribute is kebab case global attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['content-editable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. "content-editable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should throw error when observedAttribute is camelCased and is public prop', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['isRecordDetail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 0
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute references setter', () => {
-            class MyComponent extends Element  {
-                get isRecordDetail() {}
-                set isRecordDetail(value) {}
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 3
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute references computed prop', () => {
-            class MyComponent extends Element  {
-                get isRecordDetail() {}
-                set isRecordDetail(value) {}
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 3
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute is not a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['isRecordDetail'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. "isRecordDetail" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should not throw error when observedAttribute is a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['contenteditable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).not.toThrow();
-        });
-
         it('should understand static publicMethods', () => {
             class MyComponent extends Element  {
                 foo() {}
@@ -174,9 +57,144 @@ describe('def', () => {
                 xBar: {},
             };
             expect(target.getComponentDef(MyComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                ariaActiveDescendant:{
+                    config: 3,
+                },
+                ariaAtomic: {
+                    config: 3,
+                },
+                ariaAutocomplete: {
+                    config: 3,
+                },
+                ariaBusy: {
+                    config: 3,
+                },
+                ariaChecked: {
+                    config: 3,
+                },
+                ariaControls: {
+                    config: 3,
+                },
+                ariaCurrent: {
+                    config: 3,
+                },
+                ariaDescribedBy: {
+                    config: 3,
+                },
+                ariaDisabled: {
+                    config: 3,
+                },
+                ariaDragged: {
+                    config: 3,
+                },
+                ariaDropEffect: {
+                    config: 3,
+                },
+                ariaExpanded: {
+                    config: 3,
+                },
+                ariaFlowTo: {
+                    config: 3,
+                },
+                ariaHasPopUp: {
+                    config: 3,
+                },
+                ariaHidden: {
+                    config: 3,
+                },
+                ariaInvalid: {
+                    config: 3,
+                },
+                ariaLabel: {
+                    config: 3,
+                },
+                ariaLabelledBy: {
+                    config: 3,
+                },
+                ariaLevel: {
+                    config: 3,
+                },
+                ariaLive: {
+                    config: 3,
+                },
+                ariaMultiSelectable: {
+                    config: 3,
+                },
+                ariaMultiline: {
+                    config: 3,
+                },
+                ariaOrientation: {
+                    config: 3,
+                },
+                ariaOwns: {
+                    config: 3,
+                },
+                ariaPosInSet: {
+                    config: 3,
+                },
+                ariaPressed: {
+                    config: 3,
+                },
+                ariaReadonly: {
+                    config: 3,
+                },
+                ariaRelevant: {
+                    config: 3,
+                },
+                ariaRequired: {
+                    config: 3,
+                },
+                ariaSelected: {
+                    config: 3,
+                },
+                ariaSetSize: {
+                    config: 3,
+                },
+                ariaSort: {
+                    config: 3,
+                },
+                ariaValueMax: {
+                    config: 3,
+                },
+                ariaValueMin: {
+                    config: 3,
+                },
+                ariaValueNow: {
+                    config: 3,
+                },
+                ariaValueText: {
+                    config: 3,
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 1,
                     type: 'any',
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                role: {
+                    config: 3,
+                },
+                tabIndex: {
+                    config: 3
+                },
+                title: {
+                    config: 3
                 },
                 xBar: {
                     config: 0,
@@ -223,9 +241,144 @@ describe('def', () => {
             };
 
             expect(target.getComponentDef(MySubComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                ariaActiveDescendant:{
+                  config: 3,
+                },
+                ariaAtomic: {
+                  config: 3,
+                },
+                ariaAutocomplete: {
+                  config: 3,
+                },
+                ariaBusy: {
+                  config: 3,
+                },
+                ariaChecked: {
+                  config: 3,
+                },
+                ariaControls: {
+                  config: 3,
+                },
+                ariaCurrent: {
+                  config: 3,
+                },
+                ariaDescribedBy: {
+                  config: 3,
+                },
+                ariaDisabled: {
+                  config: 3,
+                },
+                ariaDragged: {
+                  config: 3,
+                },
+                ariaDropEffect: {
+                  config: 3,
+                },
+                ariaExpanded: {
+                  config: 3,
+                },
+                ariaFlowTo: {
+                  config: 3,
+                },
+                ariaHasPopUp: {
+                  config: 3,
+                },
+                ariaHidden: {
+                  config: 3,
+                },
+                ariaInvalid: {
+                  config: 3,
+                },
+                ariaLabel: {
+                  config: 3,
+                },
+                ariaLabelledBy: {
+                  config: 3,
+                },
+                ariaLevel: {
+                  config: 3,
+                },
+                ariaLive: {
+                  config: 3,
+                },
+                ariaMultiSelectable: {
+                  config: 3,
+                },
+                ariaMultiline: {
+                  config: 3,
+                },
+                ariaOrientation: {
+                  config: 3,
+                },
+                ariaOwns: {
+                  config: 3,
+                },
+                ariaPosInSet: {
+                  config: 3,
+                },
+                ariaPressed: {
+                  config: 3,
+                },
+                ariaReadonly: {
+                  config: 3,
+                },
+                ariaRelevant: {
+                  config: 3,
+                },
+                ariaRequired: {
+                  config: 3,
+                },
+                ariaSelected: {
+                  config: 3,
+                },
+                ariaSetSize: {
+                  config: 3,
+                },
+                ariaSort: {
+                  config: 3,
+                },
+                ariaValueMax: {
+                  config: 3,
+                },
+                ariaValueMin: {
+                  config: 3,
+                },
+                ariaValueNow: {
+                  config: 3,
+                },
+                ariaValueText: {
+                  config: 3,
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 1,
                     type: 'any',
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                role: {
+                    config: 3,
+                },
+                tabIndex: {
+                    config: 3
+                },
+                title: {
+                    config: 3
                 },
                 xBar: {
                     config: 3,
@@ -238,7 +391,7 @@ describe('def', () => {
                 x: {
                     config: 1,
                     type: 'any',
-                }
+                },
             });
         });
 
@@ -283,19 +436,6 @@ describe('def', () => {
             });
         });
 
-        it('should not inherit observedAttrs, it must be a manual process', function() {
-            class MyComponent extends Element {}
-            MyComponent.observedAttributes = ['title', 'tabindex'];
-
-            class MySubComponent extends MyComponent {}
-            MySubComponent.observedAttributes = ['title', 'id'];
-
-            expect(target.getComponentDef(MySubComponent).observedAttrs).toEqual({
-                title: 1,
-                id: 1
-            });
-        });
-
         it('should inherit static wire properly', () => {
             class MyComponent extends Element  {}
             MyComponent.wire = { x: { type: 'record' } };
@@ -329,10 +469,145 @@ describe('def', () => {
                 foo: {}
             };
             expect(target.getComponentDef(MyComponent).props).toEqual({
+                accessKey: {
+                    config: 3
+                },
+                ariaActiveDescendant:{
+                    config: 3,
+                },
+                ariaAtomic: {
+                    config: 3,
+                },
+                ariaAutocomplete: {
+                    config: 3,
+                },
+                ariaBusy: {
+                    config: 3,
+                },
+                ariaChecked: {
+                    config: 3,
+                },
+                ariaControls: {
+                    config: 3,
+                },
+                ariaCurrent: {
+                    config: 3,
+                },
+                ariaDescribedBy: {
+                    config: 3,
+                },
+                ariaDisabled: {
+                    config: 3,
+                },
+                ariaDragged: {
+                    config: 3,
+                },
+                ariaDropEffect: {
+                    config: 3,
+                },
+                ariaExpanded: {
+                    config: 3,
+                },
+                ariaFlowTo: {
+                    config: 3,
+                },
+                ariaHasPopUp: {
+                    config: 3,
+                },
+                ariaHidden: {
+                    config: 3,
+                },
+                ariaInvalid: {
+                    config: 3,
+                },
+                ariaLabel: {
+                    config: 3,
+                },
+                ariaLabelledBy: {
+                    config: 3,
+                },
+                ariaLevel: {
+                    config: 3,
+                },
+                ariaLive: {
+                    config: 3,
+                },
+                ariaMultiSelectable: {
+                    config: 3,
+                },
+                ariaMultiline: {
+                    config: 3,
+                },
+                ariaOrientation: {
+                    config: 3,
+                },
+                ariaOwns: {
+                    config: 3,
+                },
+                ariaPosInSet: {
+                    config: 3,
+                },
+                ariaPressed: {
+                    config: 3,
+                },
+                ariaReadonly: {
+                    config: 3,
+                },
+                ariaRelevant: {
+                    config: 3,
+                },
+                ariaRequired: {
+                    config: 3,
+                },
+                ariaSelected: {
+                    config: 3,
+                },
+                ariaSetSize: {
+                    config: 3,
+                },
+                ariaSort: {
+                    config: 3,
+                },
+                ariaValueMax: {
+                    config: 3,
+                },
+                ariaValueMin: {
+                    config: 3,
+                },
+                ariaValueNow: {
+                    config: 3,
+                },
+                ariaValueText: {
+                    config: 3,
+                },
+                dir: {
+                    config: 3
+                },
+                draggable: {
+                    config: 3
+                },
                 foo: {
                     config: 0,
                     type: 'any',
-                }
+                },
+                hidden: {
+                    config: 3
+                },
+                id: {
+                    config: 3
+                },
+                lang: {
+                    config: 3
+                },
+                role: {
+                    config: 3
+                },
+                tabIndex: {
+                    config: 3
+                },
+                title: {
+                    config: 3
+                },
             });
         });
     });

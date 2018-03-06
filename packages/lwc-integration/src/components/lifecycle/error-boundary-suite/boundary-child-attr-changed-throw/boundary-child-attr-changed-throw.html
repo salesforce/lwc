@@ -1,8 +1,0 @@
-<template>
-    <template if:true={state.error}>
-        <div class='attribute-changed-callback-altenative'>attributeChangedCallback alternative view</div>
-    </template>
-    <template if:false={state.error}>
-        <child-attr-changed-wrapper passtochild={state.title}></child-attr-changed-wrapper>
-    </template>
-</template>

@@ -419,13 +419,13 @@ describe('props and attributes', () => {
                 role="xx"></x-button>
         </template>`);
         expect(root.children[0].props).toMatchObject({
+            ariaHidden: { value: 'hidden' },
             fooBar: { value: 'x' },
             foo: { value: 'bar' },
+            role: { value: 'xx' },
         });
         expect(root.children[0].attrs).toMatchObject({
             'data-xx': { value: 'foo' },
-            'aria-hidden': { value: 'hidden' },
-            'role': { value: 'xx' },
         });
     });
 
@@ -437,11 +437,11 @@ describe('props and attributes', () => {
         expect(root.children[0].props).toMatchObject({
             bar: { value: 'test' },
             min: { value: '3' },
+            bgColor: { value: 'x' },
+            tabIndex: { value: '2' },
         });
         expect(root.children[0].attrs).toMatchObject({
-            bgcolor: { value: 'x' },
             is: { value: 'x-table' },
-            tabindex: { value: '2' },
         });
     });
 });
