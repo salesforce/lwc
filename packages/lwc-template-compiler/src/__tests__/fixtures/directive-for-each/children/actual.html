@@ -10,7 +10,7 @@
         Other Child
         <template if:true={isTrue}>
             <template for:each={items} for:item="item">
-                <p>X1</p><p>X2</p>
+                <p key={item.id}>X1</p><p key={item.id}>X2</p>
             </template>
         </template>
     </section>
