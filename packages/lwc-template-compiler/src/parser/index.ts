@@ -23,7 +23,8 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
-    keyExpression,
+    getIteratorParent,
+    getForEachParent,
 } from './expression';
 
 import {
@@ -110,7 +111,7 @@ export default function parse(source: string, state: State): {
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
-                applyKey(element);
+                applyKey(element, elementNode.__location);
 
                 parent = element;
                 stack.push(element);
@@ -363,7 +364,7 @@ export default function parse(source: string, state: State): {
 
     }
 
-    function applyKey(element: IRElement) {
+    function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
             removeAttribute(element, 'key');
@@ -373,10 +374,9 @@ export default function parse(source: string, state: State): {
             }
 
             element.forKey = keyAttribute.value;
+        } else if ((getIteratorParent(element) || getForEachParent(element)) && element.tag !== 'template') {
+            return warnAt(`Missing key for element <${element.tag}> inside of iterator. Elements within iterators must have a unique, computed key value.`, location);
         }
-
-        element.forKey = keyExpression(element);
-
     }
 
     function applyComponent(element: IRElement) {

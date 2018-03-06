@@ -90,7 +90,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     return api_element(
                         'div',
                         {
-                            key: api_key(7, item)
+                            key: api_key(7, item.id)
                         },
                         []
                     );

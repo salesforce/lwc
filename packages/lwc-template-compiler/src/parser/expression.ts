@@ -122,23 +122,3 @@ export function getForEachParent(element: IRElement): IRElement | null {
 
     return null;
 }
-
-export function keyExpression(element: IRElement) {
-    const { forKey } = element;
-    if (forKey) {
-        return forKey;
-    }
-
-    const iteratorParent = getIteratorParent(element);
-    if (iteratorParent) {
-        return types.memberExpression(
-            iteratorParent.forOf!.iterator,
-            types.identifier('value'),
-        );
-    }
-
-    const forEachParent = getForEachParent(element);
-    if (forEachParent) {
-        return forEachParent.forEach!.item;
-    }
-}

@@ -21,7 +21,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             'data-islast': xLast,
                             'data-isfirst': xFirst
                         },
-                        key: api_key(2, xValue)
+                        key: api_key(2, xValue.id)
                     },
                     [
                         api_element(

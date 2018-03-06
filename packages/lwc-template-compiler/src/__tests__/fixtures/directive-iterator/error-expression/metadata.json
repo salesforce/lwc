@@ -2,7 +2,7 @@
   "warnings": [{
     "level": "error",
     "message": "Invalid expression {x.next} - Template expression doesn't allow to modify iterators",
-    "start": 80,
+    "start": 97,
     "length": 14
   }],
   "metadata": {
