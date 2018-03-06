@@ -10,9 +10,6 @@ import templateTransformer, { TemplateMetadata } from "./template";
 import javascriptTransformer from "./javascript";
 import compatPluginFactory from "../rollup-plugins/compat";
 
-import minifyPlugin from "../rollup-plugins/minify";
-import * as replacePlugin from "rollup-plugin-replace";
-
 import { isString, isUndefined } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
 import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";

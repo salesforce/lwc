@@ -151,7 +151,6 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
         transformBundle(code) {
             code = rollupCompatInstance.transformBundle(code);
-            //return compiler.transformBundle(code, { mode });
             let result = undefined;
             if (mode === "prod" || mode === "prod_compat") {
                 const rollupReplace = replacePlugin({
