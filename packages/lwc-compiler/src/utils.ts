@@ -21,4 +21,3 @@ export function isString(o: any): o is string {
 export function isBoolean(o: any): o is boolean {
     return typeof o === 'boolean';
 }
-

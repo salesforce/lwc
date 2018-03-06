@@ -79,7 +79,7 @@ export function validateOptions(options: CompilerOptions) {
         throw new TypeError(`Expected an object with files to be compiled.`);
     }
 
-    for (let key of Object.keys(options.files)) {
+    for (const key of Object.keys(options.files)) {
         const value = options.files[key];
         if (isUndefined(value) || !isString(value)) {
             throw new TypeError(

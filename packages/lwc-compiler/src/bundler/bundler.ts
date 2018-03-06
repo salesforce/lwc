@@ -91,13 +91,13 @@ export async function bundle(
         plugins.push(rollupMinify());
     }
 
-    const bundle = await rollup({
+    const rollupBundler = await rollup({
         input: name,
-        plugins: plugins,
+        plugins,
         onwarn: handleRollupWarning(diagnostics)
     });
 
-    const { code } = await bundle.generate({
+    const { code } = await rollupBundler.generate({
         amd: { id: namespace + "-" + name },
         interop: false,
         strict: false,

@@ -22,14 +22,13 @@ export interface FileTransformerResult {
         | lwcClassTransformPlugin.Metadata;
     map: null;
 }
-export interface FileTransformer {
-    (
-        source: string,
-        filename: string,
-        options: NormalizedCompilerOptions,
-        metadataCollector?: MetadataCollector
-    ): FileTransformerResult | Promise<FileTransformerResult>;
-}
+
+export type FileTransformer = (
+    source: string,
+    filename: string,
+    options: NormalizedCompilerOptions,
+    metadataCollector?: MetadataCollector
+) => FileTransformerResult | Promise<FileTransformerResult>;
 
 export function transform(src: string, id: string, options: CompilerOptions) {
     if (!isString(src)) {

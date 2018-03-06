@@ -10,14 +10,13 @@ export function getTemplateToken(name: string, namespace: string) {
     return `${namespace}-${name}_${templateId}`;
 }
 
+export type TemplateMetadata = CompilationMetadata;
+
 /**
  * Transforms a HTML template into module exporting a template function.
  * The transform also add a style import for the default stylesheet associated with
  * the template regardless if there is an actual style or not.
  */
-
- export type TemplateMetadata = CompilationMetadata;
-
 const transform: FileTransformer = function(
     src: string,
     filename: string,
@@ -36,8 +35,8 @@ const transform: FileTransformer = function(
     const cssName = path.basename(name, path.extname(name)) + ".css";
 
     if (metadataCollector) {
-        metadata.templateDependencies.forEach(name => {
-            metadataCollector.collectReference({ name, type: "component" });
+        metadata.templateDependencies.forEach(n => {
+            metadataCollector.collectReference({ name: n, type: "component" });
         });
     }
 

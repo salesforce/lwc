@@ -48,7 +48,7 @@ export function getReferences(source: string, filename: string): ReferenceReport
                 diagnostic.location = {
                     start: location!.startOffset,
                     length: name.length,
-                }
+                };
             }
 
             result.diagnostics.push(diagnostic);

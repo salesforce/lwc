@@ -18,7 +18,6 @@ const isApexSource = isGvpSource(APEX_PREFIX);
 const isLabelSource = isGvpSource(LABEL_PREFIX);
 const isResourceUrlSource = isGvpSource(RESOURCE_URL_PREFIX);
 
-
 function getGvpId(path: NodePath<t.ImportDeclaration>) {
     const { value } = path.node.source;
     const res = /^@[\w-]+\/(.+)$/.exec(value);
@@ -27,7 +26,7 @@ function getGvpId(path: NodePath<t.ImportDeclaration>) {
 function assertGvpSource(path: NodePath<t.ImportDeclaration>): Diagnostic[]  {
     const { value } = path.node.source;
     const res = /^@[\w-]+\/(.+)$/.exec(value);
-    let diagnostics: Diagnostic[] = [];
+    const diagnostics: Diagnostic[] = [];
 
     if (!res) {
         diagnostics.push({
@@ -35,7 +34,7 @@ function assertGvpSource(path: NodePath<t.ImportDeclaration>): Diagnostic[]  {
             level: DiagnosticLevel.Fatal,
             filename: value,
         });
-    };
+    }
     return diagnostics;
 }
 
@@ -46,7 +45,7 @@ function assertOnlyDefaultImport(
     const hasNamedImport = path.node.specifiers.some(
         node => !t.isImportDefaultSpecifier(node),
     );
-    let diagnostics: Diagnostic[] = [];
+    const diagnostics: Diagnostic[] = [];
 
     if (hasNamedImport) {
         const { value } = path.node.source;

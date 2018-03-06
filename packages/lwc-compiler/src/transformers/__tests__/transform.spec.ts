@@ -1,6 +1,4 @@
 /* eslint-env node, jest */
-
-import { compile } from "../../index";
 import { transform } from "../../transformers/transformer";
 import { pretify } from "../../__tests__/utils";
 

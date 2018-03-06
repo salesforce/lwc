@@ -50,7 +50,7 @@ export default function({
     return {
         name: "module-resolver",
 
-        resolveId: function(id: string, importee: string) {
+        resolveId(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {
                 if (shouldRecordDependency(id)) {
                     metadataCollector.collectReference({

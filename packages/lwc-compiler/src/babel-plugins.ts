@@ -45,7 +45,6 @@ export const BABEL_CONFIG_BASE = {
     presets: [],
 };
 
-
 // List of plugins applied to all the javascript modules
 export const BABEL_PLUGINS_BASE = [
     [transformPublicFields, { loose: true }],

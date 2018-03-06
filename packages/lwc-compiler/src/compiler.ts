@@ -32,11 +32,10 @@ export async function compile(
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const { diagnostics, code, metadata } = await bundle(
+        const { diagnostics: bundleDiagnostics , code, metadata } = await bundle(
             normalizedOptions
         );
 
-        const bundleDiagnostics: Diagnostic[] = diagnostics;
         diagnostics.push(...bundleDiagnostics);
 
         if (!hasError(diagnostics)) {
