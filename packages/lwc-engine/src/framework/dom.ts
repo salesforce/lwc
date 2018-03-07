@@ -14,6 +14,8 @@ import { ViewModelReflection } from "./utils";
 import { VM } from './vm';
 
 const {
+    addEventListener,
+    removeEventListener,
     getAttribute,
     getAttributeNS,
     setAttribute,
@@ -25,6 +27,8 @@ const {
 } = Element.prototype;
 
 export {
+    addEventListener,
+    removeEventListener,
     getAttribute,
     getAttributeNS,
     setAttribute,

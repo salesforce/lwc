@@ -1,6 +1,6 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, assign } from "./language";
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, assign, forEach } from "./language";
 import { prepareForAttributeMutationFromTemplate } from './def';
 
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
@@ -72,7 +72,7 @@ function validateFields(vm: VM, html: any) {
         const component = vm.component as Component;
         // validating identifiers used by template that should be provided by the component
         const { ids = [] } = html;
-        ids.forEach((propName: string) => {
+        forEach.call(ids, (propName: string) => {
             if (!(propName in component)) {
                 assert.logWarning(`The template rendered by ${vm} references \`this.${propName}\`, which is not declared. This is likely a typo in the template.`);
             } else if (hasOwnProperty.call(component, propName)) {

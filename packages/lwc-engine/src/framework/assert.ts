@@ -1,5 +1,6 @@
 import { VM } from "./vm";
 import { VNode } from "../3rdparty/snabbdom/types";
+import { StringSplit } from "./language";
 
 const compareDocumentPosition = Node.prototype.compareDocumentPosition;
 const { DOCUMENT_POSITION_CONTAINS } = Node;
@@ -40,7 +41,7 @@ const assert = {
         try {
             throw new Error(msg);
         } catch (e) {
-            const stackTraceLines: string[] = e.stack.split('\n');
+            const stackTraceLines: string[] = StringSplit.call(e.stack, '\n');
             console.group(`Warning: ${msg}`); // tslint:disable-line
             stackTraceLines.filter((trace) => {
                  // Chrome adds the error message as the first item in the stack trace

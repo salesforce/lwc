@@ -1,5 +1,6 @@
 import { isUndefined } from "../language";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
+import { addEventListener } from "../dom";
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;
@@ -31,7 +32,7 @@ function removeAllEventListeners(vnode: InteractiveVNode) {
         const elm = vnode.elm as Element;
         let name;
         for (name in on) {
-            elm.removeEventListener(name, listener, false);
+            removeEventListener.call(elm, name, listener, false);
         }
         vnode.listener = undefined;
     }
@@ -57,7 +58,7 @@ function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
 
     let name;
     for (name in on) {
-        elm.addEventListener(name, listener, false);
+        addEventListener.call(elm, name, listener, false);
     }
 }
 
