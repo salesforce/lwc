@@ -1,5 +1,5 @@
-const { bundle } = require("../bundler");
-const { pretify } = require("../../__tests__/utils");
+import { bundle } from "../bundler";
+import { pretify } from "../../__tests__/utils";
 
 describe('bundler', () => {
     test('throws when invoked without configurations', async () => {

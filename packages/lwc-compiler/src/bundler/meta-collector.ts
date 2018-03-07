@@ -3,7 +3,15 @@ import {
     TrackDecorator,
     WireDecorator
 } from "babel-plugin-transform-lwc-class";
-import { BundleMetadata } from "./bundler";
+
+export type MetadataDecorators = Array<
+    ApiDecorator | TrackDecorator | WireDecorator
+>;
+
+export interface BundleMetadata {
+    references: ExternalReference[];
+    decorators: MetadataDecorators;
+}
 
 export interface ExternalReference {
     name: string;
@@ -12,7 +20,9 @@ export interface ExternalReference {
 
 export class MetadataCollector {
     private references: Map<String, ExternalReference> = new Map();
-    private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator> = [];
+    private decorators: Array<
+        ApiDecorator | TrackDecorator | WireDecorator
+    > = [];
 
     public collectReference(reference: ExternalReference) {
         const existingRef = this.references.get(reference.name);

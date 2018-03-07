@@ -1,7 +1,7 @@
 import { rollup } from "rollup";
 import * as rollupPluginReplace from "rollup-plugin-replace";
 
-import { MetadataCollector, ExternalReference } from "./meta-collector";
+import { MetadataCollector, BundleMetadata } from "./meta-collector";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";
 
 import rollupTransform from "../rollup-plugins/transform";
@@ -15,22 +15,11 @@ import {
 
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
-import {
-    ApiDecorator,
-    TrackDecorator,
-    WireDecorator
-} from "babel-plugin-transform-lwc-class";
-
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];
     map: null;
     metadata: BundleMetadata;
-}
-
-export interface BundleMetadata {
-    references: ExternalReference[];
-    decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
 }
 
 interface RollupWarning {

@@ -2,21 +2,18 @@ import * as path from "path";
 
 import { CompilerOptions } from "../options";
 import { Diagnostic } from "../diagnostics/diagnostic";
+import { Location } from '../common-interfaces/location';
 
 import { getReferences as getCssReferences } from "./css";
 import { getReferences as getHtmlReferences } from "./html";
 import { getReferences as getJsReferences } from "./javascript";
 
-export interface ReferenceLocation {
-    start: number;
-    length: number;
-}
 
 export interface Reference {
     type: ReferenceType;
     id: string;
     file: string;
-    locations: ReferenceLocation[];
+    locations: Location[];
 }
 
 export interface ReferenceReport {
