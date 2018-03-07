@@ -16,6 +16,7 @@ import { VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ShadowRoot } from "./root";
 import { EmptyObject } from "./utils";
+import { addEventListener, removeEventListener } from "./dom";
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;
@@ -126,7 +127,7 @@ export function addComponentEventListener(vm: VM, eventName: string, newHandler:
     if (isUndefined(cmpEvents[eventName])) {
         cmpEvents[eventName] = [];
         const { elm } = vm;
-        elm.addEventListener(eventName, cmpListener as EventListener, false);
+        addEventListener.call(elm, eventName, cmpListener as EventListener, false);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -149,7 +150,7 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
         const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
         if (handlers && pos > -1) {
             if (handlers.length === 1) {
-                elm.removeEventListener(eventName, (vm.cmpListener as EventListener));
+                removeEventListener.call(elm, eventName, (vm.cmpListener as EventListener));
                 (cmpEvents as any)[eventName] = undefined;
             } else {
                 ArraySplice.call(cmpEvents[eventName], pos, 1);

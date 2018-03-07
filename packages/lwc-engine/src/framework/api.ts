@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
@@ -45,16 +45,16 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     let o;
     const len = className.length;
     for (o = 0; o < len; o++) {
-        if (className.charCodeAt(o) === SPACE_CHAR) {
+        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
             if (o > start) {
-                map[className.slice(start, o)] = true;
+                map[StringSlice.call(className, start, o)] = true;
             }
             start = o + 1;
         }
     }
 
     if (o > start) {
-        map[className.slice(start, o)] = true;
+        map[StringSlice.call(className, start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {
@@ -149,7 +149,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-        children.forEach((childVnode) => {
+        forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.vnode(childVnode);
             }
@@ -171,7 +171,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         elm,
         key,
     };
-    if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
+    if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
     }
     return vnode;
@@ -270,8 +270,8 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            vnodes.forEach((childVnode) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && childVnode.sel.indexOf('-') > 0 && isUndefined(childVnode.key)) {
+            forEach.call(vnodes, (childVnode: VNode | null) => {
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && StringIndexOf.call(childVnode.sel, '-') > 0 && isUndefined(childVnode.key)) {
                     // TODO - it'd be nice to log the owner component rather than the iteration children
                     assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                 }

@@ -32,12 +32,20 @@ const {
 const {
     replace: StringReplace,
     toLowerCase: StringToLowerCase,
+    indexOf: StringIndexOf,
+    charCodeAt: StringCharCodeAt,
+    slice: StringSlice,
+    split: StringSplit,
 } = String.prototype;
 
 export {
-    ArrayReduce,
     StringToLowerCase,
     StringReplace,
+    StringIndexOf,
+    StringCharCodeAt,
+    StringSlice,
+    StringSplit,
+
     freeze,
     seal,
     keys,
@@ -53,6 +61,8 @@ export {
     hasOwnProperty,
     preventExtensions,
     isExtensible,
+
+    ArrayReduce,
     ArraySlice,
     ArraySplice,
     ArrayUnshift,
@@ -106,11 +116,3 @@ export function toString(obj: any): string {
         return obj + '';
     }
 }
-
-const {
-    indexOf: StringIndexOf,
-} = String.prototype;
-
-export {
-    StringIndexOf,
-};

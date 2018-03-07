@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace } from "./language";
 
 export type Callback = () => void;
 
@@ -38,7 +38,7 @@ const attrNameToPropNameMap: Record<string, string> = create(null);
 export function getPropNameFromAttrName(attrName: string): string {
     let propName = attrNameToPropNameMap[attrName];
     if (isUndefined(propName)) {
-        propName = attrName.replace(CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+        propName = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
         attrNameToPropNameMap[attrName] = propName;
     }
     return propName;
@@ -73,7 +73,7 @@ export function getAttrNameFromPropName(propName: string): string {
             }
     }
     // otherwise we do the regular canonical transformation.
-    return propName.replace(CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
+    return StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements

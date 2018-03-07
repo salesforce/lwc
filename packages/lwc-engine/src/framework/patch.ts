@@ -13,6 +13,7 @@ const {
     createElementNS,
     createTextNode,
     createComment,
+    createDocumentFragment,
 } = document;
 const {
     insertBefore,
@@ -30,7 +31,7 @@ function setTextContent(node: Node, text: string) {
 }
 export const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
-        return document.createDocumentFragment();
+        return createDocumentFragment.call(document);
     },
     createElement(tagName: string): HTMLElement {
         return createElement.call(document, tagName);
