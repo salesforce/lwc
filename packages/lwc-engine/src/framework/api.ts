@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, isNumber } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
@@ -256,7 +256,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let { value, done: last } = next;
     let keyMap;
     if (process.env.NODE_ENV !== 'production') {
-        keyMap = {};
+        keyMap = create(null);
     }
 
     while (last === false) {
@@ -276,13 +276,16 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
             const vnodes = isArray(vnode) ? vnode : [vnode];
             vnodes.forEach((childVnode) => {
                 if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
-                    if (isUndefined(childVnode.key)) {
+                    const { key } = childVnode;
+                    if (isString(key) || isNumber(key)) {
+                        if (keyMap[key] === 1) {
+                            assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
+                        }
+                        keyMap[key] = 1;
+                    } else {
                         // TODO - it'd be nice to log the owner component rather than the iteration children
                         assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
-                    } else if (keyMap[childVnode.key!] === 1) {
-                        assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
                     }
-                    keyMap[childVnode.key!] = 1;
                 }
             });
         }
@@ -370,6 +373,8 @@ export function k(compilerKey: number, obj: any): number | string | void {
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
-            throw new Error(`Invalid key value ${obj}. Key must be a string or number.`);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.fail(`Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`);
+            }
     }
 }
