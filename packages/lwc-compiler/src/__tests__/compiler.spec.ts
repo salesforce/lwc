@@ -1,7 +1,7 @@
 import { compile } from "../compiler";
 import { pretify, readFixture } from "./utils";
 
-const HEALTHY_CONFIG = {
+const VALID_CONFIG = {
     outputConfig: {
         env: {},
         minify: false,
@@ -127,13 +127,14 @@ describe("compiler options", () => {
 
 describe("compiler output", () => {
     test("should return output object with expected properties", async () => {
-        const output = await compile(HEALTHY_CONFIG);
+        const output = await compile(VALID_CONFIG);
         const { success, diagnostics, result } = output;
-        const { code, references } = result;
+        const { code, references, importLocations } = result;
 
         expect(code).toBeDefined();
         expect(diagnostics).toBeDefined();
         expect(references).toBeDefined();
+        expect(importLocations).toBeDefined();
         expect(success).toBeDefined();
     });
 
@@ -143,7 +144,7 @@ describe("compiler output", () => {
                 "/x/foo/foo.js": `import resource from '@resource-url/foo';`
             }
         };
-        const config = { ...HEALTHY_CONFIG, ...files };
+        const config = { ...VALID_CONFIG, ...files };
 
         const { result } = await compile(config);
         const { references } = result;
@@ -164,7 +165,7 @@ describe("compiler output", () => {
         const files = {
             files: { "test.js": `import * as MyClass from '@apex/MyClass';` }
         };
-        const config = { ...HEALTHY_CONFIG, ...files };
+        const config = { ...VALID_CONFIG, ...files };
 
         const { result, diagnostics, success } = await compile(config);
         expect(result).toBeUndefined();
