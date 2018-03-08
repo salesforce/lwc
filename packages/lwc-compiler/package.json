@@ -3,6 +3,7 @@
   "version": "0.17.19",
   "description": "LWC compiler",
   "main": "dist/commonjs/index.js",
+  "typings": "dist/types/index.d.ts",
   "author": "",
   "license": "ISC",
   "scripts": {

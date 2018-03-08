@@ -8,7 +8,6 @@ import { getReferences as getCssReferences } from "./css";
 import { getReferences as getHtmlReferences } from "./html";
 import { getReferences as getJsReferences } from "./javascript";
 
-
 export interface Reference {
     type: ReferenceType;
     id: string;
