@@ -3,14 +3,19 @@ import { NormalizedCompilerOptions } from "../options";
 import compile from "lwc-template-compiler";
 import { FileTransformer } from "./transformer";
 import { MetadataCollector } from "../bundler/meta-collector";
-import { CompilationMetadata } from "../../../lwc-template-compiler/dist/types/shared/types";
+
+// TODO: once we come up with a strategy to export all types from the module,
+// below interface should be removed and resolved from template-compiler module.
+export interface TemplateMetadata {
+    templateUsedIds: string[];
+    definedSlots: string[];
+    templateDependencies: string[];
+}
 
 export function getTemplateToken(name: string, namespace: string) {
     const templateId = path.basename(name, path.extname(name));
     return `${namespace}-${name}_${templateId}`;
 }
-
-export type TemplateMetadata = CompilationMetadata;
 
 /**
  * Transforms a HTML template into module exporting a template function.

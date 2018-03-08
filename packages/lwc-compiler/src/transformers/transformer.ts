@@ -5,7 +5,7 @@ import {
     normalizeOptions
 } from "../options";
 
-import styleTransform, { StyleMetadata } from "./style";
+import styleTransform from "./style";
 import templateTransformer, { TemplateMetadata } from "./template";
 import javascriptTransformer from "./javascript";
 import compatPluginFactory from "../rollup-plugins/compat";
@@ -18,7 +18,6 @@ export interface FileTransformerResult {
     code: string;
     metadata?:
         | TemplateMetadata
-        | StyleMetadata
         | lwcClassTransformPlugin.Metadata;
     map: null;
 }
