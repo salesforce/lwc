@@ -126,7 +126,7 @@ register(getType, function wireAdapter(targetSetter) {
 - `targetSetter` is a callable used to emit new wired values.
 - `updatedCallback` is invoked when the resolved configuration changes. The resolved configuration is the sole argument.
 - `connectedCallback` is invoked when the component is connected.
-- `disconnnectedCallback` is invoked when the component is disconnected.
+- `disconnectedCallback` is invoked when the component is disconnected.
 
 In the component's wiring lifecycle, the wire service invokes the `wireAdapter`.
 
@@ -160,7 +160,7 @@ The callable must return a `promise<any>` that resolves after the corresponding 
 ### Advantages
 
 - The wire adapter has control of the types of data and error it emits.
-- The wire adapter has control over how it emits read-only values, enabling optimizes specific to the adapter.
+- The wire adapter has control over how it emits read-only values, enabling optimizations specific to the adapter.
 - `targetSetter` unifies emitting values to wired properties or wired methods. The wire adapter need not handle this.
 - Symmetry of using `@wire` and requesting a refresh creates an easy-to-use API.
 - Caching behavior remains in control of and private to the wire adapter.
