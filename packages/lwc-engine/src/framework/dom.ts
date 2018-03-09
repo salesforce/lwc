@@ -9,6 +9,7 @@ import {
     getOwnPropertyDescriptor,
     isUndefined,
     isNull,
+    defineProperties,
 } from './language';
 import { ViewModelReflection } from "./utils";
 import { VM } from './vm';
@@ -320,4 +321,25 @@ forEach.call(defaultDefHTMLPropertyNames, (propName) => {
 if (isUndefined(GlobalHTMLPropDescriptors.id)) {
     // In IE11, id property is on Element.prototype instead of HTMLElement
     GlobalHTMLPropDescriptors.id = getOwnPropertyDescriptor(Element.prototype, 'id') as PropertyDescriptor;
+}
+
+// https://dom.spec.whatwg.org/#dom-event-composed
+// This is a very dummy, simple polyfill for composed
+if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
+    defineProperties(Event.prototype, {
+        composed: {
+            value: true,
+            configurable: true,
+            enumerable: true,
+            writable: true,
+        },
+    });
+    const { CustomEvent: OriginalCustomEvent } = (window as any);
+    (window as any).CustomEvent = function CustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
+        const event = new OriginalCustomEvent(type, eventInitDict);
+        // support for composed on custom events
+        (event as any).composed = !!(eventInitDict && (eventInitDict as any).composed);
+        return event;
+    };
+    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
 }
