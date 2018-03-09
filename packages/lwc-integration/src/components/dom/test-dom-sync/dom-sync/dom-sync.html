@@ -1,0 +1,9 @@
+<template>
+    <template for:each={transformedOptions} for:item="option">
+        <input  type="checkbox"
+                checked={option.isChecked}
+                value={option.value}
+                onchange={handleChange}>
+    </template>
+    <button onclick={test}></button>
+</template>
