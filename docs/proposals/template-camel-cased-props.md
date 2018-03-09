@@ -49,6 +49,8 @@ class MyCustomElement extends Element {
     }
 }
 ```
+### Gotchas
+- data-* attributes are not to be converted to camel case. These attributes will never execute a setter.
 
 #### Pros
 - Compatible with HTML template parsers
