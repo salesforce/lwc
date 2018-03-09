@@ -6,7 +6,7 @@ import {
     vmBeingRendered,
     invokeComponentCallback,
 } from "./invoker";
-import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice, isNull } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
@@ -163,6 +163,34 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     }
 }
 
+// TODO: once we start using the real shadowDOM, we can rely on:
+// const { getRootNode as originalGetRootNode } = Node.prototype;
+// for now, we need to provide a dummy implementation to provide retargeting
+export function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+    let node: Node = this;
+    while (node !== document) {
+        if (!composed && !isUndefined(node[ViewModelReflection])) {
+            return node; // this is not quite the root (it is the host), but for us is sufficient
+        }
+        const parent = node.parentNode;
+        if (isNull(parent)) {
+            return node;
+        }
+        node = parent;
+    }
+    return node;
+}
+
+export function isValidEvent(event: Event): boolean {
+    // TODO: this is only needed if ShadowDOM is not used
+    if ((event as any).composed === true) {
+        return true;
+    }
+    // if the closest root contains the currentTarget, the event is valid
+    return getRootNode.call(event.target).contains(event.currentTarget);
+}
+
 function handleComponentEvent(vm: VM, event: Event) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
@@ -172,7 +200,9 @@ function handleComponentEvent(vm: VM, event: Event) {
         const cmpEventsType = cmpEvt && cmpEvt[eventType];
         assert.invariant(vm.cmpEvents && !isUndefined(cmpEventsType) && cmpEventsType.length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
     }
-
+    if (!isValidEvent(event)) {
+        return;
+    }
     const { cmpEvents = EmptyObject } = vm;
     const { type, stopImmediatePropagation } = event;
     const handlers = cmpEvents[type];

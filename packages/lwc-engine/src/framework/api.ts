@@ -4,7 +4,7 @@ import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty } from "./component";
+import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
@@ -347,7 +347,9 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        // TODO: only if the event is `composed` it can be dispatched
+        if (!isValidEvent(event)) {
+            return;
+        }
         invokeComponentCallback(vm, fn, [event]);
     };
 }

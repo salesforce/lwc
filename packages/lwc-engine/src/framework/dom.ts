@@ -328,7 +328,7 @@ if (isUndefined(GlobalHTMLPropDescriptors.id)) {
 if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
     defineProperties(Event.prototype, {
         composed: {
-            value: true,
+            value: true, // yes, assuming all native events are composed (it is a compromise)
             configurable: true,
             enumerable: true,
             writable: true,

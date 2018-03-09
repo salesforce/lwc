@@ -243,6 +243,17 @@ register({
                 // prevent access to the original Host element
                 return callback(component);
             }
+            if (target instanceof Event) {
+                // TODO: implement retargeting in the membrane
+                switch (key) {
+                    case 'currentTarget':
+                        break;
+                    case 'target':
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 });
