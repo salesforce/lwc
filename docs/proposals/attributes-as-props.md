@@ -205,7 +205,7 @@ export default class MyComponent extends Element {
 
 #### Pros
 - Component authors rely more on `@api` instead of `data-` and `aria-`
-- No need to implemenet `dataSet` inside components
+- No need to implement `dataSet` inside components
 - `data-` and `aria-` can still be passed to native elements/non-LWC custom elements
 
 #### Cons
