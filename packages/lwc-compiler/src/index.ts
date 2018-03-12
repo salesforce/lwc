@@ -1,3 +1,3 @@
 export { compile } from './compiler';
 export { transform } from './transformers/transformer';
-export const version = '__VERSION__';
+export { version } from '../package.json';
