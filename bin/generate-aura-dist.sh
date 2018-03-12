@@ -1,7 +1,7 @@
 #!/bin/bash
-if [ -z "$1" ]
+if [[ $# -ne 2 ]]
   then
-    echo "No path supplied"
+    echo "Invalid arguments. Usage: generate-aura-dist.sh <path-to-Aura> <path-to-es5-proxy-compat>"
     exit 1
 fi
 
