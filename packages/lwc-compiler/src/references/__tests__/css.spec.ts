@@ -1,7 +1,7 @@
-import { getReferences } from '../../references/css';
+import { getReferenceReport } from '../../references/css';
 
 test('single selector', () => {
-    expect(getReferences(`x-foo { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -18,7 +18,7 @@ test('single selector', () => {
 
 test('single selector with attributes', () => {
     expect(
-        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
+        getReferenceReport(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -35,7 +35,7 @@ test('single selector with attributes', () => {
 });
 
 test('selector chain', () => {
-    expect(getReferences(`header x-foo { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`header x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -52,7 +52,7 @@ test('selector chain', () => {
 
 test('selector list', () => {
     expect(
-        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
+        getReferenceReport(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -80,7 +80,7 @@ test('selector list', () => {
 });
 
 test('multiline selector list', () => {
-    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -108,7 +108,7 @@ test('multiline selector list', () => {
 
 test('ugly selector list', () => {
     expect(
-        getReferences(
+        getReferenceReport(
             `      x-foo, p      .foo,  \nx-bar {\n  color  : red ;\n }`,
             'test.js',
         ).references,
@@ -140,7 +140,7 @@ test('ugly selector list', () => {
 
 test('multiple rules', () => {
     expect(
-        getReferences(
+        getReferenceReport(
             `x-foo {\ncolor: red;\n }\n \nx-bar {\ncolor: red;\n}`,
             'test.js',
         ).references,
@@ -172,7 +172,7 @@ test('multiple rules', () => {
 
 
 test('single selector', () => {
-    expect(getReferences(`x-foo { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -189,7 +189,7 @@ test('single selector', () => {
 
 test('single selector with attributes', () => {
     expect(
-        getReferences(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
+        getReferenceReport(`x-foo[title="Hello"] { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -206,7 +206,7 @@ test('single selector with attributes', () => {
 });
 
 test('selector chain', () => {
-    expect(getReferences(`header x-foo { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`header x-foo { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -223,7 +223,7 @@ test('selector chain', () => {
 
 test('selector list', () => {
     expect(
-        getReferences(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
+        getReferenceReport(`header x-foo, div, x-bar { color: red; }`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -251,7 +251,7 @@ test('selector list', () => {
 });
 
 test('multiline selector list', () => {
-    expect(getReferences(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
+    expect(getReferenceReport(`x-foo,\nx-bar { color: red; }`, 'test.js').references).toEqual([
         {
             id: 'x-foo',
             file: 'test.js',
@@ -279,7 +279,7 @@ test('multiline selector list', () => {
 
 test('ugly selector list', () => {
     expect(
-        getReferences(
+        getReferenceReport(
             `      x-foo, p      .foo,  \nx-bar {\n  color  : red ;\n }`,
             'test.js',
         ).references,
@@ -311,7 +311,7 @@ test('ugly selector list', () => {
 
 test('multiple rules', () => {
     expect(
-        getReferences(
+        getReferenceReport(
             `x-foo {\ncolor: red;\n }\n \nx-bar {\ncolor: red;\n}`,
             'test.js',
         ).references,

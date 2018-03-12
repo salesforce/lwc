@@ -23,20 +23,6 @@ function getGvpId(path: NodePath<t.ImportDeclaration>) {
     const res = /^@[\w-]+\/(.+)$/.exec(value);
     return Array.isArray(res) && res.length > 0 && res[1];
 }
-// function assertGvpSource(path: NodePath<t.ImportDeclaration>): Diagnostic[] {
-//     const { value } = path.node.source;
-//     const res = /^@[\w-]+\/(.+)$/.exec(value);
-//     const diagnostics: Diagnostic[] = [];
-
-//     if (!res) {
-//         diagnostics.push({
-//             message: String(`Unexpected GVP source for ${value}`),
-//             level: DiagnosticLevel.Fatal,
-//             filename: value
-//         });
-//     }
-//     return diagnostics;
-// }
 
 function createGvpDiagnosticError(path: NodePath<t.ImportDeclaration>) {
     const { value } = path.node.source;
@@ -216,7 +202,7 @@ function sfdcReferencesVisitor(result: ReferenceReport, filename: string) {
     };
 }
 
-export function getReferences(
+export function getReferenceReport(
     source: string,
     filename: string
 ): ReferenceReport {

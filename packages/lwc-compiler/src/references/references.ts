@@ -4,9 +4,9 @@ import { CompilerOptions } from "../options";
 import { Diagnostic } from "../diagnostics/diagnostic";
 import { Location } from '../common-interfaces/location';
 
-import { getReferences as getCssReferences } from "./css";
-import { getReferences as getHtmlReferences } from "./html";
-import { getReferences as getJsReferences } from "./javascript";
+import { getReferenceReport as getCssReferenceReport } from "./css";
+import { getReferenceReport as getHtmlReferenceReport } from "./html";
+import { getReferenceReport as getJsReferenceReport } from "./javascript";
 
 export interface Reference {
     type: ReferenceType;
@@ -55,11 +55,11 @@ export function getFileReferences(
 
     switch (ext) {
         case ".html":
-            return getHtmlReferences(source, filename);
+            return getHtmlReferenceReport(source, filename);
         case ".js":
-            return getJsReferences(source, filename);
+            return getJsReferenceReport(source, filename);
         case ".css":
-            return getCssReferences(source, filename);
+            return getCssReferenceReport(source, filename);
         default:
             return { references: [], diagnostics: [] };
     }

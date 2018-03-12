@@ -1,10 +1,10 @@
-import { getReferences } from "../../references/javascript";
+import { getReferenceReport } from "../../references/javascript";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 
 describe("resource-url", () => {
     test("gather metadata", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import resource from '@resource-url/foo';`,
                 "test.js"
             ).references
@@ -25,7 +25,7 @@ describe("resource-url", () => {
 
     test("errors when using namespaced import", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import * as resource from '@resource-url/foo';`,
                 "test.js"
             ).diagnostics[0].message
@@ -34,7 +34,7 @@ describe("resource-url", () => {
 
     test("errors when using a named import", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import { resource } from '@resource-url/foo';`,
                 "test.js"
             ).diagnostics[0].message
@@ -45,7 +45,7 @@ describe("resource-url", () => {
 describe("label", () => {
     test("gather metadata", () => {
         expect(
-            getReferences(`import label from '@label/foo';`, "test.js")
+            getReferenceReport(`import label from '@label/foo';`, "test.js")
                 .references
         ).toEqual([
             {
@@ -64,14 +64,14 @@ describe("label", () => {
 
     test("errors when using namespaced import", () => {
         expect(
-            getReferences(`import * as label from '@label/foo';`, "test.js")
+            getReferenceReport(`import * as label from '@label/foo';`, "test.js")
                 .diagnostics[0].message
         ).toBe("@label modules only support default imports.");
     });
 
     test("errors when using a named import", () => {
         expect(
-            getReferences(`import { label } from '@label/foo';`, "test.js")
+            getReferenceReport(`import { label } from '@label/foo';`, "test.js")
                 .diagnostics[0].message
         ).toBe("@label modules only support default imports.");
     });
@@ -80,7 +80,7 @@ describe("label", () => {
 describe("apex", () => {
     test("gather metadata", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import methodA from '@apex/MyClass.methodA';`,
                 "test.js"
             ).references
@@ -100,7 +100,7 @@ describe("apex", () => {
     });
 
     test("errors when using namespaced import", () => {
-        const { diagnostics } = getReferences(
+        const { diagnostics } = getReferenceReport(
             `import * as MyClass from '@apex/MyClass';`,
             "test.js"
         );
@@ -111,7 +111,7 @@ describe("apex", () => {
     });
 
     test("errors when using a default import", () => {
-        const { diagnostics } = getReferences(
+        const { diagnostics } = getReferenceReport(
             `import { methodA } from '@apex/MyClass';`,
             "test.js"
         );

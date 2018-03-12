@@ -7,7 +7,7 @@ function isCustomElement(name: string) {
     return name.includes("-");
 }
 
-export function getReferences(
+export function getReferenceReport(
     source: string,
     filename: string
 ): ReferenceReport {
