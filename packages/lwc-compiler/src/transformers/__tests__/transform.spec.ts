@@ -1,4 +1,3 @@
-/* eslint-env node, jest */
 import { transform } from "../../transformers/transformer";
 import { pretify } from "../../__tests__/utils";
 

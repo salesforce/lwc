@@ -12,7 +12,7 @@ export const MINIFY_CONFIG: any = Object.assign({}, BABEL_CONFIG_BASE, {
  */
 export default function() {
     return {
-        name: 'minify',
+        name: 'lwc-minify',
 
         transformBundle(src: string) {
             const { code, map } = babel.transform(src, MINIFY_CONFIG);

@@ -1,4 +1,6 @@
 import * as path from "path";
+import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
+
 import {
     NormalizedCompilerOptions,
     CompilerOptions,
@@ -12,8 +14,9 @@ import compatPluginFactory from "../rollup-plugins/compat";
 
 import { isString, isUndefined } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
-import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
 
+// TODO: Improve on metadata type by providing consistent interface. Currently
+// both metadata classes provide different signature
 export interface FileTransformerResult {
     code: string;
     metadata?:
