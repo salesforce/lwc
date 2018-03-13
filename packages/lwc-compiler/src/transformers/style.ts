@@ -27,8 +27,6 @@ function generateScopedStyle(src: string) {
     ].join("\n");
 }
 
-export type StyleMetadata = {};
-
 /**
  * Transforms a css string into a module exporting a function producing a stylesheet.
  * The produced function accepts 2 parameters, tagName and token to enforce style scoping.

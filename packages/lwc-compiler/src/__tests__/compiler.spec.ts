@@ -8,13 +8,13 @@ const VALID_CONFIG = {
         compat: false,
         format: "amd"
     },
-    name: "/x/foo/foo.js",
+    name: "foo",
     namespace: "x",
     files: {
-        "/x/foo/foo.js": readFixture(
+        "foo.js": readFixture(
             "class_and_template/class_and_template.js"
         ),
-        "/x/foo/foo.html": readFixture(
+        "foo.html": readFixture(
             "class_and_template/class_and_template.html"
         )
     }
@@ -141,17 +141,16 @@ describe("compiler output", () => {
     test("output should contain reference object", async () => {
         const files = {
             files: {
-                "/x/foo/foo.js": `import resource from '@resource-url/foo';`
+                "foo.js": `import resource from '@resource-url/foo';`
             }
         };
         const config = { ...VALID_CONFIG, ...files };
 
         const { result } = await compile(config);
         const { references } = result;
-        expect(references).toBeDefined();
-        expect(references[0]).toMatchObject({
+        expect(references).toMatchObject([{
             id: "foo",
-            file: "/x/foo/foo.js",
+            file: "foo.js",
             type: "resourceUrl",
             locations: [
                 {
@@ -159,7 +158,7 @@ describe("compiler output", () => {
                     length: 3
                 }
             ]
-        });
+        }]);
     });
     test("compilation should not contain bundle result if reference gathering encountered an error", async () => {
         const files = {

@@ -3,8 +3,18 @@ import {
     TrackDecorator,
     WireDecorator
 } from "babel-plugin-transform-lwc-class";
-import { BundleMetadata } from "./bundler";
+
 import { ModuleImportLocation } from "./import-location-collector";
+
+export type MetadataDecorators = Array<
+    ApiDecorator | TrackDecorator | WireDecorator
+>;
+
+export interface BundleMetadata {
+    references: ExternalReference[];
+    decorators: MetadataDecorators;
+    importLocations: ModuleImportLocation[];
+}
 
 export interface ExternalReference {
     name: string;
@@ -13,7 +23,9 @@ export interface ExternalReference {
 
 export class MetadataCollector {
     private references: Map<String, ExternalReference> = new Map();
-    private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator> = [];
+    private decorators: Array<
+        ApiDecorator | TrackDecorator | WireDecorator
+    > = [];
     private importLocations: ModuleImportLocation[] = [];
 
     public collectReference(reference: ExternalReference) {
@@ -31,7 +43,7 @@ export class MetadataCollector {
         this.decorators.push(decorator);
     }
 
-    public collectImportLocations(importLocations: ModuleImportLocation []) {
+    public collectImportLocations(importLocations: ModuleImportLocation[]) {
         this.importLocations.push(...importLocations);
     }
 
@@ -39,7 +51,7 @@ export class MetadataCollector {
         return {
             references: Array.from(this.references.values()),
             decorators: this.decorators,
-            importLocations: this.importLocations,
+            importLocations: this.importLocations
         };
     }
 }

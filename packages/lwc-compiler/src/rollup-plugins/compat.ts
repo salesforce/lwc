@@ -11,7 +11,7 @@ export default function(proxyCompatOption: OutputProxyCompatConfig | undefined) 
     });
 
     return {
-        name: "compat",
+        name: "lwc-compat",
 
         transform(src: string) {
             const { code, map } = babel.transform(src, config);

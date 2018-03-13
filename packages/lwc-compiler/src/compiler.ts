@@ -1,4 +1,5 @@
-import { bundle, BundleMetadata } from "./bundler/bundler";
+import { bundle } from "./bundler/bundler";
+import { BundleMetadata } from "./bundler/meta-collector";
 import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";

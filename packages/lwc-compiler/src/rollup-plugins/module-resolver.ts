@@ -48,7 +48,7 @@ export default function({
     options: NormalizedCompilerOptions;
 }) {
     return {
-        name: "module-resolver",
+        name: "lwc-module-resolver",
 
         resolveId(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {

@@ -14,7 +14,7 @@ export default function(
 ): FileTransformerResult {
     const config = Object.assign({}, BABEL_CONFIG_BASE, {
         plugins: [lwcClassTransformPlugin, ...BABEL_PLUGINS_BASE],
-        filename
+        filename,
     });
     const result = babel.transform(code, config);
 

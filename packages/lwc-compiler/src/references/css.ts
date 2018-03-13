@@ -52,7 +52,7 @@ function getSelectorReferences(
     return references;
 }
 
-export function getReferences(source: string, filename: string): ReferenceReport {
+export function getReferenceReport(source: string, filename: string): ReferenceReport {
     const result: ReferenceReport = { references: [], diagnostics: [] };
 
     const root = postcss.parse(source, { from: filename });

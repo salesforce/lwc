@@ -1,3 +1,5 @@
+import { Location } from '../common-interfaces/location';
+
 export interface Diagnostic {
     /** Level of the diagnostic */
     level: DiagnosticLevel;
@@ -24,12 +26,4 @@ export enum DiagnosticLevel {
     Warning = 2,
     /** Logging messages */
     Log = 3,
-}
-
-export interface Location {
-    /** 0-base character index in the file */
-    start: number;
-
-    /** Number of character after the start index */
-    length: number;
 }
