@@ -1,9 +1,8 @@
+import { Location } from '../common-interfaces/location';
+
 export interface ModuleImportLocation {
     name: string;
-    location: {
-        start: number;
-        length: number;
-    };
+    location: Location;
 }
 
 const BRACKET_LENGTH = 1;
