@@ -28,12 +28,12 @@ export interface BundleReport {
     diagnostics: Diagnostic[];
     map: null;
     metadata: BundleMetadata;
-    importLocations: ImportLocation[];
 }
 
 export interface BundleMetadata {
     references: ExternalReference[];
     decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
+    importLocations: ImportLocation[];
 }
 
 export type ModuleImportLocations = ImportLocation[];
@@ -110,12 +110,12 @@ export async function bundle(
     });
 
     const importLocations = new ImportLocationCollector().getLocations(code) || [];
+    metadataCollector.collectImportLocations(importLocations);
 
     return {
         diagnostics,
         code,
         map: null,
         metadata: metadataCollector.getMetadata(),
-        importLocations,
     };
 }

@@ -81,7 +81,8 @@ describe("compilation mode", () => {
 
         expect(metadata).toEqual({
             decorators: [],
-            references: [{ name: "engine", type: "module" }]
+            references: [{ name: "engine", type: "module" }],
+            importLocations: [],
         });
     });
 
@@ -96,10 +97,10 @@ describe("compilation mode", () => {
             pretify(readFixture("expected-compat-mode.js"))
         );
 
-        expect(metadata).toMatchObject({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }]
-        });
+        const { decorators, references, importLocations } = metadata;
+        expect(references).toMatchObject([{ name: "engine", type: "module" }]);
+        expect(decorators.length).toBe(0);
+        expect(importLocations.length).toBe(8);
     });
 
     it("handles prod-compat mode", async () => {
@@ -115,7 +116,8 @@ describe("compilation mode", () => {
 
         expect(metadata).toEqual({
             decorators: [],
-            references: [{ name: "engine", type: "module" }]
+            references: [{ name: "engine", type: "module" }],
+            importLocations: [],
         });
     });
 });
@@ -216,7 +218,8 @@ describe("metadata output", () => {
                 { name: "engine", type: "module" },
                 { name: "todo", type: "module" },
                 { name: "@schema/foo.bar", type: "module" }
-            ]
+            ],
+            importLocations: [],
         });
     });
 });

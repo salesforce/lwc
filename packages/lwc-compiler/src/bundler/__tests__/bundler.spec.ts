@@ -53,7 +53,7 @@ describe('bundler', () => {
             files: { "foo.js": src }
         };
 
-        const { importLocations } = await bundle(config);
+        const { metadata: {importLocations} } = await bundle(config);
         expect(importLocations.length).toBe(3);
         expect(importLocations[0].name).toBe("x-bar");
         expect(importLocations[0].location).toMatchObject({

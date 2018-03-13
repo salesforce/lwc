@@ -3,7 +3,6 @@ import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";
 import { CompilerOptions, validateOptions, normalizeOptions } from "./options";
-import { ImportLocation } from "./bundler/import-location-collector";
 
 export { default as templateCompiler } from "lwc-template-compiler";
 
@@ -18,7 +17,6 @@ export interface BundleResult {
     map: null;
     metadata: BundleMetadata;
     references: Reference[];
-    importLocations: ImportLocation[];
 }
 
 export async function compile(
@@ -38,7 +36,6 @@ export async function compile(
             diagnostics: bundleDiagnostics,
             code,
             metadata,
-            importLocations
         } = await bundle(normalizedOptions);
 
         diagnostics.push(...bundleDiagnostics);
@@ -49,7 +46,6 @@ export async function compile(
                 map: null,
                 metadata,
                 references: bundleReport.references,
-                importLocations
             };
         }
     }

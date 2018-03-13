@@ -4,6 +4,7 @@ import {
     WireDecorator
 } from "babel-plugin-transform-lwc-class";
 import { BundleMetadata } from "./bundler";
+import { ImportLocation } from "./import-location-collector";
 
 export interface ExternalReference {
     name: string;
@@ -13,6 +14,7 @@ export interface ExternalReference {
 export class MetadataCollector {
     private references: Map<String, ExternalReference> = new Map();
     private decorators: Array<ApiDecorator | TrackDecorator | WireDecorator> = [];
+    private importLocations: ImportLocation[] = [];
 
     public collectReference(reference: ExternalReference) {
         const existingRef = this.references.get(reference.name);
@@ -29,10 +31,15 @@ export class MetadataCollector {
         this.decorators.push(decorator);
     }
 
+    public collectImportLocations(importLocations: ImportLocation []) {
+        this.importLocations.push(...importLocations);
+    }
+
     public getMetadata(): BundleMetadata {
         return {
             references: Array.from(this.references.values()),
-            decorators: this.decorators
+            decorators: this.decorators,
+            importLocations: this.importLocations,
         };
     }
 }
