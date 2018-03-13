@@ -214,10 +214,10 @@ export default class TodoViewer extends Element {
 This implementation of the `todo` wire adapter uses DOM Events to retrieve the data from a parent element.
 
 ```js
-import { register, targetGetter } from 'wire';
+import { register } from 'wire';
 
 // Difference: receive a dispatchEvent, use DOM Events to fetch the observable
-getObservable(dispatchEvent, config) {
+function getObservable(dispatchEvent, config) {
     let observable;
     const event = new CustomEvent('getTodo', {
         bubbles: true,
@@ -232,12 +232,8 @@ getObservable(dispatchEvent, config) {
     return observable;
 }
 
-// Difference: receive eventTarget
-export function getTodo(eventTarget, config) {
-    return getObservable(eventTarget.dispatchEvent, config)
-        .map(makeReadOnlyMembrane)
-        .toPromise();
-}
+// Wire adapter id isn't a callable because it doesn't support imperative invocation
+export Symbol('getTodo');
 
 // Difference: receive eventTarget
 register(getTodo, function wireAdapter(targetSetter, eventTarget) {
@@ -265,8 +261,8 @@ register(getTodo, function wireAdapter(targetSetter, eventTarget) {
     };
 });
 
-export function refreshTodo(eventTarget, wiredValue) {
-    // Difference: retrieve eventTarget
+export function refreshTodo(wiredValue) {
+    // Difference: retrieve eventTarget and config
     return getEventTargetAndConfig(wiredValue).map(getTodo);
 }
 ```
