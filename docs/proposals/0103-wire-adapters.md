@@ -233,7 +233,7 @@ function getObservable(dispatchEvent, config) {
 }
 
 // Wire adapter id isn't a callable because it doesn't support imperative invocation
-export Symbol('getTodo');
+export const getTodo = Symbol('getTodo');
 
 // Difference: receive eventTarget
 register(getTodo, function wireAdapter(targetSetter, eventTarget) {
