@@ -21,7 +21,10 @@ import {
     WireDecorator
 } from "babel-plugin-transform-lwc-class";
 
-import { ImportLocation, ImportLocationCollector } from "./import-location-collector";
+import {
+    ModuleImportLocation,
+    collectImportLocations
+} from "./import-location-collector";
 
 export interface BundleReport {
     code: string;
@@ -33,10 +36,8 @@ export interface BundleReport {
 export interface BundleMetadata {
     references: ExternalReference[];
     decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
-    importLocations: ImportLocation[];
+    importLocations: ModuleImportLocation[];
 }
-
-export type ModuleImportLocations = ImportLocation[];
 
 interface RollupWarning {
     message: string;
@@ -80,7 +81,7 @@ export async function bundle(
         }),
         rollupModuleResolver({
             metadataCollector,
-            options,
+            options
         }),
         rollupTransform({
             metadataCollector,
@@ -109,13 +110,14 @@ export async function bundle(
         format
     });
 
-    const importLocations = new ImportLocationCollector().getLocations(code) || [];
-    metadataCollector.collectImportLocations(importLocations);
+    metadataCollector.collectImportLocations(
+        collectImportLocations(code) || []
+    );
 
     return {
         diagnostics,
         code,
         map: null,
-        metadata: metadataCollector.getMetadata(),
+        metadata: metadataCollector.getMetadata()
     };
 }

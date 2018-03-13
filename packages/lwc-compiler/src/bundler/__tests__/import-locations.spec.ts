@@ -1,14 +1,14 @@
-import { ImportLocationCollector } from "../../bundler/import-location-collector";
+import { collectImportLocations } from "../../bundler/import-location-collector";
 
 describe("import locations", () => {
     test("location collector should return empty array if incoming code isn't module", () => {
-        const locs = new ImportLocationCollector().getLocations("debugger");
+        const locs = collectImportLocations("debugger");
         expect(locs.length).toBe(0);
     });
 
     test("location collector should return empty array if no imports were specified", () => {
         const src = `define('x-foo', function () {});`
-        const locs = new ImportLocationCollector().getLocations("debugger");
+        const locs = collectImportLocations("debugger");
         expect(locs.length).toBe(0);
     });
 
@@ -18,7 +18,7 @@ describe("import locations", () => {
             xFoose();
             xZoolaf();
         });`;
-        const locs = new ImportLocationCollector().getLocations(src);
+        const locs = collectImportLocations(src);
 
         expect(locs.length).toBe(3);
         expect(locs[0]).toMatchObject({
