@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.17.19...v) (2018-03-05)
+# [](https://github.com/salesforce/lwc/compare/v0.18.0...v) (2018-03-13)
+
+
+
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/salesforce/lwc/compare/v0.17.19...v0.18.0) (2018-03-13)
+
+
+### Bug Fixes
+
+* **script:** Fix aura bin script ([#144](https://github.com/salesforce/lwc/issues/144)) ([1ff7061](https://github.com/salesforce/lwc/commit/1ff7061))
+
+
+### Features
+
+* **compiler:** attr to props for custom LWC elements ([#102](https://github.com/salesforce/lwc/issues/102)) ([02a1320](https://github.com/salesforce/lwc/commit/02a1320)), closes [#119](https://github.com/salesforce/lwc/issues/119)
+* **compiler:** More tooling metadata ([#132](https://github.com/salesforce/lwc/issues/132)) ([0514227](https://github.com/salesforce/lwc/commit/0514227))
 
 
 
@@ -162,12 +178,7 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
-
-
-
-<a name="0.17.3"></a>
-## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
 
 
 
