@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { Element, api, wire } from 'engine';
 
 export default class SingleWire extends Element {
     @api todoId;

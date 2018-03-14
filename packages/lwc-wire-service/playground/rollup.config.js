@@ -3,6 +3,7 @@
 const path = require('path');
 const lwcCompiler = require('rollup-plugin-lwc-compiler');
 const nodeResolve = require('rollup-plugin-node-resolve');
+const replace = require('rollup-plugin-replace');
 
 function resolver() {
     const re = new RegExp("^([^-]+)-(.+)$");
@@ -31,10 +32,10 @@ module.exports = {
         format: 'iife'
     },
     name: 'Main',
-    sourceMap: false,
     plugins: [
         resolver(),
         lwcCompiler({ mapNamespaceFromPath: true }),
         nodeResolve({ module: true }),
+        replace({ 'process.env.NODE_ENV': JSON.stringify('development') }),
     ].filter(Boolean),
 };
