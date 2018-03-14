@@ -13,7 +13,7 @@ describe("import locations", () => {
     });
 
     test("location collector should return location object for each import", () => {
-        const src = `define('x-foo', ['x-bar', 'x-foose', 'x-zoolaf'], function (xBar, xFoose, xZoolaf) {
+        const src = `define('x-foo', ['x-bar', '@xfoose', 'xy/zoolaf'], function (xBar, xFoose, xZoolaf) {
             xBoo();
             xFoose();
             xZoolaf();
@@ -29,17 +29,17 @@ describe("import locations", () => {
             }
         });
         expect(locs[1]).toMatchObject({
-            name: "x-foose",
+            name: "@xfoose",
             location: {
                 start: 27,
                 length: 7
             }
         });
         expect(locs[2]).toMatchObject({
-            name: "x-zoolaf",
+            name: "xy/zoolaf",
             location: {
                 start: 38,
-                length: 8
+                length: 9
             }
         });
     });

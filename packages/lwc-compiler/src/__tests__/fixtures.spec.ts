@@ -82,7 +82,9 @@ describe("compilation mode", () => {
         expect(metadata).toEqual({
             decorators: [],
             references: [{ name: "engine", type: "module" }],
-            importLocations: [],
+            importLocations: [
+                { location: { length: 8, start: 31 }, name: '"engine"' }
+            ]
         });
     });
 
@@ -92,7 +94,6 @@ describe("compilation mode", () => {
             ...{ outputConfig: { compat: true } }
         };
         const { result: { code, metadata } } = await compile(config);
-
         expect(pretify(code)).toBe(
             pretify(readFixture("expected-compat-mode.js"))
         );
@@ -114,30 +115,28 @@ describe("compilation mode", () => {
             pretify(readFixture("expected-prod_compat-mode.js"))
         );
 
-        expect(metadata).toEqual({
-            decorators: [],
-            references: [{ name: "engine", type: "module" }],
-            importLocations: [],
-        });
+        const { decorators, references, importLocations } = metadata;
+        expect(references).toMatchObject([{ name: "engine", type: "module" }]);
+        expect(decorators.length).toBe(0);
+        expect(importLocations.length).toBe(8);
     });
 });
 
 describe("node env", function() {
     it('sets env.NODE_ENV to "development" by default', async () => {
         const config = {
-            name: 'foo',
-            namespace: 'x',
+            name: "foo",
+            namespace: "x",
             files: {
-                'foo.js': 'export const env = process.env.NODE_ENV'
+                "foo.js": "export const env = process.env.NODE_ENV"
             },
             outputConfig: { format: "es" }
         };
-        const { result: { code, metadata }} = await compile(config);
+        const { result: { code, metadata } } = await compile(config);
 
         expect(pretify(code)).toBe(
-            'const env = "development";\nexport { env };',
+            'const env = "development";\nexport { env };'
         );
-
     });
 
     it("removes production code when NODE_ENV option is production", async () => {
@@ -219,7 +218,7 @@ describe("metadata output", () => {
                 { name: "todo", type: "module" },
                 { name: "@schema/foo.bar", type: "module" }
             ],
-            importLocations: [],
+            importLocations: []
         });
     });
 });

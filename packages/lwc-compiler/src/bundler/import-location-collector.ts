@@ -1,58 +1,43 @@
-import { Location } from '../common-interfaces/location';
+import { Location } from "../common-interfaces/location";
 
 export interface ModuleImportLocation {
     name: string;
     location: Location;
 }
 
-const BRACKET_LENGTH = 1;
-const EXPECTED_MATCH_LENGTH = 3;
-const IMPORT_SEPARATOR = ", ";
-const QUOTE_LENGTH = 1;
-const MODULE_IMPORT_REGEX = /(?<=define\()('.*?', )\[('.*?')\]/;
+const MODULE_IMPORT_REGEX = /(?:define\([(['|"][\w-]+['|"],?\s*)(?:\[((?:['|"][@\w-/]+['|"],?\s*)+)\])?,?\s*function/;
 
-export function collectImportLocations(code: string): ModuleImportLocation[] {
+export function collectImportLocations(code: string) {
     const locations: ModuleImportLocation[] = [];
+    const matches = new RegExp(MODULE_IMPORT_REGEX).exec(code);
 
-    const regex = new RegExp(MODULE_IMPORT_REGEX);
-    const matches = regex.exec(code);
-
-    // we expect matches to return 3 objects
-    // 1. full match
-    // 2. filename
-    // 3. imports
-    if (!matches || matches.length < EXPECTED_MATCH_LENGTH) {
-        // TODO: determine which mechanism to use to produce warnings
-        // 'Unable to collect import locations from non-AMD formatted code.;
+    // assert amd
+    if (!matches || !matches.length) {
         return locations;
     }
 
-    const filename = matches[1].replace(/'/g, ""); // normalize - result items come back with double quotes "'x-foo'"
-    const imports = matches[2].split(IMPORT_SEPARATOR);
+    const searchSubstring: string = matches[0];
 
-    // starting index points to filename, thus incrementing to point to correct location
-    let position =
-        matches.index +
-        filename.length +
-        IMPORT_SEPARATOR.length +
-        BRACKET_LENGTH +
-        QUOTE_LENGTH;
+    // format: `'x-bar', 'x-foo'`
+    const rawImports = matches[1];
+    if (!rawImports) {
+        return locations;
+    }
 
-    imports.forEach((moduleImport: string) => {
-        const name = moduleImport.replace(/'/g, ""); // string comes back with two types of quotes "'x-foo'"
+    // split result: ["'x-bar', 'x-foo'"]
+    const imports = rawImports.split(/,\s*/) || [];
+
+    imports.forEach(moduleImport => {
+        const normalizedName = moduleImport.replace(/'/g, "");
+        const position = searchSubstring.indexOf(normalizedName);
 
         locations.push({
-            name,
+            name: normalizedName,
             location: {
                 start: position,
-                length: name.length
+                length: normalizedName.length
             }
         });
-
-        // increment position from beginning of the current to next import ['current-import', 'next-import']
-        position +=
-            name.length + QUOTE_LENGTH + IMPORT_SEPARATOR.length + QUOTE_LENGTH;
     });
-
     return locations;
 }
