@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { track, Element } from 'engine';
 
 export default class Demo extends Element {
     @track state = {
