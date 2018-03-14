@@ -6,7 +6,7 @@ import {
     vmBeingRendered,
     invokeComponentCallback,
 } from "./invoker";
-import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice, isNull } from "./language";
+import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
@@ -14,9 +14,9 @@ import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
-import { ShadowRoot } from "./root";
+import { ShadowRoot, isChildOfRoot } from "./root";
 import { EmptyObject } from "./utils";
-import { addEventListener, removeEventListener } from "./dom";
+import { addEventListener, removeEventListener, getRootNode } from "./dom";
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;
@@ -163,32 +163,13 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     }
 }
 
-// TODO: once we start using the real shadowDOM, we can rely on:
-// const { getRootNode as originalGetRootNode } = Node.prototype;
-// for now, we need to provide a dummy implementation to provide retargeting
-export function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    let node: Node = this;
-    while (node !== document) {
-        if (!composed && !isUndefined(node[ViewModelReflection])) {
-            return node; // this is not quite the root (it is the host), but for us is sufficient
-        }
-        const parent = node.parentNode;
-        if (isNull(parent)) {
-            return node;
-        }
-        node = parent;
-    }
-    return node;
-}
-
 export function isValidEvent(event: Event): boolean {
     // TODO: this is only needed if ShadowDOM is not used
     if ((event as any).composed === true) {
         return true;
     }
     // if the closest root contains the currentTarget, the event is valid
-    return getRootNode.call(event.target).contains(event.currentTarget);
+    return isChildOfRoot(getRootNode.call(event.target), event.currentTarget as Node);
 }
 
 function handleComponentEvent(vm: VM, event: Event) {

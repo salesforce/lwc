@@ -9,6 +9,7 @@ import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./comp
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
 import { unwrap } from "./reactive";
+import { pierce } from "./piercing";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -350,7 +351,8 @@ export function b(fn: EventListener): EventListener {
         if (!isValidEvent(event)) {
             return;
         }
-        invokeComponentCallback(vm, fn, [event]);
+        const e = pierce(vm, event);
+        invokeComponentCallback(vm, fn, [e]);
     };
 }
 

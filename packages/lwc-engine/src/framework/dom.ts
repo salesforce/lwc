@@ -27,7 +27,35 @@ const {
     querySelectorAll,
 } = Element.prototype;
 
+const {
+    DOCUMENT_POSITION_CONTAINED_BY
+} = Node;
+
+const {
+    compareDocumentPosition,
+} = Node.prototype;
+
+// TODO: once we start using the real shadowDOM, we can rely on:
+// const { getRootNode } = Node.prototype;
+// for now, we need to provide a dummy implementation to provide retargeting
+function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+    let node: Node = this;
+    while (node !== document) {
+        if (!composed && !isUndefined(node[ViewModelReflection])) {
+            return node; // this is not quite the root (it is the host), but for us is sufficient
+        }
+        const parent = node.parentNode;
+        if (isNull(parent)) {
+            return node;
+        }
+        node = parent;
+    }
+    return node;
+}
+
 export {
+    // Element.prototype
     addEventListener,
     removeEventListener,
     getAttribute,
@@ -38,6 +66,13 @@ export {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
+
+    // Node.prototype
+    compareDocumentPosition,
+    getRootNode,
+
+    // Node
+    DOCUMENT_POSITION_CONTAINED_BY,
 };
 
 // These properties get added to LWCElement.prototype publicProps automatically
