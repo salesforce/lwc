@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull } from "./language";
+import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
     GlobalHTMLProperties,
     getAttribute,
@@ -312,7 +312,7 @@ defineProperties(LWCElement.prototype, htmlElementDescriptors);
 
 // Global HTML Attributes
 if (process.env.NODE_ENV !== 'production') {
-    getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
+    forEach.call(getOwnPropertyNames(GlobalHTMLProperties), (propName: string) => {
         if (propName in LWCElement.prototype) {
             return; // no need to redefine something that we are already exposing
         }

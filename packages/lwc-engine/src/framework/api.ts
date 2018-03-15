@@ -1,13 +1,22 @@
 import assert from "./assert";
+<<<<<<< HEAD
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, isNumber } from "./language";
+=======
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt } from "./language";
+>>>>>>> master
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty } from "./component";
+import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
+<<<<<<< HEAD
+=======
+import { unwrap } from "./reactive";
+import { pierce } from "./piercing";
+>>>>>>> master
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -44,16 +53,16 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     let o;
     const len = className.length;
     for (o = 0; o < len; o++) {
-        if (className.charCodeAt(o) === SPACE_CHAR) {
+        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
             if (o > start) {
-                map[className.slice(start, o)] = true;
+                map[StringSlice.call(className, start, o)] = true;
             }
             start = o + 1;
         }
     }
 
     if (o > start) {
-        map[className.slice(start, o)] = true;
+        map[StringSlice.call(className, start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {
@@ -148,7 +157,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-        children.forEach((childVnode) => {
+        forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.vnode(childVnode);
             }
@@ -170,7 +179,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         elm,
         key,
     };
-    if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
+    if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
     }
     return vnode;
@@ -274,6 +283,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
+<<<<<<< HEAD
             vnodes.forEach((childVnode) => {
                 if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
                     const { key } = childVnode;
@@ -286,6 +296,12 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
                         // TODO - it'd be nice to log the owner component rather than the iteration children
                         assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                     }
+=======
+            forEach.call(vnodes, (childVnode: VNode | null) => {
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && StringIndexOf.call(childVnode.sel, '-') > 0 && isUndefined(childVnode.key)) {
+                    // TODO - it'd be nice to log the owner component rather than the iteration children
+                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+>>>>>>> master
                 }
             });
         }
@@ -359,8 +375,11 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(vm, fn, [event]);
+        if (!isValidEvent(event)) {
+            return;
+        }
+        const e = pierce(vm, event);
+        invokeComponentCallback(vm, fn, [e]);
     };
 }
 

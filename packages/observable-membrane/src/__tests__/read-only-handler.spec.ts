@@ -276,4 +276,16 @@ describe('ReadOnlyHandler', () => {
         expect(accessSpy).toHaveBeenCalledTimes(2);
         expect(accessSpy).toHaveBeenLastCalledWith(obj.foo, 'bar');
     });
+    it('should throw when attempting to get the proxy from a read only proxy', function() {
+        const target = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: () => {},
+        });
+        const obj = [{ foo: 'bar' }];
+
+        const readOnly = target.getReadOnlyProxy(obj);
+        expect(() => {
+            target.getProxy(readOnly);
+        }).toThrow();
+    });
 });

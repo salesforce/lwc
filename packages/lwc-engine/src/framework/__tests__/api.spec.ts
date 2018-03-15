@@ -1,6 +1,6 @@
 import * as api from '../api';
 import { Element } from "../html-element";
-import { createElement } from './../main';
+import { createElement } from '../main';
 import { RenderAPI } from '../api';
 
 describe('api', () => {

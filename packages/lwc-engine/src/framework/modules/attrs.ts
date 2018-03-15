@@ -1,6 +1,6 @@
 import assert from "../assert";
 import { prepareForAttributeMutationFromTemplate } from '../def';
-import { isTrue, isFalse, isUndefined, keys } from '../language';
+import { isTrue, isFalse, isUndefined, keys, StringCharCodeAt } from '../language';
 import { EmptyObject } from '../utils';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
 
@@ -45,10 +45,10 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
             } else if (isFalse(cur)) {
                 removeAttribute.call(elm, key);
             } else {
-                if (key.charCodeAt(3) === ColonCharCode) {
+                if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                     // Assume xml namespace
                     elm.setAttributeNS.call(elm, xmlNS, key, cur);
-                } else if (key.charCodeAt(5) === ColonCharCode) {
+                } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
                     // Assume xlink namespace
                     elm.setAttributeNS.call(elm, xlinkNS, key, cur);
                 } else {

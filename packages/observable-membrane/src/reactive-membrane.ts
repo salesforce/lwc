@@ -101,8 +101,8 @@ export class ReactiveMembrane {
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
     objectGraph: WeakMap<any, ReactiveState> = new WeakMap();
-    constructor(distrotion: ReactiveMembraneDistortionCallback, eventMap: ReactiveMembraneEventHandlerMap) {
-        this.distortion = distrotion;
+    constructor(distortion: ReactiveMembraneDistortionCallback, eventMap: ReactiveMembraneEventHandlerMap) {
+        this.distortion = distortion;
         this.propertyMemberChange = eventMap.propertyMemberChange;
         this.propertyMemberAccess = eventMap.propertyMemberAccess;
     }
@@ -110,7 +110,12 @@ export class ReactiveMembrane {
     getProxy(value: any) {
         const distorted = invokeDistortion(this, value);
         if (isObservable(distorted)) {
-            return getReactiveState(this, distorted).reactive;
+            const o = getReactiveState(this, distorted);
+            if (o.readOnly === value) {
+                // TODO: add error code
+                throw new TypeError(`Read only object is not observable.`);
+            }
+            return o.reactive;
         }
         return distorted;
     }

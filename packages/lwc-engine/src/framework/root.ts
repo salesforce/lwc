@@ -18,7 +18,10 @@ import {
     GlobalAOMProperties,
     getAriaAttributeName,
     setAttribute,
-    removeAttribute
+    removeAttribute,
+    DOCUMENT_POSITION_CONTAINED_BY,
+    compareDocumentPosition,
+    getRootNode,
 } from './dom';
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
@@ -211,6 +214,10 @@ export function wrapIframeWindow(win: Window) {
     };
 }
 
+export function isChildOfRoot(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+}
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
@@ -242,6 +249,24 @@ register({
             if (value === elm) {
                 // prevent access to the original Host element
                 return callback(component);
+            }
+            if (target instanceof Event) {
+                switch (key) {
+                    case 'currentTarget':
+                        return callback(value === elm ? vm.component : pierce(vm, value));
+                    case 'target':
+                        const { currentTarget } = target;
+                        if (currentTarget === elm) {
+                            return callback(vm.component);
+                        } else if (isChildOfRoot(elm, currentTarget as Node)) {
+                            let root = value; // initial root is always the original target
+                            do {
+                                value = root;
+                                root = getRootNode.call(value);
+                            } while (!isChildOfRoot(root, currentTarget as Node));
+                            return callback(pierce(vm, value));
+                        }
+                }
             }
         }
     }

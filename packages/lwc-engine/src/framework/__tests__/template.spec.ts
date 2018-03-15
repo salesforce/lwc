@@ -1,7 +1,7 @@
 import * as target from '../template';
 import * as globalApi from '../api';
 import { Element } from "../html-element";
-import { createElement } from './../main';
+import { createElement } from '../main';
 import { ViewModelReflection } from '../def';
 import { Template } from '../template';
 
