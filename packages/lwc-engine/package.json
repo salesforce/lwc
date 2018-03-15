@@ -6,9 +6,8 @@
   "module": "dist/modules/es2017/engine.js",
   "typings": "types/engine.d.ts",
   "scripts": {
-    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
+    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
     "test": "DIR=`pwd` && cd ../../ && jest $DIR",
-    "build:all": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
     "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
     "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js"
