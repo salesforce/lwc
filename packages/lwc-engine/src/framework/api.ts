@@ -1,9 +1,5 @@
 import assert from "./assert";
-<<<<<<< HEAD
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, isNumber } from "./language";
-=======
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt } from "./language";
->>>>>>> master
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt, isNumber } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
@@ -12,11 +8,8 @@ import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./comp
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-<<<<<<< HEAD
-=======
 import { unwrap } from "./reactive";
 import { pierce } from "./piercing";
->>>>>>> master
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -283,8 +276,7 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-<<<<<<< HEAD
-            vnodes.forEach((childVnode) => {
+            forEach.call(vnodes, (childVnode: VNode | null) => {
                 if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
                     const { key } = childVnode;
                     if (isString(key) || isNumber(key)) {
@@ -296,12 +288,6 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
                         // TODO - it'd be nice to log the owner component rather than the iteration children
                         assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
                     }
-=======
-            forEach.call(vnodes, (childVnode: VNode | null) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && StringIndexOf.call(childVnode.sel, '-') > 0 && isUndefined(childVnode.key)) {
-                    // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
->>>>>>> master
                 }
             });
         }
