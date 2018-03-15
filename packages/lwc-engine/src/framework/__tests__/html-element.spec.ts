@@ -1,7 +1,7 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import assertLogger from './../assert';
-import { register } from "./../services";
+import assertLogger from '../assert';
+import { register } from "../services";
 import { ViewModelReflection } from "../def";
 import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";

@@ -3,7 +3,7 @@ import {
     isString,
     isUndefined,
     StringCharCodeAt,
-} from './../language';
+} from '../language';
 import { EmptyObject } from '../utils';
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { removeAttribute } from '../dom';
