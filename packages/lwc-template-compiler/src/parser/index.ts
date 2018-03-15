@@ -378,12 +378,12 @@ export default function parse(source: string, state: State): {
             }
 
             if (isForOfChild(element)) {
-                if (keyAttribute.value.property.name === 'index') {
+                if ('property' in keyAttribute.value && 'name' in keyAttribute.value.property && keyAttribute.value.property.name === 'index') {
                     return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
                 }
             } else if (isForEachChild(element)) {
                 const iteratorIndexName = getForEachIndexName(element)
-                if (iteratorIndexName && keyAttribute.value && keyAttribute.value.name === iteratorIndexName.name) {
+                if (iteratorIndexName && keyAttribute.value && 'name' in keyAttribute.value && keyAttribute.value.name === iteratorIndexName.name) {
                     return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${iteratorIndexName.name}`, keyAttribute.location);
                 }
             }
