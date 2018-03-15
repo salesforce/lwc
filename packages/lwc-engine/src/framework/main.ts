@@ -8,10 +8,5 @@ export { unwrap } from "./reactive";
 export { dangerousObjectMutation } from "./reactive";
 export { default as api } from "./decorators/api";
 export { default as track } from "./decorators/track";
+export { default as readonly } from "./decorators/readonly";
 export { default as wire } from "./decorators/wire";
-
-// TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/153
-import { membrane } from "./reactive";
-export function createReadOnlyObject(obj: any): any {
-    return membrane.getReadOnlyProxy(obj);
-}

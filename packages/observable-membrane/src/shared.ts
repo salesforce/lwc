@@ -52,7 +52,7 @@ export const unwrap = getKey ?
     : (replicaOrAny: any): any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
 
 export function isObservable(value: any): boolean {
-    if (!value) {
+    if (value == null) {
         return false;
     }
     if (isArray(value)) {
