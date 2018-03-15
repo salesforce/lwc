@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.18.0...v) (2018-03-13)
+# [](https://github.com/salesforce/lwc/compare/v0.18.1...v) (2018-03-15)
+
+
+
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/salesforce/lwc/compare/v0.18.0...v0.18.1) (2018-03-15)
+
+
+### Bug Fixes
+
+* **lwc-engine:** Add pragma to engine artifacts ([#156](https://github.com/salesforce/lwc/issues/156)) ([f83397c](https://github.com/salesforce/lwc/commit/f83397c))
+* **lwc-wire-service:** Fix project and playground ([#151](https://github.com/salesforce/lwc/issues/151)) ([7c91533](https://github.com/salesforce/lwc/commit/7c91533))
+
+
+### Features
+
+* **engine:** issue [#153](https://github.com/salesforce/lwc/issues/153) adds a mechanism for LDS to create readonly obj ([#154](https://github.com/salesforce/lwc/issues/154)) ([3de8834](https://github.com/salesforce/lwc/commit/3de8834))
 
 
 
