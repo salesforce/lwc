@@ -291,61 +291,6 @@ describe('html-element', () => {
     });
 
     describe('#dispatchEvent', function() {
-        it('should pierce dispatch event', function() {
-            let callCount = 0;
-            register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
-                    if (value === EventTarget.prototype.dispatchEvent) {
-                        callCount += 1;
-                    }
-                }
-            });
-            class Foo extends Element {
-                connectedCallback() {
-                    const event = new CustomEvent('badevent', {
-                        bubbles: true,
-                        composed: true
-                    });
-                    this.dispatchEvent(event);
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(callCount).toBe(1);
-        });
-        it('should use custom function pierced for dispatch event', function() {
-            let event;
-            let received;
-            let piercedThis;
-            let count = 0;
-            const pierced = function(evt) {
-                piercedThis = this;
-                received = evt;
-                count += 1;
-            };
-            register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
-                    if (value === EventTarget.prototype.dispatchEvent) {
-                        callback(pierced);
-                    }
-                }
-            });
-            class Foo extends Element {
-                connectedCallback() {
-                    event = {
-                        type: 'secure',
-                        composed: true,
-                        bubbles: true
-                    };
-                    this.dispatchEvent(event);
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(count).toBe(1);
-            expect(piercedThis).toBe(elm);
-            expect(received).toBe(event);
-        });
         it('should throw when event is dispatched during construction', function() {
             expect.assertions(1);
             class Foo extends Element {
@@ -420,6 +365,122 @@ describe('html-element', () => {
                 expect(assertLogger.logWarning).not.toBeCalled();
                 assertLogger.logWarning.mockRestore();
             });
+        });
+
+        it('should get native click event in host', function () {
+            expect.assertions(3);
+            function html($api) {
+                return [$api.h('div', { key: 1 }, [])];
+            };
+            class Foo extends Element {
+                constructor() {
+                    super();
+                    this.addEventListener('click', (e) => {
+                        expect(e.composed).toBe(true);
+                        expect(e.target).toBe(this); // notice that target is host
+                        expect(e.currentTarget).toBe(this); // notice that currentTarget is host
+                    });
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').click();
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should get native events from template', function () {
+            expect.assertions(2);
+            function html($api, $cmp) {
+                return [$api.h('div', { key: 1, on: { click: $api.b($cmp.handleClick)} }, [])];
+            }
+            class Foo extends Element {
+                handleClick(e: Event) {
+                    expect(e.target).toBe(this.root.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').click();
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should get custom events in host when marked as composed=true', function () {
+            expect.assertions(3);
+            function html($api) {
+                return [$api.h('div', { key: 1 }, [])];
+            }
+            class Foo extends Element {
+                constructor() {
+                    super();
+                    this.addEventListener('xyz', (e) => {
+                        expect(e.composed).toBe(true);
+                        expect(e.target).toBe(this); // notice that target is host
+                        expect(e.currentTarget).toBe(this); // notice that currentTarget is host
+                    });
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: true,
+                    }));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: false,
+                    }));
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should listen for custom events declare in template', function () {
+            expect.assertions(6);
+            function html($api, $cmp) {
+                return [$api.h('div', { key: 1, on: { xyz: $api.b($cmp.handleXyz)} }, [])];
+            }
+            class Foo extends Element {
+                handleXyz(e: Event) {
+                    expect(e.target).toBe(this.root.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: true,
+                    }));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: false,
+                    }));
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
         });
     });
 

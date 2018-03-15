@@ -14,9 +14,9 @@ import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
-import { ShadowRoot } from "./root";
+import { ShadowRoot, isChildOfRoot } from "./root";
 import { EmptyObject } from "./utils";
-import { addEventListener, removeEventListener } from "./dom";
+import { addEventListener, removeEventListener, getRootNode } from "./dom";
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;
@@ -163,6 +163,15 @@ export function removeComponentEventListener(vm: VM, eventName: string, oldHandl
     }
 }
 
+export function isValidEvent(event: Event): boolean {
+    // TODO: this is only needed if ShadowDOM is not used
+    if ((event as any).composed === true) {
+        return true;
+    }
+    // if the closest root contains the currentTarget, the event is valid
+    return isChildOfRoot(getRootNode.call(event.target), event.currentTarget as Node);
+}
+
 function handleComponentEvent(vm: VM, event: Event) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
@@ -172,7 +181,9 @@ function handleComponentEvent(vm: VM, event: Event) {
         const cmpEventsType = cmpEvt && cmpEvt[eventType];
         assert.invariant(vm.cmpEvents && !isUndefined(cmpEventsType) && cmpEventsType.length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
     }
-
+    if (!isValidEvent(event)) {
+        return;
+    }
     const { cmpEvents = EmptyObject } = vm;
     const { type, stopImmediatePropagation } = event;
     const handlers = cmpEvents[type];
