@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
+const compiler = require("lwc-compiler");
 const rollupCompile = require('../src/index');
 
 function pretty(str) {
@@ -55,6 +56,12 @@ describe('rollup in prod_compat mode', () => {
             const expected = fsExpected('expected_prod_compat_config_simple_app');
             expect(pretty(actual)).toBe(pretty(expected));
         })
+    });
+});
+
+describe('call lwc-compiler', () => {
+    it('retrieves lwc-compiler version', () => {
+        expect(compiler.version).toBeDefined();
     });
 });
 

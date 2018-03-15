@@ -29,7 +29,7 @@ describe("test index entry points", () => {
         expect(code).toBe("debugger;");
     });
 
-    test.only("able to retrieve version", () => {
+    test("able to retrieve version", () => {
         expect(version).toBeDefined();
     });
 });
