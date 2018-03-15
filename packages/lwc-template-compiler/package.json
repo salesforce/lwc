@@ -3,7 +3,7 @@
   "version": "0.18.1",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
-  "typings": "dist/types/index.d.ts",
+  "typings": "dist/types/",
   "license": "MIT",
   "scripts": {
     "build": "DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",

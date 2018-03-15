@@ -56,5 +56,8 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "source-map": "^0.7.2"
+  }
 }

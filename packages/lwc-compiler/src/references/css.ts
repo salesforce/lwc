@@ -1,16 +1,15 @@
-import { Reference } from './types';
 
 import * as postcss from 'postcss';
-import { Rule } from 'postcss';
-
 import * as postcssSelector from 'postcss-selector-parser';
 import { isTag } from 'postcss-selector-parser';
+
+import { Reference, ReferenceReport } from './references';
 
 function isCustomElementSelector(tag: string) {
     return tag.includes('-');
 }
 
-function getSelectorOffset(rule: Rule, source: string) {
+function getSelectorOffset(rule: postcss.Rule, source: string) {
     // line and column are both 1 based.
     const { line, column } = rule.source.start!;
 
@@ -53,8 +52,8 @@ function getSelectorReferences(
     return references;
 }
 
-export function getReferences(source: string, filename: string): Reference[] {
-    const references: Reference[] = [];
+export function getReferenceReport(source: string, filename: string): ReferenceReport {
+    const result: ReferenceReport = { references: [], diagnostics: [] };
 
     const root = postcss.parse(source, { from: filename });
     root.walkRules(rule => {
@@ -64,8 +63,8 @@ export function getReferences(source: string, filename: string): Reference[] {
             filename,
             selectorOffset,
         );
-        references.push(...ruleReferences);
+        result.references.push(...ruleReferences);
     });
 
-    return references;
+    return result;
 }

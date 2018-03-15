@@ -1,8 +1,8 @@
-import { getReferences } from '../../references/html';
+import { getReferenceReport } from '../../references/html';
 
 test('simple component', () => {
     expect(
-        getReferences(`<template><x-foo></x-foo></template>`, 'test.js'),
+        getReferenceReport(`<template><x-foo></x-foo></template>`, 'test.js').references,
     ).toEqual([
         {
             id: 'x-foo',
@@ -24,10 +24,10 @@ test('simple component', () => {
 
 test('nested components', () => {
     expect(
-        getReferences(
+        getReferenceReport(
             `<template><x-foo><x-bar></x-bar></x-foo><x-baz></x-baz></template>`,
             'test.js',
-        ),
+        ).references,
     ).toEqual([
         {
             id: 'x-bar',

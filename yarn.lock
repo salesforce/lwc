@@ -491,20 +491,30 @@
   dependencies:
     "@types/estree" "*"
 
-"@types/babel-generator@^6.25.1":
+"@types/babel-core@^6.25.3":
+  version "6.25.3"
+  resolved "https://registry.npmjs.org/@types/babel-core/-/babel-core-6.25.3.tgz#c7fda09007375ae89942307917ed21ed309a1c2a"
+  dependencies:
+    "@types/babel-generator" "*"
+    "@types/babel-template" "*"
+    "@types/babel-traverse" "*"
+    "@types/babel-types" "*"
+    "@types/babylon" "*"
+
+"@types/babel-generator@*", "@types/babel-generator@^6.25.1":
   version "6.25.1"
   resolved "http://npm.lwcjs.org/@types/babel-generator/-/babel-generator-6.25.1/f86ab3cf132b04597fe6c431d3083aaf1b76b530.tgz#f86ab3cf132b04597fe6c431d3083aaf1b76b530"
   dependencies:
     "@types/babel-types" "*"
 
-"@types/babel-template@^6.25.0":
+"@types/babel-template@*", "@types/babel-template@^6.25.0":
   version "6.25.0"
   resolved "http://npm.lwcjs.org/@types/babel-template/-/babel-template-6.25.0/2505d7b55b88f821d98048b4fdf07b3b22563d30.tgz#2505d7b55b88f821d98048b4fdf07b3b22563d30"
   dependencies:
     "@types/babel-types" "*"
     "@types/babylon" "*"
 
-"@types/babel-traverse@^6.25.3":
+"@types/babel-traverse@*", "@types/babel-traverse@^6.25.3":
   version "6.25.3"
   resolved "http://npm.lwcjs.org/@types/babel-traverse/-/babel-traverse-6.25.3/34dd69d1e469aee75e20ba00fbc52c7bc717b1c8.tgz#34dd69d1e469aee75e20ba00fbc52c7bc717b1c8"
   dependencies:
@@ -520,9 +530,20 @@
   dependencies:
     "@types/babel-types" "*"
 
+"@types/chokidar@^1.7.5":
+  version "1.7.5"
+  resolved "https://registry.npmjs.org/@types/chokidar/-/chokidar-1.7.5.tgz#1fa78c8803e035bed6d98e6949e514b133b0c9b6"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
+
 "@types/estree@*":
   version "0.0.38"
   resolved "http://npm.lwcjs.org/@types/estree/-/estree-0.0.38/c1be40aa933723c608820a99a373a16d215a1ca2.tgz#c1be40aa933723c608820a99a373a16d215a1ca2"
+
+"@types/events@*":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
 "@types/he@^0.5.29":
   version "0.5.29"
@@ -7696,6 +7717,10 @@ source-map@^0.5.0, source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, sour
 source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "http://npm.lwcjs.org/source-map/-/source-map-0.6.1/74722af32e9614e9c287a8d0bbde48b5e2f1a263.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
+source-map@^0.7.2:
+  version "0.7.2"
+  resolved "http://npm.lwcjs.org/source-map/-/source-map-0.7.2/115c3e891aaa9a484869fd2b89391a225feba344.tgz#115c3e891aaa9a484869fd2b89391a225feba344"
 
 spawn-command@^0.0.2-1:
   version "0.0.2-1"

@@ -1,115 +1,123 @@
-import { getReferences } from '../../references/javascript';
+import { getReferenceReport } from "../../references/javascript";
+import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 
-describe('resource-url', () => {
-    test('gather metadata', () => {
+describe("resource-url", () => {
+    test("gather metadata", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import resource from '@resource-url/foo';`,
-                'test.js',
-            ),
+                "test.js"
+            ).references
         ).toEqual([
             {
-                id: 'foo',
-                file: 'test.js',
-                type: 'resourceUrl',
+                id: "foo",
+                file: "test.js",
+                type: "resourceUrl",
                 locations: [
                     {
                         start: 36,
-                        length: 3,
-                    },
-                ],
-            },
+                        length: 3
+                    }
+                ]
+            }
         ]);
     });
 
-    test('errors when using namespaced import', () => {
-        expect(() =>
-            getReferences(
+    test("errors when using namespaced import", () => {
+        expect(
+            getReferenceReport(
                 `import * as resource from '@resource-url/foo';`,
-                'test.js',
-            ),
-        ).toThrow('@resource-url modules only support default imports.');
+                "test.js"
+            ).diagnostics[0].message
+        ).toBe("@resource-url modules only support default imports.");
     });
 
-    test('errors when using a named import', () => {
-        expect(() =>
-            getReferences(
+    test("errors when using a named import", () => {
+        expect(
+            getReferenceReport(
                 `import { resource } from '@resource-url/foo';`,
-                'test.js',
-            ),
-        ).toThrow('@resource-url modules only support default imports.');
+                "test.js"
+            ).diagnostics[0].message
+        ).toBe("@resource-url modules only support default imports.");
     });
 });
 
-describe('label', () => {
-    test('gather metadata', () => {
+describe("label", () => {
+    test("gather metadata", () => {
         expect(
-            getReferences(`import label from '@label/foo';`, 'test.js'),
+            getReferenceReport(`import label from '@label/foo';`, "test.js")
+                .references
         ).toEqual([
             {
-                id: 'foo',
-                file: 'test.js',
-                type: 'label',
+                id: "foo",
+                file: "test.js",
+                type: "label",
                 locations: [
                     {
                         start: 26,
-                        length: 3,
-                    },
-                ],
-            },
+                        length: 3
+                    }
+                ]
+            }
         ]);
     });
 
-    test('errors when using namespaced import', () => {
-        expect(() =>
-            getReferences(`import * as label from '@label/foo';`, 'test.js'),
-        ).toThrow('@label modules only support default imports.');
+    test("errors when using namespaced import", () => {
+        expect(
+            getReferenceReport(`import * as label from '@label/foo';`, "test.js")
+                .diagnostics[0].message
+        ).toBe("@label modules only support default imports.");
     });
 
-    test('errors when using a named import', () => {
-        expect(() =>
-            getReferences(`import { label } from '@label/foo';`, 'test.js'),
-        ).toThrow('@label modules only support default imports.');
+    test("errors when using a named import", () => {
+        expect(
+            getReferenceReport(`import { label } from '@label/foo';`, "test.js")
+                .diagnostics[0].message
+        ).toBe("@label modules only support default imports.");
     });
 });
 
-describe('apex', () => {
-    test('gather metadata', () => {
+describe("apex", () => {
+    test("gather metadata", () => {
         expect(
-            getReferences(
+            getReferenceReport(
                 `import methodA from '@apex/MyClass.methodA';`,
-                'test.js',
-            ),
+                "test.js"
+            ).references
         ).toEqual([
             {
-                id: 'MyClass.methodA',
-                file: 'test.js',
-                type: 'apexMethod',
+                id: "MyClass.methodA",
+                file: "test.js",
+                type: "apexMethod",
                 locations: [
                     {
                         start: 27,
-                        length: 15,
-                    },
-                ],
-            },
+                        length: 15
+                    }
+                ]
+            }
         ]);
     });
 
-    test('errors when using namespaced import', () => {
-        expect(() =>
-            getReferences(
-                `import * as MyClass from '@apex/MyClass';`,
-                'test.js',
-            ),
-        ).toThrow('@apex modules only support default imports.');
+    test("errors when using namespaced import", () => {
+        const { diagnostics } = getReferenceReport(
+            `import * as MyClass from '@apex/MyClass';`,
+            "test.js"
+        );
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[0].message).toBe(
+            "@apex modules only support default imports."
+        );
     });
 
-    test('errors when using a default import', () => {
-        expect(() =>
-            getReferences(
-                `import { methodA } from '@apex/MyClass';`,
-                'test.js',
-            ),
-        ).toThrow('@apex modules only support default imports.');
+    test("errors when using a default import", () => {
+        const { diagnostics } = getReferenceReport(
+            `import { methodA } from '@apex/MyClass';`,
+            "test.js"
+        );
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[0].message).toBe(
+            "@apex modules only support default imports."
+        );
     });
 });
