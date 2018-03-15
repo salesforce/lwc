@@ -1,0 +1,11 @@
+{
+    "warnings": [{
+      "level": "error",
+      "message": "Invalid key value for element <p>. Key cannot reference iterator index",
+      "start": 78,
+      "length": 13
+    }],
+    "metadata": {
+      "templateUsedIds": ["items"]
+    }
+  }

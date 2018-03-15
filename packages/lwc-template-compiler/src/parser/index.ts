@@ -23,8 +23,10 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
-    getIteratorParent,
-    getForEachParent,
+    isIteratorElement,
+    isForOfChild,
+    isForEachChild,
+    getForEachIndexName,
 } from './expression';
 
 import {
@@ -44,10 +46,13 @@ import {
     IRElement,
     IRAttribute,
     IRAttributeType,
+    IRStringAttribute,
+    IRBooleanAttribute,
     SlotDefinition,
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
+    IRExpressionAttribute,
 } from '../shared/types';
 
 import {
@@ -364,17 +369,28 @@ export default function parse(source: string, state: State): {
 
     }
 
+
     function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
-            removeAttribute(element, 'key');
-
             if (keyAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
             }
 
+            if (isForOfChild(element)) {
+                if (keyAttribute.value.property.name === 'index') {
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
+                }
+            } else if (isForEachChild(element)) {
+                const iteratorIndexName = getForEachIndexName(element)
+                if (iteratorIndexName && keyAttribute.value && keyAttribute.value.name === iteratorIndexName.name) {
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${iteratorIndexName.name}`, keyAttribute.location);
+                }
+            }
+            removeAttribute(element, 'key');
+
             element.forKey = keyAttribute.value;
-        } else if ((getIteratorParent(element) || getForEachParent(element)) && element.tag !== 'template') {
+        } else if (isIteratorElement(element) && element.tag !== 'template') {
             return warnAt(`Missing key for element <${element.tag}> inside of iterator. Elements within iterators must have a unique, computed key value.`, location);
         }
     }
