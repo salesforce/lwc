@@ -414,7 +414,8 @@ export default function parse(source: string, state: State): {
                 }
             } else if (forEachParent) {
                 if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${keyAttribute.value.name}`, keyAttribute.location);
+                    const name = ('name' in keyAttribute.value) && keyAttribute.value.name;
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${name}`, keyAttribute.location);
                 }
             }
             removeAttribute(element, 'key');
