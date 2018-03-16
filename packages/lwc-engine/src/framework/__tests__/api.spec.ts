@@ -295,14 +295,10 @@ describe('api', () => {
 
     describe('#k()', () => {
         it('should combine keys', () => {
-            let k1, k2, k3, k4, k5;
+            let k1, k2;
             function html($api) {
-                const o = {};
                 k1 = $api.k(123, 345);
                 k2 = $api.k(345, "678");
-                k3 = $api.k(678, o);
-                k4 = $api.k(678, o);
-                k5 = $api.k(678, {});
                 return [];
             }
             class Foo extends Element {
@@ -314,9 +310,21 @@ describe('api', () => {
             document.body.appendChild(elm);
             expect(k1).toEqual('123:345');
             expect(k2).toEqual('345:678');
-            expect(k3).toEqual(k4);
-            expect(k3 === k5).toEqual(false);
+        });
+        it('should throw when key is an object', () => {
+            function html($api) {
+                const k1 = $api.k(678, {});
+                return [];
+            }
+            class Foo extends Element {
+                render() {
+                    return html;
+                }
+            }
+            const elm = createElement('x-foo', { is: Foo });
+            expect(() => {
+                document.body.appendChild(elm);
+            }).toThrow('Invalid key value "[object Object]" in [object:vm Foo (7)]. Key must be a string or number.');
         });
     });
-
 });

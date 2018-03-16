@@ -2,7 +2,7 @@
     <button onclick={create}>New</button>
     <ul>
         <template for:each={list} for:item="task">
-            <li>
+            <li key={task.id}>
                 {task.title}
                 <button onclick={task.delete}>[X]</button>
             </li>

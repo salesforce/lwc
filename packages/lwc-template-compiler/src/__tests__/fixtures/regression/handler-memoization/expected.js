@@ -29,7 +29,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 return api_element(
                     'li',
                     {
-                        key: api_key(3, task)
+                        key: api_key(3, task.id)
                     },
                     [
                         api_dynamic(task.title),

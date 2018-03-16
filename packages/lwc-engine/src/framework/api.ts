@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
@@ -8,7 +8,6 @@ import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./comp
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { unwrap } from "./reactive";
 import { pierce } from "./piercing";
 
 export interface RenderAPI {
@@ -256,6 +255,11 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let next = iterator.next();
     let j = 0;
     let { value, done: last } = next;
+    let keyMap;
+    if (process.env.NODE_ENV !== 'production') {
+        keyMap = create(null);
+    }
+
     while (last === false) {
         // implementing a look-back-approach because we need to know if the element is the last
         next = iterator.next();
@@ -272,9 +276,17 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
             forEach.call(vnodes, (childVnode: VNode | null) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && StringIndexOf.call(childVnode.sel, '-') > 0 && isUndefined(childVnode.key)) {
-                    // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
+                    const { key } = childVnode;
+                    if (isString(key) || isNumber(key)) {
+                        if (keyMap[key] === 1) {
+                            assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
+                        }
+                        keyMap[key] = 1;
+                    } else {
+                        // TODO - it'd be nice to log the owner component rather than the iteration children
+                        assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    }
                 }
             });
         }
@@ -356,10 +368,7 @@ export function b(fn: EventListener): EventListener {
     };
 }
 
-const objToKeyMap: WeakMap<any, number> = new WeakMap();
-let globalKey: number = 0;
-
-// [k]ind function
+// [k]ey function
 export function k(compilerKey: number, obj: any): number | string | void {
     switch (typeof obj) {
         case 'number':
@@ -368,17 +377,8 @@ export function k(compilerKey: number, obj: any): number | string | void {
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
-            if (isNull(obj)) {
-                return;
+            if (process.env.NODE_ENV !== 'production') {
+                assert.fail(`Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`);
             }
-            // Slow path. We get here when element is inside iterator
-            // but no key is specified.
-            const unwrapped = unwrap(obj);
-            let objKey = objToKeyMap.get(unwrapped);
-            if (isUndefined(objKey)) {
-                objKey = globalKey++;
-                objToKeyMap.set(unwrapped, objKey);
-            }
-            return compilerKey + ':' + objKey;
     }
 }

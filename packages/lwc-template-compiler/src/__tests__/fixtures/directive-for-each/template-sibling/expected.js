@@ -18,14 +18,14 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 api_iterator($cmp.items, function(item) {
                     return [
                         api_element('p', {
-                            key: api_key(1, item)
+                            key: api_key(1, item.id)
                         },
                         [
                             api_text('1'),
                             api_dynamic(item)
                         ]),
                         api_element('p', {
-                            key: api_key(2, item)
+                            key: api_key(2, item.secondId)
                         },
                         [
                             api_text('2'),

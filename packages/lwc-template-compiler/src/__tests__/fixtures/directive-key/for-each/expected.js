@@ -14,7 +14,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         classMap: {
                             'my-list': true
                         },
-                        key: api_key(2, item)
+                        key: api_key(2, item.id)
                     },
                     [
                         api_element(

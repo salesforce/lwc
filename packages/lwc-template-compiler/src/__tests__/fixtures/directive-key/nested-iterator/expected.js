@@ -22,7 +22,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                 'data-islast': xLast,
                                 'data-isfirst': xFirst
                             },
-                            key: api_key(2, xValue)
+                            key: api_key(2, xValue.id)
                         },
                         [
                             api_element(
@@ -42,7 +42,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                         ? api_element(
                             "div",
                             {
-                                key: api_key(3, xValue)
+                                key: api_key(3, xValue.key)
                             },
                             [api_text("Text")]
                         )

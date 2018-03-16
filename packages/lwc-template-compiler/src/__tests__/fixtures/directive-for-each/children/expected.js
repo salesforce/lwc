@@ -48,7 +48,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                               api_element(
                                 'p',
                                 {
-                                    key: api_key(3, item)
+                                    key: api_key(3, item.id)
                                 },
                                 [
                                     api_text('X1')
@@ -57,7 +57,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             api_element(
                                 'p',
                                 {
-                                    key: api_key(4, item)
+                                    key: api_key(4, item.id)
                                 },
                                 [
                                     api_text('X2')
@@ -90,7 +90,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     return api_element(
                         'div',
                         {
-                            key: api_key(7, item)
+                            key: api_key(7, item.id)
                         },
                         []
                     );

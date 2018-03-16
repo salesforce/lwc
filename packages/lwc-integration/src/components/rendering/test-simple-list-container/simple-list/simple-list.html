@@ -2,7 +2,7 @@
     <div>
         <ul>
             <li class="first">header</li>
-            <li class="number" for:each={data} for:item="item">
+            <li key={item.x} class="number" for:index="index" for:each={data} for:item="item">
                 Value of X = {item.x}
             </li>
              <li class="last">footer</li>

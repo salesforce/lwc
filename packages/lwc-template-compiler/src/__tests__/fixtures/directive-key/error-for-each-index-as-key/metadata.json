@@ -1,0 +1,11 @@
+{
+    "warnings": [{
+      "level": "error",
+      "message": "Invalid key value for element <div>. Key cannot reference for:each index index",
+      "start": 38,
+      "length": 11
+    }],
+    "metadata": {
+      "templateUsedIds": ["items"]
+    }
+  }
