@@ -4,26 +4,56 @@ describe('Transform property', () => {
     pluginTest('transforms wired field', `
         import { wire } from 'engine';
         export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
-            innerRecord;
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            wiredProp;
         }
     `, {
         output: {
             code: `export default class Test {
   constructor() {
-    this.innerRecord = void 0;
+    this.wiredProp = void 0;
   }
 
 }
 Test.wire = {
-  innerRecord: {
+  wiredProp: {
     params: {
-      recordId: "recordId"
+      key1: "prop1"
     },
     static: {
-      fields: ["Account", 'Rate']
+      key2: ["fixed", 'array']
     },
-    type: "record"
+    type: "adapterId"
+  }
+};`
+        }
+    });
+
+    pluginTest('transforms multiple dynamic params', `
+        import { wire } from 'engine';
+        export default class Test {
+            @wire("adapterId", { key1: "$prop", key2: "$prop", key3: "fixed", key4: ["fixed", 'array']})
+            wiredProp;
+        }
+    `, {
+        output: {
+            code: `export default class Test {
+  constructor() {
+    this.wiredProp = void 0;
+  }
+
+}
+Test.wire = {
+  wiredProp: {
+    params: {
+      key1: "prop",
+      key2: "prop"
+    },
+    static: {
+      key3: "fixed",
+      key4: ["fixed", 'array']
+    },
+    type: "adapterId"
   }
 };`
         }
@@ -32,7 +62,7 @@ Test.wire = {
     pluginTest('decorator expects 2 parameters', `
         import { wire } from 'engine';
         export default class Test {
-            @wire() innerRecord;
+            @wire() wiredProp;
         }
     `, {
         error: {
@@ -46,24 +76,24 @@ Test.wire = {
 
     pluginTest('decorator expects a function identifier as first parameter', `
         import { wire } from 'engine';
-        import { record } from 'data-service';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire(record, {}) innerRecord;
+            @wire(getFoo, {}) wiredProp;
         }
     `, {
         output: {
-            code: `import { record } from 'data-service';
+            code: `import { getFoo } from 'data-service';
 export default class Test {
   constructor() {
-    this.innerRecord = void 0;
+    this.wiredProp = void 0;
   }
 
 }
 Test.wire = {
-  innerRecord: {
+  wiredProp: {
     params: {},
     static: {},
-    adapter: record
+    adapter: getFoo
   }
 };`
         }
@@ -71,9 +101,9 @@ Test.wire = {
 
     pluginTest('decorator expects an imported identifier as first parameter', `
         import { wire } from 'engine';
-        const RECORD = "record"
+        const ID = "adapterId"
         export default class Test {
-            @wire(RECORD, {}) innerRecord;
+            @wire(ID, {}) wiredProp;
         }
     `, {
         error: {
@@ -88,7 +118,7 @@ Test.wire = {
     pluginTest('decorator expects an object as second parameter', `
         import { wire } from 'engine';
         export default class Test {
-            @wire('record', '$recordId', ['Account', 'Rate']) innerRecord;
+            @wire('adapterId', '$prop', ['fixed', 'array']) wiredProp
         }
     `, {
         error: {
@@ -104,7 +134,7 @@ Test.wire = {
         import { api, wire } from 'engine';
         export default class Test {
             @api
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
             wiredPropWithApi;
         }
     `, {
@@ -121,7 +151,7 @@ Test.wire = {
         import { track, wire } from 'engine';
         export default class Test {
             @track
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
             wiredWithTrack
         }
     `, {
@@ -137,8 +167,8 @@ Test.wire = {
     pluginTest('throws when using 2 wired decorators', `
         import { wire } from 'engine';
         export default class Test {
-            @wire('record', { recordId: '$recordId', fields: ['Address'] })
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
             multipleWire
         }
     `, {
@@ -152,12 +182,12 @@ Test.wire = {
     });
 
     pluginTest('should not throw when using 2 separate wired decorators', `
-         import { wire } from 'engine';
-         export default class Test {
-             @wire('record', { recordId: '$recordId', fields: ['Address'] })
-             wired1;
-             @wire('record', { recordId: '$recordId', fields: ['Name'] })
-             wired2;
+        import { wire } from 'engine';
+        export default class Test {
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            wired1;
+            @wire("adapterId", { key1: "$prop1", key2: ["array"]})
+            wired2;
         }
     `, {
         output: {
@@ -171,21 +201,21 @@ Test.wire = {
 Test.wire = {
   wired1: {
     params: {
-      recordId: "recordId"
+      key1: "prop1"
     },
     static: {
-      fields: ['Address']
+      key2: ["fixed"]
     },
-    type: "record"
+    type: "adapterId"
   },
   wired2: {
     params: {
-      recordId: "recordId"
+      key1: "prop1"
     },
     static: {
-      fields: ['Name']
+      key2: ["array"]
     },
-    type: "record"
+    type: "adapterId"
   }
 };`
         }
@@ -196,24 +226,24 @@ describe('Transform method', () => {
     pluginTest('transforms wired method', `
         import { wire } from 'engine';
         export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
-            innerRecordMethod() {}
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            wiredMethod() {}
         }
     `, {
         output: {
             code: `export default class Test {
-  innerRecordMethod() {}
+  wiredMethod() {}
 
 }
 Test.wire = {
-  innerRecordMethod: {
+  wiredMethod: {
     params: {
-      recordId: "recordId"
+      key1: "prop1"
     },
     static: {
-      fields: ["Account", 'Rate']
+      key2: ["fixed"]
     },
-    type: "record",
+    type: "adapterId",
     method: 1
   }
 };`
@@ -224,7 +254,7 @@ Test.wire = {
         import { api, wire } from 'engine';
         export default class Test {
             @api
-            @wire('record', { recordId: '$recordId', fields: ['Name'] })
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
             wiredWithApi() {}
         }
     `, {
@@ -245,11 +275,11 @@ describe('Metadata', () => {
         import { wire } from 'engine';
 
         export default class Test {
-            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
-            innerRecord;
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            wiredProp;
 
-            @wire("record", { recordId: "$recordId", fields: ["Account", 'Rate']})
-            innerRecordMethod() {}
+            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            wiredMethod() {}
         }
     `,
         {
@@ -259,16 +289,16 @@ describe('Metadata', () => {
                         type: 'wire',
                         targets: [{
                             adapter: undefined,
-                            name: 'innerRecord',
-                            params: { recordId: 'recordId' },
-                            static: { fields: ['Account', 'Rate'] },
+                            name: 'wiredProp',
+                            params: { key1: 'prop1' },
+                            static: { key2: ['fixed'] },
                             type: 'property',
                         },
                         {
                             adapter: undefined,
-                            name: 'innerRecordMethod',
-                            params: { recordId: 'recordId' },
-                            static: { fields: ['Account', 'Rate'] },
+                            name: 'wiredMethod',
+                            params: { key1: 'prop1' },
+                            static: { key2: ['fixed'] },
                             type: 'method',
                         }],
                     }]
