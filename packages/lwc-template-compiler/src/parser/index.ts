@@ -89,7 +89,7 @@ function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribut
         return false;
     }
 
-    return property.name !== forOf.iterator.name;
+    return property.name === 'index';
 }
 
 function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttribute, forEach: ForEach): boolean {
