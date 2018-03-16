@@ -29,7 +29,7 @@ import {
 } from "./language";
 import {
     GlobalAOMProperties,
-    GlobalHTMLProperties,
+    getGlobalHTMLPropertiesInfo,
     getAttribute,
     setAttribute,
     setAttributeNS,
@@ -42,7 +42,7 @@ import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection } from "./utils";
+import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
 
 // TODO: refactor all the references to this
@@ -54,6 +54,7 @@ declare interface HashTable<T> {
 export interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
+    attr: string;
 }
 export interface WireDef {
     method?: number;
@@ -92,13 +93,17 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-function propertiesReducer(seed: any, propName: string) {
-    seed[propName] = { config: 3 };
+function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
+    seed[propName] = {
+        config: 3,
+        type: 'any',
+        attr: getAttrNameFromPropName(propName),
+    };
     return seed;
 }
 
-const reducedDefaultHTMLPropertyNames = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
-const HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
+const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
+const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
@@ -431,8 +436,9 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
+        const attrName = getAttrNameFromPropName(propName);
         if (process.env.NODE_ENV !== 'production') {
-            const globalHTMLProperty = GlobalHTMLProperties[propName];
+            const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
             if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
                 const { error, attribute, experimental } = globalHTMLProperty;
                 const msg: string[] = [];
@@ -449,7 +455,11 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
             }
         }
 
-        propsHash[propName] = assign({ config: 0, type: 'any' }, props[propName]);
+        propsHash[propName] = assign({
+            config: 0,
+            type: 'any',
+            attr: attrName,
+        }, props[propName]);
         return propsHash;
     }, create(null));
 }

@@ -16,13 +16,13 @@ import {
     querySelector,
     querySelectorAll,
     GlobalAOMProperties,
-    getAriaAttributeName,
     setAttribute,
     removeAttribute,
     DOCUMENT_POSITION_CONTAINED_BY,
     compareDocumentPosition,
     getRootNode,
 } from './dom';
+import { getAttrNameFromPropName } from "./utils";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -66,9 +66,9 @@ function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: 
 
 const RootDescriptors: PropertyDescriptorMap = create(null);
 
-// This routine will be a descriptor map for all AOM properties to be added
+// This routine will build a descriptor map for all AOM properties to be added
 // to ShadowRoot prototype to polyfill AOM capabilities.
-forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAriaAttributeName(propName), GlobalAOMProperties[propName]));
+forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAttrNameFromPropName(propName), GlobalAOMProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);

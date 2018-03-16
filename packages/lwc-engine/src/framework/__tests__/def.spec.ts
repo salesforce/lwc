@@ -56,150 +56,100 @@ describe('def', () => {
                 },
                 xBar: {},
             };
-            expect(target.getComponentDef(MyComponent).props).toEqual({
-                accessKey: {
-                    config: 3
-                },
-                ariaActiveDescendant:{
-                    config: 3,
-                },
-                ariaAtomic: {
-                    config: 3,
-                },
-                ariaAutocomplete: {
-                    config: 3,
-                },
-                ariaBusy: {
-                    config: 3,
-                },
-                ariaChecked: {
-                    config: 3,
-                },
-                ariaControls: {
-                    config: 3,
-                },
-                ariaCurrent: {
-                    config: 3,
-                },
-                ariaDescribedBy: {
-                    config: 3,
-                },
-                ariaDisabled: {
-                    config: 3,
-                },
-                ariaDragged: {
-                    config: 3,
-                },
-                ariaDropEffect: {
-                    config: 3,
-                },
-                ariaExpanded: {
-                    config: 3,
-                },
-                ariaFlowTo: {
-                    config: 3,
-                },
-                ariaHasPopUp: {
-                    config: 3,
-                },
-                ariaHidden: {
-                    config: 3,
-                },
-                ariaInvalid: {
-                    config: 3,
-                },
-                ariaLabel: {
-                    config: 3,
-                },
-                ariaLabelledBy: {
-                    config: 3,
-                },
-                ariaLevel: {
-                    config: 3,
-                },
-                ariaLive: {
-                    config: 3,
-                },
-                ariaMultiSelectable: {
-                    config: 3,
-                },
-                ariaMultiline: {
-                    config: 3,
-                },
-                ariaOrientation: {
-                    config: 3,
-                },
-                ariaOwns: {
-                    config: 3,
-                },
-                ariaPosInSet: {
-                    config: 3,
-                },
-                ariaPressed: {
-                    config: 3,
-                },
-                ariaReadonly: {
-                    config: 3,
-                },
-                ariaRelevant: {
-                    config: 3,
-                },
-                ariaRequired: {
-                    config: 3,
-                },
-                ariaSelected: {
-                    config: 3,
-                },
-                ariaSetSize: {
-                    config: 3,
-                },
-                ariaSort: {
-                    config: 3,
-                },
-                ariaValueMax: {
-                    config: 3,
-                },
-                ariaValueMin: {
-                    config: 3,
-                },
-                ariaValueNow: {
-                    config: 3,
-                },
-                ariaValueText: {
-                    config: 3,
-                },
-                dir: {
-                    config: 3
-                },
-                draggable: {
-                    config: 3
-                },
-                foo: {
-                    config: 1,
-                    type: 'any',
-                },
-                hidden: {
-                    config: 3
-                },
-                id: {
-                    config: 3
-                },
-                lang: {
-                    config: 3
-                },
-                role: {
-                    config: 3,
-                },
-                tabIndex: {
-                    config: 3
-                },
-                title: {
-                    config: 3
-                },
-                xBar: {
-                    config: 0,
-                    type: 'any',
-                }
+            const { props } = target.getComponentDef(MyComponent);
+            expect(props.foo).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'x-bar',
+            });
+        });
+
+        it('should provide default html props', () => {
+            function foo() {}
+            class MyComponent extends Element  {}
+            expect(Object.keys(target.getComponentDef(MyComponent).props).reduce((reducer, propName) => {
+                reducer[propName] = null;
+                return reducer;
+            }, {})).toEqual({
+                accessKey: null,
+                ariaActiveDescendant: null,
+                ariaAtomic: null,
+                ariaAutocomplete: null,
+                ariaBusy: null,
+                ariaChecked: null,
+                ariaControls: null,
+                ariaCurrent: null,
+                ariaDescribedBy: null,
+                ariaDisabled: null,
+                ariaDragged: null,
+                ariaDropEffect: null,
+                ariaExpanded: null,
+                ariaFlowTo: null,
+                ariaHasPopUp: null,
+                ariaHidden: null,
+                ariaInvalid: null,
+                ariaLabel: null,
+                ariaLabelledBy: null,
+                ariaLevel: null,
+                ariaLive: null,
+                ariaMultiSelectable: null,
+                ariaMultiline: null,
+                ariaOrientation: null,
+                ariaOwns: null,
+                ariaPosInSet: null,
+                ariaPressed: null,
+                ariaReadonly: null,
+                ariaRelevant: null,
+                ariaRequired: null,
+                ariaSelected: null,
+                ariaSetSize: null,
+                ariaSort: null,
+                ariaValueMax: null,
+                ariaValueMin: null,
+                ariaValueNow: null,
+                ariaValueText: null,
+                dir: null,
+                draggable: null,
+                hidden: null,
+                id: null,
+                lang: null,
+                role: null,
+                tabIndex: null,
+                title: null,
+            });
+        });
+
+        it('should provide default html props', () => {
+            function foo() {}
+            class MyComponent extends Element  {}
+            const { props } = target.getComponentDef(MyComponent);
+            // aria multi-capital
+            expect(props.ariaActiveDescendant).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'aria-activedescendant',
+            });
+            expect(props.role).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'role',
+            });
+            // aria exception
+            expect(props.ariaAutocomplete).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'aria-autocomplete',
+            });
+            // explicit mapping
+            expect(props.tabIndex).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'tabindex',
             });
         });
 
@@ -240,158 +190,26 @@ describe('def', () => {
                 fizz: {}
             };
 
-            expect(target.getComponentDef(MySubComponent).props).toEqual({
-                accessKey: {
-                    config: 3
-                },
-                ariaActiveDescendant:{
-                  config: 3,
-                },
-                ariaAtomic: {
-                  config: 3,
-                },
-                ariaAutocomplete: {
-                  config: 3,
-                },
-                ariaBusy: {
-                  config: 3,
-                },
-                ariaChecked: {
-                  config: 3,
-                },
-                ariaControls: {
-                  config: 3,
-                },
-                ariaCurrent: {
-                  config: 3,
-                },
-                ariaDescribedBy: {
-                  config: 3,
-                },
-                ariaDisabled: {
-                  config: 3,
-                },
-                ariaDragged: {
-                  config: 3,
-                },
-                ariaDropEffect: {
-                  config: 3,
-                },
-                ariaExpanded: {
-                  config: 3,
-                },
-                ariaFlowTo: {
-                  config: 3,
-                },
-                ariaHasPopUp: {
-                  config: 3,
-                },
-                ariaHidden: {
-                  config: 3,
-                },
-                ariaInvalid: {
-                  config: 3,
-                },
-                ariaLabel: {
-                  config: 3,
-                },
-                ariaLabelledBy: {
-                  config: 3,
-                },
-                ariaLevel: {
-                  config: 3,
-                },
-                ariaLive: {
-                  config: 3,
-                },
-                ariaMultiSelectable: {
-                  config: 3,
-                },
-                ariaMultiline: {
-                  config: 3,
-                },
-                ariaOrientation: {
-                  config: 3,
-                },
-                ariaOwns: {
-                  config: 3,
-                },
-                ariaPosInSet: {
-                  config: 3,
-                },
-                ariaPressed: {
-                  config: 3,
-                },
-                ariaReadonly: {
-                  config: 3,
-                },
-                ariaRelevant: {
-                  config: 3,
-                },
-                ariaRequired: {
-                  config: 3,
-                },
-                ariaSelected: {
-                  config: 3,
-                },
-                ariaSetSize: {
-                  config: 3,
-                },
-                ariaSort: {
-                  config: 3,
-                },
-                ariaValueMax: {
-                  config: 3,
-                },
-                ariaValueMin: {
-                  config: 3,
-                },
-                ariaValueNow: {
-                  config: 3,
-                },
-                ariaValueText: {
-                  config: 3,
-                },
-                dir: {
-                    config: 3
-                },
-                draggable: {
-                    config: 3
-                },
-                foo: {
-                    config: 1,
-                    type: 'any',
-                },
-                hidden: {
-                    config: 3
-                },
-                id: {
-                    config: 3
-                },
-                lang: {
-                    config: 3
-                },
-                role: {
-                    config: 3,
-                },
-                tabIndex: {
-                    config: 3
-                },
-                title: {
-                    config: 3
-                },
-                xBar: {
-                    config: 3,
-                    type: 'any',
-                },
-                fizz: {
-                    config: 0,
-                    type: 'any',
-                },
-                x: {
-                    config: 1,
-                    type: 'any',
-                },
+            const { props } = target.getComponentDef(MySubComponent);
+            expect(props.foo).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'x-bar',
+            });
+            expect(props.fizz).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'fizz',
+            });
+            expect(props.x).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'x',
             });
         });
 
@@ -468,146 +286,23 @@ describe('def', () => {
             MyComponent.publicProps = {
                 foo: {}
             };
-            expect(target.getComponentDef(MyComponent).props).toEqual({
-                accessKey: {
-                    config: 3
-                },
-                ariaActiveDescendant:{
-                    config: 3,
-                },
-                ariaAtomic: {
-                    config: 3,
-                },
-                ariaAutocomplete: {
-                    config: 3,
-                },
-                ariaBusy: {
-                    config: 3,
-                },
-                ariaChecked: {
-                    config: 3,
-                },
-                ariaControls: {
-                    config: 3,
-                },
-                ariaCurrent: {
-                    config: 3,
-                },
-                ariaDescribedBy: {
-                    config: 3,
-                },
-                ariaDisabled: {
-                    config: 3,
-                },
-                ariaDragged: {
-                    config: 3,
-                },
-                ariaDropEffect: {
-                    config: 3,
-                },
-                ariaExpanded: {
-                    config: 3,
-                },
-                ariaFlowTo: {
-                    config: 3,
-                },
-                ariaHasPopUp: {
-                    config: 3,
-                },
-                ariaHidden: {
-                    config: 3,
-                },
-                ariaInvalid: {
-                    config: 3,
-                },
-                ariaLabel: {
-                    config: 3,
-                },
-                ariaLabelledBy: {
-                    config: 3,
-                },
-                ariaLevel: {
-                    config: 3,
-                },
-                ariaLive: {
-                    config: 3,
-                },
-                ariaMultiSelectable: {
-                    config: 3,
-                },
-                ariaMultiline: {
-                    config: 3,
-                },
-                ariaOrientation: {
-                    config: 3,
-                },
-                ariaOwns: {
-                    config: 3,
-                },
-                ariaPosInSet: {
-                    config: 3,
-                },
-                ariaPressed: {
-                    config: 3,
-                },
-                ariaReadonly: {
-                    config: 3,
-                },
-                ariaRelevant: {
-                    config: 3,
-                },
-                ariaRequired: {
-                    config: 3,
-                },
-                ariaSelected: {
-                    config: 3,
-                },
-                ariaSetSize: {
-                    config: 3,
-                },
-                ariaSort: {
-                    config: 3,
-                },
-                ariaValueMax: {
-                    config: 3,
-                },
-                ariaValueMin: {
-                    config: 3,
-                },
-                ariaValueNow: {
-                    config: 3,
-                },
-                ariaValueText: {
-                    config: 3,
-                },
-                dir: {
-                    config: 3
-                },
-                draggable: {
-                    config: 3
-                },
-                foo: {
-                    config: 0,
-                    type: 'any',
-                },
-                hidden: {
-                    config: 3
-                },
-                id: {
-                    config: 3
-                },
-                lang: {
-                    config: 3
-                },
-                role: {
-                    config: 3
-                },
-                tabIndex: {
-                    config: 3
-                },
-                title: {
-                    config: 3
-                },
+            expect(target.getComponentDef(MyComponent).props.foo).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'foo',
+            });
+        });
+
+        it('should support html properties with exceptional transformation', function() {
+            class MyComponent extends Element  {}
+            MyComponent.publicProps = {
+                readOnly: {}
+            };
+            // non-global html property with weird map
+            expect(target.getComponentDef(MyComponent).props.readOnly).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'readonly',
             });
         });
     });

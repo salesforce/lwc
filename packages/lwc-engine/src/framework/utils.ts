@@ -1,5 +1,10 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace, hasOwnProperty } from "./language";
+import { ComponentConstructor } from "./component";
+import {
+    AttrNameToPropNameMap,
+    PropNameToAttrNameMap,
+} from "./dom";
 
 export type Callback = () => void;
 
@@ -33,47 +38,29 @@ export function addCallbackToNextTick(callback: Callback) {
 }
 
 const CAMEL_REGEX = /-([a-z])/g;
-const attrNameToPropNameMap: Record<string, string> = create(null);
 
+/**
+ * This method maps between attribute names
+ * and the corresponding property name.
+ */
 export function getPropNameFromAttrName(attrName: string): string {
-    let propName = attrNameToPropNameMap[attrName];
-    if (isUndefined(propName)) {
-        propName = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-        attrNameToPropNameMap[attrName] = propName;
+    if (!hasOwnProperty.call(PropNameToAttrNameMap, )) {
+        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
     }
-    return propName;
+    return AttrNameToPropNameMap[attrName];
 }
 
 const CAPS_REGEX = /[A-Z]/g;
-import {
-    HTMLPropertyNamesWithLowercasedReflectiveAttributes,
-} from "./dom";
-import { ComponentConstructor } from "./component";
 
 /**
  * This method maps between property names
  * and the corresponding attribute name.
  */
 export function getAttrNameFromPropName(propName: string): string {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
+    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
+        PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
     }
-
-    // these are exceptions to the rule that cannot be inferred via `CAPS_REGEX`,
-    switch (propName) {
-        case 'className':
-            return 'class';
-        case 'htmlFor':
-            return 'for';
-        default:
-            // Few more exceptions where the attribute name matches the property in lowercase.
-            if (ArrayIndexOf.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, propName) >= 0) {
-                propName.toLocaleLowerCase();
-            }
-    }
-    // otherwise we do the regular canonical transformation.
-    return StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
+    return PropNameToAttrNameMap[propName];
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
