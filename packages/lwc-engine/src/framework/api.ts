@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringIndexOf, StringSlice, StringCharCodeAt, isNumber } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
@@ -8,7 +8,6 @@ import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./comp
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { unwrap } from "./reactive";
 import { pierce } from "./piercing";
 
 export interface RenderAPI {
