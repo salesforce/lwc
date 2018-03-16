@@ -24,9 +24,8 @@ import {
     parseExpression,
     parseIdentifier,
     isIteratorElement,
-    isForOfChild,
-    isForEachChild,
-    getForEachIndexName,
+    getForOfParent,
+    getForEachParent,
 } from './expression';
 
 import {
@@ -46,13 +45,13 @@ import {
     IRElement,
     IRAttribute,
     IRAttributeType,
-    IRStringAttribute,
-    IRBooleanAttribute,
     SlotDefinition,
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
+    ForIterator,
     IRExpressionAttribute,
+    ForEach,
 } from '../shared/types';
 
 import {
@@ -72,7 +71,38 @@ import {
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
+import { isMemberExpression, isIdentifier } from 'babel-types';
 
+function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
+    const { value } = attribute;
+    // if not an expression, it is not referencing iterator index
+    if (!isMemberExpression(value)) {
+        return false;
+    }
+
+    const { object, property } = value;
+    if (!isIdentifier(object) || !isIdentifier(property)) {
+        return false;
+    }
+
+    if (forOf.iterator.name !== object.name) {
+        return false;
+    }
+
+    return property.name !== forOf.iterator.name;
+}
+
+function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttribute, forEach: ForEach): boolean {
+    const { index } = forEach;
+    const { value } = attribute;
+
+    // No index defined on foreach
+    if (!index || !isIdentifier(index) || !isIdentifier(value)) {
+        return false;
+    }
+
+    return index.name === value.name;
+}
 export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
     warnings: CompilationWarning[],
@@ -369,7 +399,6 @@ export default function parse(source: string, state: State): {
 
     }
 
-
     function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
@@ -377,14 +406,15 @@ export default function parse(source: string, state: State): {
                 return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
             }
 
-            if (isForOfChild(element)) {
-                if ('property' in keyAttribute.value && 'name' in keyAttribute.value.property && keyAttribute.value.property.name === 'index') {
+            const forOfParent = getForOfParent(element);
+            const forEachParent = getForEachParent(element);
+            if (forOfParent) {
+                if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
                     return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
                 }
-            } else if (isForEachChild(element)) {
-                const iteratorIndexName = getForEachIndexName(element)
-                if (iteratorIndexName && keyAttribute.value && 'name' in keyAttribute.value && keyAttribute.value.name === iteratorIndexName.name) {
-                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${iteratorIndexName.name}`, keyAttribute.location);
+            } else if (forEachParent) {
+                if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${keyAttribute.value.name}`, keyAttribute.location);
                 }
             }
             removeAttribute(element, 'key');

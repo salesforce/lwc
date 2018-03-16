@@ -96,18 +96,18 @@ export function parseIdentifier(source: string): TemplateIdentifier {
 // Returns the immediate iterator parent if it exists.
 // Traverses up until it finds an element with forOf, or
 // a non-template element without a forOf.
-export function isForOfChild(element: IRElement): boolean {
+export function getForOfParent(element: IRElement): IRElement | null {
     const parent = element.parent;
     if (!parent) {
-        return false;
+        return null;
     }
 
     if (parent.forOf) {
-        return true;
+        return parent;
     } else if (parent.tag.toLowerCase() === 'template') {
-        return isForOfChild(parent);
+        return getForOfParent(parent);
     }
-    return false;
+    return null;
 }
 
 export function getForEachParent(element: IRElement): IRElement | null {
@@ -123,17 +123,6 @@ export function getForEachParent(element: IRElement): IRElement | null {
     return null;
 }
 
-export function isForEachChild(element: IRElement): boolean {
-    return getForEachParent(element) !== null;
-}
-
 export function isIteratorElement(element: IRElement): boolean {
-    return !!(isForOfChild(element) || getForEachParent(element));
-}
-
-export function getForEachIndexName(element: IRElement): types.Identifier | undefined {
-    const forEachParent = getForEachParent(element);
-    if (forEachParent) {
-        return forEachParent.forEach!.index;
-    }
+    return !!(getForOfParent(element) || getForEachParent(element));
 }
