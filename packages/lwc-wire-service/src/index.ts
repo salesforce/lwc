@@ -7,7 +7,7 @@
 
 import { Element } from 'engine';
 import assert from './assert';
-import { ElementDef } from './shared-types';
+import { WireDef, ElementDef } from './shared-types';
 
 export interface WiredValue {
     data?: any;
@@ -92,7 +92,7 @@ function getPropertyValues(cmp: Element, properties: string[]) {
 /**
  * Build context payload.
  */
-function buildContext(adapters: WireAdapter[], wiredefs: any) {
+function buildContext(adapters: WireAdapter[]) {
     const context: Map<string, ServiceContext> = Object.create(null);
 
     const noArgCallbackKeys: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
@@ -111,22 +111,21 @@ function buildContext(adapters: WireAdapter[], wiredefs: any) {
     }
 
     const updatedCallbackKey = 'updatedCallback';
-    const wireUpdatedCallbacks: UpdatedCallbackConfig[] = [];
+    const updatedCallbackConfigs: UpdatedCallbackConfig[] = [];
     const paramValues: string[] = [];
     for (let j = 0; j < adapters.length; j++) {
         const updatedCallback = adapters[j][updatedCallbackKey];
         if (updatedCallback) {
-            // TODO - extract statics and params from the wire def
-            wireUpdatedCallbacks.push({
+            updatedCallbackConfigs.push({
                 updatedCallback,
                 statics: {},
                 params: {}
             });
         }
     }
-    if (wireUpdatedCallbacks.length > 0) {
+    if (updatedCallbackConfigs.length > 0) {
         const ucContext: ServiceUpdateContext = {
-            callbacks: wireUpdatedCallbacks,
+            callbacks: updatedCallbackConfigs,
             paramValues
         };
         context[updatedCallbackKey] = ucContext;
@@ -139,7 +138,7 @@ function buildContext(adapters: WireAdapter[], wiredefs: any) {
 // TODO - in early 216, engine will expose an `updated` callback for services that
 // is invoked whenever a tracked property is changed. wire service is structured to
 // make this adoption trivial.
-function updated(context: object, cmp: Element, def: ElementDef) {
+function updated(cmp: Element, data: object, def: ElementDef, context: object) {
     let ucMetadata: ServiceUpdateContext;
     if (!def.wire || !(ucMetadata = context[CONTEXT_ID].updated)) {
         return;
@@ -155,6 +154,35 @@ function updated(context: object, cmp: Element, def: ElementDef) {
 }
 
 /**
+ * Gets a mapping of component prop to wire config dynamic params. In other words,
+ * the wire config's parameter set that updates whenever a prop changes.
+ * @param {*} wireDef The wire definition.
+ * @param {String} wireTarget Component property that is the target of the wire.
+ * @returns {Object<String,String[]>} Map of prop name to wire config dynamic params.
+ */
+function getPropToParams(wireDef, wireTarget) {
+    const map = Object.create(null);
+    const { params } = wireDef;
+    if (params) {
+        Object.keys(params).forEach(param => {
+            const prop = params[param];
+
+            if (param in wireDef.static) {
+                throw new Error(`${wireTarget}'s @wire(${wireDef.adapter}) parameter ${param} specified multiple times.`);
+            }
+
+            // attribute change handlers use hyphenated case
+            let set = map[prop];
+            if (!set) {
+                set = map[prop] = [];
+            }
+            set.push(param);
+        });
+    }
+    return map;
+}
+
+/**
  * The wire service.
  *
  * This service is registered with the engine's service API. It connects service
@@ -164,26 +192,56 @@ const wireService = {
     // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
         // engine guarantees invocation only if def.wire is defined
-        const wiredefs = getWireDefs(cmp, def, updated.bind(context));
+        const wireStaticDef = def.wire;
+        const wireTargets = Object.keys(wireStaticDef);
         const adapters: WireAdapter[] = [];
+        for (let i = 0; i < wireTargets.length; i++) {
+            const wireTarget = wireTargets[i];
+            const wireDef = wireStaticDef[wireTarget];
+            const id = wireDef.adapter || wireDef.type;
 
-        for (let i = 0; i < wiredefs.length; i++) {
-            const wiredef = wiredefs[i];
-            const id = wiredef.adapter || wiredef.type;
-            const wiredPropOrMethod = wiredef.target;
-
-            const targetSetter: TargetSetter = wiredef.method ?
-                (value) => { cmp[wiredPropOrMethod](value); } :
-                (value) => { Object.assign(cmp[wiredPropOrMethod], value); };
+            const targetSetter: TargetSetter = wireDef.method ?
+                (value) => { cmp[wireTarget](value); } :
+                (value) => { Object.assign(cmp[wireTarget], value); };
 
             const adapterFactory = adapterFactories.get(id);
             if (adapterFactory) {
                 adapters.push(adapterFactory(targetSetter));
             }
+
+            const propToParamsMap = getPropToParams(wireDef, wireTarget);
+            Object.keys(propToParamsMap).forEach(prop => {
+                const originalDescriptor = Object.getOwnPropertyDescriptor(cmp.constructor.prototype, prop);
+                let newDescriptor;
+                if (originalDescriptor) {
+                    newDescriptor = Object.assign({}, originalDescriptor, {
+                        set(value) {
+                            if (originalDescriptor.set) {
+                                originalDescriptor.set.call(cmp, value);
+                            }
+                            updated.bind(this, cmp, data, def, context);
+                        }
+                    });
+                } else {
+                    const propSymbol = Symbol(prop);
+                    newDescriptor = {
+                        get() {
+                            return cmp[propSymbol];
+                        },
+                        set(value) {
+                            cmp[propSymbol] = value;
+                            updated.bind(this, cmp, data, def, context);
+                        }
+                    };
+                    // grab the existing value
+                    cmp[propSymbol] = cmp[prop];
+                }
+                Object.defineProperty(cmp, prop, newDescriptor);
+            });
         }
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildContext(adapters, wiredefs);
+        context[CONTEXT_ID] = buildContext(adapters);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
