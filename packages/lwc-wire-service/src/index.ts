@@ -47,7 +47,7 @@ export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
 const CONTEXT_ID: string = '@wire';
 
 // wire adapters: wire adapter id => adapter ctor
-const adapters: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
+const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
 
 /**
  * Invokes the specified callbacks.
@@ -92,7 +92,7 @@ function getPropertyValues(cmp: Element, properties: string[]) {
 /**
  * Build context payload.
  */
-function buildContext(adapters: WireAdapter[], ) {
+function buildContext(adapters: WireAdapter[], wiredefs: any) {
     let context: Map<string, ServiceContext> = Object.create(null);
 
     const noArgCallbacks: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
@@ -136,6 +136,24 @@ function buildContext(adapters: WireAdapter[], ) {
 
 }
 
+// TODO - in early 216, engine will expose an `updated` callback for services that
+// is invoked whenever a tracked property is changed. wire service is structured to
+// make this adoption trivial.
+function updated(context: object, cmp: Element, def: ElementDef) {
+    let ucMetadata : ServiceUpdateContext;
+    if (!def.wire || !(ucMetadata = context[CONTEXT_ID]['updated'])) {
+        return;
+    }
+    // get new values for all dynamic props
+    const paramValues = getPropertyValues(cmp, ucMetadata.paramValues);
+
+    // compare new to old dynamic prop values, updating old props with new values
+    // for each change, queue the impacted adapter(s)
+
+    // process queue of impacted adapters
+    invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
+}
+
 /**
  * The wire service.
  *
@@ -146,28 +164,25 @@ const wireService = {
     // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
         // engine guarantees invocation only if def.wire is defined
-        const adapters = installWireAdapters(cmp, def);
+        const wiredefs = getWireDefs(cmp, def, updated.bind(context));
+        const adapters: Array<WireAdapter> = [];
+
+        for (let i = 0; i < wiredefs.length; i++) {
+            const wiredef = wiredefs[i];
+            const id = wiredef.adapter || wiredef.type;
+            const wiredPropOrMethod = wiredef.target;
+
+            const targetSetter: TargetSetter = wiredef.method ?
+                (value) => { cmp[wiredPropOrMethod](value); } :
+                (value) => { Object.assign(cmp[wiredPropOrMethod], value); };
+
+            const adapterFactory = adapterFactories.get(id);
+            const adapter = adapterFactory(targetSetter);
+            adapters.push(adapter);
+        }
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildContext(adapters);
-    },
-
-    // TODO - in early 216, engine will expose an updated callback for services that
-    // is invoked whenever a tracked property is changed. wire service is structured to
-    // make this adoption trivial.
-    updated: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let ucMetadata : ServiceUpdateContext;
-        if (!def.wire || !(ucMetadata = context[CONTEXT_ID]['updated'])) {
-            return;
-        }
-        // get new values for all dynamic props
-        const paramValues = getPropertyValues(cmp, ucMetadata.paramValues);
-
-        // compare new to old dynamic prop values, updating old props with new values
-        // for each change, queue the impacted adapter(s)
-
-        // process queue of impacted adapters
-        invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
+        context[CONTEXT_ID] = buildContext(adapters, wiredefs);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
@@ -200,5 +215,5 @@ export function registerWireService(register: Function) {
 export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(adapterId, 'adapter id must be truthy');
     assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a function');
-    adapters.set(adapterId, adapterFactory);
+    adapterFactories.set(adapterId, adapterFactory);
 };

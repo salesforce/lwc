@@ -5,7 +5,8 @@ export interface WireDef {
     static: {
         [key: string]: any;
     };
-    type: string;
+    type?: string;
+    adapter?: any;
     method?: 1;
 }
 export interface ElementDef {
