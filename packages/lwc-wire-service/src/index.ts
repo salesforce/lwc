@@ -24,29 +24,123 @@ export interface WireAdapter {
 };
 export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
 
-// lifecycle hooks of wire adapters
-const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
+export interface UpdatedCallbackConfig {
+    updatedCallback: UpdatedCallback;
+    statics: {
+        [key: string]: any;
+    };
+    params: {
+        [key: string]: string;
+    };
+}
+export interface ServiceUpdateContext {
+    callbacks: UpdatedCallbackConfig[];
+    // union of callbacks.params values
+    paramValues: string[];
+}
+export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
 
-// wire adapters: wire adapter id => adapter ctor
-const ADAPTERS: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
+// lifecycle hooks of wire adapters
+// const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
 
 // key for engine service context store
 const CONTEXT_ID: string = '@wire';
 
+// wire adapters: wire adapter id => adapter ctor
+const adapters: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
+
 /**
- * Invokes the specified callbacks with specified arguments.
+ * Invokes the specified callbacks.
  */
-function invokeCallback(callbacks: WireAdapterCallback[], arg: object|undefined) {
+function invokeCallback(callbacks: NoArgumentCallback[]) {
     for (let i = 0, len = callbacks.length; i < len; ++i) {
-        callbacks[i].apply(undefined, arg);
+        callbacks[i].call(undefined);
     }
+}
+
+/**
+ * Invokes the provided updated callbacks with the resolved component properties.
+ */
+function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues: any) {
+    for (let i = 0, len = ucMetadatas.length; i < len; ++i) {
+        const { updatedCallback, statics, params } = ucMetadatas[i];
+
+        const resolvedParams = Object.create(null);
+        const keys = Object.keys(params);
+        for (let j = 0, jlen = keys.length; j < jlen; j++) {
+            const key = keys[j];
+            const value = paramValues[params[key]];
+            resolvedParams[key] = value;
+        }
+        const config = Object.assign(Object.create(null), statics, resolvedParams);
+        updatedCallback.call(undefined, config);
+    }
+}
+
+/**
+ * Gets resolved values of the specified properties.
+ */
+function getPropertyValues(cmp: Element, properties: string[]) {
+    const resolvedValues = Object.create(null);
+    for (let i = 0, len = properties.length; i < len; ++i) {
+        const paramValue = properties[i];
+        resolvedValues[paramValue] = cmp[paramValue];
+    }
+    return resolvedValues;
+}
+
+/**
+ * Build context payload.
+ */
+function buildContext(adapters: WireAdapter[], ) {
+    let context: Map<string, ServiceContext> = Object.create(null);
+
+    const noArgCallbacks: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
+    for (let i = 0; i < noArgCallbacks.length; i++) {
+        const noArgCallback = noArgCallbacks[i];
+        // TODO - this is really Array<NoArgumentCallback>
+        const callbacks: Array<WireAdapterCallback> = [];
+        for (let j = 0; j < adapters.length; j++) {
+            let callback = adapters[j][noArgCallback];
+            if (callback) {
+                callbacks.push(callback);
+            }
+        }
+        if (callbacks.length > 0) {
+            context[noArgCallback] = callbacks;
+        }
+    }
+
+    const callbacks: Array<UpdatedCallbackConfig> = [];
+    const paramValues: string[] = [];
+    for (let j = 0; j < adapters.length; j++) {
+        let callback = adapters[j]['updatedCallback'];
+        if (callback) {
+            // TODO - extract statics and params from the wire def
+            callbacks.push({
+                updatedCallback: callback,
+                statics: {},
+                params: {}
+            });
+        }
+    }
+    if (callbacks.length > 0) {
+        const ucContext: ServiceUpdateContext = {
+            callbacks,
+            paramValues
+        }
+        context['updatedCallback'] = ucContext;
+    }
+
+    return context;
+
 }
 
 /**
  * The wire service.
  *
- * This is registered service with the engine's service API. It delegates
- * lifecycle callbacks to relevant wire adapter lifecycle callbacks.
+ * This service is registered with the engine's service API. It connects service
+ * callbacks to wire adapter lifecycle callbacks.
  */
 const wireService = {
     // TODO W-4072588 - support connected + disconnected (repeated) cycles
@@ -54,41 +148,44 @@ const wireService = {
         // engine guarantees invocation only if def.wire is defined
         const adapters = installWireAdapters(cmp, def);
 
-        // collect all adapters' callbacks into arrays for future invocation
-        let contextData = Object.create(null);
-        for (let i = 0; i < HOOKS.length; i++) {
-            let hook = HOOKS[i];
-            let callbacks: Array<WireAdapterCallback> = [];
-            for (let j = 0; j < adapters.length; j++) {
-                let callback = adapters[j][hook];
-                if (callback) {
-                    callbacks.push(callback);
-                }
-            }
-            if (callbacks.length > 0) {
-                contextData[hook] = callbacks;
-            }
+        // cache context that optimizes runtime of service callbacks
+        context[CONTEXT_ID] = buildContext(adapters);
+    },
+
+    // TODO - in early 216, engine will expose an updated callback for services that
+    // is invoked whenever a tracked property is changed. wire service is structured to
+    // make this adoption trivial.
+    updated: (cmp: Element, data: object, def: ElementDef, context: object) => {
+        let ucMetadata : ServiceUpdateContext;
+        if (!def.wire || !(ucMetadata = context[CONTEXT_ID]['updated'])) {
+            return;
         }
-        context[CONTEXT_ID] = contextData;
+        // get new values for all dynamic props
+        const paramValues = getPropertyValues(cmp, ucMetadata.paramValues);
+
+        // compare new to old dynamic prop values, updating old props with new values
+        // for each change, queue the impacted adapter(s)
+
+        // process queue of impacted adapters
+        invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks : WireAdapterCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID]['connectedCallback'])) {
+        let callbacks : NoArgumentCallback[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID]['connected'])) {
             return;
         }
-        invokeCallback(callbacks, undefined);
+        invokeCallback(callbacks);
     },
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks;
-        if (!def.wire || (callbacks = context[CONTEXT_ID]['disconnectedCallback']) ) {
+        let callbacks : NoArgumentCallback[];
+        if (!def.wire || (callbacks = context[CONTEXT_ID]['disconnected']) ) {
             return;
         }
-        invokeCallback(callbacks, undefined);
+        invokeCallback(callbacks);
     }
 };
-
 
 /**
  * Registers the wire service.
@@ -103,5 +200,5 @@ export function registerWireService(register: Function) {
 export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(adapterId, 'adapter id must be truthy');
     assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a function');
-    ADAPTERS.set(adapterId, adapterFactory);
+    adapters.set(adapterId, adapterFactory);
 };
