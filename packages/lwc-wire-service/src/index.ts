@@ -16,16 +16,16 @@ export interface WiredValue {
 export type TargetSetter = (WiredValue) => void;
 export type UpdatedCallback = (object) => void;
 export type NoArgumentCallback = () => void;
-export type WireAdapterDefCallback = UpdatedCallback | NoArgumentCallback;
+export type WireAdapterCallback = UpdatedCallback | NoArgumentCallback;
 export interface WireAdapter {
-    updated?: UpdatedCallback;
-    connected?: NoArgumentCallback;
-    disconnected?: NoArgumentCallback;
+    updatedCallback?: UpdatedCallback;
+    connectedCallback?: NoArgumentCallback;
+    disconnectedCallback?: NoArgumentCallback;
 };
 export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
 
 // lifecycle hooks of wire adapters
-const HOOKS: Array<keyof WireAdapter> = ['updated', 'connected', 'disconnected'];
+const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
 
 // wire adapters: wire adapter id => adapter ctor
 const ADAPTERS: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
@@ -36,7 +36,7 @@ const CONTEXT_ID: string = '@wire';
 /**
  * Invokes the specified callbacks with specified arguments.
  */
-function invokeCallback(callbacks: WireAdapterDefCallback, arg: object|undefined) {
+function invokeCallback(callbacks: WireAdapterCallback[], arg: object|undefined) {
     for (let i = 0, len = callbacks.length; i < len; ++i) {
         callbacks[i].apply(undefined, arg);
     }
@@ -58,7 +58,7 @@ const wireService = {
         let contextData = Object.create(null);
         for (let i = 0; i < HOOKS.length; i++) {
             let hook = HOOKS[i];
-            let callbacks: Array<WireAdapterDefCallback> = [];
+            let callbacks: Array<WireAdapterCallback> = [];
             for (let j = 0; j < adapters.length; j++) {
                 let callback = adapters[j][hook];
                 if (callback) {
@@ -73,8 +73,8 @@ const wireService = {
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks;
-        if (!def.wire || (callbacks = context[CONTEXT_ID]['connected']) ) {
+        let callbacks : WireAdapterCallback[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID]['connectedCallback'])) {
             return;
         }
         invokeCallback(callbacks, undefined);
@@ -82,7 +82,7 @@ const wireService = {
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
         let callbacks;
-        if (!def.wire || (callbacks = context[CONTEXT_ID]['disconnected']) ) {
+        if (!def.wire || (callbacks = context[CONTEXT_ID]['disconnectedCallback']) ) {
             return;
         }
         invokeCallback(callbacks, undefined);
@@ -93,8 +93,8 @@ const wireService = {
 /**
  * Registers the wire service.
  */
-export function registerWireService(engine: any) {
-    engine.register(wireService);
+export function registerWireService(register: Function) {
+    register(wireService);
 }
 
 /**

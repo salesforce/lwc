@@ -2,10 +2,11 @@
 
 const path = require('path');
 const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const typescript = require('rollup-plugin-typescript');
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
 
-const entry = path.resolve(__dirname, 'src/main.js');
+const entry = path.resolve(__dirname, 'src/index.ts');
 const commonJSDirectory = path.resolve(__dirname, 'dist/commonjs');
 const modulesDirectory = path.resolve(__dirname, 'dist/modules');
 
@@ -17,6 +18,7 @@ function rollupConfig(config) {
     const isCompat = target === 'es5';
 
     let plugins = [
+        typescript({ target: target, typescript: require('typescript') }),
         isCompat && rollupCompatPlugin({ polyfills: false, disableProxyTransform: true }),
     ].filter(Boolean);
 
