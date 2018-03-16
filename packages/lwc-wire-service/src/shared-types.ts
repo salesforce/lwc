@@ -11,6 +11,6 @@ export interface WireDef {
 }
 export interface ElementDef {
     wire: { // TODO - wire is optional but all wire service code assumes it's present
-        [key: string] : WireDef
+        [key: string]: WireDef
     };
 }

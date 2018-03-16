@@ -1,8 +1,6 @@
 /**
  * Wires LWC component to wire adapters.
  */
-
-
 import { Element } from 'engine';
 import { ElementDef, WireDef } from './shared-types';
 
@@ -174,7 +172,10 @@ export function getOverrideDescriptor(cmp, prop, listeners) {
     if (originalDescriptor) {
         newDescriptor = Object.assign({}, originalDescriptor, {
             set(value) {
-                originalDescriptor.set.call(cmp, value);
+                if (originalDescriptor.set) {
+                    originalDescriptor.set.call(cmp, value);
+                }
+
                 // re-fetch the value to handle asymmetry between setter and getter values
                 listeners.forEach(f => f(cmp[prop]));
             }
@@ -210,7 +211,7 @@ export function installWiredValues(wiredValues) {
 /**
  * Installs wiring for a component.
  */
-export function installWiring(cmp:Element, def) {
+export function installWiring(cmp: Element, def) {
     const wireConfigs = getWireConfigs(def);
     const wiredValues = getWiredValues(wireConfigs, cmp);
     const propChangeHandlers = getPropChangeHandlers(wireConfigs, wiredValues);

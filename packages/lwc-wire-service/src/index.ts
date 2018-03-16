@@ -12,7 +12,7 @@ import { ElementDef } from './shared-types';
 export interface WiredValue {
     data?: any;
     error?: any;
-};
+}
 export type TargetSetter = (WiredValue) => void;
 export type UpdatedCallback = (object) => void;
 export type NoArgumentCallback = () => void;
@@ -21,7 +21,7 @@ export interface WireAdapter {
     updatedCallback?: UpdatedCallback;
     connectedCallback?: NoArgumentCallback;
     disconnectedCallback?: NoArgumentCallback;
-};
+}
 export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
 
 export interface UpdatedCallbackConfig {
@@ -93,43 +93,43 @@ function getPropertyValues(cmp: Element, properties: string[]) {
  * Build context payload.
  */
 function buildContext(adapters: WireAdapter[], wiredefs: any) {
-    let context: Map<string, ServiceContext> = Object.create(null);
+    const context: Map<string, ServiceContext> = Object.create(null);
 
-    const noArgCallbacks: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
-    for (let i = 0; i < noArgCallbacks.length; i++) {
-        const noArgCallback = noArgCallbacks[i];
-        // TODO - this is really Array<NoArgumentCallback>
-        const callbacks: Array<WireAdapterCallback> = [];
+    const noArgCallbackKeys: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
+    for (let i = 0; i < noArgCallbackKeys.length; i++) {
+        const noArgCallbackKey = noArgCallbackKeys[i];
+        const wireNoArgCallbacks: WireAdapterCallback[] = [];
         for (let j = 0; j < adapters.length; j++) {
-            let callback = adapters[j][noArgCallback];
-            if (callback) {
-                callbacks.push(callback);
+            const wireNoArgCallback = adapters[j][noArgCallbackKey];
+            if (wireNoArgCallback) {
+                wireNoArgCallbacks.push(wireNoArgCallback);
             }
         }
-        if (callbacks.length > 0) {
-            context[noArgCallback] = callbacks;
+        if (wireNoArgCallbacks.length > 0) {
+            context[noArgCallbackKey] = wireNoArgCallbacks;
         }
     }
 
-    const callbacks: Array<UpdatedCallbackConfig> = [];
+    const updatedCallbackKey = 'updatedCallback';
+    const wireUpdatedCallbacks: UpdatedCallbackConfig[] = [];
     const paramValues: string[] = [];
     for (let j = 0; j < adapters.length; j++) {
-        let callback = adapters[j]['updatedCallback'];
-        if (callback) {
+        const updatedCallback = adapters[j][updatedCallbackKey];
+        if (updatedCallback) {
             // TODO - extract statics and params from the wire def
-            callbacks.push({
-                updatedCallback: callback,
+            wireUpdatedCallbacks.push({
+                updatedCallback,
                 statics: {},
                 params: {}
             });
         }
     }
-    if (callbacks.length > 0) {
+    if (wireUpdatedCallbacks.length > 0) {
         const ucContext: ServiceUpdateContext = {
-            callbacks,
+            callbacks: wireUpdatedCallbacks,
             paramValues
-        }
-        context['updatedCallback'] = ucContext;
+        };
+        context[updatedCallbackKey] = ucContext;
     }
 
     return context;
@@ -140,8 +140,8 @@ function buildContext(adapters: WireAdapter[], wiredefs: any) {
 // is invoked whenever a tracked property is changed. wire service is structured to
 // make this adoption trivial.
 function updated(context: object, cmp: Element, def: ElementDef) {
-    let ucMetadata : ServiceUpdateContext;
-    if (!def.wire || !(ucMetadata = context[CONTEXT_ID]['updated'])) {
+    let ucMetadata: ServiceUpdateContext;
+    if (!def.wire || !(ucMetadata = context[CONTEXT_ID].updated)) {
         return;
     }
     // get new values for all dynamic props
@@ -165,7 +165,7 @@ const wireService = {
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
         // engine guarantees invocation only if def.wire is defined
         const wiredefs = getWireDefs(cmp, def, updated.bind(context));
-        const adapters: Array<WireAdapter> = [];
+        const adapters: WireAdapter[] = [];
 
         for (let i = 0; i < wiredefs.length; i++) {
             const wiredef = wiredefs[i];
@@ -177,8 +177,9 @@ const wireService = {
                 (value) => { Object.assign(cmp[wiredPropOrMethod], value); };
 
             const adapterFactory = adapterFactories.get(id);
-            const adapter = adapterFactory(targetSetter);
-            adapters.push(adapter);
+            if (adapterFactory) {
+                adapters.push(adapterFactory(targetSetter));
+            }
         }
 
         // cache context that optimizes runtime of service callbacks
@@ -186,16 +187,16 @@ const wireService = {
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks : NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID]['connected'])) {
+        let callbacks: NoArgumentCallback[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID].connected)) {
             return;
         }
         invokeCallback(callbacks);
     },
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks : NoArgumentCallback[];
-        if (!def.wire || (callbacks = context[CONTEXT_ID]['disconnected']) ) {
+        let callbacks: NoArgumentCallback[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID].disconnected)) {
             return;
         }
         invokeCallback(callbacks);
@@ -205,8 +206,8 @@ const wireService = {
 /**
  * Registers the wire service.
  */
-export function registerWireService(register: Function) {
-    register(wireService);
+export function registerWireService(registerService: Function) {
+    registerService(wireService);
 }
 
 /**
@@ -216,4 +217,4 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(adapterId, 'adapter id must be truthy');
     assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a function');
     adapterFactories.set(adapterId, adapterFactory);
-};
+}
