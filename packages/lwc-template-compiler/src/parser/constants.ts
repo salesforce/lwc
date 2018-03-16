@@ -58,7 +58,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'bgcolor': 'bgColor',
     'colspan': 'colSpan',
     'rowspan': 'rowSpan',
-    'contentEditable': 'contentEditable',
+    'contenteditable': 'contentEditable',
     'crossorigin': 'crossOrigin',
     'datetime': 'dateTime',
     'formaction': 'formAction',
