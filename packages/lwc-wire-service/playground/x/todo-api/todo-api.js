@@ -28,6 +28,10 @@ register(getTodo, function getTodoWireAdapter(targetSetter) {
     return {
         updatedCallback: (newConfig) => {
             config = newConfig;
+            subscription = getObservable(config).subscribe({
+                next: data => targetSetter({ data, error: undefined }),
+                error: error => targetSetter({ data: undefined, error })
+            });
         },
 
         connectedCallback: () => {
