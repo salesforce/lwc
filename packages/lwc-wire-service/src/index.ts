@@ -276,3 +276,12 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a function');
     adapterFactories.set(adapterId, adapterFactory);
 }
+
+/*
+ * Unregisters an adapter, only available for non prod (e.g. test util)
+ */
+export function unregister(adapterId: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        adapterFactories.delete(adapterId);
+    }
+}
