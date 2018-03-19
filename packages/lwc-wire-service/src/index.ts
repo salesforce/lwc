@@ -24,21 +24,7 @@ export interface WireAdapter {
 }
 export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
 
-export interface UpdatedCallbackConfig {
-    updatedCallback: UpdatedCallback;
-    statics: {
-        [key: string]: any;
-    };
-    params: {
-        [key: string]: string;
-    };
-}
-export interface ServiceUpdateContext {
-    callbacks: UpdatedCallbackConfig[];
-    // union of callbacks.params values
-    paramValues: string[];
-}
-export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
+export type ServiceContext = WireAdapterCallback[];
 
 // lifecycle hooks of wire adapters
 // const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
@@ -111,28 +97,18 @@ function buildContext(adapters: WireAdapter[]) {
     }
 
     const updatedCallbackKey = 'updatedCallback';
-    const updatedCallbackConfigs: UpdatedCallbackConfig[] = [];
-    const paramValues: string[] = [];
+    const wireUpdatedCallbacks: UpdatedCallback[] = [];
     for (let j = 0; j < adapters.length; j++) {
         const updatedCallback = adapters[j][updatedCallbackKey];
         if (updatedCallback) {
-            updatedCallbackConfigs.push({
-                updatedCallback,
-                statics: {},
-                params: {}
-            });
+            wireUpdatedCallbacks.push(updatedCallback);
         }
     }
-    if (updatedCallbackConfigs.length > 0) {
-        const ucContext: ServiceUpdateContext = {
-            callbacks: updatedCallbackConfigs,
-            paramValues
-        };
-        context[updatedCallbackKey] = ucContext;
+    if (wireUpdatedCallbacks.length > 0) {
+        context[updatedCallbackKey] = wireUpdatedCallbacks;
     }
 
     return context;
-
 }
 
 // TODO - in early 216, engine will expose an `updated` callback for services that
@@ -153,33 +129,19 @@ function updated(cmp: Element, data: object, def: ElementDef, context: object) {
     invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
 }
 
-/**
- * Gets a mapping of component prop to wire config dynamic params. In other words,
- * the wire config's parameter set that updates whenever a prop changes.
- * @param {*} wireDef The wire definition.
- * @param {String} wireTarget Component property that is the target of the wire.
- * @returns {Object<String,String[]>} Map of prop name to wire config dynamic params.
- */
-function getPropToParams(wireDef, wireTarget) {
-    const map = Object.create(null);
-    const { params } = wireDef;
-    if (params) {
-        Object.keys(params).forEach(param => {
-            const prop = params[param];
+function getPropsFromParams(wireDefs: WireDef[]) {
+    const props = new Set<string>();
+    wireDefs.forEach((wireDef) => {
+        const { params } = wireDef;
+        if (params) {
+            Object.keys(params).forEach(param => {
+                const prop = params[param];
+                props.add(prop);
+            });
+        }
+    });
 
-            if (param in wireDef.static) {
-                throw new Error(`${wireTarget}'s @wire(${wireDef.adapter}) parameter ${param} specified multiple times.`);
-            }
-
-            // attribute change handlers use hyphenated case
-            let set = map[prop];
-            if (!set) {
-                set = map[prop] = [];
-            }
-            set.push(param);
-        });
-    }
-    return map;
+    return props;
 }
 
 /**
@@ -195,9 +157,11 @@ const wireService = {
         const wireStaticDef = def.wire;
         const wireTargets = Object.keys(wireStaticDef);
         const adapters: WireAdapter[] = [];
+        const wireDefs: WireDef[] = [];
         for (let i = 0; i < wireTargets.length; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
+            wireDefs.push(wireDef);
             const id = wireDef.adapter || wireDef.type;
 
             const targetSetter: TargetSetter = wireDef.method ?
@@ -208,37 +172,38 @@ const wireService = {
             if (adapterFactory) {
                 adapters.push(adapterFactory(targetSetter));
             }
-
-            const propToParamsMap = getPropToParams(wireDef, wireTarget);
-            Object.keys(propToParamsMap).forEach(prop => {
-                const originalDescriptor = Object.getOwnPropertyDescriptor(cmp.constructor.prototype, prop);
-                let newDescriptor;
-                if (originalDescriptor) {
-                    newDescriptor = Object.assign({}, originalDescriptor, {
-                        set(value) {
-                            if (originalDescriptor.set) {
-                                originalDescriptor.set.call(cmp, value);
-                            }
-                            updated.bind(this, cmp, data, def, context);
-                        }
-                    });
-                } else {
-                    const propSymbol = Symbol(prop);
-                    newDescriptor = {
-                        get() {
-                            return cmp[propSymbol];
-                        },
-                        set(value) {
-                            cmp[propSymbol] = value;
-                            updated.bind(this, cmp, data, def, context);
-                        }
-                    };
-                    // grab the existing value
-                    cmp[propSymbol] = cmp[prop];
-                }
-                Object.defineProperty(cmp, prop, newDescriptor);
-            });
         }
+
+        // only add updated to bound props
+        const props = getPropsFromParams(wireDefs);
+        props.forEach((prop) => {
+            const originalDescriptor = Object.getOwnPropertyDescriptor(cmp.constructor.prototype, prop);
+            let newDescriptor;
+            if (originalDescriptor) {
+                newDescriptor = Object.assign({}, originalDescriptor, {
+                    set(value) {
+                        if (originalDescriptor.set) {
+                            originalDescriptor.set.call(cmp, value);
+                        }
+                        updated.bind(this, cmp, data, def, context);
+                    }
+                });
+            } else {
+                const propSymbol = Symbol(prop);
+                newDescriptor = {
+                    get() {
+                        return cmp[propSymbol];
+                    },
+                    set(value) {
+                        cmp[propSymbol] = value;
+                        updated.bind(this, cmp, data, def, context);
+                    }
+                };
+                // grab the existing value
+                cmp[propSymbol] = cmp[prop];
+            }
+            Object.defineProperty(cmp, prop, newDescriptor);
+        });
 
         // cache context that optimizes runtime of service callbacks
         context[CONTEXT_ID] = buildContext(adapters);
