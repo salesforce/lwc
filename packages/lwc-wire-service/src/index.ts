@@ -24,7 +24,21 @@ export interface WireAdapter {
 }
 export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
 
-export type ServiceContext = WireAdapterCallback[];
+export interface UpdatedCallbackConfig {
+    updatedCallback: UpdatedCallback;
+    statics: {
+        [key: string]: any;
+    };
+    params: {
+        [key: string]: string;
+    };
+}
+export interface ServiceUpdateContext {
+    callbacks: UpdatedCallbackConfig[];
+    // union of callbacks.params values
+    paramValues: Set<string>;
+}
+export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
 
 // lifecycle hooks of wire adapters
 // const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
@@ -66,19 +80,20 @@ function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues
 /**
  * Gets resolved values of the specified properties.
  */
-function getPropertyValues(cmp: Element, properties: string[]) {
+function getPropertyValues(cmp: Element, properties: Set<string>) {
     const resolvedValues = Object.create(null);
-    for (let i = 0, len = properties.length; i < len; ++i) {
-        const paramValue = properties[i];
+    properties.forEach((property) => {
+        const paramValue = property;
         resolvedValues[paramValue] = cmp[paramValue];
-    }
+    });
+
     return resolvedValues;
 }
 
 /**
  * Build context payload.
  */
-function buildContext(adapters: WireAdapter[]) {
+function buildServiceContext(adapters: WireAdapter[]) {
     const context: Map<string, ServiceContext> = Object.create(null);
 
     const noArgCallbackKeys: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
@@ -96,18 +111,6 @@ function buildContext(adapters: WireAdapter[]) {
         }
     }
 
-    const updatedCallbackKey = 'updatedCallback';
-    const wireUpdatedCallbacks: UpdatedCallback[] = [];
-    for (let j = 0; j < adapters.length; j++) {
-        const updatedCallback = adapters[j][updatedCallbackKey];
-        if (updatedCallback) {
-            wireUpdatedCallbacks.push(updatedCallback);
-        }
-    }
-    if (wireUpdatedCallbacks.length > 0) {
-        context[updatedCallbackKey] = wireUpdatedCallbacks;
-    }
-
     return context;
 }
 
@@ -119,6 +122,7 @@ function updated(cmp: Element, data: object, def: ElementDef, context: object) {
     if (!def.wire || !(ucMetadata = context[CONTEXT_ID].updated)) {
         return;
     }
+
     // get new values for all dynamic props
     const paramValues = getPropertyValues(cmp, ucMetadata.paramValues);
 
@@ -158,19 +162,29 @@ const wireService = {
         const wireTargets = Object.keys(wireStaticDef);
         const adapters: WireAdapter[] = [];
         const wireDefs: WireDef[] = [];
+        const updatedCallbackKey = 'updatedCallback';
+        const updatedCallbackConfigs: UpdatedCallbackConfig[] = [];
         for (let i = 0; i < wireTargets.length; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
             wireDefs.push(wireDef);
             const id = wireDef.adapter || wireDef.type;
-
             const targetSetter: TargetSetter = wireDef.method ?
                 (value) => { cmp[wireTarget](value); } :
                 (value) => { Object.assign(cmp[wireTarget], value); };
 
             const adapterFactory = adapterFactories.get(id);
             if (adapterFactory) {
-                adapters.push(adapterFactory(targetSetter));
+                const wireAdapter = adapterFactory(targetSetter);
+                adapters.push(wireAdapter);
+                const updatedCallback = wireAdapter[updatedCallbackKey];
+                if (updatedCallback) {
+                    updatedCallbackConfigs.push({
+                        updatedCallback,
+                        statics: wireDef.static,
+                        params: wireDef.params
+                    });
+                }
             }
         }
 
@@ -206,7 +220,14 @@ const wireService = {
         });
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildContext(adapters);
+        context[CONTEXT_ID] = buildServiceContext(adapters);
+        if (updatedCallbackConfigs.length > 0) {
+            const ucContext: ServiceUpdateContext = {
+                callbacks: updatedCallbackConfigs,
+                paramValues: props
+            };
+            context[CONTEXT_ID][updatedCallbackKey] = ucContext;
+        }
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
