@@ -49,6 +49,8 @@ const CONTEXT_ID: string = '@wire';
 // wire adapters: wire adapter id => adapter ctor
 const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
 
+const UPDATED: string = 'updated';
+
 /**
  * Invokes the specified callbacks.
  */
@@ -119,7 +121,7 @@ function buildServiceContext(adapters: WireAdapter[]) {
 // make this adoption trivial.
 function updated(cmp: Element, data: object, def: ElementDef, context: object) {
     let ucMetadata: ServiceUpdateContext;
-    if (!def.wire || !(ucMetadata = context[CONTEXT_ID].updated)) {
+    if (!def.wire || !(ucMetadata = context[CONTEXT_ID][UPDATED])) {
         return;
     }
 
@@ -128,6 +130,7 @@ function updated(cmp: Element, data: object, def: ElementDef, context: object) {
 
     // compare new to old dynamic prop values, updating old props with new values
     // for each change, queue the impacted adapter(s)
+    // TODO: do we really need this if updated is only hooked to bound props?
 
     // process queue of impacted adapters
     invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
@@ -199,7 +202,7 @@ const wireService = {
                         if (originalDescriptor.set) {
                             originalDescriptor.set.call(cmp, value);
                         }
-                        updated.bind(this, cmp, data, def, context);
+                        updated.call(this, cmp, data, def, context);
                     }
                 });
             } else {
@@ -210,7 +213,7 @@ const wireService = {
                     },
                     set(value) {
                         cmp[propSymbol] = value;
-                        updated.bind(this, cmp, data, def, context);
+                        updated.call(this, cmp, data, def, context);
                     }
                 };
                 // grab the existing value
@@ -226,7 +229,7 @@ const wireService = {
                 callbacks: updatedCallbackConfigs,
                 paramValues: props
             };
-            context[CONTEXT_ID][updatedCallbackKey] = ucContext;
+            context[CONTEXT_ID][UPDATED] = ucContext;
         }
     },
 

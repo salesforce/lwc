@@ -1,5 +1,5 @@
 import { Element, api, wire } from 'engine';
-import { getTodo } from 'todo-api';
+import { getTodo } from 'x-todo-api';
 
 export default class SingleWire extends Element {
     @api todoId;

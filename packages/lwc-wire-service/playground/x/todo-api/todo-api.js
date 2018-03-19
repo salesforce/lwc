@@ -2,7 +2,7 @@
  * Todo imperative APIs and wire adapters.
  */
 
-import register from 'wire-service';
+import { register } from 'wire-service';
 import getObservable from './todo';
 
 // Component-importable imperative access.
