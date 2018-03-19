@@ -650,7 +650,7 @@ describe('html-element', () => {
             });
         });
 
-        it('should not log error message when attribute is set via createElement', () => {
+        it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends Element {}
             const elm = createElement('x-foo', {is: MyComponent});
@@ -658,7 +658,7 @@ describe('html-element', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {
-                expect(assertLogger.logError).not.toBeCalled();
+                expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
         });
@@ -2280,11 +2280,11 @@ describe('html-element', () => {
             })
         })
 
-        it('should not log error message when attribute is set via createElement', () =>{
+        it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends Element {}
             const elm = createElement('x-foo', {is: MyComponent});
-            elm.setAttribute('tabindex', '0');
+            elm.setAttribute('foo', 'something');
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {

@@ -44,7 +44,7 @@ const CAMEL_REGEX = /-([a-z])/g;
  * and the corresponding property name.
  */
 export function getPropNameFromAttrName(attrName: string): string {
-    if (!hasOwnProperty.call(PropNameToAttrNameMap, )) {
+    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
         AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
     }
     return AttrNameToPropNameMap[attrName];
