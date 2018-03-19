@@ -94,30 +94,6 @@ function getPropertyValues(cmp: Element, properties: Set<string>) {
     return resolvedValues;
 }
 
-/**
- * Build context payload.
- */
-function buildServiceContext(adapters: WireAdapter[]) {
-    const context: Map<string, ServiceContext> = Object.create(null);
-
-    const noArgCallbackKeys: Array<keyof WireAdapter> = ['connectedCallback', 'disconnectedCallback'];
-    for (let i = 0; i < noArgCallbackKeys.length; i++) {
-        const noArgCallbackKey = noArgCallbackKeys[i];
-        const wireNoArgCallbacks: WireAdapterCallback[] = [];
-        for (let j = 0; j < adapters.length; j++) {
-            const wireNoArgCallback = adapters[j][noArgCallbackKey];
-            if (wireNoArgCallback) {
-                wireNoArgCallbacks.push(wireNoArgCallback);
-            }
-        }
-        if (wireNoArgCallbacks.length > 0) {
-            context[noArgCallbackKey] = wireNoArgCallbacks;
-        }
-    }
-
-    return context;
-}
-
 // TODO - in early 216, engine will expose an `updated` callback for services that
 // is invoked whenever a tracked property is changed. wire service is structured to
 // make this adoption trivial.
@@ -169,6 +145,8 @@ const wireService = {
         const wireDefs: WireDef[] = [];
         const updatedCallbackKey = 'updatedCallback';
         const updatedCallbackConfigs: UpdatedCallbackConfig[] = [];
+        const connectedNoArgCallbacks: NoArgumentCallback[] = [];
+        const disconnectedNoArgCallbacks: NoArgumentCallback[] = [];
         for (let i = 0; i < wireTargets.length; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
@@ -188,6 +166,14 @@ const wireService = {
             if (adapterFactory) {
                 const wireAdapter = adapterFactory(targetSetter);
                 adapters.push(wireAdapter);
+                const connectedCallback = wireAdapter[CONNECTED];
+                if (connectedCallback) {
+                    connectedNoArgCallbacks.push(connectedCallback);
+                }
+                const disconnectedCallback = wireAdapter[DISCONNECTED];
+                if (disconnectedCallback) {
+                    disconnectedNoArgCallbacks.push(disconnectedCallback);
+                }
                 const updatedCallback = wireAdapter[updatedCallbackKey];
                 if (updatedCallback) {
                     updatedCallbackConfigs.push({
@@ -231,7 +217,15 @@ const wireService = {
         });
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildServiceContext(adapters);
+        context[CONTEXT_ID] = Object.create(null);
+        if (connectedNoArgCallbacks.length > 0) {
+            context[CONTEXT_ID][CONNECTED] = connectedNoArgCallbacks;
+        }
+
+        if (disconnectedNoArgCallbacks.length > 0) {
+            context[CONTEXT_ID][DISCONNECTED] = disconnectedNoArgCallbacks;
+        }
+
         if (updatedCallbackConfigs.length > 0) {
             const ucContext: ServiceUpdateContext = {
                 callbacks: updatedCallbackConfigs,
