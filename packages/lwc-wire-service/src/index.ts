@@ -50,6 +50,8 @@ const CONTEXT_ID: string = '@wire';
 const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
 
 const UPDATED: string = 'updated';
+const CONNECTED: string = 'connectedCallback';
+const DISCONNECTED: string = 'disconnectedCallback';
 
 /**
  * Invokes the specified callbacks.
@@ -172,6 +174,12 @@ const wireService = {
             const wireDef = wireStaticDef[wireTarget];
             wireDefs.push(wireDef);
             const id = wireDef.adapter || wireDef.type;
+
+            // initialize wired property
+            if (!wireDef.method) {
+                cmp[wireTarget] = {};
+            }
+
             const targetSetter: TargetSetter = wireDef.method ?
                 (value) => { cmp[wireTarget](value); } :
                 (value) => { Object.assign(cmp[wireTarget], value); };
@@ -235,7 +243,7 @@ const wireService = {
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
         let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID].connected)) {
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONNECTED])) {
             return;
         }
         invokeCallback(callbacks);
@@ -243,7 +251,7 @@ const wireService = {
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
         let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID].disconnected)) {
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][DISCONNECTED])) {
             return;
         }
         invokeCallback(callbacks);
