@@ -9,14 +9,37 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
-        import { serviceTodo } from 'todo';
-        import registerWireService from 'wire-service';
+        import { registerWireService, register as registerAdapter } from 'wire-service';
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
+        import { getTodo, getObservable } from 'todo';
 
-        registerWireService(register, function () {
+        registerWireService(register);
+
+        // Register the wire adapter for @wire(getTodo).
+        registerAdapter(getTodo, function getTodoWireAdapter(targetSetter) {
+            let subscription;
+            let config;
             return {
-                serviceTodo
+                updatedCallback: (newConfig) => {
+                    config = newConfig;
+                    subscription = getObservable(config).subscribe({
+                        next: data => targetSetter({ data, error: undefined }),
+                        error: error => targetSetter({ data: undefined, error })
+                    });
+                },
+
+                connectedCallback: () => {
+                    // Subscribe to stream.
+                    subscription = getObservable(config).subscribe({
+                        next: data => targetSetter({ data, error: undefined }),
+                        error: error => targetSetter({ data: undefined, error })
+                    });
+                },
+
+                disconnectedCallback: () => {
+                    subscription.unsubscribe();
+                }
             };
         });
 

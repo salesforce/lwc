@@ -66,7 +66,7 @@ var TODO = [
 }, {});
 
 
-function serviceTodo(config) {
+function getObservable(config) {
     if (!('id' in config)) {
         return undefined;
     }
@@ -80,6 +80,10 @@ function serviceTodo(config) {
     return getSubject(todo).observable;
 }
 
-    exports.serviceTodo = serviceTodo;
+function getTodo(config) {
+    // not implemented
+}
+    exports.getTodo = getTodo;
+    exports.getObservable = getObservable;
     Object.defineProperty(exports, '__esModule', { value: true });
 })));
