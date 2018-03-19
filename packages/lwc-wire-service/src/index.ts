@@ -94,6 +94,33 @@ function getPropertyValues(cmp: Element, properties: Set<string>) {
     return resolvedValues;
 }
 
+function buildContext(
+    connectedNoArgCallbacks: NoArgumentCallback[],
+    disconnectedNoArgCallbacks: NoArgumentCallback[],
+    updatedCallbackConfigs: UpdatedCallbackConfig[],
+    props: Set<string>
+) {
+    // cache context that optimizes runtime of service callbacks
+    const wireContext = Object.create(null);
+    if (connectedNoArgCallbacks.length > 0) {
+        wireContext[CONNECTED] = connectedNoArgCallbacks;
+    }
+
+    if (disconnectedNoArgCallbacks.length > 0) {
+        wireContext[DISCONNECTED] = disconnectedNoArgCallbacks;
+    }
+
+    if (updatedCallbackConfigs.length > 0) {
+        const ucContext: ServiceUpdateContext = {
+            callbacks: updatedCallbackConfigs,
+            paramValues: props
+        };
+        wireContext[UPDATED] = ucContext;
+    }
+
+    return wireContext;
+}
+
 // TODO - in early 216, engine will expose an `updated` callback for services that
 // is invoked whenever a tracked property is changed. wire service is structured to
 // make this adoption trivial.
@@ -217,22 +244,7 @@ const wireService = {
         });
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = Object.create(null);
-        if (connectedNoArgCallbacks.length > 0) {
-            context[CONTEXT_ID][CONNECTED] = connectedNoArgCallbacks;
-        }
-
-        if (disconnectedNoArgCallbacks.length > 0) {
-            context[CONTEXT_ID][DISCONNECTED] = disconnectedNoArgCallbacks;
-        }
-
-        if (updatedCallbackConfigs.length > 0) {
-            const ucContext: ServiceUpdateContext = {
-                callbacks: updatedCallbackConfigs,
-                paramValues: props
-            };
-            context[CONTEXT_ID][UPDATED] = ucContext;
-        }
+        context[CONTEXT_ID] = buildContext(connectedNoArgCallbacks, disconnectedNoArgCallbacks, updatedCallbackConfigs, props);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
