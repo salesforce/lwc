@@ -40,9 +40,6 @@ export interface ServiceUpdateContext {
 }
 export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
 
-// lifecycle hooks of wire adapters
-// const HOOKS: Array<keyof WireAdapter> = ['updatedCallback', 'connectedCallback', 'disconnectedCallback'];
-
 // key for engine service context store
 const CONTEXT_ID: string = '@wire';
 
@@ -99,9 +96,9 @@ function buildContext(
     disconnectedNoArgCallbacks: NoArgumentCallback[],
     updatedCallbackConfigs: UpdatedCallbackConfig[],
     props: Set<string>
-) {
+): Map<string, ServiceContext> {
     // cache context that optimizes runtime of service callbacks
-    const wireContext = Object.create(null);
+    const wireContext: Map<string, ServiceContext> = Object.create(null);
     if (connectedNoArgCallbacks.length > 0) {
         wireContext[CONNECTED] = connectedNoArgCallbacks;
     }
