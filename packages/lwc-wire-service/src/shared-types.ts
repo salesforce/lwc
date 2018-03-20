@@ -1,8 +1,8 @@
 export interface WireDef {
-    params: {
+    params?: {
         [key: string]: string;
     };
-    static: {
+    static?: {
         [key: string]: any;
     };
     type?: string;
@@ -14,3 +14,25 @@ export interface ElementDef {
         [key: string]: WireDef
     };
 }
+
+export type NoArgumentCallback = () => void;
+
+export type UpdatedCallback = (object) => void;
+
+export interface UpdatedCallbackConfig {
+    updatedCallback: UpdatedCallback;
+    statics?: {
+        [key: string]: any;
+    };
+    params?: {
+        [key: string]: string;
+    };
+}
+
+export interface ServiceUpdateContext {
+    callbacks: UpdatedCallbackConfig[];
+    // union of callbacks.params values
+    paramValues: Set<string>;
+}
+
+export type ServiceContext = NoArgumentCallback[] | ServiceUpdateContext;
