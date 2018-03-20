@@ -260,9 +260,10 @@ describe('track.ts', () => {
             }).toThrow();
         });
 
-        it('should throw when invoking it with a readonly object', () => {
+        it('should throw when attempting to mutate a readonly object via track', () => {
+            const o = track(readonly({}));
             expect(() => {
-                track(readonly({}));
+                o.x = 1;
             }).toThrow();
         });
 

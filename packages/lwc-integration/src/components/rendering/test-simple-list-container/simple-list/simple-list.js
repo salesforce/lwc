@@ -2,18 +2,13 @@ import { Element, api, track } from 'engine';
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 35;
+const base = [];
+for (let i = 0; i < 100; i += 1) {
+    base[i] = i;
+}
 
-function produceNewData(oldData, min, max) {
-    const len = Math.floor(Math.random() * (max - min)) + min;
-    const data = [];
-    for (let i = 0; i < len; i += 1) {
-        if (Math.round(Math.random()) === 1 && oldData[i]) {
-            data.push(oldData[i]);
-        } else {
-            data.push({ x: Math.floor(Math.random() * 100) });
-        }
-    }
-    return data;
+function produceNewData(min, max) {
+    return base.slice(min, max);
 }
 
 export default class SimpleList extends Element {
@@ -27,8 +22,8 @@ export default class SimpleList extends Element {
     }
 
     @api set min(value) {
-        this.normalizedMin = parseInt(value, 10);
-        this.data = produceNewData(this.data, this.min, this.max);
+        this.normalizedMin = Math.max(parseInt(value, 10), 0);
+        this.data = produceNewData(this.normalizedMin, this.normalizedMax);
     }
 
     @api get max() {
@@ -36,12 +31,7 @@ export default class SimpleList extends Element {
     }
 
     @api set max(value) {
-        this.normalizedMax = parseInt(value, 10);
-        this.data = produceNewData(this.data, this.min, this.max);
-    }
-
-    @api reshuffle() {
-        const newData = produceNewData(this.data, this.min, this.max);
-        this.data = newData;
+        this.normalizedMax = Math.min(parseInt(value, 10), 100);
+        this.data = produceNewData(this.normalizedMin, this.normalizedMax);
     }
 }

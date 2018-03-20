@@ -91,11 +91,10 @@ describe('piercing', function() {
         });
         class Foo extends Element {
             connectedCallback() {
-                event = {
-                    type: 'secure',
+                event = new CustomEvent('secure', {
                     composed: true,
                     bubbles: true
-                };
+                });
                 this.dispatchEvent(event);
             }
         }
