@@ -2,15 +2,6 @@ import { CONNECTED, DISCONNECTED, UPDATED } from '../constants';
 import * as target from '../wiring';
 
 describe('wiring internal', () => {
-    it('gets bound properties from wire definition', () => {
-        const wireDef = [
-            { params: {key1: 'prop1', key2: 'prop2'} },
-            { params: {key1: 'prop1', key2: 'prop3'} }
-        ];
-        const actual = target.getPropsFromParams(wireDef);
-        expect(Array.from(actual)).toEqual(['prop1', 'prop2', 'prop3']);
-    });
-
     describe('installs setter overrides', () => {
         it("defaults to original value when setter installed", () => {
             class Target {
@@ -61,20 +52,17 @@ describe('wiring internal', () => {
 
     describe('builds wire service context', () => {
         it('includes connected callback if any', () => {
-            expect(target.buildContext([jest.fn()], [], [], new Set<string>())[CONNECTED]).toHaveLength(1);
+            expect(target.buildContext([jest.fn()], [], {})[CONNECTED]).toHaveLength(1);
         });
         it('includes disconnected callback if any', () => {
-            expect(target.buildContext([], [jest.fn()], [], new Set<string>())[DISCONNECTED]).toHaveLength(1);
+            expect(target.buildContext([], [jest.fn()], {})[DISCONNECTED]).toHaveLength(1);
         });
         it('includes updated callback config if any', () => {
             const updatedCallbackConfigs = [{
                 updatedCallback: jest.fn()
             }];
-            const paramValues = new Set<string>(['prop1']);
-            expect(target.buildContext([], [], updatedCallbackConfigs, paramValues)[UPDATED]).toEqual({
-                callbacks: updatedCallbackConfigs,
-                paramValues
-            });
+            const serviceUpdateContext = { prop: updatedCallbackConfigs };
+            expect(target.buildContext([], [], serviceUpdateContext)[UPDATED]).toEqual(serviceUpdateContext);
         });
     });
 });

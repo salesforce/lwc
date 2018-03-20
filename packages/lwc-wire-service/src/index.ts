@@ -8,11 +8,11 @@
 import { Element } from 'engine';
 import assert from './assert';
 import {
-    WireDef,
     ElementDef,
     NoArgumentCallback,
     UpdatedCallback,
-    UpdatedCallbackConfig
+    UpdatedCallbackConfig,
+    ServiceUpdateContext
 } from './shared-types';
 import {
     CONTEXT_ID,
@@ -21,7 +21,6 @@ import {
 } from './constants';
 import {
     updated,
-    getPropsFromParams,
     installSetterOverrides,
     buildContext
 } from './wiring';
@@ -65,17 +64,16 @@ const wireService = {
         const wireStaticDef = def.wire;
         const wireTargets = Object.keys(wireStaticDef);
         const adapters: WireAdapter[] = [];
-        const wireDefs: WireDef[] = [];
+
         const updatedCallbackKey = 'updatedCallback';
-        const updatedCallbackConfigs: UpdatedCallbackConfig[] = [];
         const connectedNoArgCallbacks: NoArgumentCallback[] = [];
         const disconnectedNoArgCallbacks: NoArgumentCallback[] = [];
+        const serviceUpdateContext: ServiceUpdateContext = Object.create(null);
         for (let i = 0; i < wireTargets.length; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
-            wireDefs.push(wireDef);
-            const id = wireDef.adapter || wireDef.type;
-
+            const id = wireDef.adapter;
+            const params = wireDef.params;
             // initialize wired property
             if (!wireDef.method) {
                 cmp[wireTarget] = {};
@@ -99,23 +97,36 @@ const wireService = {
                 }
                 const updatedCallback = wireAdapter[updatedCallbackKey];
                 if (updatedCallback) {
-                    updatedCallbackConfigs.push({
+                    const updatedCallbackConfig: UpdatedCallbackConfig = {
                         updatedCallback,
                         statics: wireDef.static,
                         params: wireDef.params
-                    });
+                    };
+
+                    if (params) {
+                        Object.keys(params).forEach(param => {
+                            const prop = params[param];
+                            let updatedCallbackConfigs = serviceUpdateContext[prop];
+                            if (!updatedCallbackConfigs) {
+                                updatedCallbackConfigs = [updatedCallbackConfig];
+                                serviceUpdateContext[prop] = updatedCallbackConfigs;
+                            } else {
+                                updatedCallbackConfigs.push(updatedCallbackConfig);
+                            }
+                        });
+                    }
                 }
             }
         }
 
         // only add updated to bound props
-        const props = getPropsFromParams(wireDefs);
-        props.forEach((prop) => {
-            installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, data, def, context));
+        Object.keys(serviceUpdateContext).forEach((prop) => {
+            // using data to notify which prop gets updated
+            installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, prop, def, context));
         });
 
         // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildContext(connectedNoArgCallbacks, disconnectedNoArgCallbacks, updatedCallbackConfigs, props);
+        context[CONTEXT_ID] = buildContext(connectedNoArgCallbacks, disconnectedNoArgCallbacks, serviceUpdateContext);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {

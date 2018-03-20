@@ -39,20 +39,6 @@ function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues
 }
 
 /**
- * Gets resolved values of the specified properties.
- * @param cmp component to get property value from
- * @param properties a set of bound property
- */
-function getPropertyValues(cmp: Element, properties: Set<string>) {
-    const resolvedValues = Object.create(null);
-    properties.forEach((property) => {
-        resolvedValues[property] = cmp[property];
-    });
-
-    return resolvedValues;
-}
-
-/**
  * TODO - in early 216, engine will expose an `updated` callback for services that
  * is invoked whenever a tracked property is changed. wire service is structured to
  * make this adoption trivial.
@@ -63,35 +49,12 @@ export function updated(cmp: Element, data: object, def: ElementDef, context: ob
         return;
     }
 
-    // get new values for all dynamic props
-    const paramValues = getPropertyValues(cmp, ucMetadata.paramValues);
-
-    // compare new to old dynamic prop values, updating old props with new values
-    // for each change, queue the impacted adapter(s)
-    // TODO: do we really need this if updated is only hooked to bound props?
+    const updateProp = data.toString();
+    const paramValue = Object.create(null);
+    paramValue[updateProp] = cmp[updateProp];
 
     // process queue of impacted adapters
-    invokeUpdatedCallback(ucMetadata.callbacks, paramValues);
-}
-
-/**
- * Gets bound properties from wire definitions
- * @param wireDefs The wire definitions
- * @returns Set of bound properties
- */
-export function getPropsFromParams(wireDefs: WireDef[]) {
-    const props = new Set<string>();
-    wireDefs.forEach((wireDef) => {
-        const { params } = wireDef;
-        if (params) {
-            Object.keys(params).forEach(param => {
-                const prop = params[param];
-                props.add(prop);
-            });
-        }
-    });
-
-    return props;
+    invokeUpdatedCallback(ucMetadata[updateProp], paramValue);
 }
 
 /**
@@ -152,8 +115,7 @@ export function getOverrideDescriptor(cmp: Object, prop: string, callback: Funct
 export function buildContext(
     connectedNoArgCallbacks: NoArgumentCallback[],
     disconnectedNoArgCallbacks: NoArgumentCallback[],
-    updatedCallbackConfigs: UpdatedCallbackConfig[],
-    props: Set<string>
+    serviceUpdateContext: ServiceUpdateContext
 ): Map<string, ServiceContext> {
     // cache context that optimizes runtime of service callbacks
     const wireContext: Map<string, ServiceContext> = Object.create(null);
@@ -165,12 +127,8 @@ export function buildContext(
         wireContext[DISCONNECTED] = disconnectedNoArgCallbacks;
     }
 
-    if (updatedCallbackConfigs.length > 0) {
-        const ucContext: ServiceUpdateContext = {
-            callbacks: updatedCallbackConfigs,
-            paramValues: props
-        };
-        wireContext[UPDATED] = ucContext;
+    if (serviceUpdateContext) {
+        wireContext[UPDATED] = serviceUpdateContext;
     }
 
     return wireContext;
