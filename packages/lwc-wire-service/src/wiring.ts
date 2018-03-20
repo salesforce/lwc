@@ -1,6 +1,5 @@
 import { Element } from 'engine';
 import {
-    WireDef,
     ElementDef,
     NoArgumentCallback,
     UpdatedCallbackConfig,
