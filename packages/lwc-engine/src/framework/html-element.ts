@@ -3,7 +3,7 @@ import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot }
 import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
 import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
-    GlobalHTMLProperties,
+    getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
     removeAttribute,
@@ -218,8 +218,9 @@ class LWCElement implements Component {
             assert.vm(vm);
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
-                if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
-                    const { error, experimental } = GlobalHTMLProperties[propName];
+                const info = getGlobalHTMLPropertiesInfo();
+                if (info[propName] && info[propName].attribute) {
+                    const { error, experimental } = info[propName];
                     if (error) {
                         assert.logError(error);
                     } else if (experimental) {
@@ -319,14 +320,15 @@ defineProperties(LWCElement.prototype, htmlElementDescriptors);
 
 // Global HTML Attributes
 if (process.env.NODE_ENV !== 'production') {
-    forEach.call(getOwnPropertyNames(GlobalHTMLProperties), (propName: string) => {
+    const info = getGlobalHTMLPropertiesInfo();
+    forEach.call(getOwnPropertyNames(info), (propName: string) => {
         if (propName in LWCElement.prototype) {
             return; // no need to redefine something that we are already exposing
         }
         defineProperty(LWCElement.prototype, propName, {
             get() {
                 const vm = getCustomElementVM(this as HTMLElement);
-                const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
+                const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
                 if (error) {
