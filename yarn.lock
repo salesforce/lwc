@@ -4424,6 +4424,14 @@ humanize-duration@~3.12.0:
   version "3.12.1"
   resolved "http://npm.lwcjs.org/humanize-duration/-/humanize-duration-3.12.1/e9a531519d001ee600b6400fc353fed4fa3b235f.tgz#e9a531519d001ee600b6400fc353fed4fa3b235f"
 
+husky@^0.14.3:
+  version "0.14.3"
+  resolved "http://npm.lwcjs.org/husky/-/husky-0.14.3/c69ed74e2d2779769a17ba8399b54ce0b63c12c3.tgz#c69ed74e2d2779769a17ba8399b54ce0b63c12c3"
+  dependencies:
+    is-ci "^1.0.10"
+    normalize-path "^1.0.0"
+    strip-indent "^2.0.0"
+
 iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
   version "0.4.19"
   resolved "http://npm.lwcjs.org/iconv-lite/-/iconv-lite-0.4.19/f7468f60135f5e5dad3399c0a81be9a1603a082b.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
@@ -6051,6 +6059,10 @@ normalize-package-data@^2.3.0, normalize-package-data@^2.3.2, normalize-package-
     is-builtin-module "^1.0.0"
     semver "2 || 3 || 4 || 5"
     validate-npm-package-license "^3.0.1"
+
+normalize-path@^1.0.0:
+  version "1.0.0"
+  resolved "http://npm.lwcjs.org/normalize-path/-/normalize-path-1.0.0/32d0e472f91ff345701c15a8311018d3b0a90379.tgz#32d0e472f91ff345701c15a8311018d3b0a90379"
 
 normalize-path@^2.0.0, normalize-path@^2.0.1:
   version "2.1.1"
