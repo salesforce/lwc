@@ -276,16 +276,44 @@ describe('ReadOnlyHandler', () => {
         expect(accessSpy).toHaveBeenCalledTimes(2);
         expect(accessSpy).toHaveBeenLastCalledWith(obj.foo, 'bar');
     });
-    it('should throw when attempting to get the proxy from a read only proxy', function() {
+    it('should throw when attempting to mutate a read only proxy by transitivity', function() {
         const target = new ReactiveMembrane((value) => value, {
             propertyMemberChange: () => {},
             propertyMemberAccess: () => {},
         });
-        const obj = [{ foo: 'bar' }];
+        const obj = { foo: 'bar' };
 
         const readOnly = target.getReadOnlyProxy(obj);
+        const writeAndRead = target.getProxy(readOnly);
         expect(() => {
-            target.getProxy(readOnly);
+            writeAndRead.foo = 'baz';
+        }).toThrow();
+    });
+    it('should throw when attempting to mutate a read only proxy via initialization of writable proxy', function() {
+        const target = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: () => {},
+        });
+        const obj = { foo: 'bar' };
+
+        const readOnly = target.getReadOnlyProxy(obj);
+        const writeAndRead = target.getProxy({ x: readOnly });
+        expect(() => {
+            writeAndRead.x.foo = 'baz';
+        }).toThrow();
+    });
+    it('should throw when attempting to mutate a read only proxy via mutations of a writable proxy', function() {
+        const target = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: () => {},
+        });
+        const obj = { foo: 'bar' };
+
+        const readOnly = target.getReadOnlyProxy(obj);
+        const writeAndRead = target.getProxy({});
+        writeAndRead.x = readOnly;
+        expect(() => {
+            writeAndRead.x.foo = 'baz';
         }).toThrow();
     });
 });

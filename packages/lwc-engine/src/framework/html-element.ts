@@ -12,6 +12,7 @@ import {
     setAttributeNS,
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
+    CustomEvent,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -120,6 +121,12 @@ class LWCElement implements Component {
         const vm = getCustomElementVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
+            if (arguments.length === 0) {
+                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: 1 argument required, but only 0 present.`);
+            }
+            if (!(event instanceof CustomEvent) && !(event instanceof Event)) {
+                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: parameter 1 is not of type 'Event'.`);
+            }
             const { type: evtName, composed, bubbles } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && ('composed' in event && !composed)) {

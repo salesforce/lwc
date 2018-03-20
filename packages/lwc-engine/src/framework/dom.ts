@@ -370,7 +370,7 @@ if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
         },
     });
     const { CustomEvent: OriginalCustomEvent } = (window as any);
-    (window as any).CustomEvent = function CustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
+    (window as any).CustomEvent = function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
         const event = new OriginalCustomEvent(type, eventInitDict);
         // support for composed on custom events
         (event as any).composed = !!(eventInitDict && (eventInitDict as any).composed);
@@ -378,3 +378,5 @@ if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
     };
     (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
 }
+
+export const CustomEvent = (window as any).CustomEvent;

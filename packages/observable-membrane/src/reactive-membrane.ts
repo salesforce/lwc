@@ -111,11 +111,9 @@ export class ReactiveMembrane {
         const distorted = invokeDistortion(this, value);
         if (isObservable(distorted)) {
             const o = getReactiveState(this, distorted);
-            if (o.readOnly === value) {
-                // TODO: add error code
-                throw new TypeError(`Read only object is not observable.`);
-            }
-            return o.reactive;
+            // when trying to extract the writable version of a readonly
+            // we return the readonly.
+            return o.readOnly === value ? value : o.reactive;
         }
         return distorted;
     }

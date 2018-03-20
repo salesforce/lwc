@@ -26,9 +26,11 @@ describe('Testing component: simple-list-container', () => {
 
 
     it('should render number of items between min and max', function () {
-        browser.setValue('#min', 1);
-        browser.setValue('#max', 10);
-        const list = browser.elements('simple-list-container li.number');
-        assert.ok(list.value.length <= 10 && list.value.length >= 1);
+        browser.setValue('#mininput', 1);
+        browser.setValue('#maxinput', 10);
+        return Promise.resolve(() => {
+            const list = browser.elements('simple-list-container li.number');
+            assert.ok(list.value.length <= 10 && list.value.length >= 1);
+        });
     });
 });
