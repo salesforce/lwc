@@ -2,8 +2,8 @@
   "name": "lwc-wire-service",
   "version": "0.18.1",
   "description": "@wire service",
-  "main": "dist/commonjs/es2017/wire-service.js",
-  "module": "dist/modules/es2017/wire-service.js",
+  "main": "dist/commonjs/es2017/wire.js",
+  "module": "dist/modules/es2017/wire.js",
   "scripts": {
     "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\" \"yarn build:umd:prod\"",
     "build:umd:dev": "rollup -c rollup.config.umd.dev.js",

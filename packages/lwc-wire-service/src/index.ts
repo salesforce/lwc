@@ -17,26 +17,26 @@ import {
 import {
     CONTEXT_ID,
     CONNECTED,
-    DISCONNECTED
+    DISCONNECTED,
+    UPDATEDCALLBACK
 } from './constants';
 import {
     updated,
     installSetterOverrides,
     buildContext
 } from './wiring';
-export interface WiredValue {
-    data?: any;
-    error?: any;
-}
-export type TargetSetter = (WiredValue) => void;
 
+export type TargetSetter = (wiredValue: any) => void;
+export interface EventTarget {
+    dispatchEvent(evt: Event): boolean;
+}
 export type WireAdapterCallback = UpdatedCallback | NoArgumentCallback;
 export interface WireAdapter {
     updatedCallback?: UpdatedCallback;
     connectedCallback?: NoArgumentCallback;
     disconnectedCallback?: NoArgumentCallback;
 }
-export type WireAdapterFactory = (targetSetter: TargetSetter) => WireAdapter;
+export type WireAdapterFactory = (targetSetter: TargetSetter, eventTarget: EventTarget) => WireAdapter;
 
 // wire adapters: wire adapter id => adapter ctor
 const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
@@ -65,7 +65,6 @@ const wireService = {
         const wireTargets = Object.keys(wireStaticDef);
         const adapters: WireAdapter[] = [];
 
-        const updatedCallbackKey = 'updatedCallback';
         const connectedNoArgCallbacks: NoArgumentCallback[] = [];
         const disconnectedNoArgCallbacks: NoArgumentCallback[] = [];
         const serviceUpdateContext: ServiceUpdateContext = Object.create(null);
@@ -74,18 +73,18 @@ const wireService = {
             const wireDef = wireStaticDef[wireTarget];
             const id = wireDef.adapter;
             const params = wireDef.params;
-            // initialize wired property
-            if (!wireDef.method) {
-                cmp[wireTarget] = {};
-            }
 
             const targetSetter: TargetSetter = wireDef.method ?
                 (value) => { cmp[wireTarget](value); } :
-                (value) => { Object.assign(cmp[wireTarget], value); };
+                (value) => { cmp[wireTarget] = value; };
+
+            const eventTarget: EventTarget = {
+                dispatchEvent: cmp.dispatchEvent.bind(cmp)
+            };
 
             const adapterFactory = adapterFactories.get(id);
             if (adapterFactory) {
-                const wireAdapter = adapterFactory(targetSetter);
+                const wireAdapter = adapterFactory(targetSetter, eventTarget);
                 adapters.push(wireAdapter);
                 const connectedCallback = wireAdapter[CONNECTED];
                 if (connectedCallback) {
@@ -95,7 +94,7 @@ const wireService = {
                 if (disconnectedCallback) {
                     disconnectedNoArgCallbacks.push(disconnectedCallback);
                 }
-                const updatedCallback = wireAdapter[updatedCallbackKey];
+                const updatedCallback = wireAdapter[UPDATEDCALLBACK];
                 if (updatedCallback) {
                     const updatedCallbackConfig: UpdatedCallbackConfig = {
                         updatedCallback,

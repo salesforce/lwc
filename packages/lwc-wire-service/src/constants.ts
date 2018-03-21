@@ -6,3 +6,5 @@ export const UPDATED: string = 'updated';
 export const CONNECTED: string = 'connectedCallback';
 // key for wire service context disconnected callbacks
 export const DISCONNECTED: string = 'disconnectedCallback';
+// key for wire adapter updated callbacks
+export const UPDATEDCALLBACK = 'updatedCallback';
