@@ -5,8 +5,9 @@
   "main": "dist/commonjs/es2017/wire-service.js",
   "module": "dist/modules/es2017/wire-service.js",
   "scripts": {
-    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\"",
+    "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:dev\" \"yarn build:umd:prod\"",
     "build:umd:dev": "rollup -c rollup.config.umd.dev.js",
+    "build:umd:prod": "rollup -c rollup.config.umd.prod.js",
     "build:es-and-cjs": "rollup -c rollup.config.es-and-cjs.js",
     "build:playground": "rollup -c playground/rollup.config.js",
     "serve": "node playground/server.js",

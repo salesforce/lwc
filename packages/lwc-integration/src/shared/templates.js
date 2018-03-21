@@ -80,7 +80,7 @@ exports.wireServiceHtml = function (cmpName, isCompat) {
             ${isCompat ? COMPAT : ''}
             <script src="../../shared/engine.js"></script>
             <script src="../../shared/todo.js"></script>
-            <script src="../../shared/wire-service.js"></script>
+            <script src="../../shared/wire.js"></script>
             <script src="./${cmpName}.js"></script>
         </body>
     </html>
