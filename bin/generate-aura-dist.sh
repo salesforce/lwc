@@ -18,7 +18,7 @@ cp  ./packages/lwc-engine/dist/umd/es5/engine.min.js $AURA_FILEPATH/aura-resourc
 cp  ./packages/lwc-wire-service/dist/umd/es2017/wire* $AURA_FILEPATH/aura-resources/src/main/resources/aura/resources/wire/
 cp  ./packages/lwc-wire-service/dist/umd/es5/wire.js $AURA_FILEPATH/aura-resources/src/main/resources/aura/resources/wire/wire_compat.js
 cp  ./packages/lwc-wire-service/dist/umd/es5/wire_debug.js $AURA_FILEPATH/aura-resources/src/main/resources/aura/resources/wire/wire_compat_debug.js
-cp  ./packages/lwc-wire-service/dist/umd/es5/wire.min.js $AURA_FILEPATH/aura-resources/src/main/resources/aura/resources/engine/wire_compat.min.js
+cp  ./packages/lwc-wire-service/dist/umd/es5/wire.min.js $AURA_FILEPATH/aura-resources/src/main/resources/aura/resources/wire/wire_compat.min.js
 
 # compiler
 cp  ./packages/lwc-compiler/dist/umd/compiler.js $AURA_FILEPATH/aura-modules/src/main/resources/modules/compiler.js
