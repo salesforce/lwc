@@ -31,4 +31,34 @@ describe('bundler', () => {
         expect(diagnostics).toBeDefined();
         expect(metadata).toBeDefined();
     });
+
+    test("import location is returned for valid bundle", async () => {
+        const src = `
+            import xBar from 'x-bar';
+            import xFoo from 'x-foo';
+            import xZoo from 'x-zoo';
+            xBoo();
+            xFoo();
+            xZoo();
+        `;
+
+        const config = {
+            outputConfig: {
+                env: { NODE_ENV: "development" },
+                minify: false,
+                compat: false
+            },
+            name: "foo",
+            namespace: "x",
+            files: { "foo.js": src }
+        };
+
+        const { metadata: {importLocations} } = await bundle(config);
+        expect(importLocations.length).toBe(3);
+        expect(importLocations[0].name).toBe("x-bar");
+        expect(importLocations[0].location).toMatchObject({
+            start: 18,
+            length: 5
+        });
+    });
 });

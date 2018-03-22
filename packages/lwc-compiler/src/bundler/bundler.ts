@@ -22,6 +22,10 @@ export interface BundleReport {
     metadata: BundleMetadata;
 }
 
+import {
+    collectImportLocations
+} from "./import-location-collector";
+
 interface RollupWarning {
     message: string;
     frame?: string;
@@ -64,7 +68,7 @@ export async function bundle(
         }),
         rollupModuleResolver({
             metadataCollector,
-            options,
+            options
         }),
         rollupTransform({
             metadataCollector,
@@ -92,6 +96,10 @@ export async function bundle(
         strict: false,
         format
     });
+
+    metadataCollector.collectImportLocations(
+        collectImportLocations(code) || []
+    );
 
     return {
         diagnostics,

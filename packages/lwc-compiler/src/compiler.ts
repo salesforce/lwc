@@ -33,9 +33,11 @@ export async function compile(
     diagnostics.push(...bundleReport.diagnostics);
 
     if (!hasError(diagnostics)) {
-        const { diagnostics: bundleDiagnostics , code, metadata } = await bundle(
-            normalizedOptions
-        );
+        const {
+            diagnostics: bundleDiagnostics,
+            code,
+            metadata,
+        } = await bundle(normalizedOptions);
 
         diagnostics.push(...bundleDiagnostics);
 
@@ -44,7 +46,7 @@ export async function compile(
                 code,
                 map: null,
                 metadata,
-                references: bundleReport.references
+                references: bundleReport.references,
             };
         }
     }

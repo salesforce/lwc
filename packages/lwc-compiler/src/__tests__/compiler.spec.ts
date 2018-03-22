@@ -129,11 +129,12 @@ describe("compiler output", () => {
     test("should return output object with expected properties", async () => {
         const output = await compile(VALID_CONFIG);
         const { success, diagnostics, result } = output;
-        const { code, references } = result;
+        const { code, references, metadata } = result;
 
         expect(code).toBeDefined();
         expect(diagnostics).toBeDefined();
         expect(references).toBeDefined();
+        expect(metadata).toBeDefined();
         expect(success).toBeDefined();
     });
 
