@@ -1,7 +1,6 @@
 import { getComponentDef, registerComponent } from "./def";
 import { ComponentConstructor } from "./component";
 import { keys, isUndefined, ArrayPush } from "./language";
-import { invokeComponentAttributeChangedCallback } from "./invoker";
 import { createVM, appendVM, renderVM, removeVM } from "./vm";
 import { getCustomElementVM } from "./html-element";
 import assert from "./assert";
@@ -39,17 +38,6 @@ export function customElement(Ctor: ComponentConstructor): Function {
         disconnectedCallback() {
             const vm = getCustomElementVM(this);
             removeVM(vm);
-        }
-        attributeChangedCallback(attrName: string, oldValue: any, newValue: any) {
-            const vm = getCustomElementVM(this);
-            if (def.observedAttrs[attrName] === 1) {
-                if (oldValue !== newValue) {
-                    invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-                }
-            } else if (process.env.NODE_ENV !== 'production') {
-                const propName = getPropNameFromAttrName(attrName);
-                assert.fail(`Invalid usage of attribute "${attrName}" in element ${this}. Instead, you must set the property \`${propName}\`.`);
-            }
         }
         static observedAttributes = attrs;
     };
