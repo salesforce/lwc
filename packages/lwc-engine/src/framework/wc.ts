@@ -1,10 +1,9 @@
 import { getComponentDef, registerComponent } from "./def";
 import { ComponentConstructor } from "./component";
-import { keys, isUndefined, ArrayPush } from "./language";
+import { isUndefined } from "./language";
 import { createVM, appendVM, renderVM, removeVM } from "./vm";
 import { getCustomElementVM } from "./html-element";
 import assert from "./assert";
-import { getAttrNameFromPropName } from "./utils";
 
 export function customElement(Ctor: ComponentConstructor): Function {
     const def = getComponentDef(Ctor);
