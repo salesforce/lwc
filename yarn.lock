@@ -2294,9 +2294,13 @@ commander@2.6.0:
   version "2.6.0"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.6.0/9df7e52fb2a0cb0fb89058ee80c3104225f37e1d.tgz#9df7e52fb2a0cb0fb89058ee80c3104225f37e1d"
 
-commander@^2.12.1, commander@^2.9.0:
+commander@^2.12.1:
   version "2.14.1"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.14.1/2235123e37af8ca3c65df45b026dbd357b01b9aa.tgz#2235123e37af8ca3c65df45b026dbd357b01b9aa"
+
+commander@^2.9.0:
+  version "2.15.1"
+  resolved "http://npm.lwcjs.org/commander/-/commander-2.15.1/df46e867d0fc2aec66a34662b406a9ccafff5b0f.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 commander@~2.1.0:
   version "2.1.0"
@@ -2665,6 +2669,16 @@ cross-spawn@^5.0.1, cross-spawn@^5.1.0:
   resolved "http://npm.lwcjs.org/cross-spawn/-/cross-spawn-5.1.0/e8bd0efee58fcff6f8f94510a0a554bbfa235449.tgz#e8bd0efee58fcff6f8f94510a0a554bbfa235449"
   dependencies:
     lru-cache "^4.0.1"
+    shebang-command "^1.2.0"
+    which "^1.2.9"
+
+cross-spawn@^6.0.0:
+  version "6.0.5"
+  resolved "http://npm.lwcjs.org/cross-spawn/-/cross-spawn-6.0.5/4a5ec7c64dfae22c3a14124dbacdee846d80cbc4.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
+  dependencies:
+    nice-try "^1.0.4"
+    path-key "^2.0.1"
+    semver "^5.5.0"
     shebang-command "^1.2.0"
     which "^1.2.9"
 
@@ -5980,6 +5994,10 @@ negotiator@0.6.1:
   version "0.6.1"
   resolved "http://npm.lwcjs.org/negotiator/-/negotiator-0.6.1/2b327184e8992101177b28563fb5e7102acd0ca9.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
+nice-try@^1.0.4:
+  version "1.0.4"
+  resolved "http://npm.lwcjs.org/nice-try/-/nice-try-1.0.4/d93962f6c52f2c1558c0fbda6d512819f1efe1c4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"
+
 node-fetch@~1.7.3:
   version "1.7.3"
   resolved "http://npm.lwcjs.org/node-fetch/-/node-fetch-1.7.3/980f6f72d85211a5347c6b2bc18c5b84c3eb47ef.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
@@ -6377,7 +6395,7 @@ path-is-inside@^1.0.1, path-is-inside@^1.0.2:
   version "1.0.2"
   resolved "http://npm.lwcjs.org/path-is-inside/-/path-is-inside-1.0.2/365417dede44430d1c11af61027facf074bdfc53.tgz#365417dede44430d1c11af61027facf074bdfc53"
 
-path-key@^2.0.0:
+path-key@^2.0.0, path-key@^2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/path-key/-/path-key-2.0.1/411cadb574c5a140d3a4b1910d40d80cc9f40b40.tgz#411cadb574c5a140d3a4b1910d40d80cc9f40b40"
 
@@ -7442,13 +7460,13 @@ sax@>=0.6.0, sax@^1.2.4, sax@~1.2.1:
   version "1.2.4"
   resolved "http://npm.lwcjs.org/sax/-/sax-1.2.4/2816234e2378bddc4e5354fab5caa895df7100d9.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
-selenium-standalone@^6.5.0:
-  version "6.12.0"
-  resolved "http://npm.lwcjs.org/selenium-standalone/-/selenium-standalone-6.12.0/789730db09a105f1cce12c6424d795d11c543bd4.tgz#789730db09a105f1cce12c6424d795d11c543bd4"
+selenium-standalone@^6.13.0:
+  version "6.13.0"
+  resolved "http://npm.lwcjs.org/selenium-standalone/-/selenium-standalone-6.13.0/d61d2994e196b2ff61a19de498c6711375f5a51b.tgz#d61d2994e196b2ff61a19de498c6711375f5a51b"
   dependencies:
     async "^2.1.4"
     commander "^2.9.0"
-    cross-spawn "^5.1.0"
+    cross-spawn "^6.0.0"
     debug "^3.0.0"
     lodash "^4.17.4"
     minimist "^1.2.0"
@@ -8551,12 +8569,12 @@ wdio-sauce-service@^0.4.0:
     request "~2.83.0"
     sauce-connect-launcher "~1.2.3"
 
-wdio-selenium-standalone-service@0.0.9:
-  version "0.0.9"
-  resolved "http://npm.lwcjs.org/wdio-selenium-standalone-service/-/wdio-selenium-standalone-service-0.0.9/c80d4ff489744d5a0b91d5189764916d4c0c8564.tgz#c80d4ff489744d5a0b91d5189764916d4c0c8564"
+wdio-selenium-standalone-service@~0.0.10:
+  version "0.0.10"
+  resolved "http://npm.lwcjs.org/wdio-selenium-standalone-service/-/wdio-selenium-standalone-service-0.0.10/cdb64d9a53fa3ea0ed3cf0ebf4fd3bdca93dcf05.tgz#cdb64d9a53fa3ea0ed3cf0ebf4fd3bdca93dcf05"
   dependencies:
     fs-extra "^0.30.0"
-    selenium-standalone "^6.5.0"
+    selenium-standalone "^6.13.0"
 
 wdio-spec-reporter@^0.1.0:
   version "0.1.3"
