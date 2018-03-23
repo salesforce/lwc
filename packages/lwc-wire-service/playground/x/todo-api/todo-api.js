@@ -2,7 +2,7 @@
  * Todo imperative APIs and wire adapters.
  */
 
-import { register } from 'wire-service';
+import { register, ValueChangedEvent } from 'wire-service';
 import getObservable from './todo';
 
 // Component-importable imperative access.
@@ -22,31 +22,25 @@ export function getTodo(config) {
 }
 
 // Register the wire adapter for @wire(getTodo).
-register(getTodo, function getTodoWireAdapter(targetSetter) {
+register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
     let subscription;
     let config;
-    return {
-        updatedCallback: (newConfig) => {
-            config = newConfig;
-            if (subscription) {
-                subscription.unsubscribe();
-                subscription = getObservable(config).subscribe({
-                    next: data => targetSetter({ data, error: undefined }),
-                    error: error => targetSetter({ data: undefined, error })
-                });
-            }
-        },
-
-        connectedCallback: () => {
-            // Subscribe to stream.
-            subscription = getObservable(config).subscribe({
-                next: data => targetSetter({ data, error: undefined }),
-                error: error => targetSetter({ data: undefined, error })
-            });
-        },
-
-        disconnectedCallback: () => {
+    const observer = {
+        next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+        error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+    };
+    wiredEventTarget.addEventListener('connect', () => {
+        // Subscribe to stream.
+        subscription = getObservable(config).subscribe(observer);
+    });
+    wiredEventTarget.addEventListener('disconnect', () => {
+        subscription.unsubscribe();
+    });
+    wiredEventTarget.addEventListener('config', (newConfig) => {
+        config = newConfig;
+        if (subscription) {
             subscription.unsubscribe();
         }
-    };
+        subscription = getObservable(config).subscribe(observer);
+    });
 });

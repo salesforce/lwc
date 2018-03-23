@@ -1,4 +1,3 @@
-import { CONNECTED, DISCONNECTED, UPDATED } from '../constants';
 import * as target from '../wiring';
 
 describe('wiring internal', () => {
@@ -47,22 +46,6 @@ describe('wiring internal', () => {
             cmp.prop1 = expected;
             expect(setter).toHaveBeenCalledTimes(1);
             expect(setter).toHaveBeenCalledWith(expected);
-        });
-    });
-
-    describe('builds wire service context', () => {
-        it('includes connected callback if any', () => {
-            expect(target.buildContext([jest.fn()], [], {})[CONNECTED]).toHaveLength(1);
-        });
-        it('includes disconnected callback if any', () => {
-            expect(target.buildContext([], [jest.fn()], {})[DISCONNECTED]).toHaveLength(1);
-        });
-        it('includes updated callback config if any', () => {
-            const updatedCallbackConfigs = [{
-                updatedCallback: jest.fn()
-            }];
-            const serviceUpdateContext = { prop: updatedCallbackConfigs };
-            expect(target.buildContext([], [], serviceUpdateContext)[UPDATED]).toEqual(serviceUpdateContext);
         });
     });
 });

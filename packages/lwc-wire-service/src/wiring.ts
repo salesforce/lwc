@@ -1,16 +1,14 @@
 import { Element } from 'engine';
 import {
     ElementDef,
-    NoArgumentCallback,
+    WireEventTargetCallback,
     UpdatedCallbackConfig,
     ServiceUpdateContext,
-    ServiceContext
-} from './shared-types';
+    UpdatedCallback
+} from './index';
 import {
     CONTEXT_ID,
-    UPDATED,
-    CONNECTED,
-    DISCONNECTED
+    UPDATED
 } from './constants';
 
 /**
@@ -32,7 +30,7 @@ function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues
             }
         }
 
-        const config = Object.assign(Object.create(null), statics, resolvedParams);
+        const config = Object.assign({}, statics, resolvedParams);
         updatedCallback.call(undefined, config);
     }
 }
@@ -49,7 +47,7 @@ export function updated(cmp: Element, data: object, def: ElementDef, context: ob
     }
 
     const updateProp = data.toString();
-    const paramValue = Object.create(null);
+    const paramValue = {};
     paramValue[updateProp] = cmp[updateProp];
 
     // process queue of impacted adapters
@@ -103,32 +101,20 @@ export function getOverrideDescriptor(cmp: Object, prop: string, callback: Funct
     return newDescriptor;
 }
 
-/**
- * Builds wire service context to optimize runtime lifecycle callbacks
- * @param connectedNoArgCallbacks wire adapter connected callbacks
- * @param disconnectedNoArgCallbacks wire adapter disconnected callbacks
- * @param updatedCallbackConfigs wire service context metadata with wire adapter updated callbacks
- * @param props bound properties
- * @returns A wire service context
- */
-export function buildContext(
-    connectedNoArgCallbacks: NoArgumentCallback[],
-    disconnectedNoArgCallbacks: NoArgumentCallback[],
-    serviceUpdateContext: ServiceUpdateContext
-): Map<string, ServiceContext> {
-    // cache context that optimizes runtime of service callbacks
-    const wireContext: Map<string, ServiceContext> = Object.create(null);
-    if (connectedNoArgCallbacks.length > 0) {
-        wireContext[CONNECTED] = connectedNoArgCallbacks;
+export function removeCallback(callbacks: WireEventTargetCallback[], toRemove: WireEventTargetCallback) {
+    for (let i = 0, l = callbacks.length; i < l; i++) {
+        if (callbacks[i] === toRemove) {
+            callbacks.splice(i, 1);
+            return;
+        }
     }
+}
 
-    if (disconnectedNoArgCallbacks.length > 0) {
-        wireContext[DISCONNECTED] = disconnectedNoArgCallbacks;
+export function removeUpdatedCallbackConfigs(updatedCallbackConfigs: UpdatedCallbackConfig[], toRemove: UpdatedCallback) {
+    for (let i = 0, l = updatedCallbackConfigs.length; i < l; i++) {
+        if (updatedCallbackConfigs[i].updatedCallback === toRemove) {
+            updatedCallbackConfigs.splice(i, 1);
+            return;
+        }
     }
-
-    if (serviceUpdateContext) {
-        wireContext[UPDATED] = serviceUpdateContext;
-    }
-
-    return wireContext;
 }

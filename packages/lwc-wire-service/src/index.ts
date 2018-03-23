@@ -5,38 +5,66 @@
  * Register wire adapters with `register(adapterId: any, adapterFactory: WireAdapterFactory)`.
  */
 
-import { Element } from 'engine';
+import { Element, ComposableEvent } from 'engine';
 import assert from './assert';
 import {
-    ElementDef,
-    NoArgumentCallback,
-    UpdatedCallback,
-    UpdatedCallbackConfig,
-    ServiceUpdateContext
-} from './shared-types';
-import {
     CONTEXT_ID,
-    CONNECTED,
-    DISCONNECTED,
-    UPDATEDCALLBACK
+    CONNECTEDCALLBACK,
+    DISCONNECTEDCALLBACK,
+    UPDATED,
+    CONNECT,
+    DISCONNECT,
+    CONFIG
 } from './constants';
 import {
     updated,
     installSetterOverrides,
-    buildContext
+    removeCallback,
+    removeUpdatedCallbackConfigs
 } from './wiring';
 
-export type TargetSetter = (wiredValue: any) => void;
-export interface EventTarget {
-    dispatchEvent(evt: Event): boolean;
+export interface WireDef {
+    params?: {
+        [key: string]: string;
+    };
+    static?: {
+        [key: string]: any;
+    };
+    adapter: any;
+    method?: 1;
 }
-export type WireAdapterCallback = UpdatedCallback | NoArgumentCallback;
-export interface WireAdapter {
-    updatedCallback?: UpdatedCallback;
-    connectedCallback?: NoArgumentCallback;
-    disconnectedCallback?: NoArgumentCallback;
+export interface ElementDef {
+    wire: { // TODO - wire is optional but all wire service code assumes it's present
+        [key: string]: WireDef
+    };
 }
-export type WireAdapterFactory = (targetSetter: TargetSetter, eventTarget: EventTarget) => WireAdapter;
+export type NoArgumentCallback = () => void;
+export type UpdatedCallback = (object) => void;
+export interface UpdatedCallbackConfig {
+    updatedCallback: UpdatedCallback;
+    statics?: {
+        [key: string]: any;
+    };
+    params?: {
+        [key: string]: string;
+    };
+}
+export interface ServiceUpdateContext {
+    [prop: string]: UpdatedCallbackConfig[];
+}
+export type ServiceContext = Set<NoArgumentCallback> | ServiceUpdateContext;
+
+export type WireEventTargetCallback = NoArgumentCallback | UpdatedCallback;
+export interface ValueChagnedEvent extends ComposableEvent {
+    value: any;
+}
+export interface WireEventTarget {
+    dispatchEvent(evt: ValueChagnedEvent): boolean;
+    addEventListener(type: string, callback: WireEventTargetCallback): void;
+    removeEventListener(type: string, callback: WireEventTargetCallback): void;
+}
+
+export type WireAdapterFactory = (eventTarget: WireEventTarget) => void;
 
 // wire adapters: wire adapter id => adapter ctor
 const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
@@ -60,77 +88,113 @@ function invokeCallback(callbacks: NoArgumentCallback[]) {
 const wireService = {
     // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
+        const wireContext = context[CONTEXT_ID] = Object.create(null);
+        wireContext[CONNECTEDCALLBACK] = new Set<NoArgumentCallback>();
+        wireContext[DISCONNECTEDCALLBACK] = new Set<NoArgumentCallback>();
+        wireContext[UPDATED] = Object.create(null);
+
         // engine guarantees invocation only if def.wire is defined
         const wireStaticDef = def.wire;
         const wireTargets = Object.keys(wireStaticDef);
-        const adapters: WireAdapter[] = [];
-
-        const connectedNoArgCallbacks: NoArgumentCallback[] = [];
-        const disconnectedNoArgCallbacks: NoArgumentCallback[] = [];
-        const serviceUpdateContext: ServiceUpdateContext = Object.create(null);
-        for (let i = 0; i < wireTargets.length; i++) {
+        for (let i = 0, len = wireTargets.length; i < len; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
             const id = wireDef.adapter;
             const params = wireDef.params;
 
-            const targetSetter: TargetSetter = wireDef.method ?
-                (value) => { cmp[wireTarget](value); } :
-                (value) => { cmp[wireTarget] = value; };
+            const wireEventTarget: WireEventTarget = {
+                addEventListener: (type, callback) => {
+                    const connectedCallbacks = context[CONTEXT_ID][CONNECTEDCALLBACK];
+                    const disconnectedCallbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK];
+                    const serviceUpdateContext = context[CONTEXT_ID][UPDATED];
+                    switch (type) {
+                        case CONNECT:
+                            assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connected") with the same callback');
+                            connectedCallbacks.add(callback);
+                            break;
+                        case DISCONNECT:
+                            assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnected") with the same callback');
+                            disconnectedCallbacks.add(callback);
+                            break;
+                        case CONFIG:
+                            const updatedCallbackConfig: UpdatedCallbackConfig = {
+                                updatedCallback: callback,
+                                statics: wireDef.static,
+                                params: wireDef.params
+                            };
 
-            const eventTarget: EventTarget = {
-                dispatchEvent: cmp.dispatchEvent.bind(cmp)
+                            if (params) {
+                                Object.keys(params).forEach(param => {
+                                    const prop = params[param];
+                                    let updatedCallbackConfigs = serviceUpdateContext[prop];
+                                    if (!updatedCallbackConfigs) {
+                                        updatedCallbackConfigs = [updatedCallbackConfig];
+                                        serviceUpdateContext[prop] = updatedCallbackConfigs;
+                                        installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, prop, def, context));
+                                    } else {
+                                        updatedCallbackConfigs.push(updatedCallbackConfig);
+                                    }
+                                });
+                            }
+                            break;
+                        case 'default':
+                            throw new Error(`unsupported event type ${type}`);
+                    }
+                },
+                removeEventListener: (type, callback) => {
+                    const connectedCallbacks = context[CONTEXT_ID][CONNECTEDCALLBACK];
+                    const disconnectedCallbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK];
+                    const serviceUpdateContext = context[CONTEXT_ID][UPDATED];
+                    switch (type) {
+                        case CONNECT:
+                            removeCallback(connectedCallbacks, callback);
+                            break;
+                        case DISCONNECT:
+                            removeCallback(disconnectedCallbacks, callback);
+                            break;
+                        case CONFIG:
+                            if (params) {
+                                Object.keys(params).forEach(param => {
+                                    const prop = params[param];
+                                    const updatedCallbackConfigs = serviceUpdateContext[prop];
+                                    if (updatedCallbackConfigs) {
+                                        removeUpdatedCallbackConfigs(updatedCallbackConfigs, callback);
+                                    }
+                                });
+                            }
+                            break;
+                        case 'default':
+                            throw new Error(`unsupported event type ${type}`);
+                    }
+                },
+                dispatchEvent: (evt) => {
+                    if (evt.type === "ValueChangedEvent") {
+                        const value = evt.value;
+                        if (wireDef.method) {
+                            cmp[wireTarget](value);
+                        } else {
+                            cmp[wireTarget] = value;
+                        }
+                        return true;
+                    } else {
+                        // TODO: only allow ValueChangedEvent
+                        // however, doing so would require adapter to implement machinery
+                        // that fire the intended event as DOM event and wrap inside ValueChagnedEvent
+                        return cmp.dispatchEvent(evt);
+                    }
+                }
             };
 
             const adapterFactory = adapterFactories.get(id);
             if (adapterFactory) {
-                const wireAdapter = adapterFactory(targetSetter, eventTarget);
-                adapters.push(wireAdapter);
-                const connectedCallback = wireAdapter[CONNECTED];
-                if (connectedCallback) {
-                    connectedNoArgCallbacks.push(connectedCallback);
-                }
-                const disconnectedCallback = wireAdapter[DISCONNECTED];
-                if (disconnectedCallback) {
-                    disconnectedNoArgCallbacks.push(disconnectedCallback);
-                }
-                const updatedCallback = wireAdapter[UPDATEDCALLBACK];
-                if (updatedCallback) {
-                    const updatedCallbackConfig: UpdatedCallbackConfig = {
-                        updatedCallback,
-                        statics: wireDef.static,
-                        params: wireDef.params
-                    };
-
-                    if (params) {
-                        Object.keys(params).forEach(param => {
-                            const prop = params[param];
-                            let updatedCallbackConfigs = serviceUpdateContext[prop];
-                            if (!updatedCallbackConfigs) {
-                                updatedCallbackConfigs = [updatedCallbackConfig];
-                                serviceUpdateContext[prop] = updatedCallbackConfigs;
-                            } else {
-                                updatedCallbackConfigs.push(updatedCallbackConfig);
-                            }
-                        });
-                    }
-                }
+                adapterFactory(wireEventTarget);
             }
         }
-
-        // only add updated to bound props
-        Object.keys(serviceUpdateContext).forEach((prop) => {
-            // using data to notify which prop gets updated
-            installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, prop, def, context));
-        });
-
-        // cache context that optimizes runtime of service callbacks
-        context[CONTEXT_ID] = buildContext(connectedNoArgCallbacks, disconnectedNoArgCallbacks, serviceUpdateContext);
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
         let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONNECTED])) {
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONNECTEDCALLBACK])) {
             return;
         }
         invokeCallback(callbacks);
@@ -138,7 +202,7 @@ const wireService = {
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
         let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][DISCONNECTED])) {
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK])) {
             return;
         }
         invokeCallback(callbacks);
@@ -167,5 +231,13 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
 export function unregister(adapterId: any) {
     if (process.env.NODE_ENV !== 'production') {
         adapterFactories.delete(adapterId);
+    }
+}
+
+export class ValueChangedEvent extends Event {
+    value: any;
+    constructor(value) {
+        super("ValueChangedEvent");
+        this.value = value;
     }
 }
