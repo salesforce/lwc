@@ -37,7 +37,7 @@ const {
 
 function findShadowRoot(node) {
     let root = node;
-    while(isUndefined(root[ViewModelReflection])) {
+    while (isUndefined(root[ViewModelReflection])) {
         root = root.parentNode;
     }
     return root;
