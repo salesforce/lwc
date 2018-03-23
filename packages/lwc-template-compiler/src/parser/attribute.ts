@@ -200,6 +200,10 @@ export function isAttribute(element: IRElement, attrName: string): boolean {
         return isCustomElementAttribute(attrName);
     }
 
+    if (booleanAttributes.has(attrName)) {
+        return false;
+    }
+
     // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
     if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
         return true;

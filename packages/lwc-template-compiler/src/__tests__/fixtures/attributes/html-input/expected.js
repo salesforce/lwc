@@ -7,13 +7,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 attrs: {
                     type: 'checkbox',
-                    required: true,
-                    readonly: true,
                     minlength: '5',
                     maxlength: '10'
                 },
                 props: {
-                    checked: true
+                    required: true,
+                    readOnly: true,
+                    checked: true,
                 },
                 key: 1
             },
