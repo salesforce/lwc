@@ -474,4 +474,65 @@ describe('template', () => {
             });
         });
     });
+
+    describe('Attributes', () => {
+        it('should render attributes correctly', () => {
+            const tmpl = ($api, $cmp) => {
+                return [$api.h('div', {
+                    attrs: {
+                        title: 'foo',
+                    },
+                    key: 1,
+                    style: $cmp.getStyle,
+                }, [])]
+            }
+
+            class MyComponent extends Element {
+                render() {
+                    return tmpl;
+                }
+            }
+
+            const element = createElement('x-attr-cmp', { is: MyComponent });
+            document.body.appendChild(element);
+
+            expect(element.querySelector('div').getAttribute('title')).toBe('foo');
+        });
+
+        it('should remove attribute when value is null', () => {
+            const tmpl = ($api, $cmp) => {
+                return [$api.h('div', {
+                    attrs: {
+                        title: $cmp._inner,
+                    },
+                    key: 1,
+                    style: $cmp.getStyle,
+                }, [])]
+            }
+
+            class MyComponent extends Element {
+                _inner = 'initial',
+                setInner(value) {
+                    this._inner = value;
+                }
+                render() {
+                    return tmpl;
+                }
+            }
+
+            MyComponent.publicMethods = ['setInner'];
+            MyComponent.track = {
+                _inner: 1,
+            };
+
+            const element = createElement('x-attr-cmp', { is: MyComponent });
+            document.body.appendChild(element);
+
+            expect(element.querySelector('div').getAttribute('title')).toBe('initial');
+            element.setInner(null);
+            return Promise.resolve().then(() => {
+                expect(element.querySelector('div').hasAttribute('title')).toBe(false);
+            });
+        });
+    });
 });
