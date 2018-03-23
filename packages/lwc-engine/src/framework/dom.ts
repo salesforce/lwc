@@ -59,12 +59,10 @@ function findComposedRootNode(node: Node) {
 // for now, we need to provide a dummy implementation to provide retargeting
 function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
     const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    let node: Node = this;
     if (!composed) {
-        return findShadowRoot(node.parentNode); // this is not quite the root (it is the host), but for us is sufficient
+        return findShadowRoot(this.parentNode); // this is not quite the root (it is the host), but for us is sufficient
     }
-
-    return findComposedRootNode(node);
+    return findComposedRootNode(this);
 }
 
 export {
