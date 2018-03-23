@@ -25,15 +25,15 @@ describe('dom', () => {
                 render() {
                     return ($api, $cmp) => {
                         return [
-                            $api.h(
-                                'div',
+                            $api.c(
+                                'x-child',
+                                MyComponent,
                                 {
                                     on: {
                                         foo: $api.b($cmp.handleFoo)
                                     },
                                     key: 0,
                                 },
-                                []
                             )
                         ]
                     }
@@ -42,7 +42,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('div');
+            const child = elm.querySelector('x-child');
             const match = getRootNode.call(child, { composed: true });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -50,18 +50,6 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class MyComponent extends Element {
-                trigger() {
-                    const event = new CustomEvent('foo', {
-                        bubbles: true,
-                        composed: true,
-                    });
-
-                    this.dispatchEvent(event);
-                }
-            }
-            MyComponent.publicMethods = ['trigger'];
-
             class Parent extends Element {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.root.querySelector('x-foo'));
@@ -116,15 +104,15 @@ describe('dom', () => {
                 render() {
                     return ($api, $cmp) => {
                         return [
-                            $api.h(
-                                'div',
+                            $api.c(
+                                'x-child',
+                                MyComponent,
                                 {
                                     on: {
                                         foo: $api.b($cmp.handleFoo)
                                     },
                                     key: 0,
                                 },
-                                []
                             )
                         ]
                     }
@@ -133,7 +121,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('div');
+            const child = elm.querySelector('x-child');
             const match = getRootNode.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -141,18 +129,6 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class MyComponent extends Element {
-                trigger() {
-                    const event = new CustomEvent('foo', {
-                        bubbles: true,
-                        composed: true,
-                    });
-
-                    this.dispatchEvent(event);
-                }
-            }
-            MyComponent.publicMethods = ['trigger'];
-
             class Parent extends Element {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.root.querySelector('x-foo'));

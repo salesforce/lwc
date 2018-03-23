@@ -36,10 +36,11 @@ const {
 } = Node.prototype;
 
 function findShadowRoot(node) {
-    if (isUndefined(node[ViewModelReflection])) {
-        return findShadowRoot(node.parentNode);
+    let root = node;
+    while(isUndefined(root[ViewModelReflection])) {
+        root = root.parentNode;
     }
-    return node;
+    return root;
 }
 
 // TODO: once we start using the real shadowDOM, we can rely on:
