@@ -35,16 +35,16 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
-// TODO: once we start using the real shadowDOM, we can rely on:
-// const { getRootNode } = Node.prototype;
-// for now, we need to provide a dummy implementation to provide retargeting
-function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    let node: Node = this;
+function findShadowRoot(node) {
+    let root = node;
+    while (isUndefined(root[ViewModelReflection])) {
+        root = root.parentNode;
+    }
+    return root;
+}
+
+function findComposedRootNode(node: Node) {
     while (node !== document) {
-        if (!composed && !isUndefined(node[ViewModelReflection])) {
-            return node; // this is not quite the root (it is the host), but for us is sufficient
-        }
         const parent = node.parentNode;
         if (isNull(parent)) {
             return node;
@@ -52,6 +52,17 @@ function getRootNode(this: Node, options: Record<string, any> | undefined): Node
         node = parent;
     }
     return node;
+}
+
+// TODO: once we start using the real shadowDOM, we can rely on:
+// const { getRootNode } = Node.prototype;
+// for now, we need to provide a dummy implementation to provide retargeting
+function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+    if (!composed) {
+        return findShadowRoot(this.parentNode); // this is not quite the root (it is the host), but for us is sufficient
+    }
+    return findComposedRootNode(this);
 }
 
 export {
