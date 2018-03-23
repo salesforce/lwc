@@ -9,7 +9,7 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
-        import { registerWireService, register as registerAdapter } from 'wire-service';
+        import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
         import { getTodo, getObservable } from 'todo';
@@ -17,30 +17,27 @@ exports.todoApp = function (cmpName) {
         registerWireService(register);
 
         // Register the wire adapter for @wire(getTodo).
-        registerAdapter(getTodo, function getTodoWireAdapter(targetSetter) {
+        registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
             let subscription;
             let config;
-            return {
-                updatedCallback: (newConfig) => {
-                    config = newConfig;
-                    subscription = getObservable(config).subscribe({
-                        next: data => targetSetter({ data, error: undefined }),
-                        error: error => targetSetter({ data: undefined, error })
-                    });
-                },
-
-                connectedCallback: () => {
-                    // Subscribe to stream.
-                    subscription = getObservable(config).subscribe({
-                        next: data => targetSetter({ data, error: undefined }),
-                        error: error => targetSetter({ data: undefined, error })
-                    });
-                },
-
-                disconnectedCallback: () => {
+            const observer = {
+                next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+                error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+            };
+            wiredEventTarget.addEventListener('connect', () => {
+                // Subscribe to stream.
+                subscription = getObservable(config).subscribe(observer);
+            });
+            wiredEventTarget.addEventListener('disconnect', () => {
+                subscription.unsubscribe();
+            });
+            wiredEventTarget.addEventListener('config', (newConfig) => {
+                config = newConfig;
+                if (subscription) {
                     subscription.unsubscribe();
                 }
-            };
+                subscription = getObservable(config).subscribe(observer);
+            });
         });
 
         const element = createElement('${cmpName}', { is: Cmp });
