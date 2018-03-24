@@ -1,14 +1,22 @@
 import { Element } from 'engine';
+import assert from './assert';
 import {
     ElementDef,
-    WireEventTargetCallback,
     ConfigListener,
     ParamToConfigListenerMetadataMap,
-    ConfigListenerMetadata
+    ConfigListenerMetadata,
+    WireEventTargetCallback,
+    ValueChangedEvent,
+    WireDef
 } from './index';
 import {
     CONTEXT_ID,
-    CONTEXT_UPDATED
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED,
+    CONTEXT_UPDATED,
+    CONNECT,
+    DISCONNECT,
+    CONFIG
 } from './constants';
 
 /**
@@ -41,7 +49,7 @@ function invokeConfigListeners(configListenerMetadatas: ConfigListenerMetadata[]
  * is invoked whenever a tracked property is changed. wire service is structured to
  * make this adoption trivial.
  */
-export function updated(cmp: Element, data: object, def: ElementDef, context: object) {
+function updated(cmp: Element, data: object, def: ElementDef, context: object) {
     let paramToConfigListenerMetadatas: ParamToConfigListenerMetadataMap;
     if (!def.wire || !(paramToConfigListenerMetadatas = context[CONTEXT_ID][CONTEXT_UPDATED])) {
         return;
@@ -63,7 +71,7 @@ export function updated(cmp: Element, data: object, def: ElementDef, context: ob
  * @param prop The name of the property to be monitored
  * @param callback a function to invoke when the prop's value changes
  */
-export function installSetterOverrides(cmp: Object, prop: string, callback: Function) {
+export function installSetterOverrides(cmp: Object, prop: string, callback: () => void) {
     const newDescriptor = getOverrideDescriptor(cmp, prop, callback);
     Object.defineProperty(cmp, prop, newDescriptor);
 }
@@ -136,7 +144,7 @@ export function getOverrideDescriptor(cmp: Object, prop: string, callback: () =>
     };
 }
 
-export function removeCallback(callbacks: WireEventTargetCallback[], toRemove: WireEventTargetCallback) {
+function removeCallback(callbacks: WireEventTargetCallback[], toRemove: WireEventTargetCallback) {
     for (let i = 0, l = callbacks.length; i < l; i++) {
         if (callbacks[i] === toRemove) {
             callbacks.splice(i, 1);
@@ -145,11 +153,114 @@ export function removeCallback(callbacks: WireEventTargetCallback[], toRemove: W
     }
 }
 
-export function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[], toRemove: ConfigListener) {
+function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[], toRemove: ConfigListener) {
     for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
         if (configListenerMetadatas[i].callback === toRemove) {
             configListenerMetadatas.splice(i, 1);
             return;
+        }
+    }
+}
+
+export class WireEventTarget {
+    _cmp: Element;
+    _def: ElementDef;
+    _context: object;
+    _wireDef: WireDef;
+    _wireTarget: string;
+
+    constructor(
+        cmp: Element,
+        def: ElementDef,
+        context: object,
+        wireDef: WireDef,
+        wireTarget: string) {
+        this._cmp = cmp;
+        this._def = def;
+        this._context = context;
+        this._wireDef = wireDef;
+        this._wireTarget = wireTarget;
+    }
+
+    addEventListener(type: string, callback: WireEventTargetCallback): void {
+        switch (type) {
+            case CONNECT:
+                const connectedCallbacks: Set<WireEventTargetCallback> = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connect") with the same callback');
+                connectedCallbacks.add(callback);
+                break;
+            case DISCONNECT:
+                const disconnectedCallbacks: Set<WireEventTargetCallback> = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnect") with the same callback');
+                disconnectedCallbacks.add(callback);
+                break;
+            case CONFIG:
+                const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const { params } = this._wireDef;
+                const configListenerMetadata: ConfigListenerMetadata = {
+                    callback,
+                    statics: this._wireDef.static,
+                    params
+                };
+
+                if (params) {
+                    Object.keys(params).forEach(param => {
+                        const prop = params[param];
+                        let configListenerMetadatas = paramToConfigListenerMetadata[prop];
+                        if (!configListenerMetadatas) {
+                            configListenerMetadatas = [configListenerMetadata];
+                            paramToConfigListenerMetadata[prop] = configListenerMetadatas;
+                            installSetterOverrides(this._cmp, prop, updated.bind(undefined, this._cmp, prop, this._def, this._context));
+                        } else {
+                            configListenerMetadatas.push(configListenerMetadata);
+                        }
+                    });
+                }
+                break;
+            case 'default':
+                throw new Error(`unsupported event type ${type}`);
+        }
+    }
+
+    removeEventListener(type: string, callback: WireEventTargetCallback): void {
+        switch (type) {
+            case CONNECT:
+                const connectedCallbacks = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                removeCallback(connectedCallbacks, callback);
+                break;
+            case DISCONNECT:
+                const disconnectedCallbacks = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                removeCallback(disconnectedCallbacks, callback);
+                break;
+            case CONFIG:
+                const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const { params } = this._wireDef;
+                if (params) {
+                    Object.keys(params).forEach(param => {
+                        const prop = params[param];
+                        const updatedCallbackConfigs = paramToConfigListenerMetadata[prop];
+                        if (updatedCallbackConfigs) {
+                            removeConfigListener(updatedCallbackConfigs, callback);
+                        }
+                    });
+                }
+                break;
+            case 'default':
+                throw new Error(`unsupported event type ${type}`);
+        }
+    }
+
+    dispatchEvent(evt: ValueChangedEvent): boolean {
+        if (evt instanceof ValueChangedEvent) {
+            const value = evt.value;
+            if (this._wireDef.method) {
+                this._cmp[this._wireTarget](value);
+            } else {
+                this._cmp[this._wireTarget] = value;
+            }
+            return false; // canceling signal since we don't want this to propagate
+        } else {
+            throw new Error(`Invalid event ${evt}.`);
         }
     }
 }

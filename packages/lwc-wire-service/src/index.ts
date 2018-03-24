@@ -11,16 +11,10 @@ import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,
     CONTEXT_DISCONNECTED,
-    CONTEXT_UPDATED,
-    CONNECT,
-    DISCONNECT,
-    CONFIG
+    CONTEXT_UPDATED
 } from './constants';
 import {
-    updated,
-    installSetterOverrides,
-    removeCallback,
-    removeConfigListener
+    WireEventTarget
 } from './wiring';
 
 export interface WireDef {
@@ -101,91 +95,14 @@ const wireService = {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
             const id = wireDef.adapter;
-            const params = wireDef.params;
-
-            const wireEventTarget: WireEventTarget = {
-                addEventListener: (type, callback) => {
-                    switch (type) {
-                        case CONNECT:
-                            const connectedCallbacks: Set<WireEventTargetCallback> = context[CONTEXT_ID][CONTEXT_CONNECTED];
-                            assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connect") with the same callback');
-                            connectedCallbacks.add(callback);
-                            break;
-                        case DISCONNECT:
-                            const disconnectedCallbacks: Set<WireEventTargetCallback> = context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                            assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnect") with the same callback');
-                            disconnectedCallbacks.add(callback);
-                            break;
-                        case CONFIG:
-                            const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = context[CONTEXT_ID][CONTEXT_UPDATED];
-                            const configListenerMetadata: ConfigListenerMetadata = {
-                                callback,
-                                statics: wireDef.static,
-                                params: wireDef.params
-                            };
-
-                            if (params) {
-                                Object.keys(params).forEach(param => {
-                                    const prop = params[param];
-                                    let configListenerMetadatas = paramToConfigListenerMetadata[prop];
-                                    if (!configListenerMetadatas) {
-                                        configListenerMetadatas = [configListenerMetadata];
-                                        paramToConfigListenerMetadata[prop] = configListenerMetadatas;
-                                        installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, prop, def, context));
-                                    } else {
-                                        configListenerMetadatas.push(configListenerMetadata);
-                                    }
-                                });
-                            }
-                            break;
-                        case 'default':
-                            throw new Error(`unsupported event type ${type}`);
-                    }
-                },
-                removeEventListener: (type, callback) => {
-                    switch (type) {
-                        case CONNECT:
-                            const connectedCallbacks = context[CONTEXT_ID][CONTEXT_CONNECTED];
-                            removeCallback(connectedCallbacks, callback);
-                            break;
-                        case DISCONNECT:
-                            const disconnectedCallbacks = context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                            removeCallback(disconnectedCallbacks, callback);
-                            break;
-                        case CONFIG:
-                            const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = context[CONTEXT_ID][CONTEXT_UPDATED];
-                            if (params) {
-                                Object.keys(params).forEach(param => {
-                                    const prop = params[param];
-                                    const updatedCallbackConfigs = paramToConfigListenerMetadata[prop];
-                                    if (updatedCallbackConfigs) {
-                                        removeConfigListener(updatedCallbackConfigs, callback);
-                                    }
-                                });
-                            }
-                            break;
-                        case 'default':
-                            throw new Error(`unsupported event type ${type}`);
-                    }
-                },
-                dispatchEvent: (evt) => {
-                    if (evt instanceof ValueChangedEvent) {
-                        const value = evt.value;
-                        if (wireDef.method) {
-                            cmp[wireTarget](value);
-                        } else {
-                            cmp[wireTarget] = value;
-                        }
-                        return false; // canceling signal since we don't want this to propagate
-                    } else {
-                        throw new Error(`Invalid event ${evt}.`);
-                    }
-                }
-            };
-
+            const wireEventTarget = new WireEventTarget(cmp, def, context, wireDef, wireTarget);
             const adapterFactory = adapterFactories.get(id);
             if (adapterFactory) {
-                adapterFactory(wireEventTarget);
+                adapterFactory({
+                    dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
+                    addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
+                    removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
+                } as WireEventTarget);
             }
         }
     },
