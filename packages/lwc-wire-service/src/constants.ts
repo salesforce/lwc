@@ -1,11 +1,12 @@
-// key for engine service context store
+// key in engine service context for wire service context
 export const CONTEXT_ID = '@wire';
-// key for wire service context updated context metadata
-export const UPDATED = 'updated';
-// key for wire service context connected callbacks
-export const CONNECTEDCALLBACK = 'connectedCallback';
-// key for wire service context disconnected callbacks
-export const DISCONNECTEDCALLBACK = 'disconnectedCallback';
+// key in wire service context for updated listener metadata
+export const CONTEXT_UPDATED = 'updated';
+// key in wire service context for connected listener metadata
+export const CONTEXT_CONNECTED = 'connected';
+// key in wire service context for disconnected listener metadata
+export const CONTEXT_DISCONNECTED = 'disconnected';
+
 // wire event target life cycle connectedCallback hook event type
 export const CONNECT = "connect";
 // wire event target life cycle disconnectedCallback hook event type

@@ -9,9 +9,9 @@ import { Element, ComposableEvent } from 'engine';
 import assert from './assert';
 import {
     CONTEXT_ID,
-    CONNECTEDCALLBACK,
-    DISCONNECTEDCALLBACK,
-    UPDATED,
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED,
+    CONTEXT_UPDATED,
     CONNECT,
     DISCONNECT,
     CONFIG
@@ -20,7 +20,7 @@ import {
     updated,
     installSetterOverrides,
     removeCallback,
-    removeUpdatedCallbackConfigs
+    removeConfigListener
 } from './wiring';
 
 export interface WireDef {
@@ -39,10 +39,10 @@ export interface ElementDef {
         [key: string]: WireDef
     };
 }
-export type NoArgumentCallback = () => void;
-export type UpdatedCallback = (object) => void;
-export interface UpdatedCallbackConfig {
-    updatedCallback: UpdatedCallback;
+export type NoArgumentListener = () => void;
+export type ConfigListener = (object) => void;
+export interface ConfigListenerMetadata {
+    callback: ConfigListener;
     statics?: {
         [key: string]: any;
     };
@@ -50,12 +50,13 @@ export interface UpdatedCallbackConfig {
         [key: string]: string;
     };
 }
-export interface ServiceUpdateContext {
-    [prop: string]: UpdatedCallbackConfig[];
+// map of param to list of config listeners
+// when a param changes O(1) lookup to list of config listeners to notify
+export interface ParamToConfigListenerMetadataMap {
+    [prop: string]: ConfigListenerMetadata[];
 }
-export type ServiceContext = Set<NoArgumentCallback> | ServiceUpdateContext;
 
-export type WireEventTargetCallback = NoArgumentCallback | UpdatedCallback;
+export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
 export interface ValueChangedEvent extends ComposableEvent {
     value: any;
 }
@@ -74,7 +75,7 @@ const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterF
  * Invokes the specified callbacks.
  * @param callbacks functions to call
  */
-function invokeCallback(callbacks: NoArgumentCallback[]) {
+function invokeCallback(callbacks: NoArgumentListener[]) {
     for (let i = 0, len = callbacks.length; i < len; ++i) {
         callbacks[i].call(undefined);
     }
@@ -89,9 +90,9 @@ function invokeCallback(callbacks: NoArgumentCallback[]) {
 const wireService = {
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
         const wireContext = context[CONTEXT_ID] = Object.create(null);
-        wireContext[CONNECTEDCALLBACK] = new Set<NoArgumentCallback>();
-        wireContext[DISCONNECTEDCALLBACK] = new Set<NoArgumentCallback>();
-        wireContext[UPDATED] = Object.create(null);
+        wireContext[CONTEXT_CONNECTED] = new Set<NoArgumentListener>();
+        wireContext[CONTEXT_DISCONNECTED] = new Set<NoArgumentListener>();
+        wireContext[CONTEXT_UPDATED] = Object.create(null) as ParamToConfigListenerMetadataMap;
 
         // engine guarantees invocation only if def.wire is defined
         const wireStaticDef = def.wire;
@@ -104,21 +105,21 @@ const wireService = {
 
             const wireEventTarget: WireEventTarget = {
                 addEventListener: (type, callback) => {
-                    const connectedCallbacks = context[CONTEXT_ID][CONNECTEDCALLBACK];
-                    const disconnectedCallbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK];
-                    const serviceUpdateContext = context[CONTEXT_ID][UPDATED];
                     switch (type) {
                         case CONNECT:
-                            assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connected") with the same callback');
+                            const connectedCallbacks: Set<WireEventTargetCallback> = context[CONTEXT_ID][CONTEXT_CONNECTED];
+                            assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connect") with the same callback');
                             connectedCallbacks.add(callback);
                             break;
                         case DISCONNECT:
-                            assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnected") with the same callback');
+                            const disconnectedCallbacks: Set<WireEventTargetCallback> = context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                            assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnect") with the same callback');
                             disconnectedCallbacks.add(callback);
                             break;
                         case CONFIG:
-                            const updatedCallbackConfig: UpdatedCallbackConfig = {
-                                updatedCallback: callback,
+                            const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = context[CONTEXT_ID][CONTEXT_UPDATED];
+                            const configListenerMetadata: ConfigListenerMetadata = {
+                                callback,
                                 statics: wireDef.static,
                                 params: wireDef.params
                             };
@@ -126,13 +127,13 @@ const wireService = {
                             if (params) {
                                 Object.keys(params).forEach(param => {
                                     const prop = params[param];
-                                    let updatedCallbackConfigs = serviceUpdateContext[prop];
-                                    if (!updatedCallbackConfigs) {
-                                        updatedCallbackConfigs = [updatedCallbackConfig];
-                                        serviceUpdateContext[prop] = updatedCallbackConfigs;
+                                    let configListenerMetadatas = paramToConfigListenerMetadata[prop];
+                                    if (!configListenerMetadatas) {
+                                        configListenerMetadatas = [configListenerMetadata];
+                                        paramToConfigListenerMetadata[prop] = configListenerMetadatas;
                                         installSetterOverrides(cmp, prop, updated.bind(undefined, cmp, prop, def, context));
                                     } else {
-                                        updatedCallbackConfigs.push(updatedCallbackConfig);
+                                        configListenerMetadatas.push(configListenerMetadata);
                                     }
                                 });
                             }
@@ -142,23 +143,23 @@ const wireService = {
                     }
                 },
                 removeEventListener: (type, callback) => {
-                    const connectedCallbacks = context[CONTEXT_ID][CONNECTEDCALLBACK];
-                    const disconnectedCallbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK];
-                    const serviceUpdateContext = context[CONTEXT_ID][UPDATED];
                     switch (type) {
                         case CONNECT:
+                            const connectedCallbacks = context[CONTEXT_ID][CONTEXT_CONNECTED];
                             removeCallback(connectedCallbacks, callback);
                             break;
                         case DISCONNECT:
+                            const disconnectedCallbacks = context[CONTEXT_ID][CONTEXT_DISCONNECTED];
                             removeCallback(disconnectedCallbacks, callback);
                             break;
                         case CONFIG:
+                            const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = context[CONTEXT_ID][CONTEXT_UPDATED];
                             if (params) {
                                 Object.keys(params).forEach(param => {
                                     const prop = params[param];
-                                    const updatedCallbackConfigs = serviceUpdateContext[prop];
+                                    const updatedCallbackConfigs = paramToConfigListenerMetadata[prop];
                                     if (updatedCallbackConfigs) {
-                                        removeUpdatedCallbackConfigs(updatedCallbackConfigs, callback);
+                                        removeConfigListener(updatedCallbackConfigs, callback);
                                     }
                                 });
                             }
@@ -190,16 +191,16 @@ const wireService = {
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONNECTEDCALLBACK])) {
+        let callbacks: NoArgumentListener[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
         }
         invokeCallback(callbacks);
     },
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        let callbacks: NoArgumentCallback[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][DISCONNECTEDCALLBACK])) {
+        let callbacks: NoArgumentListener[];
+        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;
         }
         invokeCallback(callbacks);
@@ -209,7 +210,7 @@ const wireService = {
 /**
  * Registers the wire service.
  */
-export function registerWireService(registerService: Function) {
+export function registerWireService(registerService: (object) => void) {
     registerService(wireService);
 }
 
@@ -222,7 +223,7 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     adapterFactories.set(adapterId, adapterFactory);
 }
 
-/*
+/**
  * Unregisters an adapter, only available for non prod (e.g. test util)
  */
 export function unregister(adapterId: any) {
@@ -231,6 +232,9 @@ export function unregister(adapterId: any) {
     }
 }
 
+/**
+ * Event fired by wire adapters to emit a new value.
+ */
 export class ValueChangedEvent {
     value: any;
     type: string;

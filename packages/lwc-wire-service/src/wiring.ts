@@ -2,23 +2,23 @@ import { Element } from 'engine';
 import {
     ElementDef,
     WireEventTargetCallback,
-    UpdatedCallbackConfig,
-    ServiceUpdateContext,
-    UpdatedCallback
+    ConfigListener,
+    ParamToConfigListenerMetadataMap,
+    ConfigListenerMetadata
 } from './index';
 import {
     CONTEXT_ID,
-    UPDATED
+    CONTEXT_UPDATED
 } from './constants';
 
 /**
- * Invokes the provided updated callbacks with the resolved component properties.
- * @param ucMetadatas wire updated service context metadata
+ * Invokes the provided change listeners with the resolved component properties.
+ * @param configListenerMetadatas list of config listener metadata (config listeners and their context)
  * @param paramValues values for all wire adapter config params
  */
-function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues: any) {
-    for (let i = 0, len = ucMetadatas.length; i < len; ++i) {
-        const { updatedCallback, statics, params } = ucMetadatas[i];
+function invokeConfigListeners(configListenerMetadatas: ConfigListenerMetadata[], paramValues: any) {
+    for (let i = 0, len = configListenerMetadatas.length; i < len; ++i) {
+        const { callback, statics, params } = configListenerMetadatas[i];
 
         const resolvedParams = Object.create(null);
         if (params) {
@@ -30,8 +30,9 @@ function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues
             }
         }
 
+        // TODO - consider read-only membrane to enforce invariant of immutable config
         const config = Object.assign({}, statics, resolvedParams);
-        updatedCallback.call(undefined, config);
+        callback.call(undefined, config);
     }
 }
 
@@ -41,8 +42,8 @@ function invokeUpdatedCallback(ucMetadatas: UpdatedCallbackConfig[], paramValues
  * make this adoption trivial.
  */
 export function updated(cmp: Element, data: object, def: ElementDef, context: object) {
-    let ucMetadata: ServiceUpdateContext;
-    if (!def.wire || !(ucMetadata = context[CONTEXT_ID][UPDATED])) {
+    let paramToConfigListenerMetadatas: ParamToConfigListenerMetadataMap;
+    if (!def.wire || !(paramToConfigListenerMetadatas = context[CONTEXT_ID][CONTEXT_UPDATED])) {
         return;
     }
 
@@ -50,8 +51,10 @@ export function updated(cmp: Element, data: object, def: ElementDef, context: ob
     const paramValue = {};
     paramValue[updateProp] = cmp[updateProp];
 
+    // TODO - must debounce multiple param changes so listeners are invoked only once
+
     // process queue of impacted adapters
-    invokeUpdatedCallback(ucMetadata[updateProp], paramValue);
+    invokeConfigListeners(paramToConfigListenerMetadatas[updateProp], paramValue);
 }
 
 /**
@@ -65,6 +68,12 @@ export function installSetterOverrides(cmp: Object, prop: string, callback: Func
     Object.defineProperty(cmp, prop, newDescriptor);
 }
 
+/**
+ * Finds the descriptor of the named property on the prototype chain
+ * @param Ctor Constructor function
+ * @param propName Name of property to find
+ * @param protoSet Prototypes searched (to avoid circular prototype chains)
+ */
 function findDescriptor(Ctor: any, propName: PropertyKey, protoSet?: any[]): PropertyDescriptor | null {
     protoSet = protoSet || [];
     if (!Ctor || protoSet.indexOf(Ctor) > -1) {
@@ -89,7 +98,7 @@ function findDescriptor(Ctor: any, propName: PropertyKey, protoSet?: any[]): Pro
  * @param callback a function to invoke when the prop's value changes
  * @return A property descriptor
  */
-export function getOverrideDescriptor(cmp: Object, prop: string, callback: Function) {
+export function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) {
     const descriptor = findDescriptor(cmp, prop);
     let enumerable;
     let get;
@@ -136,10 +145,10 @@ export function removeCallback(callbacks: WireEventTargetCallback[], toRemove: W
     }
 }
 
-export function removeUpdatedCallbackConfigs(updatedCallbackConfigs: UpdatedCallbackConfig[], toRemove: UpdatedCallback) {
-    for (let i = 0, l = updatedCallbackConfigs.length; i < l; i++) {
-        if (updatedCallbackConfigs[i].updatedCallback === toRemove) {
-            updatedCallbackConfigs.splice(i, 1);
+export function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[], toRemove: ConfigListener) {
+    for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
+        if (configListenerMetadatas[i].callback === toRemove) {
+            configListenerMetadatas.splice(i, 1);
             return;
         }
     }
