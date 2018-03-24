@@ -1,15 +1,6 @@
 import { Element } from 'engine';
 import assert from './assert';
 import {
-    ElementDef,
-    ConfigListener,
-    ParamToConfigListenerMetadataMap,
-    ConfigListenerMetadata,
-    WireEventTargetCallback,
-    ValueChangedEvent,
-    WireDef
-} from './index';
-import {
     CONTEXT_ID,
     CONTEXT_CONNECTED,
     CONTEXT_DISCONNECTED,
@@ -18,6 +9,41 @@ import {
     DISCONNECT,
     CONFIG
 } from './constants';
+export interface WireDef {
+    params?: {
+        [key: string]: string;
+    };
+    static?: {
+        [key: string]: any;
+    };
+    adapter: any;
+    method?: 1;
+}
+export interface ElementDef {
+    // wire is optional on ElementDef but the engine guarantees it before invoking wiring service hook
+    wire: {
+        [key: string]: WireDef
+    };
+}
+
+export type NoArgumentListener = () => void;
+export type ConfigListener = (object) => void;
+export interface ConfigListenerMetadata {
+    callback: ConfigListener;
+    statics?: {
+        [key: string]: any;
+    };
+    params?: {
+        [key: string]: string;
+    };
+}
+// map of param to list of config listeners
+// when a param changes O(1) lookup to list of config listeners to notify
+export interface ParamToConfigListenerMetadataMap {
+    [prop: string]: ConfigListenerMetadata[];
+}
+
+export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
 
 /**
  * Invokes the provided change listeners with the resolved component properties.
@@ -262,5 +288,17 @@ export class WireEventTarget {
         } else {
             throw new Error(`Invalid event ${evt}.`);
         }
+    }
+}
+
+/**
+ * Event fired by wire adapters to emit a new value.
+ */
+export class ValueChangedEvent {
+    value: any;
+    type: string;
+    constructor(value) {
+        this.type = 'ValueChangedEvent';
+        this.value = value;
     }
 }

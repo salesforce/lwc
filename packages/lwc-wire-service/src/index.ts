@@ -5,7 +5,7 @@
  * Register wire adapters with `register(adapterId: any, adapterFactory: WireAdapterFactory)`.
  */
 
-import { Element, ComposableEvent } from 'engine';
+import { Element } from 'engine';
 import assert from './assert';
 import {
     CONTEXT_ID,
@@ -14,46 +14,14 @@ import {
     CONTEXT_UPDATED
 } from './constants';
 import {
-    WireEventTarget
+    ElementDef,
+    NoArgumentListener,
+    WireEventTargetCallback,
+    ParamToConfigListenerMetadataMap,
+    WireEventTarget,
+    ValueChangedEvent
 } from './wiring';
 
-export interface WireDef {
-    params?: {
-        [key: string]: string;
-    };
-    static?: {
-        [key: string]: any;
-    };
-    adapter: any;
-    method?: 1;
-}
-export interface ElementDef {
-    // wire is optional on ElementDef but the engine guarantees it before invoking wiring service hook
-    wire: {
-        [key: string]: WireDef
-    };
-}
-export type NoArgumentListener = () => void;
-export type ConfigListener = (object) => void;
-export interface ConfigListenerMetadata {
-    callback: ConfigListener;
-    statics?: {
-        [key: string]: any;
-    };
-    params?: {
-        [key: string]: string;
-    };
-}
-// map of param to list of config listeners
-// when a param changes O(1) lookup to list of config listeners to notify
-export interface ParamToConfigListenerMetadataMap {
-    [prop: string]: ConfigListenerMetadata[];
-}
-
-export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
-export interface ValueChangedEvent extends ComposableEvent {
-    value: any;
-}
 export interface WireEventTarget {
     dispatchEvent(evt: ValueChangedEvent): boolean;
     addEventListener(type: string, callback: WireEventTargetCallback): void;
@@ -149,14 +117,4 @@ export function unregister(adapterId: any) {
     }
 }
 
-/**
- * Event fired by wire adapters to emit a new value.
- */
-export class ValueChangedEvent {
-    value: any;
-    type: string;
-    constructor(value) {
-        this.type = 'ValueChangedEvent';
-        this.value = value;
-    }
-}
+export { ValueChangedEvent } from './wiring';
