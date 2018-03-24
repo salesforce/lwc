@@ -17,9 +17,10 @@ import {
     ElementDef,
     NoArgumentListener,
     WireEventTargetCallback,
-    ParamToConfigListenerMetadataMap,
+    Context,
+    WireContext,
     WireEventTarget,
-    ValueChangedEvent
+    ValueChangedEvent,
 } from './wiring';
 
 export interface WireEventTarget {
@@ -50,11 +51,11 @@ function invokeCallback(callbacks: NoArgumentListener[]) {
  * callbacks to wire adapter lifecycle events.
  */
 const wireService = {
-    wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
-        const wireContext = context[CONTEXT_ID] = Object.create(null);
-        wireContext[CONTEXT_CONNECTED] = new Set<NoArgumentListener>();
-        wireContext[CONTEXT_DISCONNECTED] = new Set<NoArgumentListener>();
-        wireContext[CONTEXT_UPDATED] = Object.create(null) as ParamToConfigListenerMetadataMap;
+    wiring: (cmp: Element, data: object, def: ElementDef, context: Context) => {
+        const wireContext: WireContext = context[CONTEXT_ID] = Object.create(null);
+        wireContext[CONTEXT_CONNECTED] = [];
+        wireContext[CONTEXT_DISCONNECTED] = [];
+        wireContext[CONTEXT_UPDATED] = Object.create(null);
 
         // engine guarantees invocation only if def.wire is defined
         const wireStaticDef = def.wire;
@@ -75,7 +76,7 @@ const wireService = {
         }
     },
 
-    connected: (cmp: Element, data: object, def: ElementDef, context: object) => {
+    connected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
         let callbacks: NoArgumentListener[];
         if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
@@ -83,7 +84,7 @@ const wireService = {
         invokeCallback(callbacks);
     },
 
-    disconnected: (cmp: Element, data: object, def: ElementDef, context: object) => {
+    disconnected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
         let callbacks: NoArgumentListener[];
         if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;

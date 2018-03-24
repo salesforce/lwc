@@ -43,6 +43,16 @@ export interface ParamToConfigListenerMetadataMap {
     [prop: string]: ConfigListenerMetadata[];
 }
 
+export interface WireContext {
+    [CONTEXT_CONNECTED]: NoArgumentListener[];
+    [CONTEXT_DISCONNECTED]: NoArgumentListener[];
+    [CONTEXT_UPDATED]: ParamToConfigListenerMetadataMap;
+}
+
+export interface Context {
+    [CONTEXT_ID]: WireContext;
+}
+
 export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
 
 /**
@@ -191,14 +201,14 @@ function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[],
 export class WireEventTarget {
     _cmp: Element;
     _def: ElementDef;
-    _context: object;
+    _context: Context;
     _wireDef: WireDef;
     _wireTarget: string;
 
     constructor(
         cmp: Element,
         def: ElementDef,
-        context: object,
+        context: Context,
         wireDef: WireDef,
         wireTarget: string) {
         this._cmp = cmp;
@@ -211,17 +221,17 @@ export class WireEventTarget {
     addEventListener(type: string, callback: WireEventTargetCallback): void {
         switch (type) {
             case CONNECT:
-                const connectedCallbacks: Set<WireEventTargetCallback> = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
-                assert.isFalse(connectedCallbacks.has(callback), 'must not call addEventListener("connect") with the same callback');
-                connectedCallbacks.add(callback);
+                const connectedCallbacks = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                assert.isFalse(connectedCallbacks.includes(callback as NoArgumentListener), 'must not call addEventListener("connect") with the same callback');
+                connectedCallbacks.push(callback as NoArgumentListener);
                 break;
             case DISCONNECT:
-                const disconnectedCallbacks: Set<WireEventTargetCallback> = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                assert.isFalse(disconnectedCallbacks.has(callback), 'must not call addEventListener("disconnect") with the same callback');
-                disconnectedCallbacks.add(callback);
+                const disconnectedCallbacks = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                assert.isFalse(disconnectedCallbacks.includes(callback as NoArgumentListener), 'must not call addEventListener("disconnect") with the same callback');
+                disconnectedCallbacks.push(callback as NoArgumentListener);
                 break;
             case CONFIG:
-                const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 const { params } = this._wireDef;
                 const configListenerMetadata: ConfigListenerMetadata = {
                     callback,
@@ -259,14 +269,14 @@ export class WireEventTarget {
                 removeCallback(disconnectedCallbacks, callback);
                 break;
             case CONFIG:
-                const paramToConfigListenerMetadata: ParamToConfigListenerMetadataMap = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 const { params } = this._wireDef;
                 if (params) {
                     Object.keys(params).forEach(param => {
                         const prop = params[param];
-                        const updatedCallbackConfigs = paramToConfigListenerMetadata[prop];
-                        if (updatedCallbackConfigs) {
-                            removeConfigListener(updatedCallbackConfigs, callback);
+                        const configListenerMetadatas = paramToConfigListenerMetadata[prop];
+                        if (configListenerMetadatas) {
+                            removeConfigListener(configListenerMetadatas, callback);
                         }
                     });
                 }
