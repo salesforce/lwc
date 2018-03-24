@@ -65,6 +65,23 @@ export function installSetterOverrides(cmp: Object, prop: string, callback: Func
     Object.defineProperty(cmp, prop, newDescriptor);
 }
 
+function findDescriptor(Ctor: any, propName: PropertyKey, protoSet?: any[]): PropertyDescriptor | null {
+    protoSet = protoSet || [];
+    if (!Ctor || protoSet.indexOf(Ctor) > -1) {
+        return null; // null, undefined, or circular prototype definition
+    }
+    const proto = Object.getPrototypeOf(Ctor);
+    if (!proto) {
+        return null;
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(proto, propName);
+    if (descriptor) {
+        return descriptor;
+    }
+    protoSet.push(Ctor);
+    return findDescriptor(proto, propName, protoSet);
+}
+
 /**
  * Gets a property descriptor that monitors the provided property for changes
  * @param cmp The component
@@ -73,32 +90,41 @@ export function installSetterOverrides(cmp: Object, prop: string, callback: Func
  * @return A property descriptor
  */
 export function getOverrideDescriptor(cmp: Object, prop: string, callback: Function) {
-    const originalDescriptor = Object.getOwnPropertyDescriptor(cmp.constructor.prototype, prop);
-    let newDescriptor;
-    if (originalDescriptor) {
-        newDescriptor = Object.assign({}, originalDescriptor, {
-            set(value) {
-                if (originalDescriptor.set) {
-                    originalDescriptor.set.call(cmp, value);
-                }
-                callback();
-            }
-        });
-    } else {
-        const propSymbol = Symbol(prop);
-        newDescriptor = {
-            get() {
-                return cmp[propSymbol];
-            },
-            set(value) {
-                cmp[propSymbol] = value;
-                callback();
-            }
+    const descriptor = findDescriptor(cmp, prop);
+    let enumerable;
+    let get;
+    let set;
+    // TODO: this does not cover the override of existing descriptors at the instance level
+    // and that's ok because eventually we will not need to do any of these :)
+    if (descriptor === null || (descriptor.get === undefined && descriptor.set === undefined)) {
+        let value = cmp[prop];
+        enumerable = true;
+        get = function() {
+            return value;
         };
-        // grab the existing value
-        cmp[propSymbol] = cmp[prop];
+        set = function(newValue) {
+            value = newValue;
+            callback();
+        };
+    } else {
+        const { set: originalSet, get: originalGet } = descriptor;
+        enumerable = descriptor.enumerable;
+        set = function(newValue) {
+            if (originalSet) {
+                originalSet.call(cmp, newValue);
+            }
+            callback();
+        };
+        get = function() {
+            return originalGet ? originalGet.call(cmp) : undefined;
+        };
     }
-    return newDescriptor;
+    return {
+        set,
+        get,
+        enumerable,
+        configurable: true,
+    };
 }
 
 export function removeCallback(callbacks: WireEventTargetCallback[], toRemove: WireEventTargetCallback) {

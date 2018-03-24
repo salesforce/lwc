@@ -168,19 +168,16 @@ const wireService = {
                     }
                 },
                 dispatchEvent: (evt) => {
-                    if (evt.type === "ValueChangedEvent") {
+                    if (evt instanceof ValueChangedEvent) {
                         const value = evt.value;
                         if (wireDef.method) {
                             cmp[wireTarget](value);
                         } else {
                             cmp[wireTarget] = value;
                         }
-                        return true;
+                        return false; // canceling signal since we don't want this to propagate
                     } else {
-                        // TODO: only allow ValueChangedEvent
-                        // however, doing so would require adapter to implement machinery
-                        // that fire the intended event as DOM event and wrap inside ValueChagnedEvent
-                        return cmp.dispatchEvent(evt);
+                        throw new Error(`Invalid event ${evt}.`);
                     }
                 }
             };
@@ -221,7 +218,7 @@ export function registerWireService(registerService: Function) {
  */
 export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(adapterId, 'adapter id must be truthy');
-    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a function');
+    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
     adapterFactories.set(adapterId, adapterFactory);
 }
 
@@ -234,10 +231,11 @@ export function unregister(adapterId: any) {
     }
 }
 
-export class ValueChangedEvent extends Event {
+export class ValueChangedEvent {
     value: any;
+    type: string;
     constructor(value) {
-        super("ValueChangedEvent");
+        this.type = 'ValueChangedEvent';
         this.value = value;
     }
 }
