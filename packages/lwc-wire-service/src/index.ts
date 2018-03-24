@@ -34,7 +34,8 @@ export interface WireDef {
     method?: 1;
 }
 export interface ElementDef {
-    wire: { // TODO - wire is optional but all wire service code assumes it's present
+    // wire is optional on ElementDef but the engine guarantees it before invoking wiring service hook
+    wire: {
         [key: string]: WireDef
     };
 }
@@ -55,11 +56,11 @@ export interface ServiceUpdateContext {
 export type ServiceContext = Set<NoArgumentCallback> | ServiceUpdateContext;
 
 export type WireEventTargetCallback = NoArgumentCallback | UpdatedCallback;
-export interface ValueChagnedEvent extends ComposableEvent {
+export interface ValueChangedEvent extends ComposableEvent {
     value: any;
 }
 export interface WireEventTarget {
-    dispatchEvent(evt: ValueChagnedEvent): boolean;
+    dispatchEvent(evt: ValueChangedEvent): boolean;
     addEventListener(type: string, callback: WireEventTargetCallback): void;
     removeEventListener(type: string, callback: WireEventTargetCallback): void;
 }
@@ -83,10 +84,9 @@ function invokeCallback(callbacks: NoArgumentCallback[]) {
  * The wire service.
  *
  * This service is registered with the engine's service API. It connects service
- * callbacks to wire adapter lifecycle callbacks.
+ * callbacks to wire adapter lifecycle events.
  */
 const wireService = {
-    // TODO W-4072588 - support connected + disconnected (repeated) cycles
     wiring: (cmp: Element, data: object, def: ElementDef, context: object) => {
         const wireContext = context[CONTEXT_ID] = Object.create(null);
         wireContext[CONNECTEDCALLBACK] = new Set<NoArgumentCallback>();

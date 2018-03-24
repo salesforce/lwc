@@ -25,22 +25,34 @@ export function getTodo(config) {
 register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
     let subscription;
     let config;
+
     const observer = {
         next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
         error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
     };
+
     wiredEventTarget.addEventListener('connect', () => {
-        // Subscribe to stream.
-        subscription = getObservable(config).subscribe(observer);
+        const observable = getObservable(config);
+        if (observable) {
+            subscription = observable.subscribe(observer);
+            return;
+        }
     });
+
     wiredEventTarget.addEventListener('disconnect', () => {
         subscription.unsubscribe();
     });
+
     wiredEventTarget.addEventListener('config', (newConfig) => {
         config = newConfig;
         if (subscription) {
             subscription.unsubscribe();
+            subscription = undefined;
         }
-        subscription = getObservable(config).subscribe(observer);
+        const observable = getObservable(config);
+        if (observable) {
+            subscription = observable.subscribe(observer);
+            return;
+        }
     });
 });

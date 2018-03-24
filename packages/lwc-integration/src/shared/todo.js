@@ -5,84 +5,83 @@
 }(this, (function (exports) {
     'use strict';
 
-function getSubject(initialValue, initialError) {
-    var observer;
+    function getSubject(initialValue, initialError) {
+        var observer;
 
-    function next(value) {
-        observer.next(value);
-    }
-
-    function error(err) {
-        observer.error(err);
-    }
-
-    function complete() {
-        observer.complete();
-    }
-
-    var observable = {
-        subscribe: function(obs) {
-            observer = obs;
-            if (initialValue) {
-                next(initialValue);
-            }
-            if (initialError) {
-                error(initialError);
-            }
-            return {
-                unsubscribe: function() {}
-            };
+        function next(value) {
+            observer.next(value);
         }
-    };
 
-    return {
-        next: next,
-        error: error,
-        complete: complete,
-        observable: observable
-    };
-}
+        function error(err) {
+            observer.error(err);
+        }
 
-function generateTodo(id, completed) {
-    return {
-        id: id,
-        title: 'task ' + id,
-        completed: completed
-    };
-}
+        function complete() {
+            observer.complete();
+        }
 
-var TODO = [
-    generateTodo(0, true),
-    generateTodo(1, false),
-    // intentionally skip 2
-    generateTodo(3, true),
-    generateTodo(4, true),
-    // intentionally skip 5
-    generateTodo(6, false),
-    generateTodo(7, false)
-].reduce(function(acc, value) {
-    acc[value.id] = value;
-    return acc;
-}, {});
+        var observable = {
+            subscribe: function(obs) {
+                observer = obs;
+                if (initialValue) {
+                    next(initialValue);
+                }
+                if (initialError) {
+                    error(initialError);
+                }
+                return {
+                    unsubscribe: function() {}
+                };
+            }
+        };
 
-
-function getObservable(config) {
-    if (!('id' in config)) {
-        return undefined;
+        return {
+            next: next,
+            error: error,
+            complete: complete,
+            observable: observable
+        };
     }
 
-    var todo = TODO[config.id];
-    if (!todo) {
-        var subject = getSubject(undefined, { message: 'Todo not found' });
-        return subject.observable;
+    function generateTodo(id, completed) {
+        return {
+            id: id,
+            title: 'task ' + id,
+            completed: completed
+        };
     }
 
-    return getSubject(todo).observable;
-}
+    var TODO = [
+        generateTodo(0, true),
+        generateTodo(1, false),
+        // intentionally skip 2
+        generateTodo(3, true),
+        generateTodo(4, true),
+        // intentionally skip 5
+        generateTodo(6, false),
+        generateTodo(7, false)
+    ].reduce(function(acc, value) {
+        acc[value.id] = value;
+        return acc;
+    }, {});
 
-function getTodo(config) {
-    // not implemented
-}
+
+    function getObservable(config) {
+        if (!('id' in config)) {
+            return undefined;
+        }
+
+        var todo = TODO[config.id];
+        if (!todo) {
+            var subject = getSubject(undefined, { message: 'Todo not found' });
+            return subject.observable;
+        }
+
+        return getSubject(todo).observable;
+    }
+
+    const getTodo = Symbol('getTodo');
+
     exports.getTodo = getTodo;
     exports.getObservable = getObservable;
     Object.defineProperty(exports, '__esModule', { value: true });
