@@ -1,6 +1,6 @@
 {
   "name": "lwc-engine",
-  "version": "0.18.0",
+  "version": "0.18.0-1",
   "description": "Raptor Engine",
   "main": "dist/commonjs/es2017/engine.js",
   "module": "dist/modules/es2017/engine.js",
@@ -27,6 +27,6 @@
     }
   },
   "dependencies": {
-    "observable-membrane": "0.18.0"
+    "observable-membrane": "0.18.0-1"
   }
 }
