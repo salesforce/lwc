@@ -67,7 +67,7 @@
 
 
     function getObservable(config) {
-        if (!('id' in config)) {
+        if (!config || !('id' in config)) {
             return undefined;
         }
 

@@ -20,13 +20,17 @@ exports.todoApp = function (cmpName) {
         registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
             let subscription;
             let config;
+            wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: undefined }));
             const observer = {
                 next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
                 error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
             };
             wiredEventTarget.addEventListener('connect', () => {
-                // Subscribe to stream.
-                subscription = getObservable(config).subscribe(observer);
+                const observable = getObservable(config);
+                if (observable) {
+                    subscription = observable.subscribe(observer);
+                    return;
+                }
             });
             wiredEventTarget.addEventListener('disconnect', () => {
                 subscription.unsubscribe();
@@ -35,8 +39,13 @@ exports.todoApp = function (cmpName) {
                 config = newConfig;
                 if (subscription) {
                     subscription.unsubscribe();
+                    subscription = undefined;
                 }
-                subscription = getObservable(config).subscribe(observer);
+                const observable = getObservable(config);
+                if (observable) {
+                    subscription = observable.subscribe(observer);
+                    return;
+                }
             });
         });
 
