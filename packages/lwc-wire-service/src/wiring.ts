@@ -85,6 +85,27 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
  * is invoked whenever a tracked property is changed. wire service is structured to
  * make this adoption trivial.
  */
+function updated(cmp: Element, prop: string, def: ElementDef, context: Context) {
+    let configContext: ConfigContext;
+    if (!def.wire || !(configContext = context[CONTEXT_ID][CONTEXT_UPDATED])) {
+        return;
+    }
+
+    // TODO - don't think i can do this
+    // noop if value didn't change
+    const newValue = cmp[prop];
+    if (configContext.values[prop] === newValue) {
+        return;
+    }
+
+    if (!configContext.mutated) {
+        configContext.mutated = new Set<string>();
+        // collect all prop changes via a microtask
+        Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
+    }
+    configContext.mutated.add(prop);
+}
+
 function updatedFuture(cmp: Element, configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
 
@@ -103,28 +124,6 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
         }
     }
     invokeConfigListeners(uniqueListeners, configContext.values);
-}
-
-function updated(cmp: Element, prop: string, def: ElementDef, context: Context) {
-    let configContext: ConfigContext;
-    if (!def.wire || !(configContext = context[CONTEXT_ID][CONTEXT_UPDATED])) {
-        return;
-    }
-
-    // TODO - don't think i can do this
-    // noop if value didn't change
-    const newValue = cmp[prop];
-    if (configContext.values[prop] === newValue) {
-        return;
-    }
-
-    if (!configContext.mutated) {
-        configContext.mutated = new Set<string>();
-        // collect all prop changes via a microtask
-        // TODO 216 engine will provide a service callback for changed props
-        Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
-    }
-    configContext.mutated.add(prop);
 }
 
 /**
