@@ -5,7 +5,6 @@
  * Register wire adapters with `register(adapterId: any, adapterFactory: WireAdapterFactory)`.
  */
 
-import { Element } from 'engine';
 import assert from './assert';
 import {
     CONTEXT_ID,
@@ -14,7 +13,10 @@ import {
     CONTEXT_UPDATED
 } from './constants';
 import {
-    ElementDef,
+    Element,
+    ElementDef
+} from './engine';
+import {
     NoArgumentListener,
     WireEventTargetCallback,
     Context,

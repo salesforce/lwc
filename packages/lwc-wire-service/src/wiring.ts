@@ -1,4 +1,3 @@
-import { Element } from 'engine';
 import assert from './assert';
 import {
     CONTEXT_ID,
@@ -9,22 +8,12 @@ import {
     DISCONNECT,
     CONFIG
 } from './constants';
-export interface WireDef {
-    params?: {
-        [key: string]: string;
-    };
-    static?: {
-        [key: string]: any;
-    };
-    adapter: any;
-    method?: 1;
-}
-export interface ElementDef {
-    // wire is optional on ElementDef but the engine guarantees it before invoking wiring service hook
-    wire: {
-        [key: string]: WireDef
-    };
-}
+
+import {
+    Element,
+    ElementDef,
+    WireDef
+} from './engine';
 
 export type NoArgumentListener = () => void;
 export type ConfigListener = (object) => void;
