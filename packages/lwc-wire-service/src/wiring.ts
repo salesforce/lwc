@@ -16,7 +16,10 @@ import {
 } from './engine';
 
 export type NoArgumentListener = () => void;
-export type ConfigListener = (object) => void;
+export interface ConfigListenerArgument {
+    [key: string]: any;
+}
+export type ConfigListener = (ConfigListenerArgument) => void;
 export interface ConfigListenerMetadata {
     callback: ConfigListener;
     statics?: {
@@ -26,16 +29,24 @@ export interface ConfigListenerMetadata {
         [key: string]: string;
     };
 }
-// map of param to list of config listeners
-// when a param changes O(1) lookup to list of config listeners to notify
-export interface ParamToConfigListenerMetadataMap {
-    [prop: string]: ConfigListenerMetadata[];
+export interface ConfigContext {
+    // map of param to list of config listeners
+    // when a param changes O(1) lookup to list of config listeners to notify
+    map: {
+        [prop: string]: ConfigListenerMetadata[];
+    };
+    // map of param values
+    values: {
+        [prop: string]: any
+    };
+    // mutated props (debounced then cleared)
+    mutated?: Set<string>;
 }
 
 export interface WireContext {
     [CONTEXT_CONNECTED]: NoArgumentListener[];
     [CONTEXT_DISCONNECTED]: NoArgumentListener[];
-    [CONTEXT_UPDATED]: ParamToConfigListenerMetadataMap;
+    [CONTEXT_UPDATED]: ConfigContext;
 }
 
 export interface Context {
@@ -49,9 +60,9 @@ export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
  * @param configListenerMetadatas list of config listener metadata (config listeners and their context)
  * @param paramValues values for all wire adapter config params
  */
-function invokeConfigListeners(configListenerMetadatas: ConfigListenerMetadata[], paramValues: any) {
-    for (let i = 0, len = configListenerMetadatas.length; i < len; ++i) {
-        const { callback, statics, params } = configListenerMetadatas[i];
+function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
+    for (const metadata of configListenerMetadatas) {
+        const { callback, statics, params } = metadata;
 
         const resolvedParams = Object.create(null);
         if (params) {
@@ -74,20 +85,46 @@ function invokeConfigListeners(configListenerMetadatas: ConfigListenerMetadata[]
  * is invoked whenever a tracked property is changed. wire service is structured to
  * make this adoption trivial.
  */
-function updated(cmp: Element, data: object, def: ElementDef, context: object) {
-    let paramToConfigListenerMetadatas: ParamToConfigListenerMetadataMap;
-    if (!def.wire || !(paramToConfigListenerMetadatas = context[CONTEXT_ID][CONTEXT_UPDATED])) {
+function updatedFuture(cmp: Element, configContext: ConfigContext) {
+    const uniqueListeners = new Set<ConfigListenerMetadata>();
+
+    // configContext.mutated must be set prior to invoking this function
+    const mutated = configContext.mutated as Set<string>;
+    delete configContext.mutated;
+    for (const prop of mutated) {
+        const value = cmp[prop];
+        if (configContext.values[prop] === value) {
+            continue;
+        }
+        configContext.values[prop] = value;
+        const listeners = configContext.map[prop];
+        for (let i = 0, len = listeners.length; i < len; i++) {
+            uniqueListeners.add(listeners[i]);
+        }
+    }
+    invokeConfigListeners(uniqueListeners, configContext.values);
+}
+
+function updated(cmp: Element, prop: string, def: ElementDef, context: Context) {
+    let configContext: ConfigContext;
+    if (!def.wire || !(configContext = context[CONTEXT_ID][CONTEXT_UPDATED])) {
         return;
     }
 
-    const updateProp = data.toString();
-    const paramValue = {};
-    paramValue[updateProp] = cmp[updateProp];
+    // TODO - don't think i can do this
+    // noop if value didn't change
+    const newValue = cmp[prop];
+    if (configContext.values[prop] === newValue) {
+        return;
+    }
 
-    // TODO - must debounce multiple param changes so listeners are invoked only once
-
-    // process queue of impacted adapters
-    invokeConfigListeners(paramToConfigListenerMetadatas[updateProp], paramValue);
+    if (!configContext.mutated) {
+        configContext.mutated = new Set<string>();
+        // collect all prop changes via a microtask
+        // TODO 216 engine will provide a service callback for changed props
+        Promise.resolve().then(updatedFuture.bind(undefined, cmp, configContext));
+    }
+    configContext.mutated.add(prop);
 }
 
 /**
@@ -131,7 +168,7 @@ function findDescriptor(Ctor: any, propName: PropertyKey, protoSet?: any[]): Pro
  * @param callback a function to invoke when the prop's value changes
  * @return A property descriptor
  */
-export function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) {
+function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) {
     const descriptor = findDescriptor(cmp, prop);
     let enumerable;
     let get;
@@ -220,7 +257,7 @@ export class WireEventTarget {
                 disconnectedCallbacks.push(callback as NoArgumentListener);
                 break;
             case CONFIG:
-                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 const { params } = this._wireDef;
                 const configListenerMetadata: ConfigListenerMetadata = {
                     callback,
@@ -231,10 +268,10 @@ export class WireEventTarget {
                 if (params) {
                     Object.keys(params).forEach(param => {
                         const prop = params[param];
-                        let configListenerMetadatas = paramToConfigListenerMetadata[prop];
+                        let configListenerMetadatas = configContext[prop];
                         if (!configListenerMetadatas) {
                             configListenerMetadatas = [configListenerMetadata];
-                            paramToConfigListenerMetadata[prop] = configListenerMetadatas;
+                            configContext.map[prop] = configListenerMetadatas;
                             installSetterOverrides(this._cmp, prop, updated.bind(undefined, this._cmp, prop, this._def, this._context));
                         } else {
                             configListenerMetadatas.push(configListenerMetadata);

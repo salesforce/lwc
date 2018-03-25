@@ -32,7 +32,7 @@ const TODO = [
  * @return {Observable|undefined} An observable for the todo, or undefined if the configuration is insufficient.
 */
 export default function getObservable(config) {
-    if (!('id' in config)) {
+    if (!config || !('id' in config)) {
         return undefined;
     }
 

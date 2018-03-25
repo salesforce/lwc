@@ -57,7 +57,7 @@ const wireService = {
         const wireContext: WireContext = context[CONTEXT_ID] = Object.create(null);
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
-        wireContext[CONTEXT_UPDATED] = Object.create(null);
+        wireContext[CONTEXT_UPDATED] = { map: {}, values: {} };
 
         // engine guarantees invocation only if def.wire is defined
         const wireStaticDef = def.wire;
