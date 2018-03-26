@@ -90,18 +90,15 @@ describe('WireEventTarget', () => {
                         key: "prop"
                     }
                 };
-                let invokeCounter = 0;
-                function mockInstallTrap() {
-                    invokeCounter++;
-                }
+                const mockInstallTrap = jest.fn();
                 const originalInstallTrap = dependency.installTrap;
                 (dependency as any).installTrap = mockInstallTrap;
                 const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef as any, "test");
                 wireEventTarget.addEventListener(CONFIG, () => { /**/ });
-                expect(invokeCounter).toBe(1);
+                expect(mockInstallTrap).toHaveBeenCalled();
                 const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef as any, "test1");
                 wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
-                expect(invokeCounter).toBe(1);
+                expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
         });
