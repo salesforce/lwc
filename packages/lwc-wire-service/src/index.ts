@@ -57,7 +57,7 @@ const wireService = {
         const wireContext: WireContext = context[CONTEXT_ID] = Object.create(null);
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
-        wireContext[CONTEXT_UPDATED] = { map: {}, values: {} };
+        wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
 
         // engine guarantees invocation only if def.wire is defined
         const wireStaticDef = def.wire;
@@ -65,10 +65,9 @@ const wireService = {
         for (let i = 0, len = wireTargets.length; i < len; i++) {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
-            const id = wireDef.adapter;
-            const wireEventTarget = new WireEventTarget(cmp, def, context, wireDef, wireTarget);
-            const adapterFactory = adapterFactories.get(id);
+            const adapterFactory = adapterFactories.get(wireDef.adapter);
             if (adapterFactory) {
+                const wireEventTarget = new WireEventTarget(cmp, def, context, wireDef, wireTarget);
                 adapterFactory({
                     dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
                     addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
@@ -109,15 +108,6 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
     assert.isTrue(adapterId, 'adapter id must be truthy');
     assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
     adapterFactories.set(adapterId, adapterFactory);
-}
-
-/**
- * Unregisters an adapter, only available for non prod (e.g. test util)
- */
-export function unregister(adapterId: any) {
-    if (process.env.NODE_ENV !== 'production') {
-        adapterFactories.delete(adapterId);
-    }
 }
 
 export { ValueChangedEvent } from './wiring';

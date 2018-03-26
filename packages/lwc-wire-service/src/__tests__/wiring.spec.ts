@@ -1,51 +1,36 @@
 import * as target from '../wiring';
 
-describe('wiring internal', () => {
-    describe('installs setter overrides', () => {
-        it("defaults to original value when setter installed", () => {
-            class Target {
-                prop1 = 'initial';
-            }
-            const cmp = new Target();
-            target.installSetterOverrides(cmp, 'prop1', jest.fn());
-            expect(cmp.prop1).toBe('initial');
-        });
-        it("updates original property when installed setter invoked", () => {
-            const expected = 'expected';
-            class Target {
-                prop1;
-            }
-            const cmp = new Target();
-            target.installSetterOverrides(cmp, 'prop1', jest.fn());
-            cmp.prop1 = expected;
-            expect(cmp.prop1).toBe(expected);
-        });
-        it("installs setter on cmp for property", () => {
-            class Target {
-                set prop1(value) { /* empty */ }
-            }
-            const original = Object.getOwnPropertyDescriptor(Target.prototype, "prop1");
-            const cmp = new Target();
-            target.installSetterOverrides(cmp, 'prop1', jest.fn());
-            const descriptor = Object.getOwnPropertyDescriptor(cmp, "prop1");
-            if (descriptor && original) {
-                expect(descriptor.set).not.toBe(original.set);
-            }
-        });
-        it("invokes original setter when installed setter invoked", () => {
-            const setter = jest.fn();
-            const expected = 'expected';
-            class Target {
-                set prop1(value) {
-                    setter(value);
-                }
-                get prop1() { return ''; }
-            }
-            const cmp = new Target();
-            target.installSetterOverrides(cmp, 'prop1', jest.fn());
-            cmp.prop1 = expected;
-            expect(setter).toHaveBeenCalledTimes(1);
-            expect(setter).toHaveBeenCalledWith(expected);
+describe('WireEventTarget', () => {
+    describe('connect event', () => {
+        it('addEventListener throws on duplicate listener', () => {
         });
     });
+
+    describe('config event', () => {
+        it('addEventListener immediately fires when config is statics only', () => {
+        });
+        it('multiple config listeners from one adapter creates only one trap per property', () => {
+        });
+        it('multiple config listeners from multiple adapters creates only one trap per property', () => {
+        });
+        it('invokes all registered listeners on prop change', () => {
+        });
+        it('invokes config listener once when multiple props updated', () => {
+        });
+        it('invokes config listener with getter value', () => {
+            // verify getter value is used which may differ from the setter's argument
+        });
+    });
+
+    // TODO - do we need to do some cleanup at cmp "destroy"? what defines destroy?
+
+    describe('dispatchEvent', () => {
+        it('ValueChangedEvent updates wired property', () => {
+        });
+        it('ValueChangedEvent invokes wired method', () => {
+        });
+        it('throws on non-ValueChangedEvent', () => {
+        });
+    });
+
 });
