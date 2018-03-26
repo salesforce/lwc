@@ -1,13 +1,39 @@
 import {
-    installTrap
+    installTrap,
+    findDescriptor
 } from '../property-trap';
 import { ConfigContext } from '../wiring';
 
 describe('findDescriptor', () => {
     it('detects circular prototype chains', () => {
+        function A(){};
+        function B(){};
+        B.prototype = Object.create(A.prototype);
+        A.prototype = Object.create(B.prototype);
+        const actual = findDescriptor(B, 'target');
+        expect(actual).toBe(null);
     });
-    it('finds descriptor on super', () => {
+
+    it('finds descriptor on super with prototype setting', () => {
+        function A(){};
+        A.prototype.target = 'target';
+        function B(){};
+        B.prototype = Object.create(A.prototype);
+        expect(findDescriptor(B, 'target')).toBe(null);
+        expect(findDescriptor(new B(), 'target')).not.toBe(null);
     });
+
+    it('finds descriptor on super with classes', () => {
+        class A {
+            target : any;
+            constructor() {
+                this.target = 'target';
+            }
+        }
+        class B extends A {};
+        expect(findDescriptor(B, 'target')).toBe(null);
+        expect(findDescriptor(new B(), 'target')).not.toBe(null);
+     });
 });
 
 describe('installTrap', () => {
