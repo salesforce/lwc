@@ -26,14 +26,13 @@ const TODO = [
     return acc;
 }, {});
 
-
 /**
- * Services @wire('todo') requests.
- * @param {Object} config Service config bag.
- * @return {Observable} An observable for the recordUis.
- */
-export default function serviceTodo(config) {
-    if (!('id' in config)) {
+ * Gets an observable for a todo.
+ * @param {Object} config Configuration.
+ * @return {Observable|undefined} An observable for the todo, or undefined if the configuration is insufficient.
+*/
+export default function getObservable(config) {
+    if (!config || !('id' in config)) {
         return undefined;
     }
 

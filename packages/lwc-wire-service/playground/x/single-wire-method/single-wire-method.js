@@ -1,4 +1,5 @@
 import { Element, api, wire, track } from 'engine';
+import { getTodo } from 'x-todo-api';
 
 export default class SingleWireMethod extends Element {
     @api todoId;
@@ -6,8 +7,8 @@ export default class SingleWireMethod extends Element {
     @track error = undefined;
     @track todo = undefined;
 
-    @wire('todo', { id: '$todoId' })
-    function(error, data) {
+    @wire(getTodo, { id: '$todoId' })
+    function({error, data}) {
         this.error = error;
         this.todo = data;
     }

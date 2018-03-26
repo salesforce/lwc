@@ -9,15 +9,44 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
-        import { serviceTodo } from 'todo';
-        import registerWireService from 'wire-service';
+        import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'engine';
         import Cmp from '${cmpName}';
+        import { getTodo, getObservable } from 'todo';
 
-        registerWireService(register, function () {
-            return {
-                serviceTodo
+        registerWireService(register);
+
+        // Register the wire adapter for @wire(getTodo).
+        registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
+            let subscription;
+            let config;
+            wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: undefined }));
+            const observer = {
+                next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+                error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
             };
+            wiredEventTarget.addEventListener('connect', () => {
+                const observable = getObservable(config);
+                if (observable) {
+                    subscription = observable.subscribe(observer);
+                    return;
+                }
+            });
+            wiredEventTarget.addEventListener('disconnect', () => {
+                subscription.unsubscribe();
+            });
+            wiredEventTarget.addEventListener('config', (newConfig) => {
+                config = newConfig;
+                if (subscription) {
+                    subscription.unsubscribe();
+                    subscription = undefined;
+                }
+                const observable = getObservable(config);
+                if (observable) {
+                    subscription = observable.subscribe(observer);
+                    return;
+                }
+            });
         });
 
         const element = createElement('${cmpName}', { is: Cmp });
@@ -57,7 +86,7 @@ exports.wireServiceHtml = function (cmpName, isCompat) {
             ${isCompat ? COMPAT : ''}
             <script src="../../shared/engine.js"></script>
             <script src="../../shared/todo.js"></script>
-            <script src="../../shared/wire-service.js"></script>
+            <script src="../../shared/wire.js"></script>
             <script src="./${cmpName}.js"></script>
         </body>
     </html>

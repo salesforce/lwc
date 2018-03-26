@@ -11,7 +11,7 @@ function resolver() {
         resolveId: (id) => {
             // wire service itself (no namespace)
             if (id === 'wire-service') {
-                return path.resolve('./src/main.js');
+                return require.resolve('lwc-wire-service').replace('commonjs', 'modules');
             } else if (id === 'engine') {
                 return require.resolve('lwc-engine').replace('commonjs', 'modules');
             // test and wire namespace components

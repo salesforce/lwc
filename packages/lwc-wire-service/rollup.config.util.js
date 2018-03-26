@@ -5,7 +5,7 @@ const PROD_SUFFIX = ".min";
 
 function generateTargetName({ format, prod, target, proddebug }){
     return [
-        'wire-service',
+        'wire',
         proddebug ? DEBUG_SUFFIX : '',
         prod ? '.min' : '',
         '.js'

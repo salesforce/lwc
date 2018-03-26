@@ -1,4 +1,5 @@
 import { Element, api, wire } from 'engine';
+import { getTodo } from 'x-todo-api';
 
 export default class MultipleWires extends Element {
     idA;
@@ -18,10 +19,10 @@ export default class MultipleWires extends Element {
         return this.idA;
     }
 
-    @wire('todo', { id: '$idA' })
+    @wire(getTodo, { id: '$idA' })
     todoA;
 
-    @wire('todo', { id: '$idB' })
+    @wire(getTodo, { id: '$idB' })
     todoB;
 
     get hasError() {

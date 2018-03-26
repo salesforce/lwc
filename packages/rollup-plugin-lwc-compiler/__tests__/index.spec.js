@@ -38,7 +38,6 @@ describe('rollup in compat mode', () => {
     const rollupOptions = { allowUnnamespaced: true, mode: 'compat' };
 
     it(`simple app`, () => {
-        debugger;
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, rollupOptions).then(({ code: actual }) => {
             const expected = fsExpected('expected_compat_config_simple_app');

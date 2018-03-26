@@ -8,11 +8,6 @@ module.exports = {
         '<rootDir>/packages/*/**/__tests__/*.spec.(js|ts)'
     ],
     projects: [
-        '<rootDir>',
-        '<rootDir>/packages/*/jest.config.js'
-    ],
-    testPathIgnorePatterns: [
-        'node_modules',
-        'lwc-wire-service'
+        '<rootDir>'
     ]
 };
