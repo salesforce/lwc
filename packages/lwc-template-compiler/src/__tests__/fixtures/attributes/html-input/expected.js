@@ -5,13 +5,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'input',
             {
-                props: {
+                attrs: {
                     type: 'checkbox',
+                    minlength: '5',
+                    maxlength: '10'
+                },
+                props: {
                     required: true,
                     readOnly: true,
                     checked: true,
-                    minLength: '5',
-                    maxLength: '10'
                 },
                 key: 1
             },
