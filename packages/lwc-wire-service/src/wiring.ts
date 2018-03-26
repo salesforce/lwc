@@ -11,7 +11,8 @@ import {
 import {
     Element,
     ElementDef,
-    WireDef
+    WireDef,
+    ComposableEvent
 } from './engine';
 import {
     installTrap
@@ -138,7 +139,7 @@ export class WireEventTarget {
                 });
                 break;
 
-            case 'default':
+            default:
                 throw new Error(`unsupported event type ${type}`);
         }
     }
@@ -169,7 +170,7 @@ export class WireEventTarget {
                 }
                 break;
 
-            case 'default':
+            default:
                 throw new Error(`unsupported event type ${type}`);
         }
     }
@@ -183,6 +184,12 @@ export class WireEventTarget {
                 this._cmp[this._wireTarget] = value;
             }
             return false; // canceling signal since we don't want this to propagate
+        } else if ((evt as ComposableEvent).type === 'WireContextEvent') {
+            // NOTE: kill this hack
+            // we should only allow ValueChangedEvent
+            // however, doing so would require adapter to implement machinery
+            // that fire the intended event as DOM event and wrap inside ValueChagnedEvent
+            return this._cmp.dispatchEvent(evt);
         } else {
             throw new Error(`Invalid event ${evt}.`);
         }

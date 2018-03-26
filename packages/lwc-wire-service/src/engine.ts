@@ -1,6 +1,5 @@
 // subtypes from the engine
-export { Element } from 'engine';
-
+export { Element, ComposableEvent } from 'engine';
 export interface WireDef {
     params?: {
         [key: string]: string;
