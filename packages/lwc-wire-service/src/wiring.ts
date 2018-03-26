@@ -128,7 +128,7 @@ export class WireEventTarget {
                 const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
                 Object.keys(params).forEach(param => {
                     const prop = params[param];
-                    let configListenerMetadatas = configContext[prop];
+                    let configListenerMetadatas = configContext.listeners[prop];
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
                         configContext.listeners[prop] = configListenerMetadatas;
@@ -157,7 +157,7 @@ export class WireEventTarget {
                 break;
 
             case CONFIG:
-                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED].listeners;
                 const { params } = this._wireDef;
                 if (params) {
                     Object.keys(params).forEach(param => {
