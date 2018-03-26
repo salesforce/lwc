@@ -190,36 +190,17 @@ function isCustomElementAttribute(attrName: string): boolean {
     );
 }
 
-function isInputStateAttribute(element: IRElement, attrName: string) {
-    return element.tag === 'input' && (attrName === 'value' || attrName === 'checked');
-}
-
 export function isAttribute(element: IRElement, attrName: string): boolean {
     const isCustom = isCustomElement(element);
-    if (isCustom && !isCustomElementAttribute(attrName)) {
-        return false;
+    if (isCustom) {
+        return isCustomElementAttribute(attrName);
     }
 
-    // Handle global attrs (common to all tags) and special attribute (role, aria, key, is, data-).
-    if (GLOBAL_ATTRIBUTE_SET.has(attrName) || isAriaOrDataOrFmkAttribute(attrName)) {
+    if (SVG_TAG_SET.has(element.tag) && isValidHTMLAttribute(element.tag, attrName)) {
         return true;
     }
 
-    // Handle input tag value="" and checked attributes that are only used for state initialization.
-    // Because .setAttribute() won't update the value, those attributes should be considered as props.
-    if (isInputStateAttribute(element, attrName)) {
-        return false;
-    }
-
-    // Handle attributes applied to a subclassed element via the is="" attribute.
-    // Returns true only attributes that are valid attribute for the base element.
-    const hasIsAttr = !!getAttribute(element, 'is');
-    if (hasIsAttr) {
-        return isValidHTMLAttribute(element.tag, attrName);
-    }
-
-    // Handle general case where only standard element have attribute value.
-    return !isCustom;
+    return isAriaOrDataOrFmkAttribute(attrName);
 }
 
 export function isValidHTMLAttribute(tagName: string, attrName: string): boolean {
@@ -238,10 +219,8 @@ function shouldCamelCaseAttribute(element: IRElement, attrName: string) {
     const { tag } = element;
     const isDataAttributeOrFmk = isDataAttribute(attrName) || isFmkAttribute(attrName);
     const isSvgTag = SVG_TAG_SET.has(tag);
-
     return (
         !isSvgTag &&
-        isCustomElement(element) &&
         !isDataAttributeOrFmk
     );
 }

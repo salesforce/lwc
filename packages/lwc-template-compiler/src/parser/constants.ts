@@ -23,7 +23,7 @@ export const ARIA_RE = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 export const DATA_RE = new RegExp('^(data)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
 
 export const SVG_TAG_SET = new Set([
-    'svg', 'animate', 'circle', 'clippath', 'cursor', 'defs', 'desc', 'ellipse', 'filter',
+    'svg', 'animate', 'circle', 'clippath', 'color-profile', 'cursor', 'defs', 'desc', 'ellipse', 'filter',
     'font-face', 'g', 'glyph', 'image', 'line', 'marker', 'mask', 'missing-glyph', 'path', 'pattern',
     'polygon', 'polyline', 'rect', 'switch', 'symbol', 'text', 'textpath', 'tspan', 'use', 'view',
 ]);

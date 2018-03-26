@@ -6,7 +6,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'p',
             {
-                attrs: {
+                props: {
                     title: ''
                 },
                 key: 1
