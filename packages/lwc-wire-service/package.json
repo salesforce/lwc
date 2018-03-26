@@ -34,7 +34,7 @@
   },
   "lwc": {
     "modules": {
-      "wire-service": "dist/modules/es2017/wire-service.js"
+      "wire-service": "dist/modules/es2017/wire.js"
     }
   }
 }
