@@ -1,6 +1,50 @@
 import { getReferenceReport } from "../../references/javascript";
 import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 
+describe("module import", () => {
+    test("multiple imports from single module", () => {
+        const references = getReferenceReport(
+            `import { api, track, Element } from 'engine';`,
+            "foo.js"
+        ).references;
+
+        expect(references.length).toBe(1);
+        expect(references[0]).toMatchObject({
+            file: "foo.js",
+            id: "engine",
+            locations: [{ length: 6, start: 51 }],
+            type: "module"
+        });
+    });
+    test("default import from module", () => {
+        const references = getReferenceReport(
+            `import everything from 'engine';`,
+            "foo.js"
+        ).references;
+
+        expect(references[0]).toMatchObject({
+            file: "foo.js",
+            id: "engine",
+            locations: [{ length: 6, start: 38 }],
+            type: "module"
+        });
+    });
+
+    test("common import from module", () => {
+        const references = getReferenceReport(
+            `import * as allmystuff from 'engine';`,
+            "foo.js"
+        ).references;
+
+        expect(references[0]).toMatchObject({
+            file: "foo.js",
+            id: "engine",
+            locations: [{ length: 6, start: 43 }],
+            type: "module"
+        });
+    });
+});
+
 describe("resource-url", () => {
     test("gather metadata", () => {
         expect(
@@ -64,8 +108,10 @@ describe("label", () => {
 
     test("errors when using namespaced import", () => {
         expect(
-            getReferenceReport(`import * as label from '@label/foo';`, "test.js")
-                .diagnostics[0].message
+            getReferenceReport(
+                `import * as label from '@label/foo';`,
+                "test.js"
+            ).diagnostics[0].message
         ).toBe("@label modules only support default imports.");
     });
 

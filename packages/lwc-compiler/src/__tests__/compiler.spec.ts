@@ -11,15 +11,10 @@ const VALID_CONFIG = {
     name: "foo",
     namespace: "x",
     files: {
-        "foo.js": readFixture(
-            "class_and_template/class_and_template.js"
-        ),
-        "foo.html": readFixture(
-            "class_and_template/class_and_template.html"
-        )
+        "foo.js": readFixture("class_and_template/class_and_template.js"),
+        "foo.html": readFixture("class_and_template/class_and_template.html")
     }
 };
-
 
 describe("compiler options", () => {
     it("should validate presence of options", async () => {
@@ -94,7 +89,7 @@ describe("compiler options", () => {
             await compile({
                 name: "foo",
                 namespace: "x",
-                files: { 'x': 'foo' },
+                files: { x: "foo" },
                 outputConfig: {
                     minify: "true"
                 }
@@ -112,7 +107,7 @@ describe("compiler options", () => {
             await compile({
                 name: "foo",
                 namespace: "x",
-                files: { 'x': 'foo' },
+                files: { x: "foo" },
                 outputConfig: {
                     compat: "true"
                 }
@@ -148,17 +143,59 @@ describe("compiler output", () => {
 
         const { result } = await compile(config);
         const { references } = result;
-        expect(references).toMatchObject([{
-            id: "foo",
-            file: "foo.js",
-            type: "resourceUrl",
-            locations: [
-                {
-                    start: 36,
-                    length: 3
+        expect(references).toMatchObject([
+            {
+                id: "foo",
+                file: "foo.js",
+                type: "resourceUrl",
+                locations: [
+                    {
+                        start: 36,
+                        length: 3
+                    }
+                ]
+            }
+        ]);
+    });
+    test("should return references for multiple files", async () => {
+        const config = {
+            namespace: "x",
+            name: "foo",
+            type: "platform",
+            files: {
+                "foo.js": `
+                import { Element, api, track, wire } from 'engine';
+
+                export default class Foo extends Element {
+                    @api greeting = 'bob';
+                    @track state = {};
+                    @wire('ldsRecord', { name: '$greeting', params: {} }) record;
                 }
-            ]
-        }]);
+            `,
+                "foo.html": `
+                <template>
+                    <h1>{greeting}</h1>
+                    <x-bar></x-bar>
+                </template>
+            `
+            }
+        };
+        const { result: { references } } = await compile(config);
+        const expectedReferences = [
+            {
+                file: "foo.js",
+                id: "engine",
+                locations: [{ length: 6, start: 74 }],
+                type: "module"
+            },
+            {
+                file: "foo.html",
+                id: "x-bar",
+                locations: [{ length: 5, start: 89 }, { length: 5, start: 97 }],
+                type: "component"
+            }
+        ];
+        expect(references).toMatchObject(expectedReferences);
     });
     test("compilation should not contain bundle result if reference gathering encountered an error", async () => {
         const files = {

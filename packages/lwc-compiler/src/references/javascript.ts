@@ -18,6 +18,10 @@ const isApexSource = isGvpSource(APEX_PREFIX);
 const isLabelSource = isGvpSource(LABEL_PREFIX);
 const isResourceUrlSource = isGvpSource(RESOURCE_URL_PREFIX);
 
+function getModuleReferenceId(path: NodePath<t.ImportDeclaration>) {
+    return String(path.node.source.value);
+}
+
 function getGvpId(path: NodePath<t.ImportDeclaration>) {
     const { value } = path.node.source;
     const res = /^@[\w-]+\/(.+)$/.exec(value);
@@ -26,8 +30,29 @@ function getGvpId(path: NodePath<t.ImportDeclaration>) {
 
 function createGvpDiagnosticError(path: NodePath<t.ImportDeclaration>) {
     const { value } = path.node.source;
+    return createReferenceDiagnosticError(
+        path,
+        value,
+        String(`Unexpected GVP source for ${value}`)
+    );
+}
+
+function createModuleDiagnosticError(path: NodePath<t.ImportDeclaration>) {
+    const { value } = path.node.source;
+    return createReferenceDiagnosticError(
+        path,
+        value,
+        String(`Unexpected module source for ${value}`)
+    );
+}
+
+function createReferenceDiagnosticError(
+    path: NodePath<t.ImportDeclaration>,
+    value: string,
+    message: string
+) {
     return {
-        message: String(`Unexpected GVP source for ${value}`),
+        message,
         level: DiagnosticLevel.Fatal,
         filename: value
     };
@@ -51,6 +76,42 @@ function assertOnlyDefaultImport(
         });
     }
     return diagnostics;
+}
+
+function getModuleReferences(
+    path: NodePath<t.ImportDeclaration>,
+    filename: string
+): ReferenceReport {
+    const id = getModuleReferenceId(path);
+    const sourceDiagnostics: Diagnostic[] = id
+        ? []
+        : [createModuleDiagnosticError(path)];
+
+    const diagnostics = [...sourceDiagnostics];
+
+    const result: ReferenceReport = {
+        diagnostics,
+        references: []
+    };
+
+    if (!id || diagnostics.length > 0) {
+        return result;
+    }
+
+    // process reference
+    const { source } = path.node;
+    result.references.push({
+        id,
+        type: "module",
+        file: filename,
+        locations: [
+            {
+                start: source.start + RESOURCE_URL_PREFIX.length + 2,
+                length: id.length
+            }
+        ]
+    });
+    return result;
 }
 
 function getResourceReferences(
@@ -186,6 +247,8 @@ function sfdcReferencesVisitor(result: ReferenceReport, filename: string) {
                 importReferences = getLabelReferences(path, filename);
             } else if (isApexSource(value)) {
                 importReferences = getApexReferences(path, filename);
+            } else {
+                importReferences = getModuleReferences(path, filename);
             }
 
             if (!isUndefined(importReferences)) {
@@ -214,6 +277,5 @@ export function getReferenceReport(
 
     const result = { references: [], diagnostics: [] };
     traverse(ast, sfdcReferencesVisitor(result, filename));
-
     return result;
 }

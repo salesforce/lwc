@@ -27,7 +27,8 @@ export type ReferenceType =
     | "apexMethod"
     | "sobjectClass"
     | "sobjectField"
-    | "component";
+    | "component"
+    | "module";
 
 export function getBundleReferences({
     files
