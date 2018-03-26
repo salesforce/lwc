@@ -10,8 +10,10 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 'p',
                 {
                     attrs: {
-                        title: 'x',
                         'aria-hidden': 'x'
+                    },
+                    props: {
+                        title: 'x',
                     },
                     key: 1
                 },

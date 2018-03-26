@@ -360,12 +360,12 @@ describe('expression', () => {
 
     it('autofix unquoted value next to unary tag', () => {
         const { root } = parseTemplate(`<template><input title={myValue}/></template>`);
-        expect(root.children[0].attrs.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
+        expect(root.children[0].props.title).toMatchObject({ value: TEMPLATE_IDENTIFIER });
     });
 
     it('escaped attribute with curly braces', () => {
         const { root } = parseTemplate(`<template><input title="\\{myValue}"/></template>`);
-        expect(root.children[0].attrs.title.value).toBe('{myValue}');
+        expect(root.children[0].props.title.value).toBe('{myValue}');
     });
 
     it('potential expression error', () => {
@@ -390,9 +390,9 @@ describe('props and attributes', () => {
 
     it('element specific attribute validation', () => {
         const { root } = parseTemplate(`<template><textarea minlength="1" maxlength="5"></textarea></template>`);
-        expect(root.children[0].attrs).toMatchObject({
-            minlength: { value: '1' },
-            maxlength: { value: '5' },
+        expect(root.children[0].props).toMatchObject({
+            minLength: { value: '1' },
+            maxLength: { value: '5' },
         });
     });
 
@@ -400,6 +400,9 @@ describe('props and attributes', () => {
         const { root } = parseTemplate(`<template><p title="title" aria-hidden="true"></p></template>`);
         expect(root.children[0].attrs).toMatchObject({
             'aria-hidden': { value: 'true' },
+            'title': { value: 'title' },
+        });
+        expect(root.children[0].props).toMatchObject({
             'title': { value: 'title' },
         });
     });

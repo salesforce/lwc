@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "echo 'Building compiler...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
     "build:all": "",
     "build:umd": "webpack --progress",

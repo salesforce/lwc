@@ -22,10 +22,12 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                     'data-foo': 'datafoo',
                     'aria-hidden': 'h',
-                    role: 'presentation',
+                    role: 'presentation'
+                },
+                props: {
                     href: '/foo',
                     title: 'test',
-                    tabindex: 'test'
+                    tabIndex: 'test'
                 },
                 key: 2
             },
@@ -86,8 +88,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_element(
             'table',
             {
-                attrs: {
-                    bgcolor: 'x'
+                props: {
+                    bgColor: 'x'
                 },
                 key: 7
             },
