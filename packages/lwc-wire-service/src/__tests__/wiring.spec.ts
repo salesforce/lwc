@@ -67,10 +67,7 @@ describe('WireEventTarget', () => {
 
         describe('config event', () => {
             it('immediately fires when config is statics only', () => {
-                let executed = false;
-                function listener(config) {
-                    executed = true;
-                }
+                const listener = jest.fn();
                 const mockWireDef = {
                     static: {
                         test: ["fixed", 'array']
@@ -78,7 +75,7 @@ describe('WireEventTarget', () => {
                 };
                 const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, mockWireDef as any, "test");
                 wireEventTarget.addEventListener(CONFIG, listener);
-                expect(executed).toBeTruthy();
+                expect(listener).toHaveBeenCalledTimes(1);
             });
             it('multiple listeners from one adapter creates only one trap per property', () => {
                 const wireContext = Object.create(null);
