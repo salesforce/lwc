@@ -82,24 +82,24 @@ export function installTrap(cmp: Object, prop: string, configContext: ConfigCont
 
 /**
  * Finds the descriptor of the named property on the prototype chain
- * @param Ctor Constructor function
+ * @param target The target instance/constructor function
  * @param propName Name of property to find
  * @param protoSet Prototypes searched (to avoid circular prototype chains)
  */
-function findDescriptor(Ctor: any, propName: PropertyKey, protoSet?: any[]): PropertyDescriptor | null {
+export function findDescriptor(target: any, propName: PropertyKey, protoSet?: any[]): PropertyDescriptor | null {
     protoSet = protoSet || [];
-    if (!Ctor || protoSet.indexOf(Ctor) > -1) {
+    if (!target || protoSet.indexOf(target) > -1) {
         return null; // null, undefined, or circular prototype definition
     }
-    const proto = Object.getPrototypeOf(Ctor);
-    if (!proto) {
-        return null;
-    }
-    const descriptor = Object.getOwnPropertyDescriptor(proto, propName);
+    const descriptor = Object.getOwnPropertyDescriptor(target, propName);
     if (descriptor) {
         return descriptor;
     }
-    protoSet.push(Ctor);
+    const proto = Object.getPrototypeOf(target);
+    if (!proto) {
+        return null;
+    }
+    protoSet.push(target);
     return findDescriptor(proto, propName, protoSet);
 }
 
