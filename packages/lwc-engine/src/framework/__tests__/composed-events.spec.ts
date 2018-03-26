@@ -16,7 +16,6 @@ describe('Composed events', () => {
             }
             handleFoo() {
                 count += 1;
-                console.log('handled foo');
             }
             render() {
                 return ($api, $cmp) => {
