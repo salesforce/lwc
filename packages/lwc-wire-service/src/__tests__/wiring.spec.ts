@@ -98,6 +98,34 @@ describe('WireEventTarget', () => {
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
             });
+            it('multiple components from one adapter create multiple traps', () => {
+                const wireContext1 = Object.create(null);
+                wireContext1[CONTEXT_UPDATED] = { listeners: {}, values: {} };
+                const mockContext1 = Object.create(null);
+                mockContext1[CONTEXT_ID] = wireContext1;
+
+                const wireContext2 = Object.create(null);
+                wireContext2[CONTEXT_UPDATED] = { listeners: {}, values: {} };
+                const mockContext2 = Object.create(null);
+                mockContext2[CONTEXT_ID] = wireContext2;
+
+                const mockWireDef = {
+                    params: {
+                        key: "prop"
+                    }
+                };
+
+                const mockInstallTrap = jest.fn();
+                const originalInstallTrap = dependency.installTrap;
+                (dependency as any).installTrap = mockInstallTrap;
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext1, mockWireDef as any, "test");
+                wireEventTarget.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalled();
+                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext2, mockWireDef as any, "test");
+                wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
+                expect(mockInstallTrap).toHaveBeenCalledTimes(2);
+                (dependency as any).installTrap = originalInstallTrap;
+            });
         });
 
         it('throws when event type is not supported', () => {
