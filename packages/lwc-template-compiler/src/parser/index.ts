@@ -531,18 +531,18 @@ export default function parse(source: string, state: State): {
             }
 
             const { name, location } = attr;
-            if (isAttribute(element, name)) {
-                if (!isValidHTMLAttribute(element.tag, name)) {
-                    const msg = [
-                        `${name} is not valid attribute for ${tag}. For more information refer to`,
-                        `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
-                    ].join(' ');
+            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
+                const msg = [
+                    `${name} is not valid attribute for ${tag}. For more information refer to`,
+                    `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
+                ].join(' ');
 
-                    warnAt(msg, location);
-                } else {
-                    const attrs = element.attrs || (element.attrs = {});
-                    attrs[name] = attr;
-                }
+                warnAt(msg, location);
+            }
+
+            if (isAttribute(element, name)) {
+                const attrs = element.attrs || (element.attrs = {});
+                attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;
