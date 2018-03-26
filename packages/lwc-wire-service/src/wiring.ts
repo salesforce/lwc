@@ -23,7 +23,7 @@ export interface ConfigListenerArgument {
 }
 export type ConfigListener = (ConfigListenerArgument) => void;
 export interface ConfigListenerMetadata {
-    callback: ConfigListener;
+    listener: ConfigListener;
     statics?: {
         [key: string]: any;
     };
@@ -55,18 +55,18 @@ export interface Context {
     [CONTEXT_ID]: WireContext;
 }
 
-export type WireEventTargetCallback = NoArgumentListener | ConfigListener;
+export type WireEventTargetListener = NoArgumentListener | ConfigListener;
 
-function removeCallback(callbacks: WireEventTargetCallback[], toRemove: WireEventTargetCallback) {
-    const idx = callbacks.indexOf(toRemove);
+function removeListener(listeners: WireEventTargetListener[], toRemove: WireEventTargetListener) {
+    const idx = listeners.indexOf(toRemove);
     if (idx > -1) {
-        callbacks.splice(idx, 1);
+        listeners.splice(idx, 1);
     }
 }
 
 function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[], toRemove: ConfigListener) {
     for (let i = 0, len = configListenerMetadatas.length; i < len; i++) {
-        if (configListenerMetadatas[i].callback === toRemove) {
+        if (configListenerMetadatas[i].listener === toRemove) {
             configListenerMetadatas.splice(i, 1);
             return;
         }
@@ -93,18 +93,18 @@ export class WireEventTarget {
         this._wireTarget = wireTarget;
     }
 
-    addEventListener(type: string, callback: WireEventTargetCallback): void {
+    addEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
             case CONNECT:
-                const connectedCallbacks = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
-                assert.isFalse(connectedCallbacks.includes(callback as NoArgumentListener), 'must not call addEventListener("connect") with the same callback');
-                connectedCallbacks.push(callback as NoArgumentListener);
+                const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                connectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case DISCONNECT:
-                const disconnectedCallbacks = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                assert.isFalse(disconnectedCallbacks.includes(callback as NoArgumentListener), 'must not call addEventListener("disconnect") with the same callback');
-                disconnectedCallbacks.push(callback as NoArgumentListener);
+                const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                disconnectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case CONFIG:
@@ -114,12 +114,12 @@ export class WireEventTarget {
                 // no dynamic params, only static, so fire config once
                 if (!params) {
                     const config = statics || {};
-                    callback.call(undefined, config);
+                    listener.call(undefined, config);
                     return;
                 }
 
                 const configListenerMetadata: ConfigListenerMetadata = {
-                    callback,
+                    listener,
                     statics,
                     params
                 };
@@ -143,16 +143,16 @@ export class WireEventTarget {
         }
     }
 
-    removeEventListener(type: string, callback: WireEventTargetCallback): void {
+    removeEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
             case CONNECT:
-                const connectedCallbacks = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
-                removeCallback(connectedCallbacks, callback);
+                const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                removeListener(connectedListeners, listener);
                 break;
 
             case DISCONNECT:
-                const disconnectedCallbacks = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                removeCallback(disconnectedCallbacks, callback);
+                const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                removeListener(disconnectedListeners, listener);
                 break;
 
             case CONFIG:
@@ -163,7 +163,7 @@ export class WireEventTarget {
                         const prop = params[param];
                         const configListenerMetadatas = paramToConfigListenerMetadata[prop];
                         if (configListenerMetadatas) {
-                            removeConfigListener(configListenerMetadatas, callback);
+                            removeConfigListener(configListenerMetadatas, listener);
                         }
                     });
                 }

@@ -21,7 +21,7 @@ import {
  */
 function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
     for (const metadata of configListenerMetadatas) {
-        const { callback, statics, params } = metadata;
+        const { listener, statics, params } = metadata;
 
         const resolvedParams = Object.create(null);
         if (params) {
@@ -35,7 +35,7 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
 
         // TODO - consider read-only membrane to enforce invariant of immutable config
         const config = Object.assign({}, statics, resolvedParams);
-        callback.call(undefined, config);
+        listener.call(undefined, config);
     }
 }
 

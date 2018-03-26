@@ -18,7 +18,7 @@ import {
 } from './engine';
 import {
     NoArgumentListener,
-    WireEventTargetCallback,
+    WireEventTargetListener,
     Context,
     WireContext,
     WireEventTarget,
@@ -27,8 +27,8 @@ import {
 
 export interface WireEventTarget {
     dispatchEvent(evt: ValueChangedEvent): boolean;
-    addEventListener(type: string, callback: WireEventTargetCallback): void;
-    removeEventListener(type: string, callback: WireEventTargetCallback): void;
+    addEventListener(type: string, listener: WireEventTargetListener): void;
+    removeEventListener(type: string, listener: WireEventTargetListener): void;
 }
 
 export type WireAdapterFactory = (eventTarget: WireEventTarget) => void;
@@ -38,11 +38,11 @@ const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterF
 
 /**
  * Invokes the specified callbacks.
- * @param callbacks functions to call
+ * @param listeners functions to call
  */
-function invokeCallback(callbacks: NoArgumentListener[]) {
-    for (let i = 0, len = callbacks.length; i < len; ++i) {
-        callbacks[i].call(undefined);
+function invokeListener(listeners: NoArgumentListener[]) {
+    for (let i = 0, len = listeners.length; i < len; ++i) {
+        listeners[i].call(undefined);
     }
 }
 
@@ -78,19 +78,19 @@ const wireService = {
     },
 
     connected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
-        let callbacks: NoArgumentListener[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
+        let listeners: NoArgumentListener[];
+        if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_CONNECTED])) {
             return;
         }
-        invokeCallback(callbacks);
+        invokeListener(listeners);
     },
 
     disconnected: (cmp: Element, data: object, def: ElementDef, context: Context) => {
-        let callbacks: NoArgumentListener[];
-        if (!def.wire || !(callbacks = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
+        let listeners: NoArgumentListener[];
+        if (!def.wire || !(listeners = context[CONTEXT_ID][CONTEXT_DISCONNECTED])) {
             return;
         }
-        invokeCallback(callbacks);
+        invokeListener(listeners);
     }
 };
 
