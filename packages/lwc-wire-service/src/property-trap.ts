@@ -20,7 +20,7 @@ import {
  * @param paramValues values for all wire adapter config params
  */
 function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
-    for (const metadata of configListenerMetadatas) {
+    configListenerMetadatas.forEach((metadata) => {
         const { listener, statics, params } = metadata;
 
         const resolvedParams = Object.create(null);
@@ -36,7 +36,7 @@ function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetada
         // TODO - consider read-only membrane to enforce invariant of immutable config
         const config = Object.assign({}, statics, resolvedParams);
         listener.call(undefined, config);
-    }
+    });
 }
 
 function updated(cmp: Element, prop: string, configContext: ConfigContext) {
