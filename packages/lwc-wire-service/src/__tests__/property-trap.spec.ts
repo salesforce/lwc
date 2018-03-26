@@ -6,8 +6,8 @@ import { ConfigContext } from '../wiring';
 
 describe('findDescriptor', () => {
     it('detects circular prototype chains', () => {
-        function A(){};
-        function B(){};
+        function A() { /**/ }
+        function B() { /**/ }
         B.prototype = Object.create(A.prototype);
         A.prototype = Object.create(B.prototype);
         const actual = findDescriptor(B, 'target');
@@ -15,9 +15,9 @@ describe('findDescriptor', () => {
     });
 
     it('finds descriptor on super with prototype setting', () => {
-        function A(){};
+        function A() { /**/ }
         A.prototype.target = 'target';
-        function B(){};
+        function B() { /**/ }
         B.prototype = Object.create(A.prototype);
         expect(findDescriptor(B, 'target')).toBe(null);
         expect(findDescriptor(new B(), 'target')).not.toBe(null);
@@ -25,12 +25,12 @@ describe('findDescriptor', () => {
 
     it('finds descriptor on super with classes', () => {
         class A {
-            target : any;
+            target: any;
             constructor() {
                 this.target = 'target';
             }
         }
-        class B extends A {};
+        class B extends A {}
         expect(findDescriptor(B, 'target')).toBe(null);
         expect(findDescriptor(new B(), 'target')).not.toBe(null);
      });
