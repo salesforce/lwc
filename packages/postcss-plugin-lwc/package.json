@@ -5,6 +5,7 @@
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "echo 'Building postcss plugin...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
