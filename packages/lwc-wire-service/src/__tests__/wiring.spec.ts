@@ -69,6 +69,7 @@ describe('WireEventTarget', () => {
             it('immediately fires when config is statics only', () => {
                 const listener = jest.fn();
                 const mockWireDef = {
+                    params: {},
                     static: {
                         test: ["fixed", 'array']
                     }

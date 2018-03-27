@@ -113,7 +113,7 @@ export class WireEventTarget {
                 const statics = this._wireDef.static;
 
                 // no dynamic params, only static, so fire config once
-                if (!params) {
+                if (!params || Object.keys(params).length === 0) {
                     const config = statics || {};
                     listener.call(undefined, config);
                     return;
