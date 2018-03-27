@@ -54,17 +54,17 @@ function updatedFuture(cmp: Element, configContext: ConfigContext) {
     // configContext.mutated must be set prior to invoking this function
     const mutated = configContext.mutated as Set<string>;
     delete configContext.mutated;
-    for (const prop of mutated) {
+    mutated.forEach(prop => {
         const value = cmp[prop];
         if (configContext.values[prop] === value) {
-            continue;
+            return;
         }
         configContext.values[prop] = value;
         const listeners = configContext.listeners[prop];
         for (let i = 0, len = listeners.length; i < len; i++) {
             uniqueListeners.add(listeners[i]);
         }
-    }
+    });
     invokeConfigListeners(uniqueListeners, configContext.values);
 }
 
