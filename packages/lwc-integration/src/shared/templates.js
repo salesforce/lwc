@@ -18,30 +18,30 @@ exports.todoApp = function (cmpName) {
 
         // Register the wire adapter for @wire(getTodo).
         registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
-            let subscription;
-            let config;
+            var subscription;
+            var config;
             wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: undefined }));
-            const observer = {
-                next: data => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
-                error: error => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+            var observer = {
+                next: function(data) { wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: data, error: undefined })); },
+                error: function(error) { wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error: error })); }
             };
-            wiredEventTarget.addEventListener('connect', () => {
-                const observable = getObservable(config);
+            wiredEventTarget.addEventListener('connect', function() {
+                var observable = getObservable(config);
                 if (observable) {
                     subscription = observable.subscribe(observer);
                     return;
                 }
             });
-            wiredEventTarget.addEventListener('disconnect', () => {
+            wiredEventTarget.addEventListener('disconnect', function() {
                 subscription.unsubscribe();
             });
-            wiredEventTarget.addEventListener('config', (newConfig) => {
+            wiredEventTarget.addEventListener('config', function(newConfig) {
                 config = newConfig;
                 if (subscription) {
                     subscription.unsubscribe();
                     subscription = undefined;
                 }
-                const observable = getObservable(config);
+                var observable = getObservable(config);
                 if (observable) {
                     subscription = observable.subscribe(observer);
                     return;
@@ -49,7 +49,7 @@ exports.todoApp = function (cmpName) {
             });
         });
 
-        const element = createElement('${cmpName}', { is: Cmp });
+        var element = createElement('${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }
