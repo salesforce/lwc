@@ -947,10 +947,6 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.17.31:
-  version "0.17.31"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.31/75f73f9178330be2848aee114905abeb2a8f5716.tgz#75f73f9178330be2848aee114905abeb2a8f5716"
-
 babel-compat@0.17.33:
   version "0.17.33"
   resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.33/ec78e0f88c262be3f22951e1ae7d0c709876e2ce.tgz#ec78e0f88c262be3f22951e1ae7d0c709876e2ce"
@@ -2399,10 +2395,6 @@ compare-func@^1.3.1:
 compare-versions@2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-2.0.1/1edc1f93687fd97a325c59f55e45a07db106aca6.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
-
-compat-polyfills@0.17.31:
-  version "0.17.31"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.31/dc04602de66f4e33991b0fe73011d92aadf8986a.tgz#dc04602de66f4e33991b0fe73011d92aadf8986a"
 
 compat-polyfills@0.17.33:
   version "0.17.33"
@@ -7389,16 +7381,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^2.0.0"
     inherits "^2.0.1"
-
-rollup-plugin-compat@0.17.31:
-  version "0.17.31"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.17.31/df09d8ac51197f2c57aca7c675012dbe24b1672b.tgz#df09d8ac51197f2c57aca7c675012dbe24b1672b"
-  dependencies:
-    "@babel/core" "7.0.0-beta.40"
-    babel-compat "0.17.31"
-    babel-preset-compat "0.17.31"
-    compat-polyfills "0.17.31"
-    rollup-pluginutils "~2.0.1"
 
 rollup-plugin-compat@0.17.33:
   version "0.17.33"

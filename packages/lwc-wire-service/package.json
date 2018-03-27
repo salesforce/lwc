@@ -36,5 +36,8 @@
     "modules": {
       "wire-service": "dist/modules/es2017/wire.js"
     }
+  },
+  "dependencies": {
+    "rollup-plugin-compat": "0.17.33"
   }
 }
