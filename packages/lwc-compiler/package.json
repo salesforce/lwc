@@ -26,7 +26,8 @@
     "postcss-plugin-lwc": "0.17.19",
     "postcss-selector-parser": "^3.1.1",
     "rollup": "~0.56.2",
-    "rollup-plugin-replace": "^2.0.0"
+    "rollup-plugin-replace": "^2.0.0",
+    "root-require": "^0.3.1"
   },
   "devDependencies": {
     "@types/babel-core": "^6.25.3",

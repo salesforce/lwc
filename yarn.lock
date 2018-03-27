@@ -6267,6 +6267,10 @@ package-json@^4.0.1:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
+packpath@~0.1.0:
+  version "0.1.0"
+  resolved "http://npm.lwcjs.org/packpath/-/packpath-0.1.0/a521534222dfeaa9c612ef0c640ec399149ecdd8.tgz#a521534222dfeaa9c612ef0c640ec399149ecdd8"
+
 pad-right@^0.2.2:
   version "0.2.2"
   resolved "http://npm.lwcjs.org/pad-right/-/pad-right-0.2.2/6fbc924045d244f2a2a244503060d3bfc6009774.tgz#6fbc924045d244f2a2a244503060d3bfc6009774"
@@ -7365,6 +7369,12 @@ rollup@~0.53.0:
 rollup@~0.56.2:
   version "0.56.2"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.2/1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a.tgz#1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a"
+
+root-require@^0.3.1:
+  version "0.3.1"
+  resolved "http://npm.lwcjs.org/root-require/-/root-require-0.3.1/95e1554d63cc869a2abde3e3bfc9bbaaa1edacd3.tgz#95e1554d63cc869a2abde3e3bfc9bbaaa1edacd3"
+  dependencies:
+    packpath "~0.1.0"
 
 run-async@^2.2.0:
   version "2.3.0"
