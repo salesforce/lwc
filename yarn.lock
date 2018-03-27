@@ -945,6 +945,10 @@ babel-compat@0.17.31:
   version "0.17.31"
   resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.31/75f73f9178330be2848aee114905abeb2a8f5716.tgz#75f73f9178330be2848aee114905abeb2a8f5716"
 
+babel-compat@0.17.33:
+  version "0.17.33"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-compat/-/babel-compat-0.17.33.tgz#2798d04141c9ad91f504a8319b486d67b3287c08"
+
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-core/-/babel-core-6.26.0/af32f78b31a6fcef119c87b0fd8d9753f03a0bb8.tgz#af32f78b31a6fcef119c87b0fd8d9753f03a0bb8"
@@ -1455,6 +1459,10 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   dependencies:
     esutils "^2.0.2"
 
+babel-plugin-transform-proxy-compat@0.17.33:
+  version "0.17.33"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.17.33.tgz#879ed20bd730cd22a9c449ac12b3fd3ef7da596a"
+
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-regenerator/-/babel-plugin-transform-regenerator-6.26.0/e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f.tgz#e0703696fbde27f0a3efcacf8b4dca2f7b3a8f2f"
@@ -1528,6 +1536,41 @@ babel-preset-compat@0.17.31:
     "@babel/plugin-transform-template-literals" "7.0.0-beta.40"
     "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.40"
     "@babel/plugin-transform-unicode-regex" "7.0.0-beta.40"
+
+babel-preset-compat@0.17.33:
+  version "0.17.33"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/babel-preset-compat/-/babel-preset-compat-0.17.33.tgz#4e08f8818df5dfad6094732a61b523f94dc7b55b"
+  dependencies:
+    "@babel/plugin-proposal-class-properties" "7.0.0-beta.40"
+    "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.40"
+    "@babel/plugin-transform-arrow-functions" "7.0.0-beta.40"
+    "@babel/plugin-transform-async-to-generator" "7.0.0-beta.40"
+    "@babel/plugin-transform-block-scoped-functions" "7.0.0-beta.40"
+    "@babel/plugin-transform-block-scoping" "7.0.0-beta.40"
+    "@babel/plugin-transform-classes" "7.0.0-beta.40"
+    "@babel/plugin-transform-computed-properties" "7.0.0-beta.40"
+    "@babel/plugin-transform-destructuring" "7.0.0-beta.40"
+    "@babel/plugin-transform-duplicate-keys" "7.0.0-beta.40"
+    "@babel/plugin-transform-exponentiation-operator" "7.0.0-beta.40"
+    "@babel/plugin-transform-for-of" "7.0.0-beta.40"
+    "@babel/plugin-transform-function-name" "7.0.0-beta.40"
+    "@babel/plugin-transform-instanceof" "7.0.0-beta.40"
+    "@babel/plugin-transform-literals" "7.0.0-beta.40"
+    "@babel/plugin-transform-modules-amd" "7.0.0-beta.40"
+    "@babel/plugin-transform-modules-commonjs" "7.0.0-beta.40"
+    "@babel/plugin-transform-modules-systemjs" "7.0.0-beta.40"
+    "@babel/plugin-transform-modules-umd" "7.0.0-beta.40"
+    "@babel/plugin-transform-object-super" "7.0.0-beta.40"
+    "@babel/plugin-transform-parameters" "7.0.0-beta.40"
+    "@babel/plugin-transform-regenerator" "7.0.0-beta.40"
+    "@babel/plugin-transform-runtime" "7.0.0-beta.40"
+    "@babel/plugin-transform-shorthand-properties" "7.0.0-beta.40"
+    "@babel/plugin-transform-spread" "7.0.0-beta.40"
+    "@babel/plugin-transform-sticky-regex" "7.0.0-beta.40"
+    "@babel/plugin-transform-template-literals" "7.0.0-beta.40"
+    "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.40"
+    "@babel/plugin-transform-unicode-regex" "7.0.0-beta.40"
+    babel-plugin-transform-proxy-compat "0.17.33"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -2346,6 +2389,10 @@ compare-versions@2.0.1:
 compat-polyfills@0.17.31:
   version "0.17.31"
   resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.31/dc04602de66f4e33991b0fe73011d92aadf8986a.tgz#dc04602de66f4e33991b0fe73011d92aadf8986a"
+
+compat-polyfills@0.17.33:
+  version "0.17.33"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/compat-polyfills/-/compat-polyfills-0.17.33.tgz#9ec07d9f1fb9394592a512bbf88faa5dfb5d57b7"
 
 component-emitter@^1.2.1:
   version "1.2.1"
@@ -7327,6 +7374,16 @@ rollup-plugin-compat@0.17.31:
     babel-compat "0.17.31"
     babel-preset-compat "0.17.31"
     compat-polyfills "0.17.31"
+    rollup-pluginutils "~2.0.1"
+
+rollup-plugin-compat@0.17.33:
+  version "0.17.33"
+  resolved "https://nexus.soma.salesforce.com/nexus/content/groups/npm-all/rollup-plugin-compat/-/rollup-plugin-compat-0.17.33.tgz#3bc12b74edacd7a688535426613a058f43b9a9f5"
+  dependencies:
+    "@babel/core" "7.0.0-beta.40"
+    babel-compat "0.17.33"
+    babel-preset-compat "0.17.33"
+    compat-polyfills "0.17.33"
     rollup-pluginutils "~2.0.1"
 
 rollup-plugin-inject@^1.4.1:
