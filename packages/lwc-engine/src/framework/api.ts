@@ -4,11 +4,10 @@ import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
+import { ComponentConstructor, markComponentAsDirty } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { pierce } from "./piercing";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -360,11 +359,8 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        if (!isValidEvent(event)) {
-            return;
-        }
-        const e = pierce(vm, event);
-        invokeComponentCallback(vm, fn, [e]);
+        // TODO: only if the event is `composed` it can be dispatched
+        invokeComponentCallback(vm, fn, [event]);
     };
 }
 
