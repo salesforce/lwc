@@ -1,4 +1,5 @@
-import { unwrap, membrane } from '../reactive';
+import { membrane } from '../reactive';
+import { unwrap } from '../main';
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
 

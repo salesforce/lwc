@@ -1,5 +1,6 @@
 import assert from "./assert";
 import { ArrayMap, isArray, isNull } from "./language";
+import { unwrap as observableUnwrap } from "observable-membrane";
 
 export interface ReplicableFunction {
     new (...args: any[]): any;
@@ -94,8 +95,20 @@ export class Membrane {
 // TODO: we are using a funky and leaky abstraction here to try to identify if
 // the proxy is a compat proxy, and define the unwrap method accordingly.
 // @ts-ignore
-const { getKey } = Proxy;
+const { getKey: ProxyGetKey } = Proxy;
+const getKey = ProxyGetKey ? ProxyGetKey : (o: any, key: PropertyKey): any => o[key];
 
-export const unwrap = getKey ?
-    (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && getKey(replicaOrAny, TargetSlot)) || replicaOrAny
-    : (replicaOrAny: Replica | any): Replicable | any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
+// Universal unwrap mechanism that works for any type of membrane
+export function unwrap(value: any): any {
+    // observable membrane goes first because it is in the critical path
+    let unwrapped = observableUnwrap(value);
+    if (unwrapped !== value) {
+        return unwrapped;
+    }
+    // piercing membrane is not that important, it goes second
+    unwrapped = (value && getKey(value, TargetSlot)) || value;
+    if (unwrapped !== value) {
+        return unwrapped;
+    }
+    return value;
+}
