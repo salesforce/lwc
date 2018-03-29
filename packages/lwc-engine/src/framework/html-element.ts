@@ -148,14 +148,15 @@ class LWCElement implements Component {
     }
 
     addEventListener(type: string, listener: EventListener, options: any) {
-        const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
             throw new Error(`Deprecated Method: usage of this.addEventListener("${type}", ...) in ${vm} is now deprecated. In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener().`);
         }
     }
 
     removeEventListener(type: string, listener: EventListener, options: any) {
         if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
             throw new Error(`Deprecated Method: usage of this.removeEventListener("${type}", ...) in ${vm} is now deprecated alongside this.addEventListener(). In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener() and this.root.removeEventListener().`);
         }
     }
