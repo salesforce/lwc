@@ -23,4 +23,12 @@
             </li>
         </ul>
     </div>
+    <div>
+        <span>Prop Concat</span>
+        <ul id="prop-concat-list" onclick={handlePropConcatClick}>
+            <li key={item.title} for:each={propConcatItem} for:item="item">
+                {item.title}
+            </li>
+        </ul>
+    </div>
 </template>

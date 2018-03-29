@@ -34,4 +34,14 @@ describe('Array prototype methods', () => {
         assert(elements.value[2].getText(), 'concat 1');
         assert(elements.value[3].getText(), 'concat 2');
     });
+
+    it('should display concat items correctly', function () {
+        const el = browser.element('#prop-concat-list');
+        el.click();
+        const elements = browser.elements('#prop-concat-list li');
+        assert(elements.value[0].getText(), 'concat 1');
+        assert(elements.value[1].getText(), 'concat 2');
+        assert(elements.value[2].getText(), 'first');
+        assert(elements.value[3].getText(), 'second');
+    });
 });
