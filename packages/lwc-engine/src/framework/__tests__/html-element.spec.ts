@@ -5,6 +5,7 @@ import { register } from "../services";
 import { ViewModelReflection } from "../def";
 import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
+import { unwrap } from "../main";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -372,13 +373,14 @@ describe('html-element', () => {
             function html($api) {
                 return [$api.h('div', { key: 1 }, [])];
             };
+            let elm;
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.addEventListener('click', (e) => {
+                    this.root.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
-                        expect(e.target).toBe(this); // notice that target is host
-                        expect(e.currentTarget).toBe(this); // notice that currentTarget is host
+                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is visible for the root, always
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
                 render() {
@@ -389,7 +391,7 @@ describe('html-element', () => {
                 }
             }
             Foo.publicMethods = ['run'];
-            const elm = createElement('x-foo', { is: Foo });
+            elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
         });
@@ -417,18 +419,19 @@ describe('html-element', () => {
             elm.run();
         });
 
-        it('should get custom events in host when marked as composed=true', function () {
-            expect.assertions(3);
+        it('should get custom events in root when marked as bubbles=true', function () {
+            expect.assertions(6);
             function html($api) {
                 return [$api.h('div', { key: 1 }, [])];
             }
+            let elm;
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.addEventListener('xyz', (e) => {
-                        expect(e.composed).toBe(true);
-                        expect(e.target).toBe(this); // notice that target is host
-                        expect(e.currentTarget).toBe(this); // notice that currentTarget is host
+                    this.root.addEventListener('xyz', (e) => {
+                        expect(e.bubbles).toBe(true);
+                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is host element
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
                     });
                 }
                 render() {
@@ -447,7 +450,7 @@ describe('html-element', () => {
                 }
             }
             Foo.publicMethods = ['run'];
-            const elm = createElement('x-foo', { is: Foo });
+            elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
             elm.run();
         });

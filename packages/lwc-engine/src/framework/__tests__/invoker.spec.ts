@@ -265,24 +265,22 @@ describe('invoker', () => {
             }
         });
 
-        it('should remove listener in disconnectedCallback()', () => {
-            expect.assertions(1);
-            function fn(event: Event) {
-                expect(event.bubbles).toBe(true);
-            }
+        it('can remove listener in disconnectedCallback()', () => {
+            let removed;
+            function fn() {}
             class MyComponent1 extends Element {
                 connectedCallback() {
-                    this.addEventListener('click', fn);
+                    this.root.addEventListener('click', fn);
                 }
                 disconnectedCallback() {
-                    this.removeEventListener('click', fn);
+                    this.root.removeEventListener('click', fn);
+                    removed = true;
                 }
             }
             const elm = createElement('x-foo', { is: MyComponent1 });
             document.body.appendChild(elm);
-            elm.click();
             document.body.removeChild(elm);
-            elm.click();
+            expect(removed).toBe(true);
         });
     });
 });

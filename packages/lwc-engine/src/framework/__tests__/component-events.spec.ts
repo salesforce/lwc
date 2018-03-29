@@ -13,14 +13,23 @@ describe('Events on Custom Elements', () => {
     it('attaches click event handler to custom element from within (wc-compat)', function() {
         const result = [];
         function clicked(ev) { result.push(ev); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('click', clicked);
+                cmp = this;
+                this.root.addEventListener('click', clicked);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
-        elm.click();
+        document.body.appendChild(elm);
+        cmp.root.querySelector('div').click();
         expect(result).toHaveLength(1);
     });
 
@@ -28,16 +37,24 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1() { result.push(1); }
         function clicked2() { result.push(2); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('click', clicked1);
+                cmp = this;
+                this.root.addEventListener('click', clicked1);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
         elm.addEventListener('click', clicked2);
         document.body.appendChild(elm);
-        elm.click();
+        cmp.root.querySelector('div').click();
         expect(result).toEqual([1, 2]);
     });
 
@@ -45,15 +62,24 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1(ev) { result.push(1); ev.stopImmediatePropagation(); }
         function clicked2() { throw new Error('should never reach this listener'); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('click', clicked1);
-                this.addEventListener('click', clicked2);
+                cmp = this;
+                this.root.addEventListener('click', clicked1);
+                this.root.addEventListener('click', clicked2);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
-        elm.click();
+        document.body.appendChild(elm);
+        cmp.root.querySelector('div').click();
         expect(result).toEqual([1]);
     });
 
@@ -61,61 +87,73 @@ describe('Events on Custom Elements', () => {
         const result = [];
         function clicked1(ev) { result.push(1); ev.stopImmediatePropagation(); }
         function clicked2() { throw new Error('should never reach this listener'); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('click', clicked1);
+                cmp = this;
+                this.root.addEventListener('click', clicked1);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
         elm.addEventListener('click', clicked2);
-        elm.click();
+        document.body.appendChild(elm);
+        cmp.root.querySelector('div').click();
         expect(result).toEqual([1]);
     });
 
     it('attaches custom event handler to custom element from within (wc-compat)', function() {
         const result = [];
         function tested(ev) { result.push(ev); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('test', tested);
+                cmp = this;
+                this.root.addEventListener('test', tested);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
-        elm.dispatchEvent(new CustomEvent('test', {}));
+        document.body.appendChild(elm);
+        cmp.root.querySelector('div').dispatchEvent(new CustomEvent('test', { bubbles: true }));  // intentionally without composed: true to see if the root captures can that
         expect(result).toHaveLength(1);
     });
 
-    it('should expose component as context to the event handler when defined from within (wc-compat)', function() {
+    it('should expose root as context to the event handler when defined from within (wc-compat)', function() {
         const result = [];
         function clicked() { result.push(this); result.push.apply(result, arguments); }
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        let cmp;
         class Foo extends Element {
             constructor() {
                 super();
-                this.addEventListener('click', clicked);
+                cmp = this;
+                this.root.addEventListener('click', clicked);
+            }
+            render() {
+                return html;
             }
         }
         elm = createElement('x-foo', { is: Foo });
-        elm.click();
+        document.body.appendChild(elm);
+        cmp.root.querySelector('div').click();
         expect(result).toHaveLength(2);
-        expect(result[0]).toBe(elm[ViewModelReflection].component); // context must be the component
+        expect(result[0]).toBe(elm[ViewModelReflection].component.root); // context must be the component
         expect(result[1]).toBeInstanceOf(Event);
-    });
-
-    it('should not expose the host element via event.target', function() {
-        let event: Event;
-        function clicked(e: Event) { event = e; }
-        class Foo extends Element {
-            constructor() {
-                super();
-                this.addEventListener('click', clicked);
-            }
-        }
-        elm = createElement('x-foo', { is: Foo });
-        elm.click();
-        expect(event);
-        expect(event.target).toBe(elm[ViewModelReflection].component);
     });
 
     it('should add event listeners in constructor when created via createElement', function() {
@@ -126,7 +164,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             constructor() {
                 super();
-                this.addEventListener('c-event', function() {
+                this.root.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -152,7 +190,7 @@ describe('Events on Custom Elements', () => {
         }
         class MyComponent extends Element {
             connectedCallback() {
-                this.addEventListener('c-event', function() {
+                this.root.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -179,7 +217,7 @@ describe('Events on Custom Elements', () => {
         }
         class MyChild extends Element {
             connectedCallback() {
-                this.addEventListener('c-event', function() {
+                this.root.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -220,7 +258,7 @@ describe('Events on Custom Elements', () => {
         class MyChild extends Element {
             constructor() {
                 super();
-                this.addEventListener('c-event', function() {
+                this.root.addEventListener('c-event', function() {
                     count += 1;
                 });
             }

@@ -7,7 +7,7 @@ import { ViewModelReflection } from "../def";
 import { VM } from "../vm";
 import { Component } from "../component";
 
-describe.only('root', () => {
+describe('root', () => {
     describe('#constructor()', () => {
 
         it('should throw for invalid vm reference', () => {
