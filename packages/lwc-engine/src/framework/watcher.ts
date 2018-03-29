@@ -1,8 +1,5 @@
 import assert from "./assert";
-import { scheduleRehydration, VM } from "./vm";
-import { markComponentAsDirty } from "./component";
 import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "./language";
-import { vmBeingRendered, isRendering } from "./invoker";
 
 interface ReactiveRecord {
     // TODO: this type definition is missing numbers and symbols as keys
@@ -58,3 +55,7 @@ export function observeMutation(target: object, key: PropertyKey) {
         ArrayPush.call(vm.deps, value);
     }
 }
+
+import { scheduleRehydration, VM } from "./vm";
+import { markComponentAsDirty } from "./component";
+import { vmBeingRendered, isRendering } from "./invoker";

@@ -6,7 +6,7 @@ import { isBeingConstructed, Component } from "../component";
 import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
-import { membrane as reactiveMembrane } from "../reactive";
+import { reactiveMembrane } from "../membrane";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
