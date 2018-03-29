@@ -109,6 +109,7 @@
     var __setKey$3 = Proxy.setKey;
     var __callKey = Proxy.callKey;
     var __getKey$3 = Proxy.getKey;
+    var __concat = Proxy.concat;
 
     var Foo =
       /*#__PURE__*/
@@ -144,7 +145,7 @@
                 ),
                 "apply",
                 _ref,
-                [this].concat(args)
+                __concat([this], args)
               )
             )),
             __setKey$3(_this, "x", void 0),
