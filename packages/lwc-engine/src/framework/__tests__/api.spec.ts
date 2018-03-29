@@ -12,17 +12,17 @@ describe('api', () => {
                 static forceTagName = 'input';
             }; };
             factory.__circular__ = true;
-            const vnode = api.c('x-foo', factory, { className: 'foo' });
+            const vnode = api.c('x-foo', factory, { className: 'foo' }, []);
             expect(vnode.tag).toBe('input');
         });
 
         it('should convert className to a classMap property', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo' });
+            const vnode = api.c('x-foo', Foo, { className: 'foo' }, []);
             expect(vnode.data.class).toEqual({ foo: true });
         });
 
         it('should split classNames on white spaces', () => {
-            const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' });
+            const vnode = api.c('x-foo', Foo, { className: 'foo bar   baz' }, []);
             expect(vnode.data.class).toEqual({ foo: true, bar: true, baz: true });
         });
 
@@ -31,7 +31,7 @@ describe('api', () => {
                 api.c('x-foo', Foo, {
                     className: 'foo',
                     classMap: { foo: true }
-                });
+                }, []);
             }).toThrowError(/className/);
         });
 
@@ -40,7 +40,7 @@ describe('api', () => {
             const factory = function() {
                 return Foo;
             };
-            const vnode = api.c('x-foo', Foo, { styleMap });
+            const vnode = api.c('x-foo', Foo, { styleMap }, []);
 
             expect(vnode.data.style).toEqual({ color: 'red' });
         });
@@ -48,7 +48,7 @@ describe('api', () => {
         it('assign correct style value when style is present', () => {
             const style = 'color:red';
             const factory = function() { return Foo; };
-            const vnode = api.c('x-foo', factory, { style });
+            const vnode = api.c('x-foo', factory, { style }, []);
 
             expect(vnode.data.style).toBe('color:red');
         });
@@ -58,15 +58,9 @@ describe('api', () => {
                 color: 'red'
             };
             const factory = function() { return Foo; };
-            const vnode = api.c('x-foo', factory, { style });
+            const vnode = api.c('x-foo', factory, { style }, []);
 
             expect(vnode.data.style).toBe('[object Object]');
-        });
-
-        it('should throw an error when createElement is called without Ctor', function() {
-            expect(() => {
-                createElement('x-foo');
-            }).toThrow();
         });
 
         it('should support forceTagName static definition to force tagname on root node', () => {
@@ -88,7 +82,7 @@ describe('api', () => {
 
         it('should ignore forceTagName static definition if "is" attribute is defined in template', () => {
             function html($api) {
-                return [$api.c('button', Bar, { attrs: { is: "x-bar" } })];
+                return [$api.c('button', Bar, { attrs: { is: "x-bar" } }, [])];
             }
             class Foo extends Element {
                 render() {

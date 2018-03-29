@@ -1,3 +1,4 @@
+import assert from "./assert";
 import { init } from "../3rdparty/snabbdom/snabbdom";
 import { DOMAPI } from "../3rdparty/snabbdom/types";
 import props from "./modules/props";
@@ -7,19 +8,22 @@ import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
 import uid from "./modules/uid";
-
-const {
+import { ViewModelReflection } from "./utils";
+import {
     createElement,
     createElementNS,
     createTextNode,
     createComment,
     createDocumentFragment,
-} = document;
-const {
+} from "./dom/document";
+import {
     insertBefore,
     removeChild,
     appendChild,
-} = Node.prototype;
+} from "./dom/node";
+import { isUndefined, isFalse, isTrue } from "./language";
+import { VM } from "./vm";
+
 function parentNode(node: Node): Node | null {
     return node.parentNode;
 }
@@ -28,6 +32,11 @@ function nextSibling(node: Node): Node | null {
 }
 function setTextContent(node: Node, text: string) {
     node.nodeValue = text;
+}
+function remapNodeIfFallbackIsNeeded(vm: VM | undefined, node: Node): Node {
+    // if operation in the fake shadow root, delegate the operation to the host
+    return (isUndefined(vm) || isFalse(vm.fallback) || vm.cmpRoot !== node) ?
+        node : vm.elm;
 }
 export const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
@@ -46,12 +55,24 @@ export const htmlDomApi: DOMAPI = {
         return createComment.call(document, text);
     },
     insertBefore(parent: Node, newNode: Node, referenceNode: Node | null) {
+        const vm: VM = parent[ViewModelReflection];
+        parent = remapNodeIfFallbackIsNeeded(vm, parent);
         insertBefore.call(parent, newNode, referenceNode);
     },
     removeChild(node: Node, child: Node) {
+        const vm: VM = node[ViewModelReflection];
+        node = remapNodeIfFallbackIsNeeded(vm, node);
         removeChild.call(node, child);
     },
     appendChild(node: Node, child: Node) {
+        const vm: VM = node[ViewModelReflection];
+        if (process.env.NODE_ENV !== 'production') {
+            if (!isUndefined(vm) && isTrue(vm.fallback)) {
+                assert.vm(vm);
+                assert.invariant(vm.elm !== node, `Internal Error: no insertion should be carry on host element directly when running in fallback mode.`);
+            }
+        }
+        node = remapNodeIfFallbackIsNeeded(vm, node);
         appendChild.call(node, child);
     },
     parentNode,

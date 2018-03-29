@@ -4,7 +4,11 @@ import { ComponentConstructor } from "./component";
 import {
     AttrNameToPropNameMap,
     PropNameToAttrNameMap,
-} from "./dom";
+} from "./dom/attributes";
+import {
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINED_BY,
+} from "./dom/node";
 
 export type Callback = () => void;
 
@@ -87,3 +91,7 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
 }
 
 export const usesNativeSymbols = typeof Symbol() === 'symbol';
+
+export function isChildOfRoot(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+}

@@ -55,11 +55,13 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
+        children: t.Expression,
     ) {
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.stringLiteral(tagName),
             componentClass,
             data,
+            children,
         ]);
     }
 

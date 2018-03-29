@@ -145,7 +145,7 @@ export default function parse(source: string, state: State): {
                 applyStyle(element);
                 applyHandlers(element);
                 applyComponent(element);
-                applySlot(element);
+                // applySlot(element);
                 applyKey(element, elementNode.__location);
 
                 parent = element;
@@ -154,9 +154,9 @@ export default function parse(source: string, state: State): {
             exit() {
                 const element = stack.pop() as IRElement;
 
-                if (element && isCustomElement(element)) {
-                    dispathCustomElementChildrenInSlots(element);
-                }
+                // if (element && isCustomElement(element)) {
+                //     dispathCustomElementChildrenInSlots(element);
+                // }
 
                 applyAttributes(element);
 

@@ -46,7 +46,7 @@ describe('patch', () => {
             const calls = [];
             function html($api) {
                 calls.push('root:render');
-                return [$api.c('x-child', Child, {})];
+                return [$api.c('x-child', Child, {}, [])];
             }
             class Root extends Element {
                 constructor() {
@@ -172,7 +172,7 @@ describe('patch', () => {
             function html($api, $cmp) {
                 calls.push('root:render');
                 return $cmp.state.show
-                    ? [$api.c('x-child', Child, {})]
+                    ? [$api.c('x-child', Child, {}, [])]
                     : [];
             }
             class Root extends Element {

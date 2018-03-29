@@ -1,19 +1,22 @@
 import assert from "./assert";
-import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
 import {
-    getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
+    querySelectorAll,
+    querySelector,
+} from "./dom/element";
+import {
+    getGlobalHTMLPropertiesInfo,
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
-    CustomEvent,
-} from "./dom";
+} from "./dom/attributes";
+import { CustomEvent, Event } from "./dom/event";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
@@ -86,7 +89,7 @@ function getLinkedElement(cmp: Component): HTMLElement {
 
 function querySelectorAllFromComponent(cmp: Component, selectors: string): NodeList {
     const elm = getLinkedElement(cmp);
-    return elm.querySelectorAll(selectors);
+    return querySelectorAll.call(elm, selectors);
 }
 
 export interface ComposableEvent extends Event {
@@ -141,10 +144,14 @@ class LWCElement implements Component {
             }
         }
 
-        // Pierce dispatchEvent so locker service has a chance to overwrite
-        pierce(vm, elm);
-        const dispatchEvent = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', elm.dispatchEvent);
-        return dispatchEvent.call(elm, event);
+        let fn = dispatchEvent;
+        if (vm.fallback) {
+            // TODO: do we really need this?
+            // Pierce dispatchEvent so locker service has a chance to overwrite
+            pierce(vm, elm);
+            fn = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', fn);
+        }
+        return fn.call(elm, event);
     }
 
     addEventListener(type: string, listener: EventListener, options: any) {
@@ -230,43 +237,56 @@ class LWCElement implements Component {
         }
         return elm.getBoundingClientRect();
     }
-    querySelector(selectors: string): Node | null {
+    querySelector(selector: string): Node | null {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        for (let i = 0, len = nodeList.length; i < len; i += 1) {
-            if (wasNodePassedIntoVM(vm, nodeList[i])) {
-                // TODO: locker service might need to return a membrane proxy
-                return pierce(vm, nodeList[i]);
+        if (vm.fallback) {
+            const nodeList = querySelectorAllFromComponent(this, selector);
+            for (let i = 0, len = nodeList.length; i < len; i += 1) {
+                if (wasNodePassedIntoVM(vm, nodeList[i])) {
+                    // manual re-targeting via the piercing mechanism
+                    return pierce(vm, nodeList[i]);
+                }
+            }
+        } else {
+            const node = querySelector.call(vm.elm, selector);
+            if (!isNull(node)) {
+                return node;
             }
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.root, selectors)) {
+            if (this.root.querySelector(selector)) {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
             }
         }
 
         return null;
     }
-    querySelectorAll(selectors: string): NodeList {
+    querySelectorAll(selector: string): NodeList {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
 
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        // TODO: locker service might need to do something here
-        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
+        let nodeList;
+        if (vm.fallback) {
+            nodeList = ArrayFilter.call(querySelectorAllFromComponent(this, selector), (node: Node): boolean => wasNodePassedIntoVM(vm, node));
+            // manual re-targeting via the piercing mechanism
+            nodeList = pierce(vm, nodeList);
+        } else {
+            nodeList = this.querySelectorAll.call(vm.elm, selector);
+        }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
+            if (nodeList.length === 0 && this.root.querySelector(selector)) {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         }
-        return pierce(vm, filteredNodes);
+
+        return nodeList;
     }
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -285,12 +305,7 @@ class LWCElement implements Component {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
-        let { cmpRoot } = vm;
-        // lazy creation of the ShadowRoot Object the first time it is accessed.
-        if (isUndefined(cmpRoot)) {
-            cmpRoot = new Root(vm);
-            vm.cmpRoot = cmpRoot;
-        }
+        const { cmpRoot } = vm;
         return cmpRoot;
     }
     get root(): ShadowRoot {

@@ -152,7 +152,7 @@ describe('module/events', () => {
         class MyChild extends Element {}
         function html($api: RenderAPI) {
             return [
-                $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}})
+                $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}}, [])
             ];
         }
         class MyComponent extends Element {
@@ -175,7 +175,7 @@ describe('module/events', () => {
         class MyChild extends Element {}
         function html($api: RenderAPI) {
             return [
-                $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}})
+                $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}}, [])
             ];
         }
         class MyComponent extends Element {

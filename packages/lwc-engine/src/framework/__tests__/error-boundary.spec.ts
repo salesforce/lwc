@@ -7,7 +7,7 @@ function createBoundaryComponent(elementsToRender) {
             return [];
         } else {
             return elementsToRender.map((config) => {
-                return $api.c(config.name, config.ctor, config.props || {});
+                return $api.c(config.name, config.ctor, config.props || {}, []);
             });
         }
     }
@@ -66,8 +66,8 @@ describe('error boundary component', () => {
                 }]);
                 function html($api, $cmp) {
                     return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
+                        $api.c('x-boundary', Boundary, {}, []),
+                        $api.c('x-boundary-sibling', BoundarySibling, {}, []),
                     ];
                 }
                 class BoundryHost extends Element {
@@ -84,7 +84,7 @@ describe('error boundary component', () => {
             it('should unmount enitre subtree up to boundary component if child throws inside constructor', () => {
                 class SecondLevelChild extends Element {}
                 function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
+                    return [ $api.c('x-second-level-child', SecondLevelChild, {}, [])];
                 }
                 class FirstLevelChild extends Element {
                     constructor() {
@@ -113,8 +113,8 @@ describe('error boundary component', () => {
                 class FirstLevelChildSibling extends Element {}
                 function html($api, $cmp) {
                     return [
-                        $api.c('x-first-level-child-sibling', FirstLevelChildSibling, {}),
-                        $api.c('x-first-level-child', FirstLevelChild, {})
+                        $api.c('x-first-level-child-sibling', FirstLevelChildSibling, {}, []),
+                        $api.c('x-first-level-child', FirstLevelChild, {}, [])
                     ];
                 }
                 class Boundary extends Element {
@@ -188,8 +188,8 @@ describe('error boundary component', () => {
                 }]);
                 function html($api, $cmp) {
                     return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
+                        $api.c('x-boundary', Boundary, {}, []),
+                        $api.c('x-boundary-sibling', BoundarySibling, {}, []),
                     ];
                 }
                 class BoundryHost extends Element {
@@ -210,7 +210,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
+                    return [ $api.c('x-second-level-child', SecondLevelChild, {}, [])];
                 }
                 class FirstLevelChild extends Element {
                     render() {
@@ -236,7 +236,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html1($api, $cmp, $slotset) {
-                    return $slotset.x;
+                    return [$api.s('x', { key: 10, attrs: { name: 'x' } }, [], $slotset)];
                 }
                 class ChildWithSlot extends Element {
                     render() {
@@ -244,10 +244,12 @@ describe('error boundary component', () => {
                     }
                 }
                 function html2($api, $cmp) {
-                    // TODO: There is no way to set 'slot' value onto the template to be matched agains slotset key.
+                    // TODO: There is no way to set 'slot' value onto the template to be matched against slotset key.
                     // Not setting it causes the following warning:
                     // - Ignoring unknown provided slot name "x" in [object:vm ChildWithSlot (7)]. This is probably a typo on the slot attribute.
-                    return [ $api.c('x-child-with-slot', ChildWithSlot, { slotset: { x: [ $api.c('x-slot-cmp', SlotCmp, {})]}}) ];
+                    return [ $api.c('x-child-with-slot', ChildWithSlot, { key: 0 }, [
+                        $api.c('x-slot-cmp', SlotCmp, { key: 1, attrs: { slot: 'x' } }, [])
+                    ]) ];
                 }
                 class BoundaryWithSlot extends Element {
                     getError() {
@@ -316,7 +318,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html($api, $cmp) {
-                    return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
+                    return [$api.c('child-boundary-content', ChildBoundaryContent, {}, [])];
                 }
                 class ChildErrorBoundary extends Element {
                     getError() {
@@ -378,7 +380,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html($api, $cmp) {
-                    return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
+                    return [$api.c('child-boundary-content', ChildBoundaryContent, {}, [])];
                 }
                 class ChildErrorBoundary extends Element {
                     getError() {
@@ -424,8 +426,8 @@ describe('error boundary component', () => {
                 }]);
                 function html($api, $cmp) {
                     return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
+                        $api.c('x-boundary', Boundary, {}, []),
+                        $api.c('x-boundary-sibling', BoundarySibling, {}, []),
                     ];
                 }
                 class BoundryHost extends Element {
@@ -446,7 +448,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html($api, $cmp) {
-                    return [$api.c('x-second-level-child', SecondLevelChild, {})];
+                    return [$api.c('x-second-level-child', SecondLevelChild, {}, [])];
                 }
                 class FirstLevelChild extends Element {
                     render() {
@@ -520,8 +522,8 @@ describe('error boundary component', () => {
                 }]);
                 function html($api, $cmp) {
                     return [
-                        $api.c('x-boundary', Boundary, {}),
-                        $api.c('x-boundary-sibling', BoundarySibling, {}),
+                        $api.c('x-boundary', Boundary, {}, []),
+                        $api.c('x-boundary-sibling', BoundarySibling, {}, []),
                     ];
                 }
                 class BoundryHost extends Element {
@@ -542,7 +544,7 @@ describe('error boundary component', () => {
                     }
                 }
                 function html($api, $cmp) {
-                    return [ $api.c('x-second-level-child', SecondLevelChild, {})];
+                    return [ $api.c('x-second-level-child', SecondLevelChild, {}, [])];
                 }
                 class FirstLevelChild extends Element {
                     render() {
@@ -576,9 +578,9 @@ describe('error boundary component', () => {
                 }
                 function html($api, $cmp) {
                     if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
+                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {}, [])];
                     } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {}, [])];
                     }
                 }
                 class AltViewErrorBoundary extends Element {
@@ -615,9 +617,9 @@ describe('error boundary component', () => {
                 }
                 function html($api, $cmp) {
                     if ($cmp.getError()) {
-                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {})];
+                        return [ $api.c('post-error-child-content', PostErrorChildOffender, {}, [])];
                     } else {
-                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {})];
+                        return [ $api.c('pre-error-child-content', PreErrorChildContent, {}, [])];
                     }
                 }
                 class AltViewErrorBoundary extends Element {

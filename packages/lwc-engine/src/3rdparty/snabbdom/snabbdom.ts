@@ -163,9 +163,11 @@ export function init(
         }
         if (isElementVNode(vnode)) {
             const { data, tag } = vnode;
-            const elm = (vnode.elm = isDef((i = data.ns))
-                ? api.createElementNS(i, tag)
-                : api.createElement(tag));
+            const elm = isUndef(vnode.elm) ?
+                (vnode.elm = isDef((i = data.ns))
+                    ? api.createElementNS(i, tag)
+                    : api.createElement(tag))
+                : vnode.elm;
             if (isDef((i = data.hook)) && isDef(i.create)) {
                 i.create(emptyNode, vnode);
             }

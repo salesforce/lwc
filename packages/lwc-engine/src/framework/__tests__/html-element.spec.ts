@@ -20,7 +20,7 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {})]
+                        return [$api.c('x-foo', MyComponent, {}, [])]
                     }
                 }
             }
@@ -70,7 +70,7 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {})]
+                        return [$api.c('x-foo', MyComponent, {}, [])]
                     }
                 }
             }
@@ -124,7 +124,7 @@ describe('html-element', () => {
                             attrs: {
                                 'x:title': 'foo',
                             }
-                        })]
+                        }, [])]
                     }
                 }
             }
@@ -165,7 +165,7 @@ describe('html-element', () => {
                             attrs: {
                                 title: 'foo',
                             }
-                        })]
+                        }, [])]
                     }
                 }
             }
@@ -609,7 +609,7 @@ describe('html-element', () => {
             jest.spyOn(assertLogger, 'logError');
             function html($api, $cmp) {
                 return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }}, [])
                 ];
             }
             class Parent extends Element {
@@ -633,7 +633,7 @@ describe('html-element', () => {
             jest.spyOn(assertLogger, 'logError');
             function html($api, $cmp) {
                 return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }}, [])
                 ];
             }
             class Parent extends Element {
@@ -682,7 +682,7 @@ describe('html-element', () => {
             let childTitle = null;
             function html($api, $cmp) {
                 return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }}, [])
                 ];
             }
             class Parent extends Element {
@@ -738,7 +738,7 @@ describe('html-element', () => {
             }
             function html2($api) {
                 childFromOwner = $api.h('p', { key: 0 }, []);
-                return [$api.c('x-child', Child, {})];
+                return [$api.c('x-child', Child, {}, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -814,7 +814,7 @@ describe('html-element', () => {
             }
             function html2($api) {
                 childFromOwner = $api.h('p', { key: 0 }, []);
-                return [$api.c('x-child', Child, {})];
+                return [$api.c('x-child', Child, {}, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -2187,6 +2187,7 @@ describe('html-element', () => {
                 }
                 const element = createElement('prop-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
+                console.error(element.outerHTML);
                 element.title = 'title';
                 return Promise.resolve()
                     .then(() => {
@@ -2243,7 +2244,7 @@ describe('html-element', () => {
                 render() {
                     return function($api, $cmp) {
                         return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }}, [])
                         ]
                     }
                 }
@@ -2266,7 +2267,7 @@ describe('html-element', () => {
                 render() {
                     return function($api, $cmp) {
                         return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }}, [])
                         ]
                     }
                 }
@@ -2315,7 +2316,7 @@ describe('html-element', () => {
                 render() {
                     return function($api, $cmp) {
                         return [
-                            $api.c('x-child', Child, { props: { title: 'child title' }})
+                            $api.c('x-child', Child, { props: { title: 'child title' }}, [])
                         ]
                     }
                 }

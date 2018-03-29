@@ -29,7 +29,7 @@ describe('component', function() {
                 }
             };
             function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
+                return [$api.c('x-component', MyComponent, {}, [])];
             }
             class Parent extends Element {
                 value = 'salad';
@@ -67,7 +67,7 @@ describe('component', function() {
                 }
             };
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 callChildM() {
@@ -180,7 +180,7 @@ describe('component', function() {
                 }
             };
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 render() {
@@ -533,7 +533,7 @@ describe('component', function() {
             }
             MyChild.publicMethods = ['m'];
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 callChildM() {
@@ -562,7 +562,7 @@ describe('component', function() {
             }
             MyChild.publicMethods = ['m'];
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 getChildAttribute() {
@@ -590,7 +590,7 @@ describe('component', function() {
             }
             MyChild.publicMethods = ['m'];
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 setChildAttribute() {
@@ -618,7 +618,7 @@ describe('component', function() {
             }
             MyChild.publicMethods = ['m'];
             function html($api) {
-                return [$api.c('x-child', MyChild, {})];
+                return [$api.c('x-child', MyChild, {}, [])];
             }
             class MyComponent extends Element  {
                 removeChildAttribute() {

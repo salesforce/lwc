@@ -106,26 +106,27 @@ function transform(
 
         let babelElement: t.Expression;
         if (isCustomElement(element)) {
-            // Traverse custom components slots and it to the databag
-            transformSlotset(element, databag);
+        //     // Traverse custom components slots and it to the databag
+        //     // transformSlotset(element, databag);
 
-            // Make sure to register the component
+        //     // Make sure to register the component
             const componentClassName = element.component!;
 
             babelElement = codeGen.genCustomElement(
                 element.tag,
                 identifierFromComponentName(componentClassName),
                 databag,
+                children,
             );
-        } else if (isSlot(element)) {
-            const defaultSlot = children;
-            const passedSlot = codeGen.getSlotId(element.slotName!);
+        // } else if (isSlot(element)) {
+        //     const defaultSlot = children;
+        //     const passedSlot = codeGen.getSlotId(element.slotName!);
 
-            babelElement = t.logicalExpression(
-                '||',
-                passedSlot,
-                defaultSlot,
-            );
+        //     babelElement = t.logicalExpression(
+        //         '||',
+        //         passedSlot,
+        //         defaultSlot,
+        //     );
         } else {
             babelElement = codeGen.genElement(
                 element.tag,

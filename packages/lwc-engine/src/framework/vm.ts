@@ -1,8 +1,8 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
+import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty, isTrue, isFalse, isObject, keys } from "./language";
 import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { ViewModelReflection, getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
@@ -14,8 +14,8 @@ import { ComponentDef } from "./def";
 import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
-import { ShadowRoot } from "./root";
 import { startMeasure, endMeasure } from "./performance-timing";
+import { attachShadow, linkShadow, usesNativeShadowRoot } from "./dom/shadow-root";
 
 export interface HashTable<T> {
     [key: string]: T;
@@ -41,16 +41,18 @@ export interface VM {
     // TODO: make this type more restrictive once we know more about it
     rootProps: Record<string, string | null | boolean>;
     cmpState?: HashTable<any>;
-    cmpSlots?: Slotset;
+    cmpSlots: Slotset;
     cmpTrack: HashTable<any>;
     cmpEvents?: Record<string, EventListener[] | undefined>;
     cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
-    cmpRoot?: ShadowRoot;
+    cmpRoot: ShadowRoot;
     render?: () => void | Template;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
+    fallback: boolean;
+    mode: string;
     component?: Component;
     membrane?: Membrane;
     deps: VM[][];
@@ -149,7 +151,13 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) {
+export interface CreateOptions {
+    mode: string;
+    fallback: boolean;
+    isRoot?: boolean;
+}
+
+export function createVM(tagName: string, elm: HTMLElement, options: CreateOptions) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
@@ -158,14 +166,17 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
     }
     const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
-    const isRoot = arguments.length === 2; // root elements can't provide slotset
+    const { isRoot, mode } = options;
+    const fallback = isTrue(options.fallback) || isFalse(usesNativeShadowRoot);
     uid += 1;
     const vm: VM = {
         uid,
         idx: 0,
         isScheduled: false,
         isDirty: true,
-        isRoot,
+        isRoot: isTrue(isRoot),
+        fallback,
+        mode,
         def,
         elm: elm as VMElement,
         data: EmptyObject,
@@ -173,24 +184,25 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         cmpProps: create(null),
         rootProps: create(null),
         cmpTrack: create(null),
+        cmpSlots: fallback ? create(null) : undefined,
         cmpState: undefined,
-        cmpSlots,
         cmpEvents: undefined,
         cmpListener: undefined,
         cmpTemplate: undefined,
-        cmpRoot: undefined,
+        cmpRoot: attachShadow(elm, options, fallback),
         component: undefined,
         children: EmptyArray,
         hostAttrs: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
-
     if (process.env.NODE_ENV !== 'production') {
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
     }
+    // linking shadow-root with the VM before anything else.
+    linkShadow(vm.cmpRoot, vm);
     createComponent(vm, Ctor);
     linkComponent(vm);
 }
@@ -215,14 +227,14 @@ export function patchErrorBoundaryVm(errorBoundaryVm: VM) {
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
     const children = renderComponent(errorBoundaryVm);
-    const { elm, children: oldCh } = errorBoundaryVm;
+    const { cmpRoot, children: oldCh } = errorBoundaryVm;
     errorBoundaryVm.isScheduled = false;
     errorBoundaryVm.children = children; // caching the new children collection
 
     // patch function mutates vnodes by adding the element reference,
     // however, if patching fails it contains partial changes.
     // patch failures are caught in flushRehydrationQueue
-    patchChildren(elm, oldCh, children);
+    patchChildren(cmpRoot, oldCh, children);
     processPostPatchCallbacks(errorBoundaryVm);
 }
 
@@ -230,7 +242,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    const { children: oldCh } = vm;
+    const { cmpRoot, children: oldCh } = vm;
     vm.children = children; // caching the new children collection
     if (children.length === 0 && oldCh.length === 0) {
         return; // nothing to do here
@@ -244,7 +256,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(vm.elm, oldCh, children);
+        patchChildren(cmpRoot, oldCh, children);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -344,11 +356,19 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     }
 }
 
+function forceResetShadowContent(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const parentElm: ShadowRoot | Element = vm.fallback ? vm.elm : vm.cmpRoot;
+    parentElm.innerHTML = "";
+}
+
 export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    const { elm, children: oldCh } = vm;
+    const { cmpRoot, children: oldCh } = vm;
     vm.children = EmptyArray;
     if (oldCh.length === 0) {
         return; // optimization for the common case
@@ -357,13 +377,12 @@ export function resetShadowRoot(vm: VM) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(elm, oldCh, EmptyArray);
+        patchChildren(cmpRoot, oldCh, EmptyArray);
     } catch (e) {
         if (process.env.NODE_ENV !== 'production') {
             assert.logError("Swallow Error: Failed to reset component's shadow with an empty list of children: " + e);
         }
-        // in the event of patch failure force offender removal
-        vm.elm.innerHTML = "";
+        forceResetShadowContent(vm);
     }
 }
 
@@ -443,4 +462,48 @@ export function getComponentStack(vm: VM): string {
         elm = elm.parentElement;
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
+}
+
+// slow path routine
+export function allocateInSlot(vm: VM, children: VNodes) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(isObject(vm.cmpSlots), `When doing manual allocation, there must be a cmpSlots object available.`);
+    }
+    const { cmpSlots: oldSlots } = vm;
+    const cmpSlots = vm.cmpSlots = create(null) as Slotset;
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (isNull(vnode)) {
+            continue;
+        }
+        const data = (vnode.data as VNodeData);
+        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
+        const vnodes: VNodes = cmpSlots[slotName] = cmpSlots[slotName] || [];
+        vnodes.push(vnode);
+    }
+    if (!vm.isDirty) {
+        // We need to determine if the old allocation is really different from the new one
+        // and mark the vm as dirty
+        const oldKeys = keys(oldSlots);
+        if (oldKeys.length !== keys(cmpSlots).length) {
+            markComponentAsDirty(vm);
+            return;
+        }
+        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
+            const key = oldKeys[i];
+            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+                markComponentAsDirty(vm);
+                return;
+            }
+            const oldVNodes = oldSlots[key];
+            const vnodes = cmpSlots[key];
+            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+                if (oldVNodes[j] !== vnodes[j]) {
+                    markComponentAsDirty(vm);
+                    return;
+                }
+            }
+        }
+    }
 }

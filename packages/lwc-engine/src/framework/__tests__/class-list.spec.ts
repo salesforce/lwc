@@ -8,7 +8,7 @@ describe('class-list', () => {
         it('should support outer className', () => {
             class ChildComponent extends Element {}
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
+                return [$api.c('x-child', ChildComponent, { className: 'foo' }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -24,7 +24,7 @@ describe('class-list', () => {
         it('should support outer classMap', () => {
             class ChildComponent extends Element {}
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } })];
+                return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -44,7 +44,7 @@ describe('class-list', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'bar  baz' })];
+                return [$api.c('x-child', ChildComponent, { className: 'bar  baz' }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -64,7 +64,7 @@ describe('class-list', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
+                return [$api.c('x-child', ChildComponent, { className: 'foo' }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -84,7 +84,7 @@ describe('class-list', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo   foo' })];
+                return [$api.c('x-child', ChildComponent, { className: 'foo   foo' }, [])];
             }
             class MyComponent extends Element {
                 render() {
@@ -104,7 +104,7 @@ describe('class-list', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } })];
+                return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } }, [])];
             }
             class MyComponent extends Element {
                 render() {

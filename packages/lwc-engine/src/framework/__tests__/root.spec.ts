@@ -1,4 +1,4 @@
-import { Root, wrapIframeWindow } from "../root";
+import { wrapIframeWindow } from "../dom/shadow-root";
 import { Element } from "../html-element";
 import { h } from "../api";
 import { unwrap } from '../main';
@@ -8,21 +8,15 @@ import { VM } from "../vm";
 import { Component } from "../component";
 
 describe('root', () => {
-    describe('#constructor()', () => {
-
-        it('should throw for invalid vm reference', () => {
-            expect(() => new Root()).toThrow();
-        });
-
-    });
-
     describe('integration', () => {
 
-        it('should support this.root.host', () => {
+        it('should throw when using this.root.host', () => {
             class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
-            expect(vm.component).toBe((vm.component as Component).root.host);
+            expect(() => {
+                (vm.component as Component).root.host;
+            }).toThrow();
         });
 
         it('should support this.root.mode', () => {

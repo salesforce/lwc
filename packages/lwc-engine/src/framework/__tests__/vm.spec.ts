@@ -36,7 +36,7 @@ describe('vm', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-bar', ChildComponent4, {})];
+                return [$api.c('x-bar', ChildComponent4, {}, [])];
             }
             class MyComponent4 extends Element {
                 constructor() {
@@ -67,7 +67,7 @@ describe('vm', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-bar', ChildComponent5, {})];
+                return [$api.c('x-bar', ChildComponent5, {}, [])];
             }
             class MyComponent5 extends Element {
                 constructor() {
