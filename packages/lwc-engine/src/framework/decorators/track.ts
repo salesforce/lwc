@@ -4,7 +4,7 @@ import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
-import { membrane as reactiveMembrane } from '../reactive';
+import { reactiveMembrane } from '../membrane';
 
 // stub function to prevent misuse of the @track decorator
 export default function track(obj: any): any {
