@@ -11,7 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install --frozen-lockfile
 
@@ -20,7 +20,7 @@ jobs:
             - ~/.cache/yarn
             - node_modules
             - packages/*/node_modules
-          key: yarn-v3-{{ checksum "yarn.lock" }}
+          key: yarn-v4-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Linting
@@ -42,7 +42,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -61,7 +61,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install
 
@@ -98,7 +98,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run:
           name: Setup dynamic environment variables
