@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { membrane as reactiveMembrane } from '../reactive';
+import { reactiveMembrane } from '../membrane';
 
 // when used with exactly one argument, we assume it is a function invocation.
 export default function readonly(obj: any): any {

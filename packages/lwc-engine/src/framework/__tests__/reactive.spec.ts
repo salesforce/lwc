@@ -1,4 +1,5 @@
-import { unwrap, membrane } from '../reactive';
+import { reactiveMembrane } from '../membrane';
+import { unwrap } from '../main';
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
 
@@ -10,7 +11,7 @@ describe('unwrap', () => {
 
     it('should unwrap observable membrane object correctly', () => {
         const obj = {};
-        const proxy = membrane.getProxy(obj);
+        const proxy = reactiveMembrane.getProxy(obj);
         expect(unwrap(proxy)).toBe(obj);
     });
 
