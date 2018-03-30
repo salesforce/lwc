@@ -79,15 +79,13 @@ describe('def', () => {
                 accessKey: null,
                 ariaActiveDescendant: null,
                 ariaAtomic: null,
-                ariaAutocomplete: null,
+                ariaAutoComplete: null,
                 ariaBusy: null,
                 ariaChecked: null,
                 ariaControls: null,
                 ariaCurrent: null,
                 ariaDescribedBy: null,
                 ariaDisabled: null,
-                ariaDragged: null,
-                ariaDropEffect: null,
                 ariaExpanded: null,
                 ariaFlowTo: null,
                 ariaHasPopUp: null,
@@ -98,12 +96,12 @@ describe('def', () => {
                 ariaLevel: null,
                 ariaLive: null,
                 ariaMultiSelectable: null,
-                ariaMultiline: null,
+                ariaMultiLine: null,
                 ariaOrientation: null,
                 ariaOwns: null,
                 ariaPosInSet: null,
                 ariaPressed: null,
-                ariaReadonly: null,
+                ariaReadOnly: null,
                 ariaRelevant: null,
                 ariaRequired: null,
                 ariaSelected: null,
@@ -113,6 +111,17 @@ describe('def', () => {
                 ariaValueMin: null,
                 ariaValueNow: null,
                 ariaValueText: null,
+                ariaColCount: null,
+                ariaColIndex: null,
+                ariaDetails: null,
+                ariaErrorMessage: null,
+                ariaKeyShortcuts: null,
+                ariaModal: null,
+                ariaPlaceholder: null,
+                ariaRoleDescription: null,
+                ariaRowCount: null,
+                ariaRowIndex: null,
+                ariaRowSpan: null,
                 dir: null,
                 draggable: null,
                 hidden: null,
@@ -124,7 +133,7 @@ describe('def', () => {
             });
         });
 
-        it('should provide default html props', () => {
+        it('should provide definition for each individual html prop', () => {
             function foo() {}
             class MyComponent extends Element  {}
             const { props } = target.getComponentDef(MyComponent);
@@ -140,7 +149,7 @@ describe('def', () => {
                 attr: 'role',
             });
             // aria exception
-            expect(props.ariaAutocomplete).toEqual({
+            expect(props.ariaAutoComplete).toEqual({
                 config: 3,
                 type: 'any',
                 attr: 'aria-autocomplete',

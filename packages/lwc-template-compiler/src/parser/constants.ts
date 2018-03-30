@@ -70,7 +70,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'for': 'htmlFor',
 
     // Aria
-    'aria-autocomplete': 'ariaAutocomplete',
+    'aria-autocomplete': 'ariaAutoComplete',
     'aria-checked': 'ariaChecked',
     'aria-current': 'ariaCurrent',
     'aria-disabled': 'ariaDisabled',
@@ -80,11 +80,11 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-invalid': 'ariaInvalid',
     'aria-label': 'ariaLabel',
     'aria-level': 'ariaLevel',
-    'aria-multiline': 'ariaMultiline',
+    'aria-multiline': 'ariaMultiLine',
     'aria-multiselectable': 'ariaMultiSelectable',
     'aria-orientation': 'ariaOrientation',
     'aria-pressed': 'ariaPressed',
-    'aria-readonly': 'ariaReadonly',
+    'aria-readonly': 'ariaReadOnly',
     'aria-required': 'ariaRequired',
     'aria-selected': 'ariaSelected',
     'aria-sort': 'ariaSort',
@@ -96,8 +96,6 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-relevant': 'ariaRelevant',
     'aria-atomic': 'ariaAtomic',
     'aria-busy': 'ariaBusy',
-    'aria-dropeffect': 'ariaDropEffect',
-    'aria-dragged': 'ariaDragged',
     'aria-activedescendant': 'ariaActiveDescendant',
     'aria-controls': 'ariaControls',
     'aria-describedby': 'ariaDescribedBy',
@@ -106,6 +104,18 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-owns': 'ariaOwns',
     'aria-posinset': 'ariaPosInSet',
     'aria-setsize': 'ariaSetSize',
+
+    'aria-colcount': 'ariaColCount',
+    'aria-colindex': 'ariaColIndex',
+    'aria-details': 'ariaDetails',
+    'aria-errormessage': 'ariaErrorMessage',
+    'aria-keyshortcuts': 'ariaKeyShortcuts',
+    'aria-modal': 'ariaModal',
+    'aria-placeholder': 'ariaPlaceholder',
+    'aria-roledescription': 'ariaRoleDescription',
+    'aria-rowcount': 'ariaRowCount',
+    'aria-rowindex': 'ariaRowIndex',
+    'aria-rowspan': 'ariaRowSpan',
 };
 
 export const HTML_TAG_BLACKLIST: { [tagname: string]: boolean } = {
