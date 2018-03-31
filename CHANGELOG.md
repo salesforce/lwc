@@ -1,18 +1,28 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.19.0-0...v) (2018-03-27)
+# [](https://github.com/salesforce/lwc/compare/v0.19.0...v) (2018-03-31)
+
+
+
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/salesforce/lwc/compare/v0.19.0-0...v0.19.0) (2018-03-31)
+
+
+### Bug Fixes
+
+* **aom:** consolidating the aria dom property names ([#192](https://github.com/salesforce/lwc/issues/192)) ([0ef2570](https://github.com/salesforce/lwc/commit/0ef2570))
+* **proxy-compat:**  Fix Array.prototype.concat with Proxy compat ([#190](https://github.com/salesforce/lwc/issues/190)) ([92036bf](https://github.com/salesforce/lwc/commit/92036bf))
+* **wire-service:** params is always initialized as an empty object ([#179](https://github.com/salesforce/lwc/issues/179)) ([b969b5c](https://github.com/salesforce/lwc/commit/b969b5c))
 
 
 
 <a name="0.19.0-0"></a>
-# [0.19.0-0](https://github.com/salesforce/lwc/compare/v0.18.0...v0.19.0-0) (2018-03-27)
+# [0.19.0-0](https://github.com/salesforce/lwc/compare/v0.18.1...v0.19.0-0) (2018-03-27)
 
 
 ### Bug Fixes
 
 * **compiler:** Compiler errors for missing keys in iterator ([#138](https://github.com/salesforce/lwc/issues/138)) ([de8ee82](https://github.com/salesforce/lwc/commit/de8ee82))
 * **engine:** do not use global removeEventListener ([#174](https://github.com/salesforce/lwc/issues/174)) ([ac38122](https://github.com/salesforce/lwc/commit/ac38122))
-* **lwc-engine:** Add pragma to engine artifacts ([#156](https://github.com/salesforce/lwc/issues/156)) ([f83397c](https://github.com/salesforce/lwc/commit/f83397c))
-* **lwc-wire-service:** Fix project and playground ([#151](https://github.com/salesforce/lwc/issues/151)) ([7c91533](https://github.com/salesforce/lwc/commit/7c91533))
 * **rollup-plugin-lwc-compiler:** Removing any COMPAT code on DEV ([#158](https://github.com/salesforce/lwc/issues/158)) ([7da31a7](https://github.com/salesforce/lwc/commit/7da31a7))
 * **wire-service:** compat integration tests ([#178](https://github.com/salesforce/lwc/issues/178)) ([71050f8](https://github.com/salesforce/lwc/commit/71050f8))
 
@@ -22,8 +32,23 @@
 * **commits:** add pre-commit hook for msg validation ([#164](https://github.com/salesforce/lwc/issues/164)) ([13bd495](https://github.com/salesforce/lwc/commit/13bd495))
 * **compiler:** Native HTML Attributes + Null removal ([#172](https://github.com/salesforce/lwc/issues/172)) ([45e27cb](https://github.com/salesforce/lwc/commit/45e27cb)), closes [#167](https://github.com/salesforce/lwc/issues/167) [#170](https://github.com/salesforce/lwc/issues/170)
 * **engine:** adding support for composed and retargeting ([#141](https://github.com/salesforce/lwc/issues/141)) ([c89c20b](https://github.com/salesforce/lwc/commit/c89c20b))
-* **engine:** issue [#153](https://github.com/salesforce/lwc/issues/153) adds a mechanism for LDS to create readonly obj ([#154](https://github.com/salesforce/lwc/issues/154)) ([3de8834](https://github.com/salesforce/lwc/commit/3de8834))
 * **wire-service:** rfc implementation ([#166](https://github.com/salesforce/lwc/issues/166)) ([b1b89e0](https://github.com/salesforce/lwc/commit/b1b89e0)), closes [#148](https://github.com/salesforce/lwc/issues/148)
+
+
+
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/salesforce/lwc/compare/v0.18.0...v0.18.1) (2018-03-15)
+
+
+### Bug Fixes
+
+* **lwc-engine:** Add pragma to engine artifacts ([#156](https://github.com/salesforce/lwc/issues/156)) ([f83397c](https://github.com/salesforce/lwc/commit/f83397c))
+* **lwc-wire-service:** Fix project and playground ([#151](https://github.com/salesforce/lwc/issues/151)) ([7c91533](https://github.com/salesforce/lwc/commit/7c91533))
+
+
+### Features
+
+* **engine:** issue [#153](https://github.com/salesforce/lwc/issues/153) adds a mechanism for LDS to create readonly obj ([#154](https://github.com/salesforce/lwc/issues/154)) ([3de8834](https://github.com/salesforce/lwc/commit/3de8834))
 
 
 
