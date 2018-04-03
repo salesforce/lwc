@@ -38,18 +38,18 @@ Metadata.publicProps = {
 Metadata.publicMethods = ["publicMethod"];
 Metadata.wire = {
     wiredProp: {
+        adapter: getTodo,
         params: {},
-        static: {},
-        adapter: getTodo
+        static: {}
     },
     wiredMethod: {
+        adapter: getHello,
         params: {
           name: "publicProp"
         },
         static: {
           fields: ['one', 'two']
         },
-        adapter: getHello,
         method: 1
     }
 };

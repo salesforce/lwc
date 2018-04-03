@@ -30,22 +30,30 @@ function getWiredParams(t, wireConfig) {
 
 function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(wiredValues.map(wiredValue => {
-        const wireConfig = [
-            t.objectProperty(
-                t.identifier('params'),
-                t.objectExpression(wiredValue.params)
-            ),
-            t.objectProperty(
-                t.identifier('static'),
-                t.objectExpression(wiredValue.static)
-            )
-        ];
-
+        const wireConfig = [];
         if (wiredValue.adapter) {
             wireConfig.push(
                 t.objectProperty(
                     t.identifier('adapter'),
                     t.identifier(wiredValue.adapter.name)
+                )
+            )
+        }
+
+        if (wiredValue.params) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('params'),
+                    t.objectExpression(wiredValue.params)
+                )
+            );
+        }
+
+        if (wiredValue.static) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('static'),
+                    t.objectExpression(wiredValue.static)
                 )
             )
         }
@@ -98,9 +106,12 @@ module.exports = function transform(t, klass, decorators) {
 
         const wiredValue = {
             propertyName,
-            isClassMethod,
-            static: getWiredStatic(config),
-            params: getWiredParams(t, config),
+            isClassMethod
+        }
+
+        if (config) {
+            wiredValue.static = getWiredStatic(config);
+            wiredValue.params = getWiredParams(t, config);
         }
 
         if (id.isIdentifier()) {
@@ -110,13 +121,18 @@ module.exports = function transform(t, klass, decorators) {
             }
         }
 
-        metadata.push({
+        const wireMetadata = {
             name: wiredValue.propertyName,
             adapter: wiredValue.adapter,
-            params: getWiredParamMetadata(wiredValue.params),
-            static: getWiredStaticMetadata(wiredValue.static),
             type: isClassMethod ? 'method' : 'property'
-        });
+        };
+
+        if (config) {
+            wireMetadata.static = getWiredStaticMetadata(wiredValue.static);
+            wireMetadata.params = getWiredParamMetadata(wiredValue.params);
+        }
+
+        metadata.push(wireMetadata);
 
         return wiredValue;
     });
