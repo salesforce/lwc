@@ -3,13 +3,15 @@ const pluginTest = require('./utils/test-transform').pluginTest(require('../inde
 describe('Transform property', () => {
     pluginTest('transforms wired field', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
             wiredProp;
         }
     `, {
         output: {
-            code: `export default class Test {
+            code: `import { getFoo } from 'data-service';
+export default class Test {
   constructor() {
     this.wiredProp = void 0;
   }
@@ -23,7 +25,7 @@ Test.wire = {
     static: {
       key2: ["fixed", 'array']
     },
-    type: "adapterId"
+    adapter: getFoo
   }
 };`
         }
@@ -31,13 +33,15 @@ Test.wire = {
 
     pluginTest('transforms multiple dynamic params', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop", key2: "$prop", key3: "fixed", key4: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop", key2: "$prop", key3: "fixed", key4: ["fixed", 'array']})
             wiredProp;
         }
     `, {
         output: {
-            code: `export default class Test {
+            code: `import { getFoo } from 'data-service';
+export default class Test {
   constructor() {
     this.wiredProp = void 0;
   }
@@ -53,7 +57,7 @@ Test.wire = {
       key3: "fixed",
       key4: ["fixed", 'array']
     },
-    type: "adapterId"
+    adapter: getFoo
   }
 };`
         }
@@ -117,8 +121,9 @@ Test.wire = {
 
     pluginTest('decorator expects an object as second parameter', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire('adapterId', '$prop', ['fixed', 'array']) wiredProp
+            @wire(getFoo, '$prop', ['fixed', 'array']) wiredProp
         }
     `, {
         error: {
@@ -132,9 +137,10 @@ Test.wire = {
 
     pluginTest('throws when wired property is combined with @api', `
         import { api, wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
             @api
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
             wiredPropWithApi;
         }
     `, {
@@ -149,9 +155,10 @@ Test.wire = {
 
     pluginTest('throws when wired property is combined with @track', `
         import { track, wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
             @track
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
             wiredWithTrack
         }
     `, {
@@ -166,9 +173,10 @@ Test.wire = {
 
     pluginTest('throws when using 2 wired decorators', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
             multipleWire
         }
     `, {
@@ -183,15 +191,17 @@ Test.wire = {
 
     pluginTest('should not throw when using 2 separate wired decorators', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
             wired1;
-            @wire("adapterId", { key1: "$prop1", key2: ["array"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["array"]})
             wired2;
         }
     `, {
         output: {
-            code: `export default class Test {
+            code: `import { getFoo } from 'data-service';
+export default class Test {
   constructor() {
     this.wired1 = void 0;
     this.wired2 = void 0;
@@ -206,7 +216,7 @@ Test.wire = {
     static: {
       key2: ["fixed"]
     },
-    type: "adapterId"
+    adapter: getFoo
   },
   wired2: {
     params: {
@@ -215,7 +225,7 @@ Test.wire = {
     static: {
       key2: ["array"]
     },
-    type: "adapterId"
+    adapter: getFoo
   }
 };`
         }
@@ -225,13 +235,15 @@ Test.wire = {
 describe('Transform method', () => {
     pluginTest('transforms wired method', `
         import { wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
             wiredMethod() {}
         }
     `, {
         output: {
-            code: `export default class Test {
+            code: `import { getFoo } from 'data-service';
+export default class Test {
   wiredMethod() {}
 
 }
@@ -243,7 +255,7 @@ Test.wire = {
     static: {
       key2: ["fixed"]
     },
-    type: "adapterId",
+    adapter: getFoo,
     method: 1
   }
 };`
@@ -252,9 +264,10 @@ Test.wire = {
 
     pluginTest('throws when wired method is combined with @api', `
         import { api, wire } from 'engine';
+        import { getFoo } from 'data-service';
         export default class Test {
             @api
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
             wiredWithApi() {}
         }
     `, {
@@ -273,12 +286,12 @@ describe('Metadata', () => {
         'gather track metadata',
         `
         import { wire } from 'engine';
-
+        import { getFoo } from 'data-service';
         export default class Test {
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
             wiredProp;
 
-            @wire("adapterId", { key1: "$prop1", key2: ["fixed"]})
+            @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
             wiredMethod() {}
         }
     `,
@@ -288,14 +301,14 @@ describe('Metadata', () => {
                     decorators: [{
                         type: 'wire',
                         targets: [{
-                            adapter: undefined,
+                            adapter: {name: 'getFoo', reference: 'data-service' },
                             name: 'wiredProp',
                             params: { key1: 'prop1' },
                             static: { key2: ['fixed'] },
                             type: 'property',
                         },
                         {
-                            adapter: undefined,
+                            adapter: { name: 'getFoo', reference: 'data-service' },
                             name: 'wiredMethod',
                             params: { key1: 'prop1' },
                             static: { key2: ['fixed'] },
