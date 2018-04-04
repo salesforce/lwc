@@ -72,6 +72,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
+        // TODO: collect wire config, invoke config listener (for the root)
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         // TODO: this is the kind of awkwardness introduced by "is" attribute

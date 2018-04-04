@@ -73,6 +73,7 @@ export function addInsertionIndex(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
+    // TODO: invoke wire adapter connected event listeners
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -97,6 +98,7 @@ export function removeInsertionIndex(vm: VM) {
     if (disconnected) {
         invokeServiceHook(vm, disconnected);
     }
+    // TODO: invoke wire adapter disconnected event listeners
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {

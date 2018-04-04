@@ -81,6 +81,8 @@ export function linkComponent(vm: VM) {
     // wiring service
     const { def: { wire } } = vm;
     if (wire) {
+        // TODO: instead of wiring, create WireEventTargets here
+        // new WireEventTarget(cmp, wireDef, wireTarget)
         const { wiring } = Services;
         if (wiring) {
             invokeServiceHook(vm, wiring);

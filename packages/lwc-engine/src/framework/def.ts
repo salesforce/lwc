@@ -159,6 +159,23 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
             createPublicPropertyDescriptor(proto, propName, descriptor);
         }
     }
+
+    if (track) {
+        for (const propName in track) {
+            const descriptor = getOwnPropertyDescriptor(proto, propName);
+            // TODO: maybe these conditions should be always applied.
+            if (process.env.NODE_ENV !== 'production') {
+                const { get, set, configurable, writable } = descriptor || EmptyObject;
+                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
+                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
+                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
+            }
+            // initializing getters and setters for each public prop on the target prototype
+            createTrackedPropertyDescriptor(proto, propName, descriptor);
+        }
+    }
+
+    // wire decorator needs to be patched last because decorator orders now matter
     if (wire) {
         for (const propName in wire) {
             if (wire[propName].method) {
@@ -175,20 +192,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
             }
             // initializing getters and setters for each public prop on the target prototype
             createWiredPropertyDescriptor(proto, propName, descriptor);
-        }
-    }
-    if (track) {
-        for (const propName in track) {
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createTrackedPropertyDescriptor(proto, propName, descriptor);
         }
     }
 
