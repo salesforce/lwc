@@ -4,6 +4,7 @@ import { getBundleReferences } from "./references/references";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
 import { Reference } from "./references/references";
 import { CompilerOptions, validateOptions, normalizeOptions } from "./options";
+import { version } from './index';
 
 export { default as templateCompiler } from "lwc-template-compiler";
 
@@ -11,6 +12,7 @@ export interface CompilerOutput {
     success: boolean;
     diagnostics: Diagnostic[];
     result?: BundleResult;
+    version: string;
 }
 
 export interface BundleResult {
@@ -52,6 +54,7 @@ export async function compile(
     }
 
     return {
+        version,
         success: !hasError(diagnostics),
         diagnostics,
         result
