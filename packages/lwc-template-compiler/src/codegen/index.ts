@@ -41,6 +41,7 @@ import {
     shouldFlatten,
     destructuringAssignmentFromObject,
     getKeyGenerator,
+    isSlot,
 } from './helpers';
 
 import CodeGen from './codegen';
@@ -112,6 +113,14 @@ function transform(
                 identifierFromComponentName(componentClassName),
                 databag,
                 children,
+            );
+        } else if (isSlot(element)) {
+            const defaultSlot = children;
+
+            babelElement = codeGen.getSlot(
+                element.slotName!,
+                databag,
+                defaultSlot
             );
         } else {
             babelElement = codeGen.genElement(
