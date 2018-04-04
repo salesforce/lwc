@@ -88,6 +88,14 @@ export function linkComponent(vm: VM) {
     }
 }
 
+export function componentUpdated(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    // TODO: @vince will use this method to notify the wire decorators
+    // that the component's public properties were updated
+}
+
 export function clearReactiveListeners(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);

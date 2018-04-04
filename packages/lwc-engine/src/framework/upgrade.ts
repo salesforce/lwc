@@ -2,7 +2,7 @@ import assert from "./assert";
 import { isUndefined, isFunction, assign, hasOwnProperty } from "./language";
 import { createVM, removeVM, appendVM, renderVM } from "./vm";
 import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
-import { ComponentConstructor } from "./component";
+import { ComponentConstructor, componentUpdated } from "./component";
 import { getCustomElementVM } from "./html-element";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
@@ -72,6 +72,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
+        componentUpdated(vm);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
         // TODO: this is the kind of awkwardness introduced by "is" attribute
