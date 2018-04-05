@@ -943,9 +943,9 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-babel-compat@0.17.36:
-  version "0.17.36"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.36/e5f44620bf1d713c48289f0dea29ace01d495cd2.tgz#e5f44620bf1d713c48289f0dea29ace01d495cd2"
+babel-compat@0.17.38:
+  version "0.17.38"
+  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.38/e3de390dbbaa75da7eabf8d4b00b934042536167.tgz#e3de390dbbaa75da7eabf8d4b00b934042536167"
 
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
@@ -1457,9 +1457,9 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   dependencies:
     esutils "^2.0.2"
 
-babel-plugin-transform-proxy-compat@0.17.36:
-  version "0.17.36"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.17.36/8051958d8fee331b1245e76fdb454c384e4a658a.tgz#8051958d8fee331b1245e76fdb454c384e4a658a"
+babel-plugin-transform-proxy-compat@0.17.38:
+  version "0.17.38"
+  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.17.38/19231822ba952d99e09ceb84f9ba79cf3f1377ef.tgz#19231822ba952d99e09ceb84f9ba79cf3f1377ef"
 
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
@@ -1500,9 +1500,9 @@ babel-plugin-transform-undefined-to-void@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   version "6.10.0-alpha.f95869d4"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.10.0-alpha.f95869d4/175a1a3090e616403f8c819cdcea1aecb66523b2.tgz#175a1a3090e616403f8c819cdcea1aecb66523b2"
 
-babel-preset-compat@0.17.36:
-  version "0.17.36"
-  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.17.36/7954471d36a1f5d488275b8a1539fd75890a1de2.tgz#7954471d36a1f5d488275b8a1539fd75890a1de2"
+babel-preset-compat@0.17.38:
+  version "0.17.38"
+  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.17.38/fb4d949f6094b40ae030017be643f667a2cfd0cf.tgz#fb4d949f6094b40ae030017be643f667a2cfd0cf"
   dependencies:
     "@babel/plugin-proposal-class-properties" "7.0.0-beta.40"
     "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.40"
@@ -1533,7 +1533,7 @@ babel-preset-compat@0.17.36:
     "@babel/plugin-transform-template-literals" "7.0.0-beta.40"
     "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.40"
     "@babel/plugin-transform-unicode-regex" "7.0.0-beta.40"
-    babel-plugin-transform-proxy-compat "0.17.36"
+    babel-plugin-transform-proxy-compat "0.17.38"
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -2357,9 +2357,9 @@ compare-versions@2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-2.0.1/1edc1f93687fd97a325c59f55e45a07db106aca6.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
 
-compat-polyfills@0.17.36:
-  version "0.17.36"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.36/0effdcde1a4f9e6c55c4d5bda4eac17c218eb2e9.tgz#0effdcde1a4f9e6c55c4d5bda4eac17c218eb2e9"
+compat-polyfills@0.17.38:
+  version "0.17.38"
+  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.38/8fcd29acda655b52d0baf6443874e3c4b809aa8d.tgz#8fcd29acda655b52d0baf6443874e3c4b809aa8d"
 
 component-emitter@^1.2.1:
   version "1.2.1"
@@ -7343,14 +7343,14 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-compat@0.17.36:
-  version "0.17.36"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.17.36/bc8fb1e6fbf36642b96b137e68ebe010c0f89cce.tgz#bc8fb1e6fbf36642b96b137e68ebe010c0f89cce"
+rollup-plugin-compat@0.17.38:
+  version "0.17.38"
+  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.17.38/86e5db3b133e23fe5563813ac6027e11178bfe0b.tgz#86e5db3b133e23fe5563813ac6027e11178bfe0b"
   dependencies:
     "@babel/core" "7.0.0-beta.40"
-    babel-compat "0.17.36"
-    babel-preset-compat "0.17.36"
-    compat-polyfills "0.17.36"
+    babel-compat "0.17.38"
+    babel-preset-compat "0.17.38"
+    compat-polyfills "0.17.38"
     rollup-pluginutils "~2.0.1"
 
 rollup-plugin-inject@^1.4.1:
