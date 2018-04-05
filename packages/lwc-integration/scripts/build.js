@@ -13,7 +13,6 @@ const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 
 const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
-const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire.js`));
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
 const testSufix = '.test.js';
@@ -77,7 +76,6 @@ const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
     'engine': 'Engine',
-    'wire-service': 'WireService',
     'todo': 'Todo'
 };
 
@@ -117,7 +115,6 @@ fs.copySync(engineModeFile, path.join(testSharedOutput,'engine.js'));
 fs.writeFileSync(path.join(testSharedOutput,'downgrade.js'), compatPolyfills.loadDowngrade());
 fs.writeFileSync(path.join(testSharedOutput,'polyfills.js'), compatPolyfills.loadPolyfills());
 
-fs.copySync(wireServicePath, path.join(testSharedOutput, 'wire.js'));
 fs.copySync(todoPath, path.join(testSharedOutput, 'todo.js'));
 
 // -- Build component tests -----------------------------------------------------=

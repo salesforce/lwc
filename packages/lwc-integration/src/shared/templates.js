@@ -9,12 +9,9 @@ exports.app = function (cmpName) {
 
 exports.todoApp = function (cmpName) {
     return `
-        import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
-        import { createElement, register } from 'engine';
+        import { createElement, registerAdapter, ValueChangedEvent } from 'engine';
         import Cmp from '${cmpName}';
         import { getTodo, getObservable } from 'todo';
-
-        registerWireService(register);
 
         // Register the wire adapter for @wire(getTodo).
         registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
@@ -86,7 +83,6 @@ exports.wireServiceHtml = function (cmpName, isCompat) {
             ${isCompat ? COMPAT : ''}
             <script src="../../shared/engine.js"></script>
             <script src="../../shared/todo.js"></script>
-            <script src="../../shared/wire.js"></script>
             <script src="./${cmpName}.js"></script>
         </body>
     </html>

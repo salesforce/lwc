@@ -97,22 +97,29 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
 // wire adapters: wire adapter id => adapter ctor
 const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
 
-export function linkComponent(vm: VM) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    // wiring service
+/**
+ * Registers a wire adapter.
+ */
+export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
+    assert.isTrue(adapterId, 'adapter id must be truthy');
+    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
+    adapterFactories.set(adapterId, adapterFactory);
+}
+
+export function createWireContext(vm: VM) {
     const { def: { wire }, context } = vm;
-    if (wire) {
+    if (!context[WIRE_CONTEXT_ID]) {
         const wireContext: WireContext = context[WIRE_CONTEXT_ID] = Object.create(null);
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
         wireContext[CONTEXT_UPDATED] = {};
-        const wireTargets = Object.keys(wire);
+        const wireTargets = Object.keys(wire as WireHash);
+
+        // TODO: initialize with default value
         vm.wireValues = {};
         for (let i = 0, len = wireTargets.length; i < len; i++) {
             const wireTarget = wireTargets[i];
-            const wireDef = wire[wireTarget];
+            const wireDef = (wire as WireHash)[wireTarget];
             const adapterFactory = adapterFactories.get(wireDef.adapter);
             if (adapterFactory) {
                 const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, wireTarget);
@@ -126,22 +133,15 @@ export function linkComponent(vm: VM) {
     }
 }
 
-/**
- * Registers a wire adapter.
- */
-export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
-    assert.isTrue(adapterId, 'adapter id must be truthy');
-    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
-    adapterFactories.set(adapterId, adapterFactory);
-}
-
 export function componentUpdated(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
 
-    const { context } = vm;
-    if (context[WIRE_CONTEXT_ID]) {
+    const { def: { wire }, context } = vm;
+    if (wire) {
+        createWireContext(vm);
+
         const configContext = context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
 
         // collect all prop changes via a microtask
