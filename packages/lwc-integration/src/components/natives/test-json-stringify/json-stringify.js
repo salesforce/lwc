@@ -23,7 +23,6 @@ export default class JsonStringify extends Element {
         const obj = new Proxy({
             string: 'x',
             number: 1,
-            date: new Date(2018, 3, 4, 16, 4, 5),
             boolean: true,
             undefined: undefined,
             null: null,
