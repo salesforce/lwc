@@ -86,11 +86,9 @@ export function addInsertionIndex(vm: VM) {
         invokeServiceHook(vm, connected);
     }
 
-    let listeners: NoArgumentListener[];
-    if (!vm.def.wire || !(listeners = vm.context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED])) {
-        return;
+    if (vm.def.wire && vm.context[WIRE_CONTEXT_ID]) {
+        invokeListener(vm.context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED]);
     }
-    invokeListener(listeners);
 
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
@@ -117,11 +115,9 @@ export function removeInsertionIndex(vm: VM) {
         invokeServiceHook(vm, disconnected);
     }
 
-    let listeners: NoArgumentListener[];
-    if (!vm.def.wire || !(listeners = vm.context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED])) {
-        return;
+    if (vm.def.wire && vm.context[WIRE_CONTEXT_ID]) {
+        invokeListener(vm.context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED]);
     }
-    invokeListener(listeners);
 
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
