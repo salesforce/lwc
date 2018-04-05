@@ -29,7 +29,7 @@ const transform: FileTransformer = function(
     metadataCollector?: MetadataCollector
 ) {
     const { name, namespace } = options;
-    const { code: template, metadata, warnings } = compile(src, {});
+    const { code: template, warnings } = compile(src, {});
 
     const fatalError = warnings.find(warning => warning.level === "error");
     if (fatalError) {

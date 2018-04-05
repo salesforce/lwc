@@ -21,7 +21,6 @@ export class MetadataCollector {
     > = [];
     private importLocations: ModuleImportLocation[] = [];
 
-
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
     ) {
