@@ -26,7 +26,5 @@ describe('Testing component: simple-list-container', () => {
         nodes = browser.elements('tree-node2');
         assert.ok(nodes);
         assert.equal(nodes.value.length, 1);
-
     });
-
 });

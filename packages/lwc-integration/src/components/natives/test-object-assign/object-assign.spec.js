@@ -1,7 +1,7 @@
 const assert = require('assert');
+
 describe('Issue 828 - Object assign', () => {
     const URL = 'http://localhost:4567/object-assign';
-    let element;
 
     before(() => {
         browser.url(URL);
@@ -9,6 +9,6 @@ describe('Issue 828 - Object assign', () => {
 
     it('should return proper value', function () {
         const element = browser.element('#assign');
-        assert(element.getText(), 'foo');
+        assert.strictEqual(element.getText(), 'foo');
     });
 });
