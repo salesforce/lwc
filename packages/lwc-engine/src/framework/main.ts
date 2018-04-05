@@ -6,6 +6,10 @@ export { Element } from "./html-element";
 export { register } from "./services";
 export { unwrap } from "./membrane";
 
+// wire adapter
+export { register as registerAdapter } from './component';
+export { ValueChangedEvent } from './wiring';
+
 // TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/129
 export { dangerousObjectMutation } from "./membrane";
 export { default as api } from "./decorators/api";

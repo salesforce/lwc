@@ -16,6 +16,7 @@ import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
 import { startMeasure, endMeasure } from "./performance-timing";
+import { NoArgumentListener, WIRE_CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED } from "./wiring";
 
 export interface HashTable<T> {
     [key: string]: T;
@@ -56,12 +57,23 @@ export interface VM {
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
     toString(): string;
+    wireValues?: HashTable<any>;
 }
 
 let idx: number = 0;
 let uid: number = 0;
 
 export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
+
+/**
+ * Invokes the specified callbacks.
+ * @param listeners functions to call
+ */
+function invokeListener(listeners: NoArgumentListener[]) {
+    for (let i = 0, len = listeners.length; i < len; ++i) {
+        listeners[i].call(undefined);
+    }
+}
 
 export function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -73,7 +85,13 @@ export function addInsertionIndex(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
-    // TODO: invoke wire adapter connected event listeners
+
+    let listeners: NoArgumentListener[];
+    if (!vm.def.wire || !(listeners = vm.context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED])) {
+        return;
+    }
+    invokeListener(listeners);
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -98,7 +116,13 @@ export function removeInsertionIndex(vm: VM) {
     if (disconnected) {
         invokeServiceHook(vm, disconnected);
     }
-    // TODO: invoke wire adapter disconnected event listeners
+
+    let listeners: NoArgumentListener[];
+    if (!vm.def.wire || !(listeners = vm.context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED])) {
+        return;
+    }
+    invokeListener(listeners);
+
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {

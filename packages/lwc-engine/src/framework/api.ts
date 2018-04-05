@@ -71,7 +71,6 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 // Custom Element that is inserted via a template.
 const hook: Hooks = {
     postpatch(oldVNode: VNode, vnode: VNode) {
-        // TODO: collect wire config, invoke config listener
         const vm = getCustomElementVM(vnode.elm as HTMLElement);
         vm.cmpSlots = vnode.data.slotset;
         // TODO: hot-slots names are those slots used during the last rendering cycle, and only if

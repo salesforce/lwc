@@ -2,7 +2,7 @@
  * Todo imperative APIs and wire adapters.
  */
 
-import { register, ValueChangedEvent } from 'wire-service';
+import { registerAdapter, ValueChangedEvent } from 'engine';
 import getObservable from './todo';
 
 // Component-importable imperative access.
@@ -22,7 +22,7 @@ export function getTodo(config) {
 }
 
 // Register the wire adapter for @wire(getTodo).
-register(getTodo, function getTodoWireAdapter(wiredEventTarget) {
+registerAdapter(getTodo, function getTodoWireAdapter(wiredEventTarget) {
     let subscription;
     let config;
 

@@ -7,7 +7,6 @@ import {
     invokeComponentCallback,
 } from "./invoker";
 import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
-import { invokeServiceHook, Services } from "./services";
 import { pierce } from "./piercing";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
 import { VM } from "./vm";
@@ -17,6 +16,19 @@ import { Template } from "./template";
 import { ShadowRoot, isChildOfRoot } from "./root";
 import { EmptyObject } from "./utils";
 import { addEventListener, removeEventListener, getRootNode } from "./dom";
+import {
+    WIRE_CONTEXT_ID,
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED,
+    CONTEXT_UPDATED,
+    WireDef,
+    WireContext,
+    ConfigContext,
+    ConfigListenerMetadata,
+    WireEventTarget,
+    ValueChangedEvent,
+    WireEventTargetListener
+} from "./wiring";
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;
@@ -46,6 +58,14 @@ export interface ComponentConstructor {
     readonly __circular__?: any;
 }
 
+export interface WireEventTarget {
+    dispatchEvent(evt: ValueChangedEvent): boolean;
+    addEventListener(type: string, listener: WireEventTargetListener): void;
+    removeEventListener(type: string, listener: WireEventTargetListener): void;
+}
+
+export type WireAdapterFactory = (eventTarget: WireEventTarget) => void;
+
 export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
@@ -74,28 +94,92 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     }
 }
 
+// wire adapters: wire adapter id => adapter ctor
+const adapterFactories: Map<any, WireAdapterFactory> = new Map<any, WireAdapterFactory>();
+
 export function linkComponent(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
     // wiring service
-    const { def: { wire } } = vm;
+    const { def: { wire }, context } = vm;
     if (wire) {
-        // TODO: instead of wiring, create WireEventTargets here
-        // new WireEventTarget(cmp, wireDef, wireTarget)
-        const { wiring } = Services;
-        if (wiring) {
-            invokeServiceHook(vm, wiring);
+        const wireContext: WireContext = context[WIRE_CONTEXT_ID] = Object.create(null);
+        wireContext[CONTEXT_CONNECTED] = [];
+        wireContext[CONTEXT_DISCONNECTED] = [];
+        wireContext[CONTEXT_UPDATED] = {};
+        const wireTargets = Object.keys(wire);
+        vm.wireValues = {};
+        for (let i = 0, len = wireTargets.length; i < len; i++) {
+            const wireTarget = wireTargets[i];
+            const wireDef = wire[wireTarget];
+            const adapterFactory = adapterFactories.get(wireDef.adapter);
+            if (adapterFactory) {
+                const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, wireTarget);
+                adapterFactory({
+                    dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
+                    addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
+                    removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
+                } as WireEventTarget);
+            }
         }
     }
+}
+
+/**
+ * Registers a wire adapter.
+ */
+export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
+    assert.isTrue(adapterId, 'adapter id must be truthy');
+    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
+    adapterFactories.set(adapterId, adapterFactory);
 }
 
 export function componentUpdated(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    // TODO: @vince will use this method to notify the wire decorators
-    // that the component's public properties were updated
+
+    const { context } = vm;
+    if (context[WIRE_CONTEXT_ID]) {
+        const configContext = context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
+
+        // collect all prop changes via a microtask
+        Promise.resolve().then(updatedFuture.bind(undefined, configContext, vm.component as Component));
+    }
+}
+
+function updatedFuture(configContext: ConfigContext, cmp: Component) {
+    const uniqueListeners = new Set<ConfigListenerMetadata>();
+    Object.keys(configContext).forEach(prop => {
+        const listeners = configContext[prop];
+        for (let i = 0, len = listeners.length; i < len; i++) {
+            uniqueListeners.add(listeners[i]);
+        }
+    });
+    invokeConfigListeners(uniqueListeners, cmp);
+}
+
+/**
+ * Invokes the provided change listeners with the resolved component properties.
+ * @param configListenerMetadatas list of config listener metadata (config listeners and their context)
+ * @param paramValues values for all wire adapter config params
+ */
+function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, cmp: Component) {
+    configListenerMetadatas.forEach((metadata) => {
+        const { listener, statics, params } = metadata;
+
+        const resolvedParams = Object.create(null);
+        if (params) {
+            Object.keys(params).forEach(param => {
+                resolvedParams[param] = cmp[params[param]];
+            });
+        }
+
+        // TODO - consider read-only membrane to enforce invariant of immutable config
+        const config = Object.assign({}, statics, resolvedParams);
+        listener.call(undefined, config);
+    });
 }
 
 export function clearReactiveListeners(vm: VM) {
