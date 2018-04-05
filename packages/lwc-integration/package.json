@@ -23,8 +23,8 @@
     "sauce:prod_compat": "MODE=prod_compat yarn build:prod_compat && MODE=prod_compat wdio ./scripts/wdio.sauce.conf.js"
   },
   "devDependencies": {
-    "babel-preset-compat": "0.17.35",
-    "compat-polyfills": "0.17.35",
+    "babel-preset-compat": "0.17.38",
+    "compat-polyfills": "0.17.38",
     "deepmerge": "^1.5.2",
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",
@@ -32,7 +32,7 @@
     "lwc-compiler": "0.19.0-0",
     "lwc-engine": "0.19.0-0",
     "minimist": "^1.2.0",
-    "rollup-plugin-compat": "0.17.35",
+    "rollup-plugin-compat": "0.17.38",
     "rollup-plugin-lwc-compiler": "0.19.0-0",
     "wdio-junit-reporter": "^0.3.1",
     "wdio-mocha-framework": "^0.5.10",
