@@ -39,12 +39,6 @@ const transform: FileTransformer = function(
     const token = getTemplateToken(name, namespace);
     const cssName = path.basename(name, path.extname(name)) + ".css";
 
-    if (metadataCollector) {
-        metadata.templateDependencies.forEach(n => {
-            metadataCollector.collectReference({ name: n, type: "component" });
-        });
-    }
-
     const code = [
         `import style from './${cssName}'`,
         "",

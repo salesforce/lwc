@@ -11,31 +11,16 @@ export type MetadataDecorators = Array<
 >;
 
 export interface BundleMetadata {
-    references: ExternalReference[];
     decorators: MetadataDecorators;
     importLocations: ModuleImportLocation[];
 }
 
-export interface ExternalReference {
-    name: string;
-    type: "module" | "component";
-}
-
 export class MetadataCollector {
-    private references: Map<String, ExternalReference> = new Map();
     private decorators: Array<
         ApiDecorator | TrackDecorator | WireDecorator
     > = [];
     private importLocations: ModuleImportLocation[] = [];
 
-    public collectReference(reference: ExternalReference) {
-        const existingRef = this.references.get(reference.name);
-
-        // js file that has corresponding html must be of type 'component'
-        if (!existingRef || existingRef.type !== "component") {
-            this.references.set(reference.name, reference);
-        }
-    }
 
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
@@ -49,7 +34,6 @@ export class MetadataCollector {
 
     public getMetadata(): BundleMetadata {
         return {
-            references: Array.from(this.references.values()),
             decorators: this.decorators,
             importLocations: this.importLocations
         };

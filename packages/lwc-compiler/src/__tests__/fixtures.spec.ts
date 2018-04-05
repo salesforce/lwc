@@ -81,7 +81,6 @@ describe("compilation mode", () => {
 
         expect(metadata).toEqual({
             decorators: [],
-            references: [{ name: "engine", type: "module" }],
             importLocations: [
                 { location: { length: 8, start: 31 }, name: '"engine"' }
             ]
@@ -98,8 +97,7 @@ describe("compilation mode", () => {
             pretify(readFixture("expected-compat-mode.js"))
         );
 
-        const { decorators, references, importLocations } = metadata;
-        expect(references).toMatchObject([{ name: "engine", type: "module" }]);
+        const { decorators, importLocations } = metadata;
         expect(decorators.length).toBe(0);
         expect(importLocations.length).toBe(8);
     });
@@ -115,8 +113,7 @@ describe("compilation mode", () => {
             pretify(readFixture("expected-prod_compat-mode.js"))
         );
 
-        const { decorators, references, importLocations } = metadata;
-        expect(references).toMatchObject([{ name: "engine", type: "module" }]);
+        const { decorators, importLocations } = metadata;
         expect(decorators.length).toBe(0);
         expect(importLocations.length).toBe(8);
     });
@@ -165,7 +162,7 @@ describe("node env", function() {
 });
 
 describe("metadata output", () => {
-    it("decorators and references", async () => {
+    it("decorators and import locations", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
             namespace: "x",
@@ -211,12 +208,6 @@ describe("metadata output", () => {
                         }
                     ]
                 }
-            ],
-            references: [
-                { name: "x-bar", type: "component" },
-                { name: "engine", type: "module" },
-                { name: "todo", type: "module" },
-                { name: "@schema/foo.bar", type: "module" }
             ],
             importLocations: []
         });

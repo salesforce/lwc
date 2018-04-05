@@ -52,30 +52,25 @@ export default function({
 
         resolveId(id: string, importee: string) {
             if (!isRelativeImport(id) && importee) {
-                if (shouldRecordDependency(id)) {
-                    metadataCollector.collectReference({
-                        name: id,
-                        type: "module"
-                    });
-                }
-            } else {
-                const relPath = importee ? path.dirname(importee) : "";
-                let absPath = path.join(relPath, id);
-
-                if (!path.extname(id)) {
-                    absPath += ".js";
-                }
-
-                if (
-                    !fileExists(absPath, options) &&
-                    !isTemplateCss(id, importee)
-                ) {
-                    throw new Error(
-                        `Could not resolve '${id}' from '${importee}'`
-                    );
-                }
-                return absPath;
+                return;
             }
+
+            const relPath = importee ? path.dirname(importee) : "";
+            let absPath = path.join(relPath, id);
+
+            if (!path.extname(id)) {
+                absPath += ".js";
+            }
+
+            if (
+                !fileExists(absPath, options) &&
+                !isTemplateCss(id, importee)
+            ) {
+                throw new Error(
+                    `Could not resolve '${id}' from '${importee}'`
+                );
+            }
+            return absPath;
         },
 
         load(id: string) {
