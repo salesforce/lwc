@@ -1,0 +1,45 @@
+import { Element } from 'engine';
+
+export default class JsonStringify extends Element {
+    get objectStringify() {
+        const arr = new Proxy({
+            x: 'x',
+            y: 'y'
+        }, {});
+
+        return JSON.stringify(arr);
+    }
+
+    get arrayStringify() {
+        const arr = new Proxy([
+            1,
+            2,
+        ], {});
+
+        return JSON.stringify(arr);
+    }
+
+    get complexObjectStringify() {
+        const obj = new Proxy({
+            string: 'x',
+            number: 1,
+            date: new Date(2018, 3, 4, 16, 4, 5),
+            boolean: true,
+            undefined: undefined,
+            null: null,
+            object: { x: 'x' },
+            [Symbol('symbol')]: true,
+        }, {});
+
+        return JSON.stringify(obj);
+    }
+
+    get nestedObjectStringify() {
+        const nested = new Proxy({
+            x: new Proxy({ y: true }, {}),
+            z: new Proxy([false], {}),
+        }, {});
+
+        return JSON.stringify(nested);
+    }
+}
