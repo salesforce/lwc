@@ -1,5 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.19.0...v) (2018-03-31)
+# [](https://github.com/salesforce/lwc/compare/v0.19.1...v) (2018-04-06)
+
+
+
+<a name="0.19.1"></a>
+## [0.19.1](https://github.com/salesforce/lwc/compare/v0.19.0...v0.19.1) (2018-04-06)
+
+
+### Bug Fixes
+
+* [Backport 214/patch] Add Safari polyfill for Proxy ([#197](https://github.com/salesforce/lwc/issues/197)) ([#200](https://github.com/salesforce/lwc/issues/200)) ([02e210a](https://github.com/salesforce/lwc/commit/02e210a))
+* [Backport 214/patch] Misc. compat fixes ([#198](https://github.com/salesforce/lwc/issues/198)) ([#202](https://github.com/salesforce/lwc/issues/202)) ([769e1ad](https://github.com/salesforce/lwc/commit/769e1ad))
+* **lwc-engine:** Refactor destroy hooks to avoid leaks and guarantee disconnectedCallback ([#204](https://github.com/salesforce/lwc/issues/204)) ([#205](https://github.com/salesforce/lwc/issues/205)) ([d097c7f](https://github.com/salesforce/lwc/commit/d097c7f))
+* [Backport 214/patch] Revert preventDefault polyfill ([#208](https://github.com/salesforce/lwc/issues/208)) ([6dbdd82](https://github.com/salesforce/lwc/commit/6dbdd82))
 
 
 
