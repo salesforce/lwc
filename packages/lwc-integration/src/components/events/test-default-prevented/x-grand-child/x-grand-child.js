@@ -1,17 +1,16 @@
-import { Element, track } from 'engine';
+import { Element } from 'engine';
 
 export default class Child extends Element {
     handleClick() {
         const event = new CustomEvent('foo', {
+            bubbles: true,
             cancelable: true,
+            composed: true,
             detail: {
-                name: 'child',
+                name: 'grand-child',
             },
         });
-        this.dispatchEvent(event);
-    }
 
-    handleFoo(evt) {
-        evt.preventDefault();
+        this.dispatchEvent(event);
     }
 }
