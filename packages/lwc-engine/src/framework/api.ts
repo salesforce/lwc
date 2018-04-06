@@ -88,9 +88,8 @@ const hook: Hooks = {
     create(oldVNode: VNode, vnode: VNode) {
         createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
     },
-    remove(vnode: VNode, removeCallback) {
+    destroy(vnode: VNode) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));
-        removeCallback();
     }
 };
 

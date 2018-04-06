@@ -95,6 +95,78 @@ describe('patch', () => {
             ]);
         });
 
+        it('should destroy children in order', () => {
+            const calls = [];
+            function html($api, $cmp) {
+                calls.push('root:render');
+                return [
+                    $api.h("div", { key: 3 },
+                    [$cmp.state.show ? $api.c('x-child', Child, {}) : null]
+                )];
+            }
+            class Root extends Element {
+                state = {
+                    show: false
+                };
+                show() {
+                    this.state.show = true;
+                }
+                hide() {
+                    this.state.show = false;
+                }
+                render() {
+                    return html;
+                }
+                renderedCallback() {
+                    calls.push('root:renderedCallback');
+                }
+            }
+            Root.publicMethods = ['show', 'hide'];
+            Root.track = { state: 1 };
+
+            class Child extends Element {
+                constructor() {
+                    super();
+                    calls.push('child:constructor');
+                }
+                connectedCallback() {
+                    calls.push('child:connectedCallback');
+                }
+                render() {
+                    calls.push('child:render');
+                }
+                renderedCallback() {
+                    calls.push('child:renderedCallback');
+                }
+                disconnectedCallback() {
+                    calls.push('child:disconnectedCallback');
+                }
+            }
+
+            const elm = createElement('x-root', { is: Root });
+            document.body.appendChild(elm);
+
+            calls.length = 0;
+            elm.show();
+
+            return Promise.resolve().then(() => {
+                elm.hide();
+                return Promise.resolve().then(() => {
+                    expect(calls).toEqual([
+                        'root:render',
+                        'child:constructor',
+                        'child:connectedCallback',
+                        'child:render',
+                        'child:renderedCallback',
+                        'root:renderedCallback',
+                        'root:render',
+                        'child:disconnectedCallback',
+                        'root:renderedCallback'
+                    ]);
+                });
+            });
+        });
+
         it('should call the lifecycle hooks in the right order on update', () => {
             const calls = [];
             function html($api, $cmp) {
