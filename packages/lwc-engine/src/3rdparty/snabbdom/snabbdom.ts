@@ -251,7 +251,6 @@ export function init(
             // text nodes do not have logic associated to them
             if (isVNode(ch)) {
                 if (!isTextVNode(ch)) {
-                    invokeDestroyHook(ch);
                     listeners = cbs.remove.length + 1;
                     rm = createRmCb(ch.elm as Node, listeners);
                     for (i = 0; i < cbs.remove.length; ++i) {
@@ -262,6 +261,7 @@ export function init(
                     } else {
                         rm();
                     }
+                    invokeDestroyHook(ch);
                 } else {
                     api.removeChild(parentElm, ch.elm as Node);
                 }
