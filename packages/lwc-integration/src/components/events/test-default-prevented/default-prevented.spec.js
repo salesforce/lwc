@@ -1,16 +1,24 @@
 const assert = require('assert');
-describe('Composed events', () => {
+describe('Event.defaultPrevented', () => {
     const URL = 'http://localhost:4567/default-prevented';
-    let element;
 
     before(() => {
         browser.url(URL);
     });
 
-    it('should have the right value', function () {
-        const element = browser.element('x-child');
+    it('should set defaultPrevented to true when calling preventDefault() on event', () => {
+        const element = browser.element('x-child span');
         element.click();
-        const defaultPreventedIndicator = browser.element('.default-prevented-indicator');
-        assert.deepEqual(defaultPreventedIndicator.getText(), 'Default Prevented');
+
+        const defaultPreventedIndicator = browser.element('#default-prevented-event');
+        assert.deepEqual(defaultPreventedIndicator.getText(), 'Received defaultPrevented event from: child');
+    });
+
+    it('should allow to call multiple times preventDefault() on the same event', () => {
+        const element = browser.element('x-grand-child span');
+        element.click();
+
+        const defaultPreventedIndicator = browser.element('#default-prevented-event');
+        assert.deepEqual(defaultPreventedIndicator.getText(), 'Received defaultPrevented event from: grand-child');
     });
 });
