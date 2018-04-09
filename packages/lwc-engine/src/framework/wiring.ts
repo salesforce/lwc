@@ -192,7 +192,7 @@ export class WireEventTarget {
                 (this._vm.component as Component)[this._wireTarget](value);
             } else {
                 (this._vm.wireValues as HashTable<any>)[this._wireTarget] = value;
-                notifyMutation(this._vm.component as object, this._wireTarget, true);
+                notifyMutation(this._vm.component as object, this._wireTarget);
             }
             return false; // canceling signal since we don't want this to propagate
         } else {

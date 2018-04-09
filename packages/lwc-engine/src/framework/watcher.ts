@@ -8,8 +8,8 @@ interface ReactiveRecord {
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
 
-export function notifyMutation(target: object, key: PropertyKey, wired?: boolean) {
-    if (process.env.NODE_ENV !== 'production' && !wired) {
+export function notifyMutation(target: object, key: PropertyKey) {
+    if (process.env.NODE_ENV !== 'production') {
         assert.invariant(!isRendering, `Mutating property ${toString(key)} of ${toString(target)} is not allowed during the rendering life-cycle of ${vmBeingRendered}.`);
     }
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
