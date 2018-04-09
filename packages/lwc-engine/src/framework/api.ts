@@ -254,7 +254,8 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let next = iterator.next();
     let j = 0;
     let { value, done: last } = next;
-    let keyMap;
+    let keyMap: Record<string, number>;
+    let iterationError: string | undefined;
     if (process.env.NODE_ENV !== 'production') {
         keyMap = create(null);
     }
@@ -278,13 +279,12 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
                 if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
                     const { key } = childVnode;
                     if (isString(key) || isNumber(key)) {
-                        if (keyMap[key] === 1) {
-                            assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
+                        if (keyMap[key] === 1 && isUndefined(iterationError)) {
+                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item ${i}. Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
-                    } else {
-                        // TODO - it'd be nice to log the owner component rather than the iteration children
-                        assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    } else if (isUndefined(iterationError)) {
+                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
                     }
                 }
             });
@@ -293,6 +293,11 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
         // preparing next value
         j += 1;
         value = next.value;
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        if (!isUndefined(iterationError)) {
+            assert.logError(iterationError);
+        }
     }
     return list;
 }
