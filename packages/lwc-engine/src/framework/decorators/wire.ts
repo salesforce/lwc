@@ -1,9 +1,9 @@
 import assert from "../assert";
-import { VM, VMElement, HashTable } from "../vm";
-import { ViewModelReflection } from "../def";
+import { VMElement, HashTable } from "../vm";
 import { defineProperty, isUndefined } from "../language";
 import { observeMutation } from "../watcher";
 import { getCustomElementVM } from "../html-element";
+import { createWireContext, createWireTarget } from "../component";
 
 // stub function to prevent misuse of the @wire decorator
 export default function wire() {
@@ -16,6 +16,12 @@ export function createWiredPropertyDescriptor(proto: object, key: string, descri
     defineProperty(proto, key, {
         get(this: VMElement): any {
             const vm = getCustomElementVM(this);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
+
+            createWireContext(vm);
+            createWireTarget(vm, key);
             observeMutation(this, key);
             return (vm.wireValues as HashTable<any>)[key];
         },

@@ -37,7 +37,15 @@ export interface ConfigListenerMetadata {
 export interface ConfigContext {
     // map of param to list of config listeners
     // when a param changes O(1) lookup to list of config listeners to notify
-    [prop: string]: ConfigListenerMetadata[];
+    listeners: {
+        [prop: string]: ConfigListenerMetadata[];
+    };
+    // map of param values
+    values: {
+        [prop: string]: any
+    };
+    // mutated props (debounced then cleared)
+    mutated: Set<string>;
 }
 
 export interface WireContext {
@@ -131,10 +139,10 @@ export class WireEventTarget {
                 const configContext = this._context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
                 paramsKeys.forEach(param => {
                     const prop = params[param];
-                    let configListenerMetadatas = configContext[prop];
+                    let configListenerMetadatas = configContext.listeners[prop];
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
-                        configContext[prop] = configListenerMetadatas;
+                        configContext.listeners[prop] = configListenerMetadatas;
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
@@ -184,10 +192,7 @@ export class WireEventTarget {
                 (this._vm.component as Component)[this._wireTarget](value);
             } else {
                 (this._vm.wireValues as HashTable<any>)[this._wireTarget] = value;
-                if (this._vm.idx > 0) {
-                    // perf optimization to skip this step if not in the DOM
-                    notifyMutation(this._vm.component as object, this._wireTarget);
-                }
+                notifyMutation(this._vm.component as object, this._wireTarget, true);
             }
             return false; // canceling signal since we don't want this to propagate
         } else {

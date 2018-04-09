@@ -7,6 +7,8 @@ import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
+import { createWireContext } from "../component";
+import { WIRE_CONTEXT_ID, CONTEXT_UPDATED } from "../wiring";
 
 // stub function to prevent misuse of the @api decorator
 export default function api() {
@@ -61,6 +63,13 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                 // not need to wrap or check the value since that is happening somewhere else
                 vmBeingUpdated = null; // releasing the lock
                 vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
+
+                const { def: { wire }, context } = vm;
+                if (wire) {
+                    createWireContext(vm);
+                    context[WIRE_CONTEXT_ID][CONTEXT_UPDATED].values[key] = vm.cmpProps[key];
+                    context[WIRE_CONTEXT_ID][CONTEXT_UPDATED].mutated.add(key);
+                }
 
                 // avoid notification of observability while constructing the instance
                 if (vm.idx > 0) {

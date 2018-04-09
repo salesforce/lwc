@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, createWireContext, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
+import { createComponent, createWireContext, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, createWireTargets, createWireMethods } from "./component";
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
 import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
@@ -216,6 +216,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
     createComponent(vm, Ctor);
     if (def.wire) {
         createWireContext(vm);
+        createWireMethods(vm);
     }
 }
 

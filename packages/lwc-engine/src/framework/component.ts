@@ -9,7 +9,7 @@ import {
 import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
 import { pierce } from "./piercing";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
-import { VM } from "./vm";
+import { VM, HashTable } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
@@ -107,22 +107,45 @@ export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
 }
 
 export function createWireContext(vm: VM) {
-    const { def: { wire }, context } = vm;
+    const { context } = vm;
     if (!context[WIRE_CONTEXT_ID]) {
         const wireContext: WireContext = context[WIRE_CONTEXT_ID] = Object.create(null);
         wireContext[CONTEXT_CONNECTED] = [];
         wireContext[CONTEXT_DISCONNECTED] = [];
-        wireContext[CONTEXT_UPDATED] = {};
-        const wireTargets = Object.keys(wire as WireHash);
-
-        // TODO: initialize with default value
+        wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {}, mutated: new Set<string>() };
         vm.wireValues = {};
-        for (let i = 0, len = wireTargets.length; i < len; i++) {
-            const wireTarget = wireTargets[i];
-            const wireDef = (wire as WireHash)[wireTarget];
+    }
+}
+
+export function createWireTarget(vm: VM, key: string) {
+    const { def: { wire }, context } = vm;
+
+    if (typeof (vm.wireValues as HashTable<any>)[key] === 'undefined') {
+        const wireDef = (wire as WireHash)[key];
+        const adapterFactory = adapterFactories.get(wireDef.adapter);
+        if (adapterFactory) {
+            const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, key);
+            adapterFactory({
+                dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
+                addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
+                removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
+            } as WireEventTarget);
+        }
+
+        const configContext = context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
+        configUpdated(configContext);
+    }
+}
+
+export function createWireMethods(vm: VM) {
+    const { def: { wire }, context } = vm;
+
+    Object.keys(wire as WireHash).forEach(key => {
+        const wireDef = (wire as WireHash)[key];
+        if (wireDef.method) {
             const adapterFactory = adapterFactories.get(wireDef.adapter);
             if (adapterFactory) {
-                const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, wireTarget);
+                const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, key);
                 adapterFactory({
                     dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
                     addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
@@ -130,7 +153,7 @@ export function createWireContext(vm: VM) {
                 } as WireEventTarget);
             }
         }
-    }
+    });
 }
 
 export function componentUpdated(vm: VM) {
@@ -141,23 +164,24 @@ export function componentUpdated(vm: VM) {
     const { def: { wire }, context } = vm;
     if (wire) {
         createWireContext(vm);
-
         const configContext = context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
-
-        // collect all prop changes via a microtask
-        Promise.resolve().then(updatedFuture.bind(undefined, configContext, vm.component as Component));
+        configUpdated(configContext);
     }
 }
 
-function updatedFuture(configContext: ConfigContext, cmp: Component) {
+function configUpdated(configContext: ConfigContext) {
     const uniqueListeners = new Set<ConfigListenerMetadata>();
-    Object.keys(configContext).forEach(prop => {
-        const listeners = configContext[prop];
-        for (let i = 0, len = listeners.length; i < len; i++) {
-            uniqueListeners.add(listeners[i]);
+    const mutated = configContext.mutated as Set<string>;
+    mutated.forEach(prop => {
+        const listeners = configContext.listeners[prop];
+        if (listeners) {
+            for (let i = 0, len = listeners.length; i < len; i++) {
+                uniqueListeners.add(listeners[i]);
+            }
         }
     });
-    invokeConfigListeners(uniqueListeners, cmp);
+    configContext.mutated.clear();
+    invokeConfigListeners(uniqueListeners, configContext.values);
 }
 
 /**
@@ -165,15 +189,18 @@ function updatedFuture(configContext: ConfigContext, cmp: Component) {
  * @param configListenerMetadatas list of config listener metadata (config listeners and their context)
  * @param paramValues values for all wire adapter config params
  */
-function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, cmp: Component) {
+function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
     configListenerMetadatas.forEach((metadata) => {
         const { listener, statics, params } = metadata;
 
         const resolvedParams = Object.create(null);
         if (params) {
-            Object.keys(params).forEach(param => {
-                resolvedParams[param] = cmp[params[param]];
-            });
+            const keys = Object.keys(params);
+            for (let j = 0, jlen = keys.length; j < jlen; j++) {
+                const key = keys[j];
+                const value = paramValues[params[key]];
+                resolvedParams[key] = value;
+            }
         }
 
         // TODO - consider read-only membrane to enforce invariant of immutable config
