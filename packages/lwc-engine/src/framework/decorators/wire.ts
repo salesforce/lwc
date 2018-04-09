@@ -20,9 +20,7 @@ export function createWiredPropertyDescriptor(proto: object, key: string, descri
             return (vm.wireValues as HashTable<any>)[key];
         },
         set(this: VMElement, newValue: any) {
-            // if (process.env.NODE_ENV !== 'production') {
-            //     throw new Error('setting a wired property is invalid');
-            // }
+            // do nothing, ideally we should throw but that would break template code
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
         configurable: false,
