@@ -34,11 +34,11 @@ declare module 'engine' {
          */
         constructor();
         /**
-         * Called when the component is inserted in a document
+         * Called when the element is inserted in a document
          */
         connectedCallback(): void;
         /**
-         * Called when the component is removed from a document
+         * Called when the element is removed from a document
          */
         disconnectedCallback(): void;
         /**
@@ -46,13 +46,9 @@ declare module 'engine' {
          */
         renderedCallback(): void;
         /**
-         * Called when an attribute is changed, appened, removed or replaced on the element
+         * Called when a descendant component throws an error in one of its lifecycle hooks
          */
-        attributeChangedCallback(attributeName: string, oldValue: any, newValue: any): void;
-        /**
-         * Specifies the observed attributes
-         */
-        static observedAttributes: string[];
+        errorCallback(error: any, stack: string): void;
         
         readonly root: ShadowRootTheGoodPart;
     }
@@ -68,9 +64,9 @@ declare module 'engine' {
     export const track: PropertyDecorator;
 
     /**
-     * Decorator to wire a property or method to a wire adapter data source
-     * @param adapterId globally unique identifier of the wire adapter
-     * @param adapterConfig configuration object specific to the wire adapter
+     * Decorator factory to wire a property or method to a wire adapter data source
+     * @param getType imperative accessor for the data source
+     * @param config configuration object for the accessor
      */
-    export function wire(adapterId: string, adapterConfig: Object): void;
+    export function wire(getType: (config: object) => any, config: object): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => void;
 }
