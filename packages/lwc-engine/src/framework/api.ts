@@ -84,6 +84,7 @@ const hook: Hooks = {
     },
     insert(vnode: VNode) {
         const vm = getCustomElementVM(vnode.elm as HTMLElement);
+        componentUpdated(vm);
         appendVM(vm);
         renderVM(vm);
     },

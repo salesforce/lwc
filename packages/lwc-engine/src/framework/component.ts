@@ -117,10 +117,10 @@ export function createWireContext(vm: VM) {
     }
 }
 
-export function createWireTarget(vm: VM, key: string) {
+export function createWireTargets(vm: VM) {
     const { def: { wire }, context } = vm;
 
-    if (typeof (vm.wireValues as HashTable<any>)[key] === 'undefined') {
+    Object.keys(wire as WireHash).forEach(key => {
         const wireDef = (wire as WireHash)[key];
         const adapterFactory = adapterFactories.get(wireDef.adapter);
         if (adapterFactory) {
@@ -130,28 +130,6 @@ export function createWireTarget(vm: VM, key: string) {
                 addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
                 removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
             } as WireEventTarget);
-        }
-
-        const configContext = context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
-        configUpdated(configContext);
-    }
-}
-
-export function createWireMethods(vm: VM) {
-    const { def: { wire }, context } = vm;
-
-    Object.keys(wire as WireHash).forEach(key => {
-        const wireDef = (wire as WireHash)[key];
-        if (wireDef.method) {
-            const adapterFactory = adapterFactories.get(wireDef.adapter);
-            if (adapterFactory) {
-                const wireEventTarget = new WireEventTarget(vm, context, wireDef as WireDef, key);
-                adapterFactory({
-                    dispatchEvent: wireEventTarget.dispatchEvent.bind(wireEventTarget),
-                    addEventListener: wireEventTarget.addEventListener.bind(wireEventTarget),
-                    removeEventListener: wireEventTarget.removeEventListener.bind(wireEventTarget)
-                } as WireEventTarget);
-            }
         }
     });
 }

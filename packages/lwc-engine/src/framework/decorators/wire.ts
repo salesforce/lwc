@@ -3,7 +3,6 @@ import { VMElement, HashTable } from "../vm";
 import { defineProperty, isUndefined } from "../language";
 import { observeMutation } from "../watcher";
 import { getCustomElementVM } from "../html-element";
-import { createWireContext, createWireTarget } from "../component";
 
 // stub function to prevent misuse of the @wire decorator
 export default function wire() {
@@ -20,13 +19,12 @@ export function createWiredPropertyDescriptor(proto: object, key: string, descri
                 assert.vm(vm);
             }
 
-            createWireContext(vm);
-            createWireTarget(vm, key);
             observeMutation(this, key);
             return (vm.wireValues as HashTable<any>)[key];
         },
         set(this: VMElement, newValue: any) {
-            // do nothing, ideally we should throw but that would break template code
+            // do nothing.
+            // ideally we should throw but that would break template code
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
         configurable: false,
