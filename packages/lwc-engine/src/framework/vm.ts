@@ -1,22 +1,60 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, createWireContext, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, createWireTargets, createWireTargets } from "./component";
+import {
+    createComponent,
+    createWireContext,
+    renderComponent,
+    clearReactiveListeners,
+    ComponentConstructor,
+    ErrorCallback,
+    createWireTargets
+} from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
-import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { ViewModelReflection, getCtorByTagName } from "./def";
-import { invokeServiceHook, Services } from "./services";
+import {
+    ArrayPush,
+    isUndefined,
+    isNull,
+    ArrayUnshift,
+    ArraySlice,
+    create,
+    hasOwnProperty
+} from "./language";
+import {
+    addCallbackToNextTick,
+    EmptyObject,
+    EmptyArray,
+    usesNativeSymbols
+} from "./utils";
+import {
+    ViewModelReflection,
+    getCtorByTagName
+} from "./def";
+import {
+    invokeServiceHook,
+    Services
+} from "./services";
 import { invokeComponentCallback } from "./invoker";
-
-import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import {
+    VNode,
+    VNodeData,
+    VNodes
+} from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
-import { startMeasure, endMeasure } from "./performance-timing";
-import { NoArgumentListener, WIRE_CONTEXT_ID, CONTEXT_CONNECTED, CONTEXT_DISCONNECTED } from "./wiring";
+import {
+    startMeasure,
+    endMeasure
+} from "./performance-timing";
+import {
+    NoArgumentListener,
+    WIRE_CONTEXT_ID,
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED
+} from "./wiring";
 
 export interface HashTable<T> {
     [key: string]: T;
