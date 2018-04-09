@@ -280,11 +280,11 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
                     const { key } = childVnode;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
-                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item ${i}. Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`;
+                            iterationError = `Duplicated "key" attribute value for "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
-                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
+                        iterationError = `Invalid "key" attribute value in "<${childVnode.sel}>" in ${vmBeingRendered} for item number ${j}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`;
                     }
                 }
             });
