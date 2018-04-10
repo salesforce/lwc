@@ -1,6 +1,5 @@
 import { Element, api, track } from 'engine';
 
-
 export default class Issue763 extends Element {
     @api propItems = [{
         title: 'first'
