@@ -68,5 +68,5 @@ declare module 'engine' {
      * @param getType imperative accessor for the data source
      * @param config configuration object for the accessor
      */
-    export function wire(getType: (config: object) => any, config: object): (target: any, propertyKey: string, descriptor?: PropertyDescriptor) => void;
+    export function wire(getType: (config: any) => any, config: any): PropertyDecorator;
 }
