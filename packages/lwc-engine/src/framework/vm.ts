@@ -1,21 +1,60 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
+import {
+    createComponent,
+    createWireContext,
+    renderComponent,
+    clearReactiveListeners,
+    ComponentConstructor,
+    ErrorCallback,
+    createWireTargets
+} from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
-import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { ViewModelReflection, getCtorByTagName } from "./def";
-import { invokeServiceHook, Services } from "./services";
+import {
+    ArrayPush,
+    isUndefined,
+    isNull,
+    ArrayUnshift,
+    ArraySlice,
+    create,
+    hasOwnProperty
+} from "./language";
+import {
+    addCallbackToNextTick,
+    EmptyObject,
+    EmptyArray,
+    usesNativeSymbols
+} from "./utils";
+import {
+    ViewModelReflection,
+    getCtorByTagName
+} from "./def";
+import {
+    invokeServiceHook,
+    Services
+} from "./services";
 import { invokeComponentCallback } from "./invoker";
-
-import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import {
+    VNode,
+    VNodeData,
+    VNodes
+} from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
-import { startMeasure, endMeasure } from "./performance-timing";
+import {
+    startMeasure,
+    endMeasure
+} from "./performance-timing";
+import {
+    NoArgumentListener,
+    WIRE_CONTEXT_ID,
+    CONTEXT_CONNECTED,
+    CONTEXT_DISCONNECTED
+} from "./wiring";
 
 export interface HashTable<T> {
     [key: string]: T;
@@ -56,12 +95,23 @@ export interface VM {
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
     toString(): string;
+    wireValues?: HashTable<any>;
 }
 
 let idx: number = 0;
 let uid: number = 0;
 
 export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
+
+/**
+ * Invokes the specified callbacks.
+ * @param listeners functions to call
+ */
+function invokeListener(listeners: NoArgumentListener[]) {
+    for (let i = 0, len = listeners.length; i < len; ++i) {
+        listeners[i].call(undefined);
+    }
+}
 
 export function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -73,6 +123,11 @@ export function addInsertionIndex(vm: VM) {
     if (connected) {
         invokeServiceHook(vm, connected);
     }
+
+    if (vm.def.wire && vm.context[WIRE_CONTEXT_ID]) {
+        invokeListener(vm.context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED]);
+    }
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -97,6 +152,11 @@ export function removeInsertionIndex(vm: VM) {
     if (disconnected) {
         invokeServiceHook(vm, disconnected);
     }
+
+    if (vm.def.wire && vm.context[WIRE_CONTEXT_ID]) {
+        invokeListener(vm.context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED]);
+    }
+
     const { disconnectedCallback } = vm.def;
     if (!isUndefined(disconnectedCallback)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -192,7 +252,10 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         };
     }
     createComponent(vm, Ctor);
-    linkComponent(vm);
+    if (def.wire) {
+        createWireContext(vm);
+        createWireTargets(vm);
+    }
 }
 
 export function rehydrate(vm: VM) {

@@ -133,8 +133,16 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     let methods = getPublicMethodsHash(Ctor);
     let wire = getWireHash(Ctor);
     const track = getTrackHash(Ctor);
-
     const proto = Ctor.prototype;
+    let {
+        connectedCallback,
+        disconnectedCallback,
+        renderedCallback,
+        errorCallback,
+    } = proto;
+    const superProto = getPrototypeOf(Ctor);
+    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
+
     for (const propName in props) {
         const propDef = props[propName];
         // initializing getters and setters for each public prop on the target prototype
@@ -159,6 +167,23 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
             createPublicPropertyDescriptor(proto, propName, descriptor);
         }
     }
+
+    if (track) {
+        for (const propName in track) {
+            const descriptor = getOwnPropertyDescriptor(proto, propName);
+            // TODO: maybe these conditions should be always applied.
+            if (process.env.NODE_ENV !== 'production') {
+                const { get, set, configurable, writable } = descriptor || EmptyObject;
+                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
+                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
+                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
+            }
+            // initializing getters and setters for each public prop on the target prototype
+            createTrackedPropertyDescriptor(proto, propName, descriptor);
+        }
+    }
+
+    // wire decorator needs to be patched last because decorator orders now matter
     if (wire) {
         for (const propName in wire) {
             if (wire[propName].method) {
@@ -177,29 +202,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
             createWiredPropertyDescriptor(proto, propName, descriptor);
         }
     }
-    if (track) {
-        for (const propName in track) {
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createTrackedPropertyDescriptor(proto, propName, descriptor);
-        }
-    }
 
-    let {
-        connectedCallback,
-        disconnectedCallback,
-        renderedCallback,
-        errorCallback,
-    } = proto;
-    const superProto = getPrototypeOf(Ctor);
-    const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
         methods = assign(create(null), superDef.methods, methods);
@@ -211,7 +214,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     }
 
     props = assign(create(null), HTML_PROPS, props);
-    const descriptors = createDescriptorMap(props, methods);
+    const descriptors = createHostElementPropertyDescriptorMap(props, methods);
 
     const def: ComponentDef = {
         name,
@@ -369,7 +372,7 @@ export function prepareForAttributeMutationFromTemplate(elm: Element, key: strin
     }
 }
 
-function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
+function createHostElementPropertyDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
     // replacing mutators and accessors on the element itself to catch any mutation
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {

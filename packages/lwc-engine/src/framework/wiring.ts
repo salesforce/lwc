@@ -1,22 +1,24 @@
 import assert from './assert';
-import {
-    CONTEXT_ID,
-    CONTEXT_CONNECTED,
-    CONTEXT_DISCONNECTED,
-    CONTEXT_UPDATED,
-    CONNECT,
-    DISCONNECT,
-    CONFIG
-} from './constants';
-import {
-    Element,
-    ElementDef,
-    WireDef,
-    ComposableEvent
-} from './engine';
-import {
-    installTrap
-} from './property-trap';
+import { Component } from "./component";
+import { Context } from "./context";
+import { VM, HashTable } from "./vm";
+import { notifyMutation } from "./watcher";
+
+// key in engine service context for wire service context
+export const WIRE_CONTEXT_ID = '@wire';
+// key in wire service context for updated listener metadata
+export const CONTEXT_UPDATED = 'updated';
+// key in wire service context for connected listener metadata
+export const CONTEXT_CONNECTED = 'connected';
+// key in wire service context for disconnected listener metadata
+export const CONTEXT_DISCONNECTED = 'disconnected';
+
+// wire event target life cycle connectedCallback hook event type
+export const CONNECT = "connect";
+// wire event target life cycle disconnectedCallback hook event type
+export const DISCONNECT = "disconnect";
+// wire event target life cycle config changed hook event type
+export const CONFIG = "config";
 
 export type NoArgumentListener = () => void;
 export interface ConfigListenerArgument {
@@ -43,7 +45,7 @@ export interface ConfigContext {
         [prop: string]: any
     };
     // mutated props (debounced then cleared)
-    mutated?: Set<string>;
+    mutated: Set<string>;
 }
 
 export interface WireContext {
@@ -53,10 +55,21 @@ export interface WireContext {
 }
 
 export interface Context {
-    [CONTEXT_ID]: WireContext;
+    [WIRE_CONTEXT_ID]: WireContext;
 }
 
 export type WireEventTargetListener = NoArgumentListener | ConfigListener;
+
+export interface WireDef {
+    params: {
+        [key: string]: string;
+    };
+    static?: {
+        [key: string]: any;
+    };
+    adapter: any;
+    method?: 1;
+}
 
 function removeListener(listeners: WireEventTargetListener[], toRemove: WireEventTargetListener) {
     const idx = listeners.indexOf(toRemove);
@@ -75,20 +88,17 @@ function removeConfigListener(configListenerMetadatas: ConfigListenerMetadata[],
 }
 
 export class WireEventTarget {
-    _cmp: Element;
-    _def: ElementDef;
+    _vm: VM;
     _context: Context;
     _wireDef: WireDef;
     _wireTarget: string;
 
     constructor(
-        cmp: Element,
-        def: ElementDef,
+        vm: VM,
         context: Context,
         wireDef: WireDef,
         wireTarget: string) {
-        this._cmp = cmp;
-        this._def = def;
+        this._vm = vm;
         this._context = context;
         this._wireDef = wireDef;
         this._wireTarget = wireTarget;
@@ -97,13 +107,13 @@ export class WireEventTarget {
     addEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
             case CONNECT:
-                const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                const connectedListeners = this._context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED];
                 assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
                 connectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case DISCONNECT:
-                const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                const disconnectedListeners = this._context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED];
                 assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
                 disconnectedListeners.push(listener as NoArgumentListener);
                 break;
@@ -126,14 +136,13 @@ export class WireEventTarget {
                     params
                 };
 
-                const configContext = this._context[CONTEXT_ID][CONTEXT_UPDATED];
+                const configContext = this._context[WIRE_CONTEXT_ID][CONTEXT_UPDATED];
                 paramsKeys.forEach(param => {
                     const prop = params[param];
                     let configListenerMetadatas = configContext.listeners[prop];
                     if (!configListenerMetadatas) {
                         configListenerMetadatas = [configListenerMetadata];
                         configContext.listeners[prop] = configListenerMetadatas;
-                        installTrap(this._cmp, prop, configContext);
                     } else {
                         configListenerMetadatas.push(configListenerMetadata);
                     }
@@ -148,17 +157,17 @@ export class WireEventTarget {
     removeEventListener(type: string, listener: WireEventTargetListener): void {
         switch (type) {
             case CONNECT:
-                const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
+                const connectedListeners = this._context[WIRE_CONTEXT_ID][CONTEXT_CONNECTED];
                 removeListener(connectedListeners, listener);
                 break;
 
             case DISCONNECT:
-                const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
+                const disconnectedListeners = this._context[WIRE_CONTEXT_ID][CONTEXT_DISCONNECTED];
                 removeListener(disconnectedListeners, listener);
                 break;
 
             case CONFIG:
-                const paramToConfigListenerMetadata = this._context[CONTEXT_ID][CONTEXT_UPDATED].listeners;
+                const paramToConfigListenerMetadata = this._context[WIRE_CONTEXT_ID][CONTEXT_UPDATED].listeners;
                 const { params } = this._wireDef;
                 if (params) {
                     Object.keys(params).forEach(param => {
@@ -180,17 +189,12 @@ export class WireEventTarget {
         if (evt instanceof ValueChangedEvent) {
             const value = evt.value;
             if (this._wireDef.method) {
-                this._cmp[this._wireTarget](value);
+                (this._vm.component as Component)[this._wireTarget](value);
             } else {
-                this._cmp[this._wireTarget] = value;
+                (this._vm.wireValues as HashTable<any>)[this._wireTarget] = value;
+                notifyMutation(this._vm.component as object, this._wireTarget);
             }
             return false; // canceling signal since we don't want this to propagate
-        } else if ((evt as ComposableEvent).type === 'WireContextEvent') {
-            // NOTE: kill this hack
-            // we should only allow ValueChangedEvent
-            // however, doing so would require adapter to implement machinery
-            // that fire the intended event as DOM event and wrap inside ValueChagnedEvent
-            return this._cmp.dispatchEvent(evt);
         } else {
             throw new Error(`Invalid event ${evt}.`);
         }

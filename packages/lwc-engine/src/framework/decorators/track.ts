@@ -5,6 +5,8 @@ import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { reactiveMembrane } from '../membrane';
+import { createWireContext } from "../component";
+import { WIRE_CONTEXT_ID, CONTEXT_UPDATED } from "../wiring";
 
 // stub function to prevent misuse of the @track decorator
 export default function track(obj: any): any {
@@ -44,6 +46,14 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                     }
                 }
                 vm.cmpTrack[key] = reactiveOrAnyValue;
+
+                const { def: { wire }, context } = vm;
+                if (wire) {
+                    createWireContext(vm);
+                    context[WIRE_CONTEXT_ID][CONTEXT_UPDATED].values[key] = vm.cmpTrack[key];
+                    context[WIRE_CONTEXT_ID][CONTEXT_UPDATED].mutated.add(key);
+                }
+
                 if (vm.idx > 0) {
                     // perf optimization to skip this step if not in the DOM
                     notifyMutation(this, key);

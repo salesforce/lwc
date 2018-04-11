@@ -11,7 +11,6 @@ import { VM } from "./vm";
 export type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
 export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (newValue?: any) => void) => void;
 export interface ServiceDef {
-    wiring?: ServiceCallback;
     connected?: ServiceCallback;
     disconnected?: ServiceCallback;
     rendered?: ServiceCallback;
@@ -19,14 +18,13 @@ export interface ServiceDef {
 }
 
 export const Services: {
-  wiring?: ServiceCallback[];
   connected?: ServiceCallback[];
   disconnected?: ServiceCallback[];
   rendered?: ServiceCallback[];
   piercing?: MembranePiercingCallback[];
 } = create(null);
 
-const hooks: Array<keyof ServiceDef> = ['wiring', 'rendered', 'connected', 'disconnected', 'piercing'];
+const hooks: Array<keyof ServiceDef> = ['rendered', 'connected', 'disconnected', 'piercing'];
 
 export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {
