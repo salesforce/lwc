@@ -131,7 +131,7 @@ interface WireEventTarget extends EventTarget {
 }
 
 // Registers a wire adapter factory for an imperative accessor
-register(adapterId: Function|Symbol, wireAdapterFactory: (eventTarget: WireEventTarget) => any): undefined;
+register(adapterId: Function|Symbol, wireAdapterFactory: (eventTarget: WireEventTarget) => void): undefined;
 ```
 
 In the component's `wiring` lifecycle, the wire service invokes the `wireAdapterFactory` function to configure an instance of the wire adapter for each `@wire` instance (which is per component instance).
@@ -242,33 +242,31 @@ function getObservable(eventTarget, config) {
 // Wire adapter id isn't a callable because it doesn't support imperative invocation
 export const getTodo = Symbol('getTodo');
 
-register(getTodo, function wireAdapter(eventTarget) {
+register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
     let subscription;
     let config;
-    return {
-        updatedCallback: (newConfig) => {
-            config = newConfig;
-        },
 
-        connectedCallback: () => {
-            // Difference: pass eventTarget
-            subscription = getObservable(eventTarget, config)
-                .map(makeReadOnlyMembrane)
-                // Difference: capture eventTarget
-                .map(captureWiredValueToEventTargetAndConfig.bind(eventTarget, config))
-                .subscribe({
-                    next: (data) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(data)),
-                    error: (error) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(error))
-                });
-                .emitTo(targetSetter);
-        },
+    eventTarget.addListener('config', (newConfig) => {
+        config = newConfig;
+    });
 
-        disconnectedCallback: () => {
-            subscription.unsubscribe();
-            // Difference: release eventTarget
-            releaseEventTargetAndConfig(config);
-        }
-    };
+    eventTarget.addListener('connected', () => {
+        // Difference: pass eventTarget
+        subscription = getObservable(eventTarget, config)
+            .map(makeReadOnlyMembrane)
+            // Difference: capture eventTarget
+            .map(captureWiredValueToEventTargetAndConfig.bind(eventTarget, config))
+            .subscribe({
+                next: (data) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(data)),
+                error: (error) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(error))
+            });
+    })
+
+    eventTarget.addListener('disconnected', () => {
+        subscription.unsubscribe();
+        // Difference: release eventTarget
+        releaseEventTargetAndConfig(config);
+    });
 });
 
 export function refreshTodo(wiredValue) {
