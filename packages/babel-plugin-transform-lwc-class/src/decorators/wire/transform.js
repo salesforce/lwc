@@ -41,16 +41,6 @@ function buildWireConfigValue(t, wiredValues) {
             )
         ];
 
-        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
-        if (wiredValue.type) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('type'),
-                    t.stringLiteral(wiredValue.type)
-                )
-            )
-        }
-
         if (wiredValue.adapter) {
             wireConfig.push(
                 t.objectProperty(
@@ -113,10 +103,7 @@ module.exports = function transform(t, klass, decorators) {
             params: getWiredParams(t, config),
         }
 
-        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
-        if (id.isStringLiteral()) {
-            wiredValue.type = id.node.value;
-        } else if (id.isIdentifier()) {
+        if (id.isIdentifier()) {
             wiredValue.adapter = {
                 name: id.node.name,
                 reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
