@@ -19,13 +19,13 @@ export default class Test {
 }
 Test.wire = {
   wiredProp: {
+    adapter: getFoo,
     params: {
       key1: "prop1"
     },
     static: {
       key2: ["fixed", 'array']
-    },
-    adapter: getFoo
+    }
   }
 };`
         }
@@ -49,6 +49,7 @@ export default class Test {
 }
 Test.wire = {
   wiredProp: {
+    adapter: getFoo,
     params: {
       key1: "prop",
       key2: "prop"
@@ -56,21 +57,20 @@ Test.wire = {
     static: {
       key3: "fixed",
       key4: ["fixed", 'array']
-    },
-    adapter: getFoo
+    }
   }
 };`
         }
     });
 
-    pluginTest('decorator expects 2 parameters', `
+    pluginTest('decorator expects wire adapter as first parameter', `
         import { wire } from 'engine';
         export default class Test {
             @wire() wiredProp;
         }
     `, {
         error: {
-            message: 'test.js: @wire(<adapterId>, <adapterConfig>) expects 2 parameters.',
+            message: 'test.js: @wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
             loc: {
                 line: 2,
                 column: 4,
@@ -95,13 +95,36 @@ export default class Test {
 }
 Test.wire = {
   wiredProp: {
+    adapter: getFoo,
     params: {},
-    static: {},
-    adapter: getFoo
+    static: {}
   }
 };`
         }
     });
+
+    pluginTest('decorator expects an optional config object as second parameter', `
+        import { wire } from 'engine';
+        import { getFoo } from 'data-service';
+        export default class Test {
+            @wire(getFoo) wiredProp;
+        }
+    `, {
+            output: {
+                code: `import { getFoo } from 'data-service';
+export default class Test {
+  constructor() {
+    this.wiredProp = void 0;
+  }
+
+}
+Test.wire = {
+  wiredProp: {
+    adapter: getFoo
+  }
+};`
+            }
+        });
 
     pluginTest('decorator expects an imported identifier as first parameter', `
         import { wire } from 'engine';
@@ -210,22 +233,22 @@ export default class Test {
 }
 Test.wire = {
   wired1: {
+    adapter: getFoo,
     params: {
       key1: "prop1"
     },
     static: {
       key2: ["fixed"]
-    },
-    adapter: getFoo
+    }
   },
   wired2: {
+    adapter: getFoo,
     params: {
       key1: "prop1"
     },
     static: {
       key2: ["array"]
-    },
-    adapter: getFoo
+    }
   }
 };`
         }
@@ -249,13 +272,13 @@ export default class Test {
 }
 Test.wire = {
   wiredMethod: {
+    adapter: getFoo,
     params: {
       key1: "prop1"
     },
     static: {
       key2: ["fixed"]
     },
-    adapter: getFoo,
     method: 1
   }
 };`
