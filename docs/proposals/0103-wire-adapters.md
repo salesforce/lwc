@@ -107,26 +107,41 @@ Supporting refresh of values emitted by the wire service (wired values) is not p
 
 ## Proposal
 
-A _wire adapter_ provisions data to a wired property or method using an [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget).
-
-The _wire adapter_ is registered for declarative `@wire` consumption with the following code.
+A _wire adapter_ provisions data to a wired property or method using an [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget). A factory function is registered for declarative `@wire` use by a component.
 
 ```js
-register(getType, function wireAdapterFactory(eventTarget) {
-});
+// Events the wire adapter can dispatch to provision a value to the wired property or method
+interface ValueChangedEvent {
+    value: any;
+    new(value: any) : ValueChangedEvent;
+}
+
+// Event types the wire adapter may listen for
+type eventType = 'config' | 'connect' | 'disconnect';
+
+interface ConfigListenerArgument {
+    [key: string]: any;
+}
+type Listener = (config?: ConfigListenerArgument) => void;
+
+interface WireEventTarget extends EventTarget {
+    dispatchEvent(event: ValueChangedEvent): boolean;
+    addEventListener(type: eventType, listener: Listener): void;
+    removeEventListener(type: eventType, listener: Listener): void;
+}
+
+// Registers a wire adapter factory for an imperative accessor
+register(adapterId: Function|Symbol, wireAdapterFactory: (eventTarget: WireEventTarget) => any): undefined;
 ```
 
-- `register ` is provided by the wire service module. It receives two arguments: the wire adapter id and wire adapter factory function. Return type is null.
-- `getType` is the wire adapter id (ie imperative accessor for the data type, defined by the wire adapter). Components use this like `@wire(getType, {...})`.
-- `wireAdapter` is the _wire adapter_ factory. It is invoked per @wire instance (which is per component instance).
-- `eventTarget` is an implementation of [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) that emits the following events
-  - `config` is fired when the resolved configuration changes. A singular argument is provided: the resolved configuration.
-  - `connect` is fired when the component is connected.
-  - `disconnect` is fired when the component is disconnected.
+In the component's `wiring` lifecycle, the wire service invokes the `wireAdapterFactory` function to configure an instance of the wire adapter for each `@wire` instance (which is per component instance).
 
-In the component's `wiring` lifecycle, the wire service invokes the `wireAdapterFactory` function to get an instance of the wire adapter specific to an `@wire` instance.
+`eventTarget` is an implementation of [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) that supports listeners for the following events:
+- `config` is delivered when the resolved configuration changes. A singular argument is provided: the resolved configuration.
+- `connect` is delivered when the component is connected.
+- `disconnect` is delivered when the component is disconnected.
 
-The wire service remains responsible for resolving the configuration object. `eventTarget` emits a `config` event when the resolved configuration changes. The configuration has type object; its keys and values are type any, and are specific to the wire adapter. The wire adapter must must treat the object as immutable.
+The wire service remains responsible for resolving the configuration object. `eventTarget` delivers a `config` event when the resolved configuration changes. The value of the configuration is specific to the wire adapter. The wire adapter must treat the object as immutable.
 
 The wire adapter is responsible for provisioning values by dispatching a `ValueChangedEvent` to the event target. `ValueChangedEvent`'s constructor accepts a single argument: the value to provision. There is no limitation to the shape or contents of the value to provision. The event target handles property assignment or method invocation based on the target of the `@wire`.
 
@@ -140,11 +155,8 @@ Imperative access to data is unchanged. The wire adapter module must export a ca
 
 Wire adapters may optionally implement a refresh mechanism by defining an importable callable with the signature below. The function receives one argument: the wired value emitted by a `@wire`.
 
-A promise is returned which resolves after the wired property/method is updated (eg a new value is emitted if applicable). The resolved value is wire adapter specific.
-
 ```js
-export function refreshType(wiredValue) {
-}
+type refresh: (wiredValue: any) => promise<any>
 ```
 
 The callable receives one argument, `wiredValue`, which is the value emitted from the wire adapter (the parameter to the `ValueChangedEvent` constructor).
@@ -177,7 +189,7 @@ The callable must return a `promise<any>` that resolves after the corresponding 
 
 ## Extended Proposal
 
-There are known use cases where adapters will use DOM Events to retrieve data from the DOM hierarchy. This is not possible because wire adapters are not provided access to the host element as an EventTarget. This section proposes a solution.
+There are known use cases where adapters will use DOM Events to retrieve data from the DOM hierarchy. This is not possible because wire adapters are not provided access to the host element as an EventTarget. This section proposes a solution: the EventTarget provided to the wire adapter factory bridges dispatched events to the host element.
 
 ### Extended basic example
 
@@ -265,7 +277,7 @@ export function refreshTodo(wiredValue) {
 }
 ```
 
-The scope of changes is minimal: the event target passes non-`ValueChangedEvent`s to the host element so they're sent up the DOM hierarchy, an event target is provided in the imperative flows.
+The scope of changes is minimal: the event target re-dispatches events other than `ValueChangedEvent` to the host element.
 
 ## Rejected Proposals
 
