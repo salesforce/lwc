@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.19.1...v) (2018-04-06)
+# [](https://github.com/salesforce/lwc/compare/v0.19.2...v) (2018-04-12)
+
+
+
+<a name="0.19.2"></a>
+## [0.19.2](https://github.com/salesforce/lwc/compare/v0.19.1...v0.19.2) (2018-04-12)
+
+
+### Bug Fixes
+
+* [Backport 214/patch] Prevent properties to leak on intrinsics ([#233](https://github.com/salesforce/lwc/issues/233)) ([fe7fc2c](https://github.com/salesforce/lwc/commit/fe7fc2c))
 
 
 
