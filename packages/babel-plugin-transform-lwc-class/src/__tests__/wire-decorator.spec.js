@@ -301,7 +301,7 @@ describe('Metadata', () => {
                     decorators: [{
                         type: 'wire',
                         targets: [{
-                            adapter: {name: 'getFoo', reference: 'data-service' },
+                            adapter: { name: 'getFoo', reference: 'data-service' },
                             name: 'wiredProp',
                             params: { key1: 'prop1' },
                             static: { key2: ['fixed'] },
