@@ -42,42 +42,44 @@ export default class TodoViewer extends Element {
 An implementation of the `todo` wire adapter that uses observables for a stream of values.
 
 ```js
-import { register } from 'wire';
+import { register, ValueChangedEvent } from 'wire-service';
 
-// Component-importable imperative access.
+// Imperative access.
 export function getTodo(config) {
     return getObservable(config)
         .map(makeReadOnlyMembrane)
         .toPromise();
 }
 
-// Register the wire adapter for @wire(getTodo).
-register(getTodo, function wireAdapter(targetSetter) {
+// Declarative access: register a wire adapter factory for  @wire(getTodo).
+register(getTodo, function getTodoWireAdapterFactory(eventTarget) {
     let subscription;
     let config;
-    return {
-        // Invoked when config is updated.
-        updatedCallback: (newConfig) => {
-            // Capture config for use during subscription.
-            config = newConfig;
-        },
 
-        // Invoked when component connected.
-        connectedCallback: () => {
-            // Subscribe to stream.
-            subscription = getObservable(config)
-                .map(makeReadOnlyMembrane)
-                .map(captureWiredValueToConfig.bind(config))
-                .emitTo(targetSetter);
-        },
+    // Invoked when config is updated.
+    eventTarget.addListener('config', (newConfig) => {
+        // Capture config for use during subscription.
+        config = newConfig;
+    });
+
+    // Invoked when component connected.
+    eventTarget.addListener('connected', () => {
+        // Subscribe to stream.
+        subscription = getObservable(config)
+            .map(makeReadOnlyMembrane)
+            .map(captureWiredValueToConfig.bind(config))
+            .subscribe({
+                next: (data) => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data, error: undefined })),
+                error: (error) => wiredEventTarget.dispatchEvent(new ValueChangedEvent({ data: undefined, error }))
+            });
+    })
 
         // Invoked when component disconnected.
-        disconnectedCallback: () => {
-            // Release all resources.
-            subscription.unsubscribe();
-            releaseConfig(config);
-        }
-    };
+    eventTarget.addListener('disconnected', () => {
+        // Release all resources.
+        subscription.unsubscribe();
+        releaseConfig(config);
+    });
 });
 
 // Component-importable refresh capability. Returns Promise<any> that
@@ -105,38 +107,30 @@ Supporting refresh of values emitted by the wire service (wired values) is not p
 
 ## Proposal
 
-A _wire adapter_ is registered to support declarative `@wire` consumption with the following code.
+A _wire adapter_ provisions data to a wired property or method using an [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget).
+
+The _wire adapter_ is registered for declarative `@wire` consumption with the following code.
 
 ```js
-register(getType, function wireAdapter(targetSetter) {
-    return {
-        updatedCallback: (config) => {
-        },
-        connectedCallback: () => {
-        },
-        disconnectedCallback: () => {
-        }
-    };
+register(getType, function wireAdapterFactory(eventTarget) {
 });
 ```
 
-- `register ` is provided by the wire service module. It receives two arguments: the wire adapter id and _wire adapter_. Return type is null.
+- `register ` is provided by the wire service module. It receives two arguments: the wire adapter id and wire adapter factory function. Return type is null.
 - `getType` is the wire adapter id (ie imperative accessor for the data type, defined by the wire adapter). Components use this like `@wire(getType, {...})`.
-- `wireAdapter` is the _wire adapter_. It is invoked per @wire instance (which is per component instance). It must return an object with zero or more of the defined callbacks (see below).
-- `targetSetter` is a callable used to emit new wired values.
-- `updatedCallback` is invoked when the resolved configuration changes. The resolved configuration is the sole argument.
-- `connectedCallback` is invoked when the component is connected.
-- `disconnectedCallback` is invoked when the component is disconnected.
+- `wireAdapter` is the _wire adapter_ factory. It is invoked per @wire instance (which is per component instance).
+- `eventTarget` is an implementation of [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) that emits the following events
+  - `config` is fired when the resolved configuration changes. A singular argument is provided: the resolved configuration.
+  - `connect` is fired when the component is connected.
+  - `disconnect` is fired when the component is disconnected.
 
-In the component's wiring lifecycle, the wire service invokes the `wireAdapter`.
+In the component's `wiring` lifecycle, the wire service invokes the `wireAdapterFactory` function to get an instance of the wire adapter specific to an `@wire` instance.
 
-The wire service remains responsible for resolving the configuration object. `updatedCallback` is invoked when the resolved configuration changes. The configuration has type object. Its keys and values are type any, and are specific to the wire adapter. This object must be treated as immutable.
+The wire service remains responsible for resolving the configuration object. `eventTarget` emits a `config` event when the resolved configuration changes. The configuration has type object; its keys and values are type any, and are specific to the wire adapter. The wire adapter must must treat the object as immutable.
 
-The wire adapter is responsible for emitting the wired value with `targetSetter`. `targetSetter` handles property assignment or method invocation based on the target of the `@wire`. The wired value semantics and shape are unchanged: `{ data: any, error: any }` and only one of `data` and `error` may be non-null.
+The wire adapter is responsible for provisioning values by dispatching a `ValueChangedEvent` to the event target. `ValueChangedEvent`'s constructor accepts a single argument: the value to provision. There is no limitation to the shape or contents of the value to provision. The event target handles property assignment or method invocation based on the target of the `@wire`.
 
-The return values of `updatedCallback`, `connectedCallback`, and `disconnectedCallback` are ignored.
-
-The wire adapter is responsible for maintaining any context it requires. For example, tracking the wired value and originating resolved configuration is shown in the basic example.
+The wire adapter is responsible for maintaining any context it requires. For example, tracking the values it provisions and the originating resolved configuration is shown in the basic example.
 
 ### Imperative
 
@@ -153,18 +147,19 @@ export function refreshType(wiredValue) {
 }
 ```
 
-The callable receives one argument, `wiredValue`, which is the value emitted from the wire adapter (the wired property value or the argument provided to the wired method).
+The callable receives one argument, `wiredValue`, which is the value emitted from the wire adapter (the parameter to the `ValueChangedEvent` constructor).
 
 The callable must return a `promise<any>` that resolves after the corresponding `@wire` is updated (assuming it updates). The value resolved is adapter specific.
 
 ### Advantages
 
-- The wire adapter has control of the types of data and error it emits.
+- Event listening and dispatching is a well-understood pattern. EventTarget is a well-understood interface of this pattern.
+- The wire adapter has control of the shape of value it provisions.
 - The wire adapter has control over how it emits read-only values, enabling optimizations specific to the adapter.
-- `targetSetter` unifies emitting values to wired properties or wired methods. The wire adapter need not handle this.
+- `eventTarget` unifies emitting values to wired properties or wired methods. The wire adapter need not handle this.
 - Symmetry of using `@wire` and requesting a refresh creates an easy-to-use API.
-- Caching behavior remains in control of and private to the wire adapter.
-- Access to the wire adapter (the callable registered with the wire service) remains private. It is not importable by components.
+- Caching behavior remains controlled by and private to the wire adapter.
+- Access to the wire adapter factory (the callable registered with the wire service) remains private. It is not importable by components.
 - Wire adapters can be registered at any time (not just at application boot). This enables fetching wire adapters only when they are required by a module.
 - It provides a path for additional "context" (eg the host element) to be provided to the wire adapter. See _Extended Proposal_.
 
@@ -176,13 +171,13 @@ The callable must return a `promise<any>` that resolves after the corresponding 
   - If refresh is not supported then the wire adapter code is even simpler.
 - Other processes are required to ensure uniformity among similar adapters (eg those provided by a single vendor like Salesforce). The shape and semantics of data and error, arguments, etc should be consistent to provide an easy-to-use API.
 - Wire adapters require registration to support the declarative `@wire` syntax.
-  - Adapter registration can happen after application boot by importing `register` from `wire`.
+  - Adapter registration can happen after application boot by importing `register` from `wire-service`.
   - Non-registered wire adapters could still function with `@wire(getType)` if the wire service uses `getType` for a one-time resolution.
 - Refreshing a wired method requires capturing the wired value. This burden is considered acceptable because it's little code and wiring methods is an advanced use case.
 
 ## Extended Proposal
 
-There are known use cases where adapters will use DOM Events to retrieve data from the DOM hierarchy. This is not possible because wire adapters are not provided access to the EventTarget. This section proposes a solution.
+There are known use cases where adapters will use DOM Events to retrieve data from the DOM hierarchy. This is not possible because wire adapters are not provided access to the host element as an EventTarget. This section proposes a solution.
 
 ### Extended basic example
 
@@ -214,10 +209,10 @@ export default class TodoViewer extends Element {
 This implementation of the `todo` wire adapter uses DOM Events to retrieve the data from a parent element.
 
 ```js
-import { register } from 'wire';
+import { register, ValueChangedEvent } from 'wire-service';
 
-// Difference: receive a dispatchEvent, use DOM Events to fetch the observable
-function getObservable(dispatchEvent, config) {
+// Difference: receive an eventTarget, use DOM Events to fetch the observable
+function getObservable(eventTarget, config) {
     let observable;
     const event = new CustomEvent('getTodo', {
         bubbles: true,
@@ -228,15 +223,14 @@ function getObservable(dispatchEvent, config) {
             callback: o => { observable = o; }
         }
     });
-    dispatchEvent(event);
+    eventTarget.dispatchEvent(event);
     return observable;
 }
 
 // Wire adapter id isn't a callable because it doesn't support imperative invocation
 export const getTodo = Symbol('getTodo');
 
-// Difference: receive eventTarget
-register(getTodo, function wireAdapter(targetSetter, eventTarget) {
+register(getTodo, function wireAdapter(eventTarget) {
     let subscription;
     let config;
     return {
@@ -245,11 +239,15 @@ register(getTodo, function wireAdapter(targetSetter, eventTarget) {
         },
 
         connectedCallback: () => {
-            // Difference: pass dispatchEvent
-            subscription = getObservable(eventTarget.dispatchEvent, config)
+            // Difference: pass eventTarget
+            subscription = getObservable(eventTarget, config)
                 .map(makeReadOnlyMembrane)
                 // Difference: capture eventTarget
                 .map(captureWiredValueToEventTargetAndConfig.bind(eventTarget, config))
+                .subscribe({
+                    next: (data) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(data)),
+                    error: (error) => wiredEventTarget.dispatchEvent(new ValueChangedEvent(error))
+                });
                 .emitTo(targetSetter);
         },
 
@@ -267,7 +265,7 @@ export function refreshTodo(wiredValue) {
 }
 ```
 
-The scope of changes is minimal: an event target is provided in the imperative flows and wire adapter.
+The scope of changes is minimal: the event target passes non-`ValueChangedEvent`s to the host element so they're sent up the DOM hierarchy, an event target is provided in the imperative flows.
 
 ## Rejected Proposals
 
@@ -369,6 +367,30 @@ The wire adapter:
 - Is highly recommended to use multi-cast observables and other techniques to minimize memory consumption and runtime.
 - Is recommended to provide a cache invalidation mechanism, provided as an imperative JS API that's invocable from userland.
 
-#### Addressing issues from proposal 3:
+#### Addressing issues from proposal 3
 
-* The API that returns an observable doesn't have to be exposed to components; instead it can be registered, maybe via `wire.registerAdapter(publicPromiseBaseAPI, privateObservableBaseAPI)` in the module that defines both functions, which guarantees that users will access the `publicPromiseBaseAPI`, and that's what they will provide as the identify of the adapter via the `@wire` decorator, while the internals of the `@wire` decorator can invoke `privateObservableBaseAPI` instead to obtain access to the observable.
+- The API that returns an observable doesn't have to be exposed to components; instead it can be registered, maybe via `wire.registerAdapter(publicPromiseBaseAPI, privateObservableBaseAPI)` in the module that defines both functions, which guarantees that users will access the `publicPromiseBaseAPI`, and that's what they will provide as the identify of the adapter via the `@wire` decorator, while the internals of the `@wire` decorator can invoke `privateObservableBaseAPI` instead to obtain access to the observable.
+
+### Proposal 5: callbacks
+
+This proposal differs from the primary proposal only in the ergonomics exposed to the wire adapter developer:
+- To provision values, the wire adapter receives a function instead of an event [Event Target](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget).
+- To observe changes to the resolved configuration and component lifecycle, the wire adapter factory returns an object with several callback functions instead of listening to events from the Event Target.
+
+```js
+register(getType, function wireAdapter(targetSetter) {
+    return {
+        updatedCallback: (config) => {
+        },
+        connectedCallback: () => {
+        },
+        disconnectedCallback: () => {
+        }
+    };
+});
+```
+
+#### Disadvantages
+
+- Multiple patterns (function callbacks, event emitting) must be implemented in the wire adapter.
+- A wire adapter is unable to unregister from callbacks. That is, by providing a `connectedCallback` function the wire adapter will always receive notification of component connected.
