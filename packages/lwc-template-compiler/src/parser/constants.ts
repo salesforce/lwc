@@ -85,7 +85,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-errormessage': 'ariaErrorMessage',
     'aria-expanded': 'ariaExpanded',
     'aria-flowto': 'ariaFlowTo',
-    'aria-haspopup': 'ariaHasPopUp',
+    'aria-haspopup': 'ariaHasPopup',
     'aria-hidden': 'ariaHidden',
     'aria-invalid': 'ariaInvalid',
     'aria-keyshortcuts': 'ariaKeyShortcuts',
