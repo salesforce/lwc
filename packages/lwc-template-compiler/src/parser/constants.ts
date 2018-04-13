@@ -76,6 +76,7 @@ export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
     'aria-checked': 'ariaChecked',
     'aria-colcount': 'ariaColCount',
     'aria-colindex': 'ariaColIndex',
+    'aria-colspan': 'ariaColSpan',
     'aria-controls': 'ariaControls',
     'aria-current': 'ariaCurrent',
     'aria-describedby': 'ariaDescribedBy',
