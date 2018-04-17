@@ -120,7 +120,7 @@ describe("compiler options", () => {
     });
 });
 
-describe.only("compiler output", () => {
+describe("compiler output", () => {
     test("compiler should return bundle result default output configuration ", async () => {
         const noOutpuConfig = Object.assign({}, VALID_CONFIG);
         delete noOutpuConfig.outputConfig;
