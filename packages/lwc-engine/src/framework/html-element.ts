@@ -280,7 +280,7 @@ class LWCElement implements Component {
         }
         return getLinkedElement(this).classList;
     }
-    get root(): ShadowRoot {
+    get template(): ShadowRoot {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
@@ -292,6 +292,13 @@ class LWCElement implements Component {
             vm.cmpRoot = cmpRoot;
         }
         return cmpRoot;
+    }
+    get root(): ShadowRoot {
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+        }
+        return this.template;
     }
     toString(): string {
         const vm = getCustomElementVM(this);
