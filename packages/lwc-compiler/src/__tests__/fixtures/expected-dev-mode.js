@@ -1,4 +1,4 @@
-define('x-class_and_template', ['engine'], function (engine) {
+define('x/class_and_template', ['engine'], function (engine) {
 
 const style = undefined;
 

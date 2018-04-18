@@ -93,7 +93,6 @@ const baseInputConfig = {
             resolveFromPackages: false,
             mapNamespaceFromPath: false,
             ignoreFolderName: true,
-            allowUnnamespaced: true,
             compat: { // In order to build faster we manually add compat artifacts later
                 downgrade: false,
                 polyfills: false

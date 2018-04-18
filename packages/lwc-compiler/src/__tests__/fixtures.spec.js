@@ -68,7 +68,7 @@ describe('component name and namespace override', () => {
         });
 
         expect(pretify(code)).toBe(
-            pretify(`define("x-bar",function(){console.log("foo")});`),
+            pretify(`define("x/bar",function(){console.log("foo")});`),
         );
     });
 
@@ -83,7 +83,7 @@ describe('component name and namespace override', () => {
         });
 
         expect(pretify(code)).toBe(
-            pretify(`define("bar-foo",function(){console.log("foo")});`),
+            pretify(`define("bar/foo",function(){console.log("foo")});`),
         );
     });
 });
@@ -430,10 +430,11 @@ describe('metadata output', () => {
                 }
             ],
             references: [
-                { name: 'x-bar', type: 'component' },
+                { name: 'x/bar', type: 'module' },
                 { name: 'engine', type: 'module' },
                 { name: 'todo', type: 'module' },
-                { name: '@schema/foo.bar', type: 'module' }
+                { name: '@schema/foo.bar', type: 'module' },
+                { name: 'x-bar', type: 'component' }
             ]
         });
     });

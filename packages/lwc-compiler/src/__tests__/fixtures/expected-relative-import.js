@@ -1,4 +1,4 @@
-define('myns-relative_import', ['engine'], function (engine) {
+define('myns/relative_import', ['engine'], function (engine) {
 
 const style = undefined;
 
