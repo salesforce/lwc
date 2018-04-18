@@ -1,7 +1,7 @@
 import { bundle } from "./bundler/bundler";
 import { BundleMetadata } from "./bundler/meta-collector";
 import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
-import { CompilerOptions, validateOptions, normalizeOptions, NormalizedCompilerOptions } from "./options";
+import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
 import { version } from './index';
 
 export { default as templateCompiler } from "lwc-template-compiler";
@@ -17,7 +17,7 @@ export interface BundleResult {
     code: string;
     map: null;
     metadata: BundleMetadata;
-    outputConfig: NormalizedCompilerOptions;
+    outputConfig: NormalizedOutputConfig;
 }
 
 export async function compile(
@@ -42,7 +42,7 @@ export async function compile(
             code,
             map: null,
             metadata,
-            outputConfig: normalizedOptions,
+            outputConfig: normalizedOptions.outputConfig,
         };
     }
     return {

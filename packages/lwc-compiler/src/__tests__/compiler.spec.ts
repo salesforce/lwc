@@ -126,31 +126,27 @@ describe("compiler output", () => {
         delete noOutpuConfig.outputConfig;
         const { result: { outputConfig } } = await compile(noOutpuConfig);
         expect(outputConfig).toMatchObject({
-            outputConfig: {
-                env: {
-                    NODE_ENV: 'development',
-                },
-                minify: false,
-                compat: false,
+            env: {
+                NODE_ENV: "development"
             },
+            minify: false,
+            compat: false
         });
     });
     test("compiler should return bundle result with normalized DEV output config", async () => {
         const config = Object.assign({}, VALID_CONFIG, {
             outputConfig: {
                 minify: false,
-                compat: false,
-            },
+                compat: false
+            }
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            outputConfig: {
-                env: {
-                    NODE_ENV: 'development',
-                },
-                minify: false,
-                compat: false,
+            env: {
+                NODE_ENV: "development"
             },
+            minify: false,
+            compat: false
         });
     });
     test("compiler should return bundle result with normalized PROD output config", async () => {
@@ -159,37 +155,33 @@ describe("compiler output", () => {
                 minify: true,
                 compat: false,
                 env: {
-                    NODE_ENV: 'production',
+                    NODE_ENV: "production"
                 }
-            },
+            }
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            outputConfig: {
-                env: {
-                    NODE_ENV: 'production',
-                },
-                minify: true,
-                compat: false,
+            env: {
+                NODE_ENV: "production"
             },
+            minify: true,
+            compat: false
         });
     });
     test("compiler should return bundle result with normalized COMPAT output config", async () => {
         const config = Object.assign({}, VALID_CONFIG, {
             outputConfig: {
                 minify: false,
-                compat: true,
-            },
+                compat: true
+            }
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            outputConfig: {
-                env: {
-                    NODE_ENV: 'development',
-                },
-                minify: false,
-                compat: true,
+            env: {
+                NODE_ENV: "development"
             },
+            minify: false,
+            compat: true
         });
     });
     test("compiler should return bundle result with normalized PROD_COMPAT output config", async () => {
@@ -198,19 +190,17 @@ describe("compiler output", () => {
                 minify: false,
                 compat: true,
                 env: {
-                    NODE_ENV: 'production',
+                    NODE_ENV: "production"
                 }
-            },
+            }
         });
         const { result: { outputConfig } } = await compile(config);
         expect(outputConfig).toMatchObject({
-            outputConfig: {
-                env: {
-                    NODE_ENV: 'production',
-                },
-                minify: false,
-                compat: true,
+            env: {
+                NODE_ENV: "production"
             },
+            minify: false,
+            compat: true
         });
     });
     test("should return output object with expected properties", async () => {

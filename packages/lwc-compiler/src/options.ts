@@ -1,14 +1,18 @@
 import { isBoolean, isString, isUndefined } from "./utils";
 
 const DEFAULT_OUTPUT_CONFIG = {
-    env: {},
+    env: {
+        NODE_ENV: "development"
+    },
     minify: false,
     compat: false
 };
 
-const DEFAULT_OUTPUT_CONFIG_ENV = {
-    NODE_ENV: "development"
-};
+// const DEFAULT_OUTPUT_CONFIG_ENV = {
+//     env: {
+//         NODE_ENV: "development",
+//     }
+// };
 
 export type OutputProxyCompatConfig =
     | { global: string }
@@ -48,7 +52,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
     minify: boolean;
     env: {
-        NODE_ENV: string;
+        // NODE_ENV: string;
         [name: string]: string;
     };
 }
@@ -127,18 +131,9 @@ export function normalizeOptions(
     }
     delete options.moduleNamespace;
 
-    // merge incoming env value with default
-    const envConfig = options.outputConfig && options.outputConfig.env;
-    const normalizedEnvConfig = {
-        ...DEFAULT_OUTPUT_CONFIG_ENV,
-        ...envConfig
-    };
-
-    // merge incoming outputConfig value with defaults and normalized values
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
-        ...options.outputConfig,
-        env: normalizedEnvConfig
+        ...options.outputConfig
     };
 
     return {
