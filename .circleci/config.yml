@@ -116,7 +116,8 @@ jobs:
       - run: yarn install
       - run:
           name: Preformance Test
-          command: yarn test:performance
+          working_directory: packages/benchmark
+          command: yarn start best --externalStorage=@best/store-aws --runner remote
 
       - store_artifacts:
           path: ~/lwc/packages/benchmark/__benchmark_results__/
@@ -124,7 +125,8 @@ jobs:
 
       - run:
           name: Comparing Benchmarks
-          command: cd packages/benchmark/ && yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          working_directory: packages/benchmark
+          command: yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 
 workflows:

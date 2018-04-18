@@ -9,7 +9,7 @@
     "types": "tsc --noEmit",
     "test": "jest",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
-    "test:performance": "lerna exec --scope benchmark -- best --externalStorage='@best/store-aws'",
+    "test:performance": "lerna exec --scope benchmark -- best --runner remote",
     "build": "lerna run build --ignore benchmark --ignore lwc-integration",
     "build:artifacts": "npm run build && npm run build:compiler",
     "build:compiler": "lerna exec --scope lwc-compiler yarn build:umd",

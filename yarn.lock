@@ -375,97 +375,112 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@best/analyzer@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/analyzer/-/@best/analyzer-0.0.13/e62fd3239b26b8c6036630569fe3e4c9726aec58.tgz#e62fd3239b26b8c6036630569fe3e4c9726aec58"
+"@best/analyzer@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/analyzer/-/@best/analyzer-0.5.0/5d86aef44abc82d419535e57d7c1bb2607f31387.tgz#5d86aef44abc82d419535e57d7c1bb2607f31387"
 
-"@best/build@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/build/-/@best/build-0.0.13/cc434211a14d689f4508d7601bd4de47e598bd51.tgz#cc434211a14d689f4508d7601bd4de47e598bd51"
+"@best/build@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/build/-/@best/build-0.5.0/778b80d78a872c8268006c20ef05b24f72d36348.tgz#778b80d78a872c8268006c20ef05b24f72d36348"
   dependencies:
-    "@best/messager" "0.0.13"
-    "@best/runtime" "0.0.13"
+    "@best/messager" "0.5.0"
+    "@best/runtime" "0.5.0"
     rollup "~0.53.0"
 
-"@best/compare@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/compare/-/@best/compare-0.0.13/182e8727eac560c3936bab6243899029a7969328.tgz#182e8727eac560c3936bab6243899029a7969328"
+"@best/compare@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/compare/-/@best/compare-0.5.0/b2bab5b3227e9f4a14475d8cffe1ad17ea89f609.tgz#b2bab5b3227e9f4a14475d8cffe1ad17ea89f609"
   dependencies:
-    "@best/analyzer" "0.0.13"
-    "@best/messager" "0.0.13"
+    "@best/analyzer" "0.5.0"
+    "@best/messager" "0.5.0"
     chalk "~2.3.0"
 
-"@best/config@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/config/-/@best/config-0.0.13/a99f7fdae929fa47b12c2eb0ef7bf2fe3d870bef.tgz#a99f7fdae929fa47b12c2eb0ef7bf2fe3d870bef"
+"@best/config@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/config/-/@best/config-0.5.0/92c59917086c9a6f82a6ecec3ef90cf417bdc245.tgz#92c59917086c9a6f82a6ecec3ef90cf417bdc245"
   dependencies:
-    "@best/regex-util" "0.0.13"
-    "@best/utils" "0.0.13"
+    "@best/regex-util" "0.5.0"
+    "@best/utils" "0.5.0"
     chalk "~2.3.0"
 
-"@best/github-integration@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/github-integration/-/@best/github-integration-0.0.13/7dba4e3af7ea13f198511c3c65aa017e2541caaf.tgz#7dba4e3af7ea13f198511c3c65aa017e2541caaf"
+"@best/github-integration@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/github-integration/-/@best/github-integration-0.5.0/3db5fe4ff0ec37fe1554bb351c39ab7de0836c1d.tgz#3db5fe4ff0ec37fe1554bb351c39ab7de0836c1d"
   dependencies:
-    "@best/messager" "0.0.13"
-    "@best/utils" "0.0.13"
+    "@best/messager" "0.5.0"
+    "@best/utils" "0.5.0"
     "@octokit/rest" "^14.0.9"
     base-64 "^0.1.0"
     expand-tilde "~2.0.2"
     json2md "~1.5.11"
     jsonwebtoken "8.1.0"
 
-"@best/messager@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/messager/-/@best/messager-0.0.13/c846be79566d3bfb1d1be6cd7d78e6e5047ab6f0.tgz#c846be79566d3bfb1d1be6cd7d78e6e5047ab6f0"
+"@best/messager@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/messager/-/@best/messager-0.5.0/23fb7f1619dd6d72f4660a45d7424c13c9508954.tgz#23fb7f1619dd6d72f4660a45d7424c13c9508954"
   dependencies:
-    "@best/utils" "0.0.13"
+    "@best/utils" "0.5.0"
 
-"@best/regex-util@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.0.13/af168cd87038963461e8b28ef63cd4d018f42295.tgz#af168cd87038963461e8b28ef63cd4d018f42295"
+"@best/regex-util@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/regex-util/-/@best/regex-util-0.5.0/57f0d90f969d1da6d3f2c7b69392a1b4b29ea51b.tgz#57f0d90f969d1da6d3f2c7b69392a1b4b29ea51b"
 
-"@best/runner-headless@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.0.13/1ab432c977adcce8a3c45c87811ba97aa9e0e69b.tgz#1ab432c977adcce8a3c45c87811ba97aa9e0e69b"
+"@best/runner-headless@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/runner-headless/-/@best/runner-headless-0.5.0/c5553fa18bc1155f95dfa8ed136ec41979a3af8b.tgz#c5553fa18bc1155f95dfa8ed136ec41979a3af8b"
   dependencies:
-    puppeteer "0.13.0"
+    puppeteer "1.1.0"
     systeminformation "3.33.12"
 
-"@best/runner@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/runner/-/@best/runner-0.0.13/32ae41a10c06e0a8f249b7b956c99da11fb1c597.tgz#32ae41a10c06e0a8f249b7b956c99da11fb1c597"
+"@best/runner-remote@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/runner-remote/-/@best/runner-remote-0.5.0/2304a1ec7a588fc0d7e9c4ad930d906176ae9560.tgz#2304a1ec7a588fc0d7e9c4ad930d906176ae9560"
+  dependencies:
+    "@best/messager" "0.5.0"
+    socket.io-client "~2.0.4"
+    tar "~4.2.0"
+
+"@best/runner@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/runner/-/@best/runner-0.5.0/9044db91bc2830c8065b3351869bede1c91743d1.tgz#9044db91bc2830c8065b3351869bede1c91743d1"
   dependencies:
     chalk "~2.3.0"
     puppeteer "0.13.0"
 
-"@best/runtime@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/runtime/-/@best/runtime-0.0.13/91d3ce24f3160fd48d50af713691cc80bbaefd6d.tgz#91d3ce24f3160fd48d50af713691cc80bbaefd6d"
+"@best/runtime@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/runtime/-/@best/runtime-0.5.0/b01c812f18330ad3f5110dd4c321d024b9ef47ef.tgz#b01c812f18330ad3f5110dd4c321d024b9ef47ef"
   dependencies:
     chalk "~2.3.0"
 
-"@best/store-aws@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/store-aws/-/@best/store-aws-0.0.13/7e4e0ebe0fd9b1f6a85658a8f79c7a6fdbd76c67.tgz#7e4e0ebe0fd9b1f6a85658a8f79c7a6fdbd76c67"
+"@best/store-aws@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/store-aws/-/@best/store-aws-0.5.0/b8ed05136a63f48016b1437d4741ddbdb5541a1e.tgz#b8ed05136a63f48016b1437d4741ddbdb5541a1e"
   dependencies:
     aws-sdk "~2.176.0"
     chalk "~2.3.0"
     mime-types "~2.1.17"
     node-fetch "~1.7.3"
 
-"@best/store@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/store/-/@best/store-0.0.13/d2cd58d18d0a0ef4d7439a03a0d0ef9e4a683dc6.tgz#d2cd58d18d0a0ef4d7439a03a0d0ef9e4a683dc6"
+"@best/store-fs@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/store-fs/-/@best/store-fs-0.5.0/3bceee308da58dc63d8ab641bb281352b0c990ea.tgz#3bceee308da58dc63d8ab641bb281352b0c990ea"
+  dependencies:
+    chalk "~2.3.0"
+    globby "~7.1.1"
+
+"@best/store@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/store/-/@best/store-0.5.0/1599b0c8c9ccc5ba3575f24e70d294e5ff99f1a4.tgz#1599b0c8c9ccc5ba3575f24e70d294e5ff99f1a4"
   dependencies:
     json2md "~1.5.11"
     mkdirp "^0.5.1"
     ncp "^2.0.0"
     rimraf "~2.6.2"
 
-"@best/utils@0.0.13":
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/@best/utils/-/@best/utils-0.0.13/1d624292ef8b5d0f0bcf18683f46da3afd6adc9b.tgz#1d624292ef8b5d0f0bcf18683f46da3afd6adc9b"
+"@best/utils@0.5.0":
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/@best/utils/-/@best/utils-0.5.0/3c03f639f5c522e2d73a6d9c9560a093809e11f5.tgz#3c03f639f5c522e2d73a6d9c9560a093809e11f5"
   dependencies:
     chalk "~2.3.0"
     is-ci "^1.0.10"
@@ -603,6 +618,10 @@ add-stream@^1.0.0:
 adm-zip@~0.4.3:
   version "0.4.7"
   resolved "http://npm.lwcjs.org/adm-zip/-/adm-zip-0.4.7/8606c2cbf1c426ce8c8ec00174447fd49b6eafc1.tgz#8606c2cbf1c426ce8c8ec00174447fd49b6eafc1"
+
+after@0.8.2:
+  version "0.8.2"
+  resolved "http://npm.lwcjs.org/after/-/after-0.8.2/fedb394f9f0e02aa9768e702bda23b505fae7e1f.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
 
 agent-base@2:
   version "2.1.1"
@@ -818,6 +837,10 @@ array-unique@^0.2.1:
 array-unique@^0.3.2:
   version "0.3.2"
   resolved "http://npm.lwcjs.org/array-unique/-/array-unique-0.3.2/a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
+
+arraybuffer.slice@~0.0.7:
+  version "0.0.7"
+  resolved "http://npm.lwcjs.org/arraybuffer.slice/-/arraybuffer.slice-0.0.7/3bbc4275dd584cc1b10809b89d4e8b63a69e7675.tgz#3bbc4275dd584cc1b10809b89d4e8b63a69e7675"
 
 arrify@^1.0.0, arrify@^1.0.1:
   version "1.0.1"
@@ -1693,6 +1716,10 @@ babylon@^6.17.0, babylon@^6.18.0:
   version "6.18.0"
   resolved "http://npm.lwcjs.org/babylon/-/babylon-6.18.0/af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
+backo2@1.0.2:
+  version "1.0.2"
+  resolved "http://npm.lwcjs.org/backo2/-/backo2-1.0.2/31ab1ac8b129363463e35b3ebb69f4dfcfba7947.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
+
 balanced-match@^0.4.2:
   version "0.4.2"
   resolved "http://npm.lwcjs.org/balanced-match/-/balanced-match-0.4.2/cb3f3e3c732dc0f01ee70b403f302e61d7709838.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
@@ -1704,6 +1731,10 @@ balanced-match@^1.0.0:
 base-64@^0.1.0:
   version "0.1.0"
   resolved "http://npm.lwcjs.org/base-64/-/base-64-0.1.0/780a99c84e7d600260361511c4877613bf24f6bb.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
+
+base64-arraybuffer@0.1.5:
+  version "0.1.5"
+  resolved "http://npm.lwcjs.org/base64-arraybuffer/-/base64-arraybuffer-0.1.5/73926771923b5a19747ad666aa5cd4bf9c6e9ce8.tgz#73926771923b5a19747ad666aa5cd4bf9c6e9ce8"
 
 base64-js@^1.0.2:
   version "1.2.3"
@@ -1741,24 +1772,32 @@ before-after-hook@^1.1.0:
   version "1.1.0"
   resolved "http://npm.lwcjs.org/before-after-hook/-/before-after-hook-1.1.0/83165e15a59460d13702cb8febd6a1807896db5a.tgz#83165e15a59460d13702cb8febd6a1807896db5a"
 
-best-cli@0.0.13:
-  version "0.0.13"
-  resolved "http://npm.lwcjs.org/best-cli/-/best-cli-0.0.13/caca7ea11db2cabff3a49dcc15ca5b3802d1424c.tgz#caca7ea11db2cabff3a49dcc15ca5b3802d1424c"
+best-cli@0.5.0:
+  version "0.5.0"
+  resolved "http://npm.lwcjs.org/best-cli/-/best-cli-0.5.0/fd39554bd52fa5a02db4ff87757d7475c8b2bf09.tgz#fd39554bd52fa5a02db4ff87757d7475c8b2bf09"
   dependencies:
-    "@best/analyzer" "0.0.13"
-    "@best/build" "0.0.13"
-    "@best/compare" "0.0.13"
-    "@best/config" "0.0.13"
-    "@best/github-integration" "0.0.13"
-    "@best/messager" "0.0.13"
-    "@best/runner" "0.0.13"
-    "@best/store" "0.0.13"
+    "@best/analyzer" "0.5.0"
+    "@best/build" "0.5.0"
+    "@best/compare" "0.5.0"
+    "@best/config" "0.5.0"
+    "@best/github-integration" "0.5.0"
+    "@best/messager" "0.5.0"
+    "@best/runner" "0.5.0"
+    "@best/store" "0.5.0"
+    "@best/store-fs" "0.5.0"
     chalk "~2.3.0"
     cli-table "~0.3.1"
     globby "~7.1.1"
     micromatch "~3.1.4"
     rimraf "~2.6.2"
-    yargs "~10.0.3"
+    simple-git "~1.92.0"
+    yargs "~11.0.0"
+
+better-assert@~1.0.0:
+  version "1.0.2"
+  resolved "http://npm.lwcjs.org/better-assert/-/better-assert-1.0.2/40866b9e1b9e0b55b481894311e68faffaebc522.tgz#40866b9e1b9e0b55b481894311e68faffaebc522"
+  dependencies:
+    callsite "1.0.0"
 
 big.js@^3.1.3:
   version "3.2.0"
@@ -1777,6 +1816,10 @@ bl@^1.0.0:
   resolved "http://npm.lwcjs.org/bl/-/bl-1.2.1/cac328f7bee45730d404b692203fcb590e172d5e.tgz#cac328f7bee45730d404b692203fcb590e172d5e"
   dependencies:
     readable-stream "^2.0.5"
+
+blob@0.0.4:
+  version "0.0.4"
+  resolved "http://npm.lwcjs.org/blob/-/blob-0.0.4/bcf13052ca54463f30f9fc7e95b9a47630a94921.tgz#bcf13052ca54463f30f9fc7e95b9a47630a94921"
 
 block-stream@*:
   version "0.0.9"
@@ -2005,6 +2048,10 @@ caller-path@^0.1.0:
   dependencies:
     callsites "^0.2.0"
 
+callsite@1.0.0:
+  version "1.0.0"
+  resolved "http://npm.lwcjs.org/callsite/-/callsite-1.0.0/280398e5d664bd74038b6f0905153e6e8af1bc20.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
+
 callsites@^0.2.0:
   version "0.2.0"
   resolved "http://npm.lwcjs.org/callsites/-/callsites-0.2.0/afab96262910a7f33c19a5775825c69f34e350ca.tgz#afab96262910a7f33c19a5775825c69f34e350ca"
@@ -2130,6 +2177,10 @@ chokidar@^1.6.0, chokidar@^1.7.0:
     readdirp "^2.0.0"
   optionalDependencies:
     fsevents "^1.0.0"
+
+chownr@^1.0.1:
+  version "1.0.1"
+  resolved "http://npm.lwcjs.org/chownr/-/chownr-1.0.1/e2a75042a9551908bebd25b8523d5f9769d79181.tgz#e2a75042a9551908bebd25b8523d5f9769d79181"
 
 ci-info@^1.0.0:
   version "1.1.2"
@@ -2361,9 +2412,17 @@ compat-polyfills@0.17.40:
   version "0.17.40"
   resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.40/bd98527ac43ec55a09ee57620a2bcf043f9ba55d.tgz#bd98527ac43ec55a09ee57620a2bcf043f9ba55d"
 
-component-emitter@^1.2.1:
+component-bind@1.0.0:
+  version "1.0.0"
+  resolved "http://npm.lwcjs.org/component-bind/-/component-bind-1.0.0/00c608ab7dcd93897c0009651b1d3a8e1e73bbd1.tgz#00c608ab7dcd93897c0009651b1d3a8e1e73bbd1"
+
+component-emitter@1.2.1, component-emitter@^1.2.1:
   version "1.2.1"
   resolved "http://npm.lwcjs.org/component-emitter/-/component-emitter-1.2.1/137918d6d78283f7df7a6b7c5a63e140e69425e6.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
+
+component-inherit@0.0.3:
+  version "0.0.3"
+  resolved "http://npm.lwcjs.org/component-inherit/-/component-inherit-0.0.3/645fc4adf58b72b649d5cae65135619db26ff143.tgz#645fc4adf58b72b649d5cae65135619db26ff143"
 
 compress-commons@^1.2.0:
   version "1.2.2"
@@ -2885,13 +2944,13 @@ deasync@0.1.12:
     bindings "~1.2.1"
     nan "^2.0.7"
 
-debug@2, debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9:
+debug@2, debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9, debug@~2.6.4:
   version "2.6.9"
   resolved "http://npm.lwcjs.org/debug/-/debug-2.6.9/5d128515df134ff327e90a4c93f4e077a536341f.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
   dependencies:
     ms "2.0.0"
 
-debug@3.1.0, debug@^3.0.0, debug@^3.0.1, debug@^3.1.0:
+debug@3.1.0, debug@^3.0.0, debug@^3.0.1, debug@^3.1.0, debug@~3.1.0:
   version "3.1.0"
   resolved "http://npm.lwcjs.org/debug/-/debug-3.1.0/5bb5a0672628b64149566ba16819e61518c67261.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
@@ -3176,6 +3235,32 @@ end-of-stream@^1.0.0:
   resolved "http://npm.lwcjs.org/end-of-stream/-/end-of-stream-1.4.1/ed29634d19baba463b6ce6b80a37213eab71ec43.tgz#ed29634d19baba463b6ce6b80a37213eab71ec43"
   dependencies:
     once "^1.4.0"
+
+engine.io-client@~3.1.0:
+  version "3.1.6"
+  resolved "http://npm.lwcjs.org/engine.io-client/-/engine.io-client-3.1.6/5bdeb130f8b94a50ac5cbeb72583e7a4a063ddfd.tgz#5bdeb130f8b94a50ac5cbeb72583e7a4a063ddfd"
+  dependencies:
+    component-emitter "1.2.1"
+    component-inherit "0.0.3"
+    debug "~3.1.0"
+    engine.io-parser "~2.1.1"
+    has-cors "1.1.0"
+    indexof "0.0.1"
+    parseqs "0.0.5"
+    parseuri "0.0.5"
+    ws "~3.3.1"
+    xmlhttprequest-ssl "~1.5.4"
+    yeast "0.1.2"
+
+engine.io-parser@~2.1.1:
+  version "2.1.2"
+  resolved "http://npm.lwcjs.org/engine.io-parser/-/engine.io-parser-2.1.2/4c0f4cff79aaeecbbdcfdea66a823c6085409196.tgz#4c0f4cff79aaeecbbdcfdea66a823c6085409196"
+  dependencies:
+    after "0.8.2"
+    arraybuffer.slice "~0.0.7"
+    base64-arraybuffer "0.1.5"
+    blob "0.0.4"
+    has-binary2 "~1.0.2"
 
 enhanced-resolve@^3.4.0:
   version "3.4.1"
@@ -3918,6 +4003,12 @@ fs-extra@^1.0.0:
     jsonfile "^2.1.0"
     klaw "^1.0.0"
 
+fs-minipass@^1.2.3:
+  version "1.2.5"
+  resolved "http://npm.lwcjs.org/fs-minipass/-/fs-minipass-1.2.5/06c277218454ec288df77ada54a03b8702aacb9d.tgz#06c277218454ec288df77ada54a03b8702aacb9d"
+  dependencies:
+    minipass "^2.2.1"
+
 fs-readdir-recursive@^1.1.0:
   version "1.1.0"
   resolved "http://npm.lwcjs.org/fs-readdir-recursive/-/fs-readdir-recursive-1.1.0/e32fc030a2ccee44a6b5371308da54be0b397d27.tgz#e32fc030a2ccee44a6b5371308da54be0b397d27"
@@ -4249,6 +4340,16 @@ has-ansi@^2.0.0:
   resolved "http://npm.lwcjs.org/has-ansi/-/has-ansi-2.0.0/34f5049ce1ecdf2b0649af3ef24e45ed35416d91.tgz#34f5049ce1ecdf2b0649af3ef24e45ed35416d91"
   dependencies:
     ansi-regex "^2.0.0"
+
+has-binary2@~1.0.2:
+  version "1.0.2"
+  resolved "http://npm.lwcjs.org/has-binary2/-/has-binary2-1.0.2/e83dba49f0b9be4d026d27365350d9f03f54be98.tgz#e83dba49f0b9be4d026d27365350d9f03f54be98"
+  dependencies:
+    isarray "2.0.1"
+
+has-cors@1.1.0:
+  version "1.1.0"
+  resolved "http://npm.lwcjs.org/has-cors/-/has-cors-1.1.0/5e474793f7ea9843d1bb99c23eef49ff126fff39.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
 
 has-flag@^1.0.0:
   version "1.0.0"
@@ -4879,6 +4980,10 @@ is-windows@^1.0.0, is-windows@^1.0.2:
 isarray@1.0.0, isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/isarray/-/isarray-1.0.0/bb935d48582cba168c06834957a54a3e07124f11.tgz#bb935d48582cba168c06834957a54a3e07124f11"
+
+isarray@2.0.1:
+  version "2.0.1"
+  resolved "http://npm.lwcjs.org/isarray/-/isarray-2.0.1/a37d94ed9cda2d59865c9f76fe596ee1f338741e.tgz#a37d94ed9cda2d59865c9f76fe596ee1f338741e"
 
 isexe@^2.0.0:
   version "2.0.0"
@@ -5917,6 +6022,19 @@ minimist@~0.0.1:
   version "0.0.10"
   resolved "http://npm.lwcjs.org/minimist/-/minimist-0.0.10/de3f98543dbf96082be48ad1a0c7cda836301dcf.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
 
+minipass@^2.2.1:
+  version "2.2.4"
+  resolved "http://npm.lwcjs.org/minipass/-/minipass-2.2.4/03c824d84551ec38a8d1bb5bc350a5a30a354a40.tgz#03c824d84551ec38a8d1bb5bc350a5a30a354a40"
+  dependencies:
+    safe-buffer "^5.1.1"
+    yallist "^3.0.0"
+
+minizlib@^1.1.0:
+  version "1.1.0"
+  resolved "http://npm.lwcjs.org/minizlib/-/minizlib-1.1.0/11e13658ce46bc3a70a267aac58359d1e0c29ceb.tgz#11e13658ce46bc3a70a267aac58359d1e0c29ceb"
+  dependencies:
+    minipass "^2.2.1"
+
 mixin-deep@^1.2.0:
   version "1.3.1"
   resolved "http://npm.lwcjs.org/mixin-deep/-/mixin-deep-1.3.1/a49e7268dce1a0d9698e45326c5626df3543d0fe.tgz#a49e7268dce1a0d9698e45326c5626df3543d0fe"
@@ -6164,6 +6282,10 @@ object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.1"
   resolved "http://npm.lwcjs.org/object-assign/-/object-assign-4.1.1/2109adc7965887cfc05cbbd442cac8bfbb360863.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
+object-component@0.0.3:
+  version "0.0.3"
+  resolved "http://npm.lwcjs.org/object-component/-/object-component-0.0.3/f0c69aa50efc95b866c186f400a33769cb2f1291.tgz#f0c69aa50efc95b866c186f400a33769cb2f1291"
+
 object-copy@^0.1.0:
   version "0.1.0"
   resolved "http://npm.lwcjs.org/object-copy/-/object-copy-0.1.0/7e7d858b781bd7c991a41ba975ed3812754e998c.tgz#7e7d858b781bd7c991a41ba975ed3812754e998c"
@@ -6384,6 +6506,18 @@ parse5@^3.0.3:
   resolved "http://npm.lwcjs.org/parse5/-/parse5-3.0.3/042f792ffdd36851551cf4e9e066b3874ab45b5c.tgz#042f792ffdd36851551cf4e9e066b3874ab45b5c"
   dependencies:
     "@types/node" "*"
+
+parseqs@0.0.5:
+  version "0.0.5"
+  resolved "http://npm.lwcjs.org/parseqs/-/parseqs-0.0.5/d5208a3738e46766e291ba2ea173684921a8b89d.tgz#d5208a3738e46766e291ba2ea173684921a8b89d"
+  dependencies:
+    better-assert "~1.0.0"
+
+parseuri@0.0.5:
+  version "0.0.5"
+  resolved "http://npm.lwcjs.org/parseuri/-/parseuri-0.0.5/80204a50d4dbb779bfdc6ebe2778d90e4bce320a.tgz#80204a50d4dbb779bfdc6ebe2778d90e4bce320a"
+  dependencies:
+    better-assert "~1.0.0"
 
 parseurl@~1.3.2:
   version "1.3.2"
@@ -6833,6 +6967,19 @@ punycode@^2.1.0:
 puppeteer@0.13.0:
   version "0.13.0"
   resolved "http://npm.lwcjs.org/puppeteer/-/puppeteer-0.13.0/2e6956205f2c640964c2107f620ae1eef8bde8fd.tgz#2e6956205f2c640964c2107f620ae1eef8bde8fd"
+  dependencies:
+    debug "^2.6.8"
+    extract-zip "^1.6.5"
+    https-proxy-agent "^2.1.0"
+    mime "^1.3.4"
+    progress "^2.0.0"
+    proxy-from-env "^1.0.0"
+    rimraf "^2.6.1"
+    ws "^3.0.0"
+
+puppeteer@1.1.0:
+  version "1.1.0"
+  resolved "http://npm.lwcjs.org/puppeteer/-/puppeteer-1.1.0/97fbc2fbbf9ab659e7e202a68ac1ba54b8bc0a25.tgz#97fbc2fbbf9ab659e7e202a68ac1ba54b8bc0a25"
   dependencies:
     debug "^2.6.8"
     extract-zip "^1.6.5"
@@ -7627,6 +7774,12 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "http://npm.lwcjs.org/signal-exit/-/signal-exit-3.0.2/b5fdc08f1287ea1178628e415e25132b73646c6d.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
+simple-git@~1.92.0:
+  version "1.92.0"
+  resolved "http://npm.lwcjs.org/simple-git/-/simple-git-1.92.0/6061468eb7d19f0141078fc742e62457e910f547.tgz#6061468eb7d19f0141078fc742e62457e910f547"
+  dependencies:
+    debug "^3.1.0"
+
 slash@^1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/slash/-/slash-1.0.0/c41f2f6c39fc16d1cd17ad4b5d896114ae470d55.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
@@ -7675,6 +7828,33 @@ sntp@2.x.x:
   resolved "http://npm.lwcjs.org/sntp/-/sntp-2.1.0/2c6cec14fedc2222739caf9b5c3d85d1cc5a2cc8.tgz#2c6cec14fedc2222739caf9b5c3d85d1cc5a2cc8"
   dependencies:
     hoek "4.x.x"
+
+socket.io-client@~2.0.4:
+  version "2.0.4"
+  resolved "http://npm.lwcjs.org/socket.io-client/-/socket.io-client-2.0.4/0918a552406dc5e540b380dcd97afc4a64332f8e.tgz#0918a552406dc5e540b380dcd97afc4a64332f8e"
+  dependencies:
+    backo2 "1.0.2"
+    base64-arraybuffer "0.1.5"
+    component-bind "1.0.0"
+    component-emitter "1.2.1"
+    debug "~2.6.4"
+    engine.io-client "~3.1.0"
+    has-cors "1.1.0"
+    indexof "0.0.1"
+    object-component "0.0.3"
+    parseqs "0.0.5"
+    parseuri "0.0.5"
+    socket.io-parser "~3.1.1"
+    to-array "0.1.4"
+
+socket.io-parser@~3.1.1:
+  version "3.1.3"
+  resolved "http://npm.lwcjs.org/socket.io-parser/-/socket.io-parser-3.1.3/ed2da5ee79f10955036e3da413bfd7f1e4d86c8e.tgz#ed2da5ee79f10955036e3da413bfd7f1e4d86c8e"
+  dependencies:
+    component-emitter "1.2.1"
+    debug "~3.1.0"
+    has-binary2 "~1.0.2"
+    isarray "2.0.1"
 
 sort-keys@^1.0.0:
   version "1.1.2"
@@ -8079,6 +8259,17 @@ tar@^2.2.1:
     fstream "^1.0.2"
     inherits "2"
 
+tar@~4.2.0:
+  version "4.2.0"
+  resolved "http://npm.lwcjs.org/tar/-/tar-4.2.0/7e2bdadf55a4a04bf64a9d2680b4455e7c61d45e.tgz#7e2bdadf55a4a04bf64a9d2680b4455e7c61d45e"
+  dependencies:
+    chownr "^1.0.1"
+    fs-minipass "^1.2.3"
+    minipass "^2.2.1"
+    minizlib "^1.1.0"
+    mkdirp "^0.5.0"
+    yallist "^3.0.2"
+
 temp-dir@^1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/temp-dir/-/temp-dir-1.0.0/0a7c0ea26d3a39afa7e0ebea9c1fc0bc4daa011d.tgz#0a7c0ea26d3a39afa7e0ebea9c1fc0bc4daa011d"
@@ -8163,6 +8354,10 @@ tmp@^0.0.33:
 tmpl@1.0.x:
   version "1.0.4"
   resolved "http://npm.lwcjs.org/tmpl/-/tmpl-1.0.4/23640dd7b42d00433911140820e5cf440e521dd1.tgz#23640dd7b42d00433911140820e5cf440e521dd1"
+
+to-array@0.1.4:
+  version "0.1.4"
+  resolved "http://npm.lwcjs.org/to-array/-/to-array-0.1.4/17e6c11f73dd4f3d74cda7a4ff3238e9ad9bf890.tgz#17e6c11f73dd4f3d74cda7a4ff3238e9ad9bf890"
 
 to-arraybuffer@^1.0.0:
   version "1.0.1"
@@ -8791,7 +8986,7 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-ws@^3.0.0:
+ws@^3.0.0, ws@~3.3.1:
   version "3.3.3"
   resolved "http://npm.lwcjs.org/ws/-/ws-3.3.3/f1cf84fe2d5e901ebce94efaece785f187a228f2.tgz#f1cf84fe2d5e901ebce94efaece785f187a228f2"
   dependencies:
@@ -8829,6 +9024,10 @@ xmlbuilder@^2.6.2:
   dependencies:
     lodash "^3.5.0"
 
+xmlhttprequest-ssl@~1.5.4:
+  version "1.5.5"
+  resolved "http://npm.lwcjs.org/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.5/c2876b06168aadc40e57d97e81191ac8f4398b3e.tgz#c2876b06168aadc40e57d97e81191ac8f4398b3e"
+
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.1:
   version "4.0.1"
   resolved "http://npm.lwcjs.org/xtend/-/xtend-4.0.1/a5c6d532be656e23db820efb943a1f04998d63af.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
@@ -8841,13 +9040,17 @@ yallist@^2.1.2:
   version "2.1.2"
   resolved "http://npm.lwcjs.org/yallist/-/yallist-2.1.2/1c11f9218f076089a47dd512f93c6699a6a81d52.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
 
+yallist@^3.0.0, yallist@^3.0.2:
+  version "3.0.2"
+  resolved "http://npm.lwcjs.org/yallist/-/yallist-3.0.2/8452b4bb7e83c7c188d8041c1a837c773d6d8bb9.tgz#8452b4bb7e83c7c188d8041c1a837c773d6d8bb9"
+
 yargs-parser@^7.0.0:
   version "7.0.0"
   resolved "http://npm.lwcjs.org/yargs-parser/-/yargs-parser-7.0.0/8d0ac42f16ea55debd332caf4c4038b3e3f5dfd9.tgz#8d0ac42f16ea55debd332caf4c4038b3e3f5dfd9"
   dependencies:
     camelcase "^4.1.0"
 
-yargs-parser@^8.0.0, yargs-parser@^8.1.0:
+yargs-parser@^8.1.0:
   version "8.1.0"
   resolved "http://npm.lwcjs.org/yargs-parser/-/yargs-parser-8.1.0/f1376a33b6629a5d063782944da732631e966950.tgz#f1376a33b6629a5d063782944da732631e966950"
   dependencies:
@@ -8876,7 +9079,7 @@ yargs@^10.0.3:
     y18n "^3.2.1"
     yargs-parser "^8.1.0"
 
-yargs@^11.0.0:
+yargs@^11.0.0, yargs@~11.0.0:
   version "11.0.0"
   resolved "http://npm.lwcjs.org/yargs/-/yargs-11.0.0/c052931006c5eee74610e5fc0354bedfd08a201b.tgz#c052931006c5eee74610e5fc0354bedfd08a201b"
   dependencies:
@@ -8911,23 +9114,6 @@ yargs@^8.0.2:
     y18n "^3.2.1"
     yargs-parser "^7.0.0"
 
-yargs@~10.0.3:
-  version "10.0.3"
-  resolved "http://npm.lwcjs.org/yargs/-/yargs-10.0.3/6542debd9080ad517ec5048fb454efe9e4d4aaae.tgz#6542debd9080ad517ec5048fb454efe9e4d4aaae"
-  dependencies:
-    cliui "^3.2.0"
-    decamelize "^1.1.1"
-    find-up "^2.1.0"
-    get-caller-file "^1.0.1"
-    os-locale "^2.0.0"
-    require-directory "^2.1.1"
-    require-main-filename "^1.0.1"
-    set-blocking "^2.0.0"
-    string-width "^2.0.0"
-    which-module "^2.0.0"
-    y18n "^3.2.1"
-    yargs-parser "^8.0.0"
-
 yargs@~3.10.0:
   version "3.10.0"
   resolved "http://npm.lwcjs.org/yargs/-/yargs-3.10.0/f7ee7bd857dd7c1d2d38c0e74efbd681d1431fd1.tgz#f7ee7bd857dd7c1d2d38c0e74efbd681d1431fd1"
@@ -8949,6 +9135,10 @@ yauzl@^2.5.0:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.0.1"
+
+yeast@0.1.2:
+  version "0.1.2"
+  resolved "http://npm.lwcjs.org/yeast/-/yeast-0.1.2/008e06d8094320c372dbc2f8ed76a0ca6c8ac419.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
 zip-stream@^1.2.0:
   version "1.2.0"
