@@ -117,7 +117,7 @@ jobs:
       - run:
           name: Preformance Test
           working_directory: packages/benchmark
-          command: yarn start best --externalStorage=@best/store-aws --runner remote
+          command: yarn start --externalStorage=@best/store-aws --runner remote
 
       - store_artifacts:
           path: ~/lwc/packages/benchmark/__benchmark_results__/
