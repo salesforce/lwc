@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
-import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
+import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
 import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
     getGlobalHTMLPropertiesInfo,
@@ -146,30 +146,19 @@ class LWCElement implements Component {
         const dispatchEvent = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', elm.dispatchEvent);
         return dispatchEvent.call(elm, event);
     }
-    addEventListener(type: string, listener: EventListener) {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
 
-            if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
-            }
+    addEventListener(type: string, listener: EventListener, options: any) {
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
+            throw new Error(`Deprecated Method: usage of this.addEventListener("${type}", ...) in ${vm} is now deprecated. In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener().`);
         }
-        addComponentEventListener(vm, type, listener);
     }
 
-    removeEventListener(type: string, listener: EventListener) {
-        const vm = getCustomElementVM(this);
-
+    removeEventListener(type: string, listener: EventListener, options: any) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
-
-            if (arguments.length > 2) {
-                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
-            }
+            const vm = getCustomElementVM(this);
+            throw new Error(`Deprecated Method: usage of this.removeEventListener("${type}", ...) in ${vm} is now deprecated alongside this.addEventListener(). In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener() and this.root.removeEventListener().`);
         }
-        removeComponentEventListener(vm, type, listener);
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -291,7 +280,7 @@ class LWCElement implements Component {
         }
         return getLinkedElement(this).classList;
     }
-    get root(): ShadowRoot {
+    get template(): ShadowRoot {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
@@ -303,6 +292,13 @@ class LWCElement implements Component {
             vm.cmpRoot = cmpRoot;
         }
         return cmpRoot;
+    }
+    get root(): ShadowRoot {
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+        }
+        return this.template;
     }
     toString(): string {
         const vm = getCustomElementVM(this);

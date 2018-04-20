@@ -8,7 +8,7 @@ export default class Tree1 extends Element {
 
     constructor() {
         super();
-        this.addEventListener('togglerow', this.toggleRow.bind(this));
+        this.root.addEventListener('togglerow', this.toggleRow.bind(this));
     }
 
     get collapsedNodes() {
