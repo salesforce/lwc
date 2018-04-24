@@ -1,6 +1,6 @@
 <template>
     <ul>
-        <li for:each={items} for:item="item" class={item.x}>{item}</li>
+        <li for:each={items} for:item="item" class={item.x} key={item.id}>{item}</li>
         <li>Last</li>
     </ul>
 </template>

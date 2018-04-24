@@ -30,32 +30,30 @@ function getWiredParams(t, wireConfig) {
 
 function buildWireConfigValue(t, wiredValues) {
     return t.objectExpression(wiredValues.map(wiredValue => {
-        const wireConfig = [
-            t.objectProperty(
-                t.identifier('params'),
-                t.objectExpression(wiredValue.params)
-            ),
-            t.objectProperty(
-                t.identifier('static'),
-                t.objectExpression(wiredValue.static)
-            )
-        ];
-
-        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
-        if (wiredValue.type) {
-            wireConfig.push(
-                t.objectProperty(
-                    t.identifier('type'),
-                    t.stringLiteral(wiredValue.type)
-                )
-            )
-        }
-
+        const wireConfig = [];
         if (wiredValue.adapter) {
             wireConfig.push(
                 t.objectProperty(
                     t.identifier('adapter'),
                     t.identifier(wiredValue.adapter.name)
+                )
+            )
+        }
+
+        if (wiredValue.params) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('params'),
+                    t.objectExpression(wiredValue.params)
+                )
+            );
+        }
+
+        if (wiredValue.static) {
+            wireConfig.push(
+                t.objectProperty(
+                    t.identifier('static'),
+                    t.objectExpression(wiredValue.static)
                 )
             )
         }
@@ -108,28 +106,33 @@ module.exports = function transform(t, klass, decorators) {
 
         const wiredValue = {
             propertyName,
-            isClassMethod,
-            static: getWiredStatic(config),
-            params: getWiredParams(t, config),
+            isClassMethod
         }
 
-        // TODO: deprecate type (string as adapter id once consumer has migrated to use imported identifier)
-        if (id.isStringLiteral()) {
-            wiredValue.type = id.node.value;
-        } else if (id.isIdentifier()) {
+        if (config) {
+            wiredValue.static = getWiredStatic(config);
+            wiredValue.params = getWiredParams(t, config);
+        }
+
+        if (id.isIdentifier()) {
             wiredValue.adapter = {
                 name: id.node.name,
                 reference: path.scope.getBinding(id.node.name).path.parentPath.node.source.value
             }
         }
 
-        metadata.push({
+        const wireMetadata = {
             name: wiredValue.propertyName,
             adapter: wiredValue.adapter,
-            params: getWiredParamMetadata(wiredValue.params),
-            static: getWiredStaticMetadata(wiredValue.static),
             type: isClassMethod ? 'method' : 'property'
-        });
+        };
+
+        if (config) {
+            wireMetadata.static = getWiredStaticMetadata(wiredValue.static);
+            wireMetadata.params = getWiredParamMetadata(wiredValue.params);
+        }
+
+        metadata.push(wireMetadata);
 
         return wiredValue;
     });

@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-lwc-compiler",
-  "version": "0.17.19",
+  "version": "0.19.0-0",
   "description": "Rollup plugin to compile LWC",
   "main": "src/index.js",
   "license": "MIT",
@@ -8,17 +8,17 @@
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "devDependencies": {
-    "lwc-compiler": "0.17.19",
-    "lwc-engine": "0.17.19"
+    "lwc-compiler": "0.19.0-0",
+    "lwc-engine": "0.19.0-0"
   },
   "dependencies": {
     "glob": "^7.1.2",
-    "lwc-module-resolver": "0.17.19",
-    "rollup-plugin-compat": "0.17.31",
+    "lwc-module-resolver": "0.19.0-0",
+    "rollup-plugin-compat": "0.17.40",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
-    "lwc-compiler": "~0.17.17",
-    "lwc-engine": "~0.17.17"
+    "lwc-compiler": "0.18.x",
+    "lwc-engine": "0.18.x"
   }
 }

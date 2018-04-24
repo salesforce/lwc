@@ -38,6 +38,8 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: HashTable<any>;
+    // TODO: make this type more restrictive once we know more about it
+    rootProps: Record<string, string | null | boolean>;
     cmpState?: HashTable<any>;
     cmpSlots?: Slotset;
     cmpTrack: HashTable<any>;
@@ -52,6 +54,7 @@ export interface VM {
     component?: Component;
     membrane?: Membrane;
     deps: VM[][];
+    hostAttrs: Record<string, number | undefined>;
     toString(): string;
 }
 
@@ -168,6 +171,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
+        rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots,
@@ -177,6 +181,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         cmpRoot: undefined,
         component: undefined,
         children: EmptyArray,
+        hostAttrs: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -252,9 +257,9 @@ function patchShadowRoot(vm: VM, children: VNodes) {
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // tslint:disable-line
             }
-            recoverFromLifecyleError(vm, errorBoundaryVm, error);
+            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
 
-            // syncronously render error boundary's alternative view
+            // synchronously render error boundary's alternative view
             // to recover in the same tick
             if (errorBoundaryVm.isDirty) {
                 patchErrorBoundaryVm(errorBoundaryVm);
@@ -312,7 +317,7 @@ function flushRehydrationQueue() {
                 throw error; // tslint:disable-line
             }
             // we only recover if error boundary is present in the hierarchy
-            recoverFromLifecyleError(vm, errorBoundaryVm, error);
+            recoverFromLifeCycleError(vm, errorBoundaryVm, error);
             if (errorBoundaryVm.isDirty) {
                 patchErrorBoundaryVm(errorBoundaryVm);
             }
@@ -320,7 +325,7 @@ function flushRehydrationQueue() {
     }
 }
 
-function recoverFromLifecyleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
+function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any) {
     if (isUndefined(error.wcStack)) {
         error.wcStack = getComponentStack(failedVm);
     }

@@ -35,6 +35,28 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
+export function invokeRootCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
+    const { context, cmpRoot } = vm;
+    const ctx = currentContext;
+    establishContext(context);
+    let result;
+    let error;
+    try {
+        // TODO: membrane proxy for all args that are objects
+        result = fn.apply(cmpRoot, args);
+    } catch (e) {
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // tslint:disable-line
+        }
+    }
+    return result;
+}
+
 export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): Component {
     const { context } = vm;
     const ctx = currentContext;
@@ -109,10 +131,4 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         }
     }
     return result || [];
-}
-
-export function invokeComponentAttributeChangedCallback(vm: VM, attrName: string, oldValue: any, newValue: any) {
-    const { attributeChangedCallback } = vm.def;
-    if (isUndefined(attributeChangedCallback)) { return; }
-    invokeComponentCallback(vm, attributeChangedCallback, [attrName, oldValue, newValue]);
 }

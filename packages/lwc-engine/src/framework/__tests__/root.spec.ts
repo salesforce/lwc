@@ -1,7 +1,7 @@
 import { Root, wrapIframeWindow } from "../root";
 import { Element } from "../html-element";
 import { h } from "../api";
-import { unwrap } from '../membrane';
+import { unwrap } from '../main';
 import { createElement } from "../upgrade";
 import { ViewModelReflection } from "../def";
 import { VM } from "../vm";

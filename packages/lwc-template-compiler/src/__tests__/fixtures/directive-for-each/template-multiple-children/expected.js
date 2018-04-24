@@ -18,7 +18,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     api_element(
                         'p',
                         {
-                            key: api_key(1, item)
+                            key: api_key(1, item.keyOne)
                         },
                         [
                             api_text('1'),
@@ -28,7 +28,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     api_element(
                         'p',
                         {
-                            key: api_key(2, item)
+                            key: api_key(2, item.keyTwo)
                         },
                         [
                             api_text('2'),

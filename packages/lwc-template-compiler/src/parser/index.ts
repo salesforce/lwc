@@ -23,7 +23,9 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
-    keyExpression,
+    isIteratorElement,
+    getForOfParent,
+    getForEachParent,
 } from './expression';
 
 import {
@@ -47,6 +49,9 @@ import {
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
+    ForIterator,
+    IRExpressionAttribute,
+    ForEach,
 } from '../shared/types';
 
 import {
@@ -66,7 +71,38 @@ import {
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
 } from './constants';
+import { isMemberExpression, isIdentifier } from 'babel-types';
 
+function attributeExpressionReferencesForOfIndex(attribute: IRExpressionAttribute, forOf: ForIterator): boolean {
+    const { value } = attribute;
+    // if not an expression, it is not referencing iterator index
+    if (!isMemberExpression(value)) {
+        return false;
+    }
+
+    const { object, property } = value;
+    if (!isIdentifier(object) || !isIdentifier(property)) {
+        return false;
+    }
+
+    if (forOf.iterator.name !== object.name) {
+        return false;
+    }
+
+    return property.name === 'index';
+}
+
+function attributeExpressionReferencesForEachIndex(attribute: IRExpressionAttribute, forEach: ForEach): boolean {
+    const { index } = forEach;
+    const { value } = attribute;
+
+    // No index defined on foreach
+    if (!index || !isIdentifier(index) || !isIdentifier(value)) {
+        return false;
+    }
+
+    return index.name === value.name;
+}
 export default function parse(source: string, state: State): {
     root?: IRElement | undefined,
     warnings: CompilationWarning[],
@@ -110,7 +146,7 @@ export default function parse(source: string, state: State): {
                 applyHandlers(element);
                 applyComponent(element);
                 applySlot(element);
-                applyKey(element);
+                applyKey(element, elementNode.__location);
 
                 parent = element;
                 stack.push(element);
@@ -363,20 +399,31 @@ export default function parse(source: string, state: State): {
 
     }
 
-    function applyKey(element: IRElement) {
+    function applyKey(element: IRElement, location: parse5.MarkupData.ElementLocation | undefined) {
         const keyAttribute = getTemplateAttribute(element, 'key');
         if (keyAttribute) {
-            removeAttribute(element, 'key');
-
             if (keyAttribute.type !== IRAttributeType.Expression) {
                 return warnAt(`Key attribute value should be an expression`, keyAttribute.location);
             }
 
+            const forOfParent = getForOfParent(element);
+            const forEachParent = getForEachParent(element);
+            if (forOfParent) {
+                if (attributeExpressionReferencesForOfIndex(keyAttribute, forOfParent.forOf!)) {
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference iterator index`, keyAttribute.location);
+                }
+            } else if (forEachParent) {
+                if (attributeExpressionReferencesForEachIndex(keyAttribute, forEachParent.forEach!)) {
+                    const name = ('name' in keyAttribute.value) && keyAttribute.value.name;
+                    return warnAt(`Invalid key value for element <${element.tag}>. Key cannot reference for:each index ${name}`, keyAttribute.location);
+                }
+            }
+            removeAttribute(element, 'key');
+
             element.forKey = keyAttribute.value;
+        } else if (isIteratorElement(element) && element.tag !== 'template') {
+            return warnAt(`Missing key for element <${element.tag}> inside of iterator. Elements within iterators must have a unique, computed key value.`, location);
         }
-
-        element.forKey = keyExpression(element);
-
     }
 
     function applyComponent(element: IRElement) {
@@ -484,18 +531,18 @@ export default function parse(source: string, state: State): {
             }
 
             const { name, location } = attr;
-            if (isAttribute(element, name)) {
-                if (!isValidHTMLAttribute(element.tag, name)) {
-                    const msg = [
-                        `${name} is not valid attribute for ${tag}. For more information refer to`,
-                        `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
-                    ].join(' ');
+            if (!isCustomElement(element) && !isValidHTMLAttribute(element.tag, name)) {
+                const msg = [
+                    `${name} is not valid attribute for ${tag}. For more information refer to`,
+                    `https://developer.mozilla.org/en-US/docs/Web/HTML/Element/${tag}`,
+                ].join(' ');
 
-                    warnAt(msg, location);
-                } else {
-                    const attrs = element.attrs || (element.attrs = {});
-                    attrs[name] = attr;
-                }
+                warnAt(msg, location);
+            }
+
+            if (isAttribute(element, name)) {
+                const attrs = element.attrs || (element.attrs = {});
+                attrs[name] = attr;
             } else {
                 const props = element.props || (element.props = {});
                 props[attributeToPropertyName(element, name)] = attr;

@@ -4,16 +4,15 @@ const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } 
 function validateWireParameters(path) {
     const [id, config] = path.get('expression.arguments');
 
-    if (!id || !config) {
+    if (!id) {
         throw path.buildCodeFrameError(
-            `@wire(<adapterId>, <adapterConfig>) expects 2 parameters.`
+            `@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).`
         );
     }
 
-    // TODO: deprecate string as adapter id once consumer has migrated to use imported identifier
-    if (!id.isStringLiteral() && !id.isIdentifier()) {
+    if (!id.isIdentifier()) {
         throw id.buildCodeFrameError(
-            `@wire expects a string or a function identifier as first parameter.`
+            `@wire expects a function identifier as first parameter.`
         );
     }
 
@@ -23,7 +22,7 @@ function validateWireParameters(path) {
         );
     }
 
-    if (!config.isObjectExpression()) {
+    if (config && !config.isObjectExpression()) {
         throw config.buildCodeFrameError(
             `@wire expects a configuration object expression as second parameter.`
         );

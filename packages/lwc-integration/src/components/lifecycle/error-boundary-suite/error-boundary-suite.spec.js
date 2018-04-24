@@ -42,15 +42,6 @@ describe('error boundary integration', () => {
         assert.equal(browser.isExisting('child-connected-throw'), false);
     })
 
-    it('should render alternative view if child throws in attributeChangedCallback()', () => {
-        browser.element('#boundary-child-attr-changed-throw').click();
-        const altenativeView = browser.element('.attribute-changed-callback-altenative');
-
-        assert.equal(altenativeView.getText(), "attributeChangedCallback alternative view");
-        // ensure offender has been unmounted
-        assert.equal(browser.isExisting('child-attr-changed-throw'), false);
-    }),
-
     it('should render alternative view if child slot throws in render()', () => {
         browser.element('#boundary-child-slot-throw').click();
         const altenativeView = browser.element('.slot-altenative');

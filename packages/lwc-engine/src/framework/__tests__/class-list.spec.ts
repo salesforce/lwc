@@ -207,43 +207,6 @@ describe('class-list', () => {
             });
         });
 
-        it('should support adding new values to classList via attributeChangedCallback', () => {
-            const def = class MyComponent extends Element {
-                initClassNames() {
-                    this.classList.add('classFromInit');
-                }
-
-                attributeChangedCallback(attributeName, oldValue, newValue) {
-                    this.classList.add('classFromAttibuteChangedCb');
-                }
-            };
-            def.observedAttributes = ['title'];
-            def.publicMethods = ['initClassNames'];
-            const elm = createElement('x-foo', { is: def });
-            elm.initClassNames();
-            elm.setAttribute('title', 'title');
-            expect(elm.className).toBe('classFromInit classFromAttibuteChangedCb');
-        });
-
-        it('should support removing values from classList via attributeChangedCallback', () => {
-            const def = class MyComponent extends Element {
-                initClassNames() {
-                    this.classList.add('theOnlyClassThatShouldRemain');
-                    this.classList.add('classToRemoveDuringAttributeChangedCb');
-                }
-
-                attributeChangedCallback(attributeName, oldValue, newValue) {
-                    this.classList.remove('classToRemoveDuringAttributeChangedCb');
-                }
-            };
-            def.observedAttributes = ['title'];
-            def.publicMethods = ['initClassNames'];
-            const elm = createElement('x-foo', { is: def });
-            elm.initClassNames();
-            elm.setAttribute('title', 'title');
-            expect(elm.className).toBe('theOnlyClassThatShouldRemain');
-        });
-
         it('should support adding new values to classList via connectedCallback', () => {
             const def = class MyComponent extends Element {
                 initClassNames() {
@@ -281,56 +244,6 @@ describe('class-list', () => {
             return Promise.resolve().then(() => {
                 expect(elm.className).toBe('theOnlyClassThatShouldRemain');
             });
-        });
-
-        it('should support adding new values to classList via both attributeChangedCallback and classFromAttibuteChangedCb', () => {
-            const def = class MyComponent extends Element {
-                initClassNames() {
-                    this.classList.add('classFromInit');
-                }
-
-                attributeChangedCallback(attributeName, oldValue, newValue) {
-                    this.classList.add('classFromAttibuteChangedCb');
-                }
-
-                connectedCallback() {
-                    this.classList.add('classFromConnectedCallback');
-                }
-            };
-            def.observedAttributes = ['title'];
-            def.publicMethods = ['initClassNames'];
-            const elm = createElement('x-foo', { is: def });
-            elm.initClassNames();
-            elm.setAttribute('title', 'title');
-            document.body.appendChild(elm);
-
-            expect(elm.className).toBe('classFromInit classFromAttibuteChangedCb classFromConnectedCallback');
-        });
-
-        it('should support removing values from classList via both attributeChangedCallback and classFromAttibuteChangedCb', () => {
-            const def = class MyComponent extends Element {
-                initClassNames() {
-                    this.classList.add('theOnlyClassThatShouldRemain');
-                    this.classList.add('classToRemoveDuringConnectedCb');
-                    this.classList.add('classToRemoveDuringAttributeChangedCb');
-                }
-
-                attributeChangedCallback(attributeName, oldValue, newValue) {
-                    this.classList.remove('classToRemoveDuringAttributeChangedCb');
-                }
-
-                connectedCallback() {
-                    this.classList.remove('classToRemoveDuringConnectedCb');
-                }
-            };
-            def.observedAttributes = ['title'];
-            def.publicMethods = ['initClassNames'];
-            const elm = createElement('x-foo', { is: def });
-            elm.initClassNames();
-            elm.setAttribute('title', 'title');
-            document.body.appendChild(elm);
-
-            expect(elm.className).toBe('theOnlyClassThatShouldRemain');
         });
     });
 });

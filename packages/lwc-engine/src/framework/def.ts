@@ -25,15 +25,28 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
+    ArrayReduce,
 } from "./language";
-import { GlobalHTMLProperties } from "./dom";
+import {
+    GlobalAOMProperties,
+    getGlobalHTMLPropertiesInfo,
+    getAttribute,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+    defaultDefHTMLPropertyNames,
+    attemptAriaAttributeFallback,
+} from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName } from "./utils";
-import { invokeComponentAttributeChangedCallback } from "./invoker";
+import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
+
+// TODO: refactor all the references to this
+export { ViewModelReflection } from "./utils";
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -41,6 +54,7 @@ declare interface HashTable<T> {
 export interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
+    attr: string;
 }
 export interface WireDef {
     method?: number;
@@ -55,9 +69,6 @@ export interface TrackDef {
 export interface MethodDef {
     [key: string]: 1;
 }
-export interface ObservedAttrsDef {
-    [key: string]: 1;
-}
 export interface WireHash {
     [key: string]: WireDef;
 }
@@ -67,36 +78,32 @@ export interface ComponentDef {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
-    observedAttrs: ObservedAttrsDef;
     descriptors: PropertyDescriptorMap;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    attributeChangedCallback?: AttributeChangedCallback;
 }
 import {
-    ComponentConstructor, getCustomElementComponent, ErrorCallback, AttributeChangedCallback
+    ComponentConstructor, getCustomElementComponent, ErrorCallback
  } from './component';
-
-export const ViewModelReflection = Symbol();
-
-let observableHTMLAttrs: ObservedAttrsDef;
-
-if (process.env.NODE_ENV !== 'production') {
-    observableHTMLAttrs = getOwnPropertyNames(GlobalHTMLProperties).reduce((acc, key) => {
-        const globalProperty = GlobalHTMLProperties[key];
-        if (globalProperty && globalProperty.attribute) {
-            acc[globalProperty.attribute] = 1;
-        }
-        return acc;
-    }, create(null));
-}
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
+
+function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
+    seed[propName] = {
+        config: 3,
+        type: 'any',
+        attr: getAttrNameFromPropName(propName),
+    };
+    return seed;
+}
+
+const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
+const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
@@ -124,7 +131,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     const name: string = Ctor.name;
     let props = getPublicPropertiesHash(Ctor);
     let methods = getPublicMethodsHash(Ctor);
-    const observedAttrs = getObservedAttributesHash(Ctor);
     let wire = getWireHash(Ctor);
     const track = getTrackHash(Ctor);
 
@@ -147,7 +153,8 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
                     assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
                 }
             }
-            createPublicAccessorDescriptor(proto, propName, descriptor);
+            // if it is configured as an accessor it must have a descriptor
+            createPublicAccessorDescriptor(proto, propName, descriptor as PropertyDescriptor);
         } else {
             createPublicPropertyDescriptor(proto, propName, descriptor);
         }
@@ -190,7 +197,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
-        attributeChangedCallback,
     } = proto;
     const superProto = getPrototypeOf(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
@@ -202,9 +208,9 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
-        attributeChangedCallback = attributeChangedCallback || superDef.attributeChangedCallback;
     }
 
+    props = assign(create(null), HTML_PROPS, props);
     const descriptors = createDescriptorMap(props, methods);
 
     const def: ComponentDef = {
@@ -213,13 +219,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
-        observedAttrs,
         descriptors,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
         errorCallback,
-        attributeChangedCallback,
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -227,7 +231,6 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         freeze(wire);
         freeze(props);
         freeze(methods);
-        freeze(observedAttrs);
         for (const key in def) {
             defineProperty(def, key, {
                 configurable: false,
@@ -257,19 +260,10 @@ function createMethodCaller(key: string) {
     };
 }
 
-const {
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS
-} = Element.prototype;
-
 function getAttributePatched(this: VMElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
 
     return getAttribute.apply(this, ArraySlice.call(arguments));
@@ -277,22 +271,13 @@ function getAttributePatched(this: VMElement, attrName: string): string | null {
 
 function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
-
+    // marking the set is needed for the AOM polyfill
+    vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
-
     setAttribute.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved) {
-        newValue = getAttribute.call(this, attrName);
-        if (oldValue !== newValue) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-    }
 }
 
 function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string, newValue: any) {
@@ -300,36 +285,20 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
-
     setAttributeNS.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved) {
-        newValue = getAttributeNS.call(this, attrNameSpace, attrName);
-        if (oldValue !== newValue) {
-            invokeComponentAttributeChangedCallback(vm, attrName, oldValue, newValue);
-        }
-    }
 }
 
 function removeAttributePatched(this: VMElement, attrName: string) {
     const vm = getCustomElementVM(this);
-
+    // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttribute.call(this, attrName) : null;
-
     removeAttribute.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved && oldValue !== null) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
-    }
+    attemptAriaAttributeFallback(vm, attrName);
 }
 
 function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {
@@ -337,19 +306,12 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
 
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeColission(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
     }
-    const isObserved = isAttrObserved(vm, attrName);
-    const oldValue = isObserved ? getAttributeNS.call(this, attrNameSpace, attrName) : null;
-
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
-
-    if (isObserved && oldValue !== null) {
-        invokeComponentAttributeChangedCallback(vm, attrName, oldValue, null);
-    }
 }
 
-function assertPublicAttributeColission(vm: VM, attrName: string) {
+function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -373,10 +335,6 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
     }
     // attribute change control must be released every time its value is checked
     resetAttributeChangeControl();
-}
-
-function isAttrObserved(vm: VM, attrName: string): boolean {
-    return attrName in vm.def.observedAttrs;
 }
 
 let controlledAttributeChange: boolean = false;
@@ -454,7 +412,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
 
 function getTrackHash(target: ComponentConstructor): TrackDef {
     const track = target.track;
-    if (!track || !getOwnPropertyNames(track).length) {
+    if (!getOwnPropertyDescriptor(target, 'track') || !track || !getOwnPropertyNames(track).length) {
         return EmptyObject;
     }
 
@@ -464,7 +422,7 @@ function getTrackHash(target: ComponentConstructor): TrackDef {
 
 function getWireHash(target: ComponentConstructor): WireHash | undefined {
     const wire = target.wire;
-    if (!wire || !getOwnPropertyNames(wire).length) {
+    if (!getOwnPropertyDescriptor(target, 'wire') || !wire || !getOwnPropertyNames(wire).length) {
         return;
     }
 
@@ -474,14 +432,16 @@ function getWireHash(target: ComponentConstructor): WireHash | undefined {
 
 function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
     const props = target.publicProps;
-    if (!props || !getOwnPropertyNames(props).length) {
+    if (!getOwnPropertyDescriptor(target, 'publicProps') || !props || !getOwnPropertyNames(props).length) {
         return EmptyObject;
     }
     return getOwnPropertyNames(props).reduce((propsHash: PropsDef, propName: string): PropsDef => {
+        const attrName = getAttrNameFromPropName(propName);
         if (process.env.NODE_ENV !== 'production') {
-            if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
-                const { error, attribute, experimental } = GlobalHTMLProperties[propName];
-                const msg: any[] = [];
+            const globalHTMLProperty = getGlobalHTMLPropertiesInfo()[propName];
+            if (globalHTMLProperty && globalHTMLProperty.attribute && globalHTMLProperty.reflective === false) {
+                const { error, attribute, experimental } = globalHTMLProperty;
+                const msg: string[] = [];
                 if (error) {
                     msg.push(error);
                 } else if (experimental) {
@@ -495,14 +455,18 @@ function getPublicPropertiesHash(target: ComponentConstructor): PropsDef {
             }
         }
 
-        propsHash[propName] = assign({ config: 0, type: 'any' }, props[propName]);
+        propsHash[propName] = assign({
+            config: 0,
+            type: 'any',
+            attr: attrName,
+        }, props[propName]);
         return propsHash;
     }, create(null));
 }
 
 function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
     const publicMethods = target.publicMethods;
-    if (!publicMethods || !publicMethods.length) {
+    if (!getOwnPropertyDescriptor(target, 'publicMethods') || !publicMethods || !publicMethods.length) {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
@@ -514,30 +478,6 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
         }
 
         return methodsHash;
-    }, create(null));
-}
-
-function getObservedAttributesHash(target: ComponentConstructor): ObservedAttrsDef {
-    const observedAttributes = target.observedAttributes;
-    if (!observedAttributes || !observedAttributes.length) {
-        return EmptyObject;
-    }
-    return observedAttributes.reduce((reducer: ObservedAttrsDef, attrName: string): ObservedAttrsDef => {
-        if (process.env.NODE_ENV !== 'production') {
-            const propName = getPropNameFromAttrName(attrName);
-            // Check if it is a user defined public property
-            if (target.publicProps && target.publicProps[propName]) { // User defined prop
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. To observe mutations of the public property "${propName}" you can define a public getter and setter decorated with @api in component ${target.name}.`);
-            } else if (!observableHTMLAttrs[attrName] && ( GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute)) {
-                // Check for misspellings
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. Did you mean "${GlobalHTMLProperties[propName].attribute}"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-            } else if (!observableHTMLAttrs[attrName] && (attrName.indexOf('data-') === -1 && attrName.indexOf('aria-') === -1)) {
-                // Attribute is not valid observable HTML Attribute
-                assert.fail(`Invalid entry "${attrName}" in component ${target.name} observedAttributes. "${attrName}" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes`);
-            }
-        }
-        reducer[attrName] = 1;
-        return reducer;
     }, create(null));
 }
 

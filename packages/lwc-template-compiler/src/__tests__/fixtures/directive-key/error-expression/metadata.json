@@ -3,7 +3,7 @@
     "length": 11,
     "level": "error",
     "message": "Key attribute value should be an expression",
-    "start": 83
+    "start": 19
   }],
   "metadata": {
     "templateUsedIds": ["items"]

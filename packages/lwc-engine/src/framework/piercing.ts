@@ -1,9 +1,7 @@
 import assert from "./assert";
 import { OwnerKey, VM } from "./vm";
 import { Services } from "./services";
-import { getReplica, Membrane } from "./membrane";
-
-import { Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
+import { getReplica, Membrane, Replicable, ReplicableFunction, MembraneHandler } from "./membrane";
 
 export function piercingHook(membrane: Membrane, target: Replicable, key: PropertyKey, value: any): any {
     const { vm } = membrane.handler as PiercingMembraneHandler;

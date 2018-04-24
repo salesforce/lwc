@@ -2,11 +2,11 @@ import assert from "../assert";
 import {
     isString,
     isUndefined,
-} from './../language';
+    StringCharCodeAt,
+} from '../language';
 import { EmptyObject } from '../utils';
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-
-const { removeAttribute } = Element.prototype;
+import { removeAttribute } from '../dom';
 
 const DashCharCode = 45;
 
@@ -45,8 +45,8 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
         for (name in newStyle) {
             const cur = newStyle[name];
             if (cur !== (oldStyle as any)[name]) {
-                if (name.charCodeAt(0) === DashCharCode && name.charCodeAt(1) === DashCharCode) {
-                    // if the name is prefied with --, it will be considered a variable, and setProperty() is needed
+                if (StringCharCodeAt.call(name, 0) === DashCharCode && StringCharCodeAt.call(name, 1) === DashCharCode) {
+                    // if the name is prefixed with --, it will be considered a variable, and setProperty() is needed
                     style.setProperty(name, cur);
                 } else {
                     // @ts-ignore

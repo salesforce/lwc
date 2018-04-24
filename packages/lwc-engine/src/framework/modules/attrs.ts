@@ -1,6 +1,6 @@
 import assert from "../assert";
 import { prepareForAttributeMutationFromTemplate } from '../def';
-import { isTrue, isFalse, isUndefined, keys } from '../language';
+import { isUndefined, keys, StringCharCodeAt, isNull } from '../language';
 import { EmptyObject } from '../utils';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
 
@@ -23,15 +23,13 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
     }
 
     const elm = vnode.elm as Element;
-    const {
-        setAttribute,
-        removeAttribute
-    } = elm;
 
     let key: string;
     oldAttrs = isUndefined(oldAttrs) ? EmptyObject : oldAttrs;
 
     // update modified attributes, add new attributes
+    // this routine is only useful for data-* attributes in all kind of elements
+    // and aria-* in standard elements (custom elements will use props for these)
     for (key in attrs) {
         const cur = attrs[key];
         const old = (oldAttrs as any)[key];
@@ -39,21 +37,16 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
             if (process.env.NODE_ENV !== 'production') {
                 prepareForAttributeMutationFromTemplate(elm, key);
             }
-
-            if (isTrue(cur)) {
-                setAttribute.call(elm, key, "");
-            } else if (isFalse(cur)) {
-                removeAttribute.call(elm, key);
+            if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+                // Assume xml namespace
+                elm.setAttributeNS(xmlNS, key, cur as string);
+            } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
+                // Assume xlink namespace
+                elm.setAttributeNS(xlinkNS, key, cur as string);
+            } else if (isNull(cur)) {
+                elm.removeAttribute(key);
             } else {
-                if (key.charCodeAt(3) === ColonCharCode) {
-                    // Assume xml namespace
-                    elm.setAttributeNS.call(elm, xmlNS, key, cur);
-                } else if (key.charCodeAt(5) === ColonCharCode) {
-                    // Assume xlink namespace
-                    elm.setAttributeNS.call(elm, xlinkNS, key, cur);
-                } else {
-                    setAttribute.call(elm, key, cur);
-                }
+                elm.setAttribute(key, cur as string);
             }
         }
     }

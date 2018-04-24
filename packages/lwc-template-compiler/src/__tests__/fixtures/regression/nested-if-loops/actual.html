@@ -2,7 +2,7 @@
     <template if:true={isTrue}>
         Outer
         <template for:each={items} for:item="item">
-            <p>Inner</p>
+            <p key={item.id}>Inner</p>
         </template>
     </template>
 </template>

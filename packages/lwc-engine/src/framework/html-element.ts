@@ -1,24 +1,84 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
-import { vmBeingConstructed, isBeingConstructed, addComponentEventListener, removeComponentEventListener, Component } from "./component";
-import { ArrayFilter, freeze, seal, defineProperty, getOwnPropertyNames, isUndefined, ArraySlice, isNull, keys, defineProperties, toString } from "./language";
-import { GlobalHTMLProperties } from "./dom";
-import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered } from "./invoker";
-import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce, piercingHook } from "./piercing";
-import { ViewModelReflection } from "./def";
-import { Membrane } from "./membrane";
-import { isString } from "./language";
-
-const {
+import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
+import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import {
+    getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
-} = Element.prototype;
+    GlobalHTMLPropDescriptors,
+    attemptAriaAttributeFallback,
+    CustomEvent,
+} from "./dom";
+import { getPropNameFromAttrName } from "./utils";
+import { isRendering, vmBeingRendered } from "./invoker";
+import { wasNodePassedIntoVM, VM } from "./vm";
+import { pierce, piercingHook } from "./piercing";
+import { ViewModelReflection } from "./def";
+import { Membrane } from "./membrane";
+import { ArrayReduce, isString, isFunction } from "./language";
+import { observeMutation, notifyMutation } from "./watcher";
+
+function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
+    const { get, set, enumerable, configurable } = descriptor;
+    if (!isFunction(get)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`);
+        }
+        throw new TypeError();
+    }
+    if (!isFunction(set)) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.fail(`Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`);
+        }
+        throw new TypeError();
+    }
+    return {
+        enumerable,
+        configurable,
+        get(this: Component) {
+            const vm: VM = this[ViewModelReflection];
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
+            if (isBeingConstructed(vm)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logError(`${vm} constructor should not read the value of property "${propName}". The owner component has not yet set the value. Instead use the constructor to set default values for properties.`);
+                }
+                return;
+            }
+            observeMutation(this, propName);
+            return get.call(vm.elm);
+        },
+        set(this: Component, newValue: any) {
+            const vm = this[ViewModelReflection];
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
+                assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+                assert.invariant(!isObject(newValue) || isNull(newValue), `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`);
+            }
+
+            if (newValue !== vm.cmpProps[propName]) {
+                vm.cmpProps[propName] = newValue;
+                if (vm.idx > 0) {
+                    // perf optimization to skip this step if not in the DOM
+                    notifyMutation(this, propName);
+                }
+            }
+            return set.call(vm.elm, newValue);
+        }
+    };
+}
+
+const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPropDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
+    seed[propName] = getHTMLPropDescriptor(propName, GlobalHTMLPropDescriptors[propName]);
+    return seed;
+}, {});
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;
@@ -43,10 +103,6 @@ class LWCElement implements Component {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vmBeingConstructed);
             assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
-            const { def: { observedAttrs, attributeChangedCallback } } = vmBeingConstructed;
-            if (observedAttrs.length && isUndefined(attributeChangedCallback)) {
-                assert.logError(`${vmBeingConstructed} has static observedAttributes set to ["${keys(observedAttrs).join('", "')}"] but it is missing the attributeChangedCallback() method to watch for changes on those attributes. Double check for typos on the name of the callback.`);
-            }
         }
         const vm = vmBeingConstructed;
         const { elm, def } = vm;
@@ -65,6 +121,12 @@ class LWCElement implements Component {
         const vm = getCustomElementVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
+            if (arguments.length === 0) {
+                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: 1 argument required, but only 0 present.`);
+            }
+            if (!(event instanceof CustomEvent) && !(event instanceof Event)) {
+                throw new Error(`Failed to execute 'dispatchEvent' on ${this}: parameter 1 is not of type 'Event'.`);
+            }
             const { type: evtName, composed, bubbles } = event;
             assert.isFalse(isBeingConstructed(vm), `this.dispatchEvent() should not be called during the construction of the custom element for ${this} because no one is listening for the event "${evtName}" just yet.`);
             if (bubbles && ('composed' in event && !composed)) {
@@ -84,30 +146,19 @@ class LWCElement implements Component {
         const dispatchEvent = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', elm.dispatchEvent);
         return dispatchEvent.call(elm, event);
     }
-    addEventListener(type: string, listener: EventListener) {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
 
-            if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
-            }
+    addEventListener(type: string, listener: EventListener, options: any) {
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
+            throw new Error(`Deprecated Method: usage of this.addEventListener("${type}", ...) in ${vm} is now deprecated. In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener().`);
         }
-        addComponentEventListener(vm, type, listener);
     }
 
-    removeEventListener(type: string, listener: EventListener) {
-        const vm = getCustomElementVM(this);
-
+    removeEventListener(type: string, listener: EventListener, options: any) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
-
-            if (arguments.length > 2) {
-                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive or capture are not allowed at the top level of the component's fragment.`);
-            }
+            const vm = getCustomElementVM(this);
+            throw new Error(`Deprecated Method: usage of this.removeEventListener("${type}", ...) in ${vm} is now deprecated alongside this.addEventListener(). In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener() and this.root.removeEventListener().`);
         }
-        removeComponentEventListener(vm, type, listener);
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -125,16 +176,21 @@ class LWCElement implements Component {
         return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
     }
 
-    removeAttribute(attrName: string): void {
+    removeAttribute(attrName: string) {
+        const vm = getCustomElementVM(this);
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
-        return removeAttribute.call(getLinkedElement(this), attrName);
+        removeAttribute.call(vm.elm, attrName);
+        attemptAriaAttributeFallback(vm, attrName);
     }
 
     setAttribute(attrName: string, value: any): void {
+        const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
         }
+        // marking the set is needed for the AOM polyfill
+        vm.hostAttrs[attrName] = 1;
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
         return setAttribute.call(getLinkedElement(this), attrName, value);
@@ -145,17 +201,15 @@ class LWCElement implements Component {
     }
 
     getAttribute(attrName: string): string | null {
-        // logging errors for experimentals and special attributes
+        // logging errors for experimental and special attributes
         if (process.env.NODE_ENV !== 'production') {
             const vm = this[ViewModelReflection];
             assert.vm(vm);
             if (isString(attrName)) {
                 const propName = getPropNameFromAttrName(attrName);
-                const { def: { props: publicPropsConfig } } = vm;
-                if (propName && publicPropsConfig[propName]) {
-                    throw new ReferenceError(`Attribute "${attrName}" corresponds to public property ${propName} from ${vm}. Instead use \`this.${propName}\`. Only use \`getAttribute()\` to access global HTML attributes.`);
-                } else if (GlobalHTMLProperties[propName] && GlobalHTMLProperties[propName].attribute) {
-                    const { error, experimental } = GlobalHTMLProperties[propName];
+                const info = getGlobalHTMLPropertiesInfo();
+                if (info[propName] && info[propName].attribute) {
+                    const { error, experimental } = info[propName];
                     if (error) {
                         assert.logError(error);
                     } else if (experimental) {
@@ -218,25 +272,6 @@ class LWCElement implements Component {
         const elm = getLinkedElement(this);
         return elm.tagName + ''; // avoiding side-channeling
     }
-    get tabIndex(): number {
-        const elm = getLinkedElement(this);
-        return elm.tabIndex;
-    }
-    set tabIndex(value: number) {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isRendering, `Setting property "tabIndex" of ${toString(value)} during the rendering process of ${vmBeingRendered} is invalid. The render phase must have no side effects on the state of any component.`);
-            if (isBeingConstructed(vm)) {
-                assert.fail(`Setting property "tabIndex" during the construction process of ${vm} is invalid.`);
-            }
-        }
-
-        if (isBeingConstructed(vm)) {
-            return;
-        }
-        const elm = getLinkedElement(this);
-        elm.tabIndex = value;
-    }
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
@@ -245,7 +280,7 @@ class LWCElement implements Component {
         }
         return getLinkedElement(this).classList;
     }
-    get root(): ShadowRoot {
+    get template(): ShadowRoot {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
@@ -257,6 +292,13 @@ class LWCElement implements Component {
             vm.cmpRoot = cmpRoot;
         }
         return cmpRoot;
+    }
+    get root(): ShadowRoot {
+        if (process.env.NODE_ENV !== 'production') {
+            const vm = getCustomElementVM(this);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+        }
+        return this.template;
     }
     toString(): string {
         const vm = getCustomElementVM(this);
@@ -270,16 +312,19 @@ class LWCElement implements Component {
     }
 }
 
+defineProperties(LWCElement.prototype, htmlElementDescriptors);
+
 // Global HTML Attributes
 if (process.env.NODE_ENV !== 'production') {
-    getOwnPropertyNames(GlobalHTMLProperties).forEach((propName: string) => {
+    const info = getGlobalHTMLPropertiesInfo();
+    forEach.call(getOwnPropertyNames(info), (propName: string) => {
         if (propName in LWCElement.prototype) {
             return; // no need to redefine something that we are already exposing
         }
         defineProperty(LWCElement.prototype, propName, {
             get() {
                 const vm = getCustomElementVM(this as HTMLElement);
-                const { error, attribute, readOnly, experimental } = GlobalHTMLProperties[propName];
+                const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
                 if (error) {

@@ -1,7 +1,8 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, staticClassProperty, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
-const { LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
+const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
 module.exports = function ({ types: t }) {
     return {
@@ -14,6 +15,18 @@ module.exports = function ({ types: t }) {
             )).map(({ path }) => (
                 path.get('local')
             ));
+        },
+        ClassProperty(path, state) {
+            if (isObservedAttributesStaticProperty(path)) {
+                const observedAttributeNames = path.node.value.elements.map((elem) => {
+                    const { value } = elem;
+                    const { propName = value } = (GLOBAL_ATTRIBUTE_MAP.get(value) || {});
+                    return `"${propName}"`;
+                });
+                throw path.buildCodeFrameError(
+                    `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for ${observedAttributeNames.join(', ')} instead.`
+                );
+            }
         },
         Class(path, state) {
             const isComponent = isComponentClass(path, state.componentBaseClassImports);
@@ -36,6 +49,11 @@ module.exports = function ({ types: t }) {
             }
         }
     };
+
+    function isObservedAttributesStaticProperty(classPropertyPath) {
+        const { static: isStaticProperty, key: { name: propertyName } } = classPropertyPath.node;
+        return (isStaticProperty && propertyName === CLASS_PROPERTY_OBSERVED_ATTRIBUTES);
+    }
 
     function getBaseName({ file }) {
         const classPath = file.opts.filename;

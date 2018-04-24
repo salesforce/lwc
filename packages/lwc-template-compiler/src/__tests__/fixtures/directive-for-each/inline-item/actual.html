@@ -1,6 +1,6 @@
 <template>
     <section>
-        <div class="my-list" for:each={items} for:item="item">
+        <div key={item.id} class="my-list" for:each={items} for:item="item">
             <p>{item}</p>
         </div>
     </section>

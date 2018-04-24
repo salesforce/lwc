@@ -1,11 +1,12 @@
 {
   "name": "observable-membrane",
-  "version": "0.17.19",
+  "version": "0.19.0-0",
   "description": "Observable Membrane implementation for LWC",
   "main": "dist/commonjs/observable-membrane.js",
   "module": "dist/modules/observable-membrane.js",
   "jsnext:main": "dist/modules/observable-membrane.js",
   "scripts": {
+    "clean": "rm -rf dist",
     "test": "echo 'Testing observable membrane...' && DIR=`pwd` && cd ../../ && jest $DIR",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",

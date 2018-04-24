@@ -251,7 +251,7 @@ Text.publicMethods = ["m1"];`
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name is. "is" is a reserved attribute.',
+            message: 'test.js: Invalid property name "is". "is" is a reserved attribute.',
             loc: {
                 line: 2,
                 column: 9
@@ -310,14 +310,14 @@ Test.publicProps = {
         }
     });
 
-    pluginTest('throws error if property name prefixed with "aria"', `
+    pluginTest('throws error if property name is ambigious', `
         import { api } from 'engine';
         export default class Test {
-            @api ariaDescribedby;
+            @api tabindex;
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name ariaDescribedby. Properties starting with "aria" are reserved attributes.',
+            message: 'test.js: Ambigious attribute name tabindex. tabindex will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
             loc: {
                 line: 2,
                 column: 9
@@ -325,14 +325,35 @@ Test.publicProps = {
         }
     });
 
-    pluginTest('throws error if property name conflicts with global html attribute name', `
+    pluginTest('does not throw if property name prefixed with "aria"', `
+        import { api } from 'engine';
+        export default class Test {
+            @api ariaDescribedBy;
+        }
+    `, {
+        output: {
+            code: `export default class Test {
+  constructor() {
+    this.ariaDescribedBy = void 0;
+  }
+
+}
+Test.publicProps = {
+  ariaDescribedBy: {
+    config: 0
+  }
+};`
+        }
+    });
+
+    pluginTest('throws error if property name conflicts with disallowed global html attribute name', `
         import { api } from 'engine';
         export default class Test {
             @api slot;
         }
     `, {
         error: {
-            message: 'test.js: Invalid property name slot. slot is a global HTML attribute, use attributeChangedCallback to observe this attribute.',
+            message: 'test.js: Invalid property name "slot". "slot" is a reserved attribute.',
             loc: {
                 line: 2,
                 column: 9

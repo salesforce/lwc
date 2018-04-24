@@ -1,10 +1,11 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import assertLogger from './../assert';
-import { register } from "./../services";
+import assertLogger from '../assert';
+import { register } from "../services";
 import { ViewModelReflection } from "../def";
 import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
+import { unwrap } from "../main";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -254,12 +255,12 @@ describe('html-element', () => {
             };
             createElement('x-foo', { is: def });
         });
-        it('should throw when attribute name matches a declared public property', () => {
+        it('should not throw when attribute name matches a declared public property', () => {
             expect.assertions(1);
             const def = class MyComponent extends Element {
                 constructor() {
                     super();
-                    expect(() => this.getAttribute('foo')).toThrow();
+                    expect(() => this.getAttribute('foo')).not.toThrow();
                 }
             };
             def.publicProps = { foo: "default value" };
@@ -291,61 +292,6 @@ describe('html-element', () => {
     });
 
     describe('#dispatchEvent', function() {
-        it('should pierce dispatch event', function() {
-            let callCount = 0;
-            register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
-                    if (value === EventTarget.prototype.dispatchEvent) {
-                        callCount += 1;
-                    }
-                }
-            });
-            class Foo extends Element {
-                connectedCallback() {
-                    const event = new CustomEvent('badevent', {
-                        bubbles: true,
-                        composed: true
-                    });
-                    this.dispatchEvent(event);
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(callCount).toBe(1);
-        });
-        it('should use custom function pierced for dispatch event', function() {
-            let event;
-            let received;
-            let piercedThis;
-            let count = 0;
-            const pierced = function(evt) {
-                piercedThis = this;
-                received = evt;
-                count += 1;
-            };
-            register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
-                    if (value === EventTarget.prototype.dispatchEvent) {
-                        callback(pierced);
-                    }
-                }
-            });
-            class Foo extends Element {
-                connectedCallback() {
-                    event = {
-                        type: 'secure',
-                        composed: true,
-                        bubbles: true
-                    };
-                    this.dispatchEvent(event);
-                }
-            }
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            expect(count).toBe(1);
-            expect(piercedThis).toBe(elm);
-            expect(received).toBe(event);
-        });
         it('should throw when event is dispatched during construction', function() {
             expect.assertions(1);
             class Foo extends Element {
@@ -420,6 +366,124 @@ describe('html-element', () => {
                 expect(assertLogger.logWarning).not.toBeCalled();
                 assertLogger.logWarning.mockRestore();
             });
+        });
+
+        it('should get native click event in host', function () {
+            expect.assertions(3);
+            function html($api) {
+                return [$api.h('div', { key: 1 }, [])];
+            };
+            let elm;
+            class Foo extends Element {
+                constructor() {
+                    super();
+                    this.root.addEventListener('click', (e) => {
+                        expect(e.composed).toBe(true);
+                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is visible for the root, always
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
+                    });
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').click();
+                }
+            }
+            Foo.publicMethods = ['run'];
+            elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should get native events from template', function () {
+            expect.assertions(2);
+            function html($api, $cmp) {
+                return [$api.h('div', { key: 1, on: { click: $api.b($cmp.handleClick)} }, [])];
+            }
+            class Foo extends Element {
+                handleClick(e: Event) {
+                    expect(e.target).toBe(this.root.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').click();
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should get custom events in root when marked as bubbles=true', function () {
+            expect.assertions(6);
+            function html($api) {
+                return [$api.h('div', { key: 1 }, [])];
+            }
+            let elm;
+            class Foo extends Element {
+                constructor() {
+                    super();
+                    this.root.addEventListener('xyz', (e) => {
+                        expect(e.bubbles).toBe(true);
+                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is host element
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
+                    });
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: true,
+                    }));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: false,
+                    }));
+                }
+            }
+            Foo.publicMethods = ['run'];
+            elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
+        });
+
+        it('should listen for custom events declare in template', function () {
+            expect.assertions(6);
+            function html($api, $cmp) {
+                return [$api.h('div', { key: 1, on: { xyz: $api.b($cmp.handleXyz)} }, [])];
+            }
+            class Foo extends Element {
+                handleXyz(e: Event) {
+                    expect(e.target).toBe(this.root.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                }
+                render() {
+                    return html;
+                }
+                run() {
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: true,
+                    }));
+                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                        bubbles: true,
+                        composed: false,
+                    }));
+                }
+            }
+            Foo.publicMethods = ['run'];
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+            elm.run();
         });
     });
 
@@ -589,7 +653,7 @@ describe('html-element', () => {
             });
         });
 
-        it('should not log error message when attribute is set via createElement', () => {
+        it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends Element {}
             const elm = createElement('x-foo', {is: MyComponent});
@@ -597,7 +661,7 @@ describe('html-element', () => {
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {
-                expect(assertLogger.logError).not.toBeCalled();
+                expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
         });
@@ -857,29 +921,6 @@ describe('html-element', () => {
             });
         });
 
-        it('should not trigger attribute changed callback when changed from within', function() {
-            let callCount = 0;
-            class MyComponent extends Element {
-                attributeChangedCallback() {
-                    callCount += 1;
-                }
-                connectedCallback() {
-                    this.tabIndex = 2;
-                }
-            }
-
-            MyComponent.observedAttributes = ['tabindex'];
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            elm.setAttribute('tabindex', 3);
-            document.body.appendChild(elm);
-
-            return Promise.resolve().then(() => {
-                expect(callCount).toBe(1); // one because of the attribute value from outside
-                expect(elm.tabIndex).toBe(2);
-            });
-        });
-
         it('should not trigger render cycle', function() {
             let callCount = 0;
             class MyComponent extends Element {
@@ -1134,6 +1175,1167 @@ describe('html-element', () => {
             expect(assertLogger.logWarning).not.toBeCalled();
             assertLogger.logWarning.mockRestore();
         });
+    });
+
+    describe('Inheritance', () => {
+        it('should inherit public getters and setters correctly', () => {
+            class MyParent extends Element {
+                get foo() {}
+                set foo(value) {}
+            }
+            MyParent.publicProps = {
+                foo: {
+                    config: 3,
+                }
+            }
+            class MyComponent extends MyParent {
+
+            }
+            expect(() => {
+                createElement('getter-inheritance', { is: MyComponent })
+            }).not.toThrow();
+        });
+
+        it('should call correct inherited public setter', () => {
+            let count = 0;
+            class MyParent extends Element {
+                get foo() {}
+                set foo(value) {
+                    count += 1;
+                }
+            }
+            MyParent.publicProps = {
+                foo: {
+                    config: 3,
+                }
+            }
+            class MyComponent extends MyParent {
+
+            }
+
+            const elm = createElement('getter-inheritance', { is: MyComponent });
+            elm.foo = 'bar';
+            expect(count).toBe(1);
+        });
+    });
+
+    describe('Aria Properties', () => {
+        describe('#role', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-role', { is: MyComponent });
+                element.role = 'tab';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                element.role = 'tab';
+                expect(element.role).toBe('tab');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                expect(element.role).toBe(null);
+            });
+
+            it('should return null even if the shadow root value is set', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.role).toBe(null);
+                // checking for the internal polyfill value as well
+                expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+
+            it('should call setter when defined', () => {
+                let called = 0;
+                class MyComponent extends Element {
+                    get role() {}
+                    set role(value) {
+                        called += 1;
+                    }
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'tab';
+                expect(called).toBe(1);
+            });
+
+            it('should not overwrite role attribute when setter does nothing', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                    get role() {}
+                    set role(value) {}
+                }
+                MyComponent.publicProps = {
+                    role: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-getter-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'nottab';
+                expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+            });
+
+            it('should reflect role from root when element value is set to null', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                }
+                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                element.role = 'nottab';
+                return Promise.resolve().then(() => {
+                    element.role = null;
+                    return Promise.resolve().then(() => {
+                        expect(HTMLElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+                    });
+                });
+            });
+
+            it('should remove role attribute from element when root and value is null', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.role = 'tab';
+                    }
+                    clearRole() {
+                        this.root.role = null;
+                    }
+                }
+                MyComponent.publicMethods = ['clearRole'];
+                const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
+                document.body.appendChild(element);
+                //element.role = 'nottab';
+                return Promise.resolve().then(() => {
+                    element.role = null;
+                    element.clearRole();
+                    return Promise.resolve().then(() => {
+                        expect(HTMLElement.prototype.hasAttribute.call(element, 'role')).toBe(false);
+                    });
+                });
+            });
+
+            describe('AOM shim', () => {
+                it('getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.role = 'tab'
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    element.setAttribute('role', 'button');
+                    element.removeAttribute('role');
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'role')).toBe('tab');
+                });
+            });
+        });
+
+        describe('#ariaChecked', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-checked', { is: MyComponent });
+                element.ariaChecked = 'true';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                element.ariaChecked = 'true';
+                expect(element.ariaChecked).toBe('true');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                expect(element.ariaChecked).toBe(null);
+            });
+
+            it('should return null even if the shadow root value is set', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.ariaChecked = 'true';
+                    }
+                }
+                const element = createElement('prop-getter-aria-checked', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.ariaChecked).toBe(null);
+                // checking for the internal polyfill value as well
+                expect(HTMLElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+            });
+
+            describe('AOM shim', () => {
+                it('internal getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.ariaChecked = 'true';
+                            this.setAttribute('aria-checked', 'false');
+                            this.removeAttribute('aria-checked');
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+                });
+
+                it('external getAttribute reflect default value when aria-checked has been removed', () => {
+                    class MyComponent extends Element {
+                        connectedCallback() {
+                            this.root.ariaChecked = 'true'
+                        }
+                    }
+                    const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
+                    document.body.appendChild(element);
+                    element.setAttribute('aria-checked', 'false');
+                    element.removeAttribute('aria-checked');
+                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-checked')).toBe('true');
+                });
+            });
+        });
+
+        describe('#ariaLabel', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-aria-label', { is: MyComponent });
+                element.ariaLabel = 'label';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'aria-label')).toBe('label');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                element.ariaLabel = 'label';
+                expect(element.ariaLabel).toBe('label');
+            });
+
+            it('should return correct value when nothing has been set', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                expect(element.ariaLabel).toBe(null);
+            });
+
+            it('should return null value when not value is set, shadow root value should not leak out', () => {
+                class MyComponent extends Element {
+                    connectedCallback() {
+                        this.root.ariaLabel = 'foo';
+                    }
+                }
+                const element = createElement('prop-getter-aria-label', { is: MyComponent });
+                document.body.appendChild(element);
+                expect(element.ariaLabel).toBe(null);
+                // checking for the internal polyfill value as well
+                expect(HTMLElement.prototype.getAttribute.call(element, 'aria-label')).toBe('foo');
+            });
+        });
+    });
+
+    describe('global HTML Properties', () => {
+        describe('#lang', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'lang')).toBe('en');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-lang', { is: MyComponent });
+                element.lang = 'en';
+                expect(element.lang).toBe('en');
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set lang(value) {
+                        count += 1;
+                    }
+                    get lang() {}
+                }
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-lang', { is: MyComponent });
+                element.lang = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set lang(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.lang
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-lang-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.lang = 'en';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get lang() {
+                        count += 1;
+                        return 'en';
+                    }
+                }
+                MyComponent.publicProps = {
+                    lang: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-lang-imperative', { is: MyComponent });
+                expect(element.lang).toBe('en');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.lang
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-lang-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.lang = 'en';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.id).toBe('en');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.lang = 'en';
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        describe('#hidden', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-hidden', { is: MyComponent });
+                element.hidden = true;
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'hidden')).toBe('');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-hidden', { is: MyComponent });
+                element.hidden = true;
+                expect(element.hidden).toBe(true);
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set hidden(value) {
+                        count += 1;
+                    }
+                    get hidden() {}
+                }
+                MyComponent.publicProps = {
+                    hidden: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-hidden', { is: MyComponent });
+                element.hidden = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set hidden(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.hidden
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-hidden-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.hidden = true;
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get hidden() {
+                        count += 1;
+                        return 'hidden';
+                    }
+                }
+                MyComponent.publicProps = {
+                    hidden: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-hidden-imperative', { is: MyComponent });
+                expect(element.hidden).toBe('hidden');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.hidden
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-hidden-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.hidden = true;
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.id).toBe('true');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.hidden = true;
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        describe('#dir', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-dir', { is: MyComponent });
+                element.dir = 'ltr';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'dir')).toBe('ltr');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-dir', { is: MyComponent });
+                element.dir = 'ltr';
+                expect(element.dir).toBe('ltr');
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set dir(value) {
+                        count += 1;
+                    }
+                    get dir() {}
+                }
+                MyComponent.publicProps = {
+                    dir: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-dir', { is: MyComponent });
+                element.dir = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set dir(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.dir
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-dir-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.dir = 'ltr';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get dir() {
+                        count += 1;
+                        return 'ltr';
+                    }
+                }
+                MyComponent.publicProps = {
+                    dir: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-dir-imperative', { is: MyComponent });
+                expect(element.dir).toBe('ltr');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.dir
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-dir-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.dir = 'ltr';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.id).toBe('ltr');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.dir = 'ltr';
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        describe('#id', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-id', { is: MyComponent });
+                element.id = 'id';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'id')).toBe('id');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-id', { is: MyComponent });
+                element.id = 'id';
+                expect(element.id).toBe('id');
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set id(value) {
+                        count += 1;
+                    }
+                    get id() {}
+                }
+                MyComponent.publicProps = {
+                    id: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-id', { is: MyComponent });
+                element.id = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set id(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.id
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-id-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.id = 'ltr';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get id() {
+                        count += 1;
+                        return 'id';
+                    }
+                }
+                MyComponent.publicProps = {
+                    id: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-id-imperative', { is: MyComponent });
+                expect(element.id).toBe('id');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        title: $cmp.id
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-id-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.id = 'id';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.title).toBe('id');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.id = 'id';
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        describe('#accessKey', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-accessKey', { is: MyComponent });
+                element.accessKey = 'accessKey';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'accesskey')).toBe('accessKey');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-accessKey', { is: MyComponent });
+                element.accessKey = 'accessKey';
+                expect(element.accessKey).toBe('accessKey');
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set accessKey(value) {
+                        count += 1;
+                    }
+                    get accessKey() {}
+                }
+                MyComponent.publicProps = {
+                    accessKey: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-accessKey', { is: MyComponent });
+                element.accessKey = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set accessKey(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    title: $cmp.accessKey
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-accessKey-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.accessKey = 'accessKey';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get accessKey() {
+                        count += 1;
+                        return 'accessKey';
+                    }
+                }
+                MyComponent.publicProps = {
+                    accessKey: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-accessKey-imperative', { is: MyComponent });
+                expect(element.accessKey).toBe('accessKey');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        title: $cmp.accessKey
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-accessKey-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.accessKey = 'accessKey';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.title).toBe('accessKey');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.accessKey = 'accessKey';
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        describe('#title', () => {
+            it('should reflect attribute by default', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-reflect-title', { is: MyComponent });
+                element.title = 'title';
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, 'title')).toBe('title');
+            });
+
+            it('should return correct value from getter', () => {
+                class MyComponent extends Element {
+
+                }
+                const element = createElement('prop-getter-title', { is: MyComponent });
+                element.title = 'title';
+                expect(element.title).toBe('title');
+            });
+
+            it('should call setter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set title(value) {
+                        count += 1;
+                    }
+                    get title() {}
+                }
+                MyComponent.publicProps = {
+                    title: {
+                        config: 3,
+                    }
+                }
+                const element = createElement('prop-setter-title', { is: MyComponent });
+                element.title = {},
+                expect(count).toBe(1);
+            });
+
+            it('should not be reactive when defining own setter', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    set title(value) {
+
+                    }
+
+                    render() {
+                        count += 1;
+                        return ($api, $cmp) => {
+                            return [$api.h('div', {
+                                key: 0,
+                                props: {
+                                    id: $cmp.title
+                                }
+                            }, [])];
+                        }
+                    }
+                }
+                const element = createElement('prop-setter-title-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.title = 'title';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(count).toBe(1);
+                    });
+            });
+
+            it('should call getter defined in component', () => {
+                let count = 0;
+                class MyComponent extends Element {
+                    get title() {
+                        count += 1;
+                        return 'title';
+                    }
+                }
+                MyComponent.publicProps = {
+                    title: {
+                        config: 1,
+                    }
+                }
+                const element = createElement('prop-getter-title-imperative', { is: MyComponent });
+                expect(element.title).toBe('title');
+                expect(count).toBe(1);
+            });
+
+            it('should be reactive by default', () => {
+                let renderCount = 0;
+                class MyComponent extends Element {
+                    render() {
+                        return ($api, $cmp) => {
+                            renderCount += 1;
+                            return [
+                                $api.h('div', {
+                                    key: 0,
+                                    props: {
+                                        id: $cmp.title
+                                    }
+                                }, [])
+                            ];
+                        }
+                    }
+                }
+                const element = createElement('prop-title-reactive', { is: MyComponent });
+                document.body.appendChild(element);
+                element.title = 'title';
+                return Promise.resolve()
+                    .then(() => {
+                        expect(renderCount).toBe(2);
+                        expect(element.querySelector('div')!.id).toBe('title');
+                    });
+            });
+
+            it('should throw an error when setting default value in constructor', () => {
+                class MyComponent extends Element {
+                    constructor() {
+                        super();
+                        this.title = 'title';
+                    }
+                }
+                expect(() => {
+                    createElement('x-foo', { is: MyComponent });
+                }).toThrowError("Failed to construct '<x-foo>': The result must not have attributes.");
+
+            });
+        });
+
+        it('should always return null', () => {
+            expect.assertions(1);
+            const def = class MyComponent extends Element {
+                constructor() {
+                    super();
+                    expect(this.getAttribute('title')).toBeNull();
+                }
+            }
+            createElement('x-foo', { is: def }).setAttribute('title', 'cubano');
+        });
+
+        it('should set user specified value during setAttribute call', () => {
+            let userDefinedTabIndexValue = -1;
+            class MyComponent extends Element {
+                renderedCallback() {
+                    userDefinedTabIndexValue = this.getAttribute("tabindex");
+                }
+            }
+            const elm = createElement('x-foo', {is: MyComponent});
+            elm.setAttribute('tabindex', '0');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( ()=> {
+                expect(userDefinedTabIndexValue).toBe('0');
+            });
+
+        }),
+
+        it('should log console error when user land code changes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+            class Parent extends Element {
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ]
+                    }
+                }
+            }
+            class Child extends Element {}
+            const parentElm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                childElm.setAttribute('title', "value from parent");
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should log console error when user land code removes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+            class Parent extends Element {
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ]
+                    }
+                }
+            }
+            class Child extends Element {}
+            const parentElm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                childElm.removeAttribute('title');
+                expect(assertLogger.logError).toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
+            jest.spyOn(assertLogger, 'logError');
+            class MyComponent extends Element {}
+            const elm = createElement('x-foo', {is: MyComponent});
+            elm.setAttribute('foo', 'something');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( () => {
+                expect(assertLogger.logError).not.toBeCalled();
+                assertLogger.logError.mockRestore();
+            })
+        })
+
+        it('should delete existing attribute prior rendering', () => {
+            const def = class MyComponent extends Element {}
+            const elm = createElement('x-foo', { is: def });
+            elm.setAttribute('title', 'parent title');
+            elm.removeAttribute('title');
+            document.body.appendChild(elm);
+
+            return Promise.resolve().then( () => {
+                expect(elm.getAttribute('title')).not.toBe('parent title');
+            })
+        }),
+
+        it('should correctly set child attribute ', () => {
+            let childTitle = null;
+
+            class Parent extends Element {
+                render() {
+                    return function($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { props: { title: 'child title' }})
+                        ]
+                    }
+                }
+            }
+
+            class Child extends Element {
+                renderedCallback() {
+                    childTitle = this.getAttribute('title');
+                }
+            }
+
+            const parentElm = createElement('x-parent', { is: Parent });
+            parentElm.setAttribute('title', 'parent title');
+            document.body.appendChild(parentElm);
+
+            return Promise.resolve().then( () => {
+                const childElm = parentElm.querySelector('x-child');
+                expect(childElm.getAttribute('title')).toBe('child title');
+            })
+        })
     });
 
 });

@@ -4,13 +4,16 @@ import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
-import { membrane as reactiveMembrane } from './../reactive';
+import { reactiveMembrane } from '../membrane';
 
 // stub function to prevent misuse of the @track decorator
-export default function track() {
+export default function track(obj: any): any {
     if (process.env.NODE_ENV !== 'production') {
-        assert.fail("@track may only be used as a decorator.");
+        if (arguments.length !== 1) {
+            assert.fail("@track can be used as a decorator or as a function with one argument to produce a trackable version of the provided value.");
+        }
     }
+    return reactiveMembrane.getProxy(obj);
 }
 
 // TODO: how to allow symbols as property keys?

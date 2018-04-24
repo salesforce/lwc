@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
-import { ArrayFilter, defineProperty, isNull } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, ArrayIndexOf, ArraySplice, ArrayPush, isFunction, isFalse } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -12,7 +12,20 @@ import { getCustomElementVM } from "./html-element";
 import { Replicable, Membrane } from "./membrane";
 
 import { TargetSlot } from './membrane';
-const { querySelector, querySelectorAll } = Element.prototype;
+import {
+    querySelector,
+    querySelectorAll,
+    GlobalAOMProperties,
+    setAttribute,
+    removeAttribute,
+    DOCUMENT_POSITION_CONTAINED_BY,
+    compareDocumentPosition,
+    getRootNode,
+    addEventListener,
+    removeEventListener,
+} from './dom';
+import { getAttrNameFromPropName } from "./utils";
+import { invokeRootCallback, isRendering, vmBeingRendered } from "./invoker";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -25,8 +38,42 @@ export interface ShadowRoot {
     readonly host: Component;
     querySelector(selector: string): HTMLElement | null;
     querySelectorAll(selector: string): HTMLElement[];
+    addEventListener(type: string, listener: EventListener, options: any): void;
+    removeEventListener(type: string, listener: EventListener, options: any): void;
     toString(): string;
 }
+
+function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
+    // we use value as the storage mechanism and as the default value for the property
+    return {
+        enumerable: false,
+        get(this: ShadowRoot): any {
+            const vm = getCustomElementVM(this);
+            if (!hasOwnProperty.call(vm.rootProps, propName)) {
+                return defaultValue;
+            }
+            return vm.rootProps[propName];
+        },
+        set(this: ShadowRoot, newValue: any) {
+            const vm = getCustomElementVM(this);
+            vm.rootProps[propName] = newValue;
+            if (!isUndefined(vm.hostAttrs[attrName])) {
+                return;
+            }
+            if (isNull(newValue)) {
+                removeAttribute.call(vm.elm, attrName);
+                return;
+            }
+            setAttribute.call(vm.elm, attrName, newValue);
+        }
+    };
+}
+
+const RootDescriptors: PropertyDescriptorMap = create(null);
+
+// This routine will build a descriptor map for all AOM properties to be added
+// to ShadowRoot prototype to polyfill AOM capabilities.
+forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAttrNameFromPropName(propName), GlobalAOMProperties[propName]));
 
 export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);
@@ -50,6 +97,33 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
     pierce(vm, elm);
     const piercedQuerySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
     return piercedQuerySelectorAll.call(elm, selector);
+}
+
+const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
+
+function getWrappedListener(listener: EventListener): EventListener {
+    if (!isFunction(listener)) {
+        return listener; // ignoring non-callable arguments
+    }
+    let wrappedListener = eventListeners.get(listener);
+    if (isUndefined(wrappedListener)) {
+        wrappedListener = function(event: Event) {
+            const vm = getCustomElementVM(event.currentTarget as HTMLElement);
+            if (process.env.NODE_ENV !== 'production') {
+                assert.vm(vm);
+            }
+            // * if the event is dispatched directly on the host, it is not observable from root
+            // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
+            //   it is not observable from the root
+            if (event.target === event.currentTarget || (isFalse((event as any).composed) && getRootNode.call(event.target) !== event.currentTarget)) {
+                return;
+            }
+            const e = pierce(vm, event);
+            invokeRootCallback(vm, listener, [e]);
+        };
+        eventListeners.set(listener, wrappedListener);
+    }
+    return wrappedListener;
 }
 
 export class Root implements ShadowRoot {
@@ -92,11 +166,54 @@ export class Root implements ShadowRoot {
         }
         return nodeList;
     }
+
+    addEventListener(type: string, listener: EventListener, options: any) {
+        const vm = getCustomElementVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
+            assert.invariant(isFunction(listener), `Invalid second argument for this.root.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
+            let { cmpEvents } = vm;
+            if (isUndefined(cmpEvents)) {
+                vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
+            }
+            if (isUndefined(cmpEvents[type])) {
+                cmpEvents[type] = [];
+            }
+            if (ArrayIndexOf.call(cmpEvents[type], listener) !== -1) {
+                assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
+            }
+            ArrayPush.call(cmpEvents[type], listener);
+        }
+        addEventListener.call(vm.elm, type, getWrappedListener(listener), options);
+    }
+
+    removeEventListener(type: string, listener: EventListener, options: any) {
+        const vm = getCustomElementVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${type}".`);
+            assert.invariant(isFunction(listener), `Invalid second argument for this.root.removeEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
+            let { cmpEvents } = vm;
+            if (isUndefined(cmpEvents)) {
+                vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
+            }
+            if (isUndefined(cmpEvents[type])) {
+                cmpEvents[type] = [];
+            }
+            if (isUndefined(cmpEvents) || isUndefined(cmpEvents[type]) || ArrayIndexOf.call(cmpEvents[type], listener) === -1) {
+                assert.logError(`Did not find event listener ${listener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
+            }
+            ArraySplice.call(cmpEvents[type], ArrayIndexOf.call(cmpEvents[type], listener), 1);
+        }
+        removeEventListener.call(vm.elm, type, getWrappedListener(listener), options);
+    }
     toString(): string {
         const component = getCustomElementComponent(this);
         return `Current ShadowRoot for ${component}`;
     }
 }
+defineProperties(Root.prototype, RootDescriptors);
 
 function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     const nodeList = querySelectorAll.call(elm, selector);
@@ -171,6 +288,10 @@ export function wrapIframeWindow(win: Window) {
     };
 }
 
+export function isChildNode(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+}
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
@@ -197,6 +318,24 @@ register({
                 } else if (target[OwnerKey] !== value[OwnerKey]) {
                     // cutting out access to something outside of the shadow of the current target (usually slots)
                     return callback();
+                }
+            }
+            if (target instanceof Event) {
+                switch (key) {
+                    case 'currentTarget':
+                        // intentionally return the host element pierced here otherwise the general role below
+                        // will kick in and return the cmp, which is not the intent.
+                        return callback(pierce(vm, value));
+                    case 'target':
+                        const { currentTarget } = (target as Event);
+                        if (currentTarget === elm || isChildNode(elm, currentTarget as Node)) {
+                            let root = value; // initial root is always the original target
+                            while (root !== elm) {
+                                value = root;
+                                root = getRootNode.call(value);
+                            }
+                            return callback(pierce(vm, value));
+                        }
                 }
             }
             if (value === elm) {

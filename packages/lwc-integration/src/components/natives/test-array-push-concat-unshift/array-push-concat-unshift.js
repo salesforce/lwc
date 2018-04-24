@@ -1,7 +1,12 @@
-import { Element, track } from 'engine';
-
+import { Element, api, track } from 'engine';
 
 export default class Issue763 extends Element {
+    @api propItems = [{
+        title: 'first'
+    }, {
+        title: 'second'
+    }];
+
     @track items = [{
         title: 'first'
     }, {
@@ -15,6 +20,12 @@ export default class Issue763 extends Element {
     }]
 
     @track concatItems = [{
+        title: 'first'
+    }, {
+        title: 'second'
+    }];
+
+    @track propConcatItem = [{
         title: 'first'
     }, {
         title: 'second'
@@ -38,5 +49,13 @@ export default class Issue763 extends Element {
         }, {
             title: 'concat 2'
         }]);
+    }
+
+    handlePropConcatClick() {
+        this.propConcatItem = [{
+            title: 'concat 1',
+        }, {
+            title: 'concat 2'
+        }].concat(this.propItems);
     }
 }

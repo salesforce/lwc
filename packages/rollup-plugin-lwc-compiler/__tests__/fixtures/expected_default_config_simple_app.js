@@ -1,4 +1,3 @@
-/* MOCK POLYFILLS SRC */
 (function(engine) {
     "use strict";
 

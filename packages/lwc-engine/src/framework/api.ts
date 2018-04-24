@@ -1,14 +1,14 @@
 import assert from "./assert";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty } from "./component";
+import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { unwrap } from "./reactive";
+import { pierce } from "./piercing";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -45,16 +45,16 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
     let o;
     const len = className.length;
     for (o = 0; o < len; o++) {
-        if (className.charCodeAt(o) === SPACE_CHAR) {
+        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
             if (o > start) {
-                map[className.slice(start, o)] = true;
+                map[StringSlice.call(className, start, o)] = true;
             }
             start = o + 1;
         }
     }
 
     if (o > start) {
-        map[className.slice(start, o)] = true;
+        map[StringSlice.call(className, start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {
@@ -89,9 +89,8 @@ const hook: Hooks = {
     create(oldVNode: VNode, vnode: VNode) {
         createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
     },
-    remove(vnode: VNode, removeCallback) {
+    destroy(vnode: VNode) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));
-        removeCallback();
     }
 };
 
@@ -149,7 +148,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         if (data.style && !isString(data.style)) {
             assert.logWarning(`Invalid 'style' attribute passed to <${sel}> should be a string value, and will be ignored.`);
         }
-        children.forEach((childVnode) => {
+        forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
                 assert.vnode(childVnode);
             }
@@ -171,7 +170,7 @@ export function h(sel: string, data: VNodeData, children: any[]): VElement {
         elm,
         key,
     };
-    if (sel.length === 3 && sel.charCodeAt(0) === CHAR_S && sel.charCodeAt(1) === CHAR_V && sel.charCodeAt(2) === CHAR_G) {
+    if (sel.length === 3 && StringCharCodeAt.call(sel, 0) === CHAR_S && StringCharCodeAt.call(sel, 1) === CHAR_V && StringCharCodeAt.call(sel, 2) === CHAR_G) {
         addNS(vnode);
     }
     return vnode;
@@ -255,6 +254,11 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
     let next = iterator.next();
     let j = 0;
     let { value, done: last } = next;
+    let keyMap;
+    if (process.env.NODE_ENV !== 'production') {
+        keyMap = create(null);
+    }
+
     while (last === false) {
         // implementing a look-back-approach because we need to know if the element is the last
         next = iterator.next();
@@ -270,10 +274,18 @@ export function i(iterable: Iterable<any>, factory: (value: any, index: number, 
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            vnodes.forEach((childVnode) => {
-                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel) && childVnode.sel.indexOf('-') > 0 && isUndefined(childVnode.key)) {
-                    // TODO - it'd be nice to log the owner component rather than the iteration children
-                    assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+            forEach.call(vnodes, (childVnode: VNode | null) => {
+                if (!isNull(childVnode) && isObject(childVnode) && !isUndefined(childVnode.sel)) {
+                    const { key } = childVnode;
+                    if (isString(key) || isNumber(key)) {
+                        if (keyMap[key] === 1) {
+                            assert.logWarning(`Invalid "key" attribute in iteration with child "<${childVnode.sel}>". Key with value "${childVnode.key}" appears more than once in iteration. Key values must be unique numbers or strings.`);
+                        }
+                        keyMap[key] = 1;
+                    } else {
+                        // TODO - it'd be nice to log the owner component rather than the iteration children
+                        assert.logWarning(`Missing "key" attribute in iteration with child "<${childVnode.sel}>", index ${i}. Instead set a unique "key" attribute value on all iteration children so internal state can be preserved during rehydration.`);
+                    }
                 }
             });
         }
@@ -347,15 +359,15 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(vm, fn, [event]);
+        if (!isValidEvent(event)) {
+            return;
+        }
+        const e = pierce(vm, event);
+        invokeComponentCallback(vm, fn, [e]);
     };
 }
 
-const objToKeyMap: WeakMap<any, number> = new WeakMap();
-let globalKey: number = 0;
-
-// [k]ind function
+// [k]ey function
 export function k(compilerKey: number, obj: any): number | string | void {
     switch (typeof obj) {
         case 'number':
@@ -364,17 +376,8 @@ export function k(compilerKey: number, obj: any): number | string | void {
         case 'string':
             return compilerKey + ':' + obj;
         case 'object':
-            if (isNull(obj)) {
-                return;
+            if (process.env.NODE_ENV !== 'production') {
+                assert.fail(`Invalid key value "${obj}" in ${vmBeingRendered}. Key must be a string or number.`);
             }
-            // Slow path. We get here when element is inside iterator
-            // but no key is specified.
-            const unwrapped = unwrap(obj);
-            let objKey = objToKeyMap.get(unwrapped);
-            if (isUndefined(objKey)) {
-                objKey = globalKey++;
-                objToKeyMap.set(unwrapped, objKey);
-            }
-            return compilerKey + ':' + objKey;
     }
 }

@@ -1,5 +1,6 @@
-# compat-tests
-Compatibility integration tests
+# lwc-integration
+
+End-to-end tests run in the browser across different modes with the option to run tests remotely on Sauce Labs.
 
 ## Commands
 
@@ -47,9 +48,9 @@ yarn start
 
 ## Sauce Labs Integration
 
-### Configuration
+To run tests on Sauce Labs, Sauce Connect must be started on the machine running the tests and the Sauce Labs username and key must be set.
 
-To run tests on Sauce Labs, set `process.env.SAUCE_USERNAME` and `process.env.SAUCE_KEY` to your Sauce Labs username and key, respectively.
+### Setting Username and Key
 
 To access your key:
 1. Log in to saucelabs.com
@@ -70,6 +71,13 @@ SAUCE_USERNAME=my-user SAUCE_KEY=123-456-789 yarn run test:integration:sauce
 SAUCE_USERNAME=my-user
 SAUCE_KEY=123-456-789
 ```
+
+### Sauce Connect
+
+See the Sauce Labs [documentation](https://wiki.saucelabs.com/display/DOCS/Setting+Up+Sauce+Connect+Proxy) for setting up Sauce Connect. The general steps are:
+1. Download Sauce Connect and unzip
+2. `cd` into the unzipped directory
+3. Run `bin/sc -u YOUR_USERNAME -k YOUR_ACCESS_KEY` with your username and key from above
 
 ### Modifying Browsers
 

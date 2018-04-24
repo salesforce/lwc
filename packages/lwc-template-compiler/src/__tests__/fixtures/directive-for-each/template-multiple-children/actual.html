@@ -1,8 +1,8 @@
 <template>
     <section>
         <template for:each={items} for:item="item">
-            <p>1{item}</p>
-            <p>2{item}</p>
+            <p key={item.keyOne}>1{item}</p>
+            <p key={item.keyTwo}>2{item}</p>
         </template>
     </section>
 </template>

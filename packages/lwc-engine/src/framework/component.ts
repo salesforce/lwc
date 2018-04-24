@@ -4,20 +4,17 @@ import {
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
-    invokeComponentCallback,
 } from "./invoker";
-import { isArray, isUndefined, create, ArrayPush, ArrayIndexOf, ArraySplice } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice } from "./language";
 import { invokeServiceHook, Services } from "./services";
-import { pierce } from "./piercing";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
-import { ShadowRoot } from "./root";
-import { EmptyObject } from "./utils";
+import { ShadowRoot, isChildNode } from "./root";
+import { getRootNode } from "./dom";
 export type ErrorCallback = (error: any, stack: string) => void;
-export type AttributeChangedCallback = (attrName: string, oldValue: any, newValue: any) => void;
 export interface Component {
     [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
@@ -27,7 +24,6 @@ export interface Component {
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
     errorCallback?: ErrorCallback;
-    attributeChangedCallback?: AttributeChangedCallback;
     [key: string]: any;
 }
 
@@ -37,7 +33,6 @@ export interface ComponentConstructor {
     readonly name: string;
     readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
-    readonly observedAttributes?: string[];
     readonly publicProps?: PropsDef;
     readonly track?: TrackDef;
     readonly wire?: WireHash;
@@ -109,88 +104,13 @@ export function clearReactiveListeners(vm: VM) {
     }
 }
 
-function createComponentListener(vm: VM): EventListener {
-    return function handler(event: Event) {
-        handleComponentEvent(vm, event);
-    };
-}
-
-export function addComponentEventListener(vm: VM, eventName: string, newHandler: EventListener) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding a new event listener for "${eventName}".`);
+export function isValidEvent(event: Event): boolean {
+    // TODO: this is only needed if ShadowDOM is not used
+    if ((event as any).composed === true) {
+        return true;
     }
-    let { cmpEvents, cmpListener } = vm;
-    if (isUndefined(cmpEvents)) {
-        // this piece of code must be in sync with modules/component-events
-        vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
-        vm.cmpListener = cmpListener = createComponentListener(vm);
-    }
-    if (isUndefined(cmpEvents[eventName])) {
-        cmpEvents[eventName] = [];
-        const { elm } = vm;
-        elm.addEventListener(eventName, cmpListener as EventListener, false);
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (cmpEvents[eventName] && ArrayIndexOf.call(cmpEvents[eventName], newHandler) !== -1) {
-            assert.logWarning(`${vm} has duplicate listeners for event "${eventName}". Instead add the event listener in the connectedCallback() hook.`);
-        }
-    }
-
-    ArrayPush.call(cmpEvents[eventName], newHandler);
-}
-
-export function removeComponentEventListener(vm: VM, eventName: string, oldHandler: EventListener) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${eventName}".`);
-    }
-    const { cmpEvents, elm } = vm;
-    if (cmpEvents) {
-        const handlers = cmpEvents[eventName];
-        const pos = handlers && ArrayIndexOf.call(handlers, oldHandler);
-        if (handlers && pos > -1) {
-            if (handlers.length === 1) {
-                elm.removeEventListener(eventName, (vm.cmpListener as EventListener));
-                (cmpEvents as any)[eventName] = undefined;
-            } else {
-                ArraySplice.call(cmpEvents[eventName], pos, 1);
-            }
-            return;
-        }
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`Did not find event listener ${oldHandler} for event "${eventName}" on ${vm}. Instead only remove an event listener once.`);
-    }
-}
-
-function handleComponentEvent(vm: VM, event: Event) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(event instanceof Event, `dispatchComponentEvent() must receive an event instead of ${event}`);
-        const eventType = event.type;
-        const cmpEvt = vm.cmpEvents;
-        const cmpEventsType = cmpEvt && cmpEvt[eventType];
-        assert.invariant(vm.cmpEvents && !isUndefined(cmpEventsType) && cmpEventsType.length, `handleComponentEvent() should only be invoked if there is at least one listener in queue for ${event.type} on ${vm}.`);
-    }
-
-    const { cmpEvents = EmptyObject } = vm;
-    const { type, stopImmediatePropagation } = event;
-    const handlers = cmpEvents[type];
-    if (isArray(handlers)) {
-        let uninterrupted = true;
-        event.stopImmediatePropagation = function() {
-            uninterrupted = false;
-            stopImmediatePropagation.call(event);
-        };
-        const e = pierce(vm, event);
-        for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
-            invokeComponentCallback(vm, handlers[i], [e]);
-        }
-        // restoring original methods
-        event.stopImmediatePropagation = stopImmediatePropagation;
-    }
+    // if the closest root contains the currentTarget, the event is valid
+    return isChildNode(getRootNode.call(event.target), event.currentTarget as Node);
 }
 
 export function renderComponent(vm: VM): VNodes {
@@ -212,7 +132,7 @@ export function renderComponent(vm: VM): VNodes {
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
-        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the componet is already dirty.`);
+        assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
     vm.isDirty = true;

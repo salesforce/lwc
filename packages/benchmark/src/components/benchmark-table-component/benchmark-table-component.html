@@ -2,7 +2,7 @@
     <table>
         <tbody>
             <template for:each={rows} for:item="row">
-                <tr is="benchmark-table-component-row"
+                <tr key={row.id} is="benchmark-table-component-row"
                     class={row.className}
                     row={row}
                     onselect={handleSelect}

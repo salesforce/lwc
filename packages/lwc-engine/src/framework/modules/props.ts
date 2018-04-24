@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { isUndefined, keys } from "../language";
+import { isUndefined, keys, StringToLowerCase } from "../language";
 import { EmptyObject, getAttrNameFromPropName } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
@@ -33,14 +33,14 @@ function update(oldVnode: VNode, vnode: VNode) {
         if (process.env.NODE_ENV !== 'production') {
             if (old !== cur && !(key in elm)) {
                 // TODO: this should never really happen because the compiler should always validate
-                assert.fail(`Unknown public property "${key}" of ${elm}. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
 
         if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
             if (process.env.NODE_ENV !== 'production') {
                 if (elm[key] === cur && old !== undefined) {
-                    console.warn(`Unneccessary update of property "${key}" in ${elm}.`); // tslint:disable-line
+                    console.warn(`Unnecessary update of property "${key}" in element <${StringToLowerCase.call(elm.tagName)}>.`); // tslint:disable-line
                 }
             }
             if (!isUndefined(vm)) {

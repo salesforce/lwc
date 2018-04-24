@@ -1,7 +1,7 @@
 <template>
     <section>
         <template iterator:x={items}>
-            <div data-islast={x.last} data-isfirst={x.first}><span>Row: {x.index}</span>. Value: {x.value}</div>
+            <div key={x.value.id} data-islast={x.last} data-isfirst={x.first}><span>Row: {x.index}</span>. Value: {x.value}</div>
         </template>
     </section>
 </template>

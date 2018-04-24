@@ -11,7 +11,9 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     maxlength: '10'
                 },
                 props: {
-                    checked: true
+                    required: true,
+                    readOnly: true,
+                    checked: true,
                 },
                 key: 1
             },

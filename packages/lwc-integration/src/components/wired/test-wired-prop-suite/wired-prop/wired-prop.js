@@ -1,9 +1,9 @@
 import { Element, api, wire } from 'engine';
-import { serviceTodo } from 'todo';
+import { getTodo } from 'todo';
 export default class WiredProp extends Element {
     @api todoId;
 
-    @wire(serviceTodo, { id: '$todoId' })
+    @wire(getTodo, { id: '$todoId' })
     todo;
 
     get error() {

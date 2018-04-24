@@ -1,19 +1,15 @@
-import { Element } from 'engine';
+import { Element, api, wire, track } from 'engine';
+import { getTodo } from 'x-todo-api';
 
 export default class SingleWireMethod extends Element {
     @api todoId;
 
-    @wire('todo', { id: '$todoId' })
-    function(error, data) {
-        this.state.error = error;
-        this.state.todo = data;
-    }
+    @track error = undefined;
+    @track todo = undefined;
 
-    constructor() {
-        super();
-        this.state = {
-            error: undefined,
-            todo: undefined
-        };
+    @wire(getTodo, { id: '$todoId' })
+    function({error, data}) {
+        this.error = error;
+        this.todo = data;
     }
 }

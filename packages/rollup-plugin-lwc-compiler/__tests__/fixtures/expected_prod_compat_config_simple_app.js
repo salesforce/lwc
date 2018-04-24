@@ -49,11 +49,11 @@
       return [d("div", { key: 1 }, [c(p(b, "x"))])];
     }
     function h(a) {
-      var b = w(a, "c"),
-        c = w(a, "h");
+      var b = x(a, "c"),
+        c = x(a, "h");
       return [
         c("div", { classMap: { container: !0 }, key: 2 }, [
-          b("x-foo", v, { props: { x: "1" }, key: 1 })
+          b("x-foo", w, { props: { x: "1" }, key: 1 })
         ])
       ];
     }
@@ -73,7 +73,8 @@
     var s = Proxy.setKey,
       t = Proxy.callKey,
       u = Proxy.getKey,
-      v = (function(a) {
+      v = Proxy.concat,
+      w = (function(a) {
         function c() {
           var a, d;
           b(this, c);
@@ -87,7 +88,7 @@
                 u((a = u(c, "__proto__") || Object.getPrototypeOf(c)), "call"),
                 "apply",
                 a,
-                [this].concat(h)
+                v([this], h)
               )
             )),
             s(d, "x", void 0),
@@ -107,26 +108,26 @@
           c
         );
       })(a.Element);
-    s(v, "publicProps", { x: { config: 0 } });
-    var w = Proxy.getKey,
-      x = Proxy.setKey;
+    s(w, "publicProps", { x: { config: 0 } });
+    var x = Proxy.getKey,
+      y = Proxy.setKey;
     if (n) {
-      var y = "x-app_app";
-      x(h, "token", y), x(h, "style", n("x-app", y));
+      var z = "x-app_app";
+      y(h, "token", z), y(h, "style", n("x-app", z));
     }
-    var z = Proxy.callKey,
-      A = Proxy.getKey,
-      B = Proxy.setKey,
-      C = (function(a) {
+    var A = Proxy.callKey,
+      B = Proxy.getKey,
+      C = Proxy.setKey,
+      D = (function(a) {
         function c() {
           var a;
           return (
             b(this, c),
             (a = e(
               this,
-              z(A(c, "__proto__") || Object.getPrototypeOf(c), "call", this)
+              A(B(c, "__proto__") || Object.getPrototypeOf(c), "call", this)
             )),
-            B(a, "list", []),
+            C(a, "list", []),
             a
           );
         }
@@ -143,8 +144,8 @@
           c
         );
       })(a.Element),
-      D = Proxy.callKey,
-      E = D(document, "getElementById", "main"),
-      F = a.createElement("x-app", { is: C });
-    D(E, "appendChild", F);
+      E = Proxy.callKey,
+      F = E(document, "getElementById", "main"),
+      G = a.createElement("x-app", { is: D });
+    E(F, "appendChild", G);
   })(engine);

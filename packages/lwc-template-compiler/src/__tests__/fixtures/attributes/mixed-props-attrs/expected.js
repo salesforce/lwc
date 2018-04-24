@@ -2,6 +2,7 @@ import _nsFoo from 'ns-foo';
 import _nsBar from 'ns-bar';
 import _nsBuzz from 'ns-buzz';
 import _nsTable from 'ns-table';
+import _nsInput from "ns-input";
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { c: api_custom_element, h: api_element } = $api;
 
@@ -36,14 +37,15 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             },
             attrs: {
                 'data-xx': 'foo',
-                'aria-hidden': 'hidden',
-                role: 'xx',
-                tabindex: 'bar'
             },
             props: {
+                ariaDescribedBy: 'describedby',
+                ariaHidden: 'hidden',
                 fooBar: 'x',
                 foo: 'bar',
-                bgcolor: 'blue'
+                role: 'xx',
+                tabIndex: 'bar',
+                bgColor: 'blue',
             },
             key: 3
         }),
@@ -74,10 +76,10 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         api_custom_element('div', _nsBuzz, {
             attrs: {
                 is: 'ns-buzz',
-                'aria-hidden': 'hidden'
             },
             props: {
-                bgcolor: 'x'
+                bgColor: 'x',
+                ariaHidden: 'hidden'
             },
             key: 6
         }),
@@ -93,15 +95,25 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
         ),
         api_custom_element('table', _nsTable, {
             attrs: {
-                bgcolor: 'x',
                 is: 'ns-table',
-                tabindex: '2'
             },
             props: {
+                bgColor: 'x',
+                tabIndex: '2',
                 bar: 'test',
                 min: '3'
             },
             key: 8
+        }),
+        api_custom_element("input", _nsInput, {
+            attrs: {
+                is: "ns-input"
+            },
+            props: {
+                minLength: "3",
+                maxLength: "10"
+            },
+            key: 9
         }),
         api_element(
             'div',
@@ -110,7 +122,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 attrs: {
                     'aria-hidden': 'hidden'
                 },
-                key: 9
+                key: 10
             },
             []
         )

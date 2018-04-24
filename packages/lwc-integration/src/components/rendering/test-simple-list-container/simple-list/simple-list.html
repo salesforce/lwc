@@ -2,10 +2,12 @@
     <div>
         <ul>
             <li class="first">header</li>
-            <li class="number" for:each={data} for:item="item">
-                Value of X = {item.x}
-            </li>
-             <li class="last">footer</li>
+            <template for:index="index" for:each={data} for:item="item">
+                <li key={item} class="number" >
+                    Value of X = {item}
+                </li>
+            </template>
+            <li class="last">footer</li>
         </ul>
     </div>
 </template>

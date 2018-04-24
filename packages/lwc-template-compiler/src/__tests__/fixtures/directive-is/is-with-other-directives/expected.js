@@ -20,7 +20,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                 attrs: {
                                     is: 'ns-row'
                                 },
-                                key: api_key(1, row)
+                                key: api_key(1, row.id)
                             })
                             : null;
                     })

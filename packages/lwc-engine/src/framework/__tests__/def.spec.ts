@@ -26,123 +26,6 @@ describe('def', () => {
             expect(() => target.getComponentDef(def)).toThrow();
         });
 
-        it('should understand static observedAttributes', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['title', 'tabindex'];
-
-            expect(target.getComponentDef(MyComponent).observedAttrs).toEqual({
-                title: 1,
-                tabindex: 1,
-            });
-        });
-
-        it('should throw error when observedAttribute is kebab case and is public prop', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 0
-                }
-            };
-
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute is misspelled global attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['contentEditable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "contentEditable" in component MyComponent observedAttributes. "contentEditable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should throw error when observedAttribute is kebab case global attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['content-editable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "content-editable" in component MyComponent observedAttributes. "content-editable" is not a valid global HTML Attribute. Did you mean "contenteditable"? See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should throw error when observedAttribute is camelCased and is public prop', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['isRecordDetail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 0
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute references setter', () => {
-            class MyComponent extends Element  {
-                get isRecordDetail() {}
-                set isRecordDetail(value) {}
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 3
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute references computed prop', () => {
-            class MyComponent extends Element  {
-                get isRecordDetail() {}
-                set isRecordDetail(value) {}
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['is-record-detail'];
-            MyComponent.publicProps = {
-                isRecordDetail: {
-                    config: 3
-                }
-            };
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow();
-        });
-
-        it('should throw error when observedAttribute is not a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['isRecordDetail'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).toThrow('Invalid entry "isRecordDetail" in component MyComponent observedAttributes. "isRecordDetail" is not a valid global HTML Attribute. See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes');
-        });
-
-        it('should not throw error when observedAttribute is a valid global HTML attribute', () => {
-            class MyComponent extends Element  {
-                attributeChangedCallback() {}
-            }
-            MyComponent.observedAttributes = ['contenteditable'];
-            expect(() => {
-                target.getComponentDef(MyComponent);
-            }).not.toThrow();
-        });
-
         it('should understand static publicMethods', () => {
             class MyComponent extends Element  {
                 foo() {}
@@ -173,15 +56,109 @@ describe('def', () => {
                 },
                 xBar: {},
             };
-            expect(target.getComponentDef(MyComponent).props).toEqual({
-                foo: {
-                    config: 1,
-                    type: 'any',
-                },
-                xBar: {
-                    config: 0,
-                    type: 'any',
-                }
+            const { props } = target.getComponentDef(MyComponent);
+            expect(props.foo).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'x-bar',
+            });
+        });
+
+        it('should provide default html props', () => {
+            function foo() {}
+            class MyComponent extends Element  {}
+            expect(Object.keys(target.getComponentDef(MyComponent).props).reduce((reducer, propName) => {
+                reducer[propName] = null;
+                return reducer;
+            }, {})).toEqual({
+                accessKey: null,
+                ariaActiveDescendant: null,
+                ariaAtomic: null,
+                ariaAutoComplete: null,
+                ariaBusy: null,
+                ariaChecked: null,
+                ariaControls: null,
+                ariaCurrent: null,
+                ariaDescribedBy: null,
+                ariaDisabled: null,
+                ariaExpanded: null,
+                ariaFlowTo: null,
+                ariaHasPopUp: null,
+                ariaHidden: null,
+                ariaInvalid: null,
+                ariaLabel: null,
+                ariaLabelledBy: null,
+                ariaLevel: null,
+                ariaLive: null,
+                ariaMultiSelectable: null,
+                ariaMultiLine: null,
+                ariaOrientation: null,
+                ariaOwns: null,
+                ariaPosInSet: null,
+                ariaPressed: null,
+                ariaReadOnly: null,
+                ariaRelevant: null,
+                ariaRequired: null,
+                ariaSelected: null,
+                ariaSetSize: null,
+                ariaSort: null,
+                ariaValueMax: null,
+                ariaValueMin: null,
+                ariaValueNow: null,
+                ariaValueText: null,
+                ariaColCount: null,
+                ariaColIndex: null,
+                ariaDetails: null,
+                ariaErrorMessage: null,
+                ariaKeyShortcuts: null,
+                ariaModal: null,
+                ariaPlaceholder: null,
+                ariaRoleDescription: null,
+                ariaRowCount: null,
+                ariaRowIndex: null,
+                ariaRowSpan: null,
+                dir: null,
+                draggable: null,
+                hidden: null,
+                id: null,
+                lang: null,
+                role: null,
+                tabIndex: null,
+                title: null,
+            });
+        });
+
+        it('should provide definition for each individual html prop', () => {
+            function foo() {}
+            class MyComponent extends Element  {}
+            const { props } = target.getComponentDef(MyComponent);
+            // aria multi-capital
+            expect(props.ariaActiveDescendant).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'aria-activedescendant',
+            });
+            expect(props.role).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'role',
+            });
+            // aria exception
+            expect(props.ariaAutoComplete).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'aria-autocomplete',
+            });
+            // explicit mapping
+            expect(props.tabIndex).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'tabindex',
             });
         });
 
@@ -222,23 +199,26 @@ describe('def', () => {
                 fizz: {}
             };
 
-            expect(target.getComponentDef(MySubComponent).props).toEqual({
-                foo: {
-                    config: 1,
-                    type: 'any',
-                },
-                xBar: {
-                    config: 3,
-                    type: 'any',
-                },
-                fizz: {
-                    config: 0,
-                    type: 'any',
-                },
-                x: {
-                    config: 1,
-                    type: 'any',
-                }
+            const { props } = target.getComponentDef(MySubComponent);
+            expect(props.foo).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'foo',
+            });
+            expect(props.xBar).toEqual({
+                config: 3,
+                type: 'any',
+                attr: 'x-bar',
+            });
+            expect(props.fizz).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'fizz',
+            });
+            expect(props.x).toEqual({
+                config: 1,
+                type: 'any',
+                attr: 'x',
             });
         });
 
@@ -283,19 +263,6 @@ describe('def', () => {
             });
         });
 
-        it('should not inherit observedAttrs, it must be a manual process', function() {
-            class MyComponent extends Element {}
-            MyComponent.observedAttributes = ['title', 'tabindex'];
-
-            class MySubComponent extends MyComponent {}
-            MySubComponent.observedAttributes = ['title', 'id'];
-
-            expect(target.getComponentDef(MySubComponent).observedAttrs).toEqual({
-                title: 1,
-                id: 1
-            });
-        });
-
         it('should inherit static wire properly', () => {
             class MyComponent extends Element  {}
             MyComponent.wire = { x: { type: 'record' } };
@@ -328,11 +295,23 @@ describe('def', () => {
             MyComponent.publicProps = {
                 foo: {}
             };
-            expect(target.getComponentDef(MyComponent).props).toEqual({
-                foo: {
-                    config: 0,
-                    type: 'any',
-                }
+            expect(target.getComponentDef(MyComponent).props.foo).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'foo',
+            });
+        });
+
+        it('should support html properties with exceptional transformation', function() {
+            class MyComponent extends Element  {}
+            MyComponent.publicProps = {
+                readOnly: {}
+            };
+            // non-global html property with weird map
+            expect(target.getComponentDef(MyComponent).props.readOnly).toEqual({
+                config: 0,
+                type: 'any',
+                attr: 'readonly',
             });
         });
     });

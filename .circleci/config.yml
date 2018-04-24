@@ -11,7 +11,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install --frozen-lockfile
 
@@ -20,7 +20,7 @@ jobs:
             - ~/.cache/yarn
             - node_modules
             - packages/*/node_modules
-          key: yarn-v3-{{ checksum "yarn.lock" }}
+          key: yarn-v4-{{ checksum "yarn.lock" }}
 
       - run:
           name: Run Linting
@@ -42,7 +42,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install
       - run:
@@ -61,7 +61,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run: yarn install
 
@@ -98,7 +98,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - yarn-v3-{{ checksum "yarn.lock" }}
+          - yarn-v4-{{ checksum "yarn.lock" }}
 
       - run:
           name: Setup dynamic environment variables
@@ -116,7 +116,8 @@ jobs:
       - run: yarn install
       - run:
           name: Preformance Test
-          command: yarn test:performance
+          working_directory: packages/benchmark
+          command: yarn start --externalStorage=@best/store-aws --runner remote
 
       - store_artifacts:
           path: ~/lwc/packages/benchmark/__benchmark_results__/
@@ -124,7 +125,8 @@ jobs:
 
       - run:
           name: Comparing Benchmarks
-          command: cd packages/benchmark/ && yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
+          working_directory: packages/benchmark
+          command: yarn start --compareStats ${BASE_COMMIT} ${TARGET_COMMIT} --externalStorage=@best/store-aws --gitIntegration
 
 
 workflows:

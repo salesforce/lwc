@@ -10,13 +10,13 @@
         Other Child
         <template if:true={isTrue}>
             <template for:each={items} for:item="item">
-                <p>X1</p><p>X2</p>
+                <p key={item.id}>X1</p><p key={item.id}>X2</p>
             </template>
         </template>
     </section>
     <section class="s3">
         <p>Last child</p>
-        <div for:each={items} for:item="item"></div>
+        <div for:each={items} for:item="item" key={item.id}></div>
     </section>
     <section class="s4">
         <p>Other child1</p>

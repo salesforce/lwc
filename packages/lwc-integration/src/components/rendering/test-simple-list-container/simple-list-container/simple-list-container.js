@@ -7,7 +7,8 @@ export default class SimpleListContainer extends Element {
     @track max = 35;
 
     handleClick() {
-        this.root.querySelector('simple-list').reshuffle();
+        this.min = Math.floor(Math.random() * 100);
+        this.max = Math.floor(Math.random() * (100 - this.min)) + this.min;
     }
 
     onMinChange(event) {

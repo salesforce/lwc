@@ -1,6 +1,7 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import track from "../track";
+import readonly from "../readonly";
 
 describe('track.ts', () => {
     describe('integration', () => {
@@ -246,17 +247,43 @@ describe('track.ts', () => {
         expect(elm1.counter).toBe(countVal);
     });
 
-    describe('@track misuse', () => {
-        it('should throw when invoking track as a function', () => {
+    describe('track()', () => {
+        it('should throw when invoking it with no arguments', () => {
+            expect(() => {
+                track();
+            }).toThrow();
+        });
+
+        it('should throw when invoking it with more than one argument', () => {
+            expect(() => {
+                track({}, {});
+            }).toThrow();
+        });
+
+        it('should throw when attempting to mutate a readonly object via track', () => {
+            const o = track(readonly({}));
+            expect(() => {
+                o.x = 1;
+            }).toThrow();
+        });
+
+        it('should produce a trackable object', () => {
+            let counter = 0;
             class MyComponent extends Element {
                 constructor() {
                     super();
-                    track();
+                    this.foo = track({ bar: 1 });
+                }
+                renderedCallback() {
+                    this.foo.bar = 2;
+                    counter += 1;
                 }
             }
-            expect(() => {
-                createElement('x-foo', { is: MyComponent });
-            }).toThrow('@track may only be used as a decorator.');
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            return Promise.resolve(() => {
+                expect(counter).toBe(2); // two rendering phases due to the mutation of this.foo
+            });
         });
     });
 });
