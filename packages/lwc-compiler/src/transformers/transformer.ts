@@ -16,7 +16,7 @@ import { isString, isUndefined } from "../utils";
 import { MetadataCollector } from "../bundler/meta-collector";
 
 // TODO: Improve on metadata type by providing consistent interface. Currently
-// both metadata classes provide different signature
+// javascript transformer output differs from css and html in that later return a promise
 export interface FileTransformerResult {
     code: string;
     metadata?:

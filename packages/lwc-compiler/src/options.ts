@@ -8,12 +8,6 @@ const DEFAULT_OUTPUT_CONFIG = {
     compat: false
 };
 
-// const DEFAULT_OUTPUT_CONFIG_ENV = {
-//     env: {
-//         NODE_ENV: "development",
-//     }
-// };
-
 export type OutputProxyCompatConfig =
     | { global: string }
     | { module: string }
@@ -23,7 +17,7 @@ export interface OutputConfig {
     env?: { [name: string]: string };
     compat?: boolean;
     minify?: boolean;
-    resolveProxyCompat?: OutputProxyCompatConfig; // TODO: bad name - rename ( open a work item )
+    resolveProxyCompat?: OutputProxyCompatConfig;
 }
 
 export interface BundleFiles {
@@ -52,7 +46,6 @@ export interface NormalizedOutputConfig extends OutputConfig {
     compat: boolean;
     minify: boolean;
     env: {
-        // NODE_ENV: string;
         [name: string]: string;
     };
 }

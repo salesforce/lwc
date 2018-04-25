@@ -11,11 +11,7 @@
     "rootDir": "src",
     "outDir": "dist/commonjs",
     "declarationDir": "dist/types",
-
-    // Environment Configuration
     "moduleResolution": "node",
-
-    // Enhance Strictness
     "strict": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,

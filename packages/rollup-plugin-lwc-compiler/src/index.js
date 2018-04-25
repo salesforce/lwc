@@ -150,7 +150,7 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
         },
 
         transformBundle(code) {
-            if (mode === 'compat' || mode === 'prod_compat') {
+            if (mode === "compat" || mode === "prod_compat") {
                 code = rollupCompatInstance.transformBundle(code);
             }
             let result = undefined;
