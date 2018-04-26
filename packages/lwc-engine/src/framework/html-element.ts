@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { isFalse, ArraySplice, ArrayIndexOf, create, ArrayPush, isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
     addEventListener,
     removeEventListener,
@@ -15,6 +15,7 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
     CustomEvent,
+    getRootNode,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered, invokeComponentCallback } from "./invoker";
@@ -146,11 +147,10 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener) {
     if (isUndefined(wrappedListener)) {
         wrappedListener = function(event: Event) {
             // * if the event is dispatched directly on the host, it is observable from the custom element
-            if (event.target !== event.currentTarget) {
-                return;
+            if (event.target === event.currentTarget || getRootNode.call(event.target) === event.currentTarget) {
+                const e = pierce(vm, event);
+                invokeComponentCallback(vm, listener, [e]);
             }
-            const e = pierce(vm, event);
-            invokeComponentCallback(vm, listener, [e]);
         };
         eventListeners.set(listener, wrappedListener);
     }

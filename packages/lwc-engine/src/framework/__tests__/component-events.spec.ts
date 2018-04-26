@@ -350,4 +350,68 @@ describe('Events on Custom Elements', () => {
         elm.click();
     });
 
+    it('it should call event handler correctly when events bubble from template', () => {
+        expect.assertions(1);
+        let clickSpy = jest.fn();
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            connectedCallback() {
+                const cmp = this;
+                this.addEventListener('click', clickSpy);
+            }
+
+            clickDiv() {
+                const div = this.template.querySelector('div');
+                div.click();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        expect(clickSpy).toHaveBeenCalled();
+    });
+
+    it('should call event handler with correct context when events bubble', () => {
+        expect.assertions(1);
+        let clickSpy;
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+
+        class MyComponent extends Element {
+            connectedCallback() {
+                const cmp = this;
+                clickSpy = jest.fn().mockImplementation(function (evt) {
+                    expect(this).toBe(cmp);
+                });
+
+                this.addEventListener('click', clickSpy);
+            }
+
+            clickDiv() {
+                const div = this.template.querySelector('div');
+                div.click();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+    });
+
 });
