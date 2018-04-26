@@ -377,9 +377,9 @@ describe('html-element', () => {
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.root.addEventListener('click', (e) => {
+                    this.template.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
-                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is visible for the root, always
+                        expect(e.target).toBe(this.template.querySelector('div')); // notice that target is visible for the root, always
                         expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
@@ -387,7 +387,7 @@ describe('html-element', () => {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').click();
+                    this.template.querySelector('div').click();
                 }
             }
             Foo.publicMethods = ['run'];
@@ -403,14 +403,14 @@ describe('html-element', () => {
             }
             class Foo extends Element {
                 handleClick(e: Event) {
-                    expect(e.target).toBe(this.root.querySelector('div'));
-                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                    expect(e.target).toBe(this.template.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.template.querySelector('div'));
                 }
                 render() {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').click();
+                    this.template.querySelector('div').click();
                 }
             }
             Foo.publicMethods = ['run'];
@@ -428,9 +428,9 @@ describe('html-element', () => {
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.root.addEventListener('xyz', (e) => {
+                    this.template.addEventListener('xyz', (e) => {
                         expect(e.bubbles).toBe(true);
-                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is host element
+                        expect(e.target).toBe(this.template.querySelector('div')); // notice that target is host element
                         expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
                     });
                 }
@@ -438,12 +438,12 @@ describe('html-element', () => {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: true,
                     }));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: false,
                     }));
@@ -462,19 +462,19 @@ describe('html-element', () => {
             }
             class Foo extends Element {
                 handleXyz(e: Event) {
-                    expect(e.target).toBe(this.root.querySelector('div'));
-                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                    expect(e.target).toBe(this.template.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.template.querySelector('div'));
                 }
                 render() {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: true,
                     }));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: false,
                     }));
@@ -1250,7 +1250,7 @@ describe('html-element', () => {
             it('should return null even if the shadow root value is set', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                 }
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
@@ -1282,7 +1282,7 @@ describe('html-element', () => {
             it('should not overwrite role attribute when setter does nothing', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                     get role() {}
                     set role(value) {}
@@ -1301,7 +1301,7 @@ describe('html-element', () => {
             it('should reflect role from root when element value is set to null', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                 }
                 const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
@@ -1318,10 +1318,10 @@ describe('html-element', () => {
             it('should remove role attribute from element when root and value is null', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                     clearRole() {
-                        this.root.role = null;
+                        this.template.role = null;
                     }
                 }
                 MyComponent.publicMethods = ['clearRole'];
@@ -1341,7 +1341,7 @@ describe('html-element', () => {
                 it('getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.role = 'tab'
+                            this.template.role = 'tab'
                         }
                     }
                     const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
@@ -1383,7 +1383,7 @@ describe('html-element', () => {
             it('should return null even if the shadow root value is set', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.ariaChecked = 'true';
+                        this.template.ariaChecked = 'true';
                     }
                 }
                 const element = createElement('prop-getter-aria-checked', { is: MyComponent });
@@ -1397,7 +1397,7 @@ describe('html-element', () => {
                 it('internal getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.ariaChecked = 'true';
+                            this.template.ariaChecked = 'true';
                             this.setAttribute('aria-checked', 'false');
                             this.removeAttribute('aria-checked');
                         }
@@ -1410,7 +1410,7 @@ describe('html-element', () => {
                 it('external getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.ariaChecked = 'true'
+                            this.template.ariaChecked = 'true'
                         }
                     }
                     const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
@@ -1452,7 +1452,7 @@ describe('html-element', () => {
             it('should return null value when not value is set, shadow root value should not leak out', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.ariaLabel = 'foo';
+                        this.template.ariaLabel = 'foo';
                     }
                 }
                 const element = createElement('prop-getter-aria-label', { is: MyComponent });

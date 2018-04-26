@@ -21,7 +21,7 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('click', clicked);
+                this.template.addEventListener('click', clicked);
             }
             render() {
                 return html;
@@ -29,7 +29,7 @@ describe('Events on Custom Elements', () => {
         }
         elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toHaveLength(1);
     });
 
@@ -45,7 +45,7 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('click', clicked1);
+                this.template.addEventListener('click', clicked1);
             }
             render() {
                 return html;
@@ -70,8 +70,8 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('click', clicked1);
-                this.root.addEventListener('click', clicked2);
+                this.template.addEventListener('click', clicked1);
+                this.template.addEventListener('click', clicked2);
             }
             render() {
                 return html;
@@ -95,7 +95,7 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('click', clicked1);
+                this.template.addEventListener('click', clicked1);
             }
             render() {
                 return html;
@@ -119,7 +119,7 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('test', tested);
+                this.template.addEventListener('test', tested);
             }
             render() {
                 return html;
@@ -131,7 +131,7 @@ describe('Events on Custom Elements', () => {
         expect(result).toHaveLength(1);
     });
 
-    it('should expose root as context to the event handler when defined from within (wc-compat)', function() {
+    it('should expose template as context to the event handler when defined from within (wc-compat)', function() {
         const result = [];
         function clicked() { result.push(this); result.push.apply(result, arguments); }
         function html($api) {
@@ -142,7 +142,7 @@ describe('Events on Custom Elements', () => {
             constructor() {
                 super();
                 cmp = this;
-                this.root.addEventListener('click', clicked);
+                this.template.addEventListener('click', clicked);
             }
             render() {
                 return html;
@@ -164,7 +164,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             constructor() {
                 super();
-                this.root.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -172,7 +172,7 @@ describe('Events on Custom Elements', () => {
                 return html;
             }
             run() {
-                const div = this.root.querySelector('div');
+                const div = this.template.querySelector('div');
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
@@ -190,7 +190,7 @@ describe('Events on Custom Elements', () => {
         }
         class MyComponent extends Element {
             connectedCallback() {
-                this.root.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -198,7 +198,7 @@ describe('Events on Custom Elements', () => {
                 return html;
             }
             run() {
-                const div = this.root.querySelector('div');
+                const div = this.template.querySelector('div');
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
@@ -217,7 +217,7 @@ describe('Events on Custom Elements', () => {
         }
         class MyChild extends Element {
             connectedCallback() {
-                this.root.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -225,7 +225,7 @@ describe('Events on Custom Elements', () => {
                 return html1;
             }
             run() {
-                const div = this.root.querySelector('div');
+                const div = this.template.querySelector('div');
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
@@ -238,7 +238,7 @@ describe('Events on Custom Elements', () => {
                 return html2;
             }
             run() {
-                const child = this.root.querySelector('x-child');
+                const child = this.template.querySelector('x-child');
                 child.run();
             }
         }
@@ -258,7 +258,7 @@ describe('Events on Custom Elements', () => {
         class MyChild extends Element {
             constructor() {
                 super();
-                this.root.addEventListener('c-event', function() {
+                this.template.addEventListener('c-event', function() {
                     count += 1;
                 });
             }
@@ -266,7 +266,7 @@ describe('Events on Custom Elements', () => {
                 return html1;
             }
             run() {
-                const div = this.root.querySelector('div');
+                const div = this.template.querySelector('div');
                 div.dispatchEvent(new CustomEvent('c-event', { bubbles: true, composed: true }));
             }
         }
@@ -279,7 +279,7 @@ describe('Events on Custom Elements', () => {
                 return html2;
             }
             run() {
-                const child = this.root.querySelector('x-child');
+                const child = this.template.querySelector('x-child');
                 child.run();
             }
         }
@@ -289,6 +289,129 @@ describe('Events on Custom Elements', () => {
         document.body.appendChild(elm);
         elm.run();
         expect(count).toBe(1);
+    });
+
+    it('should add event listeners on component instance', () => {
+        expect.assertions(2);
+        let clickSpy;
+        class MyComponent extends Element {
+            connectedCallback() {
+                clickSpy = jest.fn().mockImplementation((evt) => {
+                    expect(evt.target).toBe(this);
+                });
+                this.addEventListener('click', clickSpy);
+            }
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+        expect(clickSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove event listeners from component instance', () => {
+        const clickSpy = jest.fn();
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', clickSpy);
+            }
+
+            removeClickListener() {
+                this.removeEventListener('click', clickSpy);
+            }
+        }
+
+        MyComponent.publicMethods = ['removeClickListener'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+        elm.removeClickListener();
+        elm.click();
+        expect(clickSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call event handler with correct context', () => {
+        expect.assertions(1);
+        let clickSpy;
+        class MyComponent extends Element {
+            connectedCallback() {
+                const cmp = this;
+                clickSpy = jest.fn().mockImplementation(function (evt) {
+                    expect(this).toBe(cmp);
+                });
+
+                this.addEventListener('click', clickSpy);
+            }
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+    });
+
+    it('it should call event handler correctly when events bubble from template', () => {
+        expect.assertions(1);
+        let clickSpy = jest.fn();
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            connectedCallback() {
+                const cmp = this;
+                this.addEventListener('click', clickSpy);
+            }
+
+            clickDiv() {
+                const div = this.template.querySelector('div');
+                div.click();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        expect(clickSpy).toHaveBeenCalled();
+    });
+
+    it('should call event handler with correct context when events bubble', () => {
+        expect.assertions(1);
+        let clickSpy;
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+
+        class MyComponent extends Element {
+            connectedCallback() {
+                const cmp = this;
+                clickSpy = jest.fn().mockImplementation(function (evt) {
+                    expect(this).toBe(cmp);
+                });
+
+                this.addEventListener('click', clickSpy);
+            }
+
+            clickDiv() {
+                const div = this.template.querySelector('div');
+                div.click();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
     });
 
 });

@@ -21,7 +21,7 @@ describe('unwrap', () => {
         }
         class CustomEl extends Element {
             query() {
-                return this.root.querySelector('div');
+                return this.template.querySelector('div');
             }
             render() {
                 return renderHandler;

@@ -425,7 +425,7 @@ describe('template', () => {
                 }
                 renderedCallback() {
                     counter++;
-                    div = this.root.querySelector('div');
+                    div = this.template.querySelector('div');
                 }
             }
             MyComponent.publicProps = { x: 1 };
@@ -460,7 +460,7 @@ describe('template', () => {
                 }
                 renderedCallback() {
                     counter++;
-                    div = this.root.querySelector('div');
+                    div = this.template.querySelector('div');
                 }
             }
             MyComponent.publicProps = { x: 1 };
