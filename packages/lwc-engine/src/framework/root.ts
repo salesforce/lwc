@@ -168,7 +168,7 @@ export class Root implements ShadowRoot {
 
     addEventListener(type: string, listener: EventListener, options: any) {
         const vm = getCustomElementVM(this);
-        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options));
+        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options);
     }
 
     removeEventListener(type: string, listener: EventListener, options: any) {
