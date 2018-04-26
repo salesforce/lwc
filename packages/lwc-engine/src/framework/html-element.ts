@@ -244,7 +244,7 @@ class LWCElement implements Component {
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.root, selectors)) {
+            if (shadowRootQuerySelector(this.template, selectors)) {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
             }
         }
@@ -262,7 +262,7 @@ class LWCElement implements Component {
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
 
         if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
+            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         }
