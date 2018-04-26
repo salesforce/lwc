@@ -4,9 +4,9 @@ const { rollup } = require("rollup");
 const { version } = require("../package.json");
 
 async function updateVersion(version) {
-    const source = destination = "dist/commonjs/index.js";
+    const inputPath = (outputPath = path.resolve("dist/commonjs/index.js"));
     const result = await rollup({
-        input: path.resolve(source),
+        input: inputPath,
         plugins: [
             replace({
                 __VERSION__: version
@@ -15,9 +15,9 @@ async function updateVersion(version) {
     });
 
     await result.write({
-        file: path.resolve(destination),
+        file: outputPath,
         format: "cjs",
-        sourcemap: true,
+        sourcemap: false, // keep typescript generated map to stay consistent with the rest of the files.
     });
 
     console.log("Compiler version: ", version);
@@ -25,8 +25,8 @@ async function updateVersion(version) {
 
 if (!version || typeof version !== "string") {
     throw new Error(
-        "Failed to update compiler version. Expected version value as a string, received: ",
-        version
+        "Failed to update compiler version. Expected version value as a string, received: " +
+            version
     );
 }
 
