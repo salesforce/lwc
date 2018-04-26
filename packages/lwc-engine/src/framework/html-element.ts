@@ -144,14 +144,14 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener) {
 
     let wrappedListener = eventListeners.get(listener);
     if (isUndefined(wrappedListener)) {
-        wrappedListener = function (event: Event) {
+        wrappedListener = function(event: Event) {
             // * if the event is dispatched directly on the host, it is observable from the custom element
             if (event.target !== event.currentTarget) {
                 return;
             }
             const e = pierce(vm, event);
             invokeComponentCallback(vm, listener, [e]);
-        }
+        };
         eventListeners.set(listener, wrappedListener);
     }
     return wrappedListener;
