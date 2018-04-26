@@ -18,14 +18,14 @@ describe('root', () => {
 
     describe('integration', () => {
 
-        it('should support this.root.host', () => {
+        it('should support this.template.host', () => {
             class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
             expect(vm.component).toBe((vm.component as Component).root.host);
         });
 
-        it('should support this.root.mode', () => {
+        it('should support this.template.mode', () => {
             class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
@@ -214,7 +214,7 @@ describe('root', () => {
                 }
                 class MyComponent extends Element {
                     getContentWindow() {
-                        return this.root.querySelector('iframe').contentWindow;
+                        return this.template.querySelector('iframe').contentWindow;
                     }
                     render() {
                         return html;

@@ -1,8 +1,10 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { ArraySplice, ArrayIndexOf, create, ArrayPush, isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
+    addEventListener,
+    removeEventListener,
     getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
@@ -15,13 +17,53 @@ import {
     CustomEvent,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered } from "./invoker";
+import { isRendering, vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
+
+export function removeEventListenerFromCustomElement(vm: VM, type: string, listener: EventListener, options: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${type}".`);
+        assert.invariant(isFunction(listener), `Invalid second argument for this.template.removeEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
+        let { cmpEvents } = vm;
+        if (isUndefined(cmpEvents)) {
+            vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
+        }
+        if (isUndefined(cmpEvents[type])) {
+            cmpEvents[type] = [];
+        }
+        if (isUndefined(cmpEvents) || isUndefined(cmpEvents[type]) || ArrayIndexOf.call(cmpEvents[type], listener) === -1) {
+            assert.logError(`Did not find event listener ${listener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
+        }
+        ArraySplice.call(cmpEvents[type], ArrayIndexOf.call(cmpEvents[type], listener), 1);
+    }
+    removeEventListener.call(vm.elm, type, listener, options);
+}
+
+export function addEventListenerToCustomElement(vm, type: string, listener: EventListener, options: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
+        assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
+        let { cmpEvents } = vm;
+        if (isUndefined(cmpEvents)) {
+            vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
+        }
+        if (isUndefined(cmpEvents[type])) {
+            cmpEvents[type] = [];
+        }
+        if (ArrayIndexOf.call(cmpEvents[type], listener) !== -1) {
+            assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
+        }
+        ArrayPush.call(cmpEvents[type], listener);
+    }
+    addEventListener.call(vm.elm, type, listener, options);
+}
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -93,6 +135,28 @@ export interface ComposableEvent extends Event {
     composed: boolean;
 }
 
+const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
+
+function getWrappedComponentsListener(vm: VM, listener: EventListener) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+
+    let wrappedListener = eventListeners.get(listener);
+    if (isUndefined(wrappedListener)) {
+        wrappedListener = function (event: Event) {
+            // * if the event is dispatched directly on the host, it is observable from the custom element
+            if (event.target !== event.currentTarget) {
+                return;
+            }
+            const e = pierce(vm, event);
+            invokeComponentCallback(vm, listener, [e]);
+        }
+        eventListeners.set(listener, wrappedListener);
+    }
+    return wrappedListener;
+}
+
 // This should be as performant as possible, while any initialization should be done lazily
 class LWCElement implements Component {
     [ViewModelReflection]: VM;
@@ -147,18 +211,22 @@ class LWCElement implements Component {
         return dispatchEvent.call(elm, event);
     }
 
-    addEventListener(type: string, listener: EventListener, options: any) {
+    addEventListener(type: string, listener: EventListener, options?: any) {
+        const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            throw new Error(`Deprecated Method: usage of this.addEventListener("${type}", ...) in ${vm} is now deprecated. In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener().`);
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+            }
         }
+        addEventListenerToCustomElement(vm, type, getWrappedComponentsListener(vm, listener), options);
     }
 
-    removeEventListener(type: string, listener: EventListener, options: any) {
-        if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            throw new Error(`Deprecated Method: usage of this.removeEventListener("${type}", ...) in ${vm} is now deprecated alongside this.addEventListener(). In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener() and this.root.removeEventListener().`);
-        }
+    removeEventListener(type: string, listener: EventListener, options?: any) {
+        const vm = getCustomElementVM(this);
+        removeEventListenerFromCustomElement(vm, type, getWrappedComponentsListener(vm, listener), options);
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -244,8 +312,8 @@ class LWCElement implements Component {
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.root, selectors)) {
-                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
+            if (shadowRootQuerySelector(this.template, selectors)) {
+                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
             }
         }
 
@@ -262,8 +330,8 @@ class LWCElement implements Component {
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
 
         if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
-                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
+            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
+                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
             }
         }
         return pierce(vm, filteredNodes);
@@ -296,7 +364,7 @@ class LWCElement implements Component {
     get root(): ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
-            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return this.template;
     }

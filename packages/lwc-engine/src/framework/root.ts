@@ -8,7 +8,7 @@ import { pierce, piercingHook } from "./piercing";
 import { Context } from "./context";
 import { Component } from "./component";
 import { VNodeData } from "../3rdparty/snabbdom/types";
-import { getCustomElementVM } from "./html-element";
+import { getCustomElementVM, addEventListenerToCustomElement, removeEventListenerFromCustomElement } from "./html-element";
 import { Replicable, Membrane } from "./membrane";
 
 import { TargetSlot } from './membrane';
@@ -21,7 +21,6 @@ import {
     DOCUMENT_POSITION_CONTAINED_BY,
     compareDocumentPosition,
     getRootNode,
-    addEventListener,
     removeEventListener,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
@@ -79,7 +78,7 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
     const vm = getCustomElementVM(shadowRoot);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
+        assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
 
     const elm = getLinkedElement(shadowRoot);
@@ -91,7 +90,7 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
 export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
     const vm = getCustomElementVM(shadowRoot);
     if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
+        assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
     const elm = getLinkedElement(shadowRoot);
     pierce(vm, elm);
@@ -151,7 +150,7 @@ export class Root implements ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const component = getCustomElementComponent(this);
             if (isNull(node) && component.querySelector(selector)) {
-                assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+                assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         }
         return node;
@@ -161,7 +160,7 @@ export class Root implements ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const component = getCustomElementComponent(this);
             if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
-                assert.logWarning(`this.root.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+                assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
             }
         }
         return nodeList;
@@ -169,44 +168,12 @@ export class Root implements ShadowRoot {
 
     addEventListener(type: string, listener: EventListener, options: any) {
         const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
-            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
-            assert.invariant(isFunction(listener), `Invalid second argument for this.root.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
-            let { cmpEvents } = vm;
-            if (isUndefined(cmpEvents)) {
-                vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
-            }
-            if (isUndefined(cmpEvents[type])) {
-                cmpEvents[type] = [];
-            }
-            if (ArrayIndexOf.call(cmpEvents[type], listener) !== -1) {
-                assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
-            }
-            ArrayPush.call(cmpEvents[type], listener);
-        }
-        addEventListener.call(vm.elm, type, getWrappedListener(listener), options);
+        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options));
     }
 
     removeEventListener(type: string, listener: EventListener, options: any) {
         const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
-            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${type}".`);
-            assert.invariant(isFunction(listener), `Invalid second argument for this.root.removeEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
-            let { cmpEvents } = vm;
-            if (isUndefined(cmpEvents)) {
-                vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
-            }
-            if (isUndefined(cmpEvents[type])) {
-                cmpEvents[type] = [];
-            }
-            if (isUndefined(cmpEvents) || isUndefined(cmpEvents[type]) || ArrayIndexOf.call(cmpEvents[type], listener) === -1) {
-                assert.logError(`Did not find event listener ${listener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
-            }
-            ArraySplice.call(cmpEvents[type], ArrayIndexOf.call(cmpEvents[type], listener), 1);
-        }
-        removeEventListener.call(vm.elm, type, getWrappedListener(listener), options);
+        removeEventListenerFromCustomElement(vm, type, getWrappedListener(listener), options);
     }
     toString(): string {
         const component = getCustomElementComponent(this);
@@ -333,6 +300,9 @@ register({
                             while (root !== elm) {
                                 value = root;
                                 root = getRootNode.call(value);
+                            }
+                            if (value === elm) {
+                                return callback(component);
                             }
                             return callback(pierce(vm, value));
                         }

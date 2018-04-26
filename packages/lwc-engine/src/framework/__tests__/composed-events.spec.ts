@@ -12,7 +12,7 @@ describe('Composed events', () => {
 
         class ComposedEvents extends Element {
             triggerChildFoo() {
-                this.root.querySelector('x-custom-event-child').triggerFoo();
+                this.template.querySelector('x-custom-event-child').triggerFoo();
             }
             handleFoo() {
                 count += 1;
