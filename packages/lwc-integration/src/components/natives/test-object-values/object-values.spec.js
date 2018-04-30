@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Object.values', () => {
-    const URL = 'http://localhost:4567/object-values';
+    const URL = 'http://localhost:4567/natives/objectValues';
 
     before(() => {
         browser.url(URL);

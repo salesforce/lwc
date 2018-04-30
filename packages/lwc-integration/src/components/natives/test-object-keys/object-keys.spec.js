@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Object keys', () => {
-    const URL = 'http://localhost:4567/object-keys';
+    const URL = 'http://localhost:4567/natives/objectKeys/';
     let element;
 
     before(() => {

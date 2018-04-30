@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Event dispatch piercing', () => {
-    const URL = 'http://localhost:4567/pierce-dispatch-event';
+    const URL = 'http://localhost:4567/piercing/pierceDispatchEvent/';
 
     before(() => {
         browser.url(URL);

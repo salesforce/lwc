@@ -23,7 +23,7 @@ jest.mock('compat-polyfills', () => {
 });
 
 describe('default configuration', () => {
-    const rollupOptions = {};
+    const rollupOptions = { allowUnnamespaced: true };
 
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
@@ -35,7 +35,7 @@ describe('default configuration', () => {
 });
 
 describe('rollup in compat mode', () => {
-    const rollupOptions = { mode: 'compat' };
+    const rollupOptions = { allowUnnamespaced: true, mode: 'compat' };
 
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
@@ -47,7 +47,7 @@ describe('rollup in compat mode', () => {
 });
 
 describe('rollup in prod_compat mode', () => {
-    const rollupOptions = { mode: 'prod_compat' };
+    const rollupOptions = { allowUnnamespaced: true, mode: 'prod_compat' };
     it(`simple app`, () => {
         const entry = path.join(simpleAppDir, 'main.js');
         return doRollup(entry, rollupOptions).then(({ code: actual }) => {

@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Cross-origin contentWindow communication', () => {
-    const URL = 'http://localhost:4567/iframe-compat';
+    const URL = 'http://localhost:4567/dom/iframeCompat';
     let element;
 
     before(() => {

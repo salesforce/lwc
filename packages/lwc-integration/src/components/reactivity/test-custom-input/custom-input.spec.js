@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing component: custom-input', () => {
-    const URL = 'http://localhost:4567/custom-input';
+    const URL = 'http://localhost:4567/reactivity/customInput/';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Testing component: custom-input', () => {
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'custom-input');
+        assert.equal(title, 'customInput');
         assert.ok(element);
     });
 

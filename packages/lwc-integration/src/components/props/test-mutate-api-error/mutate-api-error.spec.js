@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('@api prop mutation errors', () => {
-    const URL = 'http://localhost:4567/mutate-api-error';
+    const URL = 'http://localhost:4567/props/mutateApiError/';
     let element;
 
     before(() => {

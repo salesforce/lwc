@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 720: Wrap all string literal variables with toString method', () => {
-    const URL = 'http://localhost:4567/null-logging';
+    const URL = 'http://localhost:4567/rendering/nullLogging/';
     let element;
 
     before(() => {

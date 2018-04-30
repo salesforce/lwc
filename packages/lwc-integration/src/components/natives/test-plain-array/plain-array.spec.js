@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Plain array methods', () => {
-    const URL = 'http://localhost:4567/plain-array';
+    const URL = 'http://localhost:4567/natives/plainArray/';
 
     before(() => {
         browser.url(URL);

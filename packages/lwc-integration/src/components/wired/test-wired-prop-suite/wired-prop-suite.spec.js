@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Component with a wired property', () => {
-    const URL = 'http://localhost:4567/wired-prop-suite';
+    const URL = 'http://localhost:4567/wired/wiredPropSuite';
 
     before(() => {
         browser.url(URL);

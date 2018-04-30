@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 627: Named slot doesn\'t work properly.', () => {
-    const URL = 'http://localhost:4567/slot-render-elements';
+    const URL = 'http://localhost:4567/slots/slotRenderElements/';
     let element;
 
     before(() => {

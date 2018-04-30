@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 791: [IE11] Radio Buttons are not rendering with correct value', () => {
-    const URL = 'http://localhost:4567/radio-group-value';
+    const URL = 'http://localhost:4567/dom/radioGroupValue';
     let element;
 
     before(() => {

@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Toggling to empty classname', () => {
-    const URL = 'http://localhost:4567/toggle-empty-classname';
+    const URL = 'http://localhost:4567/rendering/toggleEmptyClassname';
     let element;
 
     before(() => {

@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing component: simple-list-container', () => {
-    const URL = 'http://localhost:4567/simple-tree-grid';
+    const URL = 'http://localhost:4567/rendering/simpleTreeGrid/';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Testing component: simple-list-container', () => {
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'simple-tree-grid');
+        assert.equal(title, 'simpleTreeGrid');
         assert.ok(element);
     });
 

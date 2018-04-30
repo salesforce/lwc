@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 572: [brain-dump] problems with accessibility and semantic markup in lwc', () => {
-    const URL = 'http://localhost:4567/force-tag-name';
+    const URL = 'http://localhost:4567/dom/forceTagName';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Issue 572: [brain-dump] problems with accessibility and semantic marku
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'force-tag-name');
+        assert.equal(title, 'forceTagName');
         assert.ok(element);
     });
 

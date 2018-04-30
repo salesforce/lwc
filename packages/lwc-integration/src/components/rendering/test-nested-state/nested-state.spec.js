@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Object keys', () => {
-    const URL = 'http://localhost:4567/nested-state';
+    const URL = 'http://localhost:4567/rendering/nestedState/';
     let element;
 
     before(() => {

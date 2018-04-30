@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 657: Cannot attach event in `connectedCallback`', () => {
-    const URL = 'http://localhost:4567/attach-event-connected-callback';
+    const URL = 'http://localhost:4567/events/attachEventConnectedCallback';
     let element;
 
     before(() => {

@@ -24,7 +24,7 @@ function loadLwcConfig(modulePath) {
     return config;
 }
 
-function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderName } = {}) {
+function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderName, allowUnnamespaced } = {}) {
     return glob.sync(MODULE_ENTRY_PATTERN, { cwd: fullPathDir }).reduce((mappings, file) => {
         const fileName = path.basename(file, MODULE_EXTENSION);
         const rootDir = path.dirname(file);
@@ -48,13 +48,35 @@ function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderNa
             return mappings;
         }
 
-        if (rootParts.pop() === fileName || ignoreFolderName) {
-            registry.moduleName = fileName;
-            registry.moduleSpecifier = `${registry.moduleNamespace}/${fileName}`;
-            mappings[registry.moduleSpecifier] = registry;
+        const nameParts = camelToDash(fileName).split('-');
+        const validModuleName = nameParts.length > 1;
+        let firstNamePart;
+        if (validModuleName) {
+            if (rootParts.pop() === fileName || ignoreFolderName) {
+                registry.moduleNamespace = nameParts.shift();
+                firstNamePart = nameParts.shift();
+                registry.moduleName = firstNamePart + nameParts.map(namePart => namePart.toUpperCase().charAt(0) + namePart.slice(1)).join('');
+                registry.moduleSpecifier = registry.moduleNamespace + '/' + registry.moduleName;
+                mappings[registry.moduleSpecifier] = registry;
+            }
+
+            return mappings;
+        } else if (allowUnnamespaced) {
+            if (rootParts.pop() === fileName || ignoreFolderName) {
+                registry.moduleName = fileName;
+                registry.moduleSpecifier = `${registry.moduleNamespace}/${fileName}`;
+                mappings[registry.moduleSpecifier] = registry;
+            }
+
+            return mappings;
         }
+
         return mappings;
     }, {});
+}
+
+function camelToDash(str) {
+    return str.replace(/([A-Z])/g, function ($1) { return "-" + $1.toLowerCase(); });
 }
 
 function hasModuleBeenVisited(module, visited) {

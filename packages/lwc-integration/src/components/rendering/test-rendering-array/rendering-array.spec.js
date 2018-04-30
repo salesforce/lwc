@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.iterator) during the rendering', () => {
-    const URL = 'http://localhost:4567/rendering-array';
+    const URL = 'http://localhost:4567/rendering/renderingArray';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.itera
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'rendering-array');
+        assert.equal(title, 'renderingArray');
         assert.ok(element);
     });
 

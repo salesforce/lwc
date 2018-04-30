@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('setAttribute', () => {
-    const URL = 'http://localhost:4567/set-attribute';
+    const URL = 'http://localhost:4567/attributes/setAttribute';
     let element;
 
     before(() => {

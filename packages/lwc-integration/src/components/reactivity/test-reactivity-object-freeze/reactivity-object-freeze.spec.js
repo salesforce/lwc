@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 723: Freezing reactive proxy throws when trying to access properties', () => {
-    const URL = 'http://localhost:4567/reactivity-object-freeze';
+    const URL = 'http://localhost:4567/reactivity/reactivityObjectFreeze/';
     let element;
 
     before(() => {

@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Title public prop', () => {
-    const URL = 'http://localhost:4567/title-prop';
+    const URL = 'http://localhost:4567/props/titleProp/';
     let element;
 
     before(() => {

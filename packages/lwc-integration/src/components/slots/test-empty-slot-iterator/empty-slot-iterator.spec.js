@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Slots with empty iterators should render', () => {
-    const URL = 'http://localhost:4567/empty-slot-iterator';
+    const URL = 'http://localhost:4567/slots/emptySlotIterator/';
     let element;
 
     before(() => {

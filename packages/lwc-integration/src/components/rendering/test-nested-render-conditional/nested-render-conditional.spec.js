@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Nested conditional render', () => {
-    const URL = 'http://localhost:4567/nested-render-conditional';
+    const URL = 'http://localhost:4567/rendering/nestedRenderConditional';
     let element;
 
     before(() => {

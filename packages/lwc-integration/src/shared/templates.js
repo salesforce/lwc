@@ -1,17 +1,17 @@
-exports.app = function (cmpName) {
+exports.app = function (moduleName, cmpName) {
     return `
         import { createElement } from 'engine';
-        import Cmp from '${cmpName}';
+        import Cmp from '${moduleName}';
         var element = createElement('${cmpName}', { is: Cmp });
         document.body.appendChild(element);
     `;
 }
 
-exports.todoApp = function (cmpName) {
+exports.todoApp = function (moduleName, cmpName) {
     return `
         import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
         import { createElement, register } from 'engine';
-        import Cmp from '${cmpName}';
+        import Cmp from '${moduleName}';
         import { getTodo, getObservable } from 'todo';
 
         registerWireService(register);
