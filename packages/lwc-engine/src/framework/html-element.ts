@@ -1,7 +1,8 @@
 import assert from "./assert";
-import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
+import { isNodeOwnedByVM, wasNodePassedIntoVM, OwnerKey } from "./vm";
+import { Root, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { ArrayFilter, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttribute,
@@ -13,15 +14,48 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
     CustomEvent,
+    querySelectorAll as nativeQuerySelectorAll,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
-import { wasNodePassedIntoVM, VM } from "./vm";
+import {  VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
+
+export function lightDOMQuerySelector(this: HTMLElement, selectors: string) {
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const matches = nativeQuerySelectorAll.call(this, selectors);
+    const nodeList = ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
+    // search for all, and find the first node that is owned by the VM in question.
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        if (isNodeOwnedByVM(ownerVM, nodeList[i])) {
+            return pierce(ownerVM, nodeList[i]);
+        }
+    }
+
+    return null;
+}
+
+export function lightDOMQuerySelectorAll(this: HTMLElement, selectors: string) {
+    const ownerVM = getElementOwnerVM(this) as VM;
+    console.log('ee', ownerVM.elm[OwnerKey])
+    const matches = nativeQuerySelectorAll.call(this, selectors);
+    return ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
+}
+
+function getElementOwnerVM(elm: HTMLElement): VM | undefined {
+    let parent = elm.parentElement;
+    while(parent) {
+        const ownerVM = getCustomElementVM(parent);
+        if (isNodeOwnedByVM(ownerVM, elm)) {
+            return ownerVM;
+        }
+    }
+    return undefined;
+}
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -82,11 +116,6 @@ const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPr
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;
-}
-
-function querySelectorAllFromComponent(cmp: Component, selectors: string): NodeList {
-    const elm = getLinkedElement(cmp);
-    return elm.querySelectorAll(selectors);
 }
 
 export interface ComposableEvent extends Event {
@@ -231,42 +260,12 @@ class LWCElement implements Component {
         return elm.getBoundingClientRect();
     }
     querySelector(selectors: string): Node | null {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
-        }
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        for (let i = 0, len = nodeList.length; i < len; i += 1) {
-            if (wasNodePassedIntoVM(vm, nodeList[i])) {
-                // TODO: locker service might need to return a membrane proxy
-                return pierce(vm, nodeList[i]);
-            }
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.root, selectors)) {
-                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
-            }
-        }
-
-        return null;
+        const elm = getLinkedElement(this);
+        return elm.querySelector(selectors);
     }
     querySelectorAll(selectors: string): NodeList {
-        const vm = getCustomElementVM(this);
-        if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
-        }
-
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        // TODO: locker service might need to do something here
-        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
-                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
-            }
-        }
-        return pierce(vm, filteredNodes);
+        const elm = getLinkedElement(this);
+        return elm.querySelectorAll(selectors);
     }
     get tagName(): string {
         const elm = getLinkedElement(this);

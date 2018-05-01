@@ -1,5 +1,6 @@
 import { init } from "../3rdparty/snabbdom/snabbdom";
 import { DOMAPI } from "../3rdparty/snabbdom/types";
+import shadow from "./modules/shadow";
 import props from "./modules/props";
 import attrs from "./modules/attrs";
 import styles from "./modules/styles";
@@ -70,6 +71,7 @@ const patchVNode = init([
     events,
     token,
     uid,
+    shadow,
 ], htmlDomApi);
 
 const patchChildren = patchVNode.children;

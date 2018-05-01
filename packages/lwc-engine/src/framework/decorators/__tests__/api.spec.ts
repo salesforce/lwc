@@ -1,6 +1,7 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import api from "../api";
+import { querySelector } from "../../dom";
 
 describe('decorators/api.ts', () => {
     describe('@api x', () => {
@@ -39,7 +40,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
+            expect(querySelector.call(elm, 'x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider properties reactive if not used in render', function() {
@@ -148,7 +149,7 @@ describe('decorators/api.ts', () => {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.parentGetter).toBe('parentgetter');
-            expect(elm.querySelector('x-component').breakfast).toBe('pancakes');
+            expect(querySelector.call(elm, 'x-component').breakfast).toBe('pancakes');
         });
 
         it('should not be consider getter and setters reactive', function() {
