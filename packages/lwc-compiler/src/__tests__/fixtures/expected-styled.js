@@ -26,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
     }, []), api_custom_element("x-foo", _xFoo, {
         key: 2
-    })];
+    }, [])];
 }
 
 if (style) {
