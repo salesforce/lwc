@@ -324,6 +324,8 @@ export function getGlobalHTMLPropertiesInfo() {
     };
 }
 
+export const EmptyNodeList  = document.createElement('div').querySelectorAll('*');
+
 // TODO: complete this list with Element properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Element
 

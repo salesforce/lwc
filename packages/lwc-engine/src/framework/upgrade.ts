@@ -1,9 +1,10 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty } from "./language";
-import { createVM, removeVM, appendVM, renderVM } from "./vm";
+import { defineProperties, isUndefined, isFunction, assign, hasOwnProperty } from "./language";
+import { createVM, removeVM, appendVM, renderVM, VMElement } from "./vm";
 import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
 import { getCustomElementVM } from "./html-element";
+import { EmptyNodeList } from "./dom";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -41,6 +42,25 @@ assign(Node.prototype, {
         return replacedNode;
     }
 });
+
+function querySelectorPatched(this: VMElement) {
+    return null;
+}
+
+function querySelectorAllPatched(this: VMElement) {
+    return EmptyNodeList;
+}
+
+const querySelectorDescriptors = {
+    querySelector: {
+        value: querySelectorPatched,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: querySelectorAllPatched,
+        configurable: true,
+    },
+}
 
 /**
  * This method is almost identical to document.createElement
@@ -89,5 +109,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         const vm = getCustomElementVM(element);
         removeVM(vm);
     };
+    defineProperties(element, querySelectorDescriptors);
     return element;
 }

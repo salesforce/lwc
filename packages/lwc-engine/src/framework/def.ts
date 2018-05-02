@@ -312,14 +312,6 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function querySelectorPatched(this: VMElement) {
-    return null;
-}
-
-function querySelectorAllPatched(this: VMElement) {
-    return nativeQuerySelectorAll.call(this, '.___EMPTY___');
-}
-
 function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -401,14 +393,6 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
             value: removeAttributeNSPatched,
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
-        querySelector: {
-            value: querySelectorPatched,
-            configurable: true,
-        },
-        querySelectorAll: {
-            value: querySelectorAllPatched,
-            configurable: true,
-        }
     };
     // expose getters and setters for each public props on the Element
     for (const key in publicProps) {
