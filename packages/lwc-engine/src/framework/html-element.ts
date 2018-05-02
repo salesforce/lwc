@@ -49,7 +49,7 @@ export function lightDOMQuerySelectorAll(this: HTMLElement, selectors: string) {
 }
 
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { Root, ShadowRoot } from "./root";
+import { Root, ShadowRoot, shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./root";
 
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
@@ -275,12 +275,26 @@ class LWCElement implements Component {
     }
     querySelector(selectors: string): Node | null {
         const elm = getLinkedElement(this);
-        return elm.querySelector(selectors);
+        const match = elm.querySelector(selectors);
+        if (process.env.NODE_ENV !== 'production') {
+            if (shadowRootQuerySelector(this.template, selectors)) {
+                assert.logWarning(`this.querySelector() can only return elements that were passed into ${this} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
+            }
+        }
+
+        return match;
     }
     querySelectorAll(selectors: string): NodeList {
         const elm = getLinkedElement(this);
-        console.log(elm.querySelectorAll.toString())
-        return elm.querySelectorAll(selectors);
+        const matches = elm.querySelectorAll(selectors);
+
+        if (process.env.NODE_ENV !== 'production') {
+            if (matches.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
+                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${this} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
+            }
+        }
+
+        return matches;
     }
     get tagName(): string {
         const elm = getLinkedElement(this);
