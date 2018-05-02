@@ -2,7 +2,7 @@ import { Element } from "../html-element";
 import { pierce } from '../piercing';
 import { ViewModelReflection } from "../def";
 import { createElement } from "../upgrade";
-import { register } from "./../services";
+import { register, Services } from "./../services";
 
 describe('piercing', function() {
     it('should set property on pierced object successfully', function() {
@@ -70,6 +70,7 @@ describe('piercing', function() {
         }
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
+        Services.piercing = undefined; // resetting the service
         expect(callCount).toBe(1);
     });
     it('should use custom function pierced for dispatch event', function() {
@@ -100,6 +101,7 @@ describe('piercing', function() {
         }
         const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
+        Services.piercing = undefined; // resetting the service
         expect(count).toBe(1);
         expect(piercedThis).toBe(elm);
         expect(received).toBe(event);

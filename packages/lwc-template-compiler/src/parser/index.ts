@@ -35,7 +35,6 @@ import {
 
 import {
     createElement,
-    isElement,
     isCustomElement,
     createText,
 } from '../shared/ir';
@@ -45,7 +44,6 @@ import {
     IRElement,
     IRAttribute,
     IRAttributeType,
-    SlotDefinition,
     TemplateIdentifier,
     CompilationWarning,
     WarningLevel,
@@ -66,7 +64,6 @@ import {
     VALID_IF_MODIFIER,
     EVENT_HANDLER_RE,
     EVENT_HANDLER_NAME_RE,
-    DEFAULT_SLOT_NAME,
     HTML_TAG_BLACKLIST,
     ITERATOR_RE,
     DASHED_TAGNAME_ELEMENT_SET,
@@ -145,7 +142,7 @@ export default function parse(source: string, state: State): {
                 applyStyle(element);
                 applyHandlers(element);
                 applyComponent(element);
-                // applySlot(element);
+                applySlot(element);
                 applyKey(element, elementNode.__location);
 
                 parent = element;
@@ -153,10 +150,6 @@ export default function parse(source: string, state: State): {
             },
             exit() {
                 const element = stack.pop() as IRElement;
-
-                // if (element && isCustomElement(element)) {
-                //     dispathCustomElementChildrenInSlots(element);
-                // }
 
                 applyAttributes(element);
 
@@ -456,6 +449,13 @@ export default function parse(source: string, state: State): {
     function applySlot(element: IRElement) {
         const { tag } = element;
 
+        const slotAttribute = getTemplateAttribute(element, 'slot');
+        if (slotAttribute) {
+            if (slotAttribute.type === IRAttributeType.Expression) {
+                return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
+            }
+        }
+
         // Early exit if the element is not a slot
         if (tag !== 'slot') {
             return;
@@ -466,12 +466,10 @@ export default function parse(source: string, state: State): {
         }
 
         // Default slot have empty string name
-        let name = DEFAULT_SLOT_NAME;
+        let name = '';
 
         const nameAttribute = getTemplateAttribute(element, 'name');
         if (nameAttribute) {
-            removeAttribute(element, 'name');
-
             if (nameAttribute.type === IRAttributeType.Expression) {
                 return warnAt(`Name attribute on slot tag can't be an expression.`, nameAttribute.location);
             } else if (nameAttribute.type === IRAttributeType.String) {
@@ -479,46 +477,9 @@ export default function parse(source: string, state: State): {
             }
         }
 
-        element.slotName = name;
-
         if (!state.slots.includes(name)) {
             state.slots.push(name);
         }
-    }
-
-    function dispathCustomElementChildrenInSlots(element: IRElement) {
-        const { children } = element;
-
-        // Early exit if the custom component has no children in the template
-        if (!children.length) {
-            return;
-        }
-
-        const slotSet: SlotDefinition = {};
-
-        for (const child of children) {
-            let slotName = DEFAULT_SLOT_NAME;
-
-            if (isElement(child)) {
-                const slotAttribute = getTemplateAttribute(child, 'slot');
-                if (slotAttribute) {
-                    if (slotAttribute.type === IRAttributeType.Expression) {
-                        return warnAt(`Slot attribute value can't be an expression.`, slotAttribute.location);
-                    }
-
-                    // Use default node name, if the slot attribute is set without value
-                    if (slotAttribute.type === IRAttributeType.String && slotAttribute.value.length) {
-                        slotName = slotAttribute.value;
-                    }
-                }
-            }
-
-            const slot = slotSet[slotName] || (slotSet[slotName] = []);
-            slot.push(child);
-        }
-
-        element.slotSet = slotSet;
-        element.children = [];
     }
 
     function applyAttributes(element: IRElement) {

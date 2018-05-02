@@ -101,12 +101,12 @@ describe('patch', () => {
                 calls.push('root:render');
                 return [
                     $api.h("div", { key: 3 },
-                    [$cmp.state.show ? $api.c('x-child', Child, {}) : null]
+                    [$cmp.state.show ? $api.c('x-child', Child, {}, []) : null]
                 )];
             }
             class Root extends Element {
                 state = {
-                    show: false
+                    show: true
                 };
                 show() {
                     this.state.show = true;
@@ -121,7 +121,7 @@ describe('patch', () => {
                     calls.push('root:renderedCallback');
                 }
             }
-            Root.publicMethods = ['show', 'hide'];
+            Root.publicMethods = ['hide'];
             Root.track = { state: 1 };
 
             class Child extends Element {
@@ -145,25 +145,19 @@ describe('patch', () => {
 
             const elm = createElement('x-root', { is: Root });
             document.body.appendChild(elm);
-
-            calls.length = 0;
-            elm.show();
-
+            elm.hide();
             return Promise.resolve().then(() => {
-                elm.hide();
-                return Promise.resolve().then(() => {
-                    expect(calls).toEqual([
-                        'root:render',
-                        'child:constructor',
-                        'child:connectedCallback',
-                        'child:render',
-                        'child:renderedCallback',
-                        'root:renderedCallback',
-                        'root:render',
-                        'child:disconnectedCallback',
-                        'root:renderedCallback'
-                    ]);
-                });
+                expect(calls).toEqual([
+                    'root:render',
+                    'child:constructor',
+                    'child:connectedCallback',
+                    'child:render',
+                    'child:renderedCallback',
+                    'root:renderedCallback',
+                    'root:render',
+                    'child:disconnectedCallback',
+                    'root:renderedCallback'
+                ]);
             });
         });
 

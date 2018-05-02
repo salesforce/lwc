@@ -228,12 +228,16 @@ describe('dom', () => {
                         ]
                     }
                 }
+                trigger() {
+                    const child = this.root.querySelector('x-foo');
+                    child.trigger();
+                }
             }
+            Parent.publicMethods = ['trigger'];
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('x-foo');
-            child.trigger();
+            elm.trigger();
         });
     });
 });

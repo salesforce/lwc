@@ -16,7 +16,6 @@ import {
 } from '../shared/scope';
 
 import {
-    createElement as createIRElement,
     traverse,
     isCustomElement,
     isComponentProp,
@@ -39,7 +38,6 @@ import {
     objectToAST,
     getMemberExpressionRoot,
     isTemplate,
-    isSlot,
     shouldFlatten,
     destructuringAssignmentFromObject,
     getKeyGenerator,
@@ -106,10 +104,7 @@ function transform(
 
         let babelElement: t.Expression;
         if (isCustomElement(element)) {
-        //     // Traverse custom components slots and it to the databag
-        //     // transformSlotset(element, databag);
-
-        //     // Make sure to register the component
+            // Make sure to register the component
             const componentClassName = element.component!;
 
             babelElement = codeGen.genCustomElement(
@@ -118,15 +113,6 @@ function transform(
                 databag,
                 children,
             );
-        // } else if (isSlot(element)) {
-        //     const defaultSlot = children;
-        //     const passedSlot = codeGen.getSlotId(element.slotName!);
-
-        //     babelElement = t.logicalExpression(
-        //         '||',
-        //         passedSlot,
-        //         defaultSlot,
-        //     );
         } else {
             babelElement = codeGen.genElement(
                 element.tag,
@@ -157,29 +143,6 @@ function transform(
         } else {
             (stack.peek() as t.ArrayExpression).elements.push(expression);
         }
-    }
-
-    function transformSlotset(element: IRElement, databag: t.ObjectExpression) {
-        if (!element.slotSet) {
-            return;
-        }
-
-        const slots: t.ObjectProperty[] = [];
-        Object.keys(element.slotSet).forEach((key) => {
-
-            const slotRoot = createIRElement('template', {});
-            slotRoot.children = element.slotSet![key];
-            slots.push(
-                t.objectProperty(
-                    t.stringLiteral(key),
-                    transform(slotRoot, codeGen, state, generateKey),
-                ),
-            );
-        });
-
-        databag.properties.push(
-            t.objectProperty(t.stringLiteral('slotset'), t.objectExpression(slots)),
-        );
     }
 
     function applyInlineIf(
@@ -472,7 +435,7 @@ function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
     const metadataExpressions: t.ExpressionStatement[] = [];
 
     // Generate the slots property on template function if slots are defined in the template
-    // tmpl.slots = ['$default$', 'x']
+    // tmpl.slots = ['', 'x']
     if (state.slots.length) {
         const slotsProperty = t.memberExpression(
             t.identifier(TEMPLATE_FUNCTION_NAME),

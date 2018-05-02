@@ -2187,7 +2187,6 @@ describe('html-element', () => {
                 }
                 const element = createElement('prop-title-reactive', { is: MyComponent });
                 document.body.appendChild(element);
-                console.error(element.outerHTML);
                 element.title = 'title';
                 return Promise.resolve()
                     .then(() => {

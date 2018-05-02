@@ -10,6 +10,7 @@ import {
     setAttributeNS,
     querySelectorAll,
     querySelector,
+    dispatchEvent,
 } from "./dom/element";
 import {
     getGlobalHTMLPropertiesInfo,

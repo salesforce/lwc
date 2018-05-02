@@ -47,11 +47,6 @@ export function isTemplate(element: IRElement) {
     return element.tag === 'template';
 }
 
-/** Returns true if the passed element is a slot element */
-export function isSlot(element: IRElement) {
-    return element.tag === 'slot';
-}
-
 /**
  * Returns true if the passed element should be flattened
  * TODO: Move this logic into the optimizing compiler. This kind of
@@ -61,8 +56,7 @@ export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
         child =>
             isElement(child) &&
-            (isSlot(child) ||
-                !!child.forEach ||
+            (!!child.forEach ||
                 !!child.forOf ||
                 (isTemplate(child) && shouldFlatten(child))),
     );

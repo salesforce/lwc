@@ -8,7 +8,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             _xCmp,
             {
                 key: 1
-            }
+            },
+            []
         )
     ];
 }

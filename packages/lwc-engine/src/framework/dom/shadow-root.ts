@@ -3,7 +3,7 @@ import { defineProperty, isUndefined, hasOwnProperty, getOwnPropertyNames, forEa
 import { ViewModelReflection, ComponentDef } from "../def";
 import { VM, isNodeOwnedByVM, OwnerKey } from "../vm";
 import { getRootNode, compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "../dom/node";
-import { removeAttribute, setAttribute, querySelectorAll, querySelector } from "../dom/element";
+import { removeAttribute, setAttribute, querySelectorAll, querySelector, addEventListener } from "../dom/element";
 import { GlobalAOMProperties } from "./attributes";
 import { getAttrNameFromPropName } from "../utils";
 import { pierce, piercingHook } from "../piercing";
@@ -44,7 +44,6 @@ export function attachShadow(elm, options, fallback): ShadowRoot {
 export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
     shadowRoot[ViewModelReflection] = vm;
 }
-
 
 const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
 
