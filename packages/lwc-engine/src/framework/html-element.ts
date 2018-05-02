@@ -1,8 +1,20 @@
 import assert from "./assert";
-import { isNodeOwnedByVM, wasNodePassedIntoVM, OwnerKey } from "./vm";
-import { Root, ShadowRoot } from "./root";
-import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { ArrayFilter, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import {
+    ArrayFilter,
+    isObject,
+    freeze,
+    seal,
+    defineProperty,
+    defineProperties,
+    getOwnPropertyNames,
+    isUndefined,
+    ArraySlice,
+    isNull,
+    forEach,
+    ArrayReduce,
+    isString,
+    isFunction,
+} from "./language";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttribute,
@@ -16,14 +28,6 @@ import {
     CustomEvent,
     querySelectorAll as nativeQuerySelectorAll,
 } from "./dom";
-import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered } from "./invoker";
-import {  VM } from "./vm";
-import { pierce, piercingHook } from "./piercing";
-import { ViewModelReflection } from "./def";
-import { Membrane } from "./membrane";
-import { ArrayReduce, isString, isFunction } from "./language";
-import { observeMutation, notifyMutation } from "./watcher";
 
 export function lightDOMQuerySelector(this: HTMLElement, selectors: string) {
     const ownerVM = getElementOwnerVM(this) as VM;
@@ -32,19 +36,29 @@ export function lightDOMQuerySelector(this: HTMLElement, selectors: string) {
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(ownerVM, nodeList[i])) {
-            return pierce(ownerVM, nodeList[i]);
+            return nodeList[i];
         }
     }
-
     return null;
 }
 
 export function lightDOMQuerySelectorAll(this: HTMLElement, selectors: string) {
     const ownerVM = getElementOwnerVM(this) as VM;
-    console.log('ee', ownerVM.elm[OwnerKey])
     const matches = nativeQuerySelectorAll.call(this, selectors);
     return ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
 }
+
+import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
+import { Root, ShadowRoot } from "./root";
+
+import { getPropNameFromAttrName } from "./utils";
+import { isRendering, vmBeingRendered } from "./invoker";
+import { pierce, piercingHook } from "./piercing";
+import { ViewModelReflection } from "./def";
+import { Membrane } from "./membrane";
+
+import { observeMutation, notifyMutation } from "./watcher";
+import { isNodeOwnedByVM, wasNodePassedIntoVM, VM } from "./vm";
 
 function getElementOwnerVM(elm: HTMLElement): VM | undefined {
     let parent = elm.parentElement;
@@ -265,6 +279,7 @@ class LWCElement implements Component {
     }
     querySelectorAll(selectors: string): NodeList {
         const elm = getLinkedElement(this);
+        console.log(elm.querySelectorAll.toString())
         return elm.querySelectorAll(selectors);
     }
     get tagName(): string {

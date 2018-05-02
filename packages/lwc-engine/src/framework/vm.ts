@@ -395,7 +395,7 @@ export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
         assert.invariant(node instanceof Node, `isNodePassedToVM() should be called with a node as the second argument instead of ${node}`);
         assert.childNode(vm.elm, node, `isNodePassedToVM() should never be called with a node that is not a child node of ${vm}`);
     }
-    const { elm } = vm;
+
     // TODO: we need to walk the parent path here as well, in case they passed it via slots multiple times
     return node[OwnerKey] === vm.uid;
 }

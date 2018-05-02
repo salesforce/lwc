@@ -4,16 +4,15 @@ import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, cre
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
-import { pierce, piercingHook } from "./piercing";
+import { pierce } from "./piercing";
 import { Context } from "./context";
 import { Component } from "./component";
 import { VNodeData } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { Replicable, Membrane } from "./membrane";
+import { Replicable } from "./membrane";
 
 import { TargetSlot } from './membrane';
 import {
-    querySelector,
     querySelectorAll,
     GlobalAOMProperties,
     setAttribute,
@@ -75,7 +74,7 @@ const RootDescriptors: PropertyDescriptorMap = create(null);
 // to ShadowRoot prototype to polyfill AOM capabilities.
 forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAttrNameFromPropName(propName), GlobalAOMProperties[propName]));
 
-export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): Node | null {
+export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
     const vm = getCustomElementVM(shadowRoot);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -86,7 +85,7 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
     return getFirstMatch(vm, elm, selector);
 }
 
-export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): NodeList {
+export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
     const vm = getCustomElementVM(shadowRoot);
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
@@ -212,7 +211,7 @@ export class Root implements ShadowRoot {
 }
 defineProperties(Root.prototype, RootDescriptors);
 
-function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
+function getFirstMatch(vm: VM, elm: Element, selector: string): HTMLElement | null {
     const nodeList = querySelectorAll.call(elm, selector);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -223,7 +222,7 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     return null;
 }
 
-function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
+function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
     const nodeList = querySelectorAll.call(elm, selector);
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
     return pierce(vm , filteredNodes);
