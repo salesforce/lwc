@@ -4,6 +4,7 @@ import { Element } from "../html-element";
 import { createElement } from '../main';
 import { ViewModelReflection } from '../def';
 import { Template } from '../template';
+import { querySelector } from '../dom';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -496,7 +497,7 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(element.querySelector('div').getAttribute('title')).toBe('foo');
+            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('foo');
         });
 
         it('should remove attribute when value is null', () => {
@@ -528,10 +529,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(element.querySelector('div').getAttribute('title')).toBe('initial');
+            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(element.querySelector('div').hasAttribute('title')).toBe(false);
+                expect(querySelector.call(element, 'div').hasAttribute('title')).toBe(false);
             });
         });
     });

@@ -37,6 +37,7 @@ import {
     removeAttributeNS,
     defaultDefHTMLPropertyNames,
     attemptAriaAttributeFallback,
+    querySelectorAll as nativeQuerySelectorAll,
 } from "./dom";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";

@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { getRootNode } from "../dom";
+import { getRootNode, querySelector, querySelectorAll } from "../dom";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
@@ -42,7 +42,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('x-child');
+            const child = querySelector.call(elm, 'x-child');
             const match = getRootNode.call(child, { composed: true });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -98,7 +98,7 @@ describe('dom', () => {
 
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
@@ -121,7 +121,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('x-child');
+            const child = querySelector.call(elm, 'x-child');
             const match = getRootNode.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -229,7 +229,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('x-foo');
+            const child = querySelector.call(elm, 'x-foo');
             child.trigger();
         });
     });

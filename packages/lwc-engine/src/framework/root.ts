@@ -4,16 +4,15 @@ import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, cre
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
-import { pierce, piercingHook } from "./piercing";
+import { pierce } from "./piercing";
 import { Context } from "./context";
 import { Component } from "./component";
 import { VNodeData } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { Replicable, Membrane } from "./membrane";
+import { Replicable } from "./membrane";
 
 import { TargetSlot } from './membrane';
 import {
-    querySelector,
     querySelectorAll,
     GlobalAOMProperties,
     setAttribute,
@@ -83,9 +82,7 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
     }
 
     const elm = getLinkedElement(shadowRoot);
-    pierce(vm, elm);
-    const piercedQuerySelector = piercingHook(vm.membrane as Membrane, elm, 'querySelector', elm.querySelector);
-    return piercedQuerySelector.call(elm, selector);
+    return getFirstMatch(vm, elm, selector);
 }
 
 export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
@@ -94,9 +91,7 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
         assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
     const elm = getLinkedElement(shadowRoot);
-    pierce(vm, elm);
-    const piercedQuerySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
-    return piercedQuerySelectorAll.call(elm, selector);
+    return getAllMatches(vm, elm, selector);
 }
 
 const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
@@ -140,7 +135,8 @@ export class Root implements ShadowRoot {
         return 'closed';
     }
     get host(): Component {
-        return getCustomElementVM(this).component as Component;
+        const vm = this[ViewModelReflection];
+        return pierce(vm, vm.elm);
     }
     get innerHTML(): string {
         // TODO: should we add this only in dev mode? or wrap this in dev mode?
@@ -215,7 +211,7 @@ export class Root implements ShadowRoot {
 }
 defineProperties(Root.prototype, RootDescriptors);
 
-function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
+function getFirstMatch(vm: VM, elm: Element, selector: string): HTMLElement | null {
     const nodeList = querySelectorAll.call(elm, selector);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
@@ -226,7 +222,7 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
     return null;
 }
 
-function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
+function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
     const nodeList = querySelectorAll.call(elm, selector);
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
     return pierce(vm , filteredNodes);
@@ -300,16 +296,6 @@ register({
         if (value) {
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
-            }
-            if (value === querySelector) {
-                // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
-                // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): Node | null => getFirstMatch(vm, target as Element, selector));
-            }
-            if (value === querySelectorAll) {
-                // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
-                // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): NodeList => getAllMatches(vm, target as Element, selector));
             }
             if (isParentNodeKeyword(key)) {
                 if (value === elm) {

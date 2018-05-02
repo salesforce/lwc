@@ -1,6 +1,7 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
 import { ComponentConstructor } from "../component";
+import { querySelector } from "../dom";
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
@@ -41,6 +42,48 @@ describe('upgrade', () => {
             expect(elm.x).not.toBe(o);
         });
 
+    });
+
+    describe('#querySelector', () => {
+        it('should not return templated elements when element is root', () => {
+            function html($api) {
+                return [$api.h('div', {
+                    key: 1,
+                }, [])];
+            }
+
+            class MyComponent extends Element {
+                render() {
+                    return html;
+                }
+            }
+
+            const el = createElement('x-no-templated-elements-query-selector', { is: MyComponent });
+            document.body.appendChild(el);
+            const match = el.querySelector('div');
+            expect(match).toBeNull();
+        });
+    });
+
+    describe('#querySelectorAll', () => {
+        it('should not return templated elements when element is root', () => {
+            function html($api) {
+                return [$api.h('div', {
+                    key: 1,
+                }, [])];
+            }
+
+            class MyComponent extends Element {
+                render() {
+                    return html;
+                }
+            }
+
+            const el = createElement('x-no-templated-elements-query-selector-all', { is: MyComponent });
+            document.body.appendChild(el);
+            const match = el.querySelectorAll('div');
+            expect(match.length).toBe(0);
+        });
     });
 
     describe('patches for Node.', () => {

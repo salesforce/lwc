@@ -43,7 +43,7 @@ describe('invoker', () => {
             class MyComponent1 extends Element {
                 connectedCallback() {
                     counter++;
-                    expect(this.root.querySelectorAll('p').length).toBe(0);
+                    expect(this.template.querySelectorAll('p').length).toBe(0);
                 }
                 render() {
                     return html;
@@ -135,7 +135,7 @@ describe('invoker', () => {
             class MyComponent3 extends Element {
                 renderedCallback() {
                     counter++;
-                    expect(this.root.querySelectorAll('p').length).toBe(1);
+                    expect(this.template.querySelectorAll('p').length).toBe(1);
                 }
                 render() {
                     return html;
@@ -270,10 +270,10 @@ describe('invoker', () => {
             function fn() {}
             class MyComponent1 extends Element {
                 connectedCallback() {
-                    this.root.addEventListener('click', fn);
+                    this.template.addEventListener('click', fn);
                 }
                 disconnectedCallback() {
-                    this.root.removeEventListener('click', fn);
+                    this.template.removeEventListener('click', fn);
                     removed = true;
                 }
             }

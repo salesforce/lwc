@@ -6,6 +6,7 @@ import { ViewModelReflection } from "../def";
 import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 import { unwrap } from "../main";
+import { querySelector } from "../dom";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -26,7 +27,7 @@ describe('html-element', () => {
             }
             const element = createElement('x-foo', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'x-foo');
             child.setFoo();
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
             expect(child.getAttributeNS('x', 'foo')).toBe('bar');
@@ -76,7 +77,7 @@ describe('html-element', () => {
             }
             const element = createElement('x-foo', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'x-foo');
             child.setFoo();
             expect(child.hasAttribute('foo')).toBe(true);
             expect(child.getAttribute('foo')).toBe('bar');
@@ -130,7 +131,7 @@ describe('html-element', () => {
             }
             const element = createElement('x-foo', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'x-foo');
             child.removeTitle();
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
         });
@@ -171,7 +172,7 @@ describe('html-element', () => {
             }
             const element = createElement('x-foo', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'x-foo');
             child.removeTitle();
             expect(child.hasAttribute('title')).toBe(false);
         });
@@ -377,9 +378,9 @@ describe('html-element', () => {
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.root.addEventListener('click', (e) => {
+                    this.template.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
-                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is visible for the root, always
+                        expect(e.target).toBe(this.template.querySelector('div')); // notice that target is visible for the root, always
                         expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
@@ -387,7 +388,7 @@ describe('html-element', () => {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').click();
+                    this.template.querySelector('div').click();
                 }
             }
             Foo.publicMethods = ['run'];
@@ -403,14 +404,14 @@ describe('html-element', () => {
             }
             class Foo extends Element {
                 handleClick(e: Event) {
-                    expect(e.target).toBe(this.root.querySelector('div'));
-                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                    expect(e.target).toBe(this.template.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.template.querySelector('div'));
                 }
                 render() {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').click();
+                    this.template.querySelector('div').click();
                 }
             }
             Foo.publicMethods = ['run'];
@@ -419,7 +420,7 @@ describe('html-element', () => {
             elm.run();
         });
 
-        it('should get custom events in root when marked as bubbles=true', function () {
+        it('should get custom events in template when marked as bubbles=true', function () {
             expect.assertions(6);
             function html($api) {
                 return [$api.h('div', { key: 1 }, [])];
@@ -428,9 +429,9 @@ describe('html-element', () => {
             class Foo extends Element {
                 constructor() {
                     super();
-                    this.root.addEventListener('xyz', (e) => {
+                    this.template.addEventListener('xyz', (e) => {
                         expect(e.bubbles).toBe(true);
-                        expect(e.target).toBe(this.root.querySelector('div')); // notice that target is host element
+                        expect(e.target).toBe(this.template.querySelector('div')); // notice that target is host element
                         expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
                     });
                 }
@@ -438,12 +439,12 @@ describe('html-element', () => {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: true,
                     }));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: false,
                     }));
@@ -462,19 +463,19 @@ describe('html-element', () => {
             }
             class Foo extends Element {
                 handleXyz(e: Event) {
-                    expect(e.target).toBe(this.root.querySelector('div'));
-                    expect(e.currentTarget).toBe(this.root.querySelector('div'));
+                    expect(e.target).toBe(this.template.querySelector('div'));
+                    expect(e.currentTarget).toBe(this.template.querySelector('div'));
                 }
                 render() {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: true,
                     }));
-                    this.root.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
+                    this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,
                         composed: false,
                     }));
@@ -622,7 +623,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -646,7 +647,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -702,7 +703,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             });
         });
@@ -1250,7 +1251,7 @@ describe('html-element', () => {
             it('should return null even if the shadow root value is set', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                 }
                 const element = createElement('prop-getter-aria-role', { is: MyComponent });
@@ -1282,7 +1283,7 @@ describe('html-element', () => {
             it('should not overwrite role attribute when setter does nothing', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                     get role() {}
                     set role(value) {}
@@ -1301,7 +1302,7 @@ describe('html-element', () => {
             it('should reflect role from root when element value is set to null', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                 }
                 const element = createElement('prop-getter-null-aria-role', { is: MyComponent });
@@ -1318,10 +1319,10 @@ describe('html-element', () => {
             it('should remove role attribute from element when root and value is null', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.role = 'tab';
+                        this.template.role = 'tab';
                     }
                     clearRole() {
-                        this.root.role = null;
+                        this.template.role = null;
                     }
                 }
                 MyComponent.publicMethods = ['clearRole'];
@@ -1341,7 +1342,7 @@ describe('html-element', () => {
                 it('getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.role = 'tab'
+                            this.template.role = 'tab'
                         }
                     }
                     const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
@@ -1383,7 +1384,7 @@ describe('html-element', () => {
             it('should return null even if the shadow root value is set', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.ariaChecked = 'true';
+                        this.template.ariaChecked = 'true';
                     }
                 }
                 const element = createElement('prop-getter-aria-checked', { is: MyComponent });
@@ -1397,7 +1398,7 @@ describe('html-element', () => {
                 it('internal getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.ariaChecked = 'true';
+                            this.template.ariaChecked = 'true';
                             this.setAttribute('aria-checked', 'false');
                             this.removeAttribute('aria-checked');
                         }
@@ -1410,7 +1411,7 @@ describe('html-element', () => {
                 it('external getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.root.ariaChecked = 'true'
+                            this.template.ariaChecked = 'true'
                         }
                     }
                     const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });
@@ -1452,7 +1453,7 @@ describe('html-element', () => {
             it('should return null value when not value is set, shadow root value should not leak out', () => {
                 class MyComponent extends Element {
                     connectedCallback() {
-                        this.root.ariaLabel = 'foo';
+                        this.template.ariaLabel = 'foo';
                     }
                 }
                 const element = createElement('prop-getter-aria-label', { is: MyComponent });
@@ -1571,7 +1572,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('en');
+                        expect(querySelector.call(element, 'div')!.id).toBe('en');
                     });
             });
 
@@ -1695,7 +1696,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('true');
+                        expect(querySelector.call(element, 'div')!.id).toBe('true');
                     });
             });
 
@@ -1819,7 +1820,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('ltr');
+                        expect(querySelector.call(element, 'div')!.id).toBe('ltr');
                     });
             });
 
@@ -1943,7 +1944,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.title).toBe('id');
+                        expect(querySelector.call(element, 'div')!.title).toBe('id');
                     });
             });
 
@@ -2067,7 +2068,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.title).toBe('accessKey');
+                        expect(querySelector.call(element, 'div')!.title).toBe('accessKey');
                     });
             });
 
@@ -2191,7 +2192,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('title');
+                        expect(querySelector.call(element, 'div')!.id).toBe('title');
                     });
             });
 
@@ -2253,7 +2254,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2276,7 +2277,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2332,7 +2333,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             })
         })
