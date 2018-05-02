@@ -62,11 +62,12 @@ import { isNodeOwnedByVM, wasNodePassedIntoVM, VM } from "./vm";
 
 function getElementOwnerVM(elm: HTMLElement): VM | undefined {
     let parent = elm.parentElement;
-    while(parent) {
+    while (parent) {
         const ownerVM = getCustomElementVM(parent);
         if (isNodeOwnedByVM(ownerVM, elm)) {
             return ownerVM;
         }
+        parent = elm.parentElement;
     }
     return undefined;
 }
