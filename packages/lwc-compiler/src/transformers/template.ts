@@ -1,6 +1,6 @@
 import * as path from "path";
 import compile from "lwc-template-compiler";
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
 import { MetadataCollector } from "../bundler/meta-collector";
 

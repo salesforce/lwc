@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 import * as presetCompat from 'babel-preset-compat';
 import { BABEL_CONFIG_BASE } from '../babel-plugins';
-import { OutputProxyCompatConfig } from "../options";
+import { OutputProxyCompatConfig } from "../compiler/options";
 
 export default function(proxyCompatOption: OutputProxyCompatConfig | undefined) {
     const config = Object.assign({}, BABEL_CONFIG_BASE, {

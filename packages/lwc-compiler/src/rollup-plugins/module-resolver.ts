@@ -1,6 +1,6 @@
 import * as path from "path";
 import { MetadataCollector } from "../bundler/meta-collector";
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions } from "../compiler/options";
 
 const EMPTY_CSS_CONTENT = ``;
 

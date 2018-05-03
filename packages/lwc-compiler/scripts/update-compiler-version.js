@@ -4,9 +4,10 @@ const { rollup } = require("rollup");
 const { version } = require("../package.json");
 
 async function updateVersion(version) {
-    const inputPath = (outputPath = path.resolve("dist/commonjs/index.js"));
+    const sourcePath = path.resolve("dist/commonjs/index.js");
+
     const result = await rollup({
-        input: inputPath,
+        input: sourcePath,
         plugins: [
             replace({
                 __VERSION__: version
@@ -15,7 +16,7 @@ async function updateVersion(version) {
     });
 
     await result.write({
-        file: outputPath,
+        file: sourcePath,
         format: "cjs",
         sourcemap: false, // keep typescript generated map to stay consistent with the rest of the files.
     });

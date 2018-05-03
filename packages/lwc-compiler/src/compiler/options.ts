@@ -1,4 +1,4 @@
-import { isBoolean, isString, isUndefined } from "./utils";
+import { isBoolean, isString, isUndefined } from "../utils";
 
 const DEFAULT_OUTPUT_CONFIG = {
     env: {
@@ -29,13 +29,6 @@ export interface CompilerOptions {
     namespace: string;
     files: BundleFiles;
     outputConfig?: OutputConfig;
-
-    // TODO: below must be removed after lwc-compiler consumers change
-    // attribute names to name/namespace. As for now, allowing these
-    // attribute so that options normalization function can convert them to
-    // name/namespace.
-    moduleName?: string;
-    moduleNamespace?: string;
 }
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
@@ -111,19 +104,6 @@ function validateOutputConfig(config: OutputConfig) {
 export function normalizeOptions(
     options: CompilerOptions
 ): NormalizedCompilerOptions {
-    // TODO: name normalization should be removed once package consumers
-    // change their compiler/transform invocation parameter attributes
-    // from moduleName/moduleNamespace to name/namespace
-    if (options.moduleName && !options.name) {
-        options.name = options.moduleName;
-    }
-    delete options.moduleName;
-
-    if (options.moduleNamespace && !options.namespace) {
-        options.namespace = options.moduleNamespace;
-    }
-    delete options.moduleNamespace;
-
     const outputConfig: NormalizedOutputConfig = {
         ...DEFAULT_OUTPUT_CONFIG,
         ...options.outputConfig

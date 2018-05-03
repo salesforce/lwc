@@ -2,7 +2,7 @@ import * as babel from "@babel/core";
 import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from "../babel-plugins";
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { MetadataCollector } from "../bundler/meta-collector";
 
@@ -17,10 +17,6 @@ export default function(
         filename,
     });
     const result = babel.transform(code, config);
-
-    if (!result || !result.code) {
-        throw new Error("javascript babel transform did not produce code.");
-    }
 
     const metadata: lwcClassTransformPlugin.Metadata = (result as any)
         .metadata;

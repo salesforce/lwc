@@ -2,9 +2,8 @@ import * as postcss from "postcss";
 import * as cssnano from "cssnano";
 import postcssPluginRaptor from "postcss-plugin-lwc";
 
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
-import { MetadataCollector } from "../bundler/meta-collector";
 
 const TOKEN_PLACEHOLDER = "__TOKEN__";
 const TAG_NAME_PLACEHOLDER = "__TAG_NAME__";
@@ -42,8 +41,7 @@ function generateScopedStyle(src: string) {
 export default function transformStyle(
     src: string,
     filename: string,
-    { outputConfig }: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector,
+    { outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const plugins = [
         postcssPluginRaptor({

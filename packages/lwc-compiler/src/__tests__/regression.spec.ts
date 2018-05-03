@@ -1,5 +1,5 @@
 import { compile } from "../index";
-import { fixturePath, readFixture, pretify } from "./utils";
+import { readFixture, pretify } from "./utils";
 
 describe("regression test", () => {
     it("#743 - Object rest spread throwing", async () => {

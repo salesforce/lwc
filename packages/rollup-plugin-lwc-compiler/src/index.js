@@ -132,8 +132,8 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             if (!rollupCompatInstance.knownCompatModule(id)) {
                 result = await compiler.transform(code, id, {
                     mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
-                    moduleName: moduleRegistry.moduleName,
-                    moduleNamespace: moduleRegistry.moduleNamespace,
+                    name: moduleRegistry.moduleName,
+                    namespace: moduleRegistry.moduleNamespace,
                     moduleSpecifier: moduleRegistry.moduleSpecifier
                 });
             }

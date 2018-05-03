@@ -1,8 +1,8 @@
-import { bundle } from "./bundler/bundler";
-import { BundleMetadata } from "./bundler/meta-collector";
-import { Diagnostic, DiagnosticLevel } from "./diagnostics/diagnostic";
+import { bundle } from "../bundler/bundler";
+import { BundleMetadata } from "../bundler/meta-collector";
+import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 import { CompilerOptions, validateOptions, normalizeOptions, NormalizedOutputConfig } from "./options";
-import { version } from './index';
+import { version } from '../index';
 
 export { default as templateCompiler } from "lwc-template-compiler";
 

@@ -5,7 +5,7 @@ import {
     NormalizedCompilerOptions,
     CompilerOptions,
     normalizeOptions
-} from "../options";
+} from "../compiler/options";
 
 import styleTransform from "./style";
 import templateTransformer, { TemplateMetadata } from "./template";

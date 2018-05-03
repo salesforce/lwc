@@ -11,9 +11,13 @@ import rollupMinify from "../rollup-plugins/minify";
 import {
     NormalizedCompilerOptions,
     validateNormalizedOptions
-} from "../options";
+} from "../compiler/options";
 
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
+
+import {
+    collectImportLocations
+} from "./import-location-collector";
 
 export interface BundleReport {
     code: string;
@@ -22,9 +26,6 @@ export interface BundleReport {
     metadata: BundleMetadata;
 }
 
-import {
-    collectImportLocations
-} from "./import-location-collector";
 
 interface RollupWarning {
     message: string;
@@ -40,10 +41,12 @@ const DEFAULT_FORMAT = "amd";
 
 function handleRollupWarning(diagnostics: Diagnostic[]) {
     return function onwarn({ message, loc }: RollupWarning) {
+        const filename = loc && loc.file;
+
         diagnostics.push({
             level: DiagnosticLevel.Warning,
             message,
-            filename: loc && loc.file
+            filename,
         });
     };
 }

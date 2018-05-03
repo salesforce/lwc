@@ -1,6 +1,6 @@
 import { getTransformer, FileTransformerResult } from '../transformers/transformer';
 
-import { NormalizedCompilerOptions } from "../options";
+import { NormalizedCompilerOptions } from "../compiler/options";
 import { MetadataCollector } from '../bundler/meta-collector';
 
 export default function({
