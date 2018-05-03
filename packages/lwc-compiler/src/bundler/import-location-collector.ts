@@ -8,12 +8,11 @@ export interface ModuleImportLocation {
 const MODULE_IMPORT_REGEX = /(?:define\([(['|"][\w-]+['|"],?\s*)(?:\[((?:['|"][@\w-/]+['|"],?\s*)+)\])?,?\s*function/;
 
 export function collectImportLocations(code: string) {
-    const locations: ModuleImportLocation[] = [];
     const matches = new RegExp(MODULE_IMPORT_REGEX).exec(code);
 
     // assert amd
     if (!matches || !matches.length) {
-        return locations;
+        return [];
     }
 
     const searchSubstring: string = matches[0];
@@ -21,23 +20,22 @@ export function collectImportLocations(code: string) {
     // format: `'x-bar', 'x-foo'`
     const rawImports = matches[1];
     if (!rawImports) {
-        return locations;
+        return [];
     }
 
     // split result: ["'x-bar', 'x-foo'"]
     const imports = rawImports.split(/,\s*/) || [];
 
-    imports.forEach(moduleImport => {
+    return imports.map((moduleImport) => {
         const normalizedName = moduleImport.replace(/'/g, "");
         const position = searchSubstring.indexOf(normalizedName);
 
-        locations.push({
+        return {
             name: normalizedName,
             location: {
                 start: position,
                 length: normalizedName.length
             }
-        });
+        };
     });
-    return locations;
 }

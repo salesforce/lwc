@@ -7586,6 +7586,10 @@ rollup@~0.56.2:
   version "0.56.2"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.2/1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a.tgz#1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a"
 
+rollup@~0.56.5:
+  version "0.56.5"
+  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.5/40fe3cf0cd1659d469baad11f4d5b6336c14ce84.tgz#40fe3cf0cd1659d469baad11f4d5b6336c14ce84"
+
 run-async@^2.2.0:
   version "2.3.0"
   resolved "http://npm.lwcjs.org/run-async/-/run-async-2.3.0/0371ab4ae0bdd720d4166d7dfda64ff7a445a6c0.tgz#0371ab4ae0bdd720d4166d7dfda64ff7a445a6c0"
@@ -7951,10 +7955,6 @@ source-map@^0.5.0, source-map@^0.5.3, source-map@^0.5.6, source-map@^0.5.7, sour
 source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "http://npm.lwcjs.org/source-map/-/source-map-0.6.1/74722af32e9614e9c287a8d0bbde48b5e2f1a263.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
-
-source-map@^0.7.2:
-  version "0.7.2"
-  resolved "http://npm.lwcjs.org/source-map/-/source-map-0.7.2/115c3e891aaa9a484869fd2b89391a225feba344.tgz#115c3e891aaa9a484869fd2b89391a225feba344"
 
 spawn-command@^0.0.2-1:
   version "0.0.2-1"
