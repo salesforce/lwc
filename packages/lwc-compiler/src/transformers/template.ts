@@ -2,7 +2,6 @@ import * as path from "path";
 import compile from "lwc-template-compiler";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
-import { MetadataCollector } from "../bundler/meta-collector";
 
 // TODO: once we come up with a strategy to export all types from the module,
 // below interface should be removed and resolved from template-compiler module.
@@ -26,7 +25,6 @@ const transform: FileTransformer = function(
     src: string,
     filename: string,
     options: NormalizedCompilerOptions,
-    metadataCollector?: MetadataCollector
 ) {
     const { name, namespace } = options;
     const { code: template, warnings } = compile(src, {});

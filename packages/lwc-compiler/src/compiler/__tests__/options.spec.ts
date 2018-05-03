@@ -11,8 +11,12 @@ const VALID_CONFIG = {
     name: "class_and_template",
     namespace: "x",
     files: {
-        "class_and_template.js": readFixture("class_and_template/class_and_template.js"),
-        "class_and_template.html": readFixture("class_and_template/class_and_template.html")
+        "class_and_template.js": readFixture(
+            "class_and_template/class_and_template.js"
+        ),
+        "class_and_template.html": readFixture(
+            "class_and_template/class_and_template.html"
+        )
     }
 };
 
@@ -75,7 +79,7 @@ describe("compiler options", () => {
                 namespace: "x",
                 files: { x: "foo" },
                 outputConfig: {
-                    minify: 'true'
+                    minify: "true"
                 }
             })
         ).rejects.toMatchObject({
@@ -92,7 +96,7 @@ describe("compiler options", () => {
                 namespace: "x",
                 files: { x: "foo" },
                 outputConfig: {
-                    compat: 'true'
+                    compat: "true"
                 }
             })
         ).rejects.toMatchObject({

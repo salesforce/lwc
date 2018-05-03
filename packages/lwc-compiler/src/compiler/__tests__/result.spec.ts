@@ -11,14 +11,18 @@ const VALID_CONFIG = {
     name: "class_and_template",
     namespace: "x",
     files: {
-        "class_and_template.js": readFixture("class_and_template/class_and_template.js"),
-        "class_and_template.html": readFixture("class_and_template/class_and_template.html")
+        "class_and_template.js": readFixture(
+            "class_and_template/class_and_template.js"
+        ),
+        "class_and_template.html": readFixture(
+            "class_and_template/class_and_template.html"
+        )
     }
 };
 
 describe("compiler result", () => {
     test("compiler should return bundle result default output configuration ", async () => {
-        const noOutputConfig = {...VALID_CONFIG, outputConfig: undefined};
+        const noOutputConfig = { ...VALID_CONFIG, outputConfig: undefined };
         const { result: { outputConfig } } = await compile(noOutputConfig);
         expect(outputConfig).toMatchObject({
             env: {
@@ -110,7 +114,6 @@ describe("compiler result", () => {
         expect(success).toBeDefined();
     });
 });
-
 
 describe("comiler metadata", () => {
     it("decorators and import locations", async () => {

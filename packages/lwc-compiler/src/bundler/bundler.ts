@@ -15,9 +15,7 @@ import {
 
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
-import {
-    collectImportLocations
-} from "./import-location-collector";
+import { collectImportLocations } from "./import-location-collector";
 
 export interface BundleReport {
     code: string;
@@ -25,7 +23,6 @@ export interface BundleReport {
     map: null;
     metadata: BundleMetadata;
 }
-
 
 interface RollupWarning {
     message: string;
@@ -46,7 +43,7 @@ function handleRollupWarning(diagnostics: Diagnostic[]) {
         diagnostics.push({
             level: DiagnosticLevel.Warning,
             message,
-            filename,
+            filename
         });
     };
 }
