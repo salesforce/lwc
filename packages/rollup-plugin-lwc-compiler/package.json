@@ -14,7 +14,7 @@
   "dependencies": {
     "glob": "^7.1.2",
     "lwc-module-resolver": "0.20.0",
-    "rollup-plugin-compat": "0.17.42",
+    "rollup-plugin-compat": "0.17.43",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
