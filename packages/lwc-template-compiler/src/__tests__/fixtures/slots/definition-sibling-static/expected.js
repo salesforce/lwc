@@ -1,5 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { t: api_text, h: api_element } = $api;
+    const { t: api_text, h: api_element, s: api_slot } = $api;
 
     return [
         api_element(
@@ -15,8 +15,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     },
                     [api_text('Sibling')]
                 ),
-                api_element(
-                    'slot',
+                api_slot(
+                    '',
                     {
                         key: 3
                     },
@@ -28,7 +28,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             },
                             [api_text('Default slot content')]
                         )
-                    ]
+                    ],
+                    $slotset
                 )
             ]
         )

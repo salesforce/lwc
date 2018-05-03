@@ -1,5 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { t: api_text, h: api_element } = $api;
+    const { t: api_text, h: api_element, s: api_slot } = $api;
 
     return [
         api_element(
@@ -15,15 +15,16 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     },
                     [api_text('Before header')]
                 ),
-                api_element(
-                    'slot',
+                api_slot(
+                    'header',
                     {
                         attrs: {
                             name: 'header'
                         },
                         key: 2
                     },
-                    [api_text('Default header')]
+                    [api_text('Default header')],
+                    $slotset
                 ),
                 api_element(
                     'p',
@@ -39,8 +40,8 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     },
                     [api_text('between')]
                 ),
-                api_element(
-                    'slot',
+                api_slot(
+                    '',
                     {
                         key: 6
                     },
@@ -52,10 +53,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             },
                             [api_text('Default body')]
                         )
-                    ]
+                    ],
+                    $slotset
                 ),
-                api_element(
-                    'slot',
+                api_slot(
+                    'footer',
                     {
                         attrs: {
                             name: 'footer'
@@ -70,10 +72,11 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                             },
                             [api_text('Default footer')]
                         )
-                    ]
+                    ],
+                    $slotset
                 )
             ]
         )
     ];
 }
-tmpl.slots = ["header", "", "footer"];
+tmpl.slots = ['header', '', 'footer'];

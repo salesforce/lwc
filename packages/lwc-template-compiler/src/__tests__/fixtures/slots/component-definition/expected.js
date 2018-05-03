@@ -1,6 +1,6 @@
 import _xFoo from 'x-foo';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { h: api_element, c: api_custom_element } = $api;
+    const { s: api_slot, c: api_custom_element } = $api;
 
     return [
         api_custom_element(
@@ -10,12 +10,13 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 2
             },
             [
-                api_element(
-                    'slot',
+                api_slot(
+                    '',
                     {
                         key: 1
                     },
-                    []
+                    [],
+                    $slotset
                 )
             ]
         )

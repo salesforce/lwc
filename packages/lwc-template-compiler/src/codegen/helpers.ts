@@ -47,6 +47,11 @@ export function isTemplate(element: IRElement) {
     return element.tag === 'template';
 }
 
+/** Returns true if the passed element is a slot element */
+export function isSlot(element: IRElement) {
+    return element.tag === 'slot';
+}
+
 /**
  * Returns true if the passed element should be flattened
  * TODO: Move this logic into the optimizing compiler. This kind of

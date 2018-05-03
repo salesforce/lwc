@@ -477,6 +477,8 @@ export default function parse(source: string, state: State): {
             }
         }
 
+        element.slotName = name;
+
         if (!state.slots.includes(name)) {
             state.slots.push(name);
         }
