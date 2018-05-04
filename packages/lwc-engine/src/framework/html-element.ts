@@ -346,6 +346,7 @@ if (process.env.NODE_ENV !== 'production') {
                 console.log(msg.join('\n')); // tslint:disable-line
                 return; // explicit undefined
             },
+            set() {}, // to avoid TypeError
             enumerable: false,
         });
     });
