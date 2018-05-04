@@ -10,10 +10,6 @@ import { isRendering, vmBeingRendered, invokeComponentEventListenerCallback } fr
 import { pierce } from "./piercing";
 import { invokeCustomElementEventCallback } from "./invoker";
 
-export interface CustomElementEventListenerContext {
-    isRoot: boolean;
-}
-
 const rootEventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
 
 function getWrappedRootListener(vm: VM, listener: EventListener): EventListener {
@@ -66,7 +62,7 @@ function executeEventHandlers(evt: Event, handlers: EventListener[]) {
     const { length: handlersLength } = handlers;
     let stopped: boolean = false;
     const oldStopImmediatePropagation = evt.stopImmediatePropagation;
-    evt.stopImmediatePropagation = function () {
+    evt.stopImmediatePropagation = function() {
         stopped = true;
         oldStopImmediatePropagation.call(this);
     };
@@ -84,7 +80,7 @@ function createElementEventListener(vm: VM, type: string) {
         assert.vm(vm);
     }
 
-    return function (this: Event, evt: Event) {
+    return function(this: Event, evt: Event) {
         const rootEvents = vm.rootEvents && vm.rootEvents[type];
         if (rootEvents) {
             executeEventHandlers(evt, rootEvents);
@@ -94,7 +90,7 @@ function createElementEventListener(vm: VM, type: string) {
         if (cmpEvents) {
             executeEventHandlers(evt, cmpEvents);
         }
-    }
+    };
 }
 
 export function addCmpEventListener(vm: VM, type: string, listener: EventListener, options: any) {
@@ -104,16 +100,16 @@ export function addCmpEventListener(vm: VM, type: string, listener: EventListene
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedComponentsListener(vm, listener);
-    let { cmpEvents, cmpListeners } = vm;
+    let { cmpEvents, cmpListener } = vm;
     if (isUndefined(cmpEvents)) {
         cmpEvents = vm.cmpEvents = create(null) as Record<string, EventListener[]>;
     }
-    if (isUndefined(cmpListeners)) {
-        cmpListeners = vm.cmpListeners = create(null) as Record<string, EventListener>;
+    if (isUndefined(cmpListener)) {
+        cmpListener = vm.cmpListener = create(null) as Record<string, EventListener>;
     }
-    let domListener = cmpListeners[type];
+    let domListener = cmpListener[type];
     if (isUndefined(domListener)) {
-        domListener = cmpListeners[type] = createElementEventListener(vm, type);
+        domListener = cmpListener[type] = createElementEventListener(vm, type);
         addEventListener.call(vm.elm, type, domListener, options);
     }
 
@@ -135,16 +131,16 @@ export function addRootEventListener(vm: VM, type: string, listener: EventListen
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedRootListener(vm, listener);
-    let { rootEvents, cmpListeners } = vm;
+    let { rootEvents, cmpListener } = vm;
     if (isUndefined(rootEvents)) {
         vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
     }
-    if (isUndefined(cmpListeners)) {
-        vm.cmpListeners = cmpListeners = create(null) as Record<string, EventListener>;
+    if (isUndefined(cmpListener)) {
+        vm.cmpListener = cmpListener = create(null) as Record<string, EventListener>;
     }
-    let domListener = cmpListeners[type];
+    let domListener = cmpListener[type];
     if (isUndefined(domListener)) {
-        domListener = cmpListeners[type] = createElementEventListener(vm, type);
+        domListener = cmpListener[type] = createElementEventListener(vm, type);
         addEventListener.call(vm.elm, type, domListener, options);
     }
 
@@ -203,7 +199,8 @@ function removeEventFromCustomElement(vm: VM, type: string, options: any) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    let { cmpEvents, rootEvents, cmpListeners } = vm;
+    const { cmpListener } = vm;
+    let { cmpEvents, rootEvents } = vm;
     if (isUndefined(cmpEvents)) {
         vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
     }
@@ -211,18 +208,18 @@ function removeEventFromCustomElement(vm: VM, type: string, options: any) {
         vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
     }
 
-    let cmpTypeEvents = cmpEvents[type]
+    let cmpTypeEvents = cmpEvents[type];
     if (isUndefined(cmpTypeEvents)) {
         cmpTypeEvents = cmpEvents[type] = [] as EventListener[];
     }
 
-    let rootTypeEvents = rootEvents[type]
+    let rootTypeEvents = rootEvents[type];
     if (isUndefined(rootTypeEvents)) {
         rootTypeEvents = rootEvents[type] = [] as EventListener[];
     }
 
-    if (cmpTypeEvents.length === 0 && rootTypeEvents.length === 0 && (cmpListeners && cmpListeners[type])) {
-        removeEventListener.call(vm.elm, type, cmpListeners[type], options);
-        cmpListeners[type] = undefined;
+    if (cmpTypeEvents.length === 0 && rootTypeEvents.length === 0 && (cmpListener && cmpListener[type])) {
+        removeEventListener.call(vm.elm, type, cmpListener[type], options);
+        cmpListener[type] = undefined;
     }
 }

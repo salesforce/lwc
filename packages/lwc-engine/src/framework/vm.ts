@@ -45,7 +45,7 @@ export interface VM {
     cmpTrack: HashTable<any>;
     cmpEvents?: Record<string, EventListener[] | undefined>;
     rootEvents?: Record<string, EventListener[] | undefined>;
-    cmpListeners?: Record<string, EventListener | undefined>;
+    cmpListener?: Record<string, EventListener | undefined>;
     cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
     render?: () => void | Template;

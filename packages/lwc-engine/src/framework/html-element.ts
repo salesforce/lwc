@@ -94,7 +94,6 @@ export interface ComposableEvent extends Event {
     composed: boolean;
 }
 
-
 // This should be as performant as possible, while any initialization should be done lazily
 class LWCElement implements Component {
     [ViewModelReflection]: VM;
