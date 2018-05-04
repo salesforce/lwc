@@ -1,10 +1,9 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
-    addEventListener,
-    removeEventListener,
     getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
@@ -15,89 +14,15 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
     CustomEvent,
-    getRootNode,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered, invokeComponentEventListenerCallback } from "./invoker";
+import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { Membrane } from "./membrane";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-
-export interface CustomElementEventListenerContext {
-    isRoot: boolean;
-}
-
-export function removeEventListenerFromCustomElement(vm: VM, type: string, listener: EventListener, options: any, context: CustomElementEventListenerContext) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by removing an event listener for "${type}".`);
-        assert.invariant(isFunction(listener), `Invalid second argument for this.template.removeEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
-    }
-    let { cmpEvents } = vm;
-    if (isUndefined(cmpEvents)) {
-        vm.cmpEvents = cmpEvents = create(null) as VM['cmpEvents'];
-    }
-    if (isUndefined(cmpEvents![type])) {
-        cmpEvents![type] = {
-            root: [],
-            component: [],
-        };
-    }
-    if (isUndefined(cmpEvents) || isUndefined(cmpEvents[type]) || ArrayIndexOf.call(cmpEvents[type], listener) === -1) {
-        assert.logError(`Did not find event listener ${listener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
-    }
-    const eventsList = context.isRoot ? cmpEvents[type].root : cmpEvents[type].cmp;
-    ArraySplice.call(eventsList, ArrayIndexOf.call(eventsList, listener), 1);
-    //removeEventListener.call(vm.elm, type, listener, options);
-}
-
-export function addEventListenerToCustomElement(vm: VM, type: string, listener: EventListener, options: any, context: CustomElementEventListenerContext) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-        assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
-        assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
-    }
-
-    let { cmpEvents } = vm;
-    if (isUndefined(cmpEvents)) {
-        vm.cmpEvents = cmpEvents = create(null) as VM['cmpEvents'];
-    }
-    if (isUndefined(cmpEvents[type])) {
-        const eventHandler = function (this: Event, evt: Event) {
-            ['root', 'cmp'].forEach((ctx) => {
-                const handlers = cmpEvents[type][ctx];
-                const { length: handlersLength } = handlers;
-                let stopped: boolean = false;
-                const oldStopImmediatePropagation = evt.stopImmediatePropagation;
-                evt.stopImmediatePropagation = function () {
-                    stopped = true;
-                    oldStopImmediatePropagation.call(this);
-                };
-                for (let i = 0; i < handlersLength; i += 1) {
-                    handlers[i].call(this, evt);
-                    if (stopped) {
-                        break;
-                    }
-                }
-            });
-        }
-        cmpEvents[type] = {
-            root: [],
-            cmp: [],
-            listener: eventHandler,
-        };
-        addEventListener.call(vm.elm, type, eventHandler, options);
-    }
-    const eventsList = context.isRoot ? cmpEvents[type].root : cmpEvents[type].cmp;
-
-    if (ArrayIndexOf.call(eventsList, listener) !== -1) {
-        assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
-    }
-    ArrayPush.call(eventsList, listener);
-}
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -169,26 +94,6 @@ export interface ComposableEvent extends Event {
     composed: boolean;
 }
 
-const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
-
-function getWrappedComponentsListener(vm: VM, listener: EventListener) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-
-    let wrappedListener = eventListeners.get(listener);
-    if (isUndefined(wrappedListener)) {
-        wrappedListener = function(event: Event) {
-            // * if the event is dispatched directly on the host, it is observable from the custom element
-            if (event.target === event.currentTarget || getRootNode.call(event.target) === event.currentTarget) {
-                const e = pierce(vm, event);
-                invokeComponentEventListenerCallback(vm, listener, [e]);
-            }
-        };
-        eventListeners.set(listener, wrappedListener);
-    }
-    return wrappedListener;
-}
 
 // This should be as performant as possible, while any initialization should be done lazily
 class LWCElement implements Component {
@@ -254,12 +159,12 @@ class LWCElement implements Component {
                 assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
             }
         }
-        addEventListenerToCustomElement(vm, type, getWrappedComponentsListener(vm, listener), options, { isRoot: false });
+        addCmpEventListener(vm, type, listener, options);
     }
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getCustomElementVM(this);
-        removeEventListenerFromCustomElement(vm, type, getWrappedComponentsListener(vm, listener), options, { isRoot: false });
+        removeCmpEventListener(vm, type, listener, options);
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {

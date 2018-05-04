@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
-import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, isFunction, isFalse } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -8,8 +8,9 @@ import { pierce, piercingHook } from "./piercing";
 import { Context } from "./context";
 import { Component } from "./component";
 import { VNodeData } from "../3rdparty/snabbdom/types";
-import { getCustomElementVM, addEventListenerToCustomElement, removeEventListenerFromCustomElement } from "./html-element";
+import { getCustomElementVM } from "./html-element";
 import { Replicable, Membrane } from "./membrane";
+import { addRootEventListener, removeRootEventListener } from "./events";
 
 import { TargetSlot } from './membrane';
 import {
@@ -23,7 +24,7 @@ import {
     getRootNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-import { invokeRootCallback, componentEventListenerType } from "./invoker";
+import { componentEventListenerType } from "./invoker";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -36,8 +37,8 @@ export interface ShadowRoot {
     readonly host: Component;
     querySelector(selector: string): HTMLElement | null;
     querySelectorAll(selector: string): HTMLElement[];
-    addEventListener(type: string, listener: EventListener, options: any): void;
-    removeEventListener(type: string, listener: EventListener, options: any): void;
+    addEventListener(type: string, listener: EventListener, options?: any): void;
+    removeEventListener(type: string, listener: EventListener, options?: any): void;
     toString(): string;
 }
 
@@ -97,33 +98,6 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
     return piercedQuerySelectorAll.call(elm, selector);
 }
 
-const eventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
-
-function getWrappedListener(listener: EventListener): EventListener {
-    if (!isFunction(listener)) {
-        return listener; // ignoring non-callable arguments
-    }
-    let wrappedListener = eventListeners.get(listener);
-    if (isUndefined(wrappedListener)) {
-        wrappedListener = function(event: Event) {
-            const vm = getCustomElementVM(event.currentTarget as HTMLElement);
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            // * if the event is dispatched directly on the host, it is not observable from root
-            // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
-            //   it is not observable from the root
-            if (event.target === event.currentTarget || (isFalse((event as any).composed) && getRootNode.call(event.target) !== event.currentTarget)) {
-                return;
-            }
-            const e = pierce(vm, event);
-            invokeRootCallback(vm, listener, [e]);
-        };
-        eventListeners.set(listener, wrappedListener);
-    }
-    return wrappedListener;
-}
-
 export class Root implements ShadowRoot {
     [ViewModelReflection]: VM;
     constructor(vm: VM) {
@@ -165,14 +139,14 @@ export class Root implements ShadowRoot {
         return nodeList;
     }
 
-    addEventListener(type: string, listener: EventListener, options: any) {
+    addEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getCustomElementVM(this);
-        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options, { isRoot: true });
+        addRootEventListener(vm, type, listener, options);
     }
 
-    removeEventListener(type: string, listener: EventListener, options: any) {
+    removeEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getCustomElementVM(this);
-        removeEventListenerFromCustomElement(vm, type, getWrappedListener(listener), options, { isRoot: true });
+        removeRootEventListener(vm, type, listener, options);
     }
     toString(): string {
         const component = getCustomElementComponent(this);
@@ -293,7 +267,7 @@ register({
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(vm, value));
                     case 'target':
-                        if (componentEventListenerType) {
+                        if (componentEventListenerType === target.type) {
                             return callback(pierce(vm, elm));
                         }
                         const { currentTarget } = (target as Event);

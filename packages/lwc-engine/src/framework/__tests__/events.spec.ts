@@ -3,6 +3,46 @@ import { createElement } from "./../upgrade";
 import { ViewModelReflection } from "../def";
 import { unwrap } from "../membrane";
 
+describe('Composed events', () => {
+    it('should be able to consume events from within template', () => {
+        let count = 0;
+        class Child extends Element {
+            triggerFoo() {
+                this.dispatchEvent(new CustomEvent('foo'));
+            }
+        }
+        Child.publicMethods = ['triggerFoo'];
+
+        class ComposedEvents extends Element {
+            triggerChildFoo() {
+                this.template.querySelector('x-custom-event-child').triggerFoo();
+            }
+            handleFoo() {
+                count += 1;
+            }
+            render() {
+                return ($api, $cmp) => {
+                    return [
+                        $api.c('x-custom-event-child', Child, {
+                            on: {
+                                foo: $api.b($cmp.handleFoo),
+                            },
+                            key: 0,
+                        }),
+                    ];
+                }
+            }
+        }
+
+        ComposedEvents.publicMethods = ['triggerChildFoo'];
+
+        const elem = createElement('x-components-events-parent', { is: ComposedEvents });
+        document.body.appendChild(elem);
+        elem.triggerChildFoo();
+        expect(count).toBe(1);
+    });
+});
+
 describe('Events on Custom Elements', () => {
     let elm, vnode0;
 
@@ -153,7 +193,7 @@ describe('Events on Custom Elements', () => {
         document.body.appendChild(elm);
         cmp.root.querySelector('div').click();
         expect(result).toHaveLength(2);
-        expect(result[0]).toBe(elm[ViewModelReflection].component.root); // context must be the component
+        expect(result[0]).toBe(undefined); // context must be the component
         expect(result[1]).toBeInstanceOf(Event);
     });
 
@@ -328,7 +368,7 @@ describe('Events on Custom Elements', () => {
         expect(clickSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should call event handler with correct context', () => {
+    it('should call event handler with undefined context', () => {
         expect.assertions(1);
         let clickSpy;
         class MyComponent extends Element {
@@ -460,6 +500,117 @@ describe('Events on Custom Elements', () => {
         elm.clickDiv();
     });
 
+    it('should have correct target when shadow root gets event dispatched from component event', () => {
+        expect.assertions(1);
+        let clickSpy;
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', (evt) => {
+                    const div = this.template.querySelector('div');
+                    div.click();
+                });
+
+                this.template.addEventListener('click', (evt) => {
+                    expect(evt.target).toBe(this.template.querySelector('div'));
+                });
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+    });
+});
+
+describe('Component events', () => {
+    it.only('should have correct target when component event gets dispatched within event handler', () => {
+        expect.assertions(1);
+        let clickSpy;
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', (evt) => {
+                    this.dispatchEvent(new CustomEvent('foo'));
+                });
+                this.addEventListener('foo', (evt) => {
+                    expect(unwrap(evt.target)).toBe(elm);
+                });
+            }
+
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.click();
+    });
+});
+
+describe('Shadow Root events', () => {
+    it('should call event handler with correct target', () => {
+        expect.assertions(1);
+        let clickSpy;
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', (evt) => {
+                    expect(evt.target).toBe(this.template.querySelector('div'));
+                });
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+    });
+
+    it('should call event handler with undefined context', () => {
+        expect.assertions(1);
+        let clickSpy;
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', function () {
+                    expect(this).toBe(undefined);
+                });
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+    });
+
     it('should call template event handlers before component event handlers', () => {
         const calls = [];
         class MyComponent extends Element {
@@ -487,5 +638,146 @@ describe('Events on Custom Elements', () => {
         elm.clickDiv();
         expect(calls).toEqual(['template', 'component']);
     });
+});
 
+describe('Removing events from shadowroot', () => {
+    it('should remove event correctly', () => {
+        const onClick = jest.fn();
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', onClick);
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            removeHandler() {
+                this.template.removeEventListener('click', onClick);
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        elm.removeHandler();
+        elm.clickDiv();
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should only remove shadow root events', () => {
+        const onClick = jest.fn();
+        const cmpClick = jest.fn();
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', cmpClick);
+                this.template.addEventListener('click', onClick);
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            removeHandler() {
+                this.template.removeEventListener('click', onClick);
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        elm.removeHandler();
+        elm.clickDiv();
+        expect(cmpClick).toHaveBeenCalledTimes(2);
+        expect(onClick).toHaveBeenCalledTimes(1);
+    })
+});
+
+describe('Removing events from cmp', () => {
+    it('should remove event correctly', () => {
+        const onClick = jest.fn();
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', onClick);
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            removeHandler() {
+                this.removeEventListener('click', onClick);
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        elm.removeHandler();
+        elm.clickDiv();
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should only remove shadow root events', () => {
+        const onClick = jest.fn();
+        const cmpClick = jest.fn();
+        class MyComponent extends Element {
+            connectedCallback() {
+                this.addEventListener('click', cmpClick);
+                this.template.addEventListener('click', onClick);
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            removeHandler() {
+                this.removeEventListener('click', onClick);
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+        MyComponent.publicMethods = ['clickDiv', 'removeHandler'];
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+        elm.removeHandler();
+        elm.clickDiv();
+        expect(cmpClick).toHaveBeenCalledTimes(1);
+        expect(onClick).toHaveBeenCalledTimes(2);
+    })
 });
