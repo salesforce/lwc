@@ -23,7 +23,7 @@ import {
     getRootNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-import { invokeRootCallback } from "./invoker";
+import { invokeRootCallback, componentEventListenerType } from "./invoker";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -167,12 +167,12 @@ export class Root implements ShadowRoot {
 
     addEventListener(type: string, listener: EventListener, options: any) {
         const vm = getCustomElementVM(this);
-        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options);
+        addEventListenerToCustomElement(vm, type, getWrappedListener(listener), options, { isRoot: true });
     }
 
     removeEventListener(type: string, listener: EventListener, options: any) {
         const vm = getCustomElementVM(this);
-        removeEventListenerFromCustomElement(vm, type, getWrappedListener(listener), options);
+        removeEventListenerFromCustomElement(vm, type, getWrappedListener(listener), options, { isRoot: true });
     }
     toString(): string {
         const component = getCustomElementComponent(this);
@@ -293,15 +293,15 @@ register({
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(vm, value));
                     case 'target':
+                        if (componentEventListenerType) {
+                            return callback(pierce(vm, elm));
+                        }
                         const { currentTarget } = (target as Event);
                         if (currentTarget === elm || isChildNode(elm, currentTarget as Node)) {
                             let root = value; // initial root is always the original target
                             while (root !== elm) {
                                 value = root;
                                 root = getRootNode.call(value);
-                            }
-                            if (value === elm) {
-                                return callback(component);
                             }
                             return callback(pierce(vm, value));
                         }

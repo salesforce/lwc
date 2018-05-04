@@ -856,7 +856,6 @@ describe('html-element', () => {
                 elm[ViewModelReflection].component.querySelectorAll('div');
             }).not.toThrow();
         });
-
     });
 
     describe('#data layer', () => {
