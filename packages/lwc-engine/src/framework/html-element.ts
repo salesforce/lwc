@@ -346,7 +346,8 @@ if (process.env.NODE_ENV !== 'production') {
                 console.log(msg.join('\n')); // tslint:disable-line
                 return; // explicit undefined
             },
-            set() {}, // to avoid TypeError
+            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
+            set() {}, // tslint:disable-line
             enumerable: false,
         });
     });
