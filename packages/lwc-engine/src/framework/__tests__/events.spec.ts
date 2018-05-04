@@ -511,10 +511,10 @@ describe('Events on Custom Elements', () => {
             connectedCallback() {
                 this.addEventListener('click', (evt) => {
                     const div = this.template.querySelector('div');
-                    div.click();
+                    div.dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
                 });
 
-                this.template.addEventListener('click', (evt) => {
+                this.template.addEventListener('foo', (evt) => {
                     expect(evt.target).toBe(this.template.querySelector('div'));
                 });
             }
@@ -543,7 +543,6 @@ describe('Component events', () => {
                     expect(unwrap(evt.target)).toBe(elm);
                 });
             }
-
         }
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });

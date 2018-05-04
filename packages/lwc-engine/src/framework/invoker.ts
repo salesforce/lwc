@@ -13,16 +13,21 @@ import { startMeasure, endMeasure } from "./performance-timing";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export let componentEventListenerType: string | null = null;
+export enum EventListenerContext {
+    COMPONENT_LISTENER = 1,
+    ROOT_LISTENER = 2,
+}
 
-export function invokeComponentEventListenerCallback(vm: VM, type: string, fn: (...args: any[]) => any, args?: any[]): any {
+export let componentEventListenerType: EventListenerContext | null = null;
+
+export function invokeCustomElementEventListenerCallback(vm: VM, listenerContext: EventListenerContext, fn: (...args: any[]) => any, args?: any[]): any {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
     let result;
     let error;
     const componentEventListenerTypeInception = componentEventListenerType;
-    componentEventListenerType = type;
+    componentEventListenerType = listenerContext;
     try {
         // TODO: membrane proxy for all args that are objects
         result = fn.apply(undefined, args);
@@ -53,31 +58,6 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
         error = Object(e);
     } finally {
         establishContext(ctx);
-        if (error) {
-            error.wcStack = getComponentStack(vm);
-            // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
-        }
-    }
-    return result;
-}
-
-export function invokeCustomElementEventCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
-    const { context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
-    let result;
-    let error;
-    const componentEventListenerTypeInception = componentEventListenerType;
-    componentEventListenerType = null;
-    try {
-        // TODO: membrane proxy for all args that are objects
-        result = fn.apply(undefined, args);
-    } catch (e) {
-        error = Object(e);
-    } finally {
-        establishContext(ctx);
-        componentEventListenerType = componentEventListenerTypeInception;
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context

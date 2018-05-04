@@ -24,7 +24,7 @@ import {
     getRootNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-import { componentEventListenerType } from "./invoker";
+import { componentEventListenerType, EventListenerContext } from "./invoker";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
@@ -267,7 +267,8 @@ register({
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(vm, value));
                     case 'target':
-                        if (componentEventListenerType === target.type) {
+                        if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                            console.log('what');
                             return callback(pierce(vm, elm));
                         }
                         const { currentTarget } = (target as Event);
