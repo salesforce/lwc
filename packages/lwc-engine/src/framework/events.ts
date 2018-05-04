@@ -93,6 +93,22 @@ function createElementEventListener(vm: VM, type: string) {
     };
 }
 
+function attachDOMListener(vm: VM, type: string, options: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    let { cmpListener } = vm;
+    if (isUndefined(cmpListener)) {
+        cmpListener = vm.cmpListener = create(null) as Record<string, EventListener>;
+    }
+
+    let domListener = cmpListener[type];
+    if (isUndefined(domListener)) {
+        domListener = cmpListener[type] = createElementEventListener(vm, type);
+        addEventListener.call(vm.elm, type, domListener, options);
+    }
+}
+
 export function addCmpEventListener(vm: VM, type: string, listener: EventListener, options: any) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
@@ -100,17 +116,9 @@ export function addCmpEventListener(vm: VM, type: string, listener: EventListene
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedComponentsListener(vm, listener);
-    let { cmpEvents, cmpListener } = vm;
+    let { cmpEvents } = vm;
     if (isUndefined(cmpEvents)) {
         cmpEvents = vm.cmpEvents = create(null) as Record<string, EventListener[]>;
-    }
-    if (isUndefined(cmpListener)) {
-        cmpListener = vm.cmpListener = create(null) as Record<string, EventListener>;
-    }
-    let domListener = cmpListener[type];
-    if (isUndefined(domListener)) {
-        domListener = cmpListener[type] = createElementEventListener(vm, type);
-        addEventListener.call(vm.elm, type, domListener, options);
     }
 
     let cmpEventHandlers = cmpEvents[type];
@@ -122,6 +130,7 @@ export function addCmpEventListener(vm: VM, type: string, listener: EventListene
         assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
     }
     ArrayPush.call(cmpEventHandlers, wrappedListener);
+    attachDOMListener(vm, type, options);
 }
 
 export function addRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
@@ -131,17 +140,9 @@ export function addRootEventListener(vm: VM, type: string, listener: EventListen
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedRootListener(vm, listener);
-    let { rootEvents, cmpListener } = vm;
+    let { rootEvents } = vm;
     if (isUndefined(rootEvents)) {
         vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
-    }
-    if (isUndefined(cmpListener)) {
-        vm.cmpListener = cmpListener = create(null) as Record<string, EventListener>;
-    }
-    let domListener = cmpListener[type];
-    if (isUndefined(domListener)) {
-        domListener = cmpListener[type] = createElementEventListener(vm, type);
-        addEventListener.call(vm.elm, type, domListener, options);
     }
 
     let rootEventHandlers = rootEvents[type];
@@ -153,6 +154,7 @@ export function addRootEventListener(vm: VM, type: string, listener: EventListen
         assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
     }
     ArrayPush.call(rootEventHandlers, wrappedListener);
+    attachDOMListener(vm, type, options);
 }
 
 export function removeRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {

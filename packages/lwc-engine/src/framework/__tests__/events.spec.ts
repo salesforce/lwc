@@ -531,7 +531,7 @@ describe('Events on Custom Elements', () => {
 });
 
 describe('Component events', () => {
-    it.only('should have correct target when component event gets dispatched within event handler', () => {
+    it('should have correct target when component event gets dispatched within event handler', () => {
         expect.assertions(1);
         let clickSpy;
         class MyComponent extends Element {
