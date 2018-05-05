@@ -3,13 +3,12 @@ import { isUndefined, isObject, isArray, create, ArrayPush } from "./language";
 
 import { Replicable } from "./membrane";
 import { Context } from "./context";
-import { Component } from "./component";
 import { VNodeData } from "../3rdparty/snabbdom/types";
 import { ComponentDef } from "./def";
 import { VM } from "./vm";
 
 export type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
-export type MembranePiercingCallback = (component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (newValue?: any) => void) => void;
+export type MembranePiercingCallback = (target: Replicable, key: PropertyKey, value: any, callback: (newValue?: any) => void) => void;
 export interface ServiceDef {
     wiring?: ServiceCallback;
     connected?: ServiceCallback;

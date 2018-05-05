@@ -17,9 +17,8 @@ import {
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce, piercingHook } from "./piercing";
+import { pierce } from "./piercing";
 import { ViewModelReflection } from "./def";
-import { Membrane } from "./membrane";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 
@@ -142,8 +141,7 @@ class LWCElement implements Component {
         }
 
         // Pierce dispatchEvent so locker service has a chance to overwrite
-        pierce(vm, elm);
-        const dispatchEvent = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', elm.dispatchEvent);
+        const dispatchEvent = pierce(elm).dispatchEvent;
         return dispatchEvent.call(elm, event);
     }
 
@@ -239,7 +237,7 @@ class LWCElement implements Component {
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
                 // TODO: locker service might need to return a membrane proxy
-                return pierce(vm, nodeList[i]);
+                return pierce(nodeList[i]);
             }
         }
 
@@ -266,7 +264,7 @@ class LWCElement implements Component {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
             }
         }
-        return pierce(vm, filteredNodes);
+        return pierce(filteredNodes);
     }
     get tagName(): string {
         const elm = getLinkedElement(this);
