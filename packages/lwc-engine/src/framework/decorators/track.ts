@@ -1,24 +1,39 @@
 import assert from "../assert";
-import { isArray, isObject, defineProperty, isUndefined } from "../language";
+import { isArray, isObject, isUndefined } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { reactiveMembrane } from '../membrane';
+import { DecoratorFunction } from "./decorate";
 
-// stub function to prevent misuse of the @track decorator
-export default function track(obj: any): any {
+function trackDecorator(target: any, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
-        if (arguments.length !== 1) {
-            assert.fail("@track can be used as a decorator or as a function with one argument to produce a trackable version of the provided value.");
+        if (!isUndefined(descriptor)) {
+            const { get, set, configurable, writable } = descriptor;
+            assert.isTrue(!get && !set, `Compiler Error: A @track decorator can only be applied to a public field.`);
+            assert.isTrue(configurable !== false, `Compiler Error: A @track decorator can only be applied to a configurable property.`);
+            assert.isTrue(writable !== false, `Compiler Error: A @track decorator can only be applied to a writable property.`);
         }
     }
-    return reactiveMembrane.getProxy(obj);
+    return createTrackedPropertyDescriptor(target, prop, isObject(descriptor) ? descriptor.enumerable === true : true);
 }
 
-// TODO: how to allow symbols as property keys?
-export function createTrackedPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
-    defineProperty(proto, key, {
+// stub function to prevent misuse of the @track decorator
+export default function track(obj?: any): DecoratorFunction | any {
+    if (arguments.length === 1) {
+        return reactiveMembrane.getProxy(obj);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length !== 0) {
+            assert.fail(`@track decorator can only be used with one argument to return a trackable object, or as a decorator with no arguments.`);
+        }
+    }
+    return trackDecorator;
+}
+
+export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean) {
+    return {
         get(this: VMElement): any {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
@@ -50,7 +65,7 @@ export function createTrackedPropertyDescriptor(proto: object, key: string, desc
                 }
             }
         },
-        enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
-        configurable: false,
-    });
+        enumerable,
+        configurable: true,
+    };
 }

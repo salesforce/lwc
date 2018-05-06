@@ -248,10 +248,8 @@ describe('track.ts', () => {
     });
 
     describe('track()', () => {
-        it('should throw when invoking it with no arguments', () => {
-            expect(() => {
-                track();
-            }).toThrow();
+        it('should return a decorator when invoking it with no arguments', () => {
+            expect(typeof track()).toBe('function');
         });
 
         it('should throw when invoking it with more than one argument', () => {

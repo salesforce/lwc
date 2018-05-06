@@ -363,17 +363,9 @@ describe('decorators/api.ts', () => {
         });
     });
 
-    describe('@api misuse', () => {
-        it('should throw when invoking api as a function', () => {
-            class MyComponent extends Element {
-                constructor() {
-                    super();
-                    api();
-                }
-            }
-            expect(() => {
-                createElement('x-foo', { is: MyComponent });
-            }).toThrow('@api may only be used as a decorator.');
+    describe('@api()', () => {
+        it('should return a decorator when invoking api as a function', () => {
+            expect(typeof api()).toBe('function');
         });
     });
 

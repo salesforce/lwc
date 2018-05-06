@@ -21,7 +21,6 @@ import {
     getPrototypeOf,
     isString,
     isFunction,
-    isObject,
     isUndefined,
     ArraySlice,
     isNull,
@@ -38,9 +37,10 @@ import {
     defaultDefHTMLPropertyNames,
     attemptAriaAttributeFallback,
 } from "./dom";
-import { createWiredPropertyDescriptor } from "./decorators/wire";
-import { createTrackedPropertyDescriptor } from "./decorators/track";
-import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
+import decorate, { DecoratorMap } from "./decorators/decorate";
+import wireDecorator from "./decorators/wire";
+import trackDecorator from "./decorators/track";
+import apiDecorator from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
@@ -90,9 +90,6 @@ import {
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
-const COMPUTED_GETTER_MASK = 1;
-const COMPUTED_SETTER_MASK = 2;
-
 function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
     seed[propName] = {
         config: 3,
@@ -135,61 +132,29 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     const track = getTrackHash(Ctor);
 
     const proto = Ctor.prototype;
-    for (const propName in props) {
-        const propDef = props[propName];
-        // initializing getters and setters for each public prop on the target prototype
-        const descriptor = getOwnPropertyDescriptor(proto, propName);
-        const { config } = propDef;
-        if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-                const mustHaveGetter = COMPUTED_GETTER_MASK & config;
-                const mustHaveSetter = COMPUTED_SETTER_MASK & config;
-                if (mustHaveGetter) {
-                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${name}`);
+    const decoratorMap: DecoratorMap = create(null);
+
+    // TODO: eventually, the compiler should do this work
+    {
+        for (const propName in props) {
+            decoratorMap[propName] = apiDecorator();
+        }
+        if (wire) {
+            for (const propName in wire) {
+                const wireDef: WireDef = wire[propName];
+                if (wireDef.method) {
+                    // for decorated methods we need to do nothing
+                    continue;
                 }
-                if (mustHaveSetter) {
-                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
-                    assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
-                }
+                decoratorMap[propName] = wireDecorator(wireDef.adapter, wireDef.params);
             }
-            // if it is configured as an accessor it must have a descriptor
-            createPublicAccessorDescriptor(proto, propName, descriptor as PropertyDescriptor);
-        } else {
-            createPublicPropertyDescriptor(proto, propName, descriptor);
         }
-    }
-    if (wire) {
-        for (const propName in wire) {
-            if (wire[propName].method) {
-                // for decorated methods we need to do nothing
-                continue;
+        if (track) {
+            for (const propName in track) {
+                decoratorMap[propName] = trackDecorator();
             }
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createWiredPropertyDescriptor(proto, propName, descriptor);
         }
-    }
-    if (track) {
-        for (const propName in track) {
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createTrackedPropertyDescriptor(proto, propName, descriptor);
-        }
+        decorate(Ctor, decoratorMap);
     }
 
     let {
