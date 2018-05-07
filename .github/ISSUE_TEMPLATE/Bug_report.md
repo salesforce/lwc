@@ -18,7 +18,7 @@ http://playground.sfdc.es/projects/edit
 if specific code snipet, paste the example here
 -->
 ```js
-var your => (code) => here;
+const your => (code) => here;
 ```
 
 
@@ -43,13 +43,13 @@ package.json
 versions < 0.17: "lwc-engine": "0.16.8"
 versions >= 0.17: "lwc-engine": "0.17.2"
 
-To get LWC version in Aura environment,
-http://[domain]//auraFW/resources/engine/engine_debug.js
+To get LWC version in Aura environment, load this file and scroll to the bottom:
+http://[domain]/auraFW/resources/engine/engine_debug.js
 -->
 - LWC: x.x.x
 
 <!--
-To get Aura version in Aura environment,
+To get Aura version in Aura environment:
 http://[domain]/auraFW/resources/version/aura.json
 -->
 - Aura: x.x.x
