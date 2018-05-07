@@ -22,28 +22,24 @@ const VALID_CONFIG = {
 
 describe("compiler options", () => {
     it("should validate presence of options", async () => {
-        expect.assertions(1);
         await expect(compile()).rejects.toMatchObject({
             message: 'Expected options object, received "undefined".'
         });
     });
 
     it("should validate bundle name option", async () => {
-        expect.assertions(1);
         await expect(compile({})).rejects.toMatchObject({
             message: 'Expected a string for name, received "undefined".'
         });
     });
 
     it("should validate bundle namespace option", async () => {
-        expect.assertions(1);
         await expect(compile({ name: "foo" })).rejects.toMatchObject({
             message: 'Expected a string for namespace, received "undefined".'
         });
     });
 
     it("should validate presence of files option", async () => {
-        expect.assertions(1);
         await expect(
             compile({
                 name: "/x/foo/foo.js",
@@ -56,7 +52,6 @@ describe("compiler options", () => {
     });
 
     it("should validate files option value type", async () => {
-        expect.assertions(1);
         await expect(
             compile({
                 name: "foo",
@@ -72,7 +67,6 @@ describe("compiler options", () => {
     });
 
     it("should validate outputConfig.minify", async () => {
-        expect.assertions(1);
         await expect(
             compile({
                 name: "foo",
@@ -89,7 +83,6 @@ describe("compiler options", () => {
     });
 
     it("should validate outputConfig.compat", async () => {
-        expect.assertions(1);
         await expect(
             compile({
                 name: "foo",
