@@ -17,7 +17,7 @@ import {
 import { getPropNameFromAttrName } from "./utils";
 import { isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce } from "./piercing";
+import { pierce, pierceProperty } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -141,7 +141,7 @@ class LWCElement implements Component {
         }
 
         // Pierce dispatchEvent so locker service has a chance to overwrite
-        const dispatchEvent = pierce(elm).dispatchEvent;
+        const dispatchEvent = pierceProperty(elm, 'dispatchEvent');
         return dispatchEvent.call(elm, event);
     }
 

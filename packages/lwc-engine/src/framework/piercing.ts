@@ -57,3 +57,11 @@ export function pierce(value: Replicable | any): any {
     }
     return getReplica(piercingMembrane, value);
 }
+
+// TODO: this is only really needed by locker, eventually we can remove this
+export function pierceProperty(target: Replicable | any, key: PropertyKey): any {
+    if (isUndefined(piercingMembrane)) {
+        piercingMembrane = createPiercingMembrane();
+    }
+    return piercingHook(piercingMembrane, target, key, target[key]);
+}
