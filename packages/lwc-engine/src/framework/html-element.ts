@@ -351,7 +351,6 @@ if (process.env.NODE_ENV !== 'production') {
             enumerable: false,
         });
     });
-
 }
 
 freeze(LWCElement);
