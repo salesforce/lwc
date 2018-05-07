@@ -12,8 +12,8 @@ import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
-import { ShadowRoot, isChildNode } from "./root";
-import { getRootNode } from "./dom";
+import { ShadowRoot } from "./root";
+import { getRootNode, isChildNode } from "./dom";
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;

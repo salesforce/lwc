@@ -13,38 +13,6 @@ import { startMeasure, endMeasure } from "./performance-timing";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
-export enum EventListenerContext {
-    COMPONENT_LISTENER = 1,
-    ROOT_LISTENER = 2,
-}
-
-export let componentEventListenerType: EventListenerContext | null = null;
-
-export function invokeCustomElementEventListenerCallback(vm: VM, listenerContext: EventListenerContext, fn: (...args: any[]) => any, args?: any[]): any {
-    const { context } = vm;
-    const ctx = currentContext;
-    establishContext(context);
-    let result;
-    let error;
-    const componentEventListenerTypeInception = componentEventListenerType;
-    componentEventListenerType = listenerContext;
-    try {
-        // TODO: membrane proxy for all args that are objects
-        result = fn.apply(undefined, args);
-    } catch (e) {
-        error = Object(e);
-    } finally {
-        establishContext(ctx);
-        componentEventListenerType = componentEventListenerTypeInception;
-        if (error) {
-            error.wcStack = getComponentStack(vm);
-            // rethrowing the original error annotated after restoring the context
-            throw error; // tslint:disable-line
-        }
-    }
-    return result;
-}
-
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
     const { context, component } = vm;
     const ctx = currentContext;
@@ -141,4 +109,33 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
         }
     }
     return result || [];
+}
+
+export enum EventListenerContext {
+    COMPONENT_LISTENER = 1,
+    ROOT_LISTENER = 2,
+}
+
+export let componentEventListenerType: EventListenerContext | null = null;
+
+export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, event: Event) {
+    const { context } = vm;
+    const ctx = currentContext;
+    establishContext(context);
+    let error;
+    const componentEventListenerTypeInception = componentEventListenerType;
+    componentEventListenerType = listenerContext;
+    try {
+        fn.call(undefined, event);
+    } catch (e) {
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        componentEventListenerType = componentEventListenerTypeInception;
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // tslint:disable-line
+        }
+    }
 }

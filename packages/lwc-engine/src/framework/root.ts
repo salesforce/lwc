@@ -19,9 +19,8 @@ import {
     GlobalAOMProperties,
     setAttribute,
     removeAttribute,
-    DOCUMENT_POSITION_CONTAINED_BY,
-    compareDocumentPosition,
     getRootNode,
+    isChildNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
 import { componentEventListenerType, EventListenerContext } from "./invoker";
@@ -228,10 +227,6 @@ export function wrapIframeWindow(win: Window) {
     };
 }
 
-export function isChildNode(root: Element, node: Node): boolean {
-    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
-}
-
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
@@ -268,7 +263,6 @@ register({
                         return callback(pierce(vm, value));
                     case 'target':
                         if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                            console.log('what');
                             return callback(pierce(vm, elm));
                         }
                         const { currentTarget } = (target as Event);

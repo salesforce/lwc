@@ -758,7 +758,7 @@ describe('Removing events from cmp', () => {
             }
 
             removeHandler() {
-                this.removeEventListener('click', onClick);
+                this.removeEventListener('click', cmpClick);
             }
 
             render() {

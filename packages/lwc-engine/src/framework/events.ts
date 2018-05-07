@@ -3,31 +3,28 @@ import {
     addEventListener,
     removeEventListener,
     getRootNode,
-    compareDocumentPosition,
-    DOCUMENT_POSITION_CONTAINED_BY,
+    isChildNode,
 } from "./dom";
 import { VM } from "./vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
-import { isRendering, vmBeingRendered, invokeCustomElementEventListenerCallback, EventListenerContext } from "./invoker";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
 import { pierce } from "./piercing";
 
-
-
-function isChildNode(root: Element, node: Node): boolean {
-    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+interface WrappedListener extends EventListener {
+    placement: EventListenerContext;
+    original: EventListener;
 }
 
-const rootEventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
+const rootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedRootListener(vm: VM, listener: EventListener): EventListener {
+function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListener {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-
     if (!isFunction(listener)) {
-        return listener; // ignoring non-callable arguments
+        throw new TypeError(); // avoiding problems with non-valid listeners
     }
-    let wrappedListener = rootEventListeners.get(listener);
+    let wrappedListener = rootEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {
         wrappedListener = function(event: Event) {
             // * if the event is dispatched directly on the host, it is not observable from root
@@ -42,23 +39,28 @@ function getWrappedRootListener(vm: VM, listener: EventListener): EventListener 
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
                     const e = pierce(vm, event);
-                    invokeCustomElementEventListenerCallback(vm, EventListenerContext.ROOT_LISTENER, listener, [e]);
+                    invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, e);
             }
-
-        };
-        rootEventListeners.set(listener, wrappedListener);
+        } as WrappedListener;
+        wrappedListener!.placement = EventListenerContext.ROOT_LISTENER;
+        if (process.env.NODE_ENV !== 'production') {
+            wrappedListener!.original = listener; // for logging purposes
+        }
+        rootEventListenerMap.set(listener, wrappedListener);
     }
     return wrappedListener;
 }
 
-const cmpEventListeners: WeakMap<EventListener, EventListener> = new WeakMap();
+const cmpEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
-function getWrappedComponentsListener(vm: VM, listener: EventListener) {
+function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedListener {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-
-    let wrappedListener = cmpEventListeners.get(listener);
+    if (!isFunction(listener)) {
+        throw new TypeError(); // avoiding problems with non-valid listeners
+    }
+    let wrappedListener = cmpEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {
         wrappedListener = function(event: Event) {
             const { composed, target, currentTarget } = event as any;
@@ -70,30 +72,16 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener) {
                 // it is coming from an slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node)) {
                     const e = pierce(vm, event);
-                    invokeCustomElementEventListenerCallback(vm, EventListenerContext.COMPONENT_LISTENER, listener, [e]);
-             }
-        };
-        cmpEventListeners.set(listener, wrappedListener);
+                    invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, e);
+            }
+        } as WrappedListener;
+        wrappedListener!.placement = EventListenerContext.COMPONENT_LISTENER;
+        if (process.env.NODE_ENV !== 'production') {
+            wrappedListener!.original = listener; // for logging purposes
+        }
+        cmpEventListenerMap.set(listener, wrappedListener);
     }
     return wrappedListener;
-}
-
-function executeEventHandlers(evt: Event, handlers: EventListener[]) {
-    const { length: handlersLength } = handlers;
-    let interrupted: boolean = false;
-    const oldStopImmediatePropagation = evt.stopImmediatePropagation;
-    evt.stopImmediatePropagation = function() {
-        interrupted = true;
-        oldStopImmediatePropagation.call(this);
-    };
-    for (let i = 0; i < handlersLength; i += 1) {
-        // all handlers on the custom element should be called with undefined 'this'
-        handlers[i].call(undefined, evt);
-        if (interrupted) {
-            return interrupted;
-        }
-    }
-    return interrupted;
 }
 
 function createElementEventListener(vm: VM) {
@@ -102,33 +90,79 @@ function createElementEventListener(vm: VM) {
     }
 
     return function(this: Event, evt: Event) {
-        const { type } = evt;
-        const rootEvents = vm.rootEvents && vm.rootEvents[type];
-        let propagationStopped = false;
-        if (rootEvents) {
-            propagationStopped = executeEventHandlers(evt, rootEvents);
+        let interrupted = false;
+        const { type, stopImmediatePropagation } = evt;
+        const { cmpEvents } = vm;
+        const listeners = cmpEvents![type] as WrappedListener[]; // it must have listeners at this point
+        const len = listeners.length;
+        evt.stopImmediatePropagation = function() {
+            interrupted = true;
+            stopImmediatePropagation.call(this);
+        };
+        for (let i = 0; i < len; i += 1) {
+            if (listeners[i].placement === EventListenerContext.ROOT_LISTENER) {
+                // all handlers on the custom element should be called with undefined 'this'
+                listeners[i].call(undefined, evt);
+                if (interrupted) {
+                    return;
+                }
+            }
         }
-
-        if (propagationStopped === true) {
-            return;
-        }
-        const cmpEvents = vm.cmpEvents && vm.cmpEvents[type];
-        if (cmpEvents) {
-            executeEventHandlers(evt, cmpEvents);
+        for (let i = 0; i < len; i += 1) {
+            if (listeners[i].placement === EventListenerContext.COMPONENT_LISTENER) {
+                // all handlers on the custom element should be called with undefined 'this'
+                listeners[i].call(undefined, evt);
+                if (interrupted) {
+                    return;
+                }
+            }
         }
     };
 }
 
-function attachDOMListener(vm: VM, type: string) {
+function attachDOMListener(vm: VM, type: string, wrappedListener: WrappedListener) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    let { cmpListener, rootEvents, cmpEvents } = vm;
+    let { cmpListener, cmpEvents } = vm;
     if (isUndefined(cmpListener)) {
         cmpListener = vm.cmpListener = createElementEventListener(vm);
     }
-    if ((!rootEvents || !cmpEvents ||  isUndefined(rootEvents![type]) || isUndefined(cmpEvents![type]))) {
+    if (isUndefined(cmpEvents)) {
+        cmpEvents = vm.cmpEvents = create(null) as Record<string, WrappedListener[]>;
+    }
+
+    let cmpEventHandlers = cmpEvents[type];
+    if (isUndefined(cmpEventHandlers)) {
+        cmpEventHandlers = cmpEvents[type] = [];
+    }
+    // only add to DOM if there is no other listener on the same placement yet
+    if (cmpEventHandlers.length === 0) {
         addEventListener.call(vm.elm, type, cmpListener);
+    }
+    ArrayPush.call(cmpEventHandlers, wrappedListener);
+    if (process.env.NODE_ENV !== 'production') {
+        if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
+            assert.logWarning(`${vm} has duplicate listener ${wrappedListener.original} for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
+        }
+    }
+}
+
+function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListener) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const { cmpEvents } = vm;
+    let p: number;
+    let listeners: EventListener[] | undefined;
+    if (!isUndefined(cmpEvents) && !isUndefined(listeners = cmpEvents[type]) && (p = ArrayIndexOf.call(listeners, wrappedListener)) !== -1) {
+        ArraySplice.call(listeners, p, 1);
+        // only remove from DOM if there is no other listener on the same placement
+        if (listeners!.length === 0) {
+            removeEventListener.call(vm.elm, type, vm.cmpListener);
+        }
+    } else if (process.env.NODE_ENV !== 'production') {
+        assert.logError(`Did not find event listener ${wrappedListener.original} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
     }
 }
 
@@ -139,21 +173,7 @@ export function addCmpEventListener(vm: VM, type: string, listener: EventListene
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedComponentsListener(vm, listener);
-    let { cmpEvents } = vm;
-    if (isUndefined(cmpEvents)) {
-        cmpEvents = vm.cmpEvents = create(null) as Record<string, EventListener[]>;
-    }
-
-    let cmpEventHandlers = cmpEvents[type];
-    if (isUndefined(cmpEventHandlers)) {
-        cmpEventHandlers = cmpEvents[type] = [];
-    }
-
-    if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
-        assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
-    }
-    attachDOMListener(vm, type);
-    ArrayPush.call(cmpEventHandlers, wrappedListener);
+    attachDOMListener(vm, type, wrappedListener);
 }
 
 export function addRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
@@ -163,41 +183,7 @@ export function addRootEventListener(vm: VM, type: string, listener: EventListen
         assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
     }
     const wrappedListener = getWrappedRootListener(vm, listener);
-    let { rootEvents } = vm;
-    if (isUndefined(rootEvents)) {
-        vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
-    }
-
-    let rootEventHandlers = rootEvents[type];
-    if (isUndefined(rootEventHandlers)) {
-        rootEventHandlers = rootEvents[type] = [];
-    }
-
-    if (ArrayIndexOf.call(rootEventHandlers, wrappedListener) !== -1) {
-        assert.logWarning(`${vm} has duplicate listeners for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
-    }
-    attachDOMListener(vm, type);
-    ArrayPush.call(rootEventHandlers, wrappedListener);
-}
-
-export function removeRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    const wrappedListener = getWrappedRootListener(vm, listener);
-    let { rootEvents } = vm;
-    if (isUndefined(rootEvents)) {
-        vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
-    }
-    if (isUndefined(rootEvents[type])) {
-        rootEvents[type] = [];
-    }
-    if (isUndefined(rootEvents) || isUndefined(rootEvents[type]) || ArrayIndexOf.call(rootEvents[type], wrappedListener) === -1) {
-        assert.logError(`Did not find event listener ${wrappedListener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
-    }
-    const eventsList = rootEvents[type];
-    ArraySplice.call(eventsList, ArrayIndexOf.call(eventsList, wrappedListener), 1);
-    removeEventFromCustomElement(vm, type);
+    attachDOMListener(vm, type, wrappedListener);
 }
 
 export function removeCmpEventListener(vm: VM, type: string, listener: EventListener, options: any) {
@@ -205,44 +191,13 @@ export function removeCmpEventListener(vm: VM, type: string, listener: EventList
         assert.vm(vm);
     }
     const wrappedListener = getWrappedComponentsListener(vm, listener);
-    let { cmpEvents } = vm;
-    if (isUndefined(cmpEvents)) {
-        vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
-    }
-    if (isUndefined(cmpEvents[type])) {
-        cmpEvents[type] = [];
-    }
-    if (isUndefined(cmpEvents) || isUndefined(cmpEvents[type]) || ArrayIndexOf.call(cmpEvents[type], wrappedListener) === -1) {
-        assert.logError(`Did not find event listener ${wrappedListener} for event "${type}" on ${vm}. This is probably a typo or a life cycle mismatch. Make sure that you add the right event listeners in the connectedCallback() hook and remove them in the disconnectedCallback() hook.`);
-    }
-    const eventsList = cmpEvents[type];
-    ArraySplice.call(eventsList, ArrayIndexOf.call(eventsList, wrappedListener), 1);
-    removeEventFromCustomElement(vm, type);
+    detachDOMListener(vm, type, wrappedListener);
 }
 
-function removeEventFromCustomElement(vm: VM, type: string) {
+export function removeRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    let { cmpEvents, rootEvents } = vm;
-    if (isUndefined(cmpEvents)) {
-        vm.cmpEvents = cmpEvents = create(null) as Record<string, EventListener[]>;
-    }
-    if (isUndefined(rootEvents)) {
-        vm.rootEvents = rootEvents = create(null) as Record<string, EventListener[]>;
-    }
-
-    let cmpTypeEvents = cmpEvents[type];
-    if (isUndefined(cmpTypeEvents)) {
-        cmpTypeEvents = cmpEvents[type] = [] as EventListener[];
-    }
-
-    let rootTypeEvents = rootEvents[type];
-    if (isUndefined(rootTypeEvents)) {
-        rootTypeEvents = rootEvents[type] = [] as EventListener[];
-    }
-
-    if (cmpTypeEvents.length === 0 && rootTypeEvents.length === 0) {
-        removeEventListener.call(vm.elm, type, vm.cmpListener);
-    }
+    const wrappedListener = getWrappedRootListener(vm, listener);
+    detachDOMListener(vm, type, wrappedListener);
 }
