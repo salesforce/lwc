@@ -139,13 +139,12 @@ function attachDOMListener(vm: VM, type: string, wrappedListener: WrappedListene
     // only add to DOM if there is no other listener on the same placement yet
     if (cmpEventHandlers.length === 0) {
         addEventListener.call(vm.elm, type, cmpListener);
-    }
-    ArrayPush.call(cmpEventHandlers, wrappedListener);
-    if (process.env.NODE_ENV !== 'production') {
+    } else if (process.env.NODE_ENV !== 'production') {
         if (ArrayIndexOf.call(cmpEventHandlers, wrappedListener) !== -1) {
             assert.logWarning(`${vm} has duplicate listener ${wrappedListener.original} for event "${type}". Instead add the event listener in the connectedCallback() hook.`);
         }
     }
+    ArrayPush.call(cmpEventHandlers, wrappedListener);
 }
 
 function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListener) {
