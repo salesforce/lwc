@@ -13,6 +13,14 @@ import { startMeasure, endMeasure } from "./performance-timing";
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 
+export let vmBeingConstructed: VM | null = null;
+export function isBeingConstructed(vm: VM): boolean {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    return vmBeingConstructed === vm;
+}
+
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
     const { context, component } = vm;
     const ctx = currentContext;
@@ -61,6 +69,8 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
+    const vmBeingConstructedInception = vmBeingConstructed;
+    vmBeingConstructed = vm;
 
     if (process.env.NODE_ENV !== 'production') {
         startMeasure(vm, 'constructor');
@@ -78,6 +88,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
         }
 
         establishContext(ctx);
+        vmBeingConstructed = vmBeingConstructedInception;
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context

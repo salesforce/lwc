@@ -1,8 +1,8 @@
 import assert from "../assert";
 import { defineProperty, isObject, isNull, isTrue } from "../language";
-import { isRendering, vmBeingRendered } from "../invoker";
+import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
-import { isBeingConstructed, Component } from "../component";
+import { Component } from "../component";
 import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
