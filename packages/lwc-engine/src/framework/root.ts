@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { ViewModelReflection, ComponentDef } from "./def";
 import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, ArrayIndexOf, ArraySplice, ArrayPush, isFunction, isFalse } from "./language";
-import { isBeingConstructed, getCustomElementComponent } from "./component";
+import { getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
 import { pierce, piercingHook } from "./piercing";
@@ -25,7 +25,7 @@ import {
     removeEventListener,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-import { invokeRootCallback, isRendering, vmBeingRendered } from "./invoker";
+import { invokeRootCallback, isRendering, vmBeingRendered, isBeingConstructed } from "./invoker";
 
 function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
