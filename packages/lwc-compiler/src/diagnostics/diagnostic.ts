@@ -1,14 +1,12 @@
-import { Location } from '../common-interfaces/location';
-
 export interface Diagnostic {
     /** Level of the diagnostic */
     level: DiagnosticLevel;
 
+    /** Relative path location of the file in the bundle. */
+    filename: string;
+
     /** Error messages that should be outputed */
     message: string;
-
-    /** Relative path location of the file in the bundle. */
-    filename?: string;
 
     /**
      * Location in the code affected by the diagnostic.
@@ -26,4 +24,12 @@ export enum DiagnosticLevel {
     Warning = 2,
     /** Logging messages */
     Log = 3,
+}
+
+export interface Location {
+    /** 0-base character index in the file */
+    start: number;
+
+    /** Number of character after the start index */
+    length: number;
 }
