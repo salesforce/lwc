@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { getRootNode } from "../dom";
+import { getRootNode } from "../dom/node";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
@@ -34,6 +34,7 @@ describe('dom', () => {
                                     },
                                     key: 0,
                                 },
+                                [],
                             )
                         ]
                     }
@@ -113,6 +114,7 @@ describe('dom', () => {
                                     },
                                     key: 0,
                                 },
+                                [],
                             )
                         ]
                     }
@@ -220,17 +222,22 @@ describe('dom', () => {
                                     on: {
                                         foo: $api.b($cmp.handleFoo)
                                     }
-                                }
+                                },
+                                [],
                             )
                         ]
                     }
                 }
+                trigger() {
+                    const child = this.root.querySelector('x-foo');
+                    child.trigger();
+                }
             }
+            Parent.publicMethods = ['trigger'];
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = elm.querySelector('x-foo');
-            child.trigger();
+            elm.trigger();
         });
     });
 });

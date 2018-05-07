@@ -9,35 +9,37 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 4
             },
             [
-                api_custom_element('ns-cmp', _nsCmp, {
-                    key: 1,
-                    slotset: {
-                        $default$: [
-                            $cmp.isTrue
-                                ? api_element(
-                                    'p',
-                                    {
-                                        attrs: {
-                                            slot: true
-                                        },
-                                        key: 2
-                                    },
-                                    [api_text('S1')]
-                                )
-                                : null,
-                            api_element(
+                api_custom_element(
+                    'ns-cmp',
+                    _nsCmp,
+                    {
+                        key: 3
+                    },
+                    [
+                        $cmp.isTrue
+                            ? api_element(
                                 'p',
                                 {
                                     attrs: {
                                         slot: true
                                     },
-                                    key: 3
+                                    key: 1
                                 },
-                                [api_text('S2')]
+                                [api_text('S1')]
                             )
-                        ]
-                    }
-                })
+                            : null,
+                        api_element(
+                            'p',
+                            {
+                                attrs: {
+                                    slot: true
+                                },
+                                key: 2
+                            },
+                            [api_text('S2')]
+                        )
+                    ]
+                )
             ]
         )
     ];

@@ -28,16 +28,18 @@ import {
     ArrayReduce,
 } from "./language";
 import {
-    GlobalAOMProperties,
-    getGlobalHTMLPropertiesInfo,
     getAttribute,
     setAttribute,
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
+} from "./dom/element";
+import {
+    GlobalAOMProperties,
+    getGlobalHTMLPropertiesInfo,
     defaultDefHTMLPropertyNames,
     attemptAriaAttributeFallback,
-} from "./dom";
+} from "./dom/attributes";
 import { createWiredPropertyDescriptor } from "./decorators/wire";
 import { createTrackedPropertyDescriptor } from "./decorators/track";
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";

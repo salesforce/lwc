@@ -19,6 +19,6 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 visible: true
             },
             key: 2
-        })
+        }, [])
     ];
 }

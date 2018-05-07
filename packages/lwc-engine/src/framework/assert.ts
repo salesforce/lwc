@@ -1,9 +1,7 @@
 import { VM } from "./vm";
 import { VNode } from "../3rdparty/snabbdom/types";
 import { StringSplit } from "./language";
-
-const compareDocumentPosition = Node.prototype.compareDocumentPosition;
-const { DOCUMENT_POSITION_CONTAINS } = Node;
+import { DOCUMENT_POSITION_CONTAINS, compareDocumentPosition } from "./dom/node";
 
 const assert = {
     invariant(value: any, msg: string) {

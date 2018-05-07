@@ -18,7 +18,7 @@ describe('decorators/api.ts', () => {
                 }
             };
             function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
+                return [$api.c('x-component', MyComponent, {}, [])];
             }
             class Parent extends Element {
                 constructor() {
@@ -127,7 +127,7 @@ describe('decorators/api.ts', () => {
                 }
             };
             function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
+                return [$api.c('x-component', MyComponent, {}, [])];
             }
             class Parent extends Element {
                 get parentGetter() {

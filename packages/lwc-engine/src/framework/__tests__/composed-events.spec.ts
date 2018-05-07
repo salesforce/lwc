@@ -25,7 +25,7 @@ describe('Composed events', () => {
                                 foo: $api.b($cmp.handleFoo),
                             },
                             key: 0,
-                        }),
+                        }, []),
                     ];
                 }
             }

@@ -141,8 +141,8 @@ describe('performance-timing', () => {
         class Foo extends engine.Element {
             render() {
                 return ($api: any) => [
-                    $api.c('x-bar', Bar, {}),
-                    $api.c('x-bar', Bar, {}),
+                    $api.c('x-bar', Bar, {}, []),
+                    $api.c('x-bar', Bar, {}, []),
                 ];
             }
         }
@@ -181,7 +181,7 @@ describe('performance-timing', () => {
         class Foo extends engine.Element {
             render() {
                 return ($api: any) => [
-                    $api.c('x-bar', Bar, {}),
+                    $api.c('x-bar', Bar, {}, []),
                 ];
             }
 
@@ -239,8 +239,8 @@ describe('performance-timing', () => {
             render() {
                 return ($api: any) => {
                     return [
-                        $api.c('x-bar', Bar, {}),
-                        $api.c('x-baz', Baz, {}),
+                        $api.c('x-bar', Bar, {}, []),
+                        $api.c('x-baz', Baz, {}, []),
                     ];
                 };
             }

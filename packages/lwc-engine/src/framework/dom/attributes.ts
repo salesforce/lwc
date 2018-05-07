@@ -1,4 +1,4 @@
-import assert from './assert';
+import assert from '../assert';
 import {
     StringToLowerCase,
     StringReplace,
@@ -9,82 +9,10 @@ import {
     getOwnPropertyDescriptor,
     isUndefined,
     isNull,
-    defineProperties,
-} from './language';
-import { ViewModelReflection } from "./utils";
-import { VM } from './vm';
-
-const {
-    addEventListener,
-    removeEventListener,
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    querySelector,
-    querySelectorAll,
-} = Element.prototype;
-
-const {
-    DOCUMENT_POSITION_CONTAINED_BY
-} = Node;
-
-const {
-    compareDocumentPosition,
-} = Node.prototype;
-
-function findShadowRoot(node) {
-    let root = node;
-    while (isUndefined(root[ViewModelReflection])) {
-        root = root.parentNode;
-    }
-    return root;
-}
-
-function findComposedRootNode(node: Node) {
-    while (node !== document) {
-        const parent = node.parentNode;
-        if (isNull(parent)) {
-            return node;
-        }
-        node = parent;
-    }
-    return node;
-}
-
-// TODO: once we start using the real shadowDOM, we can rely on:
-// const { getRootNode } = Node.prototype;
-// for now, we need to provide a dummy implementation to provide retargeting
-function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    if (!composed) {
-        return findShadowRoot(this.parentNode); // this is not quite the root (it is the host), but for us is sufficient
-    }
-    return findComposedRootNode(this);
-}
-
-export {
-    // Element.prototype
-    addEventListener,
-    removeEventListener,
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    querySelector,
-    querySelectorAll,
-
-    // Node.prototype
-    compareDocumentPosition,
-    getRootNode,
-
-    // Node
-    DOCUMENT_POSITION_CONTAINED_BY,
-};
+} from '../language';
+import { ViewModelReflection } from "../utils";
+import { VM } from '../vm';
+import { removeAttribute, setAttribute } from './element';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
@@ -395,26 +323,3 @@ if (isUndefined(GlobalHTMLPropDescriptors.id)) {
     GlobalHTMLPropDescriptors.id = getOwnPropertyDescriptor(Element.prototype, 'id') as PropertyDescriptor;
     AttrNameToPropNameMap.id = PropNameToAttrNameMap.id = 'id';
 }
-
-// https://dom.spec.whatwg.org/#dom-event-composed
-// This is a very dummy, simple polyfill for composed
-if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
-    defineProperties(Event.prototype, {
-        composed: {
-            value: true, // yes, assuming all native events are composed (it is a compromise)
-            configurable: true,
-            enumerable: true,
-            writable: true,
-        },
-    });
-    const { CustomEvent: OriginalCustomEvent } = (window as any);
-    (window as any).CustomEvent = function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
-        const event = new OriginalCustomEvent(type, eventInitDict);
-        // support for composed on custom events
-        (event as any).composed = !!(eventInitDict && (eventInitDict as any).composed);
-        return event;
-    };
-    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
-}
-
-export const CustomEvent = (window as any).CustomEvent;

@@ -15,7 +15,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                     on: {
                         foo: _m0 || ($ctx._m0 = api_bind($cmp.handleFoo))
                     }
-                })
+                }, [])
             ]
         )
     ];

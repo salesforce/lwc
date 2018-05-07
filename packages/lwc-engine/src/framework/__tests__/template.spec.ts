@@ -5,14 +5,13 @@ import { createElement } from '../main';
 import { ViewModelReflection } from '../def';
 import { Template } from '../template';
 
-function createCustomComponent(html: Template, slotset?) {
+function createCustomComponent(html: Template) {
     class MyComponent extends Element {
         render() {
             return html;
         }
     }
     const elm = createElement('x-foo', { is: MyComponent });
-    elm[ViewModelReflection].cmpSlots = slotset;
     document.body.appendChild(elm);
     return elm;
 }
@@ -32,21 +31,6 @@ describe('template', () => {
             expect($cmp && typeof $cmp === 'object').toBe(true);
             expect($slotset && typeof $slotset === 'object').toBe(true);
             expect($memoizer).toEqual({});
-        });
-
-        it('should revoke slotset proxy', () => {
-            let $slotset;
-            createCustomComponent(
-                function($api, $c, $s) {
-                    $slotset = $s;
-                    return [];
-                },
-                { x: [globalApi.h('p', { key: 0 }, [])] },
-            );
-            expect(() => $slotset.x).toThrow('Cannot perform \'get\' on a proxy that has been revoked');
-            expect(() => {
-                $slotset.foo;
-            }).toThrow();
         });
 
         it('should render arrays correctly', function() {
@@ -132,18 +116,6 @@ describe('template', () => {
             expect(counter).toBe(3);
         });
 
-        it('should throw when attempting to set a property member of slotset', () => {
-            expect(() =>
-                createCustomComponent(
-                    function($api, cmp, slotset) {
-                        slotset.x = [];
-                        return [];
-                    },
-                    { x: [globalApi.h('p', { key: 0 }, [])] },
-                ),
-            ).toThrow();
-        });
-
         it('should throw when attempting to set a property member of cmp', () => {
             function template(api, cmp) {
                 cmp.x = [];
@@ -158,15 +130,6 @@ describe('template', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => document.body.appendChild(elm)).toThrow();
-        });
-
-        it('should throw when attempting to delete a property member of slotset', () => {
-            expect(() => {
-                createCustomComponent(function(api, cmp, slotset) {
-                    delete slotset.x;
-                    return [];
-                }, { x: [ globalApi.h('p', { key: 0 }, []) ] });
-            }).toThrow();
         });
 
         it('should support switching templates', () => {

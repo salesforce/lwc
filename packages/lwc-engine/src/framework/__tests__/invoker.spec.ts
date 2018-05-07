@@ -63,7 +63,7 @@ describe('invoker', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', Child, {})];
+                return [$api.c('x-child', Child, {}, [])];
             }
             class MyComponent1 extends Element {
                 connectedCallback() {
@@ -86,7 +86,7 @@ describe('invoker', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-child', Child, {})];
+                return [$api.c('x-child', Child, {}, [])];
             }
             class MyComponent1 extends Element {
                 disconnectedCallback() {
@@ -155,7 +155,7 @@ describe('invoker', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-foo', Child, {})];
+                return [$api.c('x-foo', Child, {}, [])];
             }
             class MyComponent3 extends Element {
                 renderedCallback() {
@@ -248,7 +248,7 @@ describe('invoker', () => {
             }
             function html($api, $cmp, $slotset, $ctx) {
                 return [$api.h(
-                    "section", { key: 0 }, [$api.c("x-bar", MyComponent2, {})]
+                    "section", { key: 0 }, [$api.c("x-bar", MyComponent2, {}, [])]
                 )];
             }
             class MyComponent1 extends Element {

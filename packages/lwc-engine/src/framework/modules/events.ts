@@ -1,6 +1,6 @@
 import { isUndefined } from "../language";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-import { addEventListener, removeEventListener } from "../dom";
+import { addEventListener, removeEventListener } from "../dom/element";
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;

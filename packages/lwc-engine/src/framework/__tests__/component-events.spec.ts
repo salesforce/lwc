@@ -231,7 +231,7 @@ describe('Events on Custom Elements', () => {
         }
         MyChild.publicMethods = ['run'];
         function html2($api) {
-            return [$api.c('x-child', MyChild, {})];
+            return [$api.c('x-child', MyChild, {}, [])];
         }
         class MyComponent extends Element {
             render() {
@@ -272,7 +272,7 @@ describe('Events on Custom Elements', () => {
         }
         MyChild.publicMethods = ['run'];
         function html2($api) {
-            return [$api.c('x-child', MyChild, {})];
+            return [$api.c('x-child', MyChild, {}, [])];
         }
         class MyComponent extends Element {
             render() {
