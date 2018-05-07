@@ -1,29 +1,19 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "allowJs": false,
-    "checkJs": false,
     "target": "es2017",
     "module": "commonjs",
-    "noImplicitAny": true,
-    "sourceMap": true,
-    "declaration": true,
-    "rootDir": "src",
     "outDir": "dist/commonjs",
-    "declarationDir": "dist/types",
-    "moduleResolution": "node",
-    "strict": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
+    "checkJs": false,
+    "allowJs": true,
+    "declaration": false
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
   ],
   "exclude": [
     "**/node_modules",
     "**/dist",
-    "**/__tests__"
+    "**/__tests__",
   ]
 }
