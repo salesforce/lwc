@@ -55,7 +55,7 @@ function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderNa
             if (rootParts.pop() === fileName || ignoreFolderName) {
                 registry.moduleNamespace = nameParts.shift();
                 firstNamePart = nameParts.shift();
-                registry.moduleName = firstNamePart + nameParts.map(namePart => namePart.toUpperCase().charAt(0) + namePart.slice(1)).join('');
+                registry.moduleName = firstNamePart + nameParts.map(namePart => namePart.charAt(0).toUpperCase() + namePart.slice(1)).join('');
                 registry.moduleSpecifier = registry.moduleNamespace + '/' + registry.moduleName;
                 mappings[registry.moduleSpecifier] = registry;
             }
