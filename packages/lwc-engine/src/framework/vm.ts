@@ -11,7 +11,6 @@ import { invokeComponentCallback } from "./invoker";
 import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
-import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
@@ -52,7 +51,6 @@ export interface VM {
     isDirty: boolean;
     isRoot: boolean;
     component?: Component;
-    membrane?: Membrane;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
     toString(): string;

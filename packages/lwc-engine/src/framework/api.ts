@@ -362,7 +362,7 @@ export function b(fn: EventListener): EventListener {
         if (!isValidEvent(event)) {
             return;
         }
-        const e = pierce(vm, event);
+        const e = pierce(event);
         invokeComponentCallback(vm, fn, [e]);
     };
 }
