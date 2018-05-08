@@ -25,9 +25,10 @@ export function getMemberExpressionRoot(
 
 export function importFromComponentName(name: string): t.ImportDeclaration {
     const localComponentIdentifier = identifierFromComponentName(name);
+    const [namespace, ...fileName] = name.split('-');
     return t.importDeclaration(
         [t.importDefaultSpecifier(localComponentIdentifier)],
-        t.stringLiteral(name),
+        t.stringLiteral([namespace, toCamelCase(fileName.join('-'))].join('/')),
     );
 }
 

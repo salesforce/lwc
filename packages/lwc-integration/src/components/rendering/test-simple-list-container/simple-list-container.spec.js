@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing component: simple-list-container', () => {
-    const URL = 'http://localhost:4567/simple-list-container';
+    const URL = 'http://localhost:4567/rendering/simpleListContainer';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Testing component: simple-list-container', () => {
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'simple-list-container');
+        assert.equal(title, 'simpleListContainer');
         assert.ok(element);
     });
 

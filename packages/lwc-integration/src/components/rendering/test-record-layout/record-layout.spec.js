@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing component: record-layout', () => {
-    const URL = 'http://localhost:4567/record-layout';
+    const URL = 'http://localhost:4567/rendering/recordLayout/';
     let element;
 
     before(() => {
@@ -10,7 +10,7 @@ describe('Testing component: record-layout', () => {
 
     it('page load', () => {
         const title = browser.getTitle();
-        assert.equal(title, 'record-layout');
+        assert.equal(title, 'recordLayout');
         assert.ok(element);
     });
 

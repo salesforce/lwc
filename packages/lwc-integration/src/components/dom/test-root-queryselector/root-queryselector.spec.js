@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing component: app-list', () => {
-    const URL = 'http://localhost:4567/root-queryselector';
+    const URL = 'http://localhost:4567/dom/rootQueryselector';
 
     before(() => {
         browser.url(URL);

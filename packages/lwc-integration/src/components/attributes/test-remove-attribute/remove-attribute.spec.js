@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('removeAttribute', () => {
-    const URL = 'http://localhost:4567/remove-attribute';
+    const URL = 'http://localhost:4567/attributes/removeAttribute';
     let element;
 
     before(() => {

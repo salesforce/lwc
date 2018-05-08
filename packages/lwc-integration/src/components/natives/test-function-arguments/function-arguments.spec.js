@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Function arguments', () => {
-    const URL = 'http://localhost:4567/function-arguments';
+    const URL = 'http://localhost:4567/natives/functionArguments';
 
     before(() => {
         browser.url(URL);

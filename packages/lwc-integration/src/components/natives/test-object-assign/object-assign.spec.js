@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Issue 828 - Object assign', () => {
-    const URL = 'http://localhost:4567/object-assign';
+    const URL = 'http://localhost:4567/natives/objectAssign';
 
     before(() => {
         browser.url(URL);

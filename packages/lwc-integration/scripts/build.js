@@ -1,3 +1,4 @@
+
 const fs = require('fs-extra');
 const path = require('path');
 const babel = require('@babel/core');
@@ -28,17 +29,16 @@ const testEntries = functionalTests.reduce((seed, functionalFolder) => {
     const testsFolder = path.join(functionalTestDir, functionalFolder);
     const tests = fs.readdirSync(testsFolder).map((test) => {
         const testPath = path.join(testsFolder, test, `${test}${testSufix}`);
-        return { path: testPath, namespace: functionalFolder, name: getTestName(testPath) };
+        return {
+            path: testPath,
+            namespace: functionalFolder,
+            name: kebabToCamel(test.replace(testPrefix, ''))
+        };
     });
     return seed.concat(tests);
 }, []);
 
 // -- Plugins & Helpers -------------------------------------
-
-function getTestName(absPpath) {
-    return path.basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js').replace(testPrefix, '');
-}
-
 function testCaseComponentResolverPlugin() {
     return {
         name: 'test-case-resolver',
@@ -64,11 +64,18 @@ function entryPointResolverPlugin() {
         },
         load(id) {
             if (id.includes(testSufix)) {
-                const testBundle = getTestName(id);
-                return testBundle.startsWith('wired-') ? getTodoApp(testBundle) : templates.app(testBundle);
+                const namespace = path.dirname(id).split(path.sep).pop();
+                const cmpTag = namespace.replace(testPrefix, '');
+                const [ns, ...rest] = cmpTag.split('-');
+                const moduleIdentifier = ns + '/'+ kebabToCamel(rest.join('-'));
+                return moduleIdentifier.startsWith('wired') ? getTodoApp(moduleIdentifier, cmpTag) : templates.app(moduleIdentifier, cmpTag);
             }
         },
     }
+}
+
+function kebabToCamel(s) {
+    return s.replace(/(\-\w)/g, function (m) { return m[1].toUpperCase(); });
 }
 
 // -- Rollup config ---------------------------------------------
@@ -133,7 +140,7 @@ testEntries.reduce(async (promise, test) => {
         file: `${testOutput}/${testNamespace}/${testName}/${testName}.js`
     });
 
-    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, testName.startsWith('wired-') ? templates.wireServiceHtml(testName, isCompat) : templates.html(testName, isCompat), 'utf8');
+    fs.writeFileSync(`${testOutput}/${testNamespace}/${testName}/index.html`, testName.startsWith('wired') ? templates.wireServiceHtml(testName, isCompat) : templates.html(testName, isCompat), 'utf8');
 
 }, Promise.resolve())
 .catch((err) => { console.log(err); });

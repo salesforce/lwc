@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Array prototype methods', () => {
-    const URL = 'http://localhost:4567/enumerable-property-leak';
+    const URL = 'http://localhost:4567/natives/enumerablePropertyLeak';
 
     before(() => {
         browser.url(URL);

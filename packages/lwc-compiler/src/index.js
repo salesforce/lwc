@@ -127,7 +127,7 @@ function normalizeEntryPath(fileName) {
  * '.../foo/foo.js' => ns: default, name: foo
  * '.../myns/foo/foo.js' => ns: myns, name: foo
  */
-function getNormalizedName(fileName,{ componentName, componentNamespace, mapNamespaceFromPath }) {
+function getNormalizedName(fileName, { componentName, componentNamespace, mapNamespaceFromPath }) {
     const ext = path.extname(fileName);
     const parts = fileName.split(path.sep);
 
@@ -152,7 +152,7 @@ function getNormalizedName(fileName,{ componentName, componentNamespace, mapName
     return {
         name,
         namespace,
-        normalizedName: [namespace, name].join('-'),
+        normalizedName: [namespace, name].join('/'),
     };
 }
 

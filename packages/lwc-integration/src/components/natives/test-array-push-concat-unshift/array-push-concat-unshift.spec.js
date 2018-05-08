@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Array prototype methods', () => {
-    const URL = 'http://localhost:4567/array-push-concat-unshift';
+    const URL = 'http://localhost:4567/natives/arrayPushConcatUnshift';
 
     before(() => {
         browser.url(URL);

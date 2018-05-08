@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Setting AOM property to null from outside', () => {
-    const URL = 'http://localhost:4567/aom-attribute-removal';
+    const URL = 'http://localhost:4567/accessibility/aomAttributeRemoval/';
     let element;
 
     before(() => {

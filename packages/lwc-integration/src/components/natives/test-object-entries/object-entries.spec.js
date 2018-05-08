@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('Object.entries', () => {
-    const URL = 'http://localhost:4567/object-entries';
+    const URL = 'http://localhost:4567/natives/objectEntries';
 
     before(() => {
         browser.url(URL);

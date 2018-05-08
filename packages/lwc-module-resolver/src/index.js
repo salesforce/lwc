@@ -42,36 +42,41 @@ function resolveModulesInDir(fullPathDir, { mapNamespaceFromPath, ignoreFolderNa
                 const dirModuleNamespace = rootParts.pop();
                 registry.moduleName = fileName;
                 registry.moduleNamespace = dirModuleNamespace;
-                registry.moduleSpecifier = `${dirModuleNamespace}-${fileName}`;
+                registry.moduleSpecifier = `${dirModuleNamespace}/${fileName}`;
                 mappings[registry.moduleSpecifier] = registry;
             }
             return mappings;
         }
 
-        const nameParts = fileName.split('-');
+        const nameParts = camelToDash(fileName).split('-');
         const validModuleName = nameParts.length > 1;
-
+        let firstNamePart;
         if (validModuleName) {
             if (rootParts.pop() === fileName || ignoreFolderName) {
-                registry.moduleSpecifier = fileName;
                 registry.moduleNamespace = nameParts.shift();
-                registry.moduleName = nameParts.join('-');
+                firstNamePart = nameParts.shift();
+                registry.moduleName = firstNamePart + nameParts.map(namePart => namePart.charAt(0).toUpperCase() + namePart.slice(1)).join('');
+                registry.moduleSpecifier = registry.moduleNamespace + '/' + registry.moduleName;
                 mappings[registry.moduleSpecifier] = registry;
             }
-            return mappings;
 
+            return mappings;
         } else if (allowUnnamespaced) {
             if (rootParts.pop() === fileName || ignoreFolderName) {
                 registry.moduleName = fileName;
-                registry.moduleSpecifier = `${registry.moduleNamespace}-${fileName}`;
+                registry.moduleSpecifier = `${registry.moduleNamespace}/${fileName}`;
                 mappings[registry.moduleSpecifier] = registry;
             }
+
             return mappings;
         }
 
         return mappings;
-
     }, {});
+}
+
+function camelToDash(str) {
+    return str.replace(/([A-Z])/g, function ($1) { return "-" + $1.toLowerCase(); });
 }
 
 function hasModuleBeenVisited(module, visited) {

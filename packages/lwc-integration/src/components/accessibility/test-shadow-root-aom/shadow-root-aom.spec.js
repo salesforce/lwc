@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Default AOM values on Shadow Root', () => {
-    const URL = 'http://localhost:4567/shadow-root-aom';
+    const URL = 'http://localhost:4567/accessibility/shadowRootAom';
     let element;
 
     before(() => {

@@ -1,4 +1,4 @@
-import _fooBar from 'foo-bar';
+import _fooBar from 'foo/bar';
 export default function tmpl($api, $cmp, $slotset, $ctx) {
     const { h: api_element, c: api_custom_element } = $api;
 

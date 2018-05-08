@@ -11,15 +11,10 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
     const registry = { entry: file, moduleSpecifier: null, moduleName: null, moduleNamespace: DEFAULT_NS };
     const fileName = path.basename(file, path.extname(file));
     const rootParts = path.dirname(file).split(path.sep);
-    const nameParts = fileName.split('-');
-    const validModuleName = nameParts.length > 1;
 
     if (mapNamespaceFromPath) {
         registry.moduleName = rootParts.pop();
         registry.moduleNamespace = rootParts.pop();
-    } else if (validModuleName) {
-        registry.moduleNamespace = nameParts.shift();
-        registry.moduleName = nameParts.join('-');
     } else {
         registry.moduleName = fileName;
     }

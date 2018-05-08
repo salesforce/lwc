@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Object keys', () => {
-    const URL = 'http://localhost:4567/form-tag';
+    const URL = 'http://localhost:4567/rendering/formTag/';
     let element;
 
     before(() => {

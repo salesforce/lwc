@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Object keys', () => {
-    const URL = 'http://localhost:4567/weak-set';
+    const URL = 'http://localhost:4567/natives/weakSet/';
     let element;
 
     before(() => {

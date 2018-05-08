@@ -1,5 +1,5 @@
 import { Element } from 'engine';
-import externalDep from 'another-module';
+import externalDep from 'another/module';
 
 const style = undefined;
 

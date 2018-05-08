@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('test pre dom-insertion setAttribute and removeAttribute functionality', () => {
-    const URL = 'http://localhost:4567/attributes-suite';
+    const URL = 'http://localhost:4567/attributes/attributesSuite';
 
     before(() => {
         browser.url(URL);

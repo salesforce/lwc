@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Testing reactive proxy rehydration', () => {
-    const URL = 'http://localhost:4567/reactive-prop';
+    const URL = 'http://localhost:4567/reactivity/reactiveProp/';
     let element;
 
     before(() => {

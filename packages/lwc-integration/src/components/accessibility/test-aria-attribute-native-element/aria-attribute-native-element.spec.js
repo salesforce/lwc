@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Aria attributes on native elements', () => {
-    const URL = 'http://localhost:4567/aria-attribute-native-element';
+    const URL = 'http://localhost:4567/accessibility/ariaAttributeNativeElement';
     let element;
 
     before(() => {

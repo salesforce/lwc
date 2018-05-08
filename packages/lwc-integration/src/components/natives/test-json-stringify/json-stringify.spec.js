@@ -1,7 +1,7 @@
 const assert = require('assert');
 
 describe('JSON.stringify on proxies', () => {
-    const URL = 'http://localhost:4567/json-stringify';
+    const URL = 'http://localhost:4567/natives/jsonStringify';
 
     before(() => {
         browser.url(URL);

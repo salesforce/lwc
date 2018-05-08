@@ -1,4 +1,4 @@
-define('x-foo', ['engine'], function (engine) {
+define('x/foo', ['engine'], function (engine) {
 
 const style = undefined;
 

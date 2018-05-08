@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Issue 653: Accessing element methods via querySelector throws', () => {
-    const URL = 'http://localhost:4567/queryselector-child-method';
+    const URL = 'http://localhost:4567/dom/queryselectorChildMethod';
 
     before(() => {
         browser.url(URL);

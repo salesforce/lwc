@@ -1,4 +1,4 @@
-import _xFoo from 'x-foo';
+import _xFoo from 'x/foo';
 import { Element } from 'engine';
 
 function style(tagName, token) {

@@ -1,6 +1,6 @@
 const assert = require('assert');
 describe('Set Prototype Of', () => {
-    const URL = 'http://localhost:4567/object-setprototypeof';
+    const URL = 'http://localhost:4567/natives/objectSetprototypeof';
     let element;
 
     before(() => {
