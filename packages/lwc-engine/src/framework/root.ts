@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection } from "./def";
-import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, ArrayIndexOf, ArraySplice, ArrayPush, isFunction, isFalse } from "./language";
+import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
@@ -276,12 +276,12 @@ register({
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(value));
                     case 'target':
-                        if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                            return callback(pierce(vm, elm));
-                        }
                         const { currentTarget } = (target as Event);
                         const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
                         if (!isUndefined(vm)) {
+                            if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                                return callback(pierce(vm.elm));
+                            }
                             let node = value;
                             while (!isNull(node) && (vm as VM).uid !== node[OwnerKey]) {
                                 node = node.parentNode;

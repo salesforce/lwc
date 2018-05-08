@@ -38,7 +38,7 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
-                    const e = pierce(vm, event);
+                    const e = pierce(event);
                     invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, e);
             }
         } as WrappedListener;
@@ -71,7 +71,7 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
                 target === currentTarget ||
                 // it is coming from an slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node)) {
-                    const e = pierce(vm, event);
+                    const e = pierce(event);
                     invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, e);
             }
         } as WrappedListener;
