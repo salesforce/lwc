@@ -69,7 +69,7 @@ describe('transform', () => {
         );
     });
 
-    it('should apply transformation for javascript file', async () => {
+    it.only('should apply transformation for javascript file', async () => {
         const actual = `
             import { Element } from 'engine';
             export default class Foo extends Element {}
@@ -85,6 +85,8 @@ describe('transform', () => {
             }
             Foo.style = _tmpl.style;
         `;
+
+        debugger;
 
         const { code } = await transform(actual, 'foo.js', {
             moduleNamespace: 'x',

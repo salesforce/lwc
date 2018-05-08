@@ -143,13 +143,6 @@
   dependencies:
     "@babel/types" "7.0.0-beta.44"
 
-"@babel/helper-module-imports@7.0.0-beta.40":
-  version "7.0.0-beta.40"
-  resolved "http://npm.lwcjs.org/@babel/helper-module-imports/-/helper-module-imports-7.0.0-beta.40/251cbb6404599282e8f7356a5b32c9381bef5d2d.tgz#251cbb6404599282e8f7356a5b32c9381bef5d2d"
-  dependencies:
-    "@babel/types" "7.0.0-beta.40"
-    lodash "^4.2.0"
-
 "@babel/helper-module-imports@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "http://npm.lwcjs.org/@babel/helper-module-imports/-/helper-module-imports-7.0.0-beta.44/60edc68cdf17e13eaca5be813c96127303085133.tgz#60edc68cdf17e13eaca5be813c96127303085133"
@@ -258,13 +251,6 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@babel/plugin-proposal-class-properties@7.0.0-beta.40":
-  version "7.0.0-beta.40"
-  resolved "http://npm.lwcjs.org/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.0.0-beta.40/ee0549729e9f44603efa17523b459ea3021458dc.tgz#ee0549729e9f44603efa17523b459ea3021458dc"
-  dependencies:
-    "@babel/helper-function-name" "7.0.0-beta.40"
-    "@babel/plugin-syntax-class-properties" "7.0.0-beta.40"
-
 "@babel/plugin-proposal-class-properties@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "http://npm.lwcjs.org/@babel/plugin-proposal-class-properties/-/plugin-proposal-class-properties-7.0.0-beta.44/aff9192a883b41fdf1c73026b9105c92e931c55e.tgz#aff9192a883b41fdf1c73026b9105c92e931c55e"
@@ -273,12 +259,6 @@
     "@babel/helper-plugin-utils" "7.0.0-beta.44"
     "@babel/plugin-syntax-class-properties" "7.0.0-beta.44"
 
-"@babel/plugin-proposal-object-rest-spread@7.0.0-beta.40":
-  version "7.0.0-beta.40"
-  resolved "http://npm.lwcjs.org/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.0.0-beta.40/ce35d2240908e52706a612eb26d67db667cd700f.tgz#ce35d2240908e52706a612eb26d67db667cd700f"
-  dependencies:
-    "@babel/plugin-syntax-object-rest-spread" "7.0.0-beta.40"
-
 "@babel/plugin-proposal-object-rest-spread@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "http://npm.lwcjs.org/@babel/plugin-proposal-object-rest-spread/-/plugin-proposal-object-rest-spread-7.0.0-beta.44/b7817770cb9cf72f2e73ca6fcb83d61a87305259.tgz#b7817770cb9cf72f2e73ca6fcb83d61a87305259"
@@ -286,19 +266,11 @@
     "@babel/helper-plugin-utils" "7.0.0-beta.44"
     "@babel/plugin-syntax-object-rest-spread" "7.0.0-beta.44"
 
-"@babel/plugin-syntax-class-properties@7.0.0-beta.40":
-  version "7.0.0-beta.40"
-  resolved "http://npm.lwcjs.org/@babel/plugin-syntax-class-properties/-/plugin-syntax-class-properties-7.0.0-beta.40/ff82c04c6d97cdb947dc64e3f3d4bc791e85a16f.tgz#ff82c04c6d97cdb947dc64e3f3d4bc791e85a16f"
-
 "@babel/plugin-syntax-class-properties@7.0.0-beta.44":
   version "7.0.0-beta.44"
   resolved "http://npm.lwcjs.org/@babel/plugin-syntax-class-properties/-/plugin-syntax-class-properties-7.0.0-beta.44/1e4e67ef6d7101a3a7d2ae5f60e580cbf4b7750f.tgz#1e4e67ef6d7101a3a7d2ae5f60e580cbf4b7750f"
   dependencies:
     "@babel/helper-plugin-utils" "7.0.0-beta.44"
-
-"@babel/plugin-syntax-object-rest-spread@7.0.0-beta.40":
-  version "7.0.0-beta.40"
-  resolved "http://npm.lwcjs.org/@babel/plugin-syntax-object-rest-spread/-/plugin-syntax-object-rest-spread-7.0.0-beta.40/d5e04536062e4df685c203ae48bb19bfe2cf235c.tgz#d5e04536062e4df685c203ae48bb19bfe2cf235c"
 
 "@babel/plugin-syntax-object-rest-spread@7.0.0-beta.44":
   version "7.0.0-beta.44"
@@ -1147,15 +1119,9 @@ babel-code-frame@^6.22.0, babel-code-frame@^6.26.0:
     esutils "^2.0.2"
     js-tokens "^3.0.2"
 
-<<<<<<< HEAD
-babel-compat@0.17.43:
-  version "0.17.43"
-  resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.17.43/1482a5b6105846c2aa1abd40bd0f9aeeabbd173e.tgz#1482a5b6105846c2aa1abd40bd0f9aeeabbd173e"
-=======
 babel-compat@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/babel-compat/-/babel-compat-0.18.2/21c4561c874e7067b6f64835742ae12de91da471.tgz#21c4561c874e7067b6f64835742ae12de91da471"
->>>>>>> chore: bump proxy-compat version
 
 babel-core@^6.0.0, babel-core@^6.24.1, babel-core@^6.26.0:
   version "6.26.0"
@@ -1667,15 +1633,9 @@ babel-plugin-transform-property-literals@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   dependencies:
     esutils "^2.0.2"
 
-<<<<<<< HEAD
-babel-plugin-transform-proxy-compat@0.17.43:
-  version "0.17.43"
-  resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.17.43/090c10a9c1e619ed95cbf0b990ba2a68144f205c.tgz#090c10a9c1e619ed95cbf0b990ba2a68144f205c"
-=======
 babel-plugin-transform-proxy-compat@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-proxy-compat/-/babel-plugin-transform-proxy-compat-0.18.2/9f1728e9b03d53198c4a5ae0166cde8502c8ab21.tgz#9f1728e9b03d53198c4a5ae0166cde8502c8ab21"
->>>>>>> chore: bump proxy-compat version
 
 babel-plugin-transform-regenerator@^6.22.0:
   version "6.26.0"
@@ -1716,42 +1676,6 @@ babel-plugin-transform-undefined-to-void@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   version "6.10.0-alpha.f95869d4"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.10.0-alpha.f95869d4/175a1a3090e616403f8c819cdcea1aecb66523b2.tgz#175a1a3090e616403f8c819cdcea1aecb66523b2"
 
-<<<<<<< HEAD
-babel-preset-compat@0.17.43:
-  version "0.17.43"
-  resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.17.43/9aff3e16b1b07dd928ecc16111afcbe84e28539b.tgz#9aff3e16b1b07dd928ecc16111afcbe84e28539b"
-  dependencies:
-    "@babel/plugin-proposal-class-properties" "7.0.0-beta.40"
-    "@babel/plugin-proposal-object-rest-spread" "7.0.0-beta.40"
-    "@babel/plugin-transform-arrow-functions" "7.0.0-beta.40"
-    "@babel/plugin-transform-async-to-generator" "7.0.0-beta.40"
-    "@babel/plugin-transform-block-scoped-functions" "7.0.0-beta.40"
-    "@babel/plugin-transform-block-scoping" "7.0.0-beta.40"
-    "@babel/plugin-transform-classes" "7.0.0-beta.40"
-    "@babel/plugin-transform-computed-properties" "7.0.0-beta.40"
-    "@babel/plugin-transform-destructuring" "7.0.0-beta.40"
-    "@babel/plugin-transform-duplicate-keys" "7.0.0-beta.40"
-    "@babel/plugin-transform-exponentiation-operator" "7.0.0-beta.40"
-    "@babel/plugin-transform-for-of" "7.0.0-beta.40"
-    "@babel/plugin-transform-function-name" "7.0.0-beta.40"
-    "@babel/plugin-transform-instanceof" "7.0.0-beta.40"
-    "@babel/plugin-transform-literals" "7.0.0-beta.40"
-    "@babel/plugin-transform-modules-amd" "7.0.0-beta.40"
-    "@babel/plugin-transform-modules-commonjs" "7.0.0-beta.40"
-    "@babel/plugin-transform-modules-systemjs" "7.0.0-beta.40"
-    "@babel/plugin-transform-modules-umd" "7.0.0-beta.40"
-    "@babel/plugin-transform-object-super" "7.0.0-beta.40"
-    "@babel/plugin-transform-parameters" "7.0.0-beta.40"
-    "@babel/plugin-transform-regenerator" "7.0.0-beta.40"
-    "@babel/plugin-transform-runtime" "7.0.0-beta.40"
-    "@babel/plugin-transform-shorthand-properties" "7.0.0-beta.40"
-    "@babel/plugin-transform-spread" "7.0.0-beta.40"
-    "@babel/plugin-transform-sticky-regex" "7.0.0-beta.40"
-    "@babel/plugin-transform-template-literals" "7.0.0-beta.40"
-    "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.40"
-    "@babel/plugin-transform-unicode-regex" "7.0.0-beta.40"
-    babel-plugin-transform-proxy-compat "0.17.43"
-=======
 babel-preset-compat@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.18.2/1a61d73aa2c2c616bbb88d391eaf9bee2c4b3fcf.tgz#1a61d73aa2c2c616bbb88d391eaf9bee2c4b3fcf"
@@ -1786,7 +1710,6 @@ babel-preset-compat@0.18.2:
     "@babel/plugin-transform-typeof-symbol" "7.0.0-beta.44"
     "@babel/plugin-transform-unicode-regex" "7.0.0-beta.44"
     babel-plugin-transform-proxy-compat "0.18.2"
->>>>>>> chore: bump proxy-compat version
 
 babel-preset-env@1.6.1:
   version "1.6.1"
@@ -2642,15 +2565,9 @@ compare-versions@2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-2.0.1/1edc1f93687fd97a325c59f55e45a07db106aca6.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
 
-<<<<<<< HEAD
-compat-polyfills@0.17.43:
-  version "0.17.43"
-  resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.17.43/2d92dc41c0bb8e0834c4246774a318b0027e1c58.tgz#2d92dc41c0bb8e0834c4246774a318b0027e1c58"
-=======
 compat-polyfills@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.18.2/9c01dfe11d032f2e547333456b7a318015606c9d.tgz#9c01dfe11d032f2e547333456b7a318015606c9d"
->>>>>>> chore: bump proxy-compat version
 
 component-bind@1.0.0:
   version "1.0.0"
@@ -7730,16 +7647,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-<<<<<<< HEAD
-rollup-plugin-compat@0.17.43:
-  version "0.17.43"
-  resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.17.43/63b4796016c16f2ef2e2a159e33a1068f6710729.tgz#63b4796016c16f2ef2e2a159e33a1068f6710729"
-  dependencies:
-    "@babel/core" "7.0.0-beta.40"
-    babel-compat "0.17.43"
-    babel-preset-compat "0.17.43"
-    compat-polyfills "0.17.43"
-=======
 rollup-plugin-compat@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/rollup-plugin-compat/-/rollup-plugin-compat-0.18.2/d4d2025fa8f4afe87c8ca4e98348cb9abc78cf90.tgz#d4d2025fa8f4afe87c8ca4e98348cb9abc78cf90"
@@ -7748,7 +7655,6 @@ rollup-plugin-compat@0.18.2:
     babel-compat "0.18.2"
     babel-preset-compat "0.18.2"
     compat-polyfills "0.18.2"
->>>>>>> chore: bump proxy-compat version
     rollup-pluginutils "~2.0.1"
 
 rollup-plugin-inject@^1.4.1:
