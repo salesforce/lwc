@@ -1,6 +1,6 @@
-import { reactiveMembrane } from '../membrane';
 import { unwrap } from '../main';
 import { Element } from "../html-element";
+import { reactiveMembrane } from '../membrane';
 import { createElement } from "../upgrade";
 
 describe('unwrap', () => {
