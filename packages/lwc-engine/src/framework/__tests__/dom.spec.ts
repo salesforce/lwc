@@ -19,7 +19,7 @@ describe('dom', () => {
 
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
@@ -52,7 +52,7 @@ describe('dom', () => {
         it('should return correct value from self', () => {
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
@@ -98,7 +98,7 @@ describe('dom', () => {
 
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
@@ -131,7 +131,7 @@ describe('dom', () => {
         it('should return correct value from self', () => {
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
@@ -172,15 +172,16 @@ describe('dom', () => {
             elm.click();
         });
         // TODO: flapper
-        // it('should get custom events as composed false', function () {
-        //     expect.assertions(1);
-        //     const elm = document.createElement('div');
-        //     document.body.appendChild(elm);
-        //     elm.addEventListener('bar', function (e) {
-        //         expect(e.composed).toBe(false);
-        //     });
-        //     elm.dispatchEvent(new CustomEvent('bar', {}));
-        // });
+        it.skip('should get custom events as composed false', function () {
+            expect.assertions(1);
+            const elm = document.createElement('div');
+            document.body.appendChild(elm);
+            elm.addEventListener('bar', function (e) {
+                expect(e.composed).toBe(false);
+            });
+            elm.dispatchEvent(new CustomEvent('bar', {}));
+        });
+
         it('should allow customization of composed init in custom events', function () {
             expect.assertions(1);
             const elm = document.createElement('div');
@@ -207,7 +208,7 @@ describe('dom', () => {
 
             class Parent extends Element {
                 handleFoo(evt) {
-                    expect(evt.target).toBe(this.root.querySelector('x-foo'));
+                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
 
                 render() {
