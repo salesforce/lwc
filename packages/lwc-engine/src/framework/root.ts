@@ -277,11 +277,11 @@ register({
                         return callback(pierce(value));
                     case 'target':
                         const { currentTarget } = (target as Event);
+                        if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                            return callback(pierce(currentTarget));
+                        }
                         const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
                         if (!isUndefined(vm)) {
-                            if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                                return callback(pierce(vm.elm));
-                            }
                             let node = value;
                             while (!isNull(node) && (vm as VM).uid !== node[OwnerKey]) {
                                 node = node.parentNode;
