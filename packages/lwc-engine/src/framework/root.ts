@@ -17,6 +17,8 @@ import {
     GlobalAOMProperties,
     setAttribute,
     removeAttribute,
+    getRootNode,
+    isChildNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
 import { componentEventListenerType, EventListenerContext, isBeingConstructed } from "./invoker";
@@ -270,31 +272,34 @@ register({
                 }
             }
             if (target instanceof Event) {
+                const event = target as Event;
                 switch (key) {
                     case 'currentTarget':
                         // intentionally return the host element pierced here otherwise the general role below
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(value));
                     case 'target':
-                        const { currentTarget } = (target as Event);
+                        const { currentTarget } = event;
+
+                        // Executing event listener on component, target is always currentTarget
                         if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                             return callback(pierce(currentTarget));
                         }
+
+                        // Event is coming from an slotted element
+                        if (isChildNode(getRootNode.call(value, event), currentTarget as Element)) {
+                            return;
+                        }
+
+                        // target is owned by the VM
                         const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
                         if (!isUndefined(vm)) {
                             let node = value;
-                            while (!isNull(node) && (vm as VM).uid !== node[OwnerKey]) {
+                            while (!isNull(node) && vm.uid !== node[OwnerKey]) {
                                 node = node.parentNode;
                             }
                             return callback(pierce(node));
                         }
-                }
-            }
-            if (value instanceof HTMLElement) {
-                const vm = value[ViewModelReflection];
-                if (!isUndefined(vm) && value === vm.elm) {
-                    // prevent access to the original Host element
-                    return callback(vm.component);
                 }
             }
         }
