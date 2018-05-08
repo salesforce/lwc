@@ -357,9 +357,6 @@ export function resetShadowRoot(vm: VM) {
         // however, if patching fails it contains partial changes.
         patchChildren(elm, oldCh, EmptyArray);
     } catch (e) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.logError("Swallow Error: Failed to reset component's shadow with an empty list of children: " + e);
-        }
         // in the event of patch failure force offender removal
         vm.elm.innerHTML = "";
     }
