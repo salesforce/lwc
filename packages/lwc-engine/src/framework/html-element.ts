@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
-import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
+import { Component } from "./component";
 import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
@@ -16,7 +16,7 @@ import {
     CustomEvent,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered } from "./invoker";
+import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
 import { pierce, piercingHook } from "./piercing";
 import { ViewModelReflection } from "./def";
@@ -351,10 +351,11 @@ if (process.env.NODE_ENV !== 'production') {
                 console.log(msg.join('\n')); // tslint:disable-line
                 return; // explicit undefined
             },
+            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
+            set() {}, // tslint:disable-line
             enumerable: false,
         });
     });
-
 }
 
 freeze(LWCElement);

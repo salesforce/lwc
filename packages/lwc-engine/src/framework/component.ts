@@ -43,24 +43,12 @@ export interface ComponentConstructor {
     readonly __circular__?: any;
 }
 
-export let vmBeingConstructed: VM | null = null;
-export function isBeingConstructed(vm: VM): boolean {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    return vmBeingConstructed === vm;
-}
-
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
     // create the component instance
-    const vmBeingConstructedInception = vmBeingConstructed;
-    vmBeingConstructed = vm;
-
     const component = invokeComponentConstructor(vm, Ctor);
-    vmBeingConstructed = vmBeingConstructedInception;
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
