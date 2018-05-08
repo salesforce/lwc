@@ -1,11 +1,10 @@
 import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey1 from 'proxy-compat/callKey1';
 import __getKey from 'proxy-compat/getKey';
-import __callKey1 from 'proxy-compat/callKey1';
-import __setKey from 'proxy-compat/setKey';
 import __callKey2 from 'proxy-compat/callKey2';
 import __callKey0 from 'proxy-compat/callKey0';
 import __callKey3 from 'proxy-compat/callKey3';
+import __setKey from 'proxy-compat/setKey';
 import _regeneratorRuntime from 'babel-compat/regenerator';
 import _asyncToGenerator from 'babel-compat/helpers/asyncToGenerator';
 import _createClass from 'babel-compat/helpers/createClass';
@@ -27,13 +26,13 @@ _templateObject3 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\naB", " ", ""], ["
 var MULTIPLIER = 5;
 
 for (var i in __iterableKey(arr)) {
-    __callKey(console, "log", __getKey(arr, i) * MULTIPLIER);
+    __callKey1(console, "log", __getKey(arr, i) * MULTIPLIER);
 } // babel-plugin-transform-es2015-arrow-functions
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-arrow-functions/test/fixtures/arrow-functions/expression/actual.js
 
 
-__callKey(arr, "map", function (x) {
-    return __callKey(console, "log", x * x);
+__callKey1(arr, "map", function (x) {
+    return __callKey1(console, "log", x * x);
 }); // babel-plugin-transform-es2015-block-scoping
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-block-scoping/test/fixtures/general/function/actual.js
 
@@ -41,7 +40,7 @@ __callKey(arr, "map", function (x) {
 function test() {
     var foo = "bar";
 
-    __callKey(console, "log", foo);
+    __callKey1(console, "log", foo);
 } // babel-plugin-transform-es2015-classes
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-classes/test/fixtures/loose/super-class/actual.js
 
@@ -53,7 +52,7 @@ function (_Foo) {
     function Test() {
     _classCallCheck(this, Test);
 
-    return _possibleConstructorReturn(this, __callKey(__getKey(Test, "__proto__") || Object.getPrototypeOf(Test), "apply", this, arguments));
+    return _possibleConstructorReturn(this, __callKey2(__getKey(Test, "__proto__") || Object.getPrototypeOf(Test), "apply", this, arguments));
     }
 
     return Test;
@@ -68,7 +67,7 @@ var coords = [1, 2];
 var x = __getKey(coords, "x"),
 y = __getKey(coords, "y");
 
-__callKey(console, "log", x, y); // babel-plugin-transform-es2015-for-of
+__callKey2(console, "log", x, y); // babel-plugin-transform-es2015-for-of
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-for-of/test/fixtures/loose/let/actual.js
 
 
@@ -77,10 +76,10 @@ var _didIteratorError = false;
 var _iteratorError = undefined;
 
 try {
-    for (var _iterator = __callKey(arr, Symbol.iterator), _step; !(_iteratorNormalCompletion = __getKey(_step = __callKey(_iterator, "next"), "done")); _iteratorNormalCompletion = true) {
+    for (var _iterator = __callKey0(arr, Symbol.iterator), _step; !(_iteratorNormalCompletion = __getKey(_step = __callKey0(_iterator, "next"), "done")); _iteratorNormalCompletion = true) {
     var _i = __getKey(_step, "value");
 
-    __callKey(console, "log", _i);
+    __callKey1(console, "log", _i);
     } // babel-plugin-transform-es2015-parameters
     // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-parameters/test/fixtures/use-loose-option/default-array-destructuring/actual.js
 
@@ -90,7 +89,7 @@ try {
 } finally {
     try {
     if (!_iteratorNormalCompletion && __getKey(_iterator, "return") != null) {
-        __callKey(_iterator, "return");
+        __callKey0(_iterator, "return");
     }
     } finally {
     if (_didIteratorError) {
@@ -115,39 +114,39 @@ var obj2 = {
 }; // babel-plugin-transform-es2015-spread
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-spread/test/fixtures/spread/single/actual.js
 
-__callKey(console, "log", _toConsumableArray(foo)); // babel-plugin-transform-es2015-template-literals
+__callKey1(console, "log", _toConsumableArray(foo)); // babel-plugin-transform-es2015-template-literals
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-template-literals/test/fixtures/loose/tag/actual.js
 
 
 function literal() {
-    var foo = bar(_templateObject, 42, __callKey(_, "foobar"));
-    var bar = bar(_templateObject2, 42, __callKey(_, "foobar"));
-    var baz = bar(_templateObject3, 42, __callKey(_, "baz"));
+    var foo = bar(_templateObject, 42, __callKey0(_, "foobar"));
+    var bar = bar(_templateObject2, 42, __callKey0(_, "foobar"));
+    var baz = bar(_templateObject3, 42, __callKey0(_, "baz"));
     return [foo, bar, baz];
 } // babel-plugin-transform-es2015-typeof-symbol
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-typeof-symbol/test/fixtures/symbols/typeof/actual.js
 
 var s = Symbol("s");
 
-__callKey(assert, "ok", _typeof(s) === "symbol");
+__callKey1(assert, "ok", _typeof(s) === "symbol");
 
-__callKey(assert, "equal", _typeof(s), "symbol");
+__callKey2(assert, "equal", _typeof(s), "symbol");
 
-__callKey(assert, "equal", _typeof(_typeof(__getKey(s, "foo"))), "symbol");
+__callKey2(assert, "equal", _typeof(_typeof(__getKey(s, "foo"))), "symbol");
 
 var ts = typeof s === "string";
 
-__callKey(assert, "isNotOk", (typeof o === "undefined" ? "undefined" : _typeof(o)) === "symbol");
+__callKey1(assert, "isNotOk", (typeof o === "undefined" ? "undefined" : _typeof(o)) === "symbol");
 
-__callKey(assert, "notEqual", typeof o === "undefined" ? "undefined" : _typeof(o), "symbol");
+__callKey2(assert, "notEqual", typeof o === "undefined" ? "undefined" : _typeof(o), "symbol");
 
-__callKey(assert, "notEqual", _typeof(_typeof(__getKey(o, "foo"))), "symbol"); // babel-plugin-transform-es2015-unicode-regex
+__callKey2(assert, "notEqual", _typeof(_typeof(__getKey(o, "foo"))), "symbol"); // babel-plugin-transform-es2015-unicode-regex
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-unicode-regex/test/fixtures/unicode-regex/basic/actual.js
 
 var string = "foo💩bar";
 
-var match = __callKey(string, "match", /foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/);
-__callKey(assert, "notEqual", string, match, ts); // babel-plugin-transform-async-to-generator
+var match = __callKey1(string, "match", /foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/);
+__callKey3(assert, "notEqual", string, match, ts); // babel-plugin-transform-async-to-generator
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-async-to-generator/test/fixtures/async-to-generator/async/actual.js
 
 
@@ -163,9 +162,9 @@ function () {
     value: function () {
         var _foo = _asyncToGenerator(
         /*#__PURE__*/
-        __callKey(_regeneratorRuntime, "mark", function _callee() {
+        __callKey1(_regeneratorRuntime, "mark", function _callee() {
         var wat;
-        return __callKey(_regeneratorRuntime, "wrap", function _callee$(_context) {
+        return __callKey3(_regeneratorRuntime, "wrap", function _callee$(_context) {
             while (1) {
             switch (__setKey(_context, "prev", __getKey(_context, "next"))) {
                 case 0:
@@ -178,14 +177,14 @@ function () {
 
                 case 3:
                 case "end":
-                return __callKey(_context, "stop");
+                return __callKey0(_context, "stop");
             }
             }
         }, _callee, this);
         }));
 
         return function foo() {
-        return __callKey(_foo, "apply", this, arguments);
+        return __callKey2(_foo, "apply", this, arguments);
         };
     }()
     }]);
@@ -196,9 +195,9 @@ function () {
 
 
 var num = 1;
-num = __callKey(Math, "pow", num, 2);
+num = __callKey2(Math, "pow", num, 2);
 
-__callKey(console, "log", num); // babel-plugin-transform-object-rest-spread
+__callKey1(console, "log", num); // babel-plugin-transform-object-rest-spread
 // https://github.com/babel/babel/blob/6.x/packages/babel-plugin-transform-object-rest-spread/test/fixtures/object-spread/assignment/actual.js
 
 

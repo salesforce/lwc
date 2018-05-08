@@ -1,4 +1,3 @@
-/* MOCK POLYFILLS SRC */
 (function(engine) {
     "use strict";
 
@@ -25,7 +24,11 @@
         __setKey(descriptor, "configurable", true);
 
         if (__inKey(descriptor, "value")) __setKey(descriptor, "writable", true);
-        Object.defineProperty(target, __getKey(descriptor, "key"), descriptor);
+        Object.compatDefineProperty(
+            target,
+            __getKey(descriptor, "key"),
+            descriptor
+        );
       }
     }
 
@@ -36,11 +39,7 @@
       return Constructor;
     }
 
-    function _possibleConstructorReturn(self, call) {
-      if (call && (typeof call === "object" || typeof call === "function")) {
-        return call;
-      }
-
+    function _assertThisInitialized(self) {
       if (self === void 0) {
         throw new ReferenceError(
           "this hasn't been initialised - super() hasn't been called"
@@ -48,6 +47,14 @@
       }
 
       return self;
+    }
+
+    function _possibleConstructorReturn(self, call) {
+      if (call && (typeof call === "object" || typeof call === "function")) {
+        return call;
+      }
+
+      return _assertThisInitialized(self);
     }
 
     var __setKey$1 = Proxy.setKey;
@@ -107,7 +114,7 @@
     }
 
     var __setKey$3 = Proxy.setKey;
-    var __callKey = Proxy.callKey;
+    var __callKey2 = Proxy.callKey2;
     var __getKey$3 = Proxy.getKey;
     var __concat = Proxy.concat;
 
@@ -137,7 +144,7 @@
             _this,
             ((_temp = _this = _possibleConstructorReturn(
               this,
-              __callKey(
+              __callKey2(
                 __getKey$3(
                   (_ref =
                     __getKey$3(Foo, "__proto__") || Object.getPrototypeOf(Foo)),
@@ -207,7 +214,7 @@
       __setKey$4(tmpl$1, "style", style(tagName$1, token$1));
     }
 
-    var __callKey$1 = Proxy.callKey;
+    var __callKey1 = Proxy.callKey1;
     var __getKey$5 = Proxy.getKey;
     var __setKey$5 = Proxy.setKey;
 
@@ -223,7 +230,7 @@
 
           _this = _possibleConstructorReturn(
             this,
-            __callKey$1(
+            __callKey1(
               __getKey$5(App, "__proto__") || Object.getPrototypeOf(App),
               "call",
               this
@@ -247,13 +254,13 @@
         return App;
       })(engine.Element);
 
-    var __callKey$2 = Proxy.callKey;
+    var __callKey1$1 = Proxy.callKey1;
 
-    var container = __callKey$2(document, "getElementById", "main");
+    var container = __callKey1$1(document, "getElementById", "main");
 
     var element = engine.createElement("x-app", {
       is: App
     });
 
-    __callKey$2(container, "appendChild", element);
+    __callKey1$1(container, "appendChild", element);
   })(engine);
