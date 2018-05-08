@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { pierce } from '../piercing';
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 import { createElement } from "../upgrade";
 
 describe('piercing', function() {
@@ -18,7 +18,7 @@ describe('piercing', function() {
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        const replica = pierce(elm[ViewModelReflection], elm);
+        const replica = pierce(elm);
         expect(() => {
             replica.style.position = 'absolute';
             expect(elm.style.position).toBe('absolute');
@@ -43,7 +43,7 @@ describe('piercing', function() {
         const piercedObject = {
             deleteMe: true
         };
-        const replica = pierce(elm[ViewModelReflection], piercedObject);
+        const replica = pierce(piercedObject);
         expect(() => {
             delete replica.deleteMe;
         }).not.toThrow();
