@@ -16,6 +16,28 @@ function isTemplateCss(id: string, importee: string) {
     );
 }
 
+/**
+ * This method allows resolver to process custom template files by gracefully handling an attempt to match a css file to it.
+ * Background: per design, bundle will have only one css file, which is named after the component name.
+ *
+ * ex: my-cmp/
+ *          my-cmp.js
+ *          my-cmp.html         --> html file is named the same as js.
+ *                                  this file will be checked against my-cmp.css ( css may not exist, but
+ *                                  resolveId method will treat it as TemplateCss, because names match )
+ *
+ *          customTemplate.html --> when custom template is resolved, module resolver attempts to check
+ *                                     for css file existence with the same name. However, since css is
+ *                                     hardcoded with javascript name - my-cmp.css, it won't pass isTemplateCss check
+ */
+function isCustomTemplateImportee(id: string, importee: string) {
+    return (
+        path.extname(id) === ".css" &&
+        path.extname(importee) === ".html" &&
+        path.basename(id, ".css") !== path.basename(importee, ".html")
+    );
+}
+
 function fileExists(
     fileName: string,
     { files }: NormalizedCompilerOptions
@@ -60,11 +82,10 @@ export default function({
 
             if (
                 !fileExists(absPath, options) &&
-                !isTemplateCss(id, importee)
+                !isTemplateCss(id, importee) &&
+                !isCustomTemplateImportee(id, importee)
             ) {
-                throw new Error(
-                    `Could not resolve '${id}' from '${importee}'`
-                );
+                throw new Error(`Could not resolve '${id}' from '${importee}'`);
             }
             return absPath;
         },
