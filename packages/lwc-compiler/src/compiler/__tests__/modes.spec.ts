@@ -6,8 +6,8 @@ const NODE_ENV_CONFIG = {
     name: "node_env",
     namespace: "x",
     files: {
-        "node_env.js": readFixture("node_env/node_env.js"),
-        "node_env.html": readFixture("node_env/node_env.html")
+        "node_env.js": readFixture("../../__tests__/fixtures/node_env/node_env.js"),
+        "node_env.html": readFixture("../../__tests__/fixtures/node_env/node_env.html")
     },
     outputConfig: { format: "es" }
 };
