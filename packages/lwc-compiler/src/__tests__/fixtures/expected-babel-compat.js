@@ -1,10 +1,12 @@
-import __iterableKey from 'proxy-compat/iterableKey';
+import __concat from 'proxy-compat/concat';
 import __callKey1 from 'proxy-compat/callKey1';
 import __getKey from 'proxy-compat/getKey';
+import __inKey from 'proxy-compat/inKey';
+import __setKey from 'proxy-compat/setKey';
+import __iterableKey from 'proxy-compat/iterableKey';
 import __callKey2 from 'proxy-compat/callKey2';
 import __callKey0 from 'proxy-compat/callKey0';
 import __callKey3 from 'proxy-compat/callKey3';
-import __setKey from 'proxy-compat/setKey';
 import _regeneratorRuntime from 'babel-compat/regenerator';
 import _asyncToGenerator from 'babel-compat/helpers/asyncToGenerator';
 import _createClass from 'babel-compat/helpers/createClass';
@@ -12,7 +14,7 @@ import _typeof from 'babel-compat/helpers/typeof';
 import _taggedTemplateLiteral from 'babel-compat/helpers/taggedTemplateLiteral';
 import _toConsumableArray from 'babel-compat/helpers/toConsumableArray';
 import _slicedToArray from 'babel-compat/helpers/slicedToArray';
-import _defineProperty from 'babel-compat/helpers/defineProperty';
+import _defineProperty2 from 'babel-compat/helpers/defineProperty';
 import _classCallCheck from 'babel-compat/helpers/classCallCheck';
 import _possibleConstructorReturn from 'babel-compat/helpers/possibleConstructorReturn';
 import _inherits from 'babel-compat/helpers/inherits';
@@ -21,7 +23,38 @@ var _templateObject = /*#__PURE__*/ _taggedTemplateLiteral(["wow\na", "b ", ""],
 _templateObject2 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""]),
 _templateObject3 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
 
-// babel-plugin-check-es2015-constants
+function _objectSpread(target) {
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i] != null ? arguments[i] : {};
+        var ownKeys = Object.compatKeys(source);
+
+        if (typeof Object.getOwnPropertySymbols === 'function') {
+            ownKeys = __concat(ownKeys, __callKey1(Object.getOwnPropertySymbols(source), "filter", function (sym) {
+                return __getKey(Object.getOwnPropertyDescriptor(source, sym), "enumerable");
+            }));
+        }
+
+        __callKey1(ownKeys, "forEach", function (key) {
+            _defineProperty(target, key, __getKey(source, key));
+        });
+    }
+    return target;
+}
+
+function _defineProperty(obj, key, value) {
+    if (__inKey(obj, key)) {
+        Object.compatDefineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+        });
+    } else {
+        __setKey(obj, key, value);
+    }
+
+    return obj;
+} // babel-plugin-check-es2015-constants
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-check-es2015-constants/test/fixtures/general/program/actual.js
 var MULTIPLIER = 5;
 
@@ -59,7 +92,7 @@ function (_Foo) {
 }(Foo); //babel-plugin-transform-es2015-computed-properties
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-computed-properties/test/fixtures/loose/single/actual.js
 
-var obj1 = _defineProperty({}, "x" + foo, "heh"); // babel-plugin-transform-es2015-destructuring
+var obj1 = _defineProperty2({}, "x" + foo, "heh"); // babel-plugin-transform-es2015-destructuring
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-destructuring/test/fixtures/destructuring/object-basic/actual.js
 
 var coords = [1, 2];
@@ -201,12 +234,12 @@ __callKey1(console, "log", num); // babel-plugin-transform-object-rest-spread
 // https://github.com/babel/babel/blob/6.x/packages/babel-plugin-transform-object-rest-spread/test/fixtures/object-spread/assignment/actual.js
 
 
-z = Object.assign({
+z = _objectSpread({
     x: x
 }, y);
 z = {
     x: x,
-    w: Object.assign({}, y)
+    w: _objectSpread({}, y)
 }; // babel-plugin-transform-class-properties
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-class-properties/test/fixtures/loose/instance/actual.js
 
