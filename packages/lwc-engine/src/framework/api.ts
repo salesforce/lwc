@@ -4,7 +4,7 @@ import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
+import { ComponentConstructor, markComponentAsDirty, isValidEvent, componentUpdated } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
@@ -79,6 +79,7 @@ const hook: Hooks = {
         if (vm.cmpSlots !== oldVNode.data.slotset && !vm.isDirty) {
             markComponentAsDirty(vm);
         }
+        componentUpdated(vm);
         renderVM(vm);
     },
     insert(vnode: VNode) {
