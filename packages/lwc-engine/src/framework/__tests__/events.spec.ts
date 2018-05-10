@@ -2,6 +2,7 @@ import { Element } from "../html-element";
 import { createElement } from "./../upgrade";
 import { ViewModelReflection } from "../def";
 import { unwrap } from "../membrane";
+import { create } from "domain";
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -527,6 +528,58 @@ describe('Events on Custom Elements', () => {
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
         elm.click();
+    });
+});
+
+describe('Slotted element events', () => {
+    it('should have correct target when event comes from slotted element', () => {
+        expect.assertions(1);
+        function childHTML ($api, $cmp, $slotset) {
+            return $slotset.x;
+        }
+
+        childHTML.slots = ['x'];
+        class Child extends Element {
+            render() {
+                return childHTML;
+            }
+        }
+
+        function html($api, $cmp, $slotset) {
+            return [$api.c('x-slotted-event-target-child', Child, {
+                slotset: {
+                    x: [
+                        $api.h('div', {
+                            on: {
+                                click: $api.b($cmp.handleClick),
+                            },
+                            key: 0,
+                        }, [])
+                    ]
+                }
+            })]
+        }
+
+        class SlottedEventTarget extends Element {
+            handleClick(evt) {
+                expect(evt.target.tagName.toLowerCase()).toBe('div');
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        SlottedEventTarget.publicMethods = ['clickDiv'];
+
+        const elm = createElement('slotted-event-target', { is: SlottedEventTarget });
+        document.body.appendChild(elm);
+        elm.clickDiv();
+
     });
 });
 
