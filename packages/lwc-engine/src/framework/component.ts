@@ -5,7 +5,7 @@ import {
     isRendering,
     vmBeingRendered,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice, isObject } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
 import { VM } from "./vm";
@@ -48,13 +48,13 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
         assert.vm(vm);
     }
     // create the component instance
-    const component = invokeComponentConstructor(vm, Ctor);
+    invokeComponentConstructor(vm, Ctor);
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(vm.component === component, `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
+        assert.isTrue(isObject(vm.component), `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
         const { track } = getComponentDef(Ctor);
-        if ('state' in component && (!track || !track.state)) {
-            assert.logWarning(`Non-trackable component state detected in ${component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);
+        if ('state' in (vm.component as Component) && (!track || !track.state)) {
+            assert.logWarning(`Non-trackable component state detected in ${vm.component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);
         }
     }
 }

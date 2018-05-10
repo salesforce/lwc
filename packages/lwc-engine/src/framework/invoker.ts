@@ -43,7 +43,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): Component {
+export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -54,10 +54,9 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
         startMeasure(vm, 'constructor');
     }
 
-    let component;
     let error;
     try {
-        component = new Ctor();
+        new Ctor();
     } catch (e) {
         error = Object(e);
     } finally {
@@ -73,7 +72,6 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
             throw error; // tslint:disable-line
         }
     }
-    return component as Component;
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {

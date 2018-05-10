@@ -25,6 +25,7 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
+    hasOwnProperty,
 } from "./language";
 import {
     GlobalAOMProperties,
@@ -102,12 +103,23 @@ function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
 const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
+function getCtorProto(Ctor: any): any {
+    let proto = getPrototypeOf(Ctor);
+    // The compiler produce AMD modules that do not support circular dependencies
+    // We need to create an indirection to circumvent those cases.
+    // We could potentially move this check to the definition
+    if (hasOwnProperty.call(proto, '__circular__')) {
+        proto = proto();
+    }
+    return proto;
+}
+
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
-    const proto = getPrototypeOf(Ctor);
+    const proto = getCtorProto(Ctor);
     if (proto === BaseElement) {
         return true;
     }
@@ -163,7 +175,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         renderedCallback,
         errorCallback,
     } = proto;
-    const superProto = getPrototypeOf(Ctor);
+    const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
