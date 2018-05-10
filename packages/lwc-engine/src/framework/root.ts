@@ -27,6 +27,12 @@ function getLinkedElement(root: ShadowRoot): HTMLElement {
     return getCustomElementVM(root).elm;
 }
 
+// Temporary export for locker, will be removed once the shadow-dom polyfil is available
+export function isNodeOwnedByComponent(component: Component, node: Node) {
+    const vm: VM = component[ViewModelReflection];
+    return isNodeOwnedByVM(vm, node);
+}
+
 export interface ShadowRoot {
     [ViewModelReflection]: VM;
     readonly mode: string;
@@ -249,18 +255,17 @@ register({
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
+            /* TODO: RJ to make locker's piercing preced raptor's
             if (value === querySelector) {
-                return callback((selector: string): Node | null => {
-                    const vm = getElementOwnerVM(target as Element);
-                    return isUndefined(vm) ? null : getFirstMatch(vm, target as Element, selector);
-                });
+                // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
+                // we do in that case? Right now this is essentially a bound function, but the original is not.
+                return callback((selector: string): Node | null => getFirstMatch(vm, target as Element, selector));
             }
             if (value === querySelectorAll) {
-                return callback((selector: string): Element[] => {
-                    const vm = getElementOwnerVM(target as Element);
-                    return isUndefined(vm) ? [] : getAllMatches(vm, target as Element, selector);
-                });
-            }
+                // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
+                // we do in that case? Right now this is essentially a bound function, but the original is not.
+                return callback((selector: string): NodeList => getAllMatches(vm, target, selector));
+            } */
             if (isParentNodeKeyword(key)) {
                 const vm = getElementOwnerVM(target as Element);
                 if (!isUndefined(vm) && value === vm.elm) {

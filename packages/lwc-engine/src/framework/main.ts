@@ -8,6 +8,9 @@ export { unwrap } from "./membrane";
 
 // TODO: REMOVE THIS https://github.com/salesforce/lwc/issues/129
 export { dangerousObjectMutation } from "./membrane";
+// Temporary export for locker, will be removed once the shadow-dom polyfil is available
+export { isNodeOwnedByComponent } from "./root";
+export { getCustomElementComponent, isCustomElement } from "./component";
 export { default as api } from "./decorators/api";
 export { default as track } from "./decorators/track";
 export { default as readonly } from "./decorators/readonly";

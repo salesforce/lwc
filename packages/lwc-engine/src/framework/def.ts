@@ -256,6 +256,7 @@ function createSetter(key: string) {
 function createMethodCaller(key: string) {
     return function(this: VMElement): any {
         const component = getCustomElementComponent(this);
+        // TODO: RJ onvoke the method with a secure context, $A.lockerService.wrapComponent(component)
         return component[key].apply(component, ArraySlice.call(arguments));
     };
 }
