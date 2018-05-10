@@ -6,7 +6,7 @@ import {
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
 import { getComponentStack, VM } from "./vm";
-import { ComponentConstructor, Component } from "./component";
+import { ComponentConstructor } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
 
@@ -56,7 +56,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
 
     let error;
     try {
-        new Ctor();
+        new Ctor(); // tslint:disable-line
     } catch (e) {
         error = Object(e);
     } finally {
