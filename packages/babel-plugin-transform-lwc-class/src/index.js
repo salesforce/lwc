@@ -8,10 +8,10 @@ const decorators = require('./decorators');
  *    - First, apply in a single AST traversal the decorators and the component transformation.
  *    - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  */
-module.exports = function ({ types, traverse }) {
-    const { merge: mergeVisitors } = traverse.visitors;
+module.exports = function LwcClassTransform(api) {
+    const { merge: mergeVisitors } = api.traverse.visitors;
 
-    const { visitor: classPropertyVisitor } = classProperty({ types }, { loose: true });
+    const { visitor: classPropertyVisitor } = classProperty(api, { loose: true });
 
     return {
         manipulateOptions(opts, parserOpts) {
@@ -19,9 +19,9 @@ module.exports = function ({ types, traverse }) {
             parserOpts.plugins.push('classProperties');
         },
         visitor: mergeVisitors([
-            metadata({ types }),
-            decorators({ types }),
-            component({ types }),
+            metadata(api),
+            decorators(api),
+            component(api),
             {
                 Program: {
                     exit(path, state) {

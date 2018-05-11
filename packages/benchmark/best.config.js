@@ -7,6 +7,7 @@ module.exports = {
         }],
     ],
     benchmarkOnClient: false,
+    benchmarkIterations: 60,
     runnerConfig: [
         {
             "runner": '@best/runner-headless',

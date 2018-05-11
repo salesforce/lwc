@@ -1,6 +1,6 @@
-import { reactiveMembrane } from '../membrane';
 import { unwrap } from '../main';
 import { Element } from "../html-element";
+import { reactiveMembrane } from '../membrane';
 import { createElement } from "../upgrade";
 
 describe('unwrap', () => {
@@ -21,7 +21,7 @@ describe('unwrap', () => {
         }
         class CustomEl extends Element {
             query() {
-                return this.root.querySelector('div');
+                return this.template.querySelector('div');
             }
             render() {
                 return renderHandler;

@@ -71,7 +71,7 @@ describe('component', function() {
             }
             class MyComponent extends Element  {
                 callChildM() {
-                    value = this.root.querySelector('x-child').m;
+                    value = this.template.querySelector('x-child').m;
                 }
                 render() {
                     return html;
@@ -187,7 +187,7 @@ describe('component', function() {
                     return html;
                 }
                 run() {
-                    this.root.querySelector('x-child').breakfast = 'eggs';
+                    this.template.querySelector('x-child').breakfast = 'eggs';
                 }
             }
             MyComponent.publicMethods = ['run'];
@@ -537,7 +537,7 @@ describe('component', function() {
             }
             class MyComponent extends Element  {
                 callChildM() {
-                    this.root.querySelector('x-child').m();
+                    this.template.querySelector('x-child').m();
                 }
                 render() {
                     return html;
@@ -566,7 +566,7 @@ describe('component', function() {
             }
             class MyComponent extends Element  {
                 getChildAttribute() {
-                    this.root.querySelector('x-child').getAttribute('title');
+                    this.template.querySelector('x-child').getAttribute('title');
                 }
                 render() {
                     return html;
@@ -594,7 +594,7 @@ describe('component', function() {
             }
             class MyComponent extends Element  {
                 setChildAttribute() {
-                    this.root.querySelector('x-child').setAttribute('title', 'foo');
+                    this.template.querySelector('x-child').setAttribute('title', 'foo');
                 }
                 render() {
                     return html;
@@ -622,7 +622,7 @@ describe('component', function() {
             }
             class MyComponent extends Element  {
                 removeChildAttribute() {
-                    this.root.querySelector('x-child').removeAttribute('title');
+                    this.template.querySelector('x-child').removeAttribute('title');
                 }
                 render() {
                     return html;

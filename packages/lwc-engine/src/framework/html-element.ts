@@ -1,7 +1,8 @@
 import assert from "./assert";
 import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
-import { vmBeingConstructed, isBeingConstructed, Component } from "./component";
+import { Component } from "./component";
 import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttribute,
@@ -15,11 +16,10 @@ import {
     CustomEvent,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
-import { isRendering, vmBeingRendered } from "./invoker";
+import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce, piercingHook } from "./piercing";
+import { pierce, pierceProperty } from "./piercing";
 import { ViewModelReflection } from "./def";
-import { Membrane } from "./membrane";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 
@@ -142,23 +142,26 @@ class LWCElement implements Component {
         }
 
         // Pierce dispatchEvent so locker service has a chance to overwrite
-        pierce(vm, elm);
-        const dispatchEvent = piercingHook(vm.membrane as Membrane, elm, 'dispatchEvent', elm.dispatchEvent);
+        const dispatchEvent = pierceProperty(elm, 'dispatchEvent');
         return dispatchEvent.call(elm, event);
     }
 
-    addEventListener(type: string, listener: EventListener, options: any) {
+    addEventListener(type: string, listener: EventListener, options?: any) {
+        const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            throw new Error(`Deprecated Method: usage of this.addEventListener("${type}", ...) in ${vm} is now deprecated. In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener().`);
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+            }
         }
+        addCmpEventListener(vm, type, listener, options);
     }
 
-    removeEventListener(type: string, listener: EventListener, options: any) {
-        if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            throw new Error(`Deprecated Method: usage of this.removeEventListener("${type}", ...) in ${vm} is now deprecated alongside this.addEventListener(). In most cases, you can use the declarative syntax in your template to listen for events coming from children. Additionally, for imperative code, you can do it via this.root.addEventListener() and this.root.removeEventListener().`);
-        }
+    removeEventListener(type: string, listener: EventListener, options?: any) {
+        const vm = getCustomElementVM(this);
+        removeCmpEventListener(vm, type, listener, options);
     }
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -239,13 +242,13 @@ class LWCElement implements Component {
         for (let i = 0, len = nodeList.length; i < len; i += 1) {
             if (wasNodePassedIntoVM(vm, nodeList[i])) {
                 // TODO: locker service might need to return a membrane proxy
-                return pierce(vm, nodeList[i]);
+                return pierce(nodeList[i]);
             }
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.root, selectors)) {
-                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelector() instead.`);
+            if (shadowRootQuerySelector(this.template, selectors)) {
+                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
             }
         }
 
@@ -262,11 +265,11 @@ class LWCElement implements Component {
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
 
         if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.root, selectors).length) {
-                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.root.querySelectorAll() instead.`);
+            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
+                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
             }
         }
-        return pierce(vm, filteredNodes);
+        return pierce(filteredNodes);
     }
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -296,7 +299,7 @@ class LWCElement implements Component {
     get root(): ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
-            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return this.template;
     }
@@ -346,10 +349,11 @@ if (process.env.NODE_ENV !== 'production') {
                 console.log(msg.join('\n')); // tslint:disable-line
                 return; // explicit undefined
             },
+            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
+            set() {}, // tslint:disable-line
             enumerable: false,
         });
     });
-
 }
 
 freeze(LWCElement);

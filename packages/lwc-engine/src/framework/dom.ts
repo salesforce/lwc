@@ -65,6 +65,10 @@ function getRootNode(this: Node, options: Record<string, any> | undefined): Node
     return findComposedRootNode(this);
 }
 
+export function isChildNode(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+}
+
 export {
     // Element.prototype
     addEventListener,

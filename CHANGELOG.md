@@ -1,5 +1,30 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.0...v) (2018-04-24)
+# [](https://github.com/salesforce/lwc/compare/v0.20.2...v) (2018-05-11)
+
+
+
+<a name="0.20.2"></a>
+## [0.20.2](https://github.com/salesforce/lwc/compare/v0.20.0...v0.20.2) (2018-05-11)
+
+
+### Bug Fixes
+
+* **engine:** add existence check in removeChild ([#285](https://github.com/salesforce/lwc/issues/285)) ([81642fd](https://github.com/salesforce/lwc/commit/81642fd))
+* **engine:** define setter along with getter in global html attr ([#277](https://github.com/salesforce/lwc/issues/277)) ([5324101](https://github.com/salesforce/lwc/commit/5324101))
+* **engine:** fixes [#203](https://github.com/salesforce/lwc/issues/203) - improving error message for iteration key ([#230](https://github.com/salesforce/lwc/issues/230)) ([4ecce8a](https://github.com/salesforce/lwc/commit/4ecce8a))
+* **engine:** isBeingConstructed flag is not get out of sync ([#284](https://github.com/salesforce/lwc/issues/284)) ([888bd0d](https://github.com/salesforce/lwc/commit/888bd0d))
+
+
+### Features
+
+* **compiler:** introduce compile/transform/bundle diagnostics ([#256](https://github.com/salesforce/lwc/issues/256)) ([950d196](https://github.com/salesforce/lwc/commit/950d196))
+* **engine:** addEventListener on component instance ([#276](https://github.com/salesforce/lwc/issues/276)) ([a9533af](https://github.com/salesforce/lwc/commit/a9533af))
+* **github:** separate features and issues into separate template  ([#281](https://github.com/salesforce/lwc/issues/281)) ([b8889b0](https://github.com/salesforce/lwc/commit/b8889b0))
+
+
+### Performance Improvements
+
+* Increment performance iterations ([#290](https://github.com/salesforce/lwc/issues/290)) ([d436493](https://github.com/salesforce/lwc/commit/d436493))
 
 
 

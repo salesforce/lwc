@@ -2,16 +2,20 @@ import { compile } from "../index";
 import { readFixture, pretify } from "./utils";
 
 describe("regression test", () => {
-    it("#743 - Object rest spread throwing", async () => {
+    it('#743 - Object rest spread throwing', async () => {
         const actual = `const base = { foo: true }; const res = { ...base, bar: false };`;
         const expected = `define('x-foo', function () {
-            const base = {
-                foo: true
-            };
-            const res = Object.assign({}, base, {
-                bar: false
-            });
-            });`;
+            function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+        function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+        const base = {
+            foo: true
+        };
+
+        const res = _objectSpread({}, base, {
+            bar: false
+        });
+    });`;
 
         const { result } = await compile({
             name: "foo",

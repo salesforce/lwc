@@ -11,7 +11,6 @@ import { invokeComponentCallback } from "./invoker";
 import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
-import { Membrane } from "./membrane";
 import { Component } from "./component";
 import { Context } from "./context";
 import { ShadowRoot } from "./root";
@@ -52,7 +51,6 @@ export interface VM {
     isDirty: boolean;
     isRoot: boolean;
     component?: Component;
-    membrane?: Membrane;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
     toString(): string;
@@ -359,9 +357,6 @@ export function resetShadowRoot(vm: VM) {
         // however, if patching fails it contains partial changes.
         patchChildren(elm, oldCh, EmptyArray);
     } catch (e) {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.logError("Swallow Error: Failed to reset component's shadow with an empty list of children: " + e);
-        }
         // in the event of patch failure force offender removal
         vm.elm.innerHTML = "";
     }

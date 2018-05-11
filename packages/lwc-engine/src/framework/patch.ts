@@ -7,6 +7,7 @@ import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
 import uid from "./modules/uid";
+import { isNull } from './language';
 
 const {
     createElement,
@@ -49,7 +50,9 @@ export const htmlDomApi: DOMAPI = {
         insertBefore.call(parent, newNode, referenceNode);
     },
     removeChild(node: Node, child: Node) {
-        removeChild.call(node, child);
+        if (!isNull(node)) {
+            removeChild.call(node, child);
+        }
     },
     appendChild(node: Node, child: Node) {
         appendChild.call(node, child);

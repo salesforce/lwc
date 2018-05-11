@@ -1,5 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
+import { Membrane } from "../../membrane";
 import readonly from "../readonly";
 
 describe('readonly.ts', () => {
