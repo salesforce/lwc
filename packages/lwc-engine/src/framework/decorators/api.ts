@@ -48,8 +48,7 @@ export function prepareForPropUpdate(vm: VM) {
     vmBeingUpdated = vm;
 }
 
-// TODO: how to allow symbols as property keys?
-export function createPublicPropertyDescriptor(proto: object, key: PropertyKey, descriptor: PropertyDescriptor | undefined) {
+export function createPublicPropertyDescriptor(proto: object, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     return {
         get(this: Component): any {
             const vm = getCustomElementVM(this);
@@ -102,7 +101,7 @@ export function createPublicPropertyDescriptor(proto: object, key: PropertyKey, 
     };
 }
 
-export function createPublicAccessorDescriptor(Ctor: any, key: PropertyKey, descriptor: PropertyDescriptor) {
+export function createPublicAccessorDescriptor(Ctor: any, key: PropertyKey, descriptor: PropertyDescriptor): PropertyDescriptor {
     const { get, set, enumerable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {

@@ -32,7 +32,7 @@ export default function track(obj?: any): DecoratorFunction | any {
     return trackDecorator;
 }
 
-export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean) {
+export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {
     return {
         get(this: VMElement): any {
             const vm = getCustomElementVM(this);
