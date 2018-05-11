@@ -106,9 +106,6 @@ function LWCElement(this: Component) {
     const { elm, def } = vm;
     const component = this;
     vm.component = component;
-    // TODO: eventually the render method should be a static property on the ctor instead
-    // catching render method to match other callbacks
-    vm.render = component.render;
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);

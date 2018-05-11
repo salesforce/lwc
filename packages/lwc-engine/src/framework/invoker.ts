@@ -75,7 +75,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
-    const { render } = vm;
+    const { def: { render } } = vm;
     if (isUndefined(render)) { return []; }
     const { component, context } = vm;
     const ctx = currentContext;

@@ -46,7 +46,6 @@ export interface VM {
     cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
-    render?: () => void | Template;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;

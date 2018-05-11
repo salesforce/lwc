@@ -32,10 +32,7 @@ describe('def', () => {
                 bar() {}
             }
             MyComponent.publicMethods = ['foo', 'bar'];
-            expect(target.getComponentDef(MyComponent).methods).toEqual({
-                foo: 1,
-                bar: 1,
-            });
+            expect(Object.keys(target.getComponentDef(MyComponent).methods)).toEqual(['foo', 'bar']);
         });
 
         it('should understand static wire', () => {
@@ -255,12 +252,12 @@ describe('def', () => {
 
             MySubComponent.publicMethods = ['fizz', 'buzz'];
 
-            expect(target.getComponentDef(MySubComponent).methods).toEqual({
-                foo: 1,
-                bar: 1,
-                fizz: 1,
-                buzz: 1
-            });
+            expect(Object.keys(target.getComponentDef(MySubComponent).methods)).toEqual([
+                'foo',
+                'bar',
+                'fizz',
+                'buzz'
+            ]);
         });
 
         it('should inherit static wire properly', () => {

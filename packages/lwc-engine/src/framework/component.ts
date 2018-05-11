@@ -19,7 +19,7 @@ export interface Component {
     [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
     readonly root: ShadowRoot;
-    render?: () => void | Template;
+    render?: () => (void | Template);
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;

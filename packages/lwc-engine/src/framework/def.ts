@@ -67,8 +67,9 @@ export interface PropsDef {
 export interface TrackDef {
     [key: string]: 1;
 }
+export type PublicMethod = (...args: any[]) => any;
 export interface MethodDef {
-    [key: string]: 1;
+    [key: string]: PublicMethod;
 }
 export interface WireHash {
     [key: string]: WireDef;
@@ -83,11 +84,13 @@ export interface ComponentDef {
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
+    render?: () => Template;
     errorCallback?: ErrorCallback;
 }
 import {
     ComponentConstructor, getCustomElementComponent, ErrorCallback
  } from './component';
+import { Template } from "./template";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -174,6 +177,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
+        render,
     } = proto;
     const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
@@ -185,6 +189,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
+        render = render || superDef.render;
     }
 
     props = assign(create(null), HTML_PROPS, props);
@@ -201,6 +206,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
+        render,
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -230,10 +236,10 @@ function createSetter(key: string) {
     };
 }
 
-function createMethodCaller(key: string) {
+function createMethodCaller(method: PublicMethod): PublicMethod {
     return function(this: VMElement): any {
-        const component = getCustomElementComponent(this);
-        return component[key].apply(component, ArraySlice.call(arguments));
+        const vm = getCustomElementVM(this);
+        return method.apply(vm.component, ArraySlice.call(arguments));
     };
 }
 
@@ -380,7 +386,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
     // expose public methods as props on the Element
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
-            value: createMethodCaller(key),
+            value: createMethodCaller(publicMethodsConfig[key]),
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         };
     }
@@ -447,13 +453,10 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
-        methodsHash[methodName] = 1;
-
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
-            freeze(target.prototype[methodName]);
         }
-
+        methodsHash[methodName] = target.prototype[methodName];
         return methodsHash;
     }, create(null));
 }
