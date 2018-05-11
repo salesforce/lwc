@@ -106,6 +106,17 @@ function LWCElement(this: Component) {
     const { elm, def } = vm;
     const component = this;
     vm.component = component;
+    // interaction hooks
+    if (arguments.length === 1) {
+        const { callHook, setHook, getHook } = arguments[0] as {
+            callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+            setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
+            getHook: (cmp: Component, prop: PropertyKey) => any;
+        };
+        vm.callHook = callHook;
+        vm.setHook = setHook;
+        vm.getHook = getHook;
+    }
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);

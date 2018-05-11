@@ -46,6 +46,9 @@ export interface VM {
     cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
     cmpRoot?: ShadowRoot;
+    callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
+    getHook: (cmp: Component, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
@@ -57,6 +60,18 @@ export interface VM {
 
 let idx: number = 0;
 let uid: number = 0;
+
+function callHook(cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]): any {
+    return fn.apply(cmp, args);
+}
+
+function setHook(cmp: Component, prop: PropertyKey, newValue: any) {
+    cmp[prop] = newValue;
+}
+
+function getHook(cmp: Component, prop: PropertyKey): any {
+    return cmp[prop];
+}
 
 export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
 
@@ -176,6 +191,9 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         cmpListener: undefined,
         cmpTemplate: undefined,
         cmpRoot: undefined,
+        callHook,
+        setHook,
+        getHook,
         component: undefined,
         children: EmptyArray,
         hostAttrs: create(null),
