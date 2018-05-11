@@ -7,12 +7,16 @@ import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
-import { DecoratorFunction } from "./decorate";
 
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-function apiDecorator(target: any, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+export default function api(target: any, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+    if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length !== 3) {
+            assert.fail(`@api decorator can only be used as a decorator function.`);
+        }
+    }
     const meta = target.publicProps;
     const config = (hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
     // initializing getters and setters for each public prop on the target prototype
@@ -34,10 +38,6 @@ function apiDecorator(target: any, propName: PropertyKey, descriptor: PropertyDe
     } else {
         return createPublicPropertyDescriptor(target, propName, descriptor);
     }
-}
-
-export default function api(): DecoratorFunction | any {
-    return apiDecorator;
 }
 
 let vmBeingUpdated: VM | null = null;

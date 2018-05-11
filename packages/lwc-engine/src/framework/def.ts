@@ -152,7 +152,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     // TODO: eventually, the compiler should do this work
     {
         for (const propName in props) {
-            decoratorMap[propName] = apiDecorator();
+            decoratorMap[propName] = apiDecorator;
         }
         if (wire) {
             for (const propName in wire) {
@@ -166,7 +166,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         }
         if (track) {
             for (const propName in track) {
-                decoratorMap[propName] = trackDecorator();
+                decoratorMap[propName] = trackDecorator;
             }
         }
         decorate(Ctor, decoratorMap);

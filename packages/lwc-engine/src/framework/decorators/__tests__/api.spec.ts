@@ -363,10 +363,4 @@ describe('decorators/api.ts', () => {
         });
     });
 
-    describe('@api()', () => {
-        it('should return a decorator when invoking api as a function', () => {
-            expect(typeof api()).toBe('function');
-        });
-    });
-
 });

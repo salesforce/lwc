@@ -5,10 +5,15 @@ import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { reactiveMembrane } from '../membrane';
-import { DecoratorFunction } from "./decorate";
 
-function trackDecorator(target: any, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+export default function track(target: any, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor | any {
+    if (arguments.length === 1) {
+        return reactiveMembrane.getProxy(target);
+    }
     if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length !== 3) {
+            assert.fail(`@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`);
+        }
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;
             assert.isTrue(!get && !set, `Compiler Error: A @track decorator can only be applied to a public field.`);
@@ -17,19 +22,6 @@ function trackDecorator(target: any, prop: PropertyKey, descriptor: PropertyDesc
         }
     }
     return createTrackedPropertyDescriptor(target, prop, isObject(descriptor) ? descriptor.enumerable === true : true);
-}
-
-// stub function to prevent misuse of the @track decorator
-export default function track(obj?: any): DecoratorFunction | any {
-    if (arguments.length === 1) {
-        return reactiveMembrane.getProxy(obj);
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        if (arguments.length !== 0) {
-            assert.fail(`@track decorator can only be used with one argument to return a trackable object, or as a decorator with no arguments.`);
-        }
-    }
-    return trackDecorator;
 }
 
 export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {
