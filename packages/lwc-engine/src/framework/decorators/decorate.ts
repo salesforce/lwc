@@ -4,6 +4,7 @@ export type DecoratorFunction = (Ctor: any, key: PropertyKey, descriptor: Proper
 export type DecoratorMap = Record<string, DecoratorFunction>;
 
 export default function decorate(Ctor: any, decorators: DecoratorMap): any {
+    // intentionally comparing decorators with null and undefined
     if (!isFunction(Ctor) || decorators == null) {
         throw new TypeError();
     }

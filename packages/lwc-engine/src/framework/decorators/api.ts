@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
 import { isObject, isNull, isTrue, hasOwnProperty } from "../language";
 import { observeMutation, notifyMutation } from "../watcher";
-import { Component } from "../component";
+import { Component, ComponentConstructor } from "../component";
 import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
@@ -11,14 +11,15 @@ import { reactiveMembrane } from "../membrane";
 const COMPUTED_GETTER_MASK = 1;
 const COMPUTED_SETTER_MASK = 2;
 
-export default function api(target: any, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+export default function api(target: ComponentConstructor, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
         if (arguments.length !== 3) {
             assert.fail(`@api decorator can only be used as a decorator function.`);
         }
     }
     const meta = target.publicProps;
-    const config = (hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
+    // publicProps must be an own property, otherwise the meta is inherited.
+    const config = (!isUndefined(meta) && hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
     // initializing getters and setters for each public prop on the target prototype
     if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
         if (process.env.NODE_ENV !== 'production') {
@@ -48,7 +49,7 @@ export function prepareForPropUpdate(vm: VM) {
     vmBeingUpdated = vm;
 }
 
-export function createPublicPropertyDescriptor(proto: object, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+export function createPublicPropertyDescriptor(proto: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     return {
         get(this: Component): any {
             const vm = getCustomElementVM(this);
@@ -101,7 +102,7 @@ export function createPublicPropertyDescriptor(proto: object, key: PropertyKey, 
     };
 }
 
-export function createPublicAccessorDescriptor(Ctor: any, key: PropertyKey, descriptor: PropertyDescriptor): PropertyDescriptor {
+export function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor): PropertyDescriptor {
     const { get, set, enumerable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {

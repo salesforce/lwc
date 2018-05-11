@@ -5,8 +5,10 @@ import { observeMutation, notifyMutation } from "../watcher";
 import { VMElement } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { reactiveMembrane } from '../membrane';
+import { ComponentConstructor } from "../component";
 
-export default function track(target: any, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor | any {
+export default function track(target: ComponentConstructor, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor;
+export default function track(target: any, prop?, descriptor?): any {
     if (arguments.length === 1) {
         return reactiveMembrane.getProxy(target);
     }
@@ -21,7 +23,7 @@ export default function track(target: any, prop: PropertyKey, descriptor: Proper
             assert.isTrue(writable !== false, `Compiler Error: A @track decorator can only be applied to a writable property.`);
         }
     }
-    return createTrackedPropertyDescriptor(target, prop, isObject(descriptor) ? descriptor.enumerable === true : true);
+    return createTrackedPropertyDescriptor(target, prop, isUndefined(descriptor) ? true : descriptor.enumerable === true);
 }
 
 export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {

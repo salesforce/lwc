@@ -2,8 +2,9 @@ import { createTrackedPropertyDescriptor } from "./track";
 import assert from "../assert";
 import { isObject, isUndefined } from "../language";
 import { DecoratorFunction } from "./decorate";
+import { ComponentConstructor } from "../component";
 
-function wireDecorator(target: any, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor | any {
+function wireDecorator(target: ComponentConstructor, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor | any {
     if (process.env.NODE_ENV !== 'production') {
         if (!isUndefined(descriptor)) {
             const { get, set, configurable, writable } = descriptor;

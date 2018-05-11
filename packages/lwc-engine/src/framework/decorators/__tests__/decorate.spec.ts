@@ -35,7 +35,7 @@ describe('decorate.ts', () => {
             class f {}
             expect(decorate(f, {})).toBe(f);
         });
-        it('should throw when invoking it with no arguments', () => {
+        it('should decorate a class', () => {
             expect.assertions(7);
             class f {
                 get y() { return 1; }
