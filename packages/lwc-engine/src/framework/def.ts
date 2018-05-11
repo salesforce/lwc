@@ -88,7 +88,7 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, getCustomElementComponent, ErrorCallback
+    ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
 
@@ -193,7 +193,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     }
 
     props = assign(create(null), HTML_PROPS, props);
-    const descriptors = createDescriptorMap(props, methods);
+    const descriptors = createCustomElementDescriptorMap(props, methods);
 
     const def: ComponentDef = {
         name,
@@ -226,20 +226,25 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
 function createGetter(key: string) {
     return function(this: VMElement): any {
-        return getCustomElementComponent(this)[key];
+        const vm = getCustomElementVM(this);
+        const { getHook } = vm;
+        return getHook(vm.component as Component, key);
     };
 }
 
 function createSetter(key: string) {
     return function(this: VMElement, newValue: any): any {
-        getCustomElementComponent(this)[key] = newValue;
+        const vm = getCustomElementVM(this);
+        const { setHook } = vm;
+        setHook(vm.component as Component, key, newValue);
     };
 }
 
 function createMethodCaller(method: PublicMethod): PublicMethod {
     return function(this: VMElement): any {
         const vm = getCustomElementVM(this);
-        return method.apply(vm.component, ArraySlice.call(arguments));
+        const { callHook } = vm;
+        return callHook(vm.component as Component, method, ArraySlice.call(arguments));
     };
 }
 
@@ -352,7 +357,7 @@ export function prepareForAttributeMutationFromTemplate(elm: Element, key: strin
     }
 }
 
-function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
+function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
     // replacing mutators and accessors on the element itself to catch any mutation
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
