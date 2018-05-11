@@ -1,10 +1,10 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.1...v) (2018-05-08)
+# [](https://github.com/salesforce/lwc/compare/v0.20.2...v) (2018-05-11)
 
 
 
-<a name="0.20.1"></a>
-## [0.20.1](https://github.com/salesforce/lwc/compare/v0.20.0...v0.20.1) (2018-05-08)
+<a name="0.20.2"></a>
+## [0.20.2](https://github.com/salesforce/lwc/compare/v0.20.0...v0.20.2) (2018-05-11)
 
 
 ### Bug Fixes
@@ -19,6 +19,12 @@
 
 * **compiler:** introduce compile/transform/bundle diagnostics ([#256](https://github.com/salesforce/lwc/issues/256)) ([950d196](https://github.com/salesforce/lwc/commit/950d196))
 * **engine:** addEventListener on component instance ([#276](https://github.com/salesforce/lwc/issues/276)) ([a9533af](https://github.com/salesforce/lwc/commit/a9533af))
+* **github:** separate features and issues into separate template  ([#281](https://github.com/salesforce/lwc/issues/281)) ([b8889b0](https://github.com/salesforce/lwc/commit/b8889b0))
+
+
+### Performance Improvements
+
+* Increment performance iterations ([#290](https://github.com/salesforce/lwc/issues/290)) ([d436493](https://github.com/salesforce/lwc/commit/d436493))
 
 
 
