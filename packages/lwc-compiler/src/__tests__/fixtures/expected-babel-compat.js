@@ -198,12 +198,12 @@ __callKey(console, "log", num); // babel-plugin-transform-object-rest-spread
 // https://github.com/babel/babel/blob/6.x/packages/babel-plugin-transform-object-rest-spread/test/fixtures/object-spread/assignment/actual.js
 
 
-z = Object.assign({
+z = Object.compatAssign({
     x: x
 }, y);
 z = {
     x: x,
-    w: Object.assign({}, y)
+    w: Object.compatAssign({}, y)
 }; // babel-plugin-transform-class-properties
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-class-properties/test/fixtures/loose/instance/actual.js
 
