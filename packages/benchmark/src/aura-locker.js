@@ -8828,7 +8828,7 @@ SecureLWCElementGenerator.proxyHandler = function(key) {
           target.constructor.publicProps &&
           Object.keys(target.constructor.publicProps).indexOf(property) !== -1
         ) {
-            // temp bypass
+            // temp bypass 
           target[property] = value;
         } else if (
           target.constructor.track &&
