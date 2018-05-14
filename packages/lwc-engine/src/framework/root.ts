@@ -1,15 +1,13 @@
 import assert from "./assert";
-import { ViewModelReflection, ComponentDef } from "./def";
+import { ViewModelReflection } from "./def";
 import { isUndefined, ArrayFilter, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { isBeingConstructed, getCustomElementComponent } from "./component";
 import { OwnerKey, isNodeOwnedByVM, VM } from "./vm";
 import { register } from "./services";
-import { pierce, piercingHook } from "./piercing";
-import { Context } from "./context";
+import { pierce } from "./piercing";
 import { Component } from "./component";
-import { VNodeData } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
-import { Replicable, Membrane } from "./membrane";
+import { Replicable } from "./membrane";
 
 import { TargetSlot } from './membrane';
 import {
@@ -67,7 +65,7 @@ const RootDescriptors: PropertyDescriptorMap = create(null);
 // to ShadowRoot prototype to polyfill AOM capabilities.
 forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => RootDescriptors[propName] = createAccessibilityDescriptorForShadowRoot(propName, getAttrNameFromPropName(propName), GlobalAOMProperties[propName]));
 
-export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): HTMLElement | null {
+export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string): Element | null {
     const vm = getCustomElementVM(shadowRoot);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -75,9 +73,7 @@ export function shadowRootQuerySelector(shadowRoot: ShadowRoot, selector: string
     }
 
     const elm = getLinkedElement(shadowRoot);
-    pierce(vm, elm);
-    const piercedQuerySelector = piercingHook(vm.membrane as Membrane, elm, 'querySelector', elm.querySelector);
-    return piercedQuerySelector.call(elm, selector);
+    return getFirstMatch(vm, elm, selector);
 }
 
 export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: string): HTMLElement[] {
@@ -86,9 +82,7 @@ export function shadowRootQuerySelectorAll(shadowRoot: ShadowRoot, selector: str
         assert.isFalse(isBeingConstructed(vm), `this.root.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
     const elm = getLinkedElement(shadowRoot);
-    pierce(vm, elm);
-    const piercedQuerySelectorAll = piercingHook(vm.membrane as Membrane, elm, 'querySelectorAll', elm.querySelectorAll);
-    return piercedQuerySelectorAll.call(elm, selector);
+    return getAllMatches(vm, elm, selector);
 }
 
 export class Root implements ShadowRoot {
@@ -112,14 +106,14 @@ export class Root implements ShadowRoot {
         throw new Error();
     }
     querySelector(selector: string): HTMLElement | null {
-        const node = shadowRootQuerySelector(this, selector);
+        const node = shadowRootQuerySelector(this as ShadowRoot, selector);
         if (process.env.NODE_ENV !== 'production') {
-            const component = getCustomElementComponent(this);
+            const component = getCustomElementComponent(this as ShadowRoot);
             if (isNull(node) && component.querySelector(selector)) {
                 assert.logWarning(`this.root.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
             }
         }
-        return node;
+        return node as HTMLElement;
     }
     querySelectorAll(selector: string): HTMLElement[] {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
@@ -138,21 +132,42 @@ export class Root implements ShadowRoot {
 }
 defineProperties(Root.prototype, RootDescriptors);
 
-function getFirstMatch(vm: VM, elm: Element, selector: string): Node | null {
+function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
     const nodeList = querySelectorAll.call(elm, selector);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return pierce(vm, nodeList[i]);
+            return pierce(nodeList[i]);
         }
     }
     return null;
 }
 
-function getAllMatches(vm: VM, elm: Element, selector: string): NodeList {
+function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
     const nodeList = querySelectorAll.call(elm, selector);
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
-    return pierce(vm , filteredNodes);
+    return pierce(filteredNodes);
+}
+
+function getElementOwnerVM(elm: Element): VM | undefined {
+    if (!(elm instanceof Node)) {
+        return;
+    }
+    let node: Node | null = elm;
+    let ownerKey;
+    // search for the first element with owner identity (just in case of manually inserted elements)
+    while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
+        node = node.parentNode;
+    }
+    if (isUndefined(ownerKey) || isNull(node)) {
+        return;
+    }
+    let vm: VM | undefined;
+    // search for a custom element with a VM that owns the first element with owner identity attached to it
+    while (!isNull(node) && (isUndefined(vm = node[ViewModelReflection]) || (vm as VM).uid !== ownerKey)) {
+        node = node.parentNode;
+    }
+    return isNull(node) ? undefined : vm;
 }
 
 function isParentNodeKeyword(key: PropertyKey): boolean {
@@ -213,35 +228,39 @@ export function wrapIframeWindow(win: Window) {
 
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
-    piercing(component: Component, data: VNodeData, def: ComponentDef, context: Context, target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
-        const vm: VM = component[ViewModelReflection];
-        const { elm } = vm;
+    piercing(target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
         if (value) {
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
             if (value === querySelector) {
-                // TODO: it is possible that they invoke the querySelector() function via call or apply to set a new context, what should
-                // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): Node | null => getFirstMatch(vm, target as Element, selector));
+                return callback((selector: string): Node | null => {
+                    const vm = getElementOwnerVM(target as Element);
+                    return isUndefined(vm) ? null : getFirstMatch(vm, target as Element, selector);
+                });
             }
             if (value === querySelectorAll) {
-                // TODO: it is possible that they invoke the querySelectorAll() function via call or apply to set a new context, what should
-                // we do in that case? Right now this is essentially a bound function, but the original is not.
-                return callback((selector: string): NodeList => getAllMatches(vm, target as Element, selector));
+                return callback((selector: string): Element[] => {
+                    const vm = getElementOwnerVM(target as Element);
+                    return isUndefined(vm) ? [] : getAllMatches(vm, target as Element, selector);
+                });
             }
             if (isParentNodeKeyword(key)) {
-                if (value === elm) {
+                const vm = getElementOwnerVM(target as Element);
+                if (!isUndefined(vm) && value === vm.elm) {
                     // walking up via parent chain might end up in the shadow root element
-                    return callback(component.root);
-                } else if (target[OwnerKey] !== value[OwnerKey]) {
+                    return callback((vm.component as Component).root);
+                } else if (target instanceof Element && value instanceof Element && target[OwnerKey] !== value[OwnerKey]) {
                     // cutting out access to something outside of the shadow of the current target (usually slots)
-                    return callback();
+                    return callback(); // TODO: this should probably be `null`
                 }
             }
-            if (value === elm) {
-                // prevent access to the original Host element
-                return callback(component);
+            if (value instanceof HTMLElement) {
+                const vm = value[ViewModelReflection];
+                if (!isUndefined(vm) && value === vm.elm) {
+                    // prevent access to the original Host element
+                    return callback(vm.component);
+                }
             }
         }
     }

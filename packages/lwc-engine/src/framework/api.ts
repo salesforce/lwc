@@ -8,6 +8,7 @@ import { ComponentConstructor, markComponentAsDirty } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getCustomElementVM } from "./html-element";
+import { pierce } from "./piercing";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -358,8 +359,8 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        // TODO: only if the event is `composed` it can be dispatched
-        invokeComponentCallback(vm, fn, [event]);
+        const e = pierce(event);
+        invokeComponentCallback(vm, fn, [e]);
     };
 }
 

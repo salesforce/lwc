@@ -182,7 +182,7 @@ function handleComponentEvent(vm: VM, event: Event) {
             uninterrupted = false;
             stopImmediatePropagation.call(event);
         };
-        const e = pierce(vm, event);
+        const e = pierce(event);
         for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
             invokeComponentCallback(vm, handlers[i], [e]);
         }

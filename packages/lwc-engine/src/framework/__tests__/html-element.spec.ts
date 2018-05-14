@@ -294,7 +294,7 @@ describe('html-element', () => {
         it('should pierce dispatch event', function() {
             let callCount = 0;
             register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
+                piercing: (target, key, value, callback) => {
                     if (value === EventTarget.prototype.dispatchEvent) {
                         callCount += 1;
                     }
@@ -324,7 +324,7 @@ describe('html-element', () => {
                 count += 1;
             };
             register({
-                piercing: (component, data, def, context, target, key, value, callback) => {
+                piercing: (target, key, value, callback) => {
                     if (value === EventTarget.prototype.dispatchEvent) {
                         callback(pierced);
                     }
