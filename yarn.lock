@@ -638,6 +638,136 @@
     chalk "~2.3.0"
     is-ci "^1.0.10"
 
+"@commitlint/cli@^6.2.0":
+  version "6.2.0"
+  resolved "http://npm.lwcjs.org/@commitlint/cli/-/cli-6.2.0/b2f8190eb08ccd78eea65114b864f3c65eca466a.tgz#b2f8190eb08ccd78eea65114b864f3c65eca466a"
+  dependencies:
+    "@commitlint/format" "^6.1.3"
+    "@commitlint/lint" "^6.2.0"
+    "@commitlint/load" "^6.1.3"
+    "@commitlint/read" "^6.1.3"
+    babel-polyfill "6.26.0"
+    chalk "2.3.1"
+    get-stdin "5.0.1"
+    lodash.merge "4.6.1"
+    lodash.pick "4.4.0"
+    meow "4.0.0"
+
+"@commitlint/config-conventional@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/config-conventional/-/config-conventional-6.1.3/6c06eeae04c5ac789c3618df4d52aeda89ffb810.tgz#6c06eeae04c5ac789c3618df4d52aeda89ffb810"
+
+"@commitlint/ensure@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/ensure/-/ensure-6.1.3/813b58c9fdfae15351b72fe646a162ebdb71ea2a.tgz#813b58c9fdfae15351b72fe646a162ebdb71ea2a"
+  dependencies:
+    lodash.camelcase "4.3.0"
+    lodash.kebabcase "4.1.1"
+    lodash.snakecase "4.1.1"
+    lodash.startcase "4.4.0"
+    lodash.upperfirst "4.3.1"
+
+"@commitlint/execute-rule@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/execute-rule/-/execute-rule-6.1.3/48928e736ef15e8710d332a15c7c899555e4e10b.tgz#48928e736ef15e8710d332a15c7c899555e4e10b"
+  dependencies:
+    babel-runtime "6.26.0"
+
+"@commitlint/format@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/format/-/format-6.1.3/414b9048a9af54587da96222717ba332347abde3.tgz#414b9048a9af54587da96222717ba332347abde3"
+  dependencies:
+    babel-runtime "^6.23.0"
+    chalk "^2.0.1"
+
+"@commitlint/is-ignored@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/is-ignored/-/is-ignored-6.1.3/89c9b964a4d6228875a579c2bf552d003734b7e8.tgz#89c9b964a4d6228875a579c2bf552d003734b7e8"
+  dependencies:
+    semver "5.5.0"
+
+"@commitlint/lint@^6.2.0":
+  version "6.2.0"
+  resolved "http://npm.lwcjs.org/@commitlint/lint/-/lint-6.2.0/d78f219745b77362e1b814d5f4cec2ecc3266619.tgz#d78f219745b77362e1b814d5f4cec2ecc3266619"
+  dependencies:
+    "@commitlint/is-ignored" "^6.1.3"
+    "@commitlint/parse" "^6.1.3"
+    "@commitlint/rules" "^6.2.0"
+    babel-runtime "^6.23.0"
+    lodash.topairs "4.3.0"
+
+"@commitlint/load@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/load/-/load-6.1.3/1be40711397958f316cf40577a9c879a16f00a54.tgz#1be40711397958f316cf40577a9c879a16f00a54"
+  dependencies:
+    "@commitlint/execute-rule" "^6.1.3"
+    "@commitlint/resolve-extends" "^6.1.3"
+    babel-runtime "^6.23.0"
+    cosmiconfig "^4.0.0"
+    lodash.merge "4.6.1"
+    lodash.mergewith "4.6.1"
+    lodash.pick "4.4.0"
+    lodash.topairs "4.3.0"
+    resolve-from "4.0.0"
+
+"@commitlint/message@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/message/-/message-6.1.3/5e0473330c887016010c4c56270723b8001145d2.tgz#5e0473330c887016010c4c56270723b8001145d2"
+
+"@commitlint/parse@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/parse/-/parse-6.1.3/ff1e4d92c27cd676812bb6b9d76cd8853c0d9407.tgz#ff1e4d92c27cd676812bb6b9d76cd8853c0d9407"
+  dependencies:
+    conventional-changelog-angular "^1.3.3"
+    conventional-commits-parser "^2.1.0"
+
+"@commitlint/read@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/read/-/read-6.1.3/9f9d8db50fbf67f3000921657ed6efadb8cf9f1a.tgz#9f9d8db50fbf67f3000921657ed6efadb8cf9f1a"
+  dependencies:
+    "@commitlint/top-level" "^6.1.3"
+    "@marionebl/sander" "^0.6.0"
+    babel-runtime "^6.23.0"
+    git-raw-commits "^1.3.0"
+
+"@commitlint/resolve-extends@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/resolve-extends/-/resolve-extends-6.1.3/f45fcfe43860e05e38f3d94d54caed7ddaa41e25.tgz#f45fcfe43860e05e38f3d94d54caed7ddaa41e25"
+  dependencies:
+    babel-runtime "6.26.0"
+    lodash.merge "4.6.1"
+    lodash.omit "4.5.0"
+    require-uncached "^1.0.3"
+    resolve-from "^4.0.0"
+    resolve-global "^0.1.0"
+
+"@commitlint/rules@^6.2.0":
+  version "6.2.0"
+  resolved "http://npm.lwcjs.org/@commitlint/rules/-/rules-6.2.0/9391f65a16552822048d45a33ab6ce374686e06b.tgz#9391f65a16552822048d45a33ab6ce374686e06b"
+  dependencies:
+    "@commitlint/ensure" "^6.1.3"
+    "@commitlint/message" "^6.1.3"
+    "@commitlint/to-lines" "^6.1.3"
+    babel-runtime "^6.23.0"
+
+"@commitlint/to-lines@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/to-lines/-/to-lines-6.1.3/7ab16a02caed8daa47e959269b96164610a29d0c.tgz#7ab16a02caed8daa47e959269b96164610a29d0c"
+
+"@commitlint/top-level@^6.1.3":
+  version "6.1.3"
+  resolved "http://npm.lwcjs.org/@commitlint/top-level/-/top-level-6.1.3/126dcb6de1676342c69cd42261483f4478547299.tgz#126dcb6de1676342c69cd42261483f4478547299"
+  dependencies:
+    find-up "^2.1.0"
+
+"@marionebl/sander@^0.6.0":
+  version "0.6.1"
+  resolved "http://npm.lwcjs.org/@marionebl/sander/-/sander-0.6.1/1958965874f24bc51be48875feb50d642fc41f7b.tgz#1958965874f24bc51be48875feb50d642fc41f7b"
+  dependencies:
+    graceful-fs "^4.1.3"
+    mkdirp "^0.5.1"
+    rimraf "^2.5.2"
+
 "@octokit/rest@^14.0.9":
   version "14.0.9"
   resolved "http://npm.lwcjs.org/@octokit/rest/-/rest-14.0.9/d5e0a00dcb78901dd7b2ef852acfc0aea7c479ef.tgz#d5e0a00dcb78901dd7b2ef852acfc0aea7c479ef"
@@ -1697,6 +1827,14 @@ babel-plugin-transform-undefined-to-void@^6.10.0-alpha.caaefb4c, babel-plugin-tr
   version "6.10.0-alpha.f95869d4"
   resolved "http://npm.lwcjs.org/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.10.0-alpha.f95869d4/175a1a3090e616403f8c819cdcea1aecb66523b2.tgz#175a1a3090e616403f8c819cdcea1aecb66523b2"
 
+babel-polyfill@6.26.0:
+  version "6.26.0"
+  resolved "http://npm.lwcjs.org/babel-polyfill/-/babel-polyfill-6.26.0/379937abc67d7895970adc621f284cd966cf2153.tgz#379937abc67d7895970adc621f284cd966cf2153"
+  dependencies:
+    babel-runtime "^6.26.0"
+    core-js "^2.5.0"
+    regenerator-runtime "^0.10.5"
+
 babel-preset-compat@0.18.2:
   version "0.18.2"
   resolved "http://npm.lwcjs.org/babel-preset-compat/-/babel-preset-compat-0.18.2/1a61d73aa2c2c616bbb88d391eaf9bee2c4b3fcf.tgz#1a61d73aa2c2c616bbb88d391eaf9bee2c4b3fcf"
@@ -2321,6 +2459,14 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
+chalk@2.3.1, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.1, chalk@~2.3.0:
+  version "2.3.1"
+  resolved "http://npm.lwcjs.org/chalk/-/chalk-2.3.1/523fe2678aec7b04e8041909292fe8b17059b796.tgz#523fe2678aec7b04e8041909292fe8b17059b796"
+  dependencies:
+    ansi-styles "^3.2.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^5.2.0"
+
 chalk@^2.0.0:
   version "2.3.2"
   resolved "http://npm.lwcjs.org/chalk/-/chalk-2.3.2/250dc96b07491bfd601e648d66ddf5f60c7a5c65.tgz#250dc96b07491bfd601e648d66ddf5f60c7a5c65"
@@ -2328,14 +2474,6 @@ chalk@^2.0.0:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
-
-chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.1, chalk@~2.3.0:
-  version "2.3.1"
-  resolved "http://npm.lwcjs.org/chalk/-/chalk-2.3.1/523fe2678aec7b04e8041909292fe8b17059b796.tgz#523fe2678aec7b04e8041909292fe8b17059b796"
-  dependencies:
-    ansi-styles "^3.2.0"
-    escape-string-regexp "^1.0.5"
-    supports-color "^5.2.0"
 
 chardet@^0.4.0:
   version "0.4.2"
@@ -2504,10 +2642,6 @@ colors@1.0.3:
   version "1.0.3"
   resolved "http://npm.lwcjs.org/colors/-/colors-1.0.3/0433f44d809680fdeb60ed260f1b0c262e82a40b.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
 
-colors@~0.6.0-1:
-  version "0.6.2"
-  resolved "http://npm.lwcjs.org/colors/-/colors-0.6.2/2423fe6678ac0c5dae8852e5d0e5be08c997abcc.tgz#2423fe6678ac0c5dae8852e5d0e5be08c997abcc"
-
 colors@~1.1.2:
   version "1.1.2"
   resolved "http://npm.lwcjs.org/colors/-/colors-1.1.2/168a4701756b6a7f51a12ce0c97bfa28c084ed63.tgz#168a4701756b6a7f51a12ce0c97bfa28c084ed63"
@@ -2544,10 +2678,6 @@ commander@^2.12.1:
 commander@^2.9.0:
   version "2.15.1"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.15.1/df46e867d0fc2aec66a34662b406a9ccafff5b0f.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
-
-commander@~2.1.0:
-  version "2.1.0"
-  resolved "http://npm.lwcjs.org/commander/-/commander-2.1.0/d121bbae860d9992a3d517ba96f56588e47c6781.tgz#d121bbae860d9992a3d517ba96f56588e47c6781"
 
 comment-parser@^0.5.0:
   version "0.5.0"
@@ -2666,7 +2796,7 @@ content-type@~1.0.4:
   version "1.0.4"
   resolved "http://npm.lwcjs.org/content-type/-/content-type-1.0.4/e138cc75e040c727b1966fe5e5f8c9aee256fe3b.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
 
-conventional-changelog-angular@^1.6.6:
+conventional-changelog-angular@^1.3.3, conventional-changelog-angular@^1.6.6:
   version "1.6.6"
   resolved "http://npm.lwcjs.org/conventional-changelog-angular/-/conventional-changelog-angular-1.6.6/b27f2b315c16d0a1f23eb181309d0e6a4698ea0f.tgz#b27f2b315c16d0a1f23eb181309d0e6a4698ea0f"
   dependencies:
@@ -2796,6 +2926,18 @@ conventional-commits-filter@^1.1.1, conventional-commits-filter@^1.1.5:
     is-subset "^0.1.1"
     modify-values "^1.0.0"
 
+conventional-commits-parser@^2.1.0:
+  version "2.1.7"
+  resolved "http://npm.lwcjs.org/conventional-commits-parser/-/conventional-commits-parser-2.1.7/eca45ed6140d72ba9722ee4132674d639e644e8e.tgz#eca45ed6140d72ba9722ee4132674d639e644e8e"
+  dependencies:
+    JSONStream "^1.0.4"
+    is-text-path "^1.0.0"
+    lodash "^4.2.1"
+    meow "^4.0.0"
+    split2 "^2.0.0"
+    through2 "^2.0.0"
+    trim-off-newlines "^1.0.0"
+
 conventional-commits-parser@^2.1.1, conventional-commits-parser@^2.1.5:
   version "2.1.5"
   resolved "http://npm.lwcjs.org/conventional-commits-parser/-/conventional-commits-parser-2.1.5/9ac3a4ab221c0c3c9e9dd2c09ae01e6d1e1dabe0.tgz#9ac3a4ab221c0c3c9e9dd2c09ae01e6d1e1dabe0"
@@ -2847,6 +2989,15 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
 corser@~2.0.0:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/corser/-/corser-2.0.1/8eda252ecaab5840dcd975ceb90d9370c819ff87.tgz#8eda252ecaab5840dcd975ceb90d9370c819ff87"
+
+cosmiconfig@^4.0.0:
+  version "4.0.0"
+  resolved "http://npm.lwcjs.org/cosmiconfig/-/cosmiconfig-4.0.0/760391549580bbd2df1e562bc177b13c290972dc.tgz#760391549580bbd2df1e562bc177b13c290972dc"
+  dependencies:
+    is-directory "^0.3.1"
+    js-yaml "^3.9.0"
+    parse-json "^4.0.0"
+    require-from-string "^2.0.1"
 
 cpx@^1.5.0:
   version "1.5.0"
@@ -3787,6 +3938,18 @@ execa@^0.8.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
+execa@^0.9.0:
+  version "0.9.0"
+  resolved "http://npm.lwcjs.org/execa/-/execa-0.9.0/adb7ce62cf985071f60580deb4a88b9e34712d01.tgz#adb7ce62cf985071f60580deb4a88b9e34712d01"
+  dependencies:
+    cross-spawn "^5.0.1"
+    get-stream "^3.0.0"
+    is-stream "^1.1.0"
+    npm-run-path "^2.0.0"
+    p-finally "^1.0.0"
+    signal-exit "^3.0.0"
+    strip-eof "^1.0.0"
+
 exit-hook@^1.0.0:
   version "1.1.1"
   resolved "http://npm.lwcjs.org/exit-hook/-/exit-hook-1.1.1/f05ca233b48c05d54fff07765df8507e95c02ff8.tgz#f05ca233b48c05d54fff07765df8507e95c02ff8"
@@ -4053,10 +4216,6 @@ find-node-modules@1.0.4:
     findup-sync "0.4.2"
     merge "^1.2.0"
 
-find-parent-dir@^0.3.0:
-  version "0.3.0"
-  resolved "http://npm.lwcjs.org/find-parent-dir/-/find-parent-dir-0.3.0/33c44b429ab2b2f0646299c5f9f718f376ff8d54.tgz#33c44b429ab2b2f0646299c5f9f718f376ff8d54"
-
 find-root@1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/find-root/-/find-root-1.0.0/962ff211aab25c6520feeeb8d6287f8f6e95807a.tgz#962ff211aab25c6520feeeb8d6287f8f6e95807a"
@@ -4082,13 +4241,6 @@ findup-sync@0.4.2:
     is-glob "^2.0.1"
     micromatch "^2.3.7"
     resolve-dir "^0.1.0"
-
-findup@0.1.5:
-  version "0.1.5"
-  resolved "http://npm.lwcjs.org/findup/-/findup-0.1.5/8ad929a3393bac627957a7e5de4623b06b0e2ceb.tgz#8ad929a3393bac627957a7e5de4623b06b0e2ceb"
-  dependencies:
-    colors "~0.6.0-1"
-    commander "~2.1.0"
 
 flat-cache@^1.2.1:
   version "1.3.0"
@@ -4274,6 +4426,10 @@ get-port@^3.2.0:
   version "3.2.0"
   resolved "http://npm.lwcjs.org/get-port/-/get-port-3.2.0/dd7ce7de187c06c8bf353796ac71e099f0980ebc.tgz#dd7ce7de187c06c8bf353796ac71e099f0980ebc"
 
+get-stdin@5.0.1:
+  version "5.0.1"
+  resolved "http://npm.lwcjs.org/get-stdin/-/get-stdin-5.0.1/122e161591e21ff4c52530305693f20e6393a398.tgz#122e161591e21ff4c52530305693f20e6393a398"
+
 get-stdin@^4.0.1:
   version "4.0.1"
   resolved "http://npm.lwcjs.org/get-stdin/-/get-stdin-4.0.1/b968c6b0a04384324902e8bf1a5df32579a450fe.tgz#b968c6b0a04384324902e8bf1a5df32579a450fe"
@@ -4370,6 +4526,12 @@ glob@7.1.2, glob@^7.0.0, glob@^7.0.3, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glo
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
+global-dirs@^0.1.0:
+  version "0.1.1"
+  resolved "http://npm.lwcjs.org/global-dirs/-/global-dirs-0.1.1/b319c0dd4607f353f3be9cca4c72fc148c49f445.tgz#b319c0dd4607f353f3be9cca4c72fc148c49f445"
+  dependencies:
+    ini "^1.3.4"
+
 global-modules@^0.2.3:
   version "0.2.3"
   resolved "http://npm.lwcjs.org/global-modules/-/global-modules-0.2.3/ea5a3bed42c6d6ce995a4f8a1269b5dae223828d.tgz#ea5a3bed42c6d6ce995a4f8a1269b5dae223828d"
@@ -4454,7 +4616,7 @@ got@^6.7.1:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
+graceful-fs@^4.1.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.3, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "http://npm.lwcjs.org/graceful-fs/-/graceful-fs-4.1.11/0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -4735,13 +4897,19 @@ humanize-duration@~3.12.0:
   version "3.12.1"
   resolved "http://npm.lwcjs.org/humanize-duration/-/humanize-duration-3.12.1/e9a531519d001ee600b6400fc353fed4fa3b235f.tgz#e9a531519d001ee600b6400fc353fed4fa3b235f"
 
-husky@^0.14.3:
-  version "0.14.3"
-  resolved "http://npm.lwcjs.org/husky/-/husky-0.14.3/c69ed74e2d2779769a17ba8399b54ce0b63c12c3.tgz#c69ed74e2d2779769a17ba8399b54ce0b63c12c3"
+husky@^1.0.0-rc.4:
+  version "1.0.0-rc.4"
+  resolved "http://npm.lwcjs.org/husky/-/husky-1.0.0-rc.4/3f37031bd3ee0140addfb356c5339790126487eb.tgz#3f37031bd3ee0140addfb356c5339790126487eb"
   dependencies:
-    is-ci "^1.0.10"
-    normalize-path "^1.0.0"
-    strip-indent "^2.0.0"
+    cosmiconfig "^4.0.0"
+    execa "^0.9.0"
+    find-up "^2.1.0"
+    is-ci "^1.1.0"
+    pkg-dir "^2.0.0"
+    pupa "^1.0.0"
+    read-pkg "^3.0.0"
+    run-node "^1.0.0"
+    slash "^2.0.0"
 
 iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
   version "0.4.19"
@@ -4913,7 +5081,7 @@ is-callable@^1.1.1, is-callable@^1.1.3:
   version "1.1.3"
   resolved "http://npm.lwcjs.org/is-callable/-/is-callable-1.1.3/86eb75392805ddc33af71c92a0eedf74ee7604b2.tgz#86eb75392805ddc33af71c92a0eedf74ee7604b2"
 
-is-ci@^1.0.10:
+is-ci@^1.0.10, is-ci@^1.1.0:
   version "1.1.0"
   resolved "http://npm.lwcjs.org/is-ci/-/is-ci-1.1.0/247e4162e7860cebbdaf30b774d6b0ac7dcfe7a5.tgz#247e4162e7860cebbdaf30b774d6b0ac7dcfe7a5"
   dependencies:
@@ -4950,6 +5118,10 @@ is-descriptor@^1.0.0, is-descriptor@^1.0.2:
     is-accessor-descriptor "^1.0.0"
     is-data-descriptor "^1.0.0"
     kind-of "^6.0.2"
+
+is-directory@^0.3.1:
+  version "0.3.1"
+  resolved "http://npm.lwcjs.org/is-directory/-/is-directory-0.3.1/61339b6f2475fc772fd9c9d83f5c8575dc154ae1.tgz#61339b6f2475fc772fd9c9d83f5c8575dc154ae1"
 
 is-dotfile@^1.0.0:
   version "1.0.3"
@@ -5522,6 +5694,13 @@ js-yaml@^3.7.0, js-yaml@^3.9.1:
     argparse "^1.0.7"
     esprima "^4.0.0"
 
+js-yaml@^3.9.0:
+  version "3.11.0"
+  resolved "http://npm.lwcjs.org/js-yaml/-/js-yaml-3.11.0/597c1a8bd57152f26d622ce4117851a51f5ebaef.tgz#597c1a8bd57152f26d622ce4117851a51f5ebaef"
+  dependencies:
+    argparse "^1.0.7"
+    esprima "^4.0.0"
+
 js-yaml@~3.7.0:
   version "3.7.0"
   resolved "http://npm.lwcjs.org/js-yaml/-/js-yaml-3.7.0/5c967ddd837a9bfdca5f2de84253abe8a1c03b80.tgz#5c967ddd837a9bfdca5f2de84253abe8a1c03b80"
@@ -5857,6 +6036,10 @@ lodash._reinterpolate@~3.0.0:
   version "3.0.0"
   resolved "http://npm.lwcjs.org/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0/0ccf2d89166af03b3663c796538b75ac6e114d9d.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
 
+lodash.camelcase@4.3.0:
+  version "4.3.0"
+  resolved "http://npm.lwcjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0/b28aa6288a2b9fc651035c7711f65ab6190331a6.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
+
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "http://npm.lwcjs.org/lodash.includes/-/lodash.includes-4.3.0/60bb98a87cb923c68ca1e51325483314849f553f.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
@@ -5881,6 +6064,10 @@ lodash.isstring@^4.0.1:
   version "4.0.1"
   resolved "http://npm.lwcjs.org/lodash.isstring/-/lodash.isstring-4.0.1/d527dfb5456eca7cc9bb95d5daeaf88ba54a5451.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
 
+lodash.kebabcase@4.1.1:
+  version "4.1.1"
+  resolved "http://npm.lwcjs.org/lodash.kebabcase/-/lodash.kebabcase-4.1.1/8489b1cb0d29ff88195cceca448ff6d6cc295c36.tgz#8489b1cb0d29ff88195cceca448ff6d6cc295c36"
+
 lodash.map@^4.5.1:
   version "4.6.0"
   resolved "http://npm.lwcjs.org/lodash.map/-/lodash.map-4.6.0/771ec7839e3473d9c4cde28b19394c3562f4f6d3.tgz#771ec7839e3473d9c4cde28b19394c3562f4f6d3"
@@ -5889,9 +6076,29 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "http://npm.lwcjs.org/lodash.memoize/-/lodash.memoize-4.1.2/bcc6c49a42a2840ed997f323eada5ecd182e0bfe.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
 
+lodash.merge@4.6.1:
+  version "4.6.1"
+  resolved "http://npm.lwcjs.org/lodash.merge/-/lodash.merge-4.6.1/adc25d9cb99b9391c59624f379fbba60d7111d54.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
+
+lodash.mergewith@4.6.1:
+  version "4.6.1"
+  resolved "http://npm.lwcjs.org/lodash.mergewith/-/lodash.mergewith-4.6.1/639057e726c3afbdb3e7d42741caa8d6e4335927.tgz#639057e726c3afbdb3e7d42741caa8d6e4335927"
+
+lodash.omit@4.5.0:
+  version "4.5.0"
+  resolved "http://npm.lwcjs.org/lodash.omit/-/lodash.omit-4.5.0/6eb19ae5a1ee1dd9df0b969e66ce0b7fa30b5e60.tgz#6eb19ae5a1ee1dd9df0b969e66ce0b7fa30b5e60"
+
 lodash.once@^4.0.0:
   version "4.1.1"
   resolved "http://npm.lwcjs.org/lodash.once/-/lodash.once-4.1.1/0dd3971213c7c56df880977d504c88fb471a97ac.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
+
+lodash.pick@4.4.0:
+  version "4.4.0"
+  resolved "http://npm.lwcjs.org/lodash.pick/-/lodash.pick-4.4.0/52f05610fff9ded422611441ed1fc123a03001b3.tgz#52f05610fff9ded422611441ed1fc123a03001b3"
+
+lodash.snakecase@4.1.1:
+  version "4.1.1"
+  resolved "http://npm.lwcjs.org/lodash.snakecase/-/lodash.snakecase-4.1.1/39d714a35357147837aefd64b5dcbb16becd8f8d.tgz#39d714a35357147837aefd64b5dcbb16becd8f8d"
 
 lodash.some@^4.6.0:
   version "4.6.0"
@@ -5900,6 +6107,10 @@ lodash.some@^4.6.0:
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "http://npm.lwcjs.org/lodash.sortby/-/lodash.sortby-4.7.0/edd14c824e2cc9c1e0b0a1b42bb5210516a42438.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
+
+lodash.startcase@4.4.0:
+  version "4.4.0"
+  resolved "http://npm.lwcjs.org/lodash.startcase/-/lodash.startcase-4.4.0/9436e34ed26093ed7ffae1936144350915d9add8.tgz#9436e34ed26093ed7ffae1936144350915d9add8"
 
 lodash.template@^4.0.2:
   version "4.4.0"
@@ -5914,9 +6125,17 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "~3.0.0"
 
+lodash.topairs@4.3.0:
+  version "4.3.0"
+  resolved "http://npm.lwcjs.org/lodash.topairs/-/lodash.topairs-4.3.0/3b6deaa37d60fb116713c46c5f17ea190ec48d64.tgz#3b6deaa37d60fb116713c46c5f17ea190ec48d64"
+
 lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "http://npm.lwcjs.org/lodash.uniq/-/lodash.uniq-4.5.0/d0225373aeb652adc1bc82e4945339a842754773.tgz#d0225373aeb652adc1bc82e4945339a842754773"
+
+lodash.upperfirst@4.3.1:
+  version "4.3.1"
+  resolved "http://npm.lwcjs.org/lodash.upperfirst/-/lodash.upperfirst-4.3.1/1365edf431480481ef0d1c68957a5ed99d49f7ce.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce"
 
 lodash@4.17.2:
   version "4.17.2"
@@ -6051,6 +6270,20 @@ memory-fs@^0.4.0, memory-fs@~0.4.1:
     errno "^0.1.3"
     readable-stream "^2.0.1"
 
+meow@4.0.0, meow@^4.0.0:
+  version "4.0.0"
+  resolved "http://npm.lwcjs.org/meow/-/meow-4.0.0/fd5855dd008db5b92c552082db1c307cba20b29d.tgz#fd5855dd008db5b92c552082db1c307cba20b29d"
+  dependencies:
+    camelcase-keys "^4.0.0"
+    decamelize-keys "^1.0.0"
+    loud-rejection "^1.0.0"
+    minimist "^1.1.3"
+    minimist-options "^3.0.1"
+    normalize-package-data "^2.3.4"
+    read-pkg-up "^3.0.0"
+    redent "^2.0.0"
+    trim-newlines "^2.0.0"
+
 meow@^3.3.0:
   version "3.7.0"
   resolved "http://npm.lwcjs.org/meow/-/meow-3.7.0/72cb668b425228290abbfa856892587308a801fb.tgz#72cb668b425228290abbfa856892587308a801fb"
@@ -6065,20 +6298,6 @@ meow@^3.3.0:
     read-pkg-up "^1.0.1"
     redent "^1.0.0"
     trim-newlines "^1.0.0"
-
-meow@^4.0.0:
-  version "4.0.0"
-  resolved "http://npm.lwcjs.org/meow/-/meow-4.0.0/fd5855dd008db5b92c552082db1c307cba20b29d.tgz#fd5855dd008db5b92c552082db1c307cba20b29d"
-  dependencies:
-    camelcase-keys "^4.0.0"
-    decamelize-keys "^1.0.0"
-    loud-rejection "^1.0.0"
-    minimist "^1.1.3"
-    minimist-options "^3.0.1"
-    normalize-package-data "^2.3.4"
-    read-pkg-up "^3.0.0"
-    redent "^2.0.0"
-    trim-newlines "^2.0.0"
 
 merge-descriptors@1.0.1:
   version "1.0.1"
@@ -6397,10 +6616,6 @@ normalize-package-data@^2.3.0, normalize-package-data@^2.3.2, normalize-package-
     is-builtin-module "^1.0.0"
     semver "2 || 3 || 4 || 5"
     validate-npm-package-license "^3.0.1"
-
-normalize-path@^1.0.0:
-  version "1.0.0"
-  resolved "http://npm.lwcjs.org/normalize-path/-/normalize-path-1.0.0/32d0e472f91ff345701c15a8311018d3b0a90379.tgz#32d0e472f91ff345701c15a8311018d3b0a90379"
 
 normalize-path@^2.0.0, normalize-path@^2.0.1:
   version "2.1.1"
@@ -7142,6 +7357,10 @@ punycode@^2.1.0:
   version "2.1.0"
   resolved "http://npm.lwcjs.org/punycode/-/punycode-2.1.0/5f863edc89b96db09074bad7947bf09056ca4e7d.tgz#5f863edc89b96db09074bad7947bf09056ca4e7d"
 
+pupa@^1.0.0:
+  version "1.0.0"
+  resolved "http://npm.lwcjs.org/pupa/-/pupa-1.0.0/9a9568a5af7e657b8462a6e9d5328743560ceff6.tgz#9a9568a5af7e657b8462a6e9d5328743560ceff6"
+
 puppeteer@0.13.0:
   version "0.13.0"
   resolved "http://npm.lwcjs.org/puppeteer/-/puppeteer-0.13.0/2e6956205f2c640964c2107f620ae1eef8bde8fd.tgz#2e6956205f2c640964c2107f620ae1eef8bde8fd"
@@ -7371,6 +7590,10 @@ regenerate@^1.2.1, regenerate@^1.3.3:
   version "1.3.3"
   resolved "http://npm.lwcjs.org/regenerate/-/regenerate-1.3.3/0c336d3980553d755c39b586ae3b20aa49c82b7f.tgz#0c336d3980553d755c39b586ae3b20aa49c82b7f"
 
+regenerator-runtime@^0.10.5:
+  version "0.10.5"
+  resolved "http://npm.lwcjs.org/regenerator-runtime/-/regenerator-runtime-0.10.5/336c3efc1220adcedda2c9fab67b5a7955a33658.tgz#336c3efc1220adcedda2c9fab67b5a7955a33658"
+
 regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "http://npm.lwcjs.org/regenerator-runtime/-/regenerator-runtime-0.11.1/be05ad7f9bf7d22e056f9726cee5017fbf19e2e9.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
@@ -7569,6 +7792,10 @@ require-directory@^2.1.1:
   version "2.1.1"
   resolved "http://npm.lwcjs.org/require-directory/-/require-directory-2.1.1/8c64ad5fd30dab1c976e2344ffe7f792a6a6df42.tgz#8c64ad5fd30dab1c976e2344ffe7f792a6a6df42"
 
+require-from-string@^2.0.1:
+  version "2.0.2"
+  resolved "http://npm.lwcjs.org/require-from-string/-/require-from-string-2.0.2/89a7fdd938261267318eafe14f9c32e598c36909.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
+
 require-main-filename@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/require-main-filename/-/require-main-filename-1.0.1/97f717b69d48784f5f526a6c5aa8ffdda055a4d1.tgz#97f717b69d48784f5f526a6c5aa8ffdda055a4d1"
@@ -7601,6 +7828,10 @@ resolve-dir@^0.1.0:
     expand-tilde "^1.2.2"
     global-modules "^0.2.3"
 
+resolve-from@4.0.0, resolve-from@^4.0.0:
+  version "4.0.0"
+  resolved "http://npm.lwcjs.org/resolve-from/-/resolve-from-4.0.0/4abcd852ad32dd7baabfe9b40e00a36db5f392e6.tgz#4abcd852ad32dd7baabfe9b40e00a36db5f392e6"
+
 resolve-from@^1.0.0:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/resolve-from/-/resolve-from-1.0.1/26cbfe935d1aeeeabb29bc3fe5aeb01e93d44226.tgz#26cbfe935d1aeeeabb29bc3fe5aeb01e93d44226"
@@ -7608,6 +7839,12 @@ resolve-from@^1.0.0:
 resolve-from@^3.0.0:
   version "3.0.0"
   resolved "http://npm.lwcjs.org/resolve-from/-/resolve-from-3.0.0/b22c7af7d9d6881bc8b6e653335eebcb0a188748.tgz#b22c7af7d9d6881bc8b6e653335eebcb0a188748"
+
+resolve-global@^0.1.0:
+  version "0.1.0"
+  resolved "http://npm.lwcjs.org/resolve-global/-/resolve-global-0.1.0/8fb02cfd5b7db20118e886311f15af95bd15fbd9.tgz#8fb02cfd5b7db20118e886311f15af95bd15fbd9"
+  dependencies:
+    global-dirs "^0.1.0"
 
 resolve-url@^0.2.1, resolve-url@~0.2.1:
   version "0.2.1"
@@ -7655,7 +7892,7 @@ right-pad@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/right-pad/-/right-pad-1.0.1/8ca08c2cbb5b55e74dafa96bf7fd1a27d568c8d0.tgz#8ca08c2cbb5b55e74dafa96bf7fd1a27d568c8d0"
 
-rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@~2.6.2:
+rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.5.2, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@~2.6.2:
   version "2.6.2"
   resolved "http://npm.lwcjs.org/rimraf/-/rimraf-2.6.2/2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36.tgz#2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36"
   dependencies:
@@ -7753,6 +7990,10 @@ run-async@^2.2.0:
   dependencies:
     is-promise "^2.1.0"
 
+run-node@^1.0.0:
+  version "1.0.0"
+  resolved "http://npm.lwcjs.org/run-node/-/run-node-1.0.0/46b50b946a2aa2d4947ae1d886e9856fd9cabe5e.tgz#46b50b946a2aa2d4947ae1d886e9856fd9cabe5e"
+
 rx-lite-aggregates@^4.0.8:
   version "4.0.8"
   resolved "http://npm.lwcjs.org/rx-lite-aggregates/-/rx-lite-aggregates-4.0.8/753b87a89a11c95467c4ac1626c4efc4e05c67be.tgz#753b87a89a11c95467c4ac1626c4efc4e05c67be"
@@ -7831,11 +8072,7 @@ selenium-standalone@^6.13.0:
     which "^1.2.12"
     yauzl "^2.5.0"
 
-semver-regex@1.0.0:
-  version "1.0.0"
-  resolved "http://npm.lwcjs.org/semver-regex/-/semver-regex-1.0.0/92a4969065f9c70c694753d55248fc68f8f652c9.tgz#92a4969065f9c70c694753d55248fc68f8f652c9"
-
-"semver@2 || 3 || 4 || 5", semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0:
+"semver@2 || 3 || 4 || 5", semver@5.5.0, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0:
   version "5.5.0"
   resolved "http://npm.lwcjs.org/semver/-/semver-5.5.0/dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
@@ -7965,6 +8202,10 @@ simple-git@~1.92.0:
 slash@^1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/slash/-/slash-1.0.0/c41f2f6c39fc16d1cd17ad4b5d896114ae470d55.tgz#c41f2f6c39fc16d1cd17ad4b5d896114ae470d55"
+
+slash@^2.0.0:
+  version "2.0.0"
+  resolved "http://npm.lwcjs.org/slash/-/slash-2.0.0/de552851a1759df3a8f206535442f5ec4ddeab44.tgz#de552851a1759df3a8f206535442f5ec4ddeab44"
 
 slice-ansi@1.0.0:
   version "1.0.0"
@@ -8864,15 +9105,6 @@ uuid@^2.0.1:
 uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0:
   version "3.2.1"
   resolved "http://npm.lwcjs.org/uuid/-/uuid-3.2.1/12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14.tgz#12c528bb9d58d0b9265d9a2f6f0fe8be17ff1f14"
-
-validate-commit-msg@^2.14.0:
-  version "2.14.0"
-  resolved "http://npm.lwcjs.org/validate-commit-msg/-/validate-commit-msg-2.14.0/e5383691012cbb270dcc0bc2a4effebe14890eac.tgz#e5383691012cbb270dcc0bc2a4effebe14890eac"
-  dependencies:
-    conventional-commit-types "^2.0.0"
-    find-parent-dir "^0.3.0"
-    findup "0.1.5"
-    semver-regex "1.0.0"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
