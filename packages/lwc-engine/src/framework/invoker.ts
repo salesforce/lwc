@@ -29,6 +29,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     let error;
     try {
         // TODO: membrane proxy for all args that are objects
+        // TODO: RJ Need to wrap component with secureComponent
         result = fn.apply(component, args);
     } catch (e) {
         error = Object(e);
