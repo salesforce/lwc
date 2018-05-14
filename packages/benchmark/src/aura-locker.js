@@ -8808,11 +8808,13 @@ SecureLWCElementGenerator.proxyHandler = function(key) {
               target.constructor.publicProps &&
               Object.keys(target.constructor.publicProps).indexOf(property) !== -1
             ) {
+                // temp bypass
               ret = target[property];
             } else if (
               target.constructor.track &&
               Object.keys(target.constructor.track).indexOf(property) !== -1
             ) {
+                // temp bypass
               ret = target[property];
             } else {
               ret = target[property];
@@ -8826,11 +8828,13 @@ SecureLWCElementGenerator.proxyHandler = function(key) {
           target.constructor.publicProps &&
           Object.keys(target.constructor.publicProps).indexOf(property) !== -1
         ) {
+            // temp bypass
           target[property] = value;
         } else if (
           target.constructor.track &&
           Object.keys(target.constructor.track).indexOf(property) !== -1
         ) {
+            // temp bypass
           target[property] = value;
         } else {
           target[property] = value;
