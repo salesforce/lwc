@@ -93,6 +93,12 @@ export interface ComposableEvent extends Event {
     composed: boolean;
 }
 
+interface ComponentHooks {
+    callHook: VM["callHook"];
+    setHook: VM["setHook"];
+    getHook: VM["getHook"];
+}
+
 // This should be as performant as possible, while any initialization should be done lazily
 function LWCElement(this: Component) {
     if (isNull(vmBeingConstructed)) {
@@ -107,12 +113,10 @@ function LWCElement(this: Component) {
     const component = this;
     vm.component = component;
     // interaction hooks
+    // We are intentionally hiding this argument from the formal API of LWCElement because
+    // we don't want folks to know about it just yet.
     if (arguments.length === 1) {
-        const { callHook, setHook, getHook } = arguments[0] as {
-            callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
-            setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
-            getHook: (cmp: Component, prop: PropertyKey) => any;
-        };
+        const { callHook, setHook, getHook } = arguments[0] as ComponentHooks;
         vm.callHook = callHook;
         vm.setHook = setHook;
         vm.getHook = getHook;

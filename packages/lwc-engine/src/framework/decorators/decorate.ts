@@ -12,15 +12,15 @@ export default function decorate(Ctor: any, decorators: DecoratorMap): any {
     // intentionally allowing decoration of classes only for now
     const target = Ctor.prototype;
     for (let i = 0, len = props.length; i < len; i += 1) {
-        const prop = props[i];
-        const decorator = decorators[prop];
+        const propName = props[i];
+        const decorator = decorators[propName];
         if (!isFunction(decorator)) {
             throw new TypeError();
         }
-        const originalDescriptor = getOwnPropertyDescriptor(target, prop);
-        const descriptor = decorator(Ctor, prop, originalDescriptor);
+        const originalDescriptor = getOwnPropertyDescriptor(target, propName);
+        const descriptor = decorator(Ctor, propName, originalDescriptor);
         if (!isUndefined(descriptor)) {
-            defineProperty(target, prop, descriptor);
+            defineProperty(target, propName, descriptor);
         }
     }
     return Ctor; // chaining
