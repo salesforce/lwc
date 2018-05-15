@@ -14,11 +14,11 @@
   "dependencies": {
     "glob": "^7.1.2",
     "lwc-module-resolver": "0.20.2",
-    "rollup-plugin-compat": "0.18.2",
+    "rollup-plugin-compat": "0.18.3",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
-    "lwc-compiler": "0.18.x",
-    "lwc-engine": "0.18.x"
+    "lwc-compiler": "0.20.x",
+    "lwc-engine": "0.20.x"
   }
 }
