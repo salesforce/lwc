@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber } from "./language";
-import { vmBeingRendered, invokeComponentCallback } from "./invoker";
+import { vmBeingRendered, invokeEventListener } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
 import { registerComponent } from "./def";
@@ -360,7 +360,7 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
         const e = pierce(event);
-        invokeComponentCallback(vm, fn, [e]);
+        invokeEventListener(vm, fn, [e]);
     };
 }
 

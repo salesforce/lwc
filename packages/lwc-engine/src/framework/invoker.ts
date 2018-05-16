@@ -12,6 +12,30 @@ import { startMeasure, endMeasure } from "./performance-timing";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
+export let vmEventListener: VM|null = null;
+
+export function invokeEventListener(vm: VM, fn: (...args: any[]) => any, args?: any[]): void {
+    const { context, component } = vm;
+    const ctx = currentContext;
+    establishContext(context);
+    let error;
+    const vmEventListenerInception = vmEventListener;
+    vmEventListener = vm;
+    try {
+        // TODO: membrane proxy for all args that are objects
+        fn.apply(component, args);
+    } catch (e) {
+        error = Object(e);
+    } finally {
+        establishContext(ctx);
+        vmEventListener = vmEventListenerInception;
+        if (error) {
+            error.wcStack = getComponentStack(vm);
+            // rethrowing the original error annotated after restoring the context
+            throw error; // tslint:disable-line
+        }
+    }
+}
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
     const { context, component } = vm;
