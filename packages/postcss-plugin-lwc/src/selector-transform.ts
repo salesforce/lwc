@@ -17,7 +17,8 @@ import {
     PostCSSRuleNode,
 } from 'postcss-selector-parser';
 
-import { validateConfig, PluginConfig } from './config';
+import validateSelectors from './selector-validate';
+import { PluginConfig } from './config';
 import {
     isCustomElement,
     findNode,
@@ -27,8 +28,6 @@ import {
 
 const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
-
-const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 
 function hostPlaceholder() {
     return tag({ value: HOST_SELECTOR_PLACEHOLDER });
@@ -58,35 +57,6 @@ function hostByIsAttribute({ tagName }: PluginConfig) {
         attribute: `is="${tagName}"`,
         value: undefined,
         raws: {},
-    });
-}
-
-/** Throw error on deprecated attributes */
-function errorOnDeprecatedSelectors(root: Root) {
-    root.walk(node => {
-        const { value, sourceIndex } = node;
-
-        if (value) {
-            if (DEPRECATED_SELECTORS.has(value)) {
-                throw root.error(
-                    `Invalid usage of deprecated ${value} selector`,
-                    {
-                        index: sourceIndex,
-                        word: value,
-                    },
-                );
-            }
-
-            if (value === '::slotted') {
-                throw root.error(
-                    `::slotted pseudo-element selector is not supported`,
-                    {
-                        index: sourceIndex,
-                        word: value,
-                    },
-                );
-            }
-        }
     });
 }
 
@@ -280,7 +250,7 @@ function replaceHostPlaceholder(selector: Selector, config: PluginConfig) {
 /** Returns selector processor based on the passed config */
 function selectorProcessor(config: PluginConfig) {
     return parser(root => {
-        errorOnDeprecatedSelectors(root);
+        validateSelectors(root);
 
         root.each((selector: Selector) => scopeSelector(selector, config));
 
@@ -295,10 +265,10 @@ function selectorProcessor(config: PluginConfig) {
     }) as Processor;
 }
 
-export default function transform(
+export default function transformSelector(
     selector: string | PostCSSRuleNode,
     config: PluginConfig,
 ): string {
-    validateConfig(config);
-    return selectorProcessor(config).processSync(selector);
+    const processor = selectorProcessor(config);
+    return processor.processSync(selector);
 }
