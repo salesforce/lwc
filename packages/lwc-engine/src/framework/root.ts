@@ -256,7 +256,7 @@ register({
             }
             if (value instanceof HTMLElement) {
                 const vm = value[ViewModelReflection];
-                if (vmEventListener && vm === vmEventListener && value === vmEventListener.elm) {
+                if (!isNull(vmEventListener) && vm === vmEventListener && value === vmEventListener.elm) {
                     // prevent access to the original Host element
                     return callback(vm.component);
                 }
