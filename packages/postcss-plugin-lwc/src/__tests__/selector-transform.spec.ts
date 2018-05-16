@@ -188,7 +188,7 @@ describe('deprecated', () => {
     it('throws on deprecated /deep/ selector', () => {
         return expect(process(':host /deep/ a {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /Invalid usage of deprecated \/deep\/ selector/,
+                /Invalid usage of deprecated selector "\/deep\/"/,
             ),
             file: FILE_NAME,
             line: 1,
@@ -199,7 +199,7 @@ describe('deprecated', () => {
     it('throws on deprecated ::shadow pseudo-element selector', () => {
         return expect(process(':host::shadow a {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /Invalid usage of deprecated ::shadow selector/,
+                /Invalid usage of deprecated selector "::shadow"/,
             ),
             file: FILE_NAME,
             line: 1,
@@ -210,7 +210,18 @@ describe('deprecated', () => {
     it('throws on unsupported ::slotted pseudo-element selector', () => {
         return expect(process('::slotted a {}')).rejects.toMatchObject({
             message: expect.stringMatching(
-                /::slotted pseudo-element selector is not supported/,
+                /Invalid usage of unsupported selector "::slotted"/,
+            ),
+            file: FILE_NAME,
+            line: 1,
+            column: 1,
+        });
+    });
+
+    it('throws on unsupported ::slotted pseudo-element selector', () => {
+        return expect(process(':root {}')).rejects.toMatchObject({
+            message: expect.stringMatching(
+                /Invalid usage of unsupported selector ":root"/,
             ),
             file: FILE_NAME,
             line: 1,

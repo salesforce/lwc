@@ -29,6 +29,7 @@ const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
 const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
+const UNSOPPORTED_SELECTORS = new Set(['::slotted', ':root']);
 
 function hostPlaceholder() {
     return tag({ value: HOST_SELECTOR_PLACEHOLDER });
@@ -61,15 +62,15 @@ function hostByIsAttribute({ tagName }: PluginConfig) {
     });
 }
 
-/** Throw error on deprecated attributes */
-function errorOnDeprecatedSelectors(root: Root) {
+/** Ensure proper usage of selectors */
+function validateSelectors(root: Root) {
     root.walk(node => {
         const { value, sourceIndex } = node;
 
         if (value) {
             if (DEPRECATED_SELECTORS.has(value)) {
                 throw root.error(
-                    `Invalid usage of deprecated ${value} selector`,
+                    `Invalid usage of deprecated selector "${value}".`,
                     {
                         index: sourceIndex,
                         word: value,
@@ -77,9 +78,9 @@ function errorOnDeprecatedSelectors(root: Root) {
                 );
             }
 
-            if (value === '::slotted') {
+            if (UNSOPPORTED_SELECTORS.has(value)) {
                 throw root.error(
-                    `::slotted pseudo-element selector is not supported`,
+                    `Invalid usage of unsupported selector "${value}".`,
                     {
                         index: sourceIndex,
                         word: value,
@@ -280,7 +281,7 @@ function replaceHostPlaceholder(selector: Selector, config: PluginConfig) {
 /** Returns selector processor based on the passed config */
 function selectorProcessor(config: PluginConfig) {
     return parser(root => {
-        errorOnDeprecatedSelectors(root);
+        validateSelectors(root);
 
         root.each((selector: Selector) => scopeSelector(selector, config));
 
