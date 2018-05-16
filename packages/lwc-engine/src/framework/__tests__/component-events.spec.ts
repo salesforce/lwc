@@ -1,6 +1,7 @@
 import { Element } from "../html-element";
 import { createElement } from "./../upgrade";
 import { ViewModelReflection } from "../def";
+import { unwrap } from "../membrane";
 
 describe('Events on Custom Elements', () => {
     let elm, vnode0;
@@ -104,8 +105,8 @@ describe('Events on Custom Elements', () => {
     });
 
     it('should not expose the host element via event.target', function() {
-        let event: Event;
-        function clicked(e: Event) { event = e; }
+        let target: any;
+        function clicked(e: Event) { target = e.target; }
         class Foo extends Element {
             constructor() {
                 super();
@@ -114,8 +115,8 @@ describe('Events on Custom Elements', () => {
         }
         elm = createElement('x-foo', { is: Foo });
         elm.click();
-        expect(event);
-        expect(event.target).toBe(elm[ViewModelReflection].component);
+        expect(target);
+        expect(target).toBe(elm[ViewModelReflection].component);
     });
 
     it('should add event listeners in constructor when created via createElement', function() {
@@ -251,6 +252,130 @@ describe('Events on Custom Elements', () => {
         document.body.appendChild(elm);
         elm.run();
         expect(count).toBe(1);
+    });
+
+    it('should have correct current target when added via template', () => {
+        expect.assertions(2);
+        let childCmp;
+        class Child extends Element {
+            constructor() {
+                super();
+                childCmp = this;
+            }
+        }
+
+        function html($api, $cmp) {
+            return [
+                $api.c('current-target-child', Child, {
+                    on: {
+                        click: $api.b($cmp.onclick)
+                    }
+                })
+            ];
+        }
+
+        class Parent extends Element {
+            onclick(evt) {
+                expect(evt.currentTarget).not.toBe(childCmp);
+                expect(evt.currentTarget).toBe(this.root.querySelector('current-target-child'));
+            }
+            clickChild() {
+                this.root.querySelector('current-target-child').click();
+            }
+            render() {
+                return html;
+            }
+        }
+
+        Parent.publicMethods = ['clickChild'];
+
+        const elm = createElement('x-current-target-parent-foo', { is: Parent });
+        document.body.appendChild(elm);
+        elm.clickChild();
+    });
+
+    it('should have correct target when added via template', () => {
+        expect.assertions(2);
+        let childCmp;
+        class Child extends Element {
+            constructor() {
+                super();
+                childCmp = this;
+            }
+        }
+
+        function html($api, $cmp) {
+            return [
+                $api.c('current-target-child', Child, {
+                    on: {
+                        click: $api.b($cmp.onclick)
+                    }
+                })
+            ];
+        }
+
+        class Parent extends Element {
+            onclick(evt) {
+                expect(evt.target).not.toBe(childCmp);
+                expect(evt.target).toBe(this.root.querySelector('current-target-child'));
+            }
+            clickChild() {
+                this.root.querySelector('current-target-child').click();
+            }
+            render() {
+                return html;
+            }
+        }
+
+        Parent.publicMethods = ['clickChild'];
+
+        const elm = createElement('x-current-target-parent-foo', { is: Parent });
+        document.body.appendChild(elm);
+        elm.clickChild();
+    });
+
+    it('should have correct currentTarget when event bubbles', () => {
+        expect.assertions(3);
+        let childCmp;
+        class Child extends Element {
+            constructor() {
+                super();
+                childCmp = this;
+            }
+        }
+
+        function html($api, $cmp) {
+            return [
+                $api.h('div', {
+                    key: 0,
+                }, [
+                    $api.c('current-target-child', Child, {})
+                ])
+            ];
+        }
+
+        class Parent extends Element {
+            addChildListener() {
+                this.root.querySelector('div').addEventListener('click', (evt) => {
+                    expect(evt.target).not.toBe(childCmp);
+                    expect(unwrap(evt.currentTarget)).toBe(unwrap(this.root.querySelector('div')));
+                    expect(unwrap(evt.target)).toBe(unwrap(this.root.querySelector('current-target-child')));
+                });
+            }
+            clickChild() {
+                this.root.querySelector('current-target-child').click();
+            }
+            render() {
+                return html;
+            }
+        }
+
+        Parent.publicMethods = ['addChildListener', 'clickChild'];
+
+        const elm = createElement('x-current-target-parent-foo', { is: Parent });
+        document.body.appendChild(elm);
+        elm.addChildListener();
+        elm.clickChild();
     });
 
 });
