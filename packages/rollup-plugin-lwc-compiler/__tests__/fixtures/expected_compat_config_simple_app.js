@@ -25,9 +25,9 @@
 
         if (__inKey(descriptor, "value")) __setKey(descriptor, "writable", true);
         Object.compatDefineProperty(
-            target,
-            __getKey(descriptor, "key"),
-            descriptor
+          target,
+          __getKey(descriptor, "key"),
+          descriptor
         );
       }
     }
@@ -85,10 +85,11 @@
 
     var style = undefined;
 
-    var style$2 = undefined;
+    var style$1 = undefined;
 
     var __getKey$2 = Proxy.getKey;
     var __setKey$2 = Proxy.setKey;
+    var __callKey1 = Proxy.callKey1;
     function tmpl($api, $cmp, $slotset, $ctx) {
       var api_dynamic = __getKey$2($api, "d"),
         api_element = __getKey$2($api, "h");
@@ -104,13 +105,18 @@
       ];
     }
 
-    if (style$2) {
-      var tagName = "x-foo";
-      var token = "x-foo_foo";
+    if (style$1) {
+      __setKey$2(tmpl, "token", "x-foo_foo");
 
-      __setKey$2(tmpl, "token", token);
+      var style$2 = __callKey1(document, "createElement", "style");
 
-      __setKey$2(tmpl, "style", style$2(tagName, token));
+      __setKey$2(style$2, "type", "text/css");
+
+      __setKey$2(__getKey$2(style$2, "dataset"), "token", "x-foo_foo");
+
+      __setKey$2(style$2, "textContent", style$1("x-foo", "x-foo_foo"));
+
+      __callKey1(__getKey$2(document, "head"), "appendChild", style$2);
     }
 
     var __setKey$3 = Proxy.setKey;
@@ -180,6 +186,7 @@
 
     var __getKey$4 = Proxy.getKey;
     var __setKey$4 = Proxy.setKey;
+    var __callKey1$1 = Proxy.callKey1;
     function tmpl$1($api, $cmp, $slotset, $ctx) {
       var api_custom_element = __getKey$4($api, "c"),
         api_element = __getKey$4($api, "h");
@@ -206,15 +213,20 @@
     }
 
     if (style) {
-      var tagName$1 = "x-app";
-      var token$1 = "x-app_app";
+      __setKey$4(tmpl$1, "token", "x-app_app");
 
-      __setKey$4(tmpl$1, "token", token$1);
+      var style$3 = __callKey1$1(document, "createElement", "style");
 
-      __setKey$4(tmpl$1, "style", style(tagName$1, token$1));
+      __setKey$4(style$3, "type", "text/css");
+
+      __setKey$4(__getKey$4(style$3, "dataset"), "token", "x-app_app");
+
+      __setKey$4(style$3, "textContent", style("x-app", "x-app_app"));
+
+      __callKey1$1(__getKey$4(document, "head"), "appendChild", style$3);
     }
 
-    var __callKey1 = Proxy.callKey1;
+    var __callKey1$2 = Proxy.callKey1;
     var __getKey$5 = Proxy.getKey;
     var __setKey$5 = Proxy.setKey;
 
@@ -230,7 +242,7 @@
 
           _this = _possibleConstructorReturn(
             this,
-            __callKey1(
+            __callKey1$2(
               __getKey$5(App, "__proto__") || Object.getPrototypeOf(App),
               "call",
               this
@@ -254,13 +266,13 @@
         return App;
       })(engine.Element);
 
-    var __callKey1$1 = Proxy.callKey1;
+    var __callKey1$3 = Proxy.callKey1;
 
-    var container = __callKey1$1(document, "getElementById", "main");
+    var container = __callKey1$3(document, "getElementById", "main");
 
     var element = engine.createElement("x-app", {
       is: App
     });
 
-    __callKey1$1(container, "appendChild", element);
+    __callKey1$3(container, "appendChild", element);
   })(engine);

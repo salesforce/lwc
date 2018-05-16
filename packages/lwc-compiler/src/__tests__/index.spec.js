@@ -102,7 +102,7 @@ describe('transform', () => {
         `;
 
         const expected = `
-            import style from './foo.css'
+            import stylesheet from './foo.css'
 
             export default function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
@@ -115,11 +115,14 @@ describe('transform', () => {
                 }, [api_text("Hello")])];
             }
 
-            if (style) {
-                const tagName = 'x-foo';
-                const token = 'x-foo_foo';
-                tmpl.token = token;
-                tmpl.style = style(tagName, token);
+            if (stylesheet) {
+                tmpl.token = 'x-foo_foo';
+
+                const style = document.createElement('style');
+                style.type = 'text/css';
+                style.dataset.token = 'x-foo_foo'
+                style.textContent = stylesheet('x-foo', 'x-foo_foo');
+                document.head.appendChild(style);
             }
         `;
 

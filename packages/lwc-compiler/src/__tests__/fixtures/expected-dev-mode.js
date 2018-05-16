@@ -13,10 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-class_and_template';
-    const token = 'x-class_and_template_class_and_template';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-class_and_template_class_and_template';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-class_and_template_class_and_template';
+    style$$1.textContent = style('x-class_and_template', 'x-class_and_template_class_and_template');
+    document.head.appendChild(style$$1);
 }
 
 const Test = 1;
