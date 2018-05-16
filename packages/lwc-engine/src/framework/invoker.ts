@@ -14,7 +14,7 @@ export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
 export let vmEventListener: VM|null = null;
 
-export function invokeEventListener(vm: VM, fn: (...args: any[]) => any, args?: any[]): void {
+export function invokeEventListener(vm: VM, fn: EventListener, event: Event): void {
     const { context, component } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -23,7 +23,7 @@ export function invokeEventListener(vm: VM, fn: (...args: any[]) => any, args?: 
     vmEventListener = vm;
     try {
         // TODO: membrane proxy for all args that are objects
-        fn.apply(component, args);
+        fn.call(component, event);
     } catch (e) {
         error = Object(e);
     } finally {

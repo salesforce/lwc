@@ -184,7 +184,7 @@ function handleComponentEvent(vm: VM, event: Event) {
         };
         const e = pierce(event);
         for (let i = 0, len = handlers.length; uninterrupted && i < len; i += 1) {
-            invokeEventListener(vm, handlers[i], [e]);
+            invokeEventListener(vm, handlers[i], e);
         }
         // restoring original methods
         event.stopImmediatePropagation = stopImmediatePropagation;

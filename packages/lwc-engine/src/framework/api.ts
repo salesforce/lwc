@@ -360,7 +360,7 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
         const e = pierce(event);
-        invokeEventListener(vm, fn, [e]);
+        invokeEventListener(vm, fn, e);
     };
 }
 
