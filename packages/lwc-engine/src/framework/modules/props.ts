@@ -1,9 +1,16 @@
 import assert from "../assert";
-import { isUndefined, keys, StringToLowerCase } from "../language";
+import { isUndefined, keys, StringToLowerCase, create, preventExtensions } from "../language";
 import { EmptyObject, getAttrNameFromPropName } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { ViewModelReflection } from "../def";
+
+// This is the hash table with the fixed list of each PropertyKey that can have live values.
+// Note: this const is locked down, so engines can probably improve the `in` operation used below
+const LiveProps = preventExtensions(create(null, {
+    value: { writable: false, configurable: false },
+    checked: { writable: false, configurable: false }
+}));
 
 function update(oldVnode: VNode, vnode: VNode) {
     const props = vnode.data.props;
@@ -37,9 +44,11 @@ function update(oldVnode: VNode, vnode: VNode) {
             }
         }
 
-        if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
+        // checked and value properties are considered especial, and even if the old tracked value is equal to the new tracked value
+        // we still check against the element's corresponding value to be sure.
+        if (((key in LiveProps && elm[key] !== cur) || old !== cur) && key in elm) {
             if (process.env.NODE_ENV !== 'production') {
-                if (elm[key] === cur && old !== undefined) {
+                if (!(key in LiveProps) && elm[key] === cur && old !== undefined) {
                     console.warn(`Unnecessary update of property "${key}" in element <${StringToLowerCase.call(elm.tagName)}>.`); // tslint:disable-line
                 }
             }
