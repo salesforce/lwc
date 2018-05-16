@@ -8,7 +8,7 @@ import { pierce } from "./piercing";
 import { Component } from "./component";
 import { getCustomElementVM } from "./html-element";
 import { Replicable, TargetSlot } from "./membrane";
-import { vmEventListener } from "./invoker";
+import { vmBeingTargeted } from "./invoker";
 import {
     querySelector,
     querySelectorAll,
@@ -256,7 +256,7 @@ register({
             }
             if (value instanceof HTMLElement) {
                 const vm = value[ViewModelReflection];
-                if (!isNull(vmEventListener) && vm === vmEventListener && value === vmEventListener.elm) {
+                if (!isNull(vmBeingTargeted) && vm === vmBeingTargeted && value === vmBeingTargeted.elm) {
                     // prevent access to the original Host element
                     return callback(vm.component);
                 }

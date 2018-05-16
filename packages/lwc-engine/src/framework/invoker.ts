@@ -12,15 +12,15 @@ import { startMeasure, endMeasure } from "./performance-timing";
 
 export let isRendering: boolean = false;
 export let vmBeingRendered: VM|null = null;
-export let vmEventListener: VM|null = null;
+export let vmBeingTargeted: VM|null = null;
 
 export function invokeEventListener(vm: VM, fn: EventListener, event: Event): void {
     const { context, component } = vm;
     const ctx = currentContext;
     establishContext(context);
     let error;
-    const vmEventListenerInception = vmEventListener;
-    vmEventListener = vm;
+    const vmBeingTargetedInception = vmBeingTargeted;
+    vmBeingTargeted = vm;
     try {
         // TODO: membrane proxy for all args that are objects
         fn.call(component, event);
@@ -28,7 +28,7 @@ export function invokeEventListener(vm: VM, fn: EventListener, event: Event): vo
         error = Object(e);
     } finally {
         establishContext(ctx);
-        vmEventListener = vmEventListenerInception;
+        vmBeingTargeted = vmBeingTargetedInception;
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context
