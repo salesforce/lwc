@@ -29,7 +29,7 @@ function attachStyleToTemplate(src, { moduleName, moduleNamespace, filename }) {
         `    style.type = 'text/css';`,
         `    style.dataset.token = '${scopingToken}'`,
         `    style.textContent = stylesheet('${tagName}', '${scopingToken}');`,
-        `    document.head.appendChild(style)`,
+        `    document.head.appendChild(style);`,
         `}`,
     ].join('\n');
 }
