@@ -125,32 +125,49 @@ function customElementSelector(selectors: Root) {
  * Add scoping attributes to all the matching selectors:
  *   h1 -> h1[x-foo_tmpl]
  *   p a -> p[x-foo_tmpl] a[x-foo_tmpl]
- *
- * The scoping attribute should only get applied to the last selector of the
- * chain: h1.active -> h1.active[x-foo_tmpl]. We need to keep track of the next selector
- * candidate and add the scoping attribute before starting a new selector chain.
  */
 function scopeSelector(selector: Selector, config: PluginConfig) {
-    let candidate: Node | undefined;
+    const compoundSelectors: Node[][] = [[]];
 
+    // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
+    // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
     selector.each(node => {
-        const isScopableSelector =
-            !isPseudoElement(node) &&
-            !isCombinator(node) &&
-            !isHostPseudoClass(node) &&
-            !isHostContextPseudoClass(node);
-
-        const isSelectorChainEnd = isCombinator(node) || node === selector.last;
-
-        if (isScopableSelector) {
-            candidate = node;
-        }
-
-        if (candidate && isSelectorChainEnd) {
-            selector.insertAfter(candidate, scopeAttribute(config));
-            candidate = undefined;
+        if (isCombinator(node)) {
+            compoundSelectors.push([]);
+        } else {
+            const current = compoundSelectors[compoundSelectors.length - 1];
+            current.push(node);
         }
     });
+
+    for (const compoundSelector of compoundSelectors) {
+        // Complex selectors containing :host or :host-content have a special treatment and should
+        // not be scoped like the rest of the complex selectors
+        const shouldScopeCompoundSelector = compoundSelector.every(node => {
+            return !isHostPseudoClass(node) && !isHostContextPseudoClass(node);
+        });
+
+        if (shouldScopeCompoundSelector) {
+            let nodeToScope: Node | undefined;
+
+            // In each compound selector we need to locate the last selector to scope.
+            for (const node of compoundSelector) {
+                if (!isPseudoElement(node)) {
+                    nodeToScope = node;
+                }
+            }
+
+            const scopeAttributeNode = scopeAttribute(config);
+            if (nodeToScope) {
+                // Add the scoping attribute right after the node scope
+                selector.insertAfter(nodeToScope, scopeAttributeNode);
+            } else {
+                // Add the scoping token in the first position of the compound selector as a fallback
+                // when there is no node to scope. For example: ::after {}
+                selector.insertBefore(compoundSelector[0], scopeAttributeNode);
+            }
+        }
+    }
 }
 
 /**
