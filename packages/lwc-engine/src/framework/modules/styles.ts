@@ -5,17 +5,15 @@ import {
     StringCharCodeAt,
 } from '../language';
 import { EmptyObject } from '../utils';
-import { VNode, Module } from "../../3rdparty/snabbdom/types";
+import { VNode, Module, VNodeStyle } from "../../3rdparty/snabbdom/types";
 import { removeAttribute } from '../dom';
 
-const DashCharCode = 45;
-
 function updateStyle(oldVnode: VNode, vnode: VNode) {
-    const { data: { style: newStyle } } = vnode;
+    const { style: newStyle } = vnode.data;
     if (isUndefined(newStyle)) {
         return;
     }
-    let { data: { style: oldStyle } } = oldVnode;
+    let { style: oldStyle } = oldVnode.data;
     if (oldStyle === newStyle) {
         return;
     }
@@ -27,13 +25,13 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
     let name: string;
     const elm = (vnode.elm as HTMLElement);
     const { style } = elm;
-    if (isUndefined(newStyle) || newStyle as any === '') {
+    if (isUndefined(newStyle) || newStyle === '') {
         removeAttribute.call(elm, 'style');
     } else if (isString(newStyle)) {
         style.cssText = newStyle;
     } else {
         if (!isUndefined(oldStyle)) {
-            for (name in oldStyle) {
+            for (name in oldStyle as VNodeStyle) {
                 if (!(name in newStyle)) {
                     style.removeProperty(name);
                 }
@@ -44,14 +42,8 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
 
         for (name in newStyle) {
             const cur = newStyle[name];
-            if (cur !== (oldStyle as any)[name]) {
-                if (StringCharCodeAt.call(name, 0) === DashCharCode && StringCharCodeAt.call(name, 1) === DashCharCode) {
-                    // if the name is prefixed with --, it will be considered a variable, and setProperty() is needed
-                    style.setProperty(name, cur);
-                } else {
-                    // @ts-ignore
-                    style[name] = cur;
-                }
+            if (cur !== (oldStyle as VNodeStyle)[name]) {
+                style.setProperty(name, cur);
             }
         }
     }

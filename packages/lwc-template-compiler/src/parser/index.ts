@@ -29,7 +29,7 @@ import {
 } from './expression';
 
 import {
-    parseStyle,
+    parseStyleText,
     parseClassNames,
 } from './style';
 
@@ -266,7 +266,7 @@ export default function parse(source: string, state: State): {
             if (styleAttribute.type === IRAttributeType.Expression) {
                 element.style = styleAttribute.value;
             } else if (styleAttribute.type === IRAttributeType.String) {
-                element.styleMap = parseStyle(styleAttribute.value);
+                element.styleMap = parseStyleText(styleAttribute.value);
             }
         }
     }

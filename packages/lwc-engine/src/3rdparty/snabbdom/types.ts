@@ -76,7 +76,7 @@ export interface VNodeData {
   props?: Props;
   attrs?: Attrs;
   class?: Classes;
-  style?: VNodeStyle;
+  style?: VNodeStyle | string;
 //   dataset?: Dataset;
   on?: On;
 //   hero?: Hero;
