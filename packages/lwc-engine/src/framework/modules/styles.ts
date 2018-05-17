@@ -2,7 +2,6 @@ import assert from "../assert";
 import {
     isString,
     isUndefined,
-    StringCharCodeAt,
 } from '../language';
 import { EmptyObject } from '../utils';
 import { VNode, Module, VNodeStyle } from "../../3rdparty/snabbdom/types";
