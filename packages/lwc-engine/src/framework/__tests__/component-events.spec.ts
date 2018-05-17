@@ -277,7 +277,7 @@ describe('Events on Custom Elements', () => {
         class Parent extends Element {
             onclick(evt) {
                 expect(evt.currentTarget).not.toBe(childCmp);
-                expect(evt.currentTarget).toBe(this.root.querySelector('current-target-child'));
+                expect(evt.currentTarget).toBe(unwrap(this.root.querySelector('current-target-child')));
             }
             clickChild() {
                 this.root.querySelector('current-target-child').click();
@@ -317,7 +317,7 @@ describe('Events on Custom Elements', () => {
         class Parent extends Element {
             onclick(evt) {
                 expect(evt.target).not.toBe(childCmp);
-                expect(evt.target).toBe(this.root.querySelector('current-target-child'));
+                expect(evt.target).toBe(unwrap(this.root.querySelector('current-target-child')));
             }
             clickChild() {
                 this.root.querySelector('current-target-child').click();
