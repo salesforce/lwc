@@ -1,12 +1,12 @@
 import assert from "./assert";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty } from "./language";
-import { vmBeingRendered, invokeComponentCallback } from "./invoker";
+import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
+import { ComponentConstructor, markComponentAsDirty } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { patchShadowDomEvent } from "./events";
+import { patchShadowDomEvent, isValidEventForCustomElement } from "./events";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -362,11 +362,10 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
-        if (!isValidEvent(event)) {
-            return;
+        if (isValidEventForCustomElement(event)) {
+            patchShadowDomEvent(event);
+            invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, fn, vm.component, event);
         }
-        patchShadowDomEvent(event);
-        invokeComponentCallback(vm, fn, [event]);
     };
 }
 
