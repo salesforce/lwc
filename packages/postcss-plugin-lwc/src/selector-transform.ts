@@ -141,7 +141,7 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
     });
 
     for (const compoundSelector of compoundSelectors) {
-        // Complex selectors containing :host or :host-content have a special treatment and should
+        // Compound selectors containing :host or :host-context have a special treatment and should
         // not be scoped like the rest of the complex selectors
         const shouldScopeCompoundSelector = compoundSelector.every(node => {
             return !isHostPseudoClass(node) && !isHostContextPseudoClass(node);
