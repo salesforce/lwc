@@ -1,9 +1,34 @@
 import assert from "../assert";
-import { isUndefined, keys, StringToLowerCase } from "../language";
+import { isUndefined, keys, StringToLowerCase, preventExtensions, create } from "../language";
 import { EmptyObject, getAttrNameFromPropName } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { ViewModelReflection } from "../def";
+
+const EspecialTagAndPropMap = preventExtensions(create(null, {
+    input: {
+        writable: false,
+        configurable: false,
+        value: preventExtensions(create(null, {
+            value: { writable: false, configurable: false },
+            checked: { writable: false, configurable: false },
+        })),
+    },
+    textarea: {
+        writable: false,
+        configurable: false,
+        value: preventExtensions(create(null, {
+            value: { writable: false, configurable: false },
+        })),
+    },
+    select: {
+        writable: false,
+        configurable: false,
+        value: preventExtensions(create(null, {
+            value: { writable: false, configurable: false },
+        })),
+    },
+}));
 
 function update(oldVnode: VNode, vnode: VNode) {
     const props = vnode.data.props;
@@ -37,12 +62,16 @@ function update(oldVnode: VNode, vnode: VNode) {
             }
         }
 
-        if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
-            if (process.env.NODE_ENV !== 'production') {
-                if (elm[key] === cur && old !== undefined) {
-                    console.warn(`Unnecessary update of property "${key}" in element <${StringToLowerCase.call(elm.tagName)}>.`); // tslint:disable-line
-                }
-            }
+        const shouldUpdate = isUndefined(vm) ? (
+                // condition: is an especial element out of sync prop
+                ((vnode as any).sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[(vnode as any).sel])
+                // condition: diff is out of sync for valid prop
+                || (old !== cur && key in elm)
+            ) : (
+                // condition: is a custom element out of sync prop
+                key in elm && elm[key] !== cur
+            );
+        if (shouldUpdate) {
             if (!isUndefined(vm)) {
                 prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
             }
