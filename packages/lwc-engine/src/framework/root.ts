@@ -244,6 +244,8 @@ export function wrapIframeWindow(win: Window) {
     };
 }
 
+let GET_ROOT_NODE_CONFIG_FALSE;
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
@@ -288,7 +290,7 @@ register({
                         }
 
                         // Event is coming from an slotted element
-                        if (isChildNode(getRootNode.call(value, { composed: false }), currentTarget as Element)) {
+                        if (isChildNode(getRootNode.call(value, (GET_ROOT_NODE_CONFIG_FALSE || (GET_ROOT_NODE_CONFIG_FALSE = { composed: false }))), currentTarget as Element)) {
                             return;
                         }
                         // target is owned by the VM
