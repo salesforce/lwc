@@ -113,6 +113,24 @@ describe("compiler result", () => {
         expect(metadata).toBeDefined();
         expect(success).toBeDefined();
     });
+
+    test("should compile sources nested inside component subfolders", async () => {
+        const { result, success } = await compile({
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { Element } from 'engine';
+                import { main } from './utils/util.js';
+                export default class Test extends Element {
+                    get myimport() { return main();}
+                }
+                `,
+                "foo.html": readFixture("metadata/metadata.html"),
+                "utils/util.js": `export function main() { return 'here is your import'; }`,
+            },
+        });
+        expect(success).toBe(true);
+    });
 });
 
 describe("comiler metadata", () => {
