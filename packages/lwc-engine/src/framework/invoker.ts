@@ -127,14 +127,14 @@ export enum EventListenerContext {
 export let componentEventListenerType: EventListenerContext | null = null;
 
 export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, event: Event) {
-    const { context, callHook } = vm;
+    const { context, callHook, component } = vm;
     const ctx = currentContext;
     establishContext(context);
     let error;
     const componentEventListenerTypeInception = componentEventListenerType;
     componentEventListenerType = listenerContext;
     try {
-        callHook(undefined, fn, [event]);
+        callHook(component, fn, [event]);
     } catch (e) {
         error = Object(e);
     } finally {
