@@ -260,7 +260,8 @@ LWCElement.prototype = {
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.template, selectors)) {
+            const { getHook } = vm;
+            if (shadowRootQuerySelector(getHook(this, 'template'), selectors)) {
                 assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
             }
         }
@@ -278,7 +279,8 @@ LWCElement.prototype = {
         const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
 
         if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
+            const { getHook } = vm;
+            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(getHook(this, 'template'), selectors).length) {
                 assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
             }
         }
@@ -310,11 +312,12 @@ LWCElement.prototype = {
         return cmpRoot;
     },
     get root(): ShadowRoot {
+        const vm = getCustomElementVM(this);
+        const { getHook } = vm;
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
             assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
-        return this.template;
+        return getHook(this, 'template');
     },
     toString(): string {
         const vm = getCustomElementVM(this);
