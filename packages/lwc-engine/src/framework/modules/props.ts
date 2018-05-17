@@ -14,14 +14,14 @@ const EspecialTagAndPropMap = preventExtensions(create(null, {
             checked: { writable: false, configurable: false },
         })),
     },
-    textarea: {
+    select: {
         writable: false,
         configurable: false,
         value: preventExtensions(create(null, {
             value: { writable: false, configurable: false },
         })),
     },
-    select: {
+    textarea: {
         writable: false,
         configurable: false,
         value: preventExtensions(create(null, {
