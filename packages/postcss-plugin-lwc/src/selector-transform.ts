@@ -6,7 +6,6 @@ import {
     tag,
     combinator,
     isTag,
-    isPseudo,
     isPseudoElement,
     isCombinator,
     Processor,
