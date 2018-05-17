@@ -7,6 +7,7 @@ import {
     combinator,
     isTag,
     isPseudo,
+    isPseudoElement,
     isCombinator,
     Processor,
     Selector,
@@ -24,6 +25,8 @@ import {
     findNode,
     replaceNodeWith,
     trimNodeWhitespaces,
+    isHostContextPseudoClass,
+    isHostPseudoClass,
 } from './selector-utils';
 
 const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
@@ -131,7 +134,12 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
     let candidate: Node | undefined;
 
     selector.each(node => {
-        const isScopableSelector = !isPseudo(node) && !isCombinator(node);
+        const isScopableSelector =
+            !isPseudoElement(node) &&
+            !isCombinator(node) &&
+            !isHostPseudoClass(node) &&
+            !isHostContextPseudoClass(node);
+
         const isSelectorChainEnd = isCombinator(node) || node === selector.last;
 
         if (isScopableSelector) {
@@ -152,10 +160,9 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
  *   :host(.foo, .bar) -> $HOST$.foo, $HOST$.bar
  */
 function transformHost(selector: Selector) {
-    const hostNode = findNode(
-        selector,
-        node => isPseudo(node) && node.value === ':host',
-    ) as Pseudo | undefined;
+    const hostNode = findNode(selector, isHostPseudoClass) as
+        | Pseudo
+        | undefined;
 
     if (hostNode) {
         const placeholder = hostPlaceholder();
@@ -189,10 +196,9 @@ function transformHost(selector: Selector) {
  * If the selector already contains :host, the selector should not be scoped twice.
  */
 function transformHostContext(selector: Selector) {
-    const hostContextNode = findNode(
-        selector,
-        node => isPseudo(node) && node.value === ':host-context',
-    ) as Pseudo | undefined;
+    const hostContextNode = findNode(selector, isHostContextPseudoClass) as
+        | Pseudo
+        | undefined;
 
     const hostNode = findNode(selector, isHostPlaceholder);
 
