@@ -390,7 +390,7 @@ describe('root', () => {
         });
 
         it('should not expose shadow root on child custom element', () => {
-            //expect.assertions(1);
+            expect.assertions(1);
             let childTemplate;
             class MyChild extends Element {
                 constructor() {
