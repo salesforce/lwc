@@ -267,7 +267,7 @@ register({
                 const vm = getElementOwnerVM(target as Element);
                 if (!isUndefined(vm) && value === vm.elm) {
                     // walking up via parent chain might end up in the shadow root element
-                    return callback((vm.component as Component).root);
+                    return callback((vm.component as Component).template);
                 } else if (target instanceof Element && value instanceof Element && target[OwnerKey] !== value[OwnerKey]) {
                     // cutting out access to something outside of the shadow of the current target (usually slots)
                     return callback(); // TODO: this should probably be `null`
@@ -282,17 +282,15 @@ register({
                         return callback(pierce(value));
                     case 'target':
                         const { currentTarget } = event;
-
                         // Executing event listener on component, target is always currentTarget
                         if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                             return callback(pierce(currentTarget));
                         }
 
                         // Event is coming from an slotted element
-                        if (isChildNode(getRootNode.call(value, event), currentTarget as Element)) {
+                        if (isChildNode(getRootNode.call(value, { composed: false }), currentTarget as Element)) {
                             return;
                         }
-
                         // target is owned by the VM
                         const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
                         if (!isUndefined(vm)) {

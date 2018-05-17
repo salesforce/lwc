@@ -690,6 +690,62 @@ describe('Shadow Root events', () => {
         elm.clickDiv();
         expect(calls).toEqual(['template', 'component']);
     });
+
+    it('should have correct event target when event originates from child component shadow dom', () => {
+        expect.assertions(2);
+        let childTemplate;
+        class MyChild extends Element {
+            constructor() {
+                super();
+                childTemplate = this.template;
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+
+        MyChild.publicMethods = ['clickDiv'];
+
+        function html($api, $cmp) {
+            return [$api.c('correct-nested-root-event-target-child', MyChild, {
+                on: {
+                    click: $api.b($cmp.handleClick)
+                }
+            })];
+        }
+
+        class MyComponent extends Element {
+            handleClick(evt) {
+                expect(evt.target.tagName.toLowerCase()).toBe('correct-nested-root-event-target-child');
+                expect(evt.target).toBe(this.template.querySelector('correct-nested-root-event-target-child'));
+            }
+
+            clickChildDiv() {
+                this.template.querySelector('correct-nested-root-event-target-child').clickDiv();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickChildDiv'];
+
+        const elm = createElement('correct-nested-root-event-target-parent', { is: MyComponent });
+        document.body.appendChild(elm);
+        return Promise.resolve().then(() => {
+            elm.clickChildDiv();
+        });
+    });
 });
 
 describe('Removing events from shadowroot', () => {
