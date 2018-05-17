@@ -215,12 +215,12 @@ export function isValidEventForCustomElement(event: Event): boolean {
     const { target, currentTarget } = event;
     const { composed } = event as any;
     return (
-        // it is composed, and we should always get it
+        // it is composed, and we should always get it, or
         composed === true ||
-        // it is dispatched onto the custom element directly
+        // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from an slotted element
-        isChildNode(getRootNode.call(target, event), currentTarget as Node)
+        isChildNode(getRootNode.call(target, { composed: false }), currentTarget as Node)
     );
 }
 
