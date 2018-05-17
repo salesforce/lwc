@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.19.7...v) (2018-05-16)
+# [](https://github.com/salesforce/lwc/compare/v0.19.8...v) (2018-05-17)
+
+
+
+<a name="0.19.8"></a>
+## [0.19.8](https://github.com/salesforce/lwc/compare/v0.19.7...v0.19.8) (2018-05-17)
+
+
+### Bug Fixes
+
+* **engine:** Fixing piercing with event currentTarget ([#306](https://github.com/salesforce/lwc/issues/306)) ([728d009](https://github.com/salesforce/lwc/commit/728d009))
+* **engine:** Removing pierce on template events ([#308](https://github.com/salesforce/lwc/issues/308)) ([6294fc5](https://github.com/salesforce/lwc/commit/6294fc5))
 
 
 
