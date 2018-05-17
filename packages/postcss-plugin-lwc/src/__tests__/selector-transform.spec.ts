@@ -6,11 +6,9 @@ describe('selectors', () => {
         expect(css).toBe(`h1[x-foo_tmpl] {}`);
     });
 
-    it('should handle pseudo element', async () => {
-        const { css } = await process('ul li:first-child a {}');
-        expect(css).toBe(
-            `ul[x-foo_tmpl] li[x-foo_tmpl]:first-child a[x-foo_tmpl] {}`,
-        );
+    it('should handle * selectors', async () => {
+        const { css } = await process('* {}');
+        expect(css).toBe(`*[x-foo_tmpl] {}`);
     });
 
     it('should handle multiple selectors', async () => {
@@ -44,9 +42,6 @@ describe('selectors', () => {
     it('should handle complex CSS selectors', async () => {
         let res;
 
-        res = await process('h1::before {}');
-        expect(res.css).toBe(`h1[x-foo_tmpl]::before {}`);
-
         res = await process('h1 > a {}');
         expect(res.css).toBe(`h1[x-foo_tmpl] > a[x-foo_tmpl] {}`);
 
@@ -61,6 +56,37 @@ describe('selectors', () => {
 
         res = await process('div[attr="va lue"] {}');
         expect(res.css).toBe(`div[attr="va lue"][x-foo_tmpl] {}`);
+    });
+});
+
+describe('pseudo class selectors', () => {
+    it('should handle simple pseudo class selectors', async () => {
+        const { css } = await process(':checked {}');
+        expect(css).toBe(`:checked[x-foo_tmpl] {}`);
+    });
+
+    it('should handle complex pseudo class selectors', async () => {
+        const { css } = await process('ul li:first-child a {}');
+        expect(css).toBe(
+            `ul[x-foo_tmpl] li:first-child[x-foo_tmpl] a[x-foo_tmpl] {}`,
+        );
+    });
+
+    it('should handle functional pseudo class selectors', async () => {
+        const { css } = await process(':not(p) {}');
+        expect(css).toBe(`:not(p)[x-foo_tmpl] {}`);
+    });
+});
+
+describe('pseudo element selectors', () => {
+    it('should handle simple pseudo element selectors', async () => {
+        const { css } = await process('::after {}');
+        expect(css).toBe(`[x-foo_tmpl]::after {}`);
+    });
+
+    it('should handle complex pseudo element selectors', async () => {
+        const { css } = await process('h1::before {}');
+        expect(css).toBe(`h1[x-foo_tmpl]::before {}`);
     });
 });
 

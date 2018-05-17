@@ -7,6 +7,7 @@ import {
     combinator,
     isTag,
     isPseudo,
+    isPseudoElement,
     isCombinator,
     Processor,
     Selector,
@@ -24,6 +25,8 @@ import {
     findNode,
     replaceNodeWith,
     trimNodeWhitespaces,
+    isHostContextPseudoClass,
+    isHostPseudoClass,
 } from './selector-utils';
 
 const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
@@ -122,27 +125,49 @@ function customElementSelector(selectors: Root) {
  * Add scoping attributes to all the matching selectors:
  *   h1 -> h1[x-foo_tmpl]
  *   p a -> p[x-foo_tmpl] a[x-foo_tmpl]
- *
- * The scoping attribute should only get applied to the last selector of the
- * chain: h1.active -> h1.active[x-foo_tmpl]. We need to keep track of the next selector
- * candidate and add the scoping attribute before starting a new selector chain.
  */
 function scopeSelector(selector: Selector, config: PluginConfig) {
-    let candidate: Node | undefined;
+    const compoundSelectors: Node[][] = [[]];
 
+    // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
+    // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
     selector.each(node => {
-        const isScopableSelector = !isPseudo(node) && !isCombinator(node);
-        const isSelectorChainEnd = isCombinator(node) || node === selector.last;
-
-        if (isScopableSelector) {
-            candidate = node;
-        }
-
-        if (candidate && isSelectorChainEnd) {
-            selector.insertAfter(candidate, scopeAttribute(config));
-            candidate = undefined;
+        if (isCombinator(node)) {
+            compoundSelectors.push([]);
+        } else {
+            const current = compoundSelectors[compoundSelectors.length - 1];
+            current.push(node);
         }
     });
+
+    for (const compoundSelector of compoundSelectors) {
+        // Compound selectors containing :host or :host-context have a special treatment and should
+        // not be scoped like the rest of the complex selectors
+        const shouldScopeCompoundSelector = compoundSelector.every(node => {
+            return !isHostPseudoClass(node) && !isHostContextPseudoClass(node);
+        });
+
+        if (shouldScopeCompoundSelector) {
+            let nodeToScope: Node | undefined;
+
+            // In each compound selector we need to locate the last selector to scope.
+            for (const node of compoundSelector) {
+                if (!isPseudoElement(node)) {
+                    nodeToScope = node;
+                }
+            }
+
+            const scopeAttributeNode = scopeAttribute(config);
+            if (nodeToScope) {
+                // Add the scoping attribute right after the node scope
+                selector.insertAfter(nodeToScope, scopeAttributeNode);
+            } else {
+                // Add the scoping token in the first position of the compound selector as a fallback
+                // when there is no node to scope. For example: ::after {}
+                selector.insertBefore(compoundSelector[0], scopeAttributeNode);
+            }
+        }
+    }
 }
 
 /**
@@ -152,10 +177,9 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
  *   :host(.foo, .bar) -> $HOST$.foo, $HOST$.bar
  */
 function transformHost(selector: Selector) {
-    const hostNode = findNode(
-        selector,
-        node => isPseudo(node) && node.value === ':host',
-    ) as Pseudo | undefined;
+    const hostNode = findNode(selector, isHostPseudoClass) as
+        | Pseudo
+        | undefined;
 
     if (hostNode) {
         const placeholder = hostPlaceholder();
@@ -189,10 +213,9 @@ function transformHost(selector: Selector) {
  * If the selector already contains :host, the selector should not be scoped twice.
  */
 function transformHostContext(selector: Selector) {
-    const hostContextNode = findNode(
-        selector,
-        node => isPseudo(node) && node.value === ':host-context',
-    ) as Pseudo | undefined;
+    const hostContextNode = findNode(selector, isHostContextPseudoClass) as
+        | Pseudo
+        | undefined;
 
     const hostNode = findNode(selector, isHostPlaceholder);
 
