@@ -59,8 +59,13 @@ function update(oldVnode: VNode, vnode: VNode) {
                 );
             }
         }
-
-        if (shouldUpdate && key in elm) {
+        if (process.env.NODE_ENV !== 'production') {
+            if (!(key in elm)) {
+                // TODO: this should never really happen because the compiler should always validate
+                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+            }
+        }
+        if (shouldUpdate) {
             if (isCustomElement) {
                 // this unlock and lock mechanism allows to control public props mutations in custom elements
                 unlockForPropUpdate(vm);
@@ -69,11 +74,6 @@ function update(oldVnode: VNode, vnode: VNode) {
             } else {
                 // only touching the dom if the prop needs to be updated.
                 elm[key] = cur;
-            }
-        } else if (process.env.NODE_ENV !== 'production') {
-            if (shouldUpdate && !(key in elm)) {
-                // TODO: this should never really happen because the compiler should always validate
-                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
     }
