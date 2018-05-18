@@ -15,6 +15,16 @@ interface WrappedListener extends EventListener {
     original: EventListener;
 }
 
+const retargetedEventProxyHandler = {
+    get() {
+
+    }
+}
+
+export function createEventProxy(event: Event) {
+    return new Proxy(event, retargetedEventProxyHandler);
+}
+
 const rootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
 
 function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListener {

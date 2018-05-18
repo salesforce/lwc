@@ -1,9 +1,8 @@
 import assert from "./assert";
 import { isUndefined, isFunction, assign, hasOwnProperty } from "./language";
-import { createVM, removeVM, appendVM, renderVM } from "./vm";
+import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
-import { getCustomElementVM } from "./html-element";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();

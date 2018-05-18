@@ -456,3 +456,31 @@ export function getComponentStack(vm: VM): string {
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
 }
+
+export function getElementOwnerVM(elm: Element): VM | undefined {
+    if (!(elm instanceof Node)) {
+        return;
+    }
+    let node: Node | null = elm;
+    let ownerKey;
+    // search for the first element with owner identity (just in case of manually inserted elements)
+    while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
+        node = node.parentNode;
+    }
+    if (isUndefined(ownerKey) || isNull(node)) {
+        return;
+    }
+    let vm: VM | undefined;
+    // search for a custom element with a VM that owns the first element with owner identity attached to it
+    while (!isNull(node) && (isUndefined(vm = node[ViewModelReflection]) || (vm as VM).uid !== ownerKey)) {
+        node = node.parentNode;
+    }
+    return isNull(node) ? undefined : vm;
+}
+
+export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoot): VM {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(elmOrCmp[ViewModelReflection]);
+    }
+    return elmOrCmp[ViewModelReflection] as VM;
+}

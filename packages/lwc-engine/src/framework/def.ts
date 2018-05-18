@@ -37,14 +37,15 @@ import {
     removeAttributeNS,
     defaultDefHTMLPropertyNames,
     attemptAriaAttributeFallback,
+    EmptyNodeList,
 } from "./dom";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement, getCustomElementVM } from "./html-element";
+import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
-import { OwnerKey, VM, VMElement } from "./vm";
+import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
 
 // TODO: refactor all the references to this
 export { ViewModelReflection } from "./utils";
@@ -248,6 +249,14 @@ function createMethodCaller(method: PublicMethod): PublicMethod {
     };
 }
 
+function querySelectorPatched() {
+    return null;
+}
+
+function querySelectorAllPatched() {
+    return EmptyNodeList;
+}
+
 function getAttributePatched(this: VMElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
@@ -380,6 +389,14 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
             value: removeAttributeNSPatched,
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
+        querySelector: {
+            value: querySelectorPatched,
+            configurable: true,
+        },
+        querySelectorAll: {
+            value: querySelectorAllPatched,
+            configurable: true,
+        }
     };
     // expose getters and setters for each public props on the Element
     for (const key in publicProps) {

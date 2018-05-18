@@ -91,6 +91,8 @@ function getRootNode(
         findShadowRoot(this);
 }
 
+export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
+
 export function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
 }

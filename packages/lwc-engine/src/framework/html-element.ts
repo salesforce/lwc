@@ -1,7 +1,7 @@
 import assert from "./assert";
-import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
+import { Root, ShadowRoot } from "./root";
 import { Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getGlobalHTMLPropertiesInfo,
@@ -17,8 +17,8 @@ import {
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce, pierceProperty } from "./piercing";
+import { VM, getCustomElementVM } from "./vm";
+import { pierceProperty } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -82,11 +82,6 @@ const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPr
 
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;
-}
-
-function querySelectorAllFromComponent(cmp: Component, selectors: string): NodeList {
-    const elm = getLinkedElement(cmp);
-    return elm.querySelectorAll(selectors);
 }
 
 export interface ComposableEvent extends Event {
@@ -251,38 +246,14 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        for (let i = 0, len = nodeList.length; i < len; i += 1) {
-            if (wasNodePassedIntoVM(vm, nodeList[i])) {
-                // TODO: locker service might need to return a membrane proxy
-                return pierce(nodeList[i]);
-            }
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.template, selectors)) {
-                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
-            }
-        }
-
-        return null;
+        return vm.elm.querySelector(selectors);
     },
     querySelectorAll(selectors: string): NodeList {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        // TODO: locker service might need to do something here
-        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
-                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
-            }
-        }
-        return pierce(filteredNodes);
+        return vm.elm.querySelectorAll(selectors);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -373,10 +344,3 @@ freeze(LWCElement);
 seal(LWCElement.prototype);
 
 export { LWCElement as Element };
-
-export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoot): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrCmp[ViewModelReflection]);
-    }
-    return elmOrCmp[ViewModelReflection] as VM;
-}
