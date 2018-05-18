@@ -504,7 +504,7 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     return def;
 }
 
-const TagNameToCtor: HashTable<ComponentConstructor> = create(null);
+let TagNameToCtor: HashTable<ComponentConstructor> = create(null);
 
 export function getCtorByTagName(tagName: string): ComponentConstructor | undefined {
     return TagNameToCtor[tagName];
@@ -524,4 +524,11 @@ export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
         }
     }
     TagNameToCtor[tagName] = Ctor;
+}
+
+// This method is internal to the engine and should only be used for testing purposes!
+// The component registry need to get flushed between each test to avoid having the
+// engine warning about multiple class registration with the same tag name.
+export function flushComponentRegistry() {
+    TagNameToCtor = create(null);
 }
