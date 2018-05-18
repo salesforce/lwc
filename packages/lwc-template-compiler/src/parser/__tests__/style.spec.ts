@@ -16,14 +16,14 @@ describe('parseStyleText', () => {
     it('should parse simple style with multiple values', () => {
         const res = parseStyleText('box-shadow: 10px 5px 5px black;');
         expect(res).toEqual({
-            ['box-shadow']: '10px 5px 5px black'
+            boxShadow: '10px 5px 5px black'
         });
     });
 
     it('should parse multiple declaration', () => {
         const res = parseStyleText(`font-size: 12px;background: blue; color:red  ;`);
         expect(res).toEqual({
-            ['font-size']: '12px',
+            fontSize: '12px',
             background: 'blue',
             color: 'red'
         });
@@ -32,7 +32,7 @@ describe('parseStyleText', () => {
     it('should parse css functions', () => {
         const res = parseStyleText(`background-color:rgba(255,0,0,0.3)`);
         expect(res).toEqual({
-            ['background-color']: 'rgba(255,0,0,0.3)'
+            backgroundColor: 'rgba(255,0,0,0.3)'
         });
     });
 

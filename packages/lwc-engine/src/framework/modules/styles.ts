@@ -42,7 +42,7 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
         for (name in newStyle) {
             const cur = newStyle[name];
             if (cur !== (oldStyle as VNodeStyle)[name]) {
-                style.setProperty(name, cur);
+                style[name] = cur;
             }
         }
     }
