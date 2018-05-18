@@ -312,7 +312,7 @@ LWCElement.prototype = {
     get root(): ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
-            assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return this.template;
     },

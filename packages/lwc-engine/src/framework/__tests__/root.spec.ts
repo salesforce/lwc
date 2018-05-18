@@ -249,6 +249,40 @@ describe('root', () => {
             });
         });
 
+        it('should not reach into child components template when querySelector invoked on child custom element', () => {
+            expect.assertions(1);
+            let childTemplate;
+            class MyChild extends Element {
+                render() {
+                    return function ($api) {
+                        return [$api.h('div', {
+                            key: 0,
+                        }, [])];
+                    }
+                }
+            }
+
+            function html($api, $cmp) {
+                return [$api.c('membrane-parent-query-selector-child-custom-element-child', MyChild, {})];
+            }
+
+            class MyComponent extends Element {
+                queryChild() {
+                    return this.template.querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div');
+                }
+
+                render() {
+                    return html;
+                }
+            }
+
+            MyComponent.publicMethods = ['queryChild'];
+
+            const elm = createElement('membrane-parent-query-selector-child-custom-element', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(elm.queryChild()).toBe(null);
+        });
+
         it('should querySelectorAll on element from template', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
             class MyComponent extends Element {
@@ -350,8 +384,63 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const root = (elm[ViewModelReflection].component as Component).root;
+                const root = (elm[ViewModelReflection].component as Component).template;
                 expect(root.querySelector('div').parentNode).toBe(root);
+            });
+        });
+
+        it('should not expose shadow root on child custom element', () => {
+            expect.assertions(1);
+            let childTemplate;
+            class MyChild extends Element {
+                constructor() {
+                    super();
+                    childTemplate = this.template;
+                }
+
+                clickDiv() {
+                    this.template.querySelector('div').click();
+                }
+
+                render() {
+                    return function ($api) {
+                        return [$api.h('div', {
+                            key: 0,
+                        }, [])];
+                    }
+                }
+            }
+
+            MyChild.publicMethods = ['clickDiv'];
+
+            function html($api, $cmp) {
+                return [$api.c('x-child-parent-shadow-root', MyChild, {
+                    on: {
+                        click: $api.b($cmp.handleClick)
+                    }
+                })];
+            }
+
+            class MyComponent extends Element {
+                handleClick(evt) {
+                    expect(evt.target.parentNode).not.toBe(childTemplate);
+                }
+
+                clickChildDiv() {
+                    this.template.querySelector('x-child-parent-shadow-root').clickDiv();
+                }
+
+                render() {
+                    return html;
+                }
+            }
+
+            MyComponent.publicMethods = ['clickChildDiv'];
+
+            const elm = createElement('membrane-child-parent-shadow-root-parent', { is: MyComponent });
+            document.body.appendChild(elm);
+            return Promise.resolve().then(() => {
+                elm.clickChildDiv();
             });
         });
 
