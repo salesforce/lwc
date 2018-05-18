@@ -1,13 +1,12 @@
 module.exports = {
-    moduleFileExtensions: ['ts', 'js', 'json'],
-    transform: {
-        '.ts': require.resolve('ts-jest/preprocessor.js'),
-        '.js': require.resolve('ts-jest/preprocessor.js')
-    },
-    testMatch: [
-        '<rootDir>/packages/*/**/__tests__/*.spec.(js|ts)'
-    ],
     projects: [
-        '<rootDir>'
-    ]
+        '<rootDir>/packages/babel-plugin-transform-lwc-class',
+        '<rootDir>/packages/lwc-compiler',
+        '<rootDir>/packages/lwc-engine',
+        '<rootDir>/packages/lwc-module-resolver',
+        '<rootDir>/packages/lwc-template-compiler',
+        '<rootDir>/packages/lwc-wire-service',
+        '<rootDir>/packages/observable-membrane',
+        '<rootDir>/packages/postcss-plugin-lwc',
+    ],
 };
