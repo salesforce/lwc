@@ -39,14 +39,8 @@ function update(oldVnode: VNode, vnode: VNode) {
         let shouldUpdate = isFirstPatch;
 
         if (!isFirstPatch) {
+            // slow path because we need to make sure that we really need to update the prop
             old = (oldProps as any)[key];
-
-            if (process.env.NODE_ENV !== 'production') {
-                if (old !== cur && !(key in elm)) {
-                    // TODO: this should never really happen because the compiler should always validate
-                    assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
-                }
-            }
             if (isCustomElement) {
                 // custom element
                 const propDef = vm.def.props[key];
@@ -56,24 +50,30 @@ function update(oldVnode: VNode, vnode: VNode) {
                 // regular element
                 const { sel } = vnode as any;
                 shouldUpdate = (
-                    // condition: is an especial element out of sync prop
+                    // condition: is an especial element with especial prop?
                     (sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[sel]) ?
+                        // condition: especial prop is out of sync
                         elm[key] !== cur
-                        // condition: diff is out of sync for valid prop
-                        : (old !== cur && key in elm)
+                        // condition: diff is out of sync
+                        : old !== cur
                 );
             }
         }
 
-        if (shouldUpdate) {
+        if (shouldUpdate && key in elm) {
             if (isCustomElement) {
-                // this is just in case the vnode is actually a custom element
+                // this unlock and lock mechanism allows to control public props mutations in custom elements
                 unlockForPropUpdate(vm);
-            }
-            // touching the dom if the prop really changes.
-            elm[key] = cur;
-            if (isCustomElement) {
+                elm[key] = cur;
                 lockForPropUpdate();
+            } else {
+                // only touching the dom if the prop needs to be updated.
+                elm[key] = cur;
+            }
+        } else if (process.env.NODE_ENV !== 'production') {
+            if (shouldUpdate && !(key in elm)) {
+                // TODO: this should never really happen because the compiler should always validate
+                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
     }
