@@ -25,7 +25,7 @@ describe('module/props', () => {
     });
 
     it('should not set the custom element foo property when the new value matches (reconciliation)', () => {
-        const vm = { component: {} };
+        const vm = { component: {}, def: { props: { foo: { config: 1 } } } };
         const elm = { [ViewModelReflection]: vm };
         let read = 0;
         Object.defineProperty(elm, 'foo', {

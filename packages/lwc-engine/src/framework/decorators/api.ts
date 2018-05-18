@@ -7,9 +7,7 @@ import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
-
-const COMPUTED_GETTER_MASK = 1;
-const COMPUTED_SETTER_MASK = 2;
+import { hasPropertySetter, hasPropertyGetter } from "../utils";
 
 export default function api(target: ComponentConstructor, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
@@ -21,11 +19,11 @@ export default function api(target: ComponentConstructor, propName: PropertyKey,
     // publicProps must be an own property, otherwise the meta is inherited.
     const config = (!isUndefined(meta) && hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
     // initializing getters and setters for each public prop on the target prototype
-    if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
+    if (hasPropertySetter(config) || hasPropertyGetter(config)) {
         if (process.env.NODE_ENV !== 'production') {
             assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid property ${propName} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-            const mustHaveGetter = COMPUTED_GETTER_MASK & config;
-            const mustHaveSetter = COMPUTED_SETTER_MASK & config;
+            const mustHaveGetter = hasPropertyGetter(config);
+            const mustHaveSetter = hasPropertySetter(config);
             if (mustHaveGetter) {
                 assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${target}`);
             }

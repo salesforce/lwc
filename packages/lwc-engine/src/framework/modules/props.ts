@@ -1,34 +1,16 @@
 import assert from "../assert";
-import { isUndefined, keys, StringToLowerCase, preventExtensions, create } from "../language";
-import { EmptyObject, getAttrNameFromPropName } from "../utils";
+import { isUndefined, keys, StringToLowerCase } from "../language";
+import { EmptyObject, getAttrNameFromPropName, makeReadOnlyRecord, hasPropertyGetter } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
+import { VM } from "../vm";
 
-const EspecialTagAndPropMap = preventExtensions(create(null, {
-    input: {
-        writable: false,
-        configurable: false,
-        value: preventExtensions(create(null, {
-            value: { writable: false, configurable: false },
-            checked: { writable: false, configurable: false },
-        })),
-    },
-    select: {
-        writable: false,
-        configurable: false,
-        value: preventExtensions(create(null, {
-            value: { writable: false, configurable: false },
-        })),
-    },
-    textarea: {
-        writable: false,
-        configurable: false,
-        value: preventExtensions(create(null, {
-            value: { writable: false, configurable: false },
-        })),
-    },
-}));
+const EspecialTagAndPropMap = makeReadOnlyRecord({
+    input: makeReadOnlyRecord({ value: 0, checked: 0 }),
+    select: makeReadOnlyRecord({ value: 0 }),
+    textarea: makeReadOnlyRecord({ value: 0 }),
+});
 
 function update(oldVnode: VNode, vnode: VNode) {
     const props = vnode.data.props;
@@ -48,7 +30,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     let cur: any;
     let old: any;
     const elm = vnode.elm as Element;
-    const vm = elm[ViewModelReflection];
+    const vm: VM = elm[ViewModelReflection];
     oldProps = isUndefined(oldProps) ? EmptyObject : oldProps;
 
     for (key in props) {
@@ -62,15 +44,24 @@ function update(oldVnode: VNode, vnode: VNode) {
             }
         }
 
-        const shouldUpdate = isUndefined(vm) ? (
+        let shouldUpdate;
+        if (isUndefined(vm)) {
+            // regular element
+            const { sel } = vnode as any;
+            shouldUpdate = (
                 // condition: is an especial element out of sync prop
-                ((vnode as any).sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[(vnode as any).sel])
-                // condition: diff is out of sync for valid prop
-                || (old !== cur && key in elm)
-            ) : (
-                // condition: is a custom element out of sync prop
-                key in elm && elm[key] !== cur
+                (sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[sel]) ?
+                    elm[key] !== cur
+                    // condition: diff is out of sync for valid prop
+                    : (old !== cur && key in elm)
             );
+        } else {
+            // custom element
+            const propDef = vm.def.props[key];
+            // condition: is a custom element out of sync prop
+            shouldUpdate = (!isUndefined(propDef) && hasPropertyGetter(propDef.config)) ? elm[key] !== cur : old !== cur;
+        }
+
         if (shouldUpdate) {
             if (!isUndefined(vm)) {
                 prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
