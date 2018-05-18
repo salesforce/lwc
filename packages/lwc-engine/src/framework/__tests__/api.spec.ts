@@ -190,8 +190,8 @@ describe('api', () => {
         });
     });
 
-    describe.only('#i()', () => {
-        it.only('should support various types', () => {
+    describe('#i()', () => {
+        it('should support various types', () => {
             expect(api.i([], () => null)).toEqual([]);
             expect(api.i(undefined as any, () => null)).toEqual([]);
             expect(api.i(null as any, () => null)).toEqual([]);
