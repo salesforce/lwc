@@ -5,10 +5,9 @@ import {
     getRootNode,
     isChildNode,
 } from "./dom";
-import { VM } from "./vm";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
-import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { pierce } from "./piercing";
+import { VM, OwnerKey, getElementOwnerVM } from "./vm";
+import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -16,8 +15,37 @@ interface WrappedListener extends EventListener {
 }
 
 const retargetedEventProxyHandler = {
-    get() {
+    get(event: Event, key: PropertyKey) {
+        const value = event[key];
+        switch (key) {
+            case 'currentTarget':
+                // intentionally return the host element pierced here otherwise the general role below
+                // will kick in and return the cmp, which is not the intent.
+                return value;
+            case 'target':
+                const { currentTarget } = event;
 
+                // Executing event listener on component, target is always currentTarget
+                if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                    return currentTarget;
+                }
+
+                // Event is coming from an slotted element
+                if (isChildNode(getRootNode.call(value, event), currentTarget as Element)) {
+                    return value;
+                }
+
+                // target is owned by the VM
+                const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
+                if (!isUndefined(vm)) {
+                    let node = value;
+                    while (!isNull(node) && vm.uid !== node[OwnerKey]) {
+                        node = node.parentNode;
+                    }
+                    return node;
+                }
+        }
+        return value;
     }
 }
 
@@ -48,7 +76,7 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
-                    const e = pierce(event);
+                    const e = createEventProxy(event);
                     invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, e);
             }
         } as WrappedListener;
@@ -81,7 +109,7 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
                 target === currentTarget ||
                 // it is coming from an slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node)) {
-                    const e = pierce(event);
+                    const e = createEventProxy(event);
                     invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, e);
             }
         } as WrappedListener;

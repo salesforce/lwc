@@ -7,7 +7,7 @@ import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { pierce } from "./piercing";
+import { createEventProxy } from "./events";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -366,7 +366,7 @@ export function b(fn: EventListener): EventListener {
         if (!isValidEvent(event)) {
             return;
         }
-        const e = pierce(event);
+        const e = createEventProxy(event);
         invokeComponentCallback(vm, fn, [e]);
     };
 }

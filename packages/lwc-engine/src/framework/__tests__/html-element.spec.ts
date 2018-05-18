@@ -456,7 +456,7 @@ describe('html-element', () => {
             elm.run();
         });
 
-        it.only('should listen for custom events declare in template', function () {
+        it('should listen for custom events declare in template', function () {
             expect.assertions(6);
             function html($api, $cmp) {
                 return [$api.h('div', { key: 1, on: { xyz: $api.b($cmp.handleXyz)} }, [])];
@@ -471,7 +471,6 @@ describe('html-element', () => {
                 }
                 run() {
                     const div = this.template.querySelector('div');
-                    console.log('div', div);
                     this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
                     this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,

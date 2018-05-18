@@ -242,7 +242,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
+                const ul = (elm[ViewModelReflection].component as Component).template.querySelector('ul');
                 expect(ul);
                 const li = ul.querySelector('li');
                 expect(li);
@@ -293,14 +293,14 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelectorAll('ul')[0];
+                const ul = (elm[ViewModelReflection].component as Component).template.querySelectorAll('ul')[0];
                 expect(ul);
                 const li = ul.querySelectorAll('li')[0];
                 expect(li);
             });
         });
 
-        it('should ignore extraneous elements', () => {
+        it.only('should ignore extraneous elements', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {
@@ -310,7 +310,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
+                const ul = (elm[ViewModelReflection].component as Component).template.querySelector('ul');
                 expect(ul);
                 ul.appendChild(document.createElement('li'));
                 const li1 = ul.querySelectorAll('li')[0];
@@ -332,7 +332,7 @@ describe('root', () => {
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
                 expect(() => {
-                    (elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist');
+                    (elm[ViewModelReflection].component as Component).template.querySelector('doesnotexist');
                 }).not.toThrow();
             });
         });
@@ -348,7 +348,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                expect((elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist')).toBeNull();
+                expect((elm[ViewModelReflection].component as Component).template.querySelector('doesnotexist')).toBeNull();
             });
         });
 
@@ -366,7 +366,7 @@ describe('root', () => {
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
                 expect(() => {
-                    (elm[ViewModelReflection].component as Component).root.querySelectorAll('doesnotexist');
+                    (elm[ViewModelReflection].component as Component).template.querySelectorAll('doesnotexist');
                 }).not.toThrow();
             });
         });

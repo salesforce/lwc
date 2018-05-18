@@ -4,7 +4,6 @@ import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPr
 import { getCustomElementComponent } from "./component";
 import { OwnerKey, VM, getElementOwnerVM, getCustomElementVM } from "./vm";
 import { register } from "./services";
-import { pierce } from "./piercing";
 import { Component } from "./component";
 import { Replicable } from "./membrane";
 import { addRootEventListener, removeRootEventListener } from "./events";
@@ -15,11 +14,8 @@ import {
     GlobalAOMProperties,
     setAttribute,
     removeAttribute,
-    getRootNode,
-    isChildNode,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-import { componentEventListenerType, EventListenerContext } from "./invoker";
 
 export interface ShadowRoot {
     [ViewModelReflection]: VM;

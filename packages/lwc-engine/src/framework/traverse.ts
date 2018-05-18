@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { wasNodePassedIntoVM, VM, getElementOwnerVM, getCustomElementVM, isNodeOwnedByVM } from "./vm";
+import { wasNodePassedIntoVM, VM, getElementOwnerVM, getCustomElementVM, isNodeOwnedByVM, OwnerKey } from "./vm";
 import {
     querySelectorAll,
 } from "./dom";
@@ -10,7 +10,7 @@ import { isBeingConstructed } from "./invoker";
 
 export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
     const nodeList = querySelectorAll.call(this, selectors);
-    const vm = getCustomElementVM(this)!;
+    const vm = getElementOwnerVM(this) as VM;
     // TODO: locker service might need to do something here
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
 
@@ -23,7 +23,7 @@ export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
 }
 
 export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
-    const vm = getCustomElementVM(this);
+    const vm = getElementOwnerVM(this) as VM;
     const nodeList = querySelectorAll.call(this, selectors);
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (wasNodePassedIntoVM(vm, nodeList[i])) {
