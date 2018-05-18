@@ -40,11 +40,14 @@ export default function api(target: ComponentConstructor, propName: PropertyKey,
 }
 
 let vmBeingUpdated: VM | null = null;
-export function prepareForPropUpdate(vm: VM) {
+export function unlockForPropUpdate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
     vmBeingUpdated = vm;
+}
+export function lockForPropUpdate() {
+    vmBeingUpdated = null;
 }
 
 export function createPublicPropertyDescriptor(proto: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {

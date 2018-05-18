@@ -1,7 +1,7 @@
 import assert from "../assert";
 import { isUndefined, keys, StringToLowerCase } from "../language";
 import { getAttrNameFromPropName, makeReadOnlyRecord, hasPropertyGetter } from "../utils";
-import { prepareForPropUpdate } from "../decorators/api";
+import { lockForPropUpdate, unlockForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { ViewModelReflection } from "../utils";
 import { VM } from "../vm";
@@ -31,6 +31,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     let old: any;
     const elm = vnode.elm as Element;
     const vm: VM = elm[ViewModelReflection];
+    const isCustomElement = !isUndefined(vm);
     const isFirstPatch = isUndefined(oldProps);
 
     for (key in props) {
@@ -46,7 +47,12 @@ function update(oldVnode: VNode, vnode: VNode) {
                     assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
                 }
             }
-            if (isUndefined(vm)) {
+            if (isCustomElement) {
+                // custom element
+                const propDef = vm.def.props[key];
+                // condition: is a custom element out of sync prop
+                shouldUpdate = (!isUndefined(propDef) && hasPropertyGetter(propDef.config)) ? elm[key] !== cur : old !== cur;
+            } else {
                 // regular element
                 const { sel } = vnode as any;
                 shouldUpdate = (
@@ -56,20 +62,19 @@ function update(oldVnode: VNode, vnode: VNode) {
                         // condition: diff is out of sync for valid prop
                         : (old !== cur && key in elm)
                 );
-            } else {
-                // custom element
-                const propDef = vm.def.props[key];
-                // condition: is a custom element out of sync prop
-                shouldUpdate = (!isUndefined(propDef) && hasPropertyGetter(propDef.config)) ? elm[key] !== cur : old !== cur;
             }
         }
 
         if (shouldUpdate) {
-            if (!isUndefined(vm)) {
-                prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
+            if (isCustomElement) {
+                // this is just in case the vnode is actually a custom element
+                unlockForPropUpdate(vm);
             }
             // touching the dom if the prop really changes.
             elm[key] = cur;
+            if (isCustomElement) {
+                lockForPropUpdate();
+            }
         }
     }
 }
