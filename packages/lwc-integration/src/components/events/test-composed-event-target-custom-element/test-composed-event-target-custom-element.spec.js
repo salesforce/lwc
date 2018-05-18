@@ -13,6 +13,7 @@ describe('Event target in slot elements', () => {
             child.dispatchFoo();
         });
 
+        browser.waitForVisible('.evt-target-is-x-child');
         const element = browser.element('.evt-target-is-x-child');
         assert.strictEqual(element.getText(), 'Event Target Is x-child');
     });
