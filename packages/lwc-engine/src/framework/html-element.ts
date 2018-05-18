@@ -1,7 +1,7 @@
 import assert from "./assert";
-import { Root, ShadowRoot } from "./root";
+import { ShadowRoot } from "./root";
 import { Component } from "./component";
-import { isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getGlobalHTMLPropertiesInfo,
@@ -18,7 +18,7 @@ import {
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { VM, getCustomElementVM } from "./vm";
+import { VM, getShadowRoot } from "./vm";
 import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -126,7 +126,7 @@ LWCElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
             if (arguments.length === 0) {
@@ -152,7 +152,7 @@ LWCElement.prototype = {
     },
 
     addEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
 
@@ -165,7 +165,7 @@ LWCElement.prototype = {
     },
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         removeCmpEventListener(vm, type, listener, options);
     },
 
@@ -185,7 +185,7 @@ LWCElement.prototype = {
     },
 
     removeAttribute(attrName: string) {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
         removeAttribute.call(vm.elm, attrName);
@@ -193,7 +193,7 @@ LWCElement.prototype = {
     },
 
     setAttribute(attrName: string, value: any): void {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
         }
@@ -233,13 +233,13 @@ LWCElement.prototype = {
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         }
         return elm.getBoundingClientRect();
     },
     querySelector(selectors: string): Node | null {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
@@ -249,7 +249,7 @@ LWCElement.prototype = {
         return vm.elm.querySelector(selectors);
     },
     querySelectorAll(selectors: string): NodeList {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
@@ -264,34 +264,29 @@ LWCElement.prototype = {
     },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             // TODO: this still fails in dev but works in production, eventually, we should just throw in all modes
             assert.isFalse(isBeingConstructed(vm), `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`);
         }
         return getLinkedElement(this).classList;
     },
     get template(): ShadowRoot {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
-        let { cmpRoot } = vm;
-        // lazy creation of the ShadowRoot Object the first time it is accessed.
-        if (isUndefined(cmpRoot)) {
-            cmpRoot = new Root(vm);
-            vm.cmpRoot = cmpRoot;
-        }
-        return cmpRoot;
+        return getShadowRoot(vm);
     },
     get root(): ShadowRoot {
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.vm(vm);
+            assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
-        return this.template;
+        return getShadowRoot(vm);
     },
     toString(): string {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
@@ -312,8 +307,8 @@ if (process.env.NODE_ENV !== 'production') {
             return; // no need to redefine something that we are already exposing
         }
         defineProperty(LWCElement.prototype, propName, {
-            get() {
-                const vm = getCustomElementVM(this as HTMLElement);
+            get(this: Component) {
+                const vm = getComponentVM(this);
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
@@ -347,3 +342,11 @@ freeze(LWCElement);
 seal(LWCElement.prototype);
 
 export { LWCElement as Element };
+
+export function getComponentVM(component: Component): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(component[ViewModelReflection]);
+    }
+    return component[ViewModelReflection] as VM;
+}

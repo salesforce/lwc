@@ -2,9 +2,9 @@ import assert from "../assert";
 import { isArray, isObject, isUndefined } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
-import { VMElement, getCustomElementVM } from "../vm";
+import { getComponentVM } from "../html-element";
 import { reactiveMembrane } from '../membrane';
-import { ComponentConstructor } from "../component";
+import { ComponentConstructor, Component } from "../component";
 
 export default function track(target: ComponentConstructor, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor;
 export default function track(target: any, prop?, descriptor?): any {
@@ -27,16 +27,16 @@ export default function track(target: any, prop?, descriptor?): any {
 
 export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {
     return {
-        get(this: VMElement): any {
-            const vm = getCustomElementVM(this);
+        get(this: Component): any {
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
             observeMutation(this, key);
             return vm.cmpTrack[key];
         },
-        set(this: VMElement, newValue: any) {
-            const vm = getCustomElementVM(this);
+        set(this: Component, newValue: any) {
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);

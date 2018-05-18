@@ -3,7 +3,8 @@ import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
 import { isObject, isNull, isTrue, hasOwnProperty } from "../language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { Component, ComponentConstructor } from "../component";
-import { VM, getCustomElementVM } from "../vm";
+import { VM } from "../vm";
+import { getComponentVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
 
@@ -51,7 +52,7 @@ export function prepareForPropUpdate(vm: VM) {
 export function createPublicPropertyDescriptor(proto: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     return {
         get(this: Component): any {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
@@ -65,7 +66,7 @@ export function createPublicPropertyDescriptor(proto: ComponentConstructor, key:
             return vm.cmpProps[key];
         },
         set(this: Component, newValue: any) {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
@@ -112,13 +113,13 @@ export function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: 
     return {
         get(this: Component): any {
             if (process.env.NODE_ENV !== 'production') {
-                const vm = getCustomElementVM(this);
+                const vm = getComponentVM(this);
                 assert.vm(vm);
             }
             return get.call(this);
         },
         set(this: Component, newValue: any) {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);

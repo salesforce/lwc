@@ -2,7 +2,7 @@ import assert from "./assert";
 import { ViewModelReflection } from "./def";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
-import { VM, getCustomElementVM } from "./vm";
+import { VM, wasNodePassedIntoVM } from "./vm";
 import { Component } from "./component";
 import { addRootEventListener, removeRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
@@ -11,8 +11,17 @@ import {
     GlobalAOMProperties,
     setAttribute,
     removeAttribute,
+    querySelectorAll,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
+
+function getShadowRootVM(root: ShadowRoot): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(root[ViewModelReflection]);
+    }
+    return root[ViewModelReflection] as VM;
+}
 
 export interface ShadowRoot {
     [ViewModelReflection]: VM;
@@ -31,14 +40,14 @@ function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: 
     return {
         enumerable: false,
         get(this: ShadowRoot): any {
-            const vm = getCustomElementVM(this);
+            const vm = getShadowRootVM(this);
             if (!hasOwnProperty.call(vm.rootProps, propName)) {
                 return defaultValue;
             }
             return vm.rootProps[propName];
         },
         set(this: ShadowRoot, newValue: any) {
-            const vm = getCustomElementVM(this);
+            const vm = getShadowRootVM(this);
             vm.rootProps[propName] = newValue;
             if (!isUndefined(vm.hostAttrs[attrName])) {
                 return;
@@ -72,7 +81,8 @@ export class Root implements ShadowRoot {
         return 'closed';
     }
     get host(): Component {
-        return getCustomElementVM(this).component as Component;
+        // TODO: this should be disable at some point
+        return getShadowRootVM(this).component as Component;
     }
     get innerHTML(): string {
         // TODO: should we add this only in dev mode? or wrap this in dev mode?
@@ -81,10 +91,18 @@ export class Root implements ShadowRoot {
     querySelector(selector: string): HTMLElement | null {
         const node = shadowRootQuerySelector(this[ViewModelReflection], selector);
         if (process.env.NODE_ENV !== 'production') {
-            // TODO: this invocation into component is invalid, and should be eventually removed
-            const component = getCustomElementComponent(this as ShadowRoot);
-            if (isNull(node) && component.querySelector(selector)) {
-                assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+            if (isNull(node)) {
+                const vm = getShadowRootVM(this);
+                const nodeList = querySelectorAll.call(vm.elm, selector);
+                let foundSlottedNode = false;
+                for (let i = 0, len = nodeList.length; i < len; i += 1) {
+                    if (wasNodePassedIntoVM(vm, nodeList[i])) {
+                        foundSlottedNode = true;
+                    }
+                }
+                if (foundSlottedNode) {
+                    assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+                }
             }
         }
         return node as HTMLElement;
@@ -92,22 +110,30 @@ export class Root implements ShadowRoot {
     querySelectorAll(selector: string): HTMLElement[] {
         const nodeList = shadowRootQuerySelectorAll(this[ViewModelReflection], selector);
         if (process.env.NODE_ENV !== 'production') {
-            // TODO: this invocation into component is invalid, and should be eventually removed
-            const component = getCustomElementComponent(this);
-            if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
-                assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+            if (nodeList.length === 0) {
+                const vm = getShadowRootVM(this);
+                const slottedNodeList = querySelectorAll.call(vm.elm, selector);
+                let foundSlottedNode = false;
+                for (let i = 0, len = slottedNodeList.length; i < len; i += 1) {
+                    if (wasNodePassedIntoVM(vm, slottedNodeList[i])) {
+                        foundSlottedNode = true;
+                    }
+                }
+                if (foundSlottedNode) {
+                    assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+                }
             }
         }
         return nodeList;
     }
 
     addEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getShadowRootVM(this);
         addRootEventListener(vm, type, listener, options);
     }
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getShadowRootVM(this);
         removeRootEventListener(vm, type, listener, options);
     }
     toString(): string {
