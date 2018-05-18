@@ -122,7 +122,9 @@ describe("compiler result", () => {
                 "foo.js": `import { Element } from 'engine';
                 import { main } from './utils/util.js';
                 export default class Test extends Element {
-                    get myimport() { return main();}
+                    get myimport() {
+                        return main();
+                    }
                 }
                 `,
                 "foo.html": readFixture("metadata/metadata.html"),
