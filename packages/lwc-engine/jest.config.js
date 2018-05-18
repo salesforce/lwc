@@ -6,4 +6,5 @@ module.exports = {
     testMatch: [
         '<rootDir>/**/__tests__/**/*.spec.ts'
     ],
+    setupTestFrameworkScriptFile: '<rootDir>/scripts/jest/setup.ts',
 };

@@ -3,11 +3,11 @@ const typescript = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
-const { version } = require('../package.json');
+const { version } = require('../../package.json');
 
-const entry = path.resolve(__dirname, '../src/framework/main.ts');
-const commonJSDirectory = path.resolve(__dirname, '../dist/commonjs');
-const modulesDirectory = path.resolve(__dirname, '../dist/modules');
+const entry = path.resolve(__dirname, '../../src/framework/main.ts');
+const commonJSDirectory = path.resolve(__dirname, '../../dist/commonjs');
+const modulesDirectory = path.resolve(__dirname, '../../dist/modules');
 
 const banner = (`/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;

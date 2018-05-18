@@ -9,9 +9,9 @@
     "clean": "rm -rf dist",
     "build": "concurrently \"yarn build:es-and-cjs\" \"yarn build:umd:prod\" \"yarn build:umd:dev\"",
     "test": "DIR=`pwd` && cd ../../ && yarn test $DIR",
-    "build:umd:dev": "rollup -c scripts/rollup.config.umd.dev.js",
-    "build:umd:prod": "rollup -c scripts/rollup.config.umd.prod.js",
-    "build:es-and-cjs": "rollup -c scripts/rollup.config.es-and-cjs.js"
+    "build:umd:dev": "rollup -c scripts/rollup/rollup.config.umd.dev.js",
+    "build:umd:prod": "rollup -c scripts/rollup/rollup.config.umd.prod.js",
+    "build:es-and-cjs": "rollup -c scripts/rollup/rollup.config.es-and-cjs.js"
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
