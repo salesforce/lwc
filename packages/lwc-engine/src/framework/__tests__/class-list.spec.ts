@@ -17,7 +17,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -33,7 +33,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -53,7 +53,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('bar baz foo');
         });
 
@@ -73,7 +73,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('');
         });
 
@@ -93,7 +93,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -113,7 +113,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm[ViewModelReflection].component.root.querySelector('x-child');
+            const childElm = elm[ViewModelReflection].component.template.querySelector('x-child');
             expect(childElm.className).toBe('bar foo');
         });
 
