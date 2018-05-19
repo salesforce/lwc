@@ -93,28 +93,41 @@ export interface ComposableEvent extends Event {
     composed: boolean;
 }
 
+interface ComponentHooks {
+    callHook: VM["callHook"];
+    setHook: VM["setHook"];
+    getHook: VM["getHook"];
+}
+
 // This should be as performant as possible, while any initialization should be done lazily
-class LWCElement implements Component {
-    [ViewModelReflection]: VM;
-    constructor() {
-        if (isNull(vmBeingConstructed)) {
-            throw new ReferenceError();
-        }
-        if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vmBeingConstructed);
-            assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
-        }
-        const vm = vmBeingConstructed;
-        const { elm, def } = vm;
-        const component = this as Component;
-        vm.component = component;
-        // TODO: eventually the render method should be a static property on the ctor instead
-        // catching render method to match other callbacks
-        vm.render = component.render;
-        // linking elm and its component with VM
-        component[ViewModelReflection] = elm[ViewModelReflection] = vm;
-        defineProperties(elm, def.descriptors);
+function LWCElement(this: Component) {
+    if (isNull(vmBeingConstructed)) {
+        throw new ReferenceError();
     }
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vmBeingConstructed);
+        assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
+    }
+    const vm = vmBeingConstructed;
+    const { elm, def } = vm;
+    const component = this;
+    vm.component = component;
+    // interaction hooks
+    // We are intentionally hiding this argument from the formal API of LWCElement because
+    // we don't want folks to know about it just yet.
+    if (arguments.length === 1) {
+        const { callHook, setHook, getHook } = arguments[0] as ComponentHooks;
+        vm.callHook = callHook;
+        vm.setHook = setHook;
+        vm.getHook = getHook;
+    }
+    // linking elm and its component with VM
+    component[ViewModelReflection] = elm[ViewModelReflection] = vm;
+    defineProperties(elm, def.descriptors);
+}
+
+LWCElement.prototype = {
+    constructor: LWCElement,
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
@@ -144,7 +157,7 @@ class LWCElement implements Component {
         // Pierce dispatchEvent so locker service has a chance to overwrite
         const dispatchEvent = pierceProperty(elm, 'dispatchEvent');
         return dispatchEvent.call(elm, event);
-    }
+    },
 
     addEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getCustomElementVM(this);
@@ -157,12 +170,12 @@ class LWCElement implements Component {
             }
         }
         addCmpEventListener(vm, type, listener, options);
-    }
+    },
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getCustomElementVM(this);
         removeCmpEventListener(vm, type, listener, options);
-    }
+    },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
         if (process.env.NODE_ENV !== 'production') {
@@ -171,13 +184,13 @@ class LWCElement implements Component {
         // use cached setAttributeNS, because elm.setAttribute throws
         // when not called in template
         return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
-    }
+    },
 
     removeAttributeNS(ns: string, attrName: string): void {
         // use cached removeAttributeNS, because elm.setAttribute throws
         // when not called in template
         return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
-    }
+    },
 
     removeAttribute(attrName: string) {
         const vm = getCustomElementVM(this);
@@ -185,7 +198,7 @@ class LWCElement implements Component {
         // when not called in template
         removeAttribute.call(vm.elm, attrName);
         attemptAriaAttributeFallback(vm, attrName);
-    }
+    },
 
     setAttribute(attrName: string, value: any): void {
         const vm = getCustomElementVM(this);
@@ -197,11 +210,11 @@ class LWCElement implements Component {
         // use cached setAttribute, because elm.setAttribute throws
         // when not called in template
         return setAttribute.call(getLinkedElement(this), attrName, value);
-    }
+    },
 
     getAttributeNS(ns: string, attrName: string) {
         return getAttributeNS.call(getLinkedElement(this), ns, attrName);
-    }
+    },
 
     getAttribute(attrName: string): string | null {
         // logging errors for experimental and special attributes
@@ -223,7 +236,7 @@ class LWCElement implements Component {
         }
 
         return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
-    }
+    },
 
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
@@ -232,7 +245,7 @@ class LWCElement implements Component {
             assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         }
         return elm.getBoundingClientRect();
-    }
+    },
     querySelector(selectors: string): Node | null {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -253,7 +266,7 @@ class LWCElement implements Component {
         }
 
         return null;
-    }
+    },
     querySelectorAll(selectors: string): NodeList {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -270,11 +283,11 @@ class LWCElement implements Component {
             }
         }
         return pierce(filteredNodes);
-    }
+    },
     get tagName(): string {
         const elm = getLinkedElement(this);
         return elm.tagName + ''; // avoiding side-channeling
-    }
+    },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
@@ -282,7 +295,7 @@ class LWCElement implements Component {
             assert.isFalse(isBeingConstructed(vm), `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`);
         }
         return getLinkedElement(this).classList;
-    }
+    },
     get template(): ShadowRoot {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -295,14 +308,14 @@ class LWCElement implements Component {
             vm.cmpRoot = cmpRoot;
         }
         return cmpRoot;
-    }
+    },
     get root(): ShadowRoot {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getCustomElementVM(this);
             assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return this.template;
-    }
+    },
     toString(): string {
         const vm = getCustomElementVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -312,8 +325,8 @@ class LWCElement implements Component {
         const { tagName } = elm;
         const is = getAttribute.call(elm, 'is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
-    }
-}
+    },
+};
 
 defineProperties(LWCElement.prototype, htmlElementDescriptors);
 

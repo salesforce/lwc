@@ -11,6 +11,45 @@ export interface TemplateMetadata {
     templateDependencies: string[];
 }
 
+function attachStyleToTemplate(
+    src: string,
+    filename: string,
+    options: NormalizedCompilerOptions
+) {
+    const { name, namespace } = options;
+
+    const templateFilename = path.basename(name, path.extname(name));
+
+    // Use the component tagname and a unique style token to scope the compiled
+    // styles to the component.
+    const tagName = `${namespace}-${name}`;
+    const scopingToken = `${tagName}_${templateFilename}`;
+
+    return [
+        `import stylesheet from './${templateFilename}.css'`,
+        "",
+        src,
+        "",
+
+        // The compiler resolves the style import to undefined if the stylesheet
+        // doesn't exists.
+        `if (stylesheet) {`,
+
+        // The engine picks the style token from the template during rendering to
+        // add the token to all generated elements.
+        `    tmpl.token = '${scopingToken}';`,
+        ``,
+
+        // Inject the component style in a new style tag the document head.
+        `    const style = document.createElement('style');`,
+        `    style.type = 'text/css';`,
+        `    style.dataset.token = '${scopingToken}'`,
+        `    style.textContent = stylesheet('${tagName}', '${scopingToken}');`,
+        `    document.head.appendChild(style);`,
+        `}`
+    ].join("\n");
+}
+
 export function getTemplateToken(name: string, namespace: string) {
     const templateId = path.basename(name, path.extname(name));
     return `${namespace}-${name}_${templateId}`;
@@ -24,34 +63,20 @@ export function getTemplateToken(name: string, namespace: string) {
 const transform: FileTransformer = function(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions,
+    options: NormalizedCompilerOptions
 ) {
-    const { name, namespace } = options;
-    const { code: template, warnings } = compile(src, {});
+    const { code, metadata, warnings } = compile(src, {});
 
     const fatalError = warnings.find(warning => warning.level === "error");
     if (fatalError) {
         throw new Error(fatalError.message);
     }
 
-    const token = getTemplateToken(name, namespace);
-    const cssName = path.basename(name, path.extname(name)) + ".css";
-
-    const code = [
-        `import style from './${cssName}'`,
-        "",
-        template,
-        "",
-        `if (style) {`,
-        `   const tagName = '${namespace}-${name}';`,
-        `   const token = '${token}';`,
-        ``,
-        `   tmpl.token = token;`,
-        `   tmpl.style = style(tagName, token);`,
-        `}`
-    ].join("\n");
-
-    return { code, map: null };
+    return {
+        code: attachStyleToTemplate(code, filename, options),
+        metadata,
+        map: null
+    };
 };
 
 export default transform;

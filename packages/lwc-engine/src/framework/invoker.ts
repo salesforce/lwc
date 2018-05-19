@@ -6,7 +6,7 @@ import {
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
 import { getComponentStack, VM } from "./vm";
-import { ComponentConstructor, Component } from "./component";
+import { ComponentConstructor } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
 
@@ -22,14 +22,13 @@ export function isBeingConstructed(vm: VM): boolean {
 }
 
 export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, args?: any[]): any {
-    const { context, component } = vm;
+    const { context, component, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);
     let result;
     let error;
     try {
-        // TODO: membrane proxy for all args that are objects
-        result = fn.apply(component, args);
+        result = callHook(component, fn, args);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -43,7 +42,7 @@ export function invokeComponentCallback(vm: VM, fn: (...args: any[]) => any, arg
     return result;
 }
 
-export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): Component {
+export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor) {
     const { context } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -54,10 +53,9 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
         startMeasure(vm, 'constructor');
     }
 
-    let component;
     let error;
     try {
-        component = new Ctor();
+        new Ctor(); // tslint:disable-line
     } catch (e) {
         error = Object(e);
     } finally {
@@ -73,11 +71,10 @@ export function invokeComponentConstructor(vm: VM, Ctor: ComponentConstructor): 
             throw error; // tslint:disable-line
         }
     }
-    return component as Component;
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
-    const { render } = vm;
+    const { def: { render }, callHook } = vm;
     if (isUndefined(render)) { return []; }
     const { component, context } = vm;
     const ctx = currentContext;
@@ -94,7 +91,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     }
 
     try {
-        const html = render.call(component);
+        const html = callHook(component, render);
         if (isFunction(html)) {
             result = evaluateTemplate(vm, html);
         } else if (!isUndefined(html)) {
@@ -130,14 +127,14 @@ export enum EventListenerContext {
 export let componentEventListenerType: EventListenerContext | null = null;
 
 export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, event: Event) {
-    const { context } = vm;
+    const { context, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);
     let error;
     const componentEventListenerTypeInception = componentEventListenerType;
     componentEventListenerType = listenerContext;
     try {
-        fn.call(undefined, event);
+        callHook(undefined, fn, [event]);
     } catch (e) {
         error = Object(e);
     } finally {

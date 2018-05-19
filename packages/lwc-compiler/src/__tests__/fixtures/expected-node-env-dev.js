@@ -4,10 +4,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
 if (style) {
-    const tagName = 'x-node_env';
-    const token = 'x-node_env_node_env';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-node_env_node_env';
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-node_env_node_env';
+    style$$1.textContent = style('x-node_env', 'x-node_env_node_env');
+    document.head.appendChild(style$$1);
 }
 class ClassAndTemplate extends Element {
     connectedCallback() {

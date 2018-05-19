@@ -1,17 +1,43 @@
 import assert from "../assert";
-import { defineProperty, isObject, isNull, isTrue } from "../language";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
+import { isObject, isNull, isTrue, hasOwnProperty } from "../language";
 import { observeMutation, notifyMutation } from "../watcher";
-import { Component } from "../component";
+import { Component, ComponentConstructor } from "../component";
 import { VM } from "../vm";
 import { getCustomElementVM } from "../html-element";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
 
-// stub function to prevent misuse of the @api decorator
-export default function api() {
+const COMPUTED_GETTER_MASK = 1;
+const COMPUTED_SETTER_MASK = 2;
+
+export default function api(target: ComponentConstructor, propName: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
     if (process.env.NODE_ENV !== 'production') {
-        assert.fail("@api may only be used as a decorator.");
+        if (arguments.length !== 3) {
+            assert.fail(`@api decorator can only be used as a decorator function.`);
+        }
+    }
+    const meta = target.publicProps;
+    // publicProps must be an own property, otherwise the meta is inherited.
+    const config = (!isUndefined(meta) && hasOwnProperty.call(target, 'publicProps') && hasOwnProperty.call(meta, propName)) ? meta[propName].config : 0;
+    // initializing getters and setters for each public prop on the target prototype
+    if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
+        if (process.env.NODE_ENV !== 'production') {
+            assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid property ${propName} definition in ${target}, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
+            const mustHaveGetter = COMPUTED_GETTER_MASK & config;
+            const mustHaveSetter = COMPUTED_SETTER_MASK & config;
+            if (mustHaveGetter) {
+                assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${target}`);
+            }
+            if (mustHaveSetter) {
+                assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${target}`);
+                assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${target}. You cannot have a setter without the corresponding getter.`);
+            }
+        }
+        // if it is configured as an accessor it must have a descriptor
+        return createPublicAccessorDescriptor(target, propName, descriptor as PropertyDescriptor);
+    } else {
+        return createPublicPropertyDescriptor(target, propName, descriptor);
     }
 }
 
@@ -23,9 +49,8 @@ export function prepareForPropUpdate(vm: VM) {
     vmBeingUpdated = vm;
 }
 
-// TODO: how to allow symbols as property keys?
-export function createPublicPropertyDescriptor(proto: object, key: string, descriptor: PropertyDescriptor | undefined) {
-    defineProperty(proto, key, {
+export function createPublicPropertyDescriptor(proto: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor {
+    return {
         get(this: Component): any {
             const vm = getCustomElementVM(this);
             if (process.env.NODE_ENV !== 'production') {
@@ -74,18 +99,18 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
             }
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
-    });
+    };
 }
 
-export function createPublicAccessorDescriptor(proto: object, key: string, descriptor: PropertyDescriptor) {
+export function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: PropertyKey, descriptor: PropertyDescriptor): PropertyDescriptor {
     const { get, set, enumerable } = descriptor;
     if (!isFunction(get)) {
         if (process.env.NODE_ENV !== 'production') {
-            assert.fail(`Invalid attempt to create public property descriptor ${key} in ${proto}. It is missing the getter declaration with @api get ${key}() {} syntax.`);
+            assert.fail(`Invalid attempt to create public property descriptor ${key} in ${Ctor}. It is missing the getter declaration with @api get ${key}() {} syntax.`);
         }
         throw new TypeError();
     }
-    defineProperty(proto, key, {
+    return {
         get(this: Component): any {
             if (process.env.NODE_ENV !== 'production') {
                 const vm = getCustomElementVM(this);
@@ -125,5 +150,5 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
             }
         },
         enumerable,
-    });
+    };
 }

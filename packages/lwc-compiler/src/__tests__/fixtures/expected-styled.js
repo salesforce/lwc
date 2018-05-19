@@ -30,11 +30,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-styled';
-    const token = 'x-styled_styled';
+    tmpl.token = 'x-styled_styled';
 
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-styled_styled';
+    style$$1.textContent = style('x-styled', 'x-styled_styled');
+    document.head.appendChild(style$$1);
 }
 
 class Styled extends Element {
