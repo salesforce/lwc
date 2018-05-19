@@ -131,7 +131,7 @@ describe("transform", () => {
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it("should throw when invalid tempalte file is specified", async () => {
+    it("should throw when invalid template file is specified", async () => {
         expect.assertions(1);
         try {
             await transform(`<`, "foo.css", {
