@@ -7,27 +7,28 @@ import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 import { unwrap } from "../main";
 import { querySelector } from "../dom";
+import { callbackify } from "util";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
         it('should set attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class Child extends Element {
                 setFoo() {
                     this.setAttributeNS('x', 'foo', 'bar');
                 }
             }
-            MyComponent.publicMethods = ['setFoo'];
+            Child.publicMethods = ['setFoo'];
 
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('should-set-attribute-on-host-element-when-element-is-nested-in-template-child', MyComponent, {})]
+                        return [$api.c('x-child', Child, {})]
                     }
                 }
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'should-set-attribute-on-host-element-when-element-is-nested-in-template-child');
+            const child = querySelector.call(element, 'x-child');
             child.setFoo();
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
             expect(child.getAttributeNS('x', 'foo')).toBe('bar');
@@ -61,23 +62,23 @@ describe('html-element', () => {
 
     describe('#setAttribute()', () => {
         it('should set attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class Child extends Element {
                 setFoo() {
                     this.setAttribute('foo', 'bar');
                 }
             }
-            MyComponent.publicMethods = ['setFoo'];
+            Child.publicMethods = ['setFoo'];
 
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('should-set-attribute-on-host-element-when-element-is-nested-in-template-child', MyComponent, {})]
+                        return [$api.c('x-child', Child, {})]
                     }
                 }
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'should-set-attribute-on-host-element-when-element-is-nested-in-template-child');
+            const child = querySelector.call(element, 'x-child');
             child.setFoo();
             expect(child.hasAttribute('foo')).toBe(true);
             expect(child.getAttribute('foo')).toBe('bar');
@@ -111,17 +112,17 @@ describe('html-element', () => {
 
     describe('#removeAttributeNS()', () => {
         it('should remove namespaced attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class Child extends Element {
                 removeTitle() {
                     this.removeAttributeNS('x', 'title');
                 }
             }
-            MyComponent.publicMethods = ['removeTitle'];
+            Child.publicMethods = ['removeTitle'];
 
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('remove-namespaced-attribute-on-host-element-child', MyComponent, {
+                        return [$api.c('x-child', Child, {
                             attrs: {
                                 'x:title': 'foo',
                             }
@@ -131,7 +132,7 @@ describe('html-element', () => {
             }
             const element = createElement('remove-namespaced-attribute-on-host-element', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'remove-namespaced-attribute-on-host-element-child');
+            const child = querySelector.call(element, 'x-child');
             child.removeTitle();
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
         });
@@ -152,17 +153,17 @@ describe('html-element', () => {
 
     describe('#removeAttribute()', () => {
         it('should remove attribute on host element when element is nested in template', () => {
-            class MyComponent extends Element {
+            class Child extends Element {
                 removeTitle() {
                     this.removeAttribute('title');
                 }
             }
-            MyComponent.publicMethods = ['removeTitle'];
+            Child.publicMethods = ['removeTitle'];
 
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('element-is-nested-in-template-child', MyComponent, {
+                        return [$api.c('x-child', Child, {
                             attrs: {
                                 title: 'foo',
                             }
@@ -172,7 +173,7 @@ describe('html-element', () => {
             }
             const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'element-is-nested-in-template-child');
+            const child = querySelector.call(element, 'x-child');
             child.removeTitle();
             expect(child.hasAttribute('title')).toBe(false);
         });
