@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.2...v) (2018-05-11)
+# [](https://github.com/salesforce/lwc/compare/v0.20.3...v) (2018-05-15)
+
+
+
+<a name="0.20.3"></a>
+## [0.20.3](https://github.com/salesforce/lwc/compare/v0.20.2...v0.20.3) (2018-05-15)
+
+
+### Bug Fixes
+
+* **husky:** fix husky release ([#297](https://github.com/salesforce/lwc/issues/297)) ([75722cb](https://github.com/salesforce/lwc/commit/75722cb))
+* upgrade compat packages ([#301](https://github.com/salesforce/lwc/issues/301)) ([cf5f5ae](https://github.com/salesforce/lwc/commit/cf5f5ae))
 
 
 

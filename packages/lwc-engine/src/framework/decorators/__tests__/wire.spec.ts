@@ -200,7 +200,7 @@ describe('wire.ts', () => {
     });
 
     describe('@wire misuse', () => {
-        it('should throw when invoking wire as a function', () => {
+        it('should throw when invoking wire without adapter', () => {
             class MyComponent extends Element {
                 constructor() {
                     super();
@@ -209,7 +209,7 @@ describe('wire.ts', () => {
             }
             expect(() => {
                 createElement('x-foo', { is: MyComponent });
-            }).toThrow('@wire may only be used as a decorator.');
+            }).toThrow('@wire(adapter, config?) may only be used as a decorator.');
         });
     });
 

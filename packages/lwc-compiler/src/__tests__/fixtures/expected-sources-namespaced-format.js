@@ -13,10 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-foo';
-    const token = 'x-foo_foo';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-foo_foo';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-foo_foo';
+    style$$1.textContent = style('x-foo', 'x-foo_foo');
+    document.head.appendChild(style$$1);
 }
 
 const Test = 1;

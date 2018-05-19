@@ -248,12 +248,6 @@ describe('track.ts', () => {
     });
 
     describe('track()', () => {
-        it('should throw when invoking it with no arguments', () => {
-            expect(() => {
-                track();
-            }).toThrow();
-        });
-
         it('should throw when invoking it with more than one argument', () => {
             expect(() => {
                 track({}, {});

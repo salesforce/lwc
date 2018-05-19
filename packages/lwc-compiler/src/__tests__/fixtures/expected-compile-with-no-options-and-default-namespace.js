@@ -13,10 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-default';
-    const token = 'x-default_default';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-default_default';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-default_default';
+    style$$1.textContent = style('x-default', 'x-default_default');
+    document.head.appendChild(style$$1);
 }
 
 class Default extends Element {

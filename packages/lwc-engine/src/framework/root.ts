@@ -114,6 +114,7 @@ export class Root implements ShadowRoot {
     querySelector(selector: string): HTMLElement | null {
         const node = shadowRootQuerySelector(this as ShadowRoot, selector);
         if (process.env.NODE_ENV !== 'production') {
+            // TODO: this invocation into component is invalid, and should be eventually removed
             const component = getCustomElementComponent(this as ShadowRoot);
             if (isNull(node) && component.querySelector(selector)) {
                 assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
@@ -124,6 +125,7 @@ export class Root implements ShadowRoot {
     querySelectorAll(selector: string): HTMLElement[] {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
         if (process.env.NODE_ENV !== 'production') {
+            // TODO: this invocation into component is invalid, and should be eventually removed
             const component = getCustomElementComponent(this);
             if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
                 assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
