@@ -3,7 +3,7 @@
 
     const style = undefined;
 
-    const style$2 = undefined;
+    const style$1 = undefined;
 
     function tmpl($api, $cmp, $slotset, $ctx) {
       const { d: api_dynamic, h: api_element } = $api;
@@ -19,12 +19,14 @@
       ];
     }
 
-    if (style$2) {
-      const tagName = "x-foo";
-      const token = "x-foo_foo";
+    if (style$1) {
+      tmpl.token = "x-foo_foo";
 
-      tmpl.token = token;
-      tmpl.style = style$2(tagName, token);
+      const style = document.createElement("style");
+      style.type = "text/css";
+      style.dataset.token = "x-foo_foo";
+      style.textContent = style$1("x-foo", "x-foo_foo");
+      document.head.appendChild(style);
     }
 
     class Foo extends engine.Element {
@@ -69,11 +71,13 @@
     }
 
     if (style) {
-      const tagName = "x-app";
-      const token = "x-app_app";
+      tmpl$1.token = "x-app_app";
 
-      tmpl$1.token = token;
-      tmpl$1.style = style(tagName, token);
+      const style$$1 = document.createElement("style");
+      style$$1.type = "text/css";
+      style$$1.dataset.token = "x-app_app";
+      style$$1.textContent = style("x-app", "x-app_app");
+      document.head.appendChild(style$$1);
     }
 
     class App extends engine.Element {

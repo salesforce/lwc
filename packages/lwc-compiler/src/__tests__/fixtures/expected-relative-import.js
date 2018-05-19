@@ -13,10 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'myns-relative_import';
-    const token = 'myns-relative_import_relative_import';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'myns-relative_import_relative_import';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'myns-relative_import_relative_import';
+    style$$1.textContent = style('myns-relative_import', 'myns-relative_import_relative_import');
+    document.head.appendChild(style$$1);
 }
 
 function test() {}

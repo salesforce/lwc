@@ -30,7 +30,7 @@ function _objectSpread(target) {
 
         if (typeof Object.getOwnPropertySymbols === 'function') {
             ownKeys = __concat(ownKeys, __callKey1(Object.getOwnPropertySymbols(source), "filter", function (sym) {
-                return __getKey(Object.getOwnPropertyDescriptor(source, sym), "enumerable");
+                return __getKey(Object.compatGetOwnPropertyDescriptor(source, sym), "enumerable");
             }));
         }
 

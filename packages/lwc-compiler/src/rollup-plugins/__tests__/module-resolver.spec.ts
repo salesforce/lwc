@@ -34,29 +34,31 @@ describe("module resolver", () => {
         expect(success).toBe(true);
         expect(pretify(result.code)).toMatch(
             pretify(`define('x-class_and_template', ['engine'], function (engine) {
-            const style = undefined;
-            function tmpl($api, $cmp, $slotset, $ctx) {
-            const {
-            t: api_text,
-            h: api_element
-            } = $api;
-            return [api_element("p", {
-            key: 1
-            }, [api_text("Manually Imported Template")])];
-            }
-            if (style) {
-            const tagName = 'x-class_and_template';
-            const token = 'x-class_and_template_class_and_template';
-            tmpl.token = token;
-            tmpl.style = style(tagName, token);
-            }
-            class Test extends engine.Element {
-            render() {
-            return tmpl;
-            }
-            }
-            return Test;
-            });`)
+                const style = undefined;
+                function tmpl($api, $cmp, $slotset, $ctx) {
+                const {
+                t: api_text,
+                h: api_element
+                } = $api;
+                return [api_element(\"p\", {
+                key: 1
+                }, [api_text(\"Manually Imported Template\")])];
+                }
+                if (style) {
+                tmpl.token = 'x-class_and_template_class_and_template';
+                const style$$1 = document.createElement('style');
+                style$$1.type = 'text/css';
+                style$$1.dataset.token = 'x-class_and_template_class_and_template';
+                style$$1.textContent = style('x-class_and_template', 'x-class_and_template_class_and_template');
+                document.head.appendChild(style$$1);
+                }
+                class Test extends engine.Element {
+                render() {
+                return tmpl;
+                }
+                }
+                return Test;
+                });`)
         );
     });
     test("compiler should resolve bundle with manually imported template that does not match component name", async () => {
@@ -80,29 +82,31 @@ describe("module resolver", () => {
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
             pretify(`define('x-class_and_template', ['engine'], function (engine) {
-            const style = undefined;
-            function tmpl($api, $cmp, $slotset, $ctx) {
-            const {
-            t: api_text,
-            h: api_element
-            } = $api;
-            return [api_element("p", {
-            key: 1
-            }, [api_text("Another Template")])];
-            }
-            if (style) {
-            const tagName = 'x-class_and_template';
-            const token = 'x-class_and_template_class_and_template';
-            tmpl.token = token;
-            tmpl.style = style(tagName, token);
-            }
-            class Test extends engine.Element {
-            render() {
-            return tmpl;
-            }
-            }
-            return Test;
-            });`)
+                const style = undefined;
+                function tmpl($api, $cmp, $slotset, $ctx) {
+                const {
+                t: api_text,
+                h: api_element
+                } = $api;
+                return [api_element(\"p\", {
+                key: 1
+                }, [api_text(\"Another Template\")])];
+                }
+                if (style) {
+                tmpl.token = 'x-class_and_template_anotherTemplate';
+                const style$$1 = document.createElement('style');
+                style$$1.type = 'text/css';
+                style$$1.dataset.token = 'x-class_and_template_anotherTemplate';
+                style$$1.textContent = style('x-class_and_template', 'x-class_and_template_anotherTemplate');
+                document.head.appendChild(style$$1);
+                }
+                class Test extends engine.Element {
+                render() {
+                return tmpl;
+                }
+                }
+                return Test;
+                });`)
         );
     });
 });

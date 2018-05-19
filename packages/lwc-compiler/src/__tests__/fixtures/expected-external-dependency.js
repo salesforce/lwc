@@ -14,10 +14,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-external';
-    const token = 'x-external_external';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-external_external';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-external_external';
+    style$$1.textContent = style('x-external', 'x-external_external');
+    document.head.appendChild(style$$1);
 }
 
 class Foo extends Element {

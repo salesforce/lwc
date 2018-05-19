@@ -1,31 +1,4 @@
-import * as postcss from 'postcss';
-import lwcPlugin from '../index';
-
-const FILE_NAME = '/test.css';
-const DEFAULT_TAGNAME = 'x-foo';
-const DEFAULT_TOKEN = 'x-foo_tmpl';
-
-function process(
-    source: string,
-    options: any = { tagName: DEFAULT_TAGNAME, token: DEFAULT_TOKEN },
-) {
-    const plugins = [lwcPlugin(options)];
-    return postcss(plugins).process(source, { from: FILE_NAME });
-}
-
-describe('validate options', () => {
-    it('assert tagName option', () => {
-        expect(() => process('', {})).toThrow(
-            /tagName option must be a string but instead received undefined/,
-        );
-    });
-
-    it('assert token option', () => {
-        expect(() => process('', { tagName: DEFAULT_TAGNAME })).toThrow(
-            /token option must be a string but instead received undefined/,
-        );
-    });
-});
+import { process } from './shared';
 
 describe('selectors', () => {
     it('should handle element selector', async () => {
@@ -33,11 +6,9 @@ describe('selectors', () => {
         expect(css).toBe(`h1[x-foo_tmpl] {}`);
     });
 
-    it('should handle pseudo element', async () => {
-        const { css } = await process('ul li:first-child a {}');
-        expect(css).toBe(
-            `ul[x-foo_tmpl] li[x-foo_tmpl]:first-child a[x-foo_tmpl] {}`,
-        );
+    it('should handle * selectors', async () => {
+        const { css } = await process('* {}');
+        expect(css).toBe(`*[x-foo_tmpl] {}`);
     });
 
     it('should handle multiple selectors', async () => {
@@ -71,9 +42,6 @@ describe('selectors', () => {
     it('should handle complex CSS selectors', async () => {
         let res;
 
-        res = await process('h1::before {}');
-        expect(res.css).toBe(`h1[x-foo_tmpl]::before {}`);
-
         res = await process('h1 > a {}');
         expect(res.css).toBe(`h1[x-foo_tmpl] > a[x-foo_tmpl] {}`);
 
@@ -88,6 +56,37 @@ describe('selectors', () => {
 
         res = await process('div[attr="va lue"] {}');
         expect(res.css).toBe(`div[attr="va lue"][x-foo_tmpl] {}`);
+    });
+});
+
+describe('pseudo class selectors', () => {
+    it('should handle simple pseudo class selectors', async () => {
+        const { css } = await process(':checked {}');
+        expect(css).toBe(`:checked[x-foo_tmpl] {}`);
+    });
+
+    it('should handle complex pseudo class selectors', async () => {
+        const { css } = await process('ul li:first-child a {}');
+        expect(css).toBe(
+            `ul[x-foo_tmpl] li:first-child[x-foo_tmpl] a[x-foo_tmpl] {}`,
+        );
+    });
+
+    it('should handle functional pseudo class selectors', async () => {
+        const { css } = await process(':not(p) {}');
+        expect(css).toBe(`:not(p)[x-foo_tmpl] {}`);
+    });
+});
+
+describe('pseudo element selectors', () => {
+    it('should handle simple pseudo element selectors', async () => {
+        const { css } = await process('::after {}');
+        expect(css).toBe(`[x-foo_tmpl]::after {}`);
+    });
+
+    it('should handle complex pseudo element selectors', async () => {
+        const { css } = await process('h1::before {}');
+        expect(css).toBe(`h1[x-foo_tmpl]::before {}`);
     });
 });
 
@@ -181,40 +180,5 @@ describe(':host-context', () => {
         expect(css).toBe(
             `.darktheme x-foo[x-foo_tmpl],.darktheme [is="x-foo"][x-foo_tmpl] {}`,
         );
-    });
-});
-
-describe('deprecated', () => {
-    it('throws on deprecated /deep/ selector', () => {
-        return expect(process(':host /deep/ a {}')).rejects.toMatchObject({
-            message: expect.stringMatching(
-                /Invalid usage of deprecated \/deep\/ selector/,
-            ),
-            file: FILE_NAME,
-            line: 1,
-            column: 7,
-        });
-    });
-
-    it('throws on deprecated ::shadow pseudo-element selector', () => {
-        return expect(process(':host::shadow a {}')).rejects.toMatchObject({
-            message: expect.stringMatching(
-                /Invalid usage of deprecated ::shadow selector/,
-            ),
-            file: FILE_NAME,
-            line: 1,
-            column: 6,
-        });
-    });
-
-    it('throws on unsupported ::slotted pseudo-element selector', () => {
-        return expect(process('::slotted a {}')).rejects.toMatchObject({
-            message: expect.stringMatching(
-                /::slotted pseudo-element selector is not supported/,
-            ),
-            file: FILE_NAME,
-            line: 1,
-            column: 1,
-        });
     });
 });

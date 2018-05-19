@@ -21,11 +21,11 @@ import {
     getPrototypeOf,
     isString,
     isFunction,
-    isObject,
     isUndefined,
     ArraySlice,
     isNull,
     ArrayReduce,
+    hasOwnProperty,
 } from "./language";
 import {
     GlobalAOMProperties,
@@ -38,9 +38,10 @@ import {
     defaultDefHTMLPropertyNames,
     attemptAriaAttributeFallback,
 } from "./dom";
-import { createWiredPropertyDescriptor } from "./decorators/wire";
-import { createTrackedPropertyDescriptor } from "./decorators/track";
-import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from "./decorators/api";
+import decorate, { DecoratorMap } from "./decorators/decorate";
+import wireDecorator from "./decorators/wire";
+import trackDecorator from "./decorators/track";
+import apiDecorator from "./decorators/api";
 import { Element as BaseElement, getCustomElementVM } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement } from "./vm";
@@ -66,8 +67,9 @@ export interface PropsDef {
 export interface TrackDef {
     [key: string]: 1;
 }
+export type PublicMethod = (...args: any[]) => any;
 export interface MethodDef {
-    [key: string]: 1;
+    [key: string]: PublicMethod;
 }
 export interface WireHash {
     [key: string]: WireDef;
@@ -82,16 +84,15 @@ export interface ComponentDef {
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
+    render?: () => Template;
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, getCustomElementComponent, ErrorCallback
+    ComponentConstructor, ErrorCallback, Component
  } from './component';
+import { Template } from "./template";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
-
-const COMPUTED_GETTER_MASK = 1;
-const COMPUTED_SETTER_MASK = 2;
 
 function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
     seed[propName] = {
@@ -105,12 +106,23 @@ function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
 const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
+function getCtorProto(Ctor: any): any {
+    let proto = getPrototypeOf(Ctor);
+    // The compiler produce AMD modules that do not support circular dependencies
+    // We need to create an indirection to circumvent those cases.
+    // We could potentially move this check to the definition
+    if (hasOwnProperty.call(proto, '__circular__')) {
+        proto = proto();
+    }
+    return proto;
+}
+
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
     protoSet = protoSet || [];
     if (!Ctor || ArrayIndexOf.call(protoSet, Ctor) >= 0) {
         return false; // null, undefined, or circular prototype definition
     }
-    const proto = getPrototypeOf(Ctor);
+    const proto = getCtorProto(Ctor);
     if (proto === BaseElement) {
         return true;
     }
@@ -135,61 +147,29 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     const track = getTrackHash(Ctor);
 
     const proto = Ctor.prototype;
-    for (const propName in props) {
-        const propDef = props[propName];
-        // initializing getters and setters for each public prop on the target prototype
-        const descriptor = getOwnPropertyDescriptor(proto, propName);
-        const { config } = propDef;
-        if (COMPUTED_SETTER_MASK & config || COMPUTED_GETTER_MASK & config) {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.invariant(!descriptor || (isFunction(descriptor.get) || isFunction(descriptor.set)), `Invalid ${name}.prototype.${propName} definition, it cannot be a prototype definition if it is a public property. Instead use the constructor to define it.`);
-                const mustHaveGetter = COMPUTED_GETTER_MASK & config;
-                const mustHaveSetter = COMPUTED_SETTER_MASK & config;
-                if (mustHaveGetter) {
-                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.get), `Missing getter for property ${propName} decorated with @api in ${name}`);
+    const decoratorMap: DecoratorMap = create(null);
+
+    // TODO: eventually, the compiler should do this work
+    {
+        for (const propName in props) {
+            decoratorMap[propName] = apiDecorator;
+        }
+        if (wire) {
+            for (const propName in wire) {
+                const wireDef: WireDef = wire[propName];
+                if (wireDef.method) {
+                    // for decorated methods we need to do nothing
+                    continue;
                 }
-                if (mustHaveSetter) {
-                    assert.isTrue(isObject(descriptor) && isFunction(descriptor.set), `Missing setter for property ${propName} decorated with @api in ${name}`);
-                    assert.isTrue(mustHaveGetter, `Missing getter for property ${propName} decorated with @api in ${name}. You cannot have a setter without the corresponding getter.`);
-                }
+                decoratorMap[propName] = wireDecorator(wireDef.adapter, wireDef.params);
             }
-            // if it is configured as an accessor it must have a descriptor
-            createPublicAccessorDescriptor(proto, propName, descriptor as PropertyDescriptor);
-        } else {
-            createPublicPropertyDescriptor(proto, propName, descriptor);
         }
-    }
-    if (wire) {
-        for (const propName in wire) {
-            if (wire[propName].method) {
-                // for decorated methods we need to do nothing
-                continue;
+        if (track) {
+            for (const propName in track) {
+                decoratorMap[propName] = trackDecorator;
             }
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createWiredPropertyDescriptor(proto, propName, descriptor);
         }
-    }
-    if (track) {
-        for (const propName in track) {
-            const descriptor = getOwnPropertyDescriptor(proto, propName);
-            // TODO: maybe these conditions should be always applied.
-            if (process.env.NODE_ENV !== 'production') {
-                const { get, set, configurable, writable } = descriptor || EmptyObject;
-                assert.isTrue(!get && !set, `Compiler Error: A decorator can only be applied to a public field.`);
-                assert.isTrue(configurable !== false, `Compiler Error: A decorator can only be applied to a configurable property.`);
-                assert.isTrue(writable !== false, `Compiler Error: A decorator can only be applied to a writable property.`);
-            }
-            // initializing getters and setters for each public prop on the target prototype
-            createTrackedPropertyDescriptor(proto, propName, descriptor);
-        }
+        decorate(Ctor, decoratorMap);
     }
 
     let {
@@ -197,8 +177,9 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
+        render,
     } = proto;
-    const superProto = getPrototypeOf(Ctor);
+    const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
         props = assign(create(null), superDef.props, props);
@@ -208,10 +189,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback = disconnectedCallback || superDef.disconnectedCallback;
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
+        render = render || superDef.render;
     }
 
     props = assign(create(null), HTML_PROPS, props);
-    const descriptors = createDescriptorMap(props, methods);
+    const descriptors = createCustomElementDescriptorMap(props, methods);
 
     const def: ComponentDef = {
         name,
@@ -224,6 +206,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         disconnectedCallback,
         renderedCallback,
         errorCallback,
+        render,
     };
 
     if (process.env.NODE_ENV !== 'production') {
@@ -243,20 +226,25 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
 function createGetter(key: string) {
     return function(this: VMElement): any {
-        return getCustomElementComponent(this)[key];
+        const vm = getCustomElementVM(this);
+        const { getHook } = vm;
+        return getHook(vm.component as Component, key);
     };
 }
 
 function createSetter(key: string) {
     return function(this: VMElement, newValue: any): any {
-        getCustomElementComponent(this)[key] = newValue;
+        const vm = getCustomElementVM(this);
+        const { setHook } = vm;
+        setHook(vm.component as Component, key, newValue);
     };
 }
 
-function createMethodCaller(key: string) {
+function createMethodCaller(method: PublicMethod): PublicMethod {
     return function(this: VMElement): any {
-        const component = getCustomElementComponent(this);
-        return component[key].apply(component, ArraySlice.call(arguments));
+        const vm = getCustomElementVM(this);
+        const { callHook } = vm;
+        return callHook(vm.component as Component, method, ArraySlice.call(arguments));
     };
 }
 
@@ -369,7 +357,7 @@ export function prepareForAttributeMutationFromTemplate(elm: Element, key: strin
     }
 }
 
-function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
+function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
     // replacing mutators and accessors on the element itself to catch any mutation
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
@@ -403,7 +391,7 @@ function createDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodD
     // expose public methods as props on the Element
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
-            value: createMethodCaller(key),
+            value: createMethodCaller(publicMethodsConfig[key]),
             configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         };
     }
@@ -470,13 +458,10 @@ function getPublicMethodsHash(target: ComponentConstructor): MethodDef {
         return EmptyObject;
     }
     return publicMethods.reduce((methodsHash: MethodDef, methodName: string): MethodDef => {
-        methodsHash[methodName] = 1;
-
         if (process.env.NODE_ENV !== 'production') {
             assert.isTrue(isFunction(target.prototype[methodName]), `Component "${target.name}" should have a method \`${methodName}\` instead of ${target.prototype[methodName]}.`);
-            freeze(target.prototype[methodName]);
         }
-
+        methodsHash[methodName] = target.prototype[methodName];
         return methodsHash;
     }, create(null));
 }

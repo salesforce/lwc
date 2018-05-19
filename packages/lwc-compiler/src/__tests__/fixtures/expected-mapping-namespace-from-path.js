@@ -14,10 +14,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    const tagName = 'x-cmp1';
-    const token = 'x-cmp1_cmp1';
-    tmpl.token = token;
-    tmpl.style = style(tagName, token);
+    tmpl.token = 'x-cmp1_cmp1';
+
+    const style$$1 = document.createElement('style');
+    style$$1.type = 'text/css';
+    style$$1.dataset.token = 'x-cmp1_cmp1';
+    style$$1.textContent = style('x-cmp1', 'x-cmp1_cmp1');
+    document.head.appendChild(style$$1);
 }
 
 class Cmp1 extends Element {

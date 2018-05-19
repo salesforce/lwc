@@ -114,6 +114,7 @@ export class Root implements ShadowRoot {
     querySelector(selector: string): HTMLElement | null {
         const node = shadowRootQuerySelector(this as ShadowRoot, selector);
         if (process.env.NODE_ENV !== 'production') {
+            // TODO: this invocation into component is invalid, and should be eventually removed
             const component = getCustomElementComponent(this as ShadowRoot);
             if (isNull(node) && component.querySelector(selector)) {
                 assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
@@ -124,6 +125,7 @@ export class Root implements ShadowRoot {
     querySelectorAll(selector: string): HTMLElement[] {
         const nodeList = shadowRootQuerySelectorAll(this, selector);
         if (process.env.NODE_ENV !== 'production') {
+            // TODO: this invocation into component is invalid, and should be eventually removed
             const component = getCustomElementComponent(this);
             if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
                 assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
@@ -242,6 +244,8 @@ export function wrapIframeWindow(win: Window) {
     };
 }
 
+const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
+
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
     piercing(target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
@@ -265,7 +269,7 @@ register({
                 const vm = getElementOwnerVM(target as Element);
                 if (!isUndefined(vm) && value === vm.elm) {
                     // walking up via parent chain might end up in the shadow root element
-                    return callback((vm.component as Component).root);
+                    return callback((vm.component as Component).template);
                 } else if (target instanceof Element && value instanceof Element && target[OwnerKey] !== value[OwnerKey]) {
                     // cutting out access to something outside of the shadow of the current target (usually slots)
                     return callback(); // TODO: this should probably be `null`
@@ -280,17 +284,15 @@ register({
                         return callback(pierce(value));
                     case 'target':
                         const { currentTarget } = event;
-
                         // Executing event listener on component, target is always currentTarget
                         if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                             return callback(pierce(currentTarget));
                         }
 
                         // Event is coming from an slotted element
-                        if (isChildNode(getRootNode.call(value, event), currentTarget as Element)) {
+                        if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
                             return;
                         }
-
                         // target is owned by the VM
                         const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
                         if (!isUndefined(vm)) {

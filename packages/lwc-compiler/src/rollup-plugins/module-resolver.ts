@@ -8,11 +8,11 @@ function isRelativeImport(id: string) {
     return id.startsWith(".");
 }
 
-function isTemplateCss(id: string, importee: string, moduleName: string) {
+function isTemplateCss(id: string, importee: string) {
     return (
         path.extname(id) === ".css" &&
         path.extname(importee) === ".html" &&
-        path.basename(id, ".css") === moduleName
+        path.basename(id, ".css") === path.basename(importee, ".html")
     );
 }
 
@@ -60,7 +60,7 @@ export default function({
 
             if (
                 !fileExists(absPath, options) &&
-                !isTemplateCss(id, importee, options.name)
+                !isTemplateCss(id, importee)
             ) {
                 throw new Error(`Could not resolve '${id}' from '${importee}'`);
             }
