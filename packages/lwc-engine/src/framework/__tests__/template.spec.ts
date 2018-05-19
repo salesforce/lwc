@@ -58,9 +58,9 @@ describe('template', () => {
                     ]);
                 });
             });
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div').length).toBe(2);
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div').length).toBe(2);
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         it('should render sets correctly', function() {
@@ -74,9 +74,9 @@ describe('template', () => {
                     ]);
                 });
             });
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div').length).toBe(2);
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(elm[ViewModelReflection].component.root.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div').length).toBe(2);
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div')[0].textContent).toBe('a');
+            expect(elm[ViewModelReflection].component.template.querySelectorAll('div')[1].textContent).toBe('b');
         });
 
         // this test depends on the memoization
