@@ -41,7 +41,7 @@ function attachStyleToTemplate(src: string, { moduleName, moduleNamespace, filen
     moduleNamespace: string,
     filename: string,
 }) {
-    const templateFilename = path.basename(moduleName, path.extname(moduleName));
+    const templateFilename = path.basename(filename, path.extname(filename));
 
     // Use the component tagname and a unique style token to scope the compiled
     // styles to the component.

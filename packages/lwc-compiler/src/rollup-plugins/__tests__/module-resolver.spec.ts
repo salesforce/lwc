@@ -93,11 +93,11 @@ describe("module resolver", () => {
                 }, [api_text(\"Another Template\")])];
                 }
                 if (style) {
-                tmpl.token = 'x-class_and_template_class_and_template';
+                tmpl.token = 'x-class_and_template_anotherTemplate';
                 const style$$1 = document.createElement('style');
                 style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_class_and_template';
-                style$$1.textContent = style('x-class_and_template', 'x-class_and_template_class_and_template');
+                style$$1.dataset.token = 'x-class_and_template_anotherTemplate';
+                style$$1.textContent = style('x-class_and_template', 'x-class_and_template_anotherTemplate');
                 document.head.appendChild(style$$1);
                 }
                 class Test extends engine.Element {
