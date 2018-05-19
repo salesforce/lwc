@@ -11,48 +11,25 @@ export interface TemplateMetadata {
     templateDependencies: string[];
 }
 
-/**
- * Transforms a HTML template into module exporting a template function.
- * The transform also add a style import for the default stylesheet associated with
- * the template regardless if there is an actual style or not.
- */
-const transform: FileTransformer = function(
+function attachStyleToTemplate(
     src: string,
     filename: string,
-    options: NormalizedCompilerOptions,
+    options: NormalizedCompilerOptions
 ) {
     const { name, namespace } = options;
-    const { code: template, warnings } = compile(src, {});
 
-    const fatalError = warnings.find(warning => warning.level === "error");
-    if (fatalError) {
-        throw new Error(fatalError.message);
-    }
-
-    return { code: attachStyleToTemplate(template, {
-        moduleName: name,
-        moduleNamespace: namespace,
-        filename,
-    }), map: null };
-};
-
-function attachStyleToTemplate(src: string, { moduleName, moduleNamespace, filename }: {
-    moduleName: string,
-    moduleNamespace: string,
-    filename: string,
-}) {
     const templateFilename = path.basename(filename, path.extname(filename));
 
     // Use the component tagname and a unique style token to scope the compiled
     // styles to the component.
-    const tagName = `${moduleNamespace}-${moduleName}`;
+    const tagName = `${namespace}-${name}`;
     const scopingToken = `${tagName}_${templateFilename}`;
 
     return [
         `import stylesheet from './${templateFilename}.css'`,
-        '',
+        "",
         src,
-        '',
+        "",
 
         // The compiler resolves the style import to undefined if the stylesheet
         // doesn't exists.
@@ -69,8 +46,32 @@ function attachStyleToTemplate(src: string, { moduleName, moduleNamespace, filen
         `    style.dataset.token = '${scopingToken}'`,
         `    style.textContent = stylesheet('${tagName}', '${scopingToken}');`,
         `    document.head.appendChild(style);`,
-        `}`,
-    ].join('\n');
+        `}`
+    ].join("\n");
 }
+
+/**
+ * Transforms a HTML template into module exporting a template function.
+ * The transform also add a style import for the default stylesheet associated with
+ * the template regardless if there is an actual style or not.
+ */
+const transform: FileTransformer = function(
+    src: string,
+    filename: string,
+    options: NormalizedCompilerOptions
+) {
+    const { code, metadata, warnings } = compile(src, {});
+
+    const fatalError = warnings.find(warning => warning.level === "error");
+    if (fatalError) {
+        throw new Error(fatalError.message);
+    }
+
+    return {
+        code: attachStyleToTemplate(code, filename, options),
+        metadata,
+        map: null
+    };
+};
 
 export default transform;
