@@ -11,11 +11,6 @@ export interface TemplateMetadata {
     templateDependencies: string[];
 }
 
-export function getTemplateToken(name: string, namespace: string) {
-    const templateId = path.basename(name, path.extname(name));
-    return `${namespace}-${name}_${templateId}`;
-}
-
 /**
  * Transforms a HTML template into module exporting a template function.
  * The transform also add a style import for the default stylesheet associated with
@@ -34,24 +29,48 @@ const transform: FileTransformer = function(
         throw new Error(fatalError.message);
     }
 
-    const token = getTemplateToken(name, namespace);
-    const cssName = path.basename(name, path.extname(name)) + ".css";
-
-    const code = [
-        `import style from './${cssName}'`,
-        "",
-        template,
-        "",
-        `if (style) {`,
-        `   const tagName = '${namespace}-${name}';`,
-        `   const token = '${token}';`,
-        ``,
-        `   tmpl.token = token;`,
-        `   tmpl.style = style(tagName, token);`,
-        `}`
-    ].join("\n");
-
-    return { code, map: null };
+    return { code: attachStyleToTemplate(template, {
+        moduleName: name,
+        moduleNamespace: namespace,
+        filename,
+    }), map: null };
 };
+
+function attachStyleToTemplate(src: string, { moduleName, moduleNamespace, filename }: {
+    moduleName: string,
+    moduleNamespace: string,
+    filename: string,
+}) {
+    const templateFilename = path.basename(moduleName, path.extname(moduleName));
+
+    // Use the component tagname and a unique style token to scope the compiled
+    // styles to the component.
+    const tagName = `${moduleNamespace}-${moduleName}`;
+    const scopingToken = `${tagName}_${templateFilename}`;
+
+    return [
+        `import stylesheet from './${templateFilename}.css'`,
+        '',
+        src,
+        '',
+
+        // The compiler resolves the style import to undefined if the stylesheet
+        // doesn't exists.
+        `if (stylesheet) {`,
+
+        // The engine picks the style token from the template during rendering to
+        // add the token to all generated elements.
+        `    tmpl.token = '${scopingToken}';`,
+        ``,
+
+        // Inject the component style in a new style tag the document head.
+        `    const style = document.createElement('style');`,
+        `    style.type = 'text/css';`,
+        `    style.dataset.token = '${scopingToken}'`,
+        `    style.textContent = stylesheet('${tagName}', '${scopingToken}');`,
+        `    document.head.appendChild(style);`,
+        `}`,
+    ].join('\n');
+}
 
 export default transform;
