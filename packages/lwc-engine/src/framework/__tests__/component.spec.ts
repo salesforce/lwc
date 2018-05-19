@@ -51,7 +51,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.lunch).toBe('salad');
-            expect(elm[ViewModelReflection].component.root.querySelector('x-component').breakfast).toBe('pancakes');
+            expect(elm[ViewModelReflection].component.template.querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function() {
@@ -358,7 +358,7 @@ describe('component', function() {
                 }
             });
             document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].component.root.querySelector('section').style.cssText).toBe('color: red;');
+            expect(elm[ViewModelReflection].component.template.querySelector('section').style.cssText).toBe('color: red;');
             expect(calledCSSText).toBe(true);
         });
 
@@ -455,7 +455,7 @@ describe('component', function() {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const section = elm[ViewModelReflection].component.root.querySelector('section');
+            const section = elm[ViewModelReflection].component.template.querySelector('section');
             section.style.removeProperty = function() {
                 called = true;
             };

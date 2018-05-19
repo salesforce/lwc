@@ -26,7 +26,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toHaveLength(1);
     });
 
@@ -65,10 +65,10 @@ describe('module/events', () => {
         MyComponent.track = { counter: 1 };
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        component.root.querySelector('div').click();
+        component.template.querySelector('div').click();
         component.counter += 1;
         return Promise.resolve().then( () => {
-            component.root.querySelector('div').click();
+            component.template.querySelector('div').click();
             expect(second).toBe(true);
             expect(result).toEqual([1, 2]);
         });
@@ -108,11 +108,11 @@ describe('module/events', () => {
         MyComponent.track = { counter: 1 };
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        component.root.querySelector('p').click();
+        component.template.querySelector('p').click();
         component.counter += 1;
         return Promise.resolve().then( () => {
             expect(second).toBe(true);
-            component.root.querySelector('div').click();
+            component.template.querySelector('div').click();
             expect(result).toEqual([1, 1]);
         });
     });
@@ -141,7 +141,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toHaveLength(2);
         expect(result[0]).toBe(cmp);
         expect(result[1]).toBeInstanceOf(Event);
@@ -166,7 +166,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        cmp.root.querySelector('x-child').click();
+        cmp.template.querySelector('x-child').click();
         expect(result).toHaveLength(1);
     });
 
@@ -189,7 +189,7 @@ describe('module/events', () => {
         }
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
-        cmp.root.querySelector('x-child').dispatchEvent(new CustomEvent('test', {}));
+        cmp.template.querySelector('x-child').dispatchEvent(new CustomEvent('test', {}));
         expect(result).toHaveLength(1);
     });
 
