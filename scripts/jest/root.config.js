@@ -1,4 +1,7 @@
+const path = require('path');
+
 module.exports = {
+    rootDir: '../..',
     projects: [
         '<rootDir>/packages/babel-plugin-transform-lwc-class',
         '<rootDir>/packages/lwc-compiler',

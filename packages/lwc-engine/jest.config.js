@@ -1,10 +1,8 @@
+const BASE_CONFIG = require('../../scripts/jest/base.config');
+
 module.exports = {
-    moduleFileExtensions: ['ts', 'js', 'json'],
-    transform: {
-        '.ts': require.resolve('ts-jest/preprocessor.js'),
-    },
-    testMatch: [
-        '<rootDir>/**/__tests__/**/*.spec.ts'
-    ],
+    ...BASE_CONFIG,
+
+    displayName: 'lwc-engine',
     setupTestFrameworkScriptFile: '<rootDir>/scripts/jest/setup.ts',
 };
