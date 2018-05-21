@@ -1,48 +1,51 @@
 import assert from "./assert";
-import { wasNodePassedIntoVM, VM, getElementOwnerVM, getCustomElementVM, isNodeOwnedByVM, OwnerKey } from "./vm";
+import { wasNodePassedIntoVM, VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "./vm";
 import {
-    querySelectorAll,
+    querySelectorAll as nativeQuerySelectorAll,
+    parentNodeGetter as nativeParentNodeGetter,
+    parentElementGetter as nativeParentElementGetter,
 } from "./dom";
+import { Root } from "./root";
 import {
     ArrayFilter,
+    isUndefined,
 } from "./language";
 import { isBeingConstructed } from "./invoker";
 
-export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
-    const nodeList = querySelectorAll.call(this, selectors);
-    const vm = getElementOwnerVM(this) as VM;
-    // TODO: locker service might need to do something here
-    const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(vm, selectors).length) {
-            assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
-        }
+export function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
+    const vm = getElementOwnerVM(this);
+    const value = nativeParentElementGetter.call(this);
+    if (!isUndefined(vm) && value === vm.elm) {
+        // walking up via parent chain might end up in the shadow root element
+        return vm.cmpRoot!;
+    } else if (value instanceof Element && this[OwnerKey] !== value[OwnerKey]) {
+        // cutting out access to something outside of the shadow of the current target (usually slots)
+        return null;
     }
-    return filteredNodes;
+    return value;
+}
+
+export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const matches = nativeQuerySelectorAll.call(this, selectors);
+    return ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
 }
 
 export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
-    const vm = getElementOwnerVM(this) as VM;
-    const nodeList = querySelectorAll.call(this, selectors);
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const matches = nativeQuerySelectorAll.call(this, selectors);
+    const nodeList = ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
+    // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        if (wasNodePassedIntoVM(vm, nodeList[i])) {
-            // TODO: locker service might need to return a membrane proxy
+        if (isNodeOwnedByVM(ownerVM, nodeList[i])) {
             return nodeList[i];
         }
     }
-
-    if (process.env.NODE_ENV !== 'production') {
-        if (shadowRootQuerySelector(vm, selectors)) {
-            assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
-        }
-    }
-
     return null;
 }
 
 function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
-    const nodeList = querySelectorAll.call(elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
@@ -53,7 +56,7 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
 }
 
 function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
-    const nodeList = querySelectorAll.call(elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
     const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
     return filteredNodes;
 }

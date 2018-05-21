@@ -7,6 +7,7 @@ import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } fro
 import { ViewModelReflection, getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
+import { parentNodeGetter, parentElementGetter } from "./dom";
 
 import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -407,9 +408,8 @@ export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
         assert.invariant(node instanceof Node, `isNodePassedToVM() should be called with a node as the second argument instead of ${node}`);
         assert.childNode(vm.elm, node, `isNodePassedToVM() should never be called with a node that is not a child node of ${vm}`);
     }
-    const { elm } = vm;
     // TODO: we need to walk the parent path here as well, in case they passed it via slots multiple times
-    return node[OwnerKey] === elm[OwnerKey];
+    return node[OwnerKey] === vm.uid;
 }
 
 function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
@@ -417,7 +417,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.vm(vm);
     }
     const { elm } = vm;
-    const parentElm = elm && elm.parentElement;
+    const parentElm = elm && parentElementGetter.call(elm);
     return getErrorBoundaryVM(parentElm);
 }
 
@@ -440,7 +440,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         }
         // TODO: if shadowDOM start preventing this walking process, we will
         // need to find a different way to find the right boundary
-        elm = elm.parentElement;
+        elm = parentElementGetter.call(elm);
     }
 }
 
@@ -452,7 +452,7 @@ export function getComponentStack(vm: VM): string {
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
-        elm = elm.parentElement;
+        elm = parentElementGetter.call(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
 }
@@ -465,7 +465,7 @@ export function getElementOwnerVM(elm: Element): VM | undefined {
     let ownerKey;
     // search for the first element with owner identity (just in case of manually inserted elements)
     while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
-        node = node.parentNode;
+        node = parentNodeGetter.call(node);
     }
     if (isUndefined(ownerKey) || isNull(node)) {
         return;
@@ -473,7 +473,7 @@ export function getElementOwnerVM(elm: Element): VM | undefined {
     let vm: VM | undefined;
     // search for a custom element with a VM that owns the first element with owner identity attached to it
     while (!isNull(node) && (isUndefined(vm = node[ViewModelReflection]) || (vm as VM).uid !== ownerKey)) {
-        node = node.parentNode;
+        node = parentNodeGetter.call(node);
     }
     return isNull(node) ? undefined : vm;
 }

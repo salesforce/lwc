@@ -300,7 +300,7 @@ describe('root', () => {
             });
         });
 
-        it.only('should ignore extraneous elements', () => {
+        it('should ignore extraneous elements', () => {
             function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
             class MyComponent extends Element {
                 render() {

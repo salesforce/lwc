@@ -9,6 +9,7 @@ import token from "./modules/token";
 import uid from "./modules/uid";
 import shadow from "./modules/shadow";
 import { isNull } from './language';
+import { parentNodeGetter } from "./dom";
 
 const {
     createElement,
@@ -23,7 +24,7 @@ const {
     appendChild,
 } = Node.prototype;
 function parentNode(node: Node): Node | null {
-    return node.parentNode;
+    return parentNodeGetter.call(node);
 }
 function nextSibling(node: Node): Node | null {
     return node.nextSibling;

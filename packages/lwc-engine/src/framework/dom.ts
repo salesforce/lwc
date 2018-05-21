@@ -36,6 +36,9 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
+const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const parentElementGetter = getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!;
+
 /**
  * Returns the context shadow included root.
  */
@@ -66,8 +69,9 @@ function findShadowRoot(node: Node): Node {
  * in our case.
  */
 function findComposedRootNode(node: Node): Node {
-    while (!isNull(node.parentNode)) {
-        node = node.parentNode;
+    const parent = parentNodeGetter.call(node);
+    while (!isNull(parent)) {
+        node = parent;
     }
 
     return node;
@@ -113,6 +117,8 @@ export {
     // Node.prototype
     compareDocumentPosition,
     getRootNode,
+    parentNodeGetter,
+    parentElementGetter,
 
     // Node
     DOCUMENT_POSITION_CONTAINED_BY,
