@@ -185,6 +185,7 @@ register({
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
+<<<<<<< HEAD
             if (isParentNodeKeyword(key)) {
                 const vm = getElementOwnerVM(target as Element);
                 if (!isUndefined(vm) && value === vm.elm) {
@@ -195,6 +196,8 @@ register({
                     return callback(); // TODO: this should probably be `null`
                 }
             }
+=======
+>>>>>>> wip: parent traversal
         }
     }
 });

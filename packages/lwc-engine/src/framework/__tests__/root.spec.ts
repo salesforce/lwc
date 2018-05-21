@@ -389,6 +389,24 @@ describe('root', () => {
             });
         });
 
+        it('should allow walking back to the shadow root via parentElement', () => {
+            function html($api) {
+                return [$api.h('div', { key: 0 }, [])];
+            }
+            class MyComponent extends Element {
+                render() {
+                    return html;
+                }
+            }
+
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            return Promise.resolve().then(() => {
+                const root = (elm[ViewModelReflection].component as Component).template;
+                expect(root.querySelector('div').parentElement).toBe(root);
+            });
+        });
+
         it('should not expose shadow root on child custom element', () => {
             expect.assertions(1);
             let childTemplate;

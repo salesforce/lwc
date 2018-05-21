@@ -1,6 +1,11 @@
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { defineProperties } from './../language';
-import { lightDomQuerySelector, lightDomQuerySelectorAll, parentNodeDescriptorValue } from "./../traverse";
+import {
+    lightDomQuerySelector,
+    lightDomQuerySelectorAll,
+    parentNodeDescriptorValue,
+    parentElementDescriptorValue,
+} from "./../traverse";
 
 const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
@@ -15,6 +20,10 @@ const shadowDescriptors: PropertyDescriptorMap = {
         get: parentNodeDescriptorValue,
         configurable: true,
     },
+    parentElement: {
+        get: parentElementDescriptorValue,
+        configurable: true,
+    }
 }
 
 function create(oldVnode: VNode, vnode: VNode) {

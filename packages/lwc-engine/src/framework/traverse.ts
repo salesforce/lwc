@@ -12,17 +12,31 @@ import {
 } from "./language";
 import { isBeingConstructed } from "./invoker";
 
-export function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
-    const vm = getElementOwnerVM(this);
-    const value = nativeParentElementGetter.call(this);
+function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+
     if (!isUndefined(vm) && value === vm.elm) {
         // walking up via parent chain might end up in the shadow root element
         return vm.cmpRoot!;
-    } else if (value instanceof Element && this[OwnerKey] !== value[OwnerKey]) {
+    } else if (value instanceof Element && node[OwnerKey] === value[OwnerKey]) {
         // cutting out access to something outside of the shadow of the current target (usually slots)
-        return null;
+        return value;
     }
-    return value;
+    return null;
+}
+
+export function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
+    const vm = getElementOwnerVM(this) as VM;
+    const value = nativeParentNodeGetter.call(this);
+    return getShadowParent(this, vm, value);
+}
+
+export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
+    const vm = getElementOwnerVM(this) as VM;
+    const value = nativeParentElementGetter.call(this);
+    return getShadowParent(this, vm, value);
 }
 
 export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
