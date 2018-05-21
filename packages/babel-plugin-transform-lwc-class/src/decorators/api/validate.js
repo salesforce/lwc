@@ -71,12 +71,40 @@ function validatePairSetterGetter(decorators) {
             isApiDecorator(decorator) &&
             decorator.type === DECORATOR_TYPES.GETTER &&
             path.parentPath.get('key.name').node === name
-        ))
+        ));
 
         if (!associatedGetter) {
             throw path.buildCodeFrameError(`@api set ${name} setter does not have associated getter.`);
         }
     });
+}
+
+function validateUniqueness(decorators) {
+    const apiDecorators = decorators.filter(isApiDecorator);
+
+    for (let i = 0; i < apiDecorators.length; i++) {
+        const { path: currentPath, type: currentType } = apiDecorators[i];
+        const currentPropertyName = currentPath.parentPath.get('key.name').node;
+
+        for (let j = 0; j < apiDecorators.length; j++) {
+            const { path: comparePath, type: compareType } = apiDecorators[j];
+            const comparePropertyName = comparePath.parentPath.get('key.name').node;
+
+            if (currentPath !== comparePath) {
+                const haveSameName = currentPropertyName === comparePropertyName;
+                const isGetterSetterPair = (
+                    (currentType === DECORATOR_TYPES.GETTER && compareType === DECORATOR_TYPES.SETTER) ||
+                    (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER)
+                );
+
+                if (haveSameName && !isGetterSetterPair) {
+                    throw comparePath.buildCodeFrameError(
+                        `Duplicate @api property "${currentPropertyName}".`,
+                    );
+                }
+            }
+        }
+    }
 }
 
 module.exports = function validate(klass, decorators) {
@@ -92,4 +120,5 @@ module.exports = function validate(klass, decorators) {
     });
 
     validatePairSetterGetter(decorators);
-}
+    validateUniqueness(decorators);
+};

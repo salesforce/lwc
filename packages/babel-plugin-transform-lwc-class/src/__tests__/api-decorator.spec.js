@@ -392,6 +392,57 @@ Test.publicProps = {
             },
         }
     });
+
+    pluginTest('Duplicate api properties', `
+        import { api } from 'engine';
+        export default class Text {
+            @api foo = 1;
+            @api foo = 2;
+        }
+    `, {
+        error: {
+            message: 'test.js: Duplicate @api property "foo".',
+            loc: {
+                line: 2,
+                column: 9
+            }
+        }
+    });
+
+    pluginTest('Conflicting api properties with getter/setter', `
+        import { api } from 'engine';
+        export default class Text {
+            @api foo = 1;
+
+            _internal = 1;
+            @api get foo() { return 'foo' };
+            @api set foo(val) { this._internal = val };
+        }
+    `, {
+        error: {
+            message: 'test.js: Duplicate @api property "foo".',
+            loc: {
+                line: 2,
+                column: 9
+            }
+        }
+    });
+
+    pluginTest('Conflicting api properties with method', `
+        import { api } from 'engine';
+        export default class Text {
+            @api foo = 1;
+            @api foo() { return 'foo'; }
+        }
+    `, {
+        error: {
+            message: 'test.js: Duplicate @api property "foo".',
+            loc: {
+                line: 2,
+                column: 9
+            }
+        }
+    });
 });
 
 describe('Transform method', () => {
