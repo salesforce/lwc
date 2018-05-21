@@ -75,7 +75,6 @@ function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
     return filteredNodes;
 }
 
-
 export function shadowRootQuerySelector(vm: VM, selector: string): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);

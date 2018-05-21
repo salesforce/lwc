@@ -50,7 +50,7 @@ const retargetedEventProxyHandler = {
         }
         return value;
     }
-}
+};
 
 export function createEventProxy(event: Event) {
     return new Proxy(event, retargetedEventProxyHandler);

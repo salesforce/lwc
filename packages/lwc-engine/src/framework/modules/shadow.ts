@@ -24,7 +24,7 @@ const shadowDescriptors: PropertyDescriptorMap = {
         get: parentElementDescriptorValue,
         configurable: true,
     }
-}
+};
 
 function create(oldVnode: VNode, vnode: VNode) {
     const { elm } = vnode;

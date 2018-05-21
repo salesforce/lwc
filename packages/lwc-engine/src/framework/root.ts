@@ -2,7 +2,7 @@ import assert from "./assert";
 import { ViewModelReflection } from "./def";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
-import { OwnerKey, VM, getElementOwnerVM, getCustomElementVM } from "./vm";
+import { VM, getCustomElementVM } from "./vm";
 import { register } from "./services";
 import { Component } from "./component";
 import { Replicable } from "./membrane";
@@ -120,10 +120,6 @@ export class Root implements ShadowRoot {
 }
 defineProperties(Root.prototype, RootDescriptors);
 
-function isParentNodeKeyword(key: PropertyKey): boolean {
-    return (key === 'parentNode' || key === 'parentElement');
-}
-
 function isIframeContentWindow(key: PropertyKey, value: any) {
     return (key === 'contentWindow') && value.window === value;
 }
@@ -175,8 +171,6 @@ export function wrapIframeWindow(win: Window) {
         },
     };
 }
-
-const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 // Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
 register({
