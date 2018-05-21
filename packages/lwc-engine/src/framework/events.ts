@@ -4,6 +4,7 @@ import {
     removeEventListener,
     getRootNode,
     isChildNode,
+    parentNodeGetter,
 } from "./dom";
 import { VM, OwnerKey, getElementOwnerVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
@@ -13,6 +14,8 @@ interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
 }
+
+const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const retargetedEventProxyHandler = {
     get(event: Event, key: PropertyKey) {
@@ -31,7 +34,7 @@ const retargetedEventProxyHandler = {
                 }
 
                 // Event is coming from an slotted element
-                if (isChildNode(getRootNode.call(value, event), currentTarget as Element)) {
+                if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
                     return value;
                 }
 
@@ -40,7 +43,7 @@ const retargetedEventProxyHandler = {
                 if (!isUndefined(vm)) {
                     let node = value;
                     while (!isNull(node) && vm.uid !== node[OwnerKey]) {
-                        node = node.parentNode;
+                        node = parentNodeGetter.call(node);
                     }
                     return node;
                 }

@@ -185,19 +185,6 @@ register({
             if (isIframeContentWindow(key as PropertyKey, value)) {
                 callback(wrapIframeWindow(value));
             }
-<<<<<<< HEAD
-            if (isParentNodeKeyword(key)) {
-                const vm = getElementOwnerVM(target as Element);
-                if (!isUndefined(vm) && value === vm.elm) {
-                    // walking up via parent chain might end up in the shadow root element
-                    return callback((vm.component as Component).template);
-                } else if (target instanceof Element && value instanceof Element && target[OwnerKey] !== value[OwnerKey]) {
-                    // cutting out access to something outside of the shadow of the current target (usually slots)
-                    return callback(); // TODO: this should probably be `null`
-                }
-            }
-=======
->>>>>>> wip: parent traversal
         }
     }
 });
