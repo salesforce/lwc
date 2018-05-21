@@ -90,18 +90,19 @@ function validateUniqueness(decorators) {
             const { path: comparePath, type: compareType } = apiDecorators[j];
             const comparePropertyName = comparePath.parentPath.get('key.name').node;
 
-            if (currentPath !== comparePath) {
-                const haveSameName = currentPropertyName === comparePropertyName;
-                const isGetterSetterPair = (
-                    (currentType === DECORATOR_TYPES.GETTER && compareType === DECORATOR_TYPES.SETTER) ||
-                    (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER)
-                );
+            // We will throw if the considered properties have the same name, and when their
+            // are not part of a pair of getter/setter.
+            const haveSameName = currentPropertyName === comparePropertyName;
+            const isDifferentProperty = currentPath !== comparePath;
+            const isGetterSetterPair = (
+                (currentType === DECORATOR_TYPES.GETTER && compareType === DECORATOR_TYPES.SETTER) ||
+                (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER)
+            );
 
-                if (haveSameName && !isGetterSetterPair) {
-                    throw comparePath.buildCodeFrameError(
-                        `Duplicate @api property "${currentPropertyName}".`,
-                    );
-                }
+            if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
+                throw comparePath.buildCodeFrameError(
+                    `Duplicate @api property "${currentPropertyName}".`,
+                );
             }
         }
     }
