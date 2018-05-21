@@ -51,11 +51,11 @@ describe('selectors', () => {
         res = await process('div.active > p {}');
         expect(res.css).toBe(`div.active[x-foo_tmpl] > p[x-foo_tmpl] {}`);
 
-        res = await process('div[attr="value"] {}');
-        expect(res.css).toBe(`div[attr="value"][x-foo_tmpl] {}`);
+        res = await process('div[title="value"] {}');
+        expect(res.css).toBe(`div[title="value"][x-foo_tmpl] {}`);
 
-        res = await process('div[attr="va lue"] {}');
-        expect(res.css).toBe(`div[attr="va lue"][x-foo_tmpl] {}`);
+        res = await process('div[title="va lue"] {}');
+        expect(res.css).toBe(`div[title="va lue"][x-foo_tmpl] {}`);
     });
 });
 
@@ -131,9 +131,9 @@ describe(':host', () => {
     });
 
     it('should handle attribute', async () => {
-        const { css } = await process(':host([disabled]) {}');
+        const { css } = await process(':host([draggable]) {}');
         expect(css).toBe(
-            `x-foo[x-foo_tmpl][disabled],[is="x-foo"][x-foo_tmpl][disabled] {}`,
+            `x-foo[x-foo_tmpl][draggable],[is="x-foo"][x-foo_tmpl][draggable] {}`,
         );
     });
 
