@@ -9,6 +9,7 @@ import {
     getOwnPropertyDescriptor,
     isUndefined,
     isNull,
+    isTrue,
     defineProperties,
 } from './language';
 import { ViewModelReflection } from "./utils";
@@ -35,34 +36,50 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
-function findShadowRoot(node) {
-    let root = node;
-    while (isUndefined(root[ViewModelReflection])) {
-        root = root.parentNode;
+/**
+ * Returns the context shadow included root.
+ */
+function findShadowRoot(node: Node): Node {
+    while (
+        !isNull(node.parentNode) &&
+        isUndefined(node[ViewModelReflection])
+    ) {
+        node = node.parentNode;
     }
-    return root;
-}
 
-function findComposedRootNode(node: Node) {
-    while (node !== document) {
-        const parent = node.parentNode;
-        if (isNull(parent)) {
-            return node;
-        }
-        node = parent;
-    }
     return node;
 }
 
-// TODO: once we start using the real shadowDOM, we can rely on:
-// const { getRootNode } = Node.prototype;
-// for now, we need to provide a dummy implementation to provide retargeting
-function getRootNode(this: Node, options: Record<string, any> | undefined): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    if (!composed) {
-        return findShadowRoot(this.parentNode); // this is not quite the root (it is the host), but for us is sufficient
+/**
+ * Returns the context root beyond the shadow root.
+ *
+ * It doesn't returns actually the root but the host. This approximation is sufficiant
+ * in our case.
+ */
+function findComposedRootNode(node: Node): Node {
+    while (!isNull(node.parentNode)) {
+        node = node.parentNode;
     }
-    return findComposedRootNode(this);
+
+    return node;
+}
+
+/**
+ * Dummy implementation of the Node.prototype.getRootNode.
+ * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
+ *
+ * TODO: Once we start using the real shadowDOM, this method should be replaced by:
+ * const { getRootNode } = Node.prototype;
+ */
+function getRootNode(
+    this: Node,
+    options?: { composed?: boolean }
+): Node {
+    const composed: boolean = isUndefined(options) ? false : !!options.composed;
+
+    return isTrue(composed) ?
+        findComposedRootNode(this) :
+        findShadowRoot(this.parentNode);
 }
 
 export function isChildNode(root: Element, node: Node): boolean {
