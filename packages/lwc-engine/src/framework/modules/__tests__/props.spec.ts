@@ -31,18 +31,18 @@ describe('module/props', () => {
         Object.defineProperty(elm, 'foo', {
             get: () => {
                 read += 1;
-                return "new foo";
+                return "old foo";
             },
             set: () => { throw new Error('setter for custom element foo property was called accidentally'); },
             configurable: false,
             enumerable: true,
         });
-        const oldVnode = { sel: 'input', data: { props: { foo: "old foo" } } };
+        const oldVnode = { sel: 'input', data: { props: { foo: "new foo" } } };
         const newVnode = { sel: 'input', data: { props: { foo: "new foo" } }, elm };
 
         target.update(oldVnode, newVnode);
-        expect(read).toBe(1); // ready the getter once
-        expect(elm.foo).toBe("new foo");
+        expect(read).toBe(0); // do not read the getter
+        expect(elm.foo).toBe("old foo");
     });
 
 

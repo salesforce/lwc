@@ -1,6 +1,6 @@
 import assert from "../assert";
 import { isUndefined, keys, StringToLowerCase } from "../language";
-import { getAttrNameFromPropName, makeReadOnlyRecord, hasPropertyGetter } from "../utils";
+import { getAttrNameFromPropName, makeReadOnlyRecord } from "../utils";
 import { lockForPropUpdate, unlockForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { ViewModelReflection } from "../utils";
@@ -43,9 +43,8 @@ function update(oldVnode: VNode, vnode: VNode) {
             old = (oldProps as any)[key];
             if (isCustomElement) {
                 // custom element
-                const propDef = vm.def.props[key];
-                // condition: is a custom element out of sync prop
-                shouldUpdate = (!isUndefined(propDef) && hasPropertyGetter(propDef.config)) ? elm[key] !== cur : old !== cur;
+                // condition: is value out of sync prop
+                shouldUpdate = old !== cur;
             } else {
                 // regular element
                 const { sel } = vnode as any;
