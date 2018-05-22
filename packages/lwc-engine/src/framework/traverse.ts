@@ -1,5 +1,6 @@
 import assert from "./assert";
-import { wasNodePassedIntoVM, VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "./vm";
+import { ViewModelReflection } from "./def";
+import { wasNodePassedIntoVM, VM, getElementOwnerVM, getCustomElementVM, isNodeOwnedByVM, OwnerKey } from "./vm";
 import {
     querySelectorAll as nativeQuerySelectorAll,
     parentNodeGetter as nativeParentNodeGetter,
@@ -40,18 +41,17 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | R
 }
 
 export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
-    const ownerVM = getElementOwnerVM(this) as VM;
+    const vm = getElementOwnerVM(this) as VM;
     const matches = nativeQuerySelectorAll.call(this, selectors);
-    return ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
+    return ArrayFilter.call(matches, (match) => isNodeOwnedByVM(vm, match));
 }
 
 export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
-    const ownerVM = getElementOwnerVM(this) as VM;
-    const matches = nativeQuerySelectorAll.call(this, selectors);
-    const nodeList = ArrayFilter.call(matches, (match) => wasNodePassedIntoVM(ownerVM, match));
+    const vm = getElementOwnerVM(this) as VM;
+    const nodeList = nativeQuerySelectorAll.call(this, selectors);
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        if (isNodeOwnedByVM(ownerVM, nodeList[i])) {
+        if (isNodeOwnedByVM(vm, nodeList[i])) {
             return nodeList[i];
         }
     }
@@ -79,7 +79,6 @@ export function shadowRootQuerySelector(vm: VM, selector: string): Element | nul
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
-
     return getFirstMatch(vm, vm.elm, selector);
 }
 
