@@ -283,23 +283,52 @@ register({
                         // will kick in and return the cmp, which is not the intent.
                         return callback(pierce(value));
                     case 'target':
+                        // For event listener attached:
+                        // * on the component => `target` must always equal to `currentTarget`
+                        // * on the root => `target` is retargeted
+                        // * on an element inside template => `target` is retargeted
+                        // * on the root component of the component tree via addEventListener
+                        //      => don't do any retargeting
+                        //
+                        // Slotted events should not be handled, since those are part of the light DOM.
+
                         const { currentTarget } = event;
+
                         // Executing event listener on component, target is always currentTarget
                         if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                             return callback(pierce(currentTarget));
                         }
 
-                        // Event is coming from an slotted element
+                        // Handle events is coming from an slotted elements.
+                        // TODO: Add more information why we need to handle the light DOM events here.
                         if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
                             return;
                         }
-                        // target is owned by the VM
-                        const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
+
+                        let vm: VM | undefined;
+                        if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
+                            // If we are in an event listener attached on the shadow root, then we do not want to look
+                            // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
+                            // rendered the component (parent component).
+                            //
+                            // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
+                            vm = getCustomElementVM(currentTarget as HTMLElement);
+                        } else if (!isUndefined(currentTarget)) {
+                            // TODO: When does currentTarget can be undefined
+                            vm = getElementOwnerVM(currentTarget as Element);
+                        }
+
+                        // Handle case when VM is not present for example when attaching an event listener
+                        // on the root component of the component tree.
                         if (!isUndefined(vm)) {
                             let node = value;
+
+                            // Let's climb up the node tree starting from the original event target
+                            // up until finding the first node being rendered by the current VM.
                             while (!isNull(node) && vm.uid !== node[OwnerKey]) {
                                 node = node.parentNode;
                             }
+
                             return callback(pierce(node));
                         }
                 }

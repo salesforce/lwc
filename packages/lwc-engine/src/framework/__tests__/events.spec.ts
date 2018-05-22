@@ -746,6 +746,44 @@ describe('Shadow Root events', () => {
             elm.clickChildDiv();
         });
     });
+
+    it('should retarget properly event listener attached on non-root components', () => {
+        expect.assertions(2);
+
+        class GrandChild extends Element {}
+
+        class Child extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', evt => {
+                    expect(evt.target.tagName).toBe('X-GRAND-CHILD');
+                    expect(evt.currentTarget.tagName).toBe('X-CHILD');
+                });
+            }
+
+            render() {
+                return $api => {
+                    return [
+                        $api.c('x-grand-child', GrandChild, {})
+                    ];
+                };
+            }
+        }
+
+        class Root extends Element {
+            render() {
+                return $api => {
+                    return [
+                        $api.c('x-child', Child, {})
+                    ];
+                };
+            }
+        }
+
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+
+        HTMLElement.prototype.querySelector.call(elm, 'x-grand-child').click();
+    });
 });
 
 describe('Removing events from shadowroot', () => {
