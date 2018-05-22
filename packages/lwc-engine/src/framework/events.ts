@@ -211,6 +211,7 @@ function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListene
     }
 }
 
+const NON_COMPOSED = { composed: false };
 export function isValidEventForCustomElement(event: Event): boolean {
     const { target, currentTarget } = event;
     const { composed } = event as any;
@@ -220,7 +221,7 @@ export function isValidEventForCustomElement(event: Event): boolean {
         // it is dispatched onto the custom element directly, or
         target === currentTarget ||
         // it is coming from an slotted element
-        isChildNode(getRootNode.call(target, { composed: false }), currentTarget as Node)
+        isChildNode(getRootNode.call(target, NON_COMPOSED), currentTarget as Node)
     );
 }
 
