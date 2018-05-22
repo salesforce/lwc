@@ -40,6 +40,15 @@ const {
  * Returns the context shadow included root.
  */
 function findShadowRoot(node: Node): Node {
+    // We need to ensure that the parent element is present before accessing it.
+    if (isNull(node.parentNode)) {
+        return node;
+    }
+
+    // In the case of LWC, the root and the host element are the same things. Therefor,
+    // when calling findShadowRoot on the a host element we want to return the parent host
+    // element and not the current host element.
+    node = node.parentNode;
     while (
         !isNull(node.parentNode) &&
         isUndefined(node[ViewModelReflection])
@@ -79,7 +88,7 @@ function getRootNode(
 
     return isTrue(composed) ?
         findComposedRootNode(this) :
-        findShadowRoot(this.parentNode);
+        findShadowRoot(this);
 }
 
 export function isChildNode(root: Element, node: Node): boolean {
