@@ -18,7 +18,7 @@ interface WrappedListener extends EventListener {
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 function createWrappedEventHandler(event: Event, fn: any, accessContext: any) {
-    return function (this: any) {
+    return function(this: any) {
         // We can check if the invokation context is the same as the access context
         // If it is, we know the user did something like evt.preventDefault();
         // If thats the case, the intent is to call preventDefault with the
@@ -27,7 +27,7 @@ function createWrappedEventHandler(event: Event, fn: any, accessContext: any) {
         // This will likely err out but it may not.
         const context = (this === accessContext) ? event : this;
         fn.call(context);
-    }
+    };
 }
 
 const retargetedEventProxyHandler = {

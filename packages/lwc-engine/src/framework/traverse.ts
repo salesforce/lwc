@@ -1,6 +1,5 @@
 import assert from "./assert";
-import { ViewModelReflection } from "./def";
-import { wasNodePassedIntoVM, VM, getElementOwnerVM, getCustomElementVM, isNodeOwnedByVM, OwnerKey } from "./vm";
+import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "./vm";
 import {
     querySelectorAll as nativeQuerySelectorAll,
     parentNodeGetter as nativeParentNodeGetter,
