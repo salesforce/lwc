@@ -17,14 +17,27 @@ interface WrappedListener extends EventListener {
 
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
+function createWrappedEventHandler(event: Event, fn: any, accessContext: any) {
+    return function (this: any) {
+        // We can check if the invokation context is the same as the access context
+        // If it is, we know the user did something like evt.preventDefault();
+        // If thats the case, the intent is to call preventDefault with the
+        // original context. If the context is not the same, developer did this:
+        // evt.preventDefault.call({}). In that case, we want to use the supplied context.
+        // This will likely err out but it may not.
+        const context = (this === accessContext) ? event : this;
+        fn.call(context);
+    }
+}
+
 const retargetedEventProxyHandler = {
-    get(event: Event, key: PropertyKey) {
+    get(event: Event, key: PropertyKey, proxyContext: any) {
         const value = event[key];
         switch (key) {
-            case 'currentTarget':
-                // intentionally return the host element pierced here otherwise the general role below
-                // will kick in and return the cmp, which is not the intent.
-                return value;
+            case 'preventDefault':
+            case 'stopImmediatePropagation':
+            case 'stopPropagation':
+                return createWrappedEventHandler(event, value, proxyContext);
             case 'target':
                 const { currentTarget } = event;
 

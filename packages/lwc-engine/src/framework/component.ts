@@ -8,7 +8,7 @@ import {
 import { isArray, ArrayIndexOf, ArraySplice, isObject } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
-import { VM } from "./vm";
+import { VM, } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 
 import { Template } from "./template";
