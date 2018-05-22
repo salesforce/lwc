@@ -50,34 +50,12 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class Parent extends Element {
-                handleFoo(evt) {
-                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
-                }
-
-                render() {
-                    return ($api, $cmp) => {
-                        return [
-                            $api.h(
-                                'div',
-                                {
-                                    on: {
-                                        foo: $api.b($cmp.handleFoo)
-                                    },
-                                    key: 0,
-                                },
-                                []
-                            )
-                        ]
-                    }
-                }
-            }
-
+            class Parent extends Element {}
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
+
             const match = getRootNode.call(elm, { composed: true });
-            // We can't assert against document directly, because
-            // for some reasons, jest is locking up with document here
+
             expect(match.nodeName).toBe('#document');
         });
     });
@@ -129,34 +107,12 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class Parent extends Element {
-                handleFoo(evt) {
-                    expect(evt.target).toBe(this.template.querySelector('x-foo'));
-                }
-
-                render() {
-                    return ($api, $cmp) => {
-                        return [
-                            $api.h(
-                                'div',
-                                {
-                                    on: {
-                                        foo: $api.b($cmp.handleFoo)
-                                    },
-                                    key: 0,
-                                },
-                                []
-                            )
-                        ]
-                    }
-                }
-            }
-
+            class Parent extends Element {}
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const match = getRootNode.call(elm, { composed: true });
-            // We can't assert against document directly, because
-            // for some reasons, jest is locking up with document here
+
+            const match = getRootNode.call(elm, { composed: false });
+
             expect(match.nodeName).toBe('#document');
         });
     });
