@@ -299,18 +299,19 @@ register({
                             return callback(pierce(currentTarget));
                         }
 
-                        // TODO: Add more information why we need to handle the light DOM events here
+                        // Handle events is coming from an slotted elements.
+                        // TODO: Add more information why we need to handle the light DOM events here.
                         if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
                             return;
                         }
 
                         let vm: VM | undefined;
                         if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
-                            // If we are in an event listener attached on the shadow root,
-                            // then we do not want to look for the currentTarget owner VM
-                            // because the currentTarget owner VM would be the VM which rendered the component (parent component).
-                            // Instead, we want to get the custom element's VM because that
-                            // VM owns the shadow root itself.
+                            // If we are in an event listener attached on the shadow root, then we do not want to look
+                            // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
+                            // rendered the component (parent component).
+                            //
+                            // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
                             vm = getCustomElementVM(currentTarget as HTMLElement);
                         } else if (!isUndefined(currentTarget)) {
                             // TODO: When does currentTarget can be undefined
@@ -322,6 +323,8 @@ register({
                         if (!isUndefined(vm)) {
                             let node = value;
 
+                            // Let's climb up the node tree starting from the original event target
+                            // up until finding the first node being rendered by the current VM.
                             while (!isNull(node) && vm.uid !== node[OwnerKey]) {
                                 node = node.parentNode;
                             }
