@@ -1,32 +1,60 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.4...v) (2018-05-21)
+# [](https://github.com/salesforce/lwc/compare/v0.20.5...v) (2018-05-23)
 
 
 
-<a name="0.20.4"></a>
-## [0.20.4](https://github.com/salesforce/lwc/compare/v0.19.0-0...v0.20.4) (2018-05-21)
+<a name="0.20.5"></a>
+## [0.20.5](https://github.com/salesforce/lwc/compare/v0.20.4...v0.20.5) (2018-05-23)
 
 
 ### Bug Fixes
 
-* **aom:** consolidating the aria dom property names ([#192](https://github.com/salesforce/lwc/issues/192)) ([13cd8c4](https://github.com/salesforce/lwc/commit/13cd8c4))
-* **compiler:** optional second parameter for wire decorator ([#193](https://github.com/salesforce/lwc/issues/193)) ([5eb02f0](https://github.com/salesforce/lwc/commit/5eb02f0)), closes [#181](https://github.com/salesforce/lwc/issues/181)
-* **engine:** add existence check in removeChild ([#285](https://github.com/salesforce/lwc/issues/285)) ([81642fd](https://github.com/salesforce/lwc/commit/81642fd))
-* **engine:** define setter along with getter in global html attr ([#277](https://github.com/salesforce/lwc/issues/277)) ([5324101](https://github.com/salesforce/lwc/commit/5324101))
-* **engine:** fixes [#203](https://github.com/salesforce/lwc/issues/203) - improving error message for iteration key ([#230](https://github.com/salesforce/lwc/issues/230)) ([4ecce8a](https://github.com/salesforce/lwc/commit/4ecce8a))
+* event retargeting issue with nested component ([#338](https://github.com/salesforce/lwc/issues/338)) ([a21121b](https://github.com/salesforce/lwc/commit/a21121b))
+* getRootNode when composed is false and the element is the root ([#337](https://github.com/salesforce/lwc/issues/337)) ([8dd8392](https://github.com/salesforce/lwc/commit/8dd8392))
+
+
+
+<a name="0.20.4"></a>
+## [0.20.4](https://github.com/salesforce/lwc/compare/v0.20.3...v0.20.4) (2018-05-21)
+
+
+### Bug Fixes
+
 * **engine:** Fixing composed on getRootNode call in pierce ([#313](https://github.com/salesforce/lwc/issues/313)) ([6ad3b7c](https://github.com/salesforce/lwc/commit/6ad3b7c))
-* **engine:** isBeingConstructed flag is not get out of sync ([#284](https://github.com/salesforce/lwc/issues/284)) ([888bd0d](https://github.com/salesforce/lwc/commit/888bd0d))
-* **husky:** fix husky release ([#297](https://github.com/salesforce/lwc/issues/297)) ([75722cb](https://github.com/salesforce/lwc/commit/75722cb))
-* **lwc-engine:** Refactor destroy hooks to avoid leaks and guarantee disconnectedCallback ([#204](https://github.com/salesforce/lwc/issues/204)) ([f78a335](https://github.com/salesforce/lwc/commit/f78a335))
-* **wire-service:** params is always initialized as an empty object ([#179](https://github.com/salesforce/lwc/issues/179)) ([b969b5c](https://github.com/salesforce/lwc/commit/b969b5c))
-* Add Safari polyfill for Proxy ([#197](https://github.com/salesforce/lwc/issues/197)) ([e9dc833](https://github.com/salesforce/lwc/commit/e9dc833))
 * Ensure uniqueness of public properties are compile time ([#323](https://github.com/salesforce/lwc/issues/323)) ([bf88354](https://github.com/salesforce/lwc/commit/bf88354))
 * Forbid usage of :root pseudo-class selector ([#303](https://github.com/salesforce/lwc/issues/303)) ([7413286](https://github.com/salesforce/lwc/commit/7413286))
 * Linting issue introduced by merge on master ([#315](https://github.com/salesforce/lwc/issues/315)) ([6ad80ca](https://github.com/salesforce/lwc/commit/6ad80ca))
-* Misc. compat fixes ([#198](https://github.com/salesforce/lwc/issues/198)) ([480e99a](https://github.com/salesforce/lwc/commit/480e99a))
-* Revert preventDefault polyfill ([#207](https://github.com/salesforce/lwc/issues/207)) ([274b81c](https://github.com/salesforce/lwc/commit/274b81c))
 * Transform standalone pseudo class selectors ([#310](https://github.com/salesforce/lwc/issues/310)) ([9adea2d](https://github.com/salesforce/lwc/commit/9adea2d))
+
+
+### Features
+
+* Add support for style injection in compiler ([#302](https://github.com/salesforce/lwc/issues/302)) ([3b754f8](https://github.com/salesforce/lwc/commit/3b754f8))
+* Restrict usage of attributes in stylesheets ([#316](https://github.com/salesforce/lwc/issues/316)) ([948fbb9](https://github.com/salesforce/lwc/commit/948fbb9)), closes [#261](https://github.com/salesforce/lwc/issues/261)
+
+
+
+<a name="0.20.3"></a>
+## [0.20.3](https://github.com/salesforce/lwc/compare/v0.20.2...v0.20.3) (2018-05-15)
+
+
+### Bug Fixes
+
+* **husky:** fix husky release ([#297](https://github.com/salesforce/lwc/issues/297)) ([75722cb](https://github.com/salesforce/lwc/commit/75722cb))
 * upgrade compat packages ([#301](https://github.com/salesforce/lwc/issues/301)) ([cf5f5ae](https://github.com/salesforce/lwc/commit/cf5f5ae))
+
+
+
+<a name="0.20.2"></a>
+## [0.20.2](https://github.com/salesforce/lwc/compare/v0.20.0...v0.20.2) (2018-05-11)
+
+
+### Bug Fixes
+
+* **engine:** add existence check in removeChild ([#285](https://github.com/salesforce/lwc/issues/285)) ([81642fd](https://github.com/salesforce/lwc/commit/81642fd))
+* **engine:** define setter along with getter in global html attr ([#277](https://github.com/salesforce/lwc/issues/277)) ([5324101](https://github.com/salesforce/lwc/commit/5324101))
+* **engine:** fixes [#203](https://github.com/salesforce/lwc/issues/203) - improving error message for iteration key ([#230](https://github.com/salesforce/lwc/issues/230)) ([4ecce8a](https://github.com/salesforce/lwc/commit/4ecce8a))
+* **engine:** isBeingConstructed flag is not get out of sync ([#284](https://github.com/salesforce/lwc/issues/284)) ([888bd0d](https://github.com/salesforce/lwc/commit/888bd0d))
 
 
 ### Features
@@ -34,13 +62,31 @@
 * **compiler:** introduce compile/transform/bundle diagnostics ([#256](https://github.com/salesforce/lwc/issues/256)) ([950d196](https://github.com/salesforce/lwc/commit/950d196))
 * **engine:** addEventListener on component instance ([#276](https://github.com/salesforce/lwc/issues/276)) ([a9533af](https://github.com/salesforce/lwc/commit/a9533af))
 * **github:** separate features and issues into separate template  ([#281](https://github.com/salesforce/lwc/issues/281)) ([b8889b0](https://github.com/salesforce/lwc/commit/b8889b0))
-* Add support for style injection in compiler ([#302](https://github.com/salesforce/lwc/issues/302)) ([3b754f8](https://github.com/salesforce/lwc/commit/3b754f8))
-* Restrict usage of attributes in stylesheets ([#316](https://github.com/salesforce/lwc/issues/316)) ([948fbb9](https://github.com/salesforce/lwc/commit/948fbb9)), closes [#261](https://github.com/salesforce/lwc/issues/261)
 
 
 ### Performance Improvements
 
 * Increment performance iterations ([#290](https://github.com/salesforce/lwc/issues/290)) ([d436493](https://github.com/salesforce/lwc/commit/d436493))
+
+
+
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/salesforce/lwc/compare/v0.19.0-0...v0.20.0) (2018-04-24)
+
+
+### Bug Fixes
+
+* **aom:** consolidating the aria dom property names ([#192](https://github.com/salesforce/lwc/issues/192)) ([13cd8c4](https://github.com/salesforce/lwc/commit/13cd8c4))
+* Add Safari polyfill for Proxy ([#197](https://github.com/salesforce/lwc/issues/197)) ([e9dc833](https://github.com/salesforce/lwc/commit/e9dc833))
+* Misc. compat fixes ([#198](https://github.com/salesforce/lwc/issues/198)) ([480e99a](https://github.com/salesforce/lwc/commit/480e99a))
+* Revert preventDefault polyfill ([#207](https://github.com/salesforce/lwc/issues/207)) ([274b81c](https://github.com/salesforce/lwc/commit/274b81c))
+* **compiler:** optional second parameter for wire decorator ([#193](https://github.com/salesforce/lwc/issues/193)) ([5eb02f0](https://github.com/salesforce/lwc/commit/5eb02f0)), closes [#181](https://github.com/salesforce/lwc/issues/181)
+* **lwc-engine:** Refactor destroy hooks to avoid leaks and guarantee disconnectedCallback ([#204](https://github.com/salesforce/lwc/issues/204)) ([f78a335](https://github.com/salesforce/lwc/commit/f78a335))
+* **wire-service:** params is always initialized as an empty object ([#179](https://github.com/salesforce/lwc/issues/179)) ([b969b5c](https://github.com/salesforce/lwc/commit/b969b5c))
+
+
+### Performance Improvements
+
 * Update best ([#257](https://github.com/salesforce/lwc/issues/257)) ([aca5593](https://github.com/salesforce/lwc/commit/aca5593))
 
 
