@@ -43,53 +43,53 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | R
     return getShadowParent(this, vm, value);
 }
 
+function getAllMatches(vm: VM, nodeList: NodeList) {
+    return ArrayFilter.call(nodeList, (match) => {
+        const isOwned = isNodeOwnedByVM(vm, match);
+        if (isOwned) {
+            // Patch querySelector, querySelectorAll, etc
+            // if element is owned by VM
+            patchShadowDomTraversalMethods(match);
+        }
+        return isOwned;
+    });
+}
+
+function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        if (isNodeOwnedByVM(vm, nodeList[i])) {
+            return patchShadowDomTraversalMethods(nodeList[i]as HTMLElement);
+        }
+    }
+    return null;
+}
+
 export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
     const vm = getElementOwnerVM(this) as VM;
     const matches = nativeQuerySelectorAll.call(this, selectors);
-    return ArrayFilter.call(matches, (match) => isNodeOwnedByVM(vm, patchShadowDomTraversalMethods(match)));
+    return getAllMatches(vm, matches);
 }
 
 export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
     const vm = getElementOwnerVM(this) as VM;
     const nodeList = nativeQuerySelectorAll.call(this, selectors);
-    // search for all, and find the first node that is owned by the VM in question.
-    for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return patchShadowDomTraversalMethods(nodeList[i]);
-        }
-    }
-    return null;
-}
-
-function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
-    // search for all, and find the first node that is owned by the VM in question.
-    for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return patchShadowDomTraversalMethods(nodeList[i]);
-        }
-    }
-    return null;
-}
-
-function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
-    const nodeList = nativeQuerySelectorAll.call(elm, selector);
-    const filteredNodes = ArrayFilter.call(nodeList, (node: HTMLElement): boolean => isNodeOwnedByVM(vm, node));
-    return filteredNodes;
+    return getFirstMatch(vm, nodeList);
 }
 
 export function shadowRootQuerySelector(vm: VM, selector: string): Element | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
-    return getFirstMatch(vm, vm.elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(vm.elm, selector);
+    return getFirstMatch(vm, nodeList);
 }
 
 export function shadowRootQuerySelectorAll(vm: VM, selector: string): HTMLElement[] {
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
-    return getAllMatches(vm, vm.elm, selector);
+    const nodeList = nativeQuerySelectorAll.call(vm.elm, selector);
+    return getAllMatches(vm, nodeList);
 }
 
 const shadowDescriptors: PropertyDescriptorMap = {
