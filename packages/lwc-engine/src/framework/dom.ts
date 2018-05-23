@@ -15,9 +15,9 @@ import {
 import { ViewModelReflection } from "./utils";
 import { VM } from './vm';
 
-const {
-    dispatchEvent,
-} = EventTarget.prototype;
+const dispatchEvent = 'EventTarget' in window ?
+    EventTarget.prototype.dispatchEvent :
+    Node.prototype.dispatchEvent; // IE11
 
 const {
     addEventListener,
@@ -41,7 +41,9 @@ const {
 } = Node.prototype;
 
 const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
-const parentElementGetter = getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get!;
+const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
+    getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
 
 /**
  * Returns the context shadow included root.
