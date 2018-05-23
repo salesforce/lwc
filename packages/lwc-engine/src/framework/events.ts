@@ -6,6 +6,7 @@ import {
     isChildNode,
     parentNodeGetter,
 } from "./dom";
+import { TargetSlot } from "./membrane";
 import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
@@ -35,6 +36,8 @@ const retargetedEventProxyHandler = {
     get(event: Event, key: PropertyKey, proxyContext: any) {
         const value = event[key];
         switch (key) {
+            case TargetSlot:
+                return event;
             case 'preventDefault':
             case 'stopImmediatePropagation':
             case 'stopPropagation':

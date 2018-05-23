@@ -5,6 +5,7 @@ export default class Child extends Element {
 
     connectedCallback() {
         this.template.addEventListener('click', (evt) => {
+            console.log(evt.target.tagName)
             this.eventTargetIsCorrect = evt.target.tagName === 'X-GRAND-CHILD';
         });
     }
