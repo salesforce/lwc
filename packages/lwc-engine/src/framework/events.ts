@@ -9,6 +9,7 @@ import {
 import { VM, OwnerKey, getElementOwnerVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
+import { patchShadowDomTraversalMethods } from "./traverse";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -43,12 +44,12 @@ const retargetedEventProxyHandler = {
 
                 // Executing event listener on component, target is always currentTarget
                 if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                    return currentTarget;
+                    return patchShadowDomTraversalMethods(currentTarget as HTMLElement);
                 }
 
                 // Event is coming from an slotted element
                 if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
-                    return value;
+                    return patchShadowDomTraversalMethods(value);
                 }
 
                 // target is owned by the VM
@@ -58,7 +59,7 @@ const retargetedEventProxyHandler = {
                     while (!isNull(node) && vm.uid !== node[OwnerKey]) {
                         node = parentNodeGetter.call(node);
                     }
-                    return node;
+                    return patchShadowDomTraversalMethods(node);
                 }
         }
         return value;

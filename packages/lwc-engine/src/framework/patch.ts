@@ -7,7 +7,6 @@ import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
 import uid from "./modules/uid";
-import shadow from "./modules/shadow";
 import { isNull } from './language';
 import { parentNodeGetter } from "./dom";
 
@@ -75,7 +74,6 @@ const patchVNode = init([
     events,
     token,
     uid,
-    shadow,
 ], htmlDomApi);
 
 const patchChildren = patchVNode.children;

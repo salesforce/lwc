@@ -9,6 +9,8 @@ import { Root } from "./root";
 import {
     ArrayFilter,
     isUndefined,
+    defineProperties,
+    hasOwnProperty,
 } from "./language";
 import { isBeingConstructed } from "./invoker";
 
@@ -22,7 +24,7 @@ function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLEleme
         return vm.cmpRoot!;
     } else if (value instanceof Element && node[OwnerKey] === value[OwnerKey]) {
         // cutting out access to something outside of the shadow of the current target (usually slots)
-        return value;
+        return patchShadowDomTraversalMethods(value);
     }
     return null;
 }
@@ -42,7 +44,7 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | R
 export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
     const vm = getElementOwnerVM(this) as VM;
     const matches = nativeQuerySelectorAll.call(this, selectors);
-    return ArrayFilter.call(matches, (match) => isNodeOwnedByVM(vm, match));
+    return ArrayFilter.call(matches, (match) => isNodeOwnedByVM(vm, patchShadowDomTraversalMethods(match)));
 }
 
 export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
@@ -51,7 +53,7 @@ export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return nodeList[i];
+            return patchShadowDomTraversalMethods(nodeList[i]);
         }
     }
     return null;
@@ -62,7 +64,7 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
     // search for all, and find the first node that is owned by the VM in question.
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return nodeList[i];
+            return patchShadowDomTraversalMethods(nodeList[i]);
         }
     }
     return null;
@@ -70,7 +72,7 @@ function getFirstMatch(vm: VM, elm: Element, selector: string): Element | null {
 
 function getAllMatches(vm: VM, elm: Element, selector: string): HTMLElement[] {
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
-    const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => isNodeOwnedByVM(vm, node));
+    const filteredNodes = ArrayFilter.call(nodeList, (node: HTMLElement): boolean => isNodeOwnedByVM(vm, node));
     return filteredNodes;
 }
 
@@ -86,4 +88,30 @@ export function shadowRootQuerySelectorAll(vm: VM, selector: string): HTMLElemen
         assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
     }
     return getAllMatches(vm, vm.elm, selector);
+}
+
+const shadowDescriptors: PropertyDescriptorMap = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    parentNode: {
+        get: parentNodeDescriptorValue,
+        configurable: true,
+    },
+    parentElement: {
+        get: parentElementDescriptorValue,
+        configurable: true,
+    }
+};
+
+export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
+    if (!hasOwnProperty.call(node, 'querySelector')) {
+        defineProperties(node, shadowDescriptors);
+    }
+    return node;
 }

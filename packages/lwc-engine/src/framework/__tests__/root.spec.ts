@@ -59,7 +59,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const node = (elm[ViewModelReflection].component as Component).root.querySelector('p');
+                const node = (elm[ViewModelReflection].component as Component).template.querySelector('p');
                 expect(node.tagName).toBe('P');
             });
         });
@@ -75,7 +75,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const nodes = (elm[ViewModelReflection].component as Component).root.querySelectorAll('p');
+                const nodes = (elm[ViewModelReflection].component as Component).template.querySelectorAll('p');
                 expect(nodes).toHaveLength(0);
             });
         });

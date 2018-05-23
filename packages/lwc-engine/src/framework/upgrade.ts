@@ -1,8 +1,9 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty } from "./language";
+import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
+import { EmptyNodeList } from "./dom";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -38,8 +39,16 @@ assign(Node.prototype, {
         callNodeSlot(replacedNode, DisconnectingSlot);
         callNodeSlot(newChild, ConnectingSlot);
         return replacedNode;
-    }
+    },
 });
+
+function querySelectorPatchedRoot() {
+    return null;
+}
+
+function querySelectorAllPatchedRoot() {
+    return EmptyNodeList;
+}
 
 /**
  * This method is almost identical to document.createElement
@@ -66,8 +75,21 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     if (hasOwnProperty.call(element, ViewModelReflection)) {
         return element;
     }
+
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element);
+
+    // We don't support slots on root nodes
+    defineProperties(element, {
+        querySelectorAll: {
+            value: querySelectorAllPatchedRoot,
+            configurable: true,
+        },
+        querySelector: {
+            value: querySelectorPatchedRoot,
+            configurable: true,
+        }
+    });
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
