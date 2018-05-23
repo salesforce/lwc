@@ -5,7 +5,7 @@ import { unwrap } from "../membrane";
 import { create } from "domain";
 
 describe('Composed events', () => {
-    it('should be able to consume events from within template', () => {
+    it.only('should be able to consume events from within template', () => {
         let count = 0;
         class Child extends Element {
             triggerFoo() {
@@ -456,7 +456,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -480,7 +480,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -593,7 +593,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
         }

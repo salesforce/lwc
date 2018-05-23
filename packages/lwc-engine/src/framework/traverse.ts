@@ -4,11 +4,13 @@ import {
     querySelectorAll as nativeQuerySelectorAll,
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
+    iFrameContentWindowGetter,
 } from "./dom";
-import { Root } from "./root";
+import { Root, wrapIframeWindow } from "./root";
 import {
     ArrayFilter,
     isUndefined,
+    defineProperty,
     defineProperties,
     hasOwnProperty,
 } from "./language";
@@ -109,9 +111,24 @@ const shadowDescriptors: PropertyDescriptorMap = {
     }
 };
 
+const contentWindowDescriptor: PropertyDescriptor = {
+    get: function (this: HTMLIFrameElement) {
+        const original = iFrameContentWindowGetter.call(this);
+        if (original) {
+            return wrapIframeWindow(original);
+        }
+        return original;
+    },
+    configurable: true,
+};
+
 export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
     if (!hasOwnProperty.call(node, 'querySelector')) {
         defineProperties(node, shadowDescriptors);
+    }
+
+    if (node.tagName === 'IFRAME' && !hasOwnProperty.call(node, 'contentWindow')) {
+        defineProperty(node, 'contentWindow', contentWindowDescriptor);
     }
     return node;
 }

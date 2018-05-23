@@ -18,7 +18,6 @@ import {
 import { getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { VM, getCustomElementVM } from "./vm";
-import { pierceProperty } from "./piercing";
 import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -148,9 +147,6 @@ LWCElement.prototype = {
                 assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
             }
         }
-
-        // Pierce dispatchEvent so locker service has a chance to overwrite
-        const dispatchEvent = pierceProperty(elm, 'dispatchEvent');
         return dispatchEvent.call(elm, event);
     },
 

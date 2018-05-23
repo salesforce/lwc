@@ -3,13 +3,9 @@ import { ViewModelReflection } from "./def";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
 import { VM, getCustomElementVM } from "./vm";
-import { register } from "./services";
 import { Component } from "./component";
-import { Replicable } from "./membrane";
 import { addRootEventListener, removeRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
-
-import { TargetSlot } from './membrane';
 import {
     GlobalAOMProperties,
     setAttribute,
@@ -120,13 +116,8 @@ export class Root implements ShadowRoot {
 }
 defineProperties(Root.prototype, RootDescriptors);
 
-function isIframeContentWindow(key: PropertyKey, value: any) {
-    return (key === 'contentWindow') && value.window === value;
-}
-
 export function wrapIframeWindow(win: Window) {
     return {
-        [TargetSlot]: win,
         postMessage() {
             return win.postMessage.apply(win, arguments);
         },
@@ -171,14 +162,3 @@ export function wrapIframeWindow(win: Window) {
         },
     };
 }
-
-// Registering a service to enforce the shadowDOM semantics via the Raptor membrane implementation
-register({
-    piercing(target: Replicable, key: PropertyKey, value: any, callback: (value?: any) => void) {
-        if (value) {
-            if (isIframeContentWindow(key as PropertyKey, value)) {
-                callback(wrapIframeWindow(value));
-            }
-        }
-    }
-});

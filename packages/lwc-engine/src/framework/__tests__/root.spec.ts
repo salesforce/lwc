@@ -225,7 +225,7 @@ describe('root', () => {
                 const elm = createElement('x-foo', { is: MyComponent });
                 document.body.appendChild(elm);
                 const iframeContentWindow = elm.getContentWindow();
-                expect(document.querySelector('iframe').contentWindow === unwrap(iframeContentWindow)).toBe(true);
+                expect(document.querySelector('iframe').contentWindow === iframeContentWindow).toBe(true);
             });
         });
     });

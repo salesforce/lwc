@@ -95,6 +95,8 @@ function getRootNode(
         findShadowRoot(this);
 }
 
+export const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
+
 export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
 
 export function isChildNode(root: Element, node: Node): boolean {
