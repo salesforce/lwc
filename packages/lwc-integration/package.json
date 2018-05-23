@@ -1,7 +1,7 @@
 {
   "name": "lwc-integration",
   "private": true,
-  "version": "0.20.4",
+  "version": "0.20.5",
   "license": "Beerware",
   "scripts": {
     "test": "echo 'No unit test in lwc-integration package'",
@@ -29,11 +29,11 @@
     "dotenv": "^4.0.0",
     "fs-extra": "^4.0.2",
     "http-server": "^0.10.0",
-    "lwc-compiler": "0.20.4",
-    "lwc-engine": "0.20.4",
+    "lwc-compiler": "0.20.5",
+    "lwc-engine": "0.20.5",
     "minimist": "^1.2.0",
     "rollup-plugin-compat": "0.18.3",
-    "rollup-plugin-lwc-compiler": "0.20.4",
+    "rollup-plugin-lwc-compiler": "0.20.5",
     "wdio-junit-reporter": "^0.3.1",
     "wdio-mocha-framework": "^0.5.10",
     "wdio-sauce-service": "^0.4.0",
