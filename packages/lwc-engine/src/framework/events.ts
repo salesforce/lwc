@@ -6,7 +6,7 @@ import {
     isChildNode,
     parentNodeGetter,
 } from "./dom";
-import { VM, OwnerKey, getElementOwnerVM } from "./vm";
+import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./traverse";
@@ -18,7 +18,7 @@ interface WrappedListener extends EventListener {
 
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
-function createWrappedEventHandler(event: Event, fn: any, accessContext: any) {
+function createWrappedEventMethod(event: Event, fn: any, accessContext: any) {
     return function(this: any) {
         // We can check if the invokation context is the same as the access context
         // If it is, we know the user did something like evt.preventDefault();
@@ -38,7 +38,7 @@ const retargetedEventProxyHandler = {
             case 'preventDefault':
             case 'stopImmediatePropagation':
             case 'stopPropagation':
-                return createWrappedEventHandler(event, value, proxyContext);
+                return createWrappedEventMethod(event, value, proxyContext);
             case 'target':
                 const { currentTarget } = event;
 
@@ -47,13 +47,27 @@ const retargetedEventProxyHandler = {
                     return patchShadowDomTraversalMethods(currentTarget as HTMLElement);
                 }
 
-                // Event is coming from an slotted element
+                // Handle events is coming from an slotted elements.
+                // TODO: Add more information why we need to handle the light DOM events here.
                 if (isChildNode(getRootNode.call(value, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
                     return patchShadowDomTraversalMethods(value);
                 }
 
-                // target is owned by the VM
-                const vm = currentTarget ? getElementOwnerVM(currentTarget as Element) : undefined;
+                let vm: VM | undefined;
+                if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
+                    // If we are in an event listener attached on the shadow root, then we do not want to look
+                    // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
+                    // rendered the component (parent component).
+                    //
+                    // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
+                    vm = getCustomElementVM(currentTarget as HTMLElement);
+                } else if (!isUndefined(currentTarget)) {
+                    // TODO: When does currentTarget can be undefined
+                    vm = getElementOwnerVM(currentTarget as Element);
+                }
+
+                // Handle case when VM is not present for example when attaching an event listener
+                // on the root component of the component tree.
                 if (!isUndefined(vm)) {
                     let node = value;
                     while (!isNull(node) && vm.uid !== node[OwnerKey]) {
