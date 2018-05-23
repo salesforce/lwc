@@ -112,7 +112,7 @@ const shadowDescriptors: PropertyDescriptorMap = {
 };
 
 const contentWindowDescriptor: PropertyDescriptor = {
-    get: function (this: HTMLIFrameElement) {
+    get(this: HTMLIFrameElement) {
         const original = iFrameContentWindowGetter.call(this);
         if (original) {
             return wrapIframeWindow(original);
