@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { toString } from "./language";
+import { toString, isUndefined } from "./language";
 import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
 
@@ -20,5 +20,20 @@ export function dangerousObjectMutation(obj: any): any {
     return reactiveMembrane.getProxy(unwrap(obj));
 }
 
-// Universal unwrap mechanism that works for any type of membrane
-export const unwrap = observableUnwrap;
+export const TargetSlot = Symbol();
+
+// Universal unwrap mechanism that works for observable membrane
+// and wrapped iframe contentWindow
+export function unwrap(value: any): any {
+    // observable membrane goes first because it is in the critical path
+    let unwrapped = observableUnwrap(value);
+    if (unwrapped !== value) {
+        return unwrapped;
+    }
+    // Wrapped iframe contentWindow
+    unwrapped = value[TargetSlot];
+    if (!isUndefined(unwrapped) && unwrapped !== value) {
+        return unwrapped;
+    }
+    return value;
+}

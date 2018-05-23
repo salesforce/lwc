@@ -14,6 +14,7 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
     CustomEvent,
+    dispatchEvent,
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";

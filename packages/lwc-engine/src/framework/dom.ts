@@ -16,6 +16,10 @@ import { ViewModelReflection } from "./utils";
 import { VM } from './vm';
 
 const {
+    dispatchEvent,
+} = EventTarget.prototype;
+
+const {
     addEventListener,
     removeEventListener,
     getAttribute,
@@ -104,6 +108,9 @@ export function isChildNode(root: Element, node: Node): boolean {
 }
 
 export {
+    // EventTarget.prototype
+    dispatchEvent,
+
     // Element.prototype
     addEventListener,
     removeEventListener,

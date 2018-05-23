@@ -2,14 +2,13 @@ import { Element } from "../html-element";
 import { createElement } from "./../upgrade";
 import { ViewModelReflection } from "../def";
 import { unwrap } from "../membrane";
-import { create } from "domain";
 
 describe('Composed events', () => {
-    it.only('should be able to consume events from within template', () => {
+    it('should be able to consume events from within template', () => {
         let count = 0;
         class Child extends Element {
             triggerFoo() {
-                this.dispatchEvent(new CustomEvent('foo'));
+                this.dispatchEvent(new CustomEvent('foo', {}));
             }
         }
         Child.publicMethods = ['triggerFoo'];

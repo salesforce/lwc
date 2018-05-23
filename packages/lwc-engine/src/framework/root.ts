@@ -6,6 +6,7 @@ import { VM, getCustomElementVM } from "./vm";
 import { Component } from "./component";
 import { addRootEventListener, removeRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
+import { TargetSlot } from "./membrane";
 import {
     GlobalAOMProperties,
     setAttribute,
@@ -118,6 +119,7 @@ defineProperties(Root.prototype, RootDescriptors);
 
 export function wrapIframeWindow(win: Window) {
     return {
+        [TargetSlot]: win,
         postMessage() {
             return win.postMessage.apply(win, arguments);
         },

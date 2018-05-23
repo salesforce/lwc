@@ -6,6 +6,7 @@ import { createElement } from "../upgrade";
 import { ViewModelReflection } from "../def";
 import { VM } from "../vm";
 import { Component } from "../component";
+import { querySelector } from "../dom";
 
 describe('root', () => {
     describe('#constructor()', () => {
@@ -224,8 +225,9 @@ describe('root', () => {
 
                 const elm = createElement('x-foo', { is: MyComponent });
                 document.body.appendChild(elm);
+                const nativeIframeContentWindow = document.querySelector('iframe').contentWindow;
                 const iframeContentWindow = elm.getContentWindow();
-                expect(document.querySelector('iframe').contentWindow === iframeContentWindow).toBe(true);
+                expect(nativeIframeContentWindow === unwrap(iframeContentWindow)).toBe(true);
             });
         });
     });
