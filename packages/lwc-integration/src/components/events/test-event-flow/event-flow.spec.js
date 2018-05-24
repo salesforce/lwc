@@ -116,117 +116,117 @@ describe('event flow:', () => {
                 assert(shadowRootIndex < customElementIndex);
             });
         });
-    });
 
-    describe('the parent custom element listener bound from the inside', () => {
-        it('should execute after the parent custom element listener programmatically bound from the outside', () => {
-            clickChildButton();
+        describe('the parent custom element listener bound from the inside', () => {
+            it('should execute after the parent custom element listener programmatically bound from the outside', () => {
+                clickChildButton();
 
-            const insideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
-            );
-            const outsideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
-            );
+                const insideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
+                );
+                const outsideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT
+                );
 
-            assert(insideIndex < outsideIndex);
+                assert(insideIndex < outsideIndex);
+            });
+
+            it('should execute after the parent custom element listener declaratively bound from the outside', () => {
+                clickChildButton();
+
+                const insideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
+                );
+                const outsideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT
+                );
+
+                assert(insideIndex < outsideIndex);
+            });
         });
 
-        it('should execute after the parent custom element listener declaratively bound from the outside', () => {
-            clickChildButton();
+        describe('the child shadow root listener', () => {
+            it('should execute before the inside child custom element listener', () => {
+                clickChildButton();
 
-            const insideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT
-            );
-            const outsideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT
-            );
+                const shadowRootIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
+                );
+                const customElementIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
+                );
 
-            assert(insideIndex < outsideIndex);
-        });
-    });
+                assert(shadowRootIndex < customElementIndex);
+            });
 
-    describe('the child shadow root listener', () => {
-        it('should execute before the inside child custom element listener', () => {
-            clickChildButton();
+            it('should execute before the child custom element listener bound from the parent renderedCallback', () => {
+                clickChildButton();
 
-            const shadowRootIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
-            );
-            const customElementIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
-            );
+                const shadowRootIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
+                );
+                const customElementIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
+                );
 
-            assert(shadowRootIndex < customElementIndex);
-        });
+                assert(shadowRootIndex < customElementIndex);
+            });
 
-        it('should execute before the child custom element listener bound from the parent renderedCallback', () => {
-            clickChildButton();
+            it('should execute before the child custom element listener bound from the parent template', () => {
+                clickChildButton();
 
-            const shadowRootIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
-            );
-            const customElementIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
-            );
+                const shadowRootIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
+                );
+                const customElementIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
+                );
 
-            assert(shadowRootIndex < customElementIndex);
-        });
-
-        it('should execute before the child custom element listener bound from the parent template', () => {
-            clickChildButton();
-
-            const shadowRootIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT
-            );
-            const customElementIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
-            );
-
-            assert(shadowRootIndex < customElementIndex);
-        });
-    });
-
-    describe('the child custom element listener bound from the inside', () => {
-        it('should execute before the child custom element listener programmatically bound from the outside', () => {
-            clickChildButton();
-
-            const insideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
-            );
-            const outsideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
-            );
-
-            assert(insideIndex < outsideIndex);
+                assert(shadowRootIndex < customElementIndex);
+            });
         });
 
-        it('should execute before the child custom element listener declaratively bound from the outside', () => {
-            clickChildButton();
+        describe('the child custom element listener bound from the inside', () => {
+            it('should execute before the child custom element listener programmatically bound from the outside', () => {
+                clickChildButton();
 
-            const insideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
-            );
-            const outsideIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
-            );
+                const insideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
+                );
+                const outsideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD
+                );
 
-            assert(insideIndex < outsideIndex);
+                assert(insideIndex < outsideIndex);
+            });
+
+            it('should execute before the child custom element listener declaratively bound from the outside', () => {
+                clickChildButton();
+
+                const insideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD
+                );
+                const outsideIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD
+                );
+
+                assert(insideIndex < outsideIndex);
+            });
         });
-    });
 
-    describe('the parent shadow root listener bound in the constructor', () => {
-        it('should execute before the parent shadow root listener bound in the renderedCallback', () => {
-            clickChildButton();
+        describe('the parent shadow root listener bound in the constructor', () => {
+            it('should execute before the parent shadow root listener bound in the renderedCallback', () => {
+                clickChildButton();
 
-            const constructorIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
-            );
-            const renderedCallbackIndex = getGuidIndex(
-                EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT
-            );
+                const constructorIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_CONSTRUCTOR_LISTENER__BOUND_TO_PARENT_ROOT
+                );
+                const renderedCallbackIndex = getGuidIndex(
+                    EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_PARENT_ROOT
+                );
 
-            assert(constructorIndex < renderedCallbackIndex);
+                assert(constructorIndex < renderedCallbackIndex);
+            });
         });
     });
 
