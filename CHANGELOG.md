@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.19.8...v) (2018-05-17)
+# [](https://github.com/salesforce/lwc/compare/v0.19.9...v) (2018-05-24)
+
+
+
+<a name="0.19.9"></a>
+## [0.19.9](https://github.com/salesforce/lwc/compare/v0.19.8...v0.19.9) (2018-05-24)
+
+
+### Bug Fixes
+
+* **engine:** live bindings for value and checked properties 3nd attempt ([#341](https://github.com/salesforce/lwc/issues/341)) ([1e5d06a](https://github.com/salesforce/lwc/commit/1e5d06a))
 
 
 
