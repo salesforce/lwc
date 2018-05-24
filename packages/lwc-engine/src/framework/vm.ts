@@ -7,6 +7,7 @@ import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } fro
 import { ViewModelReflection, getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
+import { parentNodeGetter, parentElementGetter } from "./dom";
 
 import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -417,7 +418,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.vm(vm);
     }
     const { elm } = vm;
-    const parentElm = elm && elm.parentElement;
+    const parentElm = elm && parentElementGetter.call(elm);
     return getErrorBoundaryVM(parentElm);
 }
 
@@ -440,7 +441,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         }
         // TODO: if shadowDOM start preventing this walking process, we will
         // need to find a different way to find the right boundary
-        elm = elm.parentElement;
+        elm = parentElementGetter.call(elm);
     }
 }
 
@@ -452,7 +453,35 @@ export function getComponentStack(vm: VM): string {
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
-        elm = elm.parentElement;
+        elm = parentElementGetter.call(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
+}
+
+export function getElementOwnerVM(elm: Element | undefined): VM | undefined {
+    if (!(elm instanceof Node)) {
+        return;
+    }
+    let node: Node | null = elm;
+    let ownerKey;
+    // search for the first element with owner identity (just in case of manually inserted elements)
+    while (!isNull(node) && isUndefined((ownerKey = node[OwnerKey]))) {
+        node = parentNodeGetter.call(node);
+    }
+    if (isUndefined(ownerKey) || isNull(node)) {
+        return;
+    }
+    let vm: VM | undefined;
+    // search for a custom element with a VM that owns the first element with owner identity attached to it
+    while (!isNull(node) && (isUndefined(vm = node[ViewModelReflection]) || (vm as VM).uid !== ownerKey)) {
+        node = parentNodeGetter.call(node);
+    }
+    return isNull(node) ? undefined : vm;
+}
+
+export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoot): VM {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(elmOrCmp[ViewModelReflection]);
+    }
+    return elmOrCmp[ViewModelReflection] as VM;
 }

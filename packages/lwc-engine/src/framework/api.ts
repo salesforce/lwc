@@ -2,13 +2,12 @@ import assert from "./assert";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty } from "./language";
 import { vmBeingRendered, invokeComponentCallback } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM } from "./vm";
 import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
 
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { getCustomElementVM } from "./html-element";
-import { pierce } from "./piercing";
+import { patchShadowDomEvent } from "./events";
 
 export interface RenderAPI {
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
@@ -367,8 +366,8 @@ export function b(fn: EventListener): EventListener {
         if (!isValidEvent(event)) {
             return;
         }
-        const e = pierce(event);
-        invokeComponentCallback(vm, fn, [e]);
+        patchShadowDomEvent(event);
+        invokeComponentCallback(vm, fn, [event]);
     };
 }
 

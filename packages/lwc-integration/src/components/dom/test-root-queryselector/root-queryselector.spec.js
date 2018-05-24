@@ -1,5 +1,5 @@
 const assert = require('assert');
-describe('Testing component: app-list', () => {
+describe('Testing component: test-root-queryselector', () => {
     const URL = 'http://localhost:4567/root-queryselector';
 
     before(() => {
@@ -12,6 +12,5 @@ describe('Testing component: app-list', () => {
         const error = browser.elements('#error');
         assert.equal(noerror.value.length, 1);
         assert.equal(error.value.length, 0);
-        assert.equal(elem.getText(), 'No Error');
     });
 });

@@ -1,20 +1,17 @@
 import assert from "./assert";
 import { isUndefined, isObject, isArray, create, ArrayPush } from "./language";
 
-import { Replicable } from "./membrane";
 import { Context } from "./context";
 import { VNodeData } from "../3rdparty/snabbdom/types";
 import { ComponentDef } from "./def";
 import { VM } from "./vm";
 
 export type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
-export type MembranePiercingCallback = (target: Replicable, key: PropertyKey, value: any, callback: (newValue?: any) => void) => void;
 export interface ServiceDef {
     wiring?: ServiceCallback;
     connected?: ServiceCallback;
     disconnected?: ServiceCallback;
     rendered?: ServiceCallback;
-    piercing?: MembranePiercingCallback;
 }
 
 export const Services: {
@@ -22,10 +19,9 @@ export const Services: {
   connected?: ServiceCallback[];
   disconnected?: ServiceCallback[];
   rendered?: ServiceCallback[];
-  piercing?: MembranePiercingCallback[];
 } = create(null);
 
-const hooks: Array<keyof ServiceDef> = ['wiring', 'rendered', 'connected', 'disconnected', 'piercing'];
+const hooks: Array<keyof ServiceDef> = ['wiring', 'rendered', 'connected', 'disconnected'];
 
 export function register(service: ServiceDef) {
     if (process.env.NODE_ENV !== 'production') {

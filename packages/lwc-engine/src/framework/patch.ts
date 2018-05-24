@@ -8,6 +8,7 @@ import events from "./modules/events";
 import token from "./modules/token";
 import uid from "./modules/uid";
 import { isNull } from './language';
+import { parentNodeGetter } from "./dom";
 
 const {
     createElement,
@@ -22,7 +23,7 @@ const {
     appendChild,
 } = Node.prototype;
 function parentNode(node: Node): Node | null {
-    return node.parentNode;
+    return parentNodeGetter.call(node);
 }
 function nextSibling(node: Node): Node | null {
     return node.nextSibling;

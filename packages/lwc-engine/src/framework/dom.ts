@@ -15,6 +15,10 @@ import {
 import { ViewModelReflection } from "./utils";
 import { VM } from './vm';
 
+const dispatchEvent = 'EventTarget' in window ?
+    EventTarget.prototype.dispatchEvent :
+    Node.prototype.dispatchEvent; // IE11
+
 const {
     addEventListener,
     removeEventListener,
@@ -36,24 +40,31 @@ const {
     compareDocumentPosition,
 } = Node.prototype;
 
+const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
+    getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
+
 /**
  * Returns the context shadow included root.
  */
 function findShadowRoot(node: Node): Node {
+    const initialParent = parentNodeGetter.call(node);
     // We need to ensure that the parent element is present before accessing it.
-    if (isNull(node.parentNode)) {
+    if (isNull(initialParent)) {
         return node;
     }
 
     // In the case of LWC, the root and the host element are the same things. Therefor,
     // when calling findShadowRoot on the a host element we want to return the parent host
     // element and not the current host element.
-    node = node.parentNode;
+    node = initialParent;
+    let nodeParent;
     while (
-        !isNull(node.parentNode) &&
+        !isNull(nodeParent = parentNodeGetter.call(node)) &&
         isUndefined(node[ViewModelReflection])
     ) {
-        node = node.parentNode;
+        node = nodeParent;
     }
 
     return node;
@@ -66,8 +77,9 @@ function findShadowRoot(node: Node): Node {
  * in our case.
  */
 function findComposedRootNode(node: Node): Node {
-    while (!isNull(node.parentNode)) {
-        node = node.parentNode;
+    let nodeParent;
+    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
+        node = nodeParent;
     }
 
     return node;
@@ -91,11 +103,18 @@ function getRootNode(
         findShadowRoot(this);
 }
 
+export const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
+
+export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
+
 export function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 export {
+    // EventTarget.prototype
+    dispatchEvent,
+
     // Element.prototype
     addEventListener,
     removeEventListener,
@@ -111,6 +130,8 @@ export {
     // Node.prototype
     compareDocumentPosition,
     getRootNode,
+    parentNodeGetter,
+    parentElementGetter,
 
     // Node
     DOCUMENT_POSITION_CONTAINED_BY,

@@ -4,15 +4,68 @@ import {
     removeEventListener,
     getRootNode,
     isChildNode,
+    parentNodeGetter,
 } from "./dom";
-import { VM } from "./vm";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
-import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { pierce } from "./piercing";
+import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
+import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties } from "./language";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
+import { patchShadowDomTraversalMethods } from "./traverse";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
+}
+
+const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
+const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
+
+const eventShadowDescriptors: PropertyDescriptorMap = {
+    target: {
+        get(this: Event): HTMLElement {
+            const { currentTarget } = this;
+            const originalTarget: HTMLElement = eventTargetGetter.call(this);
+
+            // Executing event listener on component, target is always currentTarget
+            if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                return patchShadowDomTraversalMethods(currentTarget as HTMLElement);
+            }
+
+            // Handle events is coming from an slotted elements.
+            // TODO: Add more information why we need to handle the light DOM events here.
+            if (isChildNode(getRootNode.call(originalTarget, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
+                return patchShadowDomTraversalMethods(originalTarget);
+            }
+
+            let vm: VM | undefined;
+            if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
+                // If we are in an event listener attached on the shadow root, then we do not want to look
+                // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
+                // rendered the component (parent component).
+                //
+                // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
+                vm = getCustomElementVM(currentTarget as HTMLElement);
+            } else if (!isUndefined(currentTarget)) {
+                // TODO: When does currentTarget can be undefined
+                vm = getElementOwnerVM(currentTarget as Element);
+            }
+
+            // Handle case when VM is not present for example when attaching an event listener
+            // on the root component of the component tree.
+            if (!isUndefined(vm)) {
+                let node = originalTarget;
+                while (!isNull(node) && vm.uid !== node[OwnerKey]) {
+                    node = parentNodeGetter.call(node);
+                }
+                return patchShadowDomTraversalMethods(node);
+            }
+            return originalTarget;
+        },
+        configurable: true,
+    },
+};
+
+export function patchShadowDomEvent(event: Event) {
+    defineProperties(event, eventShadowDescriptors);
 }
 
 const rootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
@@ -38,8 +91,8 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
-                    const e = pierce(event);
-                    invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, e);
+                    patchShadowDomEvent(event);
+                    invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, event);
             }
         } as WrappedListener;
         wrappedListener!.placement = EventListenerContext.ROOT_LISTENER;
@@ -71,8 +124,8 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
                 target === currentTarget ||
                 // it is coming from an slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node)) {
-                    const e = pierce(event);
-                    invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, e);
+                    patchShadowDomEvent(event);
+                    invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, event);
             }
         } as WrappedListener;
         wrappedListener!.placement = EventListenerContext.COMPONENT_LISTENER;

@@ -6,6 +6,7 @@ import { createElement } from "../upgrade";
 import { ViewModelReflection } from "../def";
 import { VM } from "../vm";
 import { Component } from "../component";
+import { querySelector } from "../dom";
 
 describe('root', () => {
     describe('#constructor()', () => {
@@ -59,7 +60,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const node = (elm[ViewModelReflection].component as Component).root.querySelector('p');
+                const node = (elm[ViewModelReflection].component as Component).template.querySelector('p');
                 expect(node.tagName).toBe('P');
             });
         });
@@ -75,7 +76,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const nodes = (elm[ViewModelReflection].component as Component).root.querySelectorAll('p');
+                const nodes = (elm[ViewModelReflection].component as Component).template.querySelectorAll('p');
                 expect(nodes).toHaveLength(0);
             });
         });
@@ -224,226 +225,10 @@ describe('root', () => {
 
                 const elm = createElement('x-foo', { is: MyComponent });
                 document.body.appendChild(elm);
+                const nativeIframeContentWindow = document.querySelector('iframe').contentWindow;
                 const iframeContentWindow = elm.getContentWindow();
-                expect(document.querySelector('iframe').contentWindow === unwrap(iframeContentWindow)).toBe(true);
+                expect(nativeIframeContentWindow === unwrap(iframeContentWindow)).toBe(true);
             });
         });
     });
-
-    describe('membrane', () => {
-
-        it('should querySelector on element from template', () => {
-            function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
-                expect(ul);
-                const li = ul.querySelector('li');
-                expect(li);
-            });
-        });
-
-        it('should not reach into child components template when querySelector invoked on child custom element', () => {
-            expect.assertions(1);
-            let childTemplate;
-            class MyChild extends Element {
-                render() {
-                    return function ($api) {
-                        return [$api.h('div', {
-                            key: 0,
-                        }, [])];
-                    }
-                }
-            }
-
-            function html($api, $cmp) {
-                return [$api.c('membrane-parent-query-selector-child-custom-element-child', MyChild, {})];
-            }
-
-            class MyComponent extends Element {
-                queryChild() {
-                    return this.template.querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div');
-                }
-
-                render() {
-                    return html;
-                }
-            }
-
-            MyComponent.publicMethods = ['queryChild'];
-
-            const elm = createElement('membrane-parent-query-selector-child-custom-element', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(elm.queryChild()).toBe(null);
-        });
-
-        it('should querySelectorAll on element from template', () => {
-            function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelectorAll('ul')[0];
-                expect(ul);
-                const li = ul.querySelectorAll('li')[0];
-                expect(li);
-            });
-        });
-
-        it('should ignore extraneous elements', () => {
-            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const ul = (elm[ViewModelReflection].component as Component).root.querySelector('ul');
-                expect(ul);
-                ul.appendChild(document.createElement('li'));
-                const li1 = ul.querySelectorAll('li')[0];
-                expect(li1).toBeUndefined();
-                const li2 = ul.querySelector('li');
-                expect(li2).toBeNull();
-            });
-        });
-
-        it('should not throw error if querySelector does not match any elements', () => {
-            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                expect(() => {
-                    (elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist');
-                }).not.toThrow();
-            });
-        });
-
-        it('should return null if querySelector does not match any elements', () => {
-            function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                expect((elm[ViewModelReflection].component as Component).root.querySelector('doesnotexist')).toBeNull();
-            });
-        });
-
-        it('should not throw error if querySelectorAll does not match any elements', () => {
-            function html($api) {
-                return [$api.h('ul', { key: 0 }, [])];
-            }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                expect(() => {
-                    (elm[ViewModelReflection].component as Component).root.querySelectorAll('doesnotexist');
-                }).not.toThrow();
-            });
-        });
-
-        it('should allow walking back to the shadow root', () => {
-            function html($api) {
-                return [$api.h('div', { key: 0 }, [])];
-            }
-            class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            }
-
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                const root = (elm[ViewModelReflection].component as Component).template;
-                expect(root.querySelector('div').parentNode).toBe(root);
-            });
-        });
-
-        it('should not expose shadow root on child custom element', () => {
-            expect.assertions(1);
-            let childTemplate;
-            class MyChild extends Element {
-                constructor() {
-                    super();
-                    childTemplate = this.template;
-                }
-
-                clickDiv() {
-                    this.template.querySelector('div').click();
-                }
-
-                render() {
-                    return function ($api) {
-                        return [$api.h('div', {
-                            key: 0,
-                        }, [])];
-                    }
-                }
-            }
-
-            MyChild.publicMethods = ['clickDiv'];
-
-            function html($api, $cmp) {
-                return [$api.c('x-child-parent-shadow-root', MyChild, {
-                    on: {
-                        click: $api.b($cmp.handleClick)
-                    }
-                })];
-            }
-
-            class MyComponent extends Element {
-                handleClick(evt) {
-                    expect(evt.target.parentNode).not.toBe(childTemplate);
-                }
-
-                clickChildDiv() {
-                    this.template.querySelector('x-child-parent-shadow-root').clickDiv();
-                }
-
-                render() {
-                    return html;
-                }
-            }
-
-            MyComponent.publicMethods = ['clickChildDiv'];
-
-            const elm = createElement('membrane-child-parent-shadow-root-parent', { is: MyComponent });
-            document.body.appendChild(elm);
-            return Promise.resolve().then(() => {
-                elm.clickChildDiv();
-            });
-        });
-
-    });
-
 });
