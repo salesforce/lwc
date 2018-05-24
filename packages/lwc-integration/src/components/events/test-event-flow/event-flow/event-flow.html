@@ -4,6 +4,8 @@
         onchildbuttonclick={handleChildButtonClick}
     ></x-parent>
 
+    <button id="clear" onclick={handleClearButtonClick}>clear logs</button>
+
     <ol class="logs">
         <template for:each={logs} for:item="log">
             <li key={log.eventName}><pre>{log.eventName}</pre></li>

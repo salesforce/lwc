@@ -58,7 +58,7 @@ describe('event flow:', () => {
     before(() => {
         browser.url(TEST_URL);
 
-        // Load the set of events from the event-flow component
+        // Load the set of event names and guids from the event-flow component
         const EVT = browser.execute(function () {
             return document.querySelector('event-flow').EVENT;
         }).value;
@@ -68,8 +68,7 @@ describe('event flow:', () => {
     });
 
     beforeEach(() => {
-        // One click per page load
-        browser.url(TEST_URL);
+        browser.click('button#clear');
         // Reset log cache
         LOGGED_GUIDS = null;
     });

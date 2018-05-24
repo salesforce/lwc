@@ -64,4 +64,8 @@ export default class EventFlow extends Element {
     handleChildButtonClick(event) {
         this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_TEMPLATE_LISTENER__BOUND_TO_PARENT);
     }
+
+    handleClearButtonClick(event) {
+        this._logs.length = 0;
+    }
 }
