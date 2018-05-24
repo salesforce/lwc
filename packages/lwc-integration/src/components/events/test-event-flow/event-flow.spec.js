@@ -229,6 +229,14 @@ describe('event flow:', () => {
     });
 
     describe('when the slotted button is clicked', () => {
+        // TODO: Render slots in the DOM
+        it.skip('the slotted button click listener bound to the slot in the child renderedCallback should execute', () => {
+            clickSlottedButton();
+            assert(
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT)
+            );
+        });
+
         it('the slotted button click listener bound to the slotted button in the parent renderedCallback should execute', () => {
             clickSlottedButton();
             assert(
