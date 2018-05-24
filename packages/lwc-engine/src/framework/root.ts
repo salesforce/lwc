@@ -5,7 +5,7 @@ import { getCustomElementComponent } from "./component";
 import { getShadowRootVM, VM } from "./vm";
 import { Component } from "./component";
 import { addRootEventListener, removeRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, lightDomQuerySelectorAll, lightDomQuerySelector } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
 import { TargetSlot } from "./membrane";
 import {
     GlobalAOMProperties,
