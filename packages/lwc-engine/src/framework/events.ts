@@ -22,7 +22,6 @@ const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 const eventShadowDescriptors: PropertyDescriptorMap = {
     target: {
         get(this: Event): HTMLElement {
-            console.log('hwat?;)')
             const { currentTarget } = this;
             const originalTarget: HTMLElement = eventTargetGetter.call(this);
 

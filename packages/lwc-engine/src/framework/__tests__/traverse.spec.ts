@@ -7,7 +7,6 @@ import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 import { unwrap } from "../main";
 import { querySelector } from "../dom";
-import { } from "../traverse";
 
 describe('#lightDomQuerySelectorAll()', () => {
     describe('Invoked from within component', () => {
