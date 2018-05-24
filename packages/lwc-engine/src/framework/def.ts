@@ -92,6 +92,7 @@ import {
     ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
+import { removeTemplateEventListener, addTemplateEventListener } from "./events";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -300,6 +301,16 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
+function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    addTemplateEventListener(vm, type, listener);
+}
+
+function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    removeTemplateEventListener(vm, type, listener);
+}
+
 function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -388,7 +399,15 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
         querySelectorAll: {
             value: lightDomQuerySelectorAll,
             configurable: true,
-        }
+        },
+        addEventListener: {
+            value: addEventListenerPatched,
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+        },
+        removeEventListener: {
+            value: removeEventListenerPatched,
+            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+        },
     };
     // expose getters and setters for each public props on the Element
     for (const key in publicProps) {

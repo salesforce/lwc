@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { ViewModelReflection } from "./def";
-import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
+import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString } from "./language";
 import { getCustomElementComponent } from "./component";
 import { getShadowRootVM, VM } from "./vm";
 import { Component } from "./component";
@@ -107,12 +107,28 @@ export class Root implements ShadowRoot {
 
     addEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getShadowRootVM(this);
-        addRootEventListener(vm, type, listener, options);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.template.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
+            }
+        }
+        addRootEventListener(vm, type, listener);
     }
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getShadowRootVM(this);
-        removeRootEventListener(vm, type, listener, options);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.template.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
+            }
+        }
+        removeRootEventListener(vm, type, listener);
     }
     toString(): string {
         const component = getCustomElementComponent(this);

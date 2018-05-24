@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { ShadowRoot } from "./root";
 import { Component } from "./component";
-import { isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
+import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getGlobalHTMLPropertiesInfo,
@@ -158,15 +158,23 @@ LWCElement.prototype = {
 
             if (arguments.length > 2) {
                 // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
             }
         }
-        addCmpEventListener(vm, type, listener, options);
+        addCmpEventListener(vm, type, listener);
     },
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
         const vm = getComponentVM(this);
-        removeCmpEventListener(vm, type, listener, options);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
+            }
+        }
+        removeCmpEventListener(vm, type, listener);
     },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
