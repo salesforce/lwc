@@ -44,8 +44,8 @@ describe('dom', () => {
             document.body.appendChild(elm);
             const child = querySelector.call(elm, 'x-child');
             const match = getRootNode.call(child, { composed: true });
-            // // We can't assert against document directly, because
-            // // for some reasons, jest is locking up with document here
+            // We can't assert against document directly, because
+            // for some reasons, jest is locking up with document here
             expect(match.nodeName).toBe('#document');
         });
 
