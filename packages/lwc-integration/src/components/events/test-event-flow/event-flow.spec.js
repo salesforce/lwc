@@ -229,7 +229,7 @@ describe('event flow:', () => {
     });
 
     describe('when the slotted button is clicked', () => {
-        it('the slotted button listener bound to the slotted button in the parent renderedCallback should execute', () => {
+        it('the slotted button click listener bound to the slotted button in the parent renderedCallback should execute', () => {
             clickSlottedButton();
             assert(
                 isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOTTED_BUTTON)
@@ -243,51 +243,45 @@ describe('event flow:', () => {
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the child shadow root should not execute', () => {
+        it('the slotted button click listener bound to the child shadow root should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD_ROOT)
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the child custom element in the child constructor should not execute', () => {
+        it('the slotted button click listener bound to the child custom element in the child constructor should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_CONSTRUCTOR_LISTENER__BOUND_TO_CHILD)
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the child custom element in the parent template should not execute', () => {
+        it('the slotted button click listener bound to the child custom element in the parent template should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_CHILD)
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the child custom element in the parent renderedCallback should not execute', () => {
+        it('the slotted button click listener bound to the child custom element in the parent renderedCallback should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD)
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the div in the parent template should not execute', () => {
+        it('the slotted button click listener bound to the div in the parent template should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_TEMPLATE_LISTENER__BOUND_TO_DIV)
             );
         });
 
-        // Need to verify actual behavior
-        it.skip('the slotted button click listener bound to the div in the parent renderedCallback should not execute', () => {
+        it('the slotted button click listener bound to the div in the parent renderedCallback should execute', () => {
             clickSlottedButton();
             assert(
-                !isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV)
+                isEventLogged(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_PARENT_RENDEREDCALLBACK_LISTENER__BOUND_TO_DIV)
             );
         });
 
