@@ -1,5 +1,5 @@
 import { Element } from 'engine';
-import EVENT from '../EVENT';
+import { EVENT } from '../EVENT';
 
 export default class Child extends Element {
     log(guid) {
@@ -54,6 +54,14 @@ export default class Child extends Element {
             this.template.querySelector('button#child').addEventListener('childbuttonclick', event => {
                 this.log(EVENT.CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_CHILD_BUTTON);
             });
+
+            // Slot
+            const slot = this.template.querySelector('slot');
+            if (slot) {
+                slot.addEventListener('slottedbuttonclick', event => {
+                    this.log(EVENT.SLOTTED_BUTTON_CLICK__HANDLED_BY_CHILD_RENDEREDCALLBACK_LISTENER__BOUND_TO_SLOT);
+                });
+            }
         }
     }
 

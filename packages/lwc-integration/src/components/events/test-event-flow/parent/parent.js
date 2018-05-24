@@ -1,5 +1,5 @@
 import { Element, api, track, unwrap } from 'engine';
-import EVENT from '../EVENT';
+import { EVENT } from '../EVENT';
 
 export default class Parent extends Element {
     log(guid) {

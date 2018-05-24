@@ -3,7 +3,7 @@ function guid() {
     return guid.count++;
 }
 
-const EVENT = {
+export const EVENT = {
     // event-flow.js
     SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW: guid(),
     SLOTTED_BUTTON_CLICK__HANDLED_BY_EVENT_FLOW_RENDEREDCALLBACK_LISTENER__BOUND_TO_EVENT_FLOW_ROOT: guid(),
@@ -47,4 +47,7 @@ const EVENT = {
     CHILD_BUTTON_CLICK__HANDLED_BY_CHILD_TEMPLATE_LISTENER__BOUND_TO_CHILD_BUTTON: guid(),
 };
 
-export default EVENT;
+export const GUID_TO_NAME_MAP = Object.keys(EVENT).reduce((map, key) => {
+    map[EVENT[key]] = key;
+    return map;
+}, {});

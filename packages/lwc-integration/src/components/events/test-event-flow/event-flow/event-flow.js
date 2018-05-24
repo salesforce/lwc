@@ -1,15 +1,13 @@
 import { Element, api, track, unwrap } from 'engine';
-import EVENT from '../EVENT';
-
-const GUID_TO_EVENT_NAME_MAP = Object.keys(EVENT).reduce((map, key) => {
-    map[EVENT[key]] = key;
-    return map;
-}, {});
+import { EVENT, GUID_TO_NAME_MAP } from '../EVENT';
 
 export default class EventFlow extends Element {
     // Expose these "constants" to the test suite
     @api get EVENT() {
-        return EVENT;
+        return {
+            EVENT,
+            GUID_TO_NAME_MAP,
+        };
     }
 
     @track _logs = [];
@@ -17,12 +15,12 @@ export default class EventFlow extends Element {
         return this._logs;
     }
     log(guid) {
-        if (!guid || !GUID_TO_EVENT_NAME_MAP[guid]) {
+        if (!guid || !GUID_TO_NAME_MAP[guid]) {
             throw new Event(`The guid "${guid}" does not exist.`);
         }
         this._logs.push({
             guid,
-            eventName: GUID_TO_EVENT_NAME_MAP[guid],
+            eventName: GUID_TO_NAME_MAP[guid],
         });
     }
 

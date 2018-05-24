@@ -1,8 +1,10 @@
 const assert = require('assert');
 const TEST_URL = 'http://localhost:4567/event-flow';
 
-// Loaded from the browser context before each test
+// Loaded from the browser context
 let EVENT;
+let GUID_TO_NAME_MAP;
+
 let LOGGED_GUIDS;
 
 function getLoggedEventGuids() {
@@ -16,7 +18,7 @@ function getLoggedEventGuids() {
 }
 
 function getGuidIndex(eventGuid) {
-    eventGuid = Number(eventGuid);
+    assertValidGuid(eventGuid);
     const guids = getLoggedEventGuids();
     let foundIndex = -1;
     const filtered = guids
@@ -34,6 +36,12 @@ function getGuidIndex(eventGuid) {
     return foundIndex;
 }
 
+function assertValidGuid(guid) {
+    if (!GUID_TO_NAME_MAP[guid]) {
+        throw new Event(`The guid "${guid}" is invalid.`);
+    }
+}
+
 function clickSlottedButton() {
     browser.element('button#slotted').click();
 }
@@ -42,6 +50,7 @@ function clickChildButton() {
 }
 
 function isEventLogged(guid) {
+    assertValidGuid(guid);
     return getLoggedEventGuids().some(g => g === guid);
 }
 
@@ -50,22 +59,12 @@ describe('event flow:', () => {
         browser.url(TEST_URL);
 
         // Load the set of events from the event-flow component
-        EVENT = browser.execute(function () {
+        const EVT = browser.execute(function () {
             return document.querySelector('event-flow').EVENT;
         }).value;
 
-        if (typeof Proxy !== 'undefined') {
-            // For sanity, to guard against misspelled event names
-            EVENT = new Proxy(EVENT, {
-                get(target, property, receiver) {
-                    const value = target[property];
-                    if (typeof value === 'undefined') {
-                        throw new Error(`The event "${property}" does not exist.`);
-                    }
-                    return value;
-                }
-            });
-        }
+        EVENT = EVT.EVENT;
+        GUID_TO_NAME_MAP = EVT.GUID_TO_NAME_MAP;
     });
 
     beforeEach(() => {
