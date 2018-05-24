@@ -54,16 +54,18 @@ describe('event flow:', () => {
             return document.querySelector('event-flow').EVENT;
         }).value;
 
-        // For sanity, to guard against misspelled event names
-        EVENT = new Proxy(EVENT, {
-            get(target, property, receiver) {
-                const value = target[property];
-                if (typeof value === 'undefined') {
-                    throw new Error(`The event "${property}" does not exist.`);
+        if (typeof Proxy !== 'undefined') {
+            // For sanity, to guard against misspelled event names
+            EVENT = new Proxy(EVENT, {
+                get(target, property, receiver) {
+                    const value = target[property];
+                    if (typeof value === 'undefined') {
+                        throw new Error(`The event "${property}" does not exist.`);
+                    }
+                    return value;
                 }
-                return value;
-            }
-        });
+            });
+        }
     });
 
     beforeEach(() => {
