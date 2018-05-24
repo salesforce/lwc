@@ -18,7 +18,7 @@ import {
 } from "./dom";
 import { getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { VM, getShadowRoot } from "./vm";
+import { getComponentVM, VM, getShadowRoot } from "./vm";
 import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
@@ -342,11 +342,3 @@ freeze(LWCElement);
 seal(LWCElement.prototype);
 
 export { LWCElement as Element };
-
-export function getComponentVM(component: Component): VM {
-    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(component[ViewModelReflection]);
-    }
-    return component[ViewModelReflection] as VM;
-}

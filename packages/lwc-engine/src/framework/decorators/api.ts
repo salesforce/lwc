@@ -3,8 +3,7 @@ import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
 import { isObject, isNull, isTrue, hasOwnProperty } from "../language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { Component, ComponentConstructor } from "../component";
-import { VM } from "../vm";
-import { getComponentVM } from "../html-element";
+import { VM, getComponentVM } from "../vm";
 import { isUndefined, isFunction } from "../language";
 import { reactiveMembrane } from "../membrane";
 

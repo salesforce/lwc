@@ -2,26 +2,17 @@ import assert from "./assert";
 import { ViewModelReflection } from "./def";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
-import { VM, wasNodePassedIntoVM } from "./vm";
+import { getShadowRootVM, VM } from "./vm";
 import { Component } from "./component";
 import { addRootEventListener, removeRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, lightDomQuerySelectorAll, lightDomQuerySelector } from "./traverse";
 import { TargetSlot } from "./membrane";
 import {
     GlobalAOMProperties,
     setAttribute,
     removeAttribute,
-    querySelectorAll,
 } from './dom';
 import { getAttrNameFromPropName } from "./utils";
-
-function getShadowRootVM(root: ShadowRoot): VM {
-    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(root[ViewModelReflection]);
-    }
-    return root[ViewModelReflection] as VM;
-}
 
 export interface ShadowRoot {
     [ViewModelReflection]: VM;
@@ -89,18 +80,11 @@ export class Root implements ShadowRoot {
         throw new Error();
     }
     querySelector(selector: string): HTMLElement | null {
-        const node = shadowRootQuerySelector(this[ViewModelReflection], selector);
+        const vm = getShadowRootVM(this);
+        const node = shadowRootQuerySelector(vm, selector);
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(node)) {
-                const vm = getShadowRootVM(this);
-                const nodeList = querySelectorAll.call(vm.elm, selector);
-                let foundSlottedNode = false;
-                for (let i = 0, len = nodeList.length; i < len; i += 1) {
-                    if (wasNodePassedIntoVM(vm, nodeList[i])) {
-                        foundSlottedNode = true;
-                    }
-                }
-                if (foundSlottedNode) {
+                if (vm.elm.querySelector(selector)) {
                     assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                 }
             }
@@ -108,18 +92,12 @@ export class Root implements ShadowRoot {
         return node as HTMLElement;
     }
     querySelectorAll(selector: string): HTMLElement[] {
-        const nodeList = shadowRootQuerySelectorAll(this[ViewModelReflection], selector);
+        const vm = getShadowRootVM(this);
+        const nodeList = shadowRootQuerySelectorAll(vm, selector);
         if (process.env.NODE_ENV !== 'production') {
             if (nodeList.length === 0) {
-                const vm = getShadowRootVM(this);
-                const slottedNodeList = querySelectorAll.call(vm.elm, selector);
-                let foundSlottedNode = false;
-                for (let i = 0, len = slottedNodeList.length; i < len; i += 1) {
-                    if (wasNodePassedIntoVM(vm, slottedNodeList[i])) {
-                        foundSlottedNode = true;
-                    }
-                }
-                if (foundSlottedNode) {
+                const results = vm.elm.querySelectorAll(selector);
+                if (results.length) {
                     assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                 }
             }

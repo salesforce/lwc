@@ -498,3 +498,19 @@ export function getShadowRoot(vm: VM): ShadowRoot {
     }
     return cmpRoot;
 }
+
+export function getComponentVM(component: Component): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(component[ViewModelReflection]);
+    }
+    return component[ViewModelReflection] as VM;
+}
+
+export function getShadowRootVM(root: ShadowRoot): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(root[ViewModelReflection]);
+    }
+    return root[ViewModelReflection] as VM;
+}

@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isArray, isObject, isUndefined } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
-import { getComponentVM } from "../html-element";
+import { getComponentVM } from "../vm";
 import { reactiveMembrane } from '../membrane';
 import { ComponentConstructor, Component } from "../component";
 
