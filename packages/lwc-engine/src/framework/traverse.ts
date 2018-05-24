@@ -128,12 +128,12 @@ export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
     // seen it and can move on.
     if (!hasOwnProperty.call(node, 'querySelector')) {
         defineProperties(node, shadowDescriptors);
-    }
 
-    if (node.tagName === 'IFRAME' && !hasOwnProperty.call(node, 'contentWindow')) {
-        // We need to patch iframe.contentWindow because raw access to the contentWindow
-        // Will break in compat mode
-        defineProperty(node, 'contentWindow', contentWindowDescriptor);
+        if (node.tagName === 'IFRAME') {
+            // We need to patch iframe.contentWindow because raw access to the contentWindow
+            // Will break in compat mode
+            defineProperty(node, 'contentWindow', contentWindowDescriptor);
+        }
     }
     return node;
 }
