@@ -1,0 +1,12 @@
+<template>
+    <x-parent
+        onslottedbuttonclick={handleSlottedButtonClick}
+        onchildbuttonclick={handleChildButtonClick}
+    ></x-parent>
+
+    <ol class="logs">
+        <template for:each={logs} for:item="log">
+            <li key={log.eventName}><pre>{log.eventName}</pre></li>
+        </template>
+    </ol>
+</template>
