@@ -6,7 +6,7 @@ import {
     parentElementGetter as nativeParentElementGetter,
     iFrameContentWindowGetter,
 } from "./dom";
-import { Root, wrapIframeWindow } from "./root";
+import { Root, wrapIframeWindow, ShadowRoot } from "./root";
 import {
     ArrayFilter,
     defineProperty,
@@ -15,7 +15,7 @@ import {
 } from "./language";
 import { isBeingConstructed } from "./invoker";
 
-function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): Root | HTMLElement | null {
+function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
@@ -30,13 +30,13 @@ function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLEleme
     return null;
 }
 
-export function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
+export function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
     const vm = getElementOwnerVM(this) as VM;
     const value = nativeParentNodeGetter.call(this);
     return getShadowParent(this, vm, value);
 }
 
-export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | Root | null {
+export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
     const vm = getElementOwnerVM(this) as VM;
     const value = nativeParentElementGetter.call(this);
     return getShadowParent(this, vm, value);
