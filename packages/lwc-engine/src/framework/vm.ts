@@ -14,7 +14,7 @@ import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { Component } from "./component";
 import { Context } from "./context";
-import { ShadowRoot } from "./root";
+import { ShadowRoot, Root } from "./root";
 import { startMeasure, endMeasure } from "./performance-timing";
 
 export interface HashTable<T> {
@@ -484,4 +484,33 @@ export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoo
         assert.vm(elmOrCmp[ViewModelReflection]);
     }
     return elmOrCmp[ViewModelReflection] as VM;
+}
+
+export function getShadowRoot(vm: VM): ShadowRoot {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    let { cmpRoot } = vm;
+    // lazy creation of the ShadowRoot Object the first time it is accessed.
+    if (isUndefined(cmpRoot)) {
+        cmpRoot = new Root(vm);
+        vm.cmpRoot = cmpRoot;
+    }
+    return cmpRoot;
+}
+
+export function getComponentVM(component: Component): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(component[ViewModelReflection]);
+    }
+    return component[ViewModelReflection] as VM;
+}
+
+export function getShadowRootVM(root: ShadowRoot): VM {
+    // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(root[ViewModelReflection]);
+    }
+    return root[ViewModelReflection] as VM;
 }

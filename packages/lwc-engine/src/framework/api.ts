@@ -5,7 +5,6 @@ import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM } from "./vm";
 import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty, isValidEvent } from "./component";
-
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { patchShadowDomEvent } from "./events";
 

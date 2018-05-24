@@ -2,7 +2,7 @@ import assert from "./assert";
 import { ViewModelReflection } from "./def";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty } from "./language";
 import { getCustomElementComponent } from "./component";
-import { VM, getCustomElementVM } from "./vm";
+import { getShadowRootVM, VM } from "./vm";
 import { Component } from "./component";
 import { addRootEventListener, removeRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
@@ -31,14 +31,14 @@ function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: 
     return {
         enumerable: false,
         get(this: ShadowRoot): any {
-            const vm = getCustomElementVM(this);
+            const vm = getShadowRootVM(this);
             if (!hasOwnProperty.call(vm.rootProps, propName)) {
                 return defaultValue;
             }
             return vm.rootProps[propName];
         },
         set(this: ShadowRoot, newValue: any) {
-            const vm = getCustomElementVM(this);
+            const vm = getShadowRootVM(this);
             vm.rootProps[propName] = newValue;
             if (!isUndefined(vm.hostAttrs[attrName])) {
                 return;
@@ -72,42 +72,46 @@ export class Root implements ShadowRoot {
         return 'closed';
     }
     get host(): Component {
-        return getCustomElementVM(this).component as Component;
+        // TODO: this should be disable at some point
+        return getShadowRootVM(this).component as Component;
     }
     get innerHTML(): string {
         // TODO: should we add this only in dev mode? or wrap this in dev mode?
         throw new Error();
     }
     querySelector(selector: string): HTMLElement | null {
-        const node = shadowRootQuerySelector(this[ViewModelReflection], selector);
+        const vm = getShadowRootVM(this);
+        const node = shadowRootQuerySelector(vm, selector);
         if (process.env.NODE_ENV !== 'production') {
-            // TODO: this invocation into component is invalid, and should be eventually removed
-            const component = getCustomElementComponent(this as ShadowRoot);
-            if (isNull(node) && component.querySelector(selector)) {
-                assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+            if (isNull(node)) {
+                if (vm.elm.querySelector(selector)) {
+                    assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+                }
             }
         }
         return node as HTMLElement;
     }
     querySelectorAll(selector: string): HTMLElement[] {
-        const nodeList = shadowRootQuerySelectorAll(this[ViewModelReflection], selector);
+        const vm = getShadowRootVM(this);
+        const nodeList = shadowRootQuerySelectorAll(vm, selector);
         if (process.env.NODE_ENV !== 'production') {
-            // TODO: this invocation into component is invalid, and should be eventually removed
-            const component = getCustomElementComponent(this);
-            if (nodeList.length === 0 && component.querySelectorAll(selector).length) {
-                assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${component}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+            if (nodeList.length === 0) {
+                const results = vm.elm.querySelectorAll(selector);
+                if (results.length) {
+                    assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+                }
             }
         }
         return nodeList;
     }
 
     addEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getShadowRootVM(this);
         addRootEventListener(vm, type, listener, options);
     }
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getShadowRootVM(this);
         removeRootEventListener(vm, type, listener, options);
     }
     toString(): string {
