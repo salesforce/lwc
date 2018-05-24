@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { defineProperty, isObject, isNull, isTrue } from "../language";
+import { defineProperty, isObject, isNull, isTrue, toString } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { isBeingConstructed, Component } from "../component";
@@ -57,20 +57,21 @@ export function createPublicPropertyDescriptor(proto: object, key: string, descr
                     }
                 }
             }
-            if (vmBeingUpdated === vm) {
-                // not need to wrap or check the value since that is happening somewhere else
-                vmBeingUpdated = null; // releasing the lock
-                vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
-
-                // avoid notification of observability while constructing the instance
-                if (vm.idx > 0) {
-                    // perf optimization to skip this step if not in the DOM
-                    notifyMutation(this, key);
+            if (process.env.NODE_ENV !== 'production') {
+                if (vmBeingUpdated !== vm) {
+                    // logic for setting new properties of the element directly from the DOM
+                    // is only recommended for root elements created via createElement()
+                    assert.logWarning(`If property ${key} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`);
                 }
-            } else if (process.env.NODE_ENV !== 'production') {
-                // logic for setting new properties of the element directly from the DOM
-                // will only be allowed for root elements created via createElement()
-                assert.logError(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
+            }
+            vmBeingUpdated = null; // releasing the lock
+            // not need to wrap or check the value since that is happening somewhere else
+            vm.cmpProps[key] = reactiveMembrane.getReadOnlyProxy(newValue);
+
+            // avoid notification of observability while constructing the instance
+            if (vm.idx > 0) {
+                // perf optimization to skip this step if not in the DOM
+                notifyMutation(this, key);
             }
         },
         enumerable: isUndefined(descriptor) ? true : descriptor.enumerable,
@@ -110,18 +111,19 @@ export function createPublicAccessorDescriptor(proto: object, key: string, descr
                     }
                 }
             }
-            if (vmBeingUpdated === vm) {
-                // not need to wrap or check the value since that is happening somewhere else
-                vmBeingUpdated = null; // releasing the lock
-                if (set) {
-                    set.call(this, reactiveMembrane.getReadOnlyProxy(newValue));
-                } else if (process.env.NODE_ENV !== 'production') {
-                    assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter decorated with @api.`);
+            if (process.env.NODE_ENV !== 'production') {
+                if (vmBeingUpdated !== vm) {
+                    // logic for setting new properties of the element directly from the DOM
+                    // is only recommended for root elements created via createElement()
+                    assert.logWarning(`If property ${key} decorated with @api in ${vm} is used in the template, the value ${toString(newValue)} set manually may be overridden by the template, consider binding the property only in the template.`);
                 }
+            }
+            vmBeingUpdated = null; // releasing the lock
+            // not need to wrap or check the value since that is happening somewhere else
+            if (set) {
+                set.call(this, reactiveMembrane.getReadOnlyProxy(newValue));
             } else if (process.env.NODE_ENV !== 'production') {
-                // logic for setting new properties of the element directly from the DOM
-                // will only be allowed for root elements created via createElement()
-                assert.fail(`Invalid attempt to set property ${key} from ${vm} to ${newValue}. This property was decorated with @api, and can only be changed via the template.`);
+                assert.fail(`Invalid attempt to set a new value for property ${key} of ${vm} that does not has a setter decorated with @api.`);
             }
         },
         enumerable,
