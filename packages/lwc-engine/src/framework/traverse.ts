@@ -6,7 +6,7 @@ import {
     parentElementGetter as nativeParentElementGetter,
     iFrameContentWindowGetter,
 } from "./dom";
-import { Root, wrapIframeWindow, ShadowRoot } from "./root";
+import { wrapIframeWindow, ShadowRoot } from "./root";
 import {
     ArrayFilter,
     defineProperty,
