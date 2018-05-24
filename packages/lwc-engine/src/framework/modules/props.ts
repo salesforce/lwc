@@ -1,16 +1,23 @@
 import assert from "../assert";
 import { isUndefined, keys, StringToLowerCase } from "../language";
-import { EmptyObject, getAttrNameFromPropName } from "../utils";
-import { prepareForPropUpdate } from "../decorators/api";
+import { getAttrNameFromPropName, makeReadOnlyRecord } from "../utils";
+import { lockForPropUpdate, unlockForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
+import { VM } from "../vm";
+
+const EspecialTagAndPropMap = makeReadOnlyRecord({
+    input: makeReadOnlyRecord({ value: 0, checked: 0 }),
+    select: makeReadOnlyRecord({ value: 0 }),
+    textarea: makeReadOnlyRecord({ value: 0 }),
+});
 
 function update(oldVnode: VNode, vnode: VNode) {
     const props = vnode.data.props;
     if (isUndefined(props)) {
         return;
     }
-    let oldProps = oldVnode.data.props;
+    const oldProps = oldVnode.data.props;
     if (oldProps === props) {
         return;
     }
@@ -23,31 +30,50 @@ function update(oldVnode: VNode, vnode: VNode) {
     let cur: any;
     let old: any;
     const elm = vnode.elm as Element;
-    const vm = elm[ViewModelReflection];
-    oldProps = isUndefined(oldProps) ? EmptyObject : oldProps;
+    const vm: VM = elm[ViewModelReflection];
+    const isCustomElement = !isUndefined(vm);
+    const isFirstPatch = isUndefined(oldProps);
 
     for (key in props) {
         cur = props[key];
-        old = (oldProps as any)[key];
+        let shouldUpdate = isFirstPatch;
 
+        if (!isFirstPatch) {
+            // slow path because we need to make sure that we really need to update the prop
+            old = (oldProps as any)[key];
+            if (isCustomElement) {
+                // custom element
+                // condition: is value out of sync prop
+                shouldUpdate = old !== cur;
+            } else {
+                // regular element
+                const { sel } = vnode as any;
+                shouldUpdate = (
+                    // condition: is an especial element with especial prop?
+                    (sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[sel]) ?
+                        // condition: especial prop is out of sync
+                        elm[key] !== cur
+                        // condition: diff is out of sync
+                        : old !== cur
+                );
+            }
+        }
         if (process.env.NODE_ENV !== 'production') {
-            if (old !== cur && !(key in elm)) {
+            if (!(key in elm)) {
                 // TODO: this should never really happen because the compiler should always validate
                 assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
-
-        if (old !== cur && (key in elm) && (key !== 'value' || elm[key] !== cur)) {
-            if (process.env.NODE_ENV !== 'production') {
-                if (elm[key] === cur && old !== undefined) {
-                    console.warn(`Unnecessary update of property "${key}" in element <${StringToLowerCase.call(elm.tagName)}>.`); // tslint:disable-line
-                }
+        if (shouldUpdate) {
+            if (isCustomElement) {
+                // this unlock and lock mechanism allows to control public props mutations in custom elements
+                unlockForPropUpdate(vm);
+                elm[key] = cur;
+                lockForPropUpdate();
+            } else {
+                // only touching the dom if the prop needs to be updated.
+                elm[key] = cur;
             }
-            if (!isUndefined(vm)) {
-                prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
-            }
-            // touching the dom if the prop really changes.
-            elm[key] = cur;
         }
     }
 }

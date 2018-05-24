@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace, hasOwnProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace, hasOwnProperty, freeze, setPrototypeOf } from "./language";
 import { ComponentConstructor } from "./component";
 import {
     AttrNameToPropNameMap,
@@ -87,3 +87,20 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
 }
 
 export const usesNativeSymbols = typeof Symbol() === 'symbol';
+
+export function makeReadOnlyRecord(record: Record<string, any>): Record<string, any> {
+    setPrototypeOf(record, null);
+    freeze(record);
+    return record;
+}
+
+const COMPUTED_GETTER_MASK = 1;
+const COMPUTED_SETTER_MASK = 2;
+
+export function hasPropertyGetter(config: number): boolean {
+    return (COMPUTED_GETTER_MASK & config) !== 0;
+}
+
+export function hasPropertySetter(config: number): boolean {
+    return (COMPUTED_SETTER_MASK & config) !== 0;
+}
