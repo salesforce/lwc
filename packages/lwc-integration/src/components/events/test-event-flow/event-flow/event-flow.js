@@ -12,7 +12,7 @@ export default class EventFlow extends Element {
 
     @track _logs = [];
     @api get logs() {
-        return this._logs;
+        return unwrap(this._logs);
     }
     log(guid) {
         if (!guid || !GUID_TO_NAME_MAP[guid]) {
