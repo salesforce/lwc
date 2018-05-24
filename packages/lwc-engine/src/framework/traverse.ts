@@ -9,19 +9,18 @@ import {
 import { Root, wrapIframeWindow } from "./root";
 import {
     ArrayFilter,
-    isUndefined,
     defineProperty,
     defineProperties,
     hasOwnProperty,
 } from "./language";
 import { isBeingConstructed } from "./invoker";
 
-function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement) {
+function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): Root | HTMLElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
 
-    if (!isUndefined(vm) && value === vm.elm) {
+    if (value === vm.elm) {
         // walking up via parent chain might end up in the shadow root element
         return vm.cmpRoot!;
     } else if (value instanceof Element && node[OwnerKey] === value[OwnerKey]) {
@@ -43,7 +42,7 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | R
     return getShadowParent(this, vm, value);
 }
 
-function getAllMatches(vm: VM, nodeList: NodeList) {
+function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
     return ArrayFilter.call(nodeList, (match) => {
         const isOwned = isNodeOwnedByVM(vm, match);
         if (isOwned) {
@@ -64,13 +63,13 @@ function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
     return null;
 }
 
-export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string) {
+export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string): HTMLElement[] {
     const vm = getElementOwnerVM(this) as VM;
     const matches = nativeQuerySelectorAll.call(this, selectors);
     return getAllMatches(vm, matches);
 }
 
-export function lightDomQuerySelector(this: HTMLElement, selectors: string) {
+export function lightDomQuerySelector(this: HTMLElement, selectors: string): HTMLElement | null {
     const vm = getElementOwnerVM(this) as VM;
     const nodeList = nativeQuerySelectorAll.call(this, selectors);
     return getFirstMatch(vm, nodeList);
@@ -123,11 +122,17 @@ const contentWindowDescriptor: PropertyDescriptor = {
 };
 
 export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
+    // Patching is done at the HTMLElement instance level.
+    // Avoid monkey patching shadow methods twice for perf reasons.
+    // If the node has querySelector defined on it, we have already
+    // seen it and can move on.
     if (!hasOwnProperty.call(node, 'querySelector')) {
         defineProperties(node, shadowDescriptors);
     }
 
     if (node.tagName === 'IFRAME' && !hasOwnProperty.call(node, 'contentWindow')) {
+        // We need to patch iframe.contentWindow because raw access to the contentWindow
+        // Will break in compat mode
         defineProperty(node, 'contentWindow', contentWindowDescriptor);
     }
     return node;

@@ -243,6 +243,9 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
+        // Delegate to custom element querySelector.
+        // querySelector on the custom element will respect
+        // shadow semantics
         return vm.elm.querySelector(selectors);
     },
     querySelectorAll(selectors: string): NodeList {
@@ -250,6 +253,9 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
+        // Delegate to custom element querySelectorAll.
+        // querySelectorAll on the custom element will respect
+        // shadow semantics
         return vm.elm.querySelectorAll(selectors);
     },
     get tagName(): string {

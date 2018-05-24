@@ -458,7 +458,7 @@ export function getComponentStack(vm: VM): string {
     return wcStack.reverse().join('\n\t');
 }
 
-export function getElementOwnerVM(elm: Element): VM | undefined {
+export function getElementOwnerVM(elm: Element | undefined): VM | undefined {
     if (!(elm instanceof Node)) {
         return;
     }

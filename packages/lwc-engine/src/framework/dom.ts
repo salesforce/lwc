@@ -68,7 +68,6 @@ function findShadowRoot(node: Node): Node {
     }
 
     return node;
-
 }
 
 /**

@@ -470,7 +470,6 @@ describe('html-element', () => {
                     return html;
                 }
                 run() {
-                    const div = this.template.querySelector('div');
                     this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz'));
                     this.template.querySelector('div').dispatchEvent(new CustomEvent('xyz', {
                         bubbles: true,

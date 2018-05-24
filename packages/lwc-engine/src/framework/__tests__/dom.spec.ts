@@ -46,7 +46,7 @@ describe('dom', () => {
             const match = getRootNode.call(child, { composed: true });
             // // We can't assert against document directly, because
             // // for some reasons, jest is locking up with document here
-            // expect(match.nodeName).toBe('#document');
+            expect(match.nodeName).toBe('#document');
         });
 
         it('should return correct value from self', () => {

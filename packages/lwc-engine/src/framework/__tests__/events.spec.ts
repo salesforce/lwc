@@ -8,7 +8,7 @@ describe('Composed events', () => {
         let count = 0;
         class Child extends Element {
             triggerFoo() {
-                this.dispatchEvent(new CustomEvent('foo', {}));
+                this.dispatchEvent(new CustomEvent('foo'));
             }
         }
         Child.publicMethods = ['triggerFoo'];
