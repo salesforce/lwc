@@ -44,14 +44,12 @@ function findShadowRoot(node: Node): Node {
     return node;
 }
 
-function findComposedRootNode(node: Node) {
-    while (node !== document) {
-        const parent = node.parentNode;
-        if (isNull(parent)) {
-            return node;
-        }
-        node = parent;
+function findComposedRootNode(node: Node): Node {
+    let nodeParent;
+    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
+        node = nodeParent;
     }
+
     return node;
 }
 
