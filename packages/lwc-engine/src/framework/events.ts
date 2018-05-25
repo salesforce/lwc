@@ -2,18 +2,25 @@ import assert from "./assert";
 import {
     addEventListener,
     removeEventListener,
+} from "./dom/element";
+import {
     getRootNode,
-    isChildNode,
     parentNodeGetter,
-} from "./dom";
+} from "./dom/node";
 import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
-import { patchShadowDomTraversalMethods } from "./traverse";
+import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
+}
+
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./dom/node";
+
+function isChildNode(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;

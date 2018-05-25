@@ -1,9 +1,11 @@
 import assert from "./assert";
 import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
+import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom";
+import { EmptyNodeList } from "./dom/node";
+import { ViewModelReflection } from "./utils";
+import { setAttribute } from "./dom/element";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -99,10 +101,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         // We don't want to do this during construction because it breaks another
         // WC invariant.
         if (!isUndefined(forceTagName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(element, 'is');
-            }
-            element.setAttribute('is', sel);
+            setAttribute.call(element, 'is', sel);
         }
         renderVM(vm);
     };

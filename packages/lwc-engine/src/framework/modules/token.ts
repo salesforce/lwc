@@ -1,7 +1,6 @@
 import { isUndefined } from "../language";
-import { prepareForAttributeMutationFromTemplate } from '../def';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
-import { removeAttribute, setAttribute } from "../dom";
+import { removeAttribute, setAttribute } from "../dom/element";
 
 function updateToken(oldVnode: VNode, vnode: VNode) {
     const { data: { token: oldToken } } = oldVnode;
@@ -13,16 +12,10 @@ function updateToken(oldVnode: VNode, vnode: VNode) {
 
     const elm = vnode.elm as Element;
     if (!isUndefined(oldToken)) {
-        if (process.env.NODE_ENV !== 'production') {
-            prepareForAttributeMutationFromTemplate(elm, oldToken);
-        }
         removeAttribute.call(elm, oldToken);
     }
 
     if (!isUndefined(newToken)) {
-        if (process.env.NODE_ENV !== 'production') {
-            prepareForAttributeMutationFromTemplate(elm, newToken);
-        }
         setAttribute.call(elm, newToken, '');
     }
 }

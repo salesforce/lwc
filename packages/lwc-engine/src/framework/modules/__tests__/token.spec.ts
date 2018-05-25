@@ -1,7 +1,7 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import { Template } from "../../template";
-import { querySelectorAll } from "../../dom";
+import { querySelectorAll } from "../../dom/element";
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {

@@ -3,18 +3,18 @@ import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
-import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { ViewModelReflection, getCtorByTagName } from "./def";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
+import { getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentNodeGetter, parentElementGetter } from "./dom";
+import { parentNodeGetter, parentElementGetter } from "./dom/node";
 
-import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { Component } from "./component";
 import { Context } from "./context";
-import { ShadowRoot, Root } from "./root";
+import { ShadowRoot, Root } from "./dom/shadow-root";
 import { startMeasure, endMeasure } from "./performance-timing";
 
 export interface HashTable<T> {
@@ -22,7 +22,7 @@ export interface HashTable<T> {
 }
 
 export interface Slotset {
-    [key: string]: VNode[];
+    [key: string]: VNodes;
 }
 
 export interface VMElement extends HTMLElement {
@@ -53,6 +53,7 @@ export interface VM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
+    fallback: boolean;
     component?: Component;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
@@ -172,6 +173,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
     const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
     const isRoot = arguments.length === 2; // root elements can't provide slotset
+    const fallback = true;
     uid += 1;
     const vm: VM = {
         uid,
@@ -179,6 +181,7 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         isScheduled: false,
         isDirty: true,
         isRoot,
+        fallback,
         def,
         elm: elm as VMElement,
         data: EmptyObject,

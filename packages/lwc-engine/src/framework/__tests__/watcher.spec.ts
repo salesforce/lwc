@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from '../main';
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 
 describe('watcher', () => {
 

@@ -1,7 +1,7 @@
 import * as target from '../component';
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { ViewModelReflection } from '../def';
+import { ViewModelReflection } from '../utils';
 
 describe('component', function() {
     describe('#createComponent()', () => {

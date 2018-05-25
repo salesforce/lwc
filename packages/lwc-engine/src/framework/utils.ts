@@ -4,7 +4,7 @@ import { ComponentConstructor } from "./component";
 import {
     AttrNameToPropNameMap,
     PropNameToAttrNameMap,
-} from "./dom";
+} from "./dom/attributes";
 
 export type Callback = () => void;
 

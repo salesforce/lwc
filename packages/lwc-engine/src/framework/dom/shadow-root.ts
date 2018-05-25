@@ -1,18 +1,18 @@
-import assert from "./assert";
-import { ViewModelReflection } from "./def";
-import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString } from "./language";
-import { getCustomElementComponent } from "./component";
-import { getShadowRootVM, VM } from "./vm";
-import { Component } from "./component";
-import { addRootEventListener, removeRootEventListener } from "./events";
+import assert from "../assert";
+import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString } from "../language";
+import { getCustomElementComponent, Component } from "../component";
+import { getShadowRootVM, VM } from "../vm";
+import { addRootEventListener, removeRootEventListener } from "../events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
-import { TargetSlot } from "./membrane";
+import { TargetSlot } from "../membrane";
 import {
     GlobalAOMProperties,
+} from './attributes';
+import {
     setAttribute,
     removeAttribute,
-} from './dom';
-import { getAttrNameFromPropName } from "./utils";
+} from './element';
+import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
 
 export interface ShadowRoot {
     [ViewModelReflection]: VM;

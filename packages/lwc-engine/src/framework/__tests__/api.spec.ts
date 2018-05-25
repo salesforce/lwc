@@ -2,7 +2,7 @@ import * as api from '../api';
 import { Element } from "../html-element";
 import { createElement } from '../main';
 import { RenderAPI } from '../api';
-import { querySelector } from "../dom";
+import { querySelector } from "../dom/element";
 
 describe('api', () => {
     describe('#c()', () => {

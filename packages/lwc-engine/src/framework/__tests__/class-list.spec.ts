@@ -1,7 +1,7 @@
 import { Element } from "../html-element";
 import * as api from "../api";
 import { createElement } from '../upgrade';
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 
 describe('class-list', () => {
     describe('integration', () => {

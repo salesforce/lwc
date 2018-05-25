@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { querySelector, querySelectorAll } from "../dom";
+import { querySelector, querySelectorAll } from "../dom/element";
 
 function createBoundaryComponent(elementsToRender) {
     function html($api, $cmp) {

@@ -1,27 +1,28 @@
 import assert from "./assert";
-import { ShadowRoot } from "./root";
+import { ShadowRoot } from "./dom/shadow-root";
 import { Component } from "./component";
 import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
-    getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
+} from "./dom/element";
+import {
+    getGlobalHTMLPropertiesInfo,
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
-    CustomEvent,
-    dispatchEvent,
-} from "./dom";
-import { getPropNameFromAttrName } from "./utils";
+} from "./dom/attributes";
+import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getShadowRoot } from "./vm";
-import { ViewModelReflection } from "./def";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
+import { CustomEvent } from "./dom/event";
+import { dispatchEvent } from "./dom/event-target";
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;

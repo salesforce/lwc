@@ -8,7 +8,7 @@ import events from "./modules/events";
 import token from "./modules/token";
 import uid from "./modules/uid";
 import { isNull } from './language';
-import { parentNodeGetter } from "./dom";
+import { parentNodeGetter } from "./dom/node";
 
 const {
     createElement,

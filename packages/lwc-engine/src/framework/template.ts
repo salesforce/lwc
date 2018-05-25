@@ -1,14 +1,13 @@
 import assert from "./assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, assign, forEach } from "./language";
-import { prepareForAttributeMutationFromTemplate } from './def';
-
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "./language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
 import { Slotset, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { Component } from "./component";
+import { removeAttribute, setAttribute } from "./dom/element";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotset: Slotset, ctx: Context): undefined | VNodes;
@@ -17,41 +16,6 @@ export interface Template {
 }
 
 const EmptySlots: Slotset = create(null);
-
-function getSlotsetValue(slotset: Slotset, slotName: string): VNode[] {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isObject(slotset), `Invalid slotset value ${toString(slotset)}`);
-    }
-    // TODO: mark slotName as reactive
-    return slotset && slotset[slotName];
-}
-
-const slotsetProxyHandler: ProxyHandler<Slotset> = {
-    get: (slotset: Slotset, key: string): any => getSlotsetValue(slotset, key),
-    set: (): boolean => {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.logError(`$slotset object cannot be mutated from template.`);
-        }
-        return false;
-    },
-    deleteProperty: (): boolean => {
-        if (process.env.NODE_ENV !== 'production') {
-            assert.logError(`$slotset object cannot be mutated from template.`);
-        }
-        return false;
-    },
-};
-
-if (process.env.NODE_ENV === 'production') {
-    assign(slotsetProxyHandler, {
-        apply(target: any, thisArg: any, argArray?: any) {
-            throw new Error(`invalid call invocation from slotset`);
-        },
-        construct(target: Slotset, argArray: any, newTarget?: any): object {
-            throw new Error(`invalid construction invocation from slotset`);
-        },
-    });
-}
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV !== 'production') {
@@ -101,18 +65,12 @@ function applyTokenToHost(vm: VM, html: Template): void {
         // Remove the token currently applied to the host element if different than the one associated
         // with the current template
         if (!isUndefined(oldToken)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(host, oldToken);
-            }
-            host.removeAttribute(oldToken);
+            removeAttribute.call(host, oldToken);
         }
 
         // If the template has a token apply the token to the host element
         if (!isUndefined(newToken)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(host, newToken);
-            }
-            host.setAttribute(newToken, '');
+            setAttribute.call(host, newToken, '');
         }
     }
 }
@@ -145,12 +103,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isObject(context.tplCache), `vm.context.tplCache must be an object associated to ${cmpTemplate}.`);
     }
-    const { proxy: slotset, revoke: slotsetRevoke } = Proxy.revocable(cmpSlots, slotsetProxyHandler);
-    const vnodes = html.call(undefined, api, component, slotset, context.tplCache);
+    const vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
     }
-    slotsetRevoke();
     return vnodes;
 }

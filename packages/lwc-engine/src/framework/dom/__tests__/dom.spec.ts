@@ -1,6 +1,7 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
-import { getRootNode, querySelector } from "../dom";
+import { Element } from "../../html-element";
+import { createElement } from "../../upgrade";
+import { querySelector } from "../element";
+import { getRootNode } from "../node";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
