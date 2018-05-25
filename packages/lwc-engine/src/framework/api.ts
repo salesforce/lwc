@@ -140,7 +140,7 @@ function getCurrentOwnerId(): number {
 
 function getCurrentFallback(): boolean {
     // TODO: eventually this should fallback to false to favor real Shadow DOM
-    return isNull(vmBeingRendered) ? true : vmBeingRendered.fallback;
+    return isNull(vmBeingRendered) || vmBeingRendered.fallback;
 }
 
 function getCurrentTplToken(): string | undefined {

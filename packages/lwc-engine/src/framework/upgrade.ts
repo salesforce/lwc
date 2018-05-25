@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties, isNull, isObject } from "./language";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
@@ -52,9 +52,6 @@ function querySelectorAllPatchedRoot() {
     return EmptyNodeList;
 }
 
-// This is just to facilitate testing and such
-class DefaultRootElement extends Element {}
-
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -70,8 +67,8 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
-    let { is, mode, fallback } = (options as any);
-    if (!isFunction(is)) { is = DefaultRootElement; }
+    const { is } = (options as any);
+    let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }
     // TODO: for now, we default to true, but eventually it should default to false
