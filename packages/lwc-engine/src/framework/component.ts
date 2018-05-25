@@ -11,7 +11,6 @@ import { getComponentDef, PropsDef, WireHash, TrackDef } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
-import { ShadowRoot } from "./dom/shadow-root";
 import { ViewModelReflection } from "./utils";
 
 export type ErrorCallback = (error: any, stack: string) => void;

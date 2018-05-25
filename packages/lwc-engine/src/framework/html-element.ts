@@ -1,5 +1,4 @@
 import assert from "./assert";
-import { ShadowRoot } from "./dom/shadow-root";
 import { Component } from "./component";
 import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
@@ -18,7 +17,7 @@ import {
 } from "./dom/attributes";
 import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, getShadowRoot } from "./vm";
+import { getComponentVM, VM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent } from "./dom/event";
@@ -247,7 +246,7 @@ LWCElement.prototype = {
         }
         return elm.getBoundingClientRect();
     },
-    querySelector(selectors: string): Node | null {
+    querySelector(selector: string): Node | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
@@ -255,9 +254,9 @@ LWCElement.prototype = {
         // Delegate to custom element querySelector.
         // querySelector on the custom element will respect
         // shadow semantics
-        return vm.elm.querySelector(selectors);
+        return vm.elm.querySelector(selector);
     },
-    querySelectorAll(selectors: string): NodeList {
+    querySelectorAll(selector: string): NodeList {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
@@ -265,7 +264,7 @@ LWCElement.prototype = {
         // Delegate to custom element querySelectorAll.
         // querySelectorAll on the custom element will respect
         // shadow semantics
-        return vm.elm.querySelectorAll(selectors);
+        return vm.elm.querySelectorAll(selector);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -284,7 +283,7 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
-        return getShadowRoot(vm);
+        return vm.cmpRoot;
     },
     get root(): ShadowRoot {
         const vm = getComponentVM(this);
@@ -292,7 +291,7 @@ LWCElement.prototype = {
             assert.vm(vm);
             assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
-        return getShadowRoot(vm);
+        return vm.cmpRoot;
     },
     toString(): string {
         const vm = getComponentVM(this);
