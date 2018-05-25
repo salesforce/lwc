@@ -115,11 +115,6 @@ function getCurrentOwnerId(): number {
     return isNull(vmBeingRendered) ? 0 : vmBeingRendered.uid;
 }
 
-function getCurrentFallback(): boolean {
-    // TODO: eventually this should fallback to false to favor real Shadow DOM
-    return isNull(vmBeingRendered) ? true : vmBeingRendered.fallback;
-}
-
 function getCurrentTplToken(): string | undefined {
     // For root elements and other special cases the vm is not set.
     if (isNull(vmBeingRendered)) {
@@ -240,7 +235,6 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();
     data.uid = getCurrentOwnerId();
-    data.fallback = getCurrentFallback();
     data.mode = 'open'; // TODO: this should be defined in Ctor
     children = arguments.length === 3 ? EmptyArray : children;
     const vnode: VElement = {

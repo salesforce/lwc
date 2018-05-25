@@ -53,7 +53,6 @@ export interface VM {
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
-    fallback: boolean;
     component?: Component;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
@@ -173,7 +172,6 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
     const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
     const isRoot = arguments.length === 2; // root elements can't provide slotset
-    const fallback = true;
     uid += 1;
     const vm: VM = {
         uid,
@@ -181,7 +179,6 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         isScheduled: false,
         isDirty: true,
         isRoot,
-        fallback,
         def,
         elm: elm as VMElement,
         data: EmptyObject,
