@@ -43,10 +43,14 @@ function assertValidGuid(guid) {
 }
 
 function clickSlottedButton() {
-    browser.element('button#slotted').click();
+    browser.execute(function () {
+        document.querySelector('button#slotted').click()
+    });
 }
 function clickChildButton() {
-    browser.element('button#child').click();
+    browser.execute(function () {
+        document.querySelector('button#child').click()
+    });
 }
 
 function isEventLogged(guid) {
