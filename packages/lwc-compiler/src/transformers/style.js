@@ -25,6 +25,64 @@ function generateScopedStyle(src) {
     ].join('\n');
 }
 
+/*
+
+div {
+    background: var(--bg-color);
+    color: red;
+}
+
+===>
+
+div[<scoping-token>] {
+    background: var(--bg-color);
+    color: red;
+}
+
+
+===>
+
+div[__TOKEN__] {
+    background: var(--bg-color, blue);
+    color: red;
+}
+
+
+===>
+
+function (token, customProperties) {
+    return `div[${token}] {
+        background: ${customProperties['bg-color'] || 'blue'};
+        background: var(--bg-color);
+        color: red;
+
+
+        color: var(--lwc-bg-color);
+
+
+        color: ${customProperties['lwc-bg-color']};
+        color: var(--lwc-bg-color);
+
+
+
+        color: var(--lwc-bg-color, blue);
+
+        color: ${customProperties['lwc-bg-color'] || 'blue'};
+        color: var(--lwc-bg-color, 'blue');
+    }`
+}
+
+div {
+    // Custom property definition prevented
+    // throw error
+    --color: red;
+
+
+}
+
+
+*/
+
 /**
  * Transforms a css string into a module exporting a function producing a stylesheet.
  * The produced function accepts 2 parameters, tagName and token to enforce style scoping.
