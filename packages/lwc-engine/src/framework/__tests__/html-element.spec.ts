@@ -7,6 +7,7 @@ import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 import { unwrap } from "../main";
 import { querySelector } from "../dom";
+import { callbackify } from "util";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
