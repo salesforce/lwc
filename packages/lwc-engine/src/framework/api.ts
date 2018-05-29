@@ -271,7 +271,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         tag,
         sel,
         data,
-        children: EmptyArray,
+        children,
         text,
         elm,
         key,
