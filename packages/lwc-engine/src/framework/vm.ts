@@ -16,6 +16,27 @@ import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { attachShadow, linkShadow, usesNativeShadowRoot } from "./dom/shadow-root";
+import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+import { addEventListenerPatched, removeEventListenerPatched } from "./dom/events";
+
+const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+}
 
 export interface HashTable<T> {
     [key: string]: T;
@@ -58,6 +79,7 @@ export interface VM {
     component?: Component;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
+    fallbackDescriptors?: PropertyDescriptorMap;
     toString(): string;
 }
 
@@ -209,6 +231,8 @@ export function createVM(tagName: string, elm: HTMLElement, options: CreateOptio
         component: undefined,
         children: EmptyArray,
         hostAttrs: create(null),
+        // If we are in fallback, we need to monkey patch querySelector/querySelectorAll/addEventListener/removeEventListener
+        fallbackDescriptors: isTrue(fallback) ? fallbackDescriptors : undefined,
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };

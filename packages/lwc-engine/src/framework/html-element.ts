@@ -15,10 +15,6 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
 } from "./dom/attributes";
-import {
-    lightDomQuerySelector,
-    lightDomQuerySelectorAll,
-} from "./dom/traverse";
 import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
@@ -26,16 +22,6 @@ import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
-
-function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    addTemplateEventListener(vm, type, listener);
-}
-
-function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    removeTemplateEventListener(vm, type, listener);
-}
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -106,25 +92,6 @@ interface ComponentHooks {
     callHook: VM["callHook"];
     setHook: VM["setHook"];
     getHook: VM["getHook"];
-}
-
-const fallbackDescriptors = {
-    querySelector: {
-        value: lightDomQuerySelector,
-        configurable: true,
-    },
-    querySelectorAll: {
-        value: lightDomQuerySelectorAll,
-        configurable: true,
-    },
-    addEventListener: {
-        value: addEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-    },
-    removeEventListener: {
-        value: removeEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-    },
 }
 
 // This should be as performant as possible, while any initialization should be done lazily
