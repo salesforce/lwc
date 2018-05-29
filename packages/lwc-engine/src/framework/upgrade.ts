@@ -1,6 +1,6 @@
 import assert from "./assert";
-import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject } from "./language";
-import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
+import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, fallbackDescriptors } from "./vm";
 import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom/node";
@@ -87,17 +87,10 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, { mode, fallback, isRoot: true });
 
-    // We don't support slots on root nodes
-    defineProperties(element, {
-        querySelectorAll: {
-            value: querySelectorAllPatchedRoot,
-            configurable: true,
-        },
-        querySelector: {
-            value: querySelectorPatchedRoot,
-            configurable: true,
-        }
-    });
+    if (isTrue(fallback)) {
+        // We don't support slots on root nodes
+        defineProperties(element, fallbackDescriptors);
+    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);

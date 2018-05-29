@@ -17,9 +17,9 @@ import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { attachShadow, linkShadow, usesNativeShadowRoot } from "./dom/shadow-root";
 import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
-import { addEventListenerPatched, removeEventListenerPatched } from "./dom/events";
+import { addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 
-const fallbackDescriptors = {
+export const fallbackDescriptors = {
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
