@@ -20,8 +20,28 @@ import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } 
 import { getComponentVM, VM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { CustomEvent } from "./dom/event";
+import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
+import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+
+const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true,
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true,
+    },
+};
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
