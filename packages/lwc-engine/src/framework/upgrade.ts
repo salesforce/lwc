@@ -6,7 +6,6 @@ import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom/node";
 import { ViewModelReflection } from "./utils";
 import { setAttribute } from "./dom/element";
-import { addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
