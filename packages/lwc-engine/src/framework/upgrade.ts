@@ -61,7 +61,7 @@ const rootNodeFallbackDescriptors = {
         value: querySelectorPatchedRoot,
         configurable: true,
     }
-}
+};
 
 /**
  * This method is almost identical to document.createElement

@@ -36,7 +36,7 @@ export const fallbackDescriptors = {
         value: removeEventListenerPatched,
         configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
     },
-}
+};
 
 export interface HashTable<T> {
     [key: string]: T;
