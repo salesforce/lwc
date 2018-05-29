@@ -47,7 +47,6 @@ import apiDecorator from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
-import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -91,7 +90,6 @@ import {
     ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
-import { removeTemplateEventListener, addTemplateEventListener } from "./events";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -300,16 +298,6 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    addTemplateEventListener(vm, type, listener);
-}
-
-function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    removeTemplateEventListener(vm, type, listener);
-}
-
 function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -373,39 +361,23 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttribute: {
             value: setAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttribute: {
             value: removeAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-        },
-        querySelector: {
-            value: lightDomQuerySelector,
             configurable: true,
-        },
-        querySelectorAll: {
-            value: lightDomQuerySelectorAll,
-            configurable: true,
-        },
-        addEventListener: {
-            value: addEventListenerPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-        },
-        removeEventListener: {
-            value: removeEventListenerPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
     };
     // expose getters and setters for each public props on the Element
@@ -419,7 +391,7 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         };
     }
     return descriptors;

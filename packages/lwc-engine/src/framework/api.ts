@@ -1,10 +1,10 @@
 import assert from "./assert";
 import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty } from "./language";
-import { EmptyArray, SPACE_CHAR } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset } from "./vm";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty, isTrue } from "./language";
+import { EmptyArray, SPACE_CHAR, ViewModelReflection } from "./utils";
+import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
 import { registerComponent } from "./def";
-import { ComponentConstructor, markComponentAsDirty } from "./component";
+import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { patchShadowDomEvent, isValidEventForCustomElement } from "./events";
 
@@ -71,13 +71,6 @@ function getMapFromClassName(className: string | undefined): Record<string, bool
 const hook: Hooks = {
     postpatch(oldVNode: VNode, vnode: VNode) {
         const vm = getCustomElementVM(vnode.elm as HTMLElement);
-        vm.cmpSlots = vnode.data.slotset;
-        // TODO: hot-slots names are those slots used during the last rendering cycle, and only if
-        // one of those is changed, the vm should be marked as dirty.
-        // TODO: Issue #133
-        if (vm.cmpSlots !== oldVNode.data.slotset && !vm.isDirty) {
-            markComponentAsDirty(vm);
-        }
         renderVM(vm);
     },
     insert(vnode: VNode) {
@@ -86,7 +79,37 @@ const hook: Hooks = {
         renderVM(vm);
     },
     create(oldVNode: VNode, vnode: VNode) {
-        createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
+        const { fallback, mode } = vnode.data;
+        createVM(vnode.sel as string, vnode.elm as HTMLElement, {
+            mode,
+            fallback,
+        });
+        const vm: VM = (vnode.elm as HTMLElement)[ViewModelReflection];
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+            assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        }
+        if (isTrue(vm.fallback)) {
+            // slow path
+            const children = vnode.children as VNodes;
+            allocateInSlot(vm, children, vnode.data.slotset);
+            // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
+            vnode.children = EmptyArray;
+        }
+    },
+    update(oldVNode: VNode, vnode: VNode) {
+        const vm = getCustomElementVM(vnode.elm as HTMLElement);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+            assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
+        }
+        if (isTrue(vm.fallback)) {
+            // slow path
+            const children = vnode.children as VNodes;
+            allocateInSlot(vm, children, vnode.data.slotset);
+            // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
+            vnode.children = EmptyArray;
+        }
     },
     destroy(vnode: VNode) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));
@@ -113,6 +136,11 @@ function addNS(vnode: VElement) {
 
 function getCurrentOwnerId(): number {
     return isNull(vmBeingRendered) ? 0 : vmBeingRendered.uid;
+}
+
+function getCurrentFallback(): boolean {
+    // TODO: eventually this should fallback to false to favor real Shadow DOM
+    return isNull(vmBeingRendered) || vmBeingRendered.fallback;
 }
 
 function getCurrentTplToken(): string | undefined {
@@ -235,6 +263,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();
     data.uid = getCurrentOwnerId();
+    data.fallback = getCurrentFallback();
     data.mode = 'open'; // TODO: this should be defined in Ctor
     children = arguments.length === 3 ? EmptyArray : children;
     const vnode: VElement = {
@@ -383,7 +412,7 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
         if (isValidEventForCustomElement(event)) {
-            patchShadowDomEvent(event);
+            patchShadowDomEvent(vm, event);
             invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, fn, vm.component, event);
         }
     };
