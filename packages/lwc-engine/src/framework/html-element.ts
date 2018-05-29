@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Component } from "./component";
-import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
-import { addCmpEventListener, removeCmpEventListener } from "./events";
+import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
+import { addCmpEventListener, removeCmpEventListener, removeTemplateEventListener, addTemplateEventListener } from "./events";
 import {
     getAttribute,
     getAttributeNS,
@@ -15,13 +15,27 @@ import {
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
 } from "./dom/attributes";
+import {
+    lightDomQuerySelector,
+    lightDomQuerySelectorAll,
+} from "./dom/traverse";
 import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM } from "./vm";
+import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
+
+function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    addTemplateEventListener(vm, type, listener);
+}
+
+function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    removeTemplateEventListener(vm, type, listener);
+}
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -94,6 +108,25 @@ interface ComponentHooks {
     getHook: VM["getHook"];
 }
 
+const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+}
+
 // This should be as performant as possible, while any initialization should be done lazily
 function LWCElement(this: Component) {
     if (isNull(vmBeingConstructed)) {
@@ -104,7 +137,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, fallback } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -119,6 +152,9 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
+    if (isTrue(fallback)) {
+        defineProperties(elm, fallbackDescriptors);
+    }
 }
 
 LWCElement.prototype = {
