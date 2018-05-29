@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject } from "./language";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
@@ -52,6 +52,17 @@ function querySelectorAllPatchedRoot() {
     return EmptyNodeList;
 }
 
+const rootNodeFallbackDescriptors = {
+    querySelectorAll: {
+        value: querySelectorAllPatchedRoot,
+        configurable: true,
+    },
+    querySelector: {
+        value: querySelectorPatchedRoot,
+        configurable: true,
+    },
+};
+
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -86,18 +97,10 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
 
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, { mode, fallback, isRoot: true });
-
-    // We don't support slots on root nodes
-    defineProperties(element, {
-        querySelectorAll: {
-            value: querySelectorAllPatchedRoot,
-            configurable: true,
-        },
-        querySelector: {
-            value: querySelectorPatchedRoot,
-            configurable: true,
-        }
-    });
+    if (isTrue(fallback)) {
+        // We don't support slots on root nodes
+        defineProperties(element, rootNodeFallbackDescriptors);
+    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
