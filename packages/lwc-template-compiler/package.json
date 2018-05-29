@@ -1,9 +1,9 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.20.5",
+  "version": "0.21.0",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
-  "typings": "dist/types/index.d.ts",
+  "typings": "dist/types/",
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist",

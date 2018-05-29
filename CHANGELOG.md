@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.5...v) (2018-05-23)
+# [](https://github.com/salesforce/lwc/compare/v0.21.0...v) (2018-05-29)
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/salesforce/lwc/compare/v0.20.5...v0.21.0) (2018-05-29)
+
+
+### Bug Fixes
+
+* **engine:** live bindings for value and checked properties 3nd attempt ([#340](https://github.com/salesforce/lwc/issues/340)) ([ef4acff](https://github.com/salesforce/lwc/commit/ef4acff))
+* **engine:** preserve order of event dispaching between CE and SR ([#309](https://github.com/salesforce/lwc/issues/309)) ([1a1ba17](https://github.com/salesforce/lwc/commit/1a1ba17))
+* **engine:** remove piercing membrane ([#324](https://github.com/salesforce/lwc/issues/324)) ([1e4c7f1](https://github.com/salesforce/lwc/commit/1e4c7f1))
+* **tests:** fixed event integration test ([#346](https://github.com/salesforce/lwc/issues/346)) ([7402138](https://github.com/salesforce/lwc/commit/7402138))
+
+
+### Features
+
+* **compiler:** raptor on platform ([#298](https://github.com/salesforce/lwc/issues/298)) ([922de78](https://github.com/salesforce/lwc/commit/922de78))
 
 
 
