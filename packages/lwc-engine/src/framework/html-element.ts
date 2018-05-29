@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { Component } from "./component";
-import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach } from "./language";
+import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getAttribute,
@@ -104,7 +104,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, fallback } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -119,6 +119,9 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
+    if (isTrue(fallback)) {
+        defineProperties(elm, fallbackDescriptors);
+    }
 }
 
 LWCElement.prototype = {

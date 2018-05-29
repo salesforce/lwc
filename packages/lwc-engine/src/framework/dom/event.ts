@@ -1,4 +1,9 @@
 import { getOwnPropertyDescriptor, defineProperties } from "../language";
+<<<<<<< HEAD
+=======
+import { getCustomElementVM } from "../vm";
+import { addTemplateEventListener, removeTemplateEventListener } from "../events";
+>>>>>>> master
 
 // https://dom.spec.whatwg.org/#dom-event-composed
 // This is a very dummy, simple polyfill for composed
@@ -22,3 +27,16 @@ if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
 }
 
 export const CustomEvent = (window as any).CustomEvent;
+<<<<<<< HEAD
+=======
+
+export function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    addTemplateEventListener(vm, type, listener);
+}
+
+export function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
+    const vm = getCustomElementVM(this as HTMLElement);
+    removeTemplateEventListener(vm, type, listener);
+}
+>>>>>>> master
