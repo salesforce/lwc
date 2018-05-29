@@ -55,9 +55,11 @@ function querySelectorAllPatchedRoot() {
 const rootNodeFallbackDescriptors = {
     querySelectorAll: {
         value: querySelectorAllPatchedRoot,
+        configurable: true,
     },
     querySelector: {
         value: querySelectorPatchedRoot,
+        configurable: true,
     },
 };
 
