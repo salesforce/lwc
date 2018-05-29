@@ -55,9 +55,6 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
-    },
-    "validate-commit-msg": {
-      "path": ".vcmrc"
     }
   },
   "workspaces": [
