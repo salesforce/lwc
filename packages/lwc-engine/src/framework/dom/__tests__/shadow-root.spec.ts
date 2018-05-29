@@ -1,12 +1,12 @@
-import { Root, wrapIframeWindow } from "../root";
-import { Element } from "../html-element";
-import { h } from "../api";
-import { unwrap } from '../main';
-import { createElement } from "../upgrade";
-import { ViewModelReflection } from "../def";
-import { VM } from "../vm";
-import { Component } from "../component";
-import { querySelector } from "../dom";
+import { Root, wrapIframeWindow } from "../shadow-root";
+import { Element } from "../../html-element";
+import { h } from "../../api";
+import { unwrap } from '../../main';
+import { createElement } from "../../upgrade";
+import { ViewModelReflection } from "../../utils";
+import { VM } from "../../vm";
+import { Component } from "../../component";
+import { querySelector } from "../element";
 
 describe('root', () => {
     describe('#constructor()', () => {

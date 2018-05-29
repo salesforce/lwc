@@ -1,4 +1,4 @@
-import assert from './assert';
+import assert from '../assert';
 import {
     StringToLowerCase,
     StringReplace,
@@ -9,133 +9,10 @@ import {
     getOwnPropertyDescriptor,
     isUndefined,
     isNull,
-    isTrue,
-    defineProperties,
-} from './language';
-import { ViewModelReflection } from "./utils";
-import { VM } from './vm';
-
-const dispatchEvent = 'EventTarget' in window ?
-    EventTarget.prototype.dispatchEvent :
-    Node.prototype.dispatchEvent; // IE11
-
-const {
-    addEventListener,
-    removeEventListener,
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    querySelector,
-    querySelectorAll,
-} = Element.prototype;
-
-const {
-    DOCUMENT_POSITION_CONTAINED_BY
-} = Node;
-
-const {
-    compareDocumentPosition,
-} = Node.prototype;
-
-const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
-const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
-    getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
-    getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
-
-/**
- * Returns the context shadow included root.
- */
-function findShadowRoot(node: Node): Node {
-    const initialParent = parentNodeGetter.call(node);
-    // We need to ensure that the parent element is present before accessing it.
-    if (isNull(initialParent)) {
-        return node;
-    }
-
-    // In the case of LWC, the root and the host element are the same things. Therefor,
-    // when calling findShadowRoot on the a host element we want to return the parent host
-    // element and not the current host element.
-    node = initialParent;
-    let nodeParent;
-    while (
-        !isNull(nodeParent = parentNodeGetter.call(node)) &&
-        isUndefined(node[ViewModelReflection])
-    ) {
-        node = nodeParent;
-    }
-
-    return node;
-}
-
-/**
- * Returns the context root beyond the shadow root.
- *
- * It doesn't returns actually the root but the host. This approximation is sufficiant
- * in our case.
- */
-function findComposedRootNode(node: Node): Node {
-    let nodeParent;
-    while (!isNull(nodeParent = parentNodeGetter.call(node))) {
-        node = nodeParent;
-    }
-
-    return node;
-}
-
-/**
- * Dummy implementation of the Node.prototype.getRootNode.
- * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
- *
- * TODO: Once we start using the real shadowDOM, this method should be replaced by:
- * const { getRootNode } = Node.prototype;
- */
-function getRootNode(
-    this: Node,
-    options?: { composed?: boolean }
-): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-
-    return isTrue(composed) ?
-        findComposedRootNode(this) :
-        findShadowRoot(this);
-}
-
-export const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
-
-export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
-
-export function isChildNode(root: Element, node: Node): boolean {
-    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
-}
-
-export {
-    // EventTarget.prototype
-    dispatchEvent,
-
-    // Element.prototype
-    addEventListener,
-    removeEventListener,
-    getAttribute,
-    getAttributeNS,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    querySelector,
-    querySelectorAll,
-
-    // Node.prototype
-    compareDocumentPosition,
-    getRootNode,
-    parentNodeGetter,
-    parentElementGetter,
-
-    // Node
-    DOCUMENT_POSITION_CONTAINED_BY,
-};
+} from '../language';
+import { ViewModelReflection } from "../utils";
+import { VM } from '../vm';
+import { removeAttribute, setAttribute } from './element';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
@@ -446,26 +323,3 @@ if (isUndefined(GlobalHTMLPropDescriptors.id)) {
     GlobalHTMLPropDescriptors.id = getOwnPropertyDescriptor(Element.prototype, 'id') as PropertyDescriptor;
     AttrNameToPropNameMap.id = PropNameToAttrNameMap.id = 'id';
 }
-
-// https://dom.spec.whatwg.org/#dom-event-composed
-// This is a very dummy, simple polyfill for composed
-if (!getOwnPropertyDescriptor(Event.prototype, 'composed')) {
-    defineProperties(Event.prototype, {
-        composed: {
-            value: true, // yes, assuming all native events are composed (it is a compromise)
-            configurable: true,
-            enumerable: true,
-            writable: true,
-        },
-    });
-    const { CustomEvent: OriginalCustomEvent } = (window as any);
-    (window as any).CustomEvent = function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
-        const event = new OriginalCustomEvent(type, eventInitDict);
-        // support for composed on custom events
-        (event as any).composed = !!(eventInitDict && (eventInitDict as any).composed);
-        return event;
-    };
-    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
-}
-
-export const CustomEvent = (window as any).CustomEvent;

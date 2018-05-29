@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "./../upgrade";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 import { unwrap } from "../membrane";
 
 describe('Composed events', () => {

@@ -1,6 +1,6 @@
 import { createElement } from "../main";
 import { Element } from "../html-element";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 
 describe('invoker', () => {
 

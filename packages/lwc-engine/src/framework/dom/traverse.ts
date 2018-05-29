@@ -1,19 +1,24 @@
-import assert from "./assert";
-import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "./vm";
+import assert from "../assert";
+import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "../vm";
 import {
-    querySelectorAll as nativeQuerySelectorAll,
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
-    iFrameContentWindowGetter,
-} from "./dom";
-import { wrapIframeWindow, ShadowRoot } from "./root";
+} from "./node";
+import {
+    querySelectorAll as nativeQuerySelectorAll,
+} from "./element";
+import { wrapIframeWindow } from "./shadow-root";
 import {
     ArrayFilter,
     defineProperty,
     defineProperties,
     hasOwnProperty,
-} from "./language";
-import { isBeingConstructed } from "./invoker";
+} from "../language";
+import { isBeingConstructed } from "../invoker";
+
+import { getOwnPropertyDescriptor } from "../language";
+
+const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
 function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
     if (process.env.NODE_ENV !== 'production') {

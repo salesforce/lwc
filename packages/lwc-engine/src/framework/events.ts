@@ -2,18 +2,25 @@ import assert from "./assert";
 import {
     addEventListener,
     removeEventListener,
+} from "./dom/element";
+import {
     getRootNode,
-    isChildNode,
     parentNodeGetter,
-} from "./dom";
+} from "./dom/node";
 import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
-import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties } from "./language";
+import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
-import { patchShadowDomTraversalMethods } from "./traverse";
+import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
+}
+
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./dom/node";
+
+function isChildNode(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
@@ -64,8 +71,10 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
     },
 };
 
-export function patchShadowDomEvent(event: Event) {
-    defineProperties(event, eventShadowDescriptors);
+export function patchShadowDomEvent(vm: VM, event: Event) {
+    if (isTrue(vm.fallback)) {
+        defineProperties(event, eventShadowDescriptors);
+    }
 }
 
 const rootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
@@ -91,7 +100,7 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
-                    patchShadowDomEvent(event);
+                    patchShadowDomEvent(vm, event);
                     invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, undefined, event);
             }
         } as WrappedListener;
@@ -117,7 +126,7 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
     if (isUndefined(wrappedListener)) {
         wrappedListener = function(event: Event) {
             if (isValidEventForCustomElement(event)) {
-                patchShadowDomEvent(event);
+                patchShadowDomEvent(vm, event);
                 invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, undefined, event);
             }
         } as WrappedListener;

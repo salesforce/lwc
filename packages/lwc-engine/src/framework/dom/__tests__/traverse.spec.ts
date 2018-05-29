@@ -1,12 +1,12 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
-import assertLogger from '../assert';
-import { register } from "../services";
-import { ViewModelReflection } from "../def";
-import { VNode } from "../../3rdparty/snabbdom/types";
-import { Component } from "../component";
-import { unwrap } from "../main";
-import { querySelector } from "../dom";
+import { Element } from "../../html-element";
+import { createElement } from "../../upgrade";
+import assertLogger from '../../assert';
+import { register } from "../../services";
+import { ViewModelReflection } from "../../utils";
+import { VNode } from "../../../3rdparty/snabbdom/types";
+import { Component } from "../../component";
+import { unwrap } from "../../main";
+import { querySelector } from "../element";
 
 describe('#lightDomQuerySelectorAll()', () => {
     describe('Invoked from within component', () => {

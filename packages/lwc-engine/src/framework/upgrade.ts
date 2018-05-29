@@ -1,9 +1,11 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
+import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom";
+import { EmptyNodeList } from "./dom/node";
+import { ViewModelReflection } from "./utils";
+import { setAttribute } from "./dom/element";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -50,6 +52,17 @@ function querySelectorAllPatchedRoot() {
     return EmptyNodeList;
 }
 
+const rootNodeFallbackDescriptors = {
+    querySelectorAll: {
+        value: querySelectorAllPatchedRoot,
+        configurable: true,
+    },
+    querySelector: {
+        value: querySelectorPatchedRoot,
+        configurable: true,
+    },
+};
+
 /**
  * This method is almost identical to document.createElement
  * (https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
@@ -62,10 +75,16 @@ function querySelectorAllPatchedRoot() {
  * then it throws a TypeError.
  */
 export function createElement(sel: string, options: any = {}): HTMLElement {
-    if (isUndefined(options) || !isFunction(options.is)) {
+    if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
-    registerComponent(sel, options.is);
+    const { is } = (options as any);
+    let { mode, fallback } = (options as any);
+    // TODO: for now, we default to open, but eventually it should default to 'closed'
+    if (mode !== 'closed') { mode = 'open'; }
+    // TODO: for now, we default to true, but eventually it should default to false
+    if (fallback !== false) { fallback = true; }
+    registerComponent(sel, is);
     // extracting the registered constructor just in case we need to force the tagName
     const Ctor = getCtorByTagName(sel);
     const { forceTagName } = Ctor as ComponentConstructor;
@@ -77,19 +96,11 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element);
-
-    // We don't support slots on root nodes
-    defineProperties(element, {
-        querySelectorAll: {
-            value: querySelectorAllPatchedRoot,
-            configurable: true,
-        },
-        querySelector: {
-            value: querySelectorPatchedRoot,
-            configurable: true,
-        }
-    });
+    createVM(sel, element, { mode, fallback, isRoot: true });
+    if (isTrue(fallback)) {
+        // We don't support slots on root nodes
+        defineProperties(element, rootNodeFallbackDescriptors);
+    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
@@ -99,10 +110,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         // We don't want to do this during construction because it breaks another
         // WC invariant.
         if (!isUndefined(forceTagName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(element, 'is');
-            }
-            element.setAttribute('is', sel);
+            setAttribute.call(element, 'is', sel);
         }
         renderVM(vm);
     };
