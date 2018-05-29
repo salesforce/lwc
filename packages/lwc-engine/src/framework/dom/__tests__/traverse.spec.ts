@@ -2,7 +2,6 @@ import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import assertLogger from '../../assert';
 import { register } from "../../services";
-import { ViewModelReflection } from "../../utils";
 import { VNode } from "../../../3rdparty/snabbdom/types";
 import { Component } from "../../component";
 import { unwrap } from "../../main";
@@ -96,17 +95,25 @@ describe('#lightDomQuerySelectorAll()', () => {
         });
 
         it('should ignore elements from template', () => {
-            function html($api) {
+            function html1($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            class Child extends Element {
                 render() {
-                    return html;
+                    return html1;
                 }
-            };
-            const elm = createElement('x-should-ignore-elements-from-template', { is: def });
+            }
+            function html2($api) {
+                return [$api.c('x-child', Child, { key: 0 }, [])];
+            }
+            class Parent extends Element {
+                render() {
+                    return html2;
+                }
+            }
+            const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].component.querySelectorAll('p')).toHaveLength(0);
+            expect(elm.shadowRoot.querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
         });
 
         it('should not throw an error if no nodes are found', () => {
@@ -121,7 +128,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const elm = createElement('should-not-throw-an-error-if-no-nodes-are-found', { is: def });
             document.body.appendChild(elm);
             expect(() => {
-                elm[ViewModelReflection].component.querySelectorAll('div');
+                elm.shadowRoot.querySelectorAll('div');
             }).not.toThrow();
         });
     });
@@ -239,17 +246,25 @@ describe('#lightDomQuerySelector()', () => {
     });
 
     it('should ignore element from template', () => {
-        function html($api) {
+        function html1($api) {
             return [$api.h('p', { key: 0 }, [])];
         }
-        const def = class MyComponent extends Element {
+        class Child extends Element {
             render() {
-                return html;
+                return html1;
             }
-        };
-        const elm = createElement('x-foo', { is: def });
+        }
+        function html2($api) {
+            return [$api.c('x-child', Child, { key: 0 }, [])];
+        }
+        class Parent extends Element {
+            render() {
+                return html2;
+            }
+        }
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
-        expect(elm[ViewModelReflection].component.querySelector('p')).toBeNull();
+        expect(elm.shadowRoot.querySelector('x-child').querySelector('p')).toBeNull();
     });
 
     it('should not throw an error if element does not exist', () => {
@@ -264,7 +279,7 @@ describe('#lightDomQuerySelector()', () => {
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
         expect(() => {
-            elm[ViewModelReflection].component.querySelector('div');
+            elm.shadowRoot.querySelector('div');
         }).not.toThrow();
     });
 
@@ -279,7 +294,7 @@ describe('#lightDomQuerySelector()', () => {
         };
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
-        expect(elm[ViewModelReflection].component.querySelector('div')).toBeNull();
+        expect(elm.shadowRoot.querySelector('div')).toBeNull();
     });
 });
 
@@ -294,7 +309,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm[ViewModelReflection].component as Component).template.querySelector('ul');
+            const ul = elm.shadowRoot.querySelector('ul');
             expect(ul);
             const li = ul.querySelector('li');
             expect(li);
@@ -345,7 +360,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm[ViewModelReflection].component as Component).template.querySelectorAll('ul')[0];
+            const ul = (elm.shadowRoot.querySelectorAll('ul')[0];
             expect(ul);
             const li = ul.querySelectorAll('li')[0];
             expect(li);
@@ -362,7 +377,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm[ViewModelReflection].component as Component).template.querySelector('ul');
+            const ul = (elm.shadowRoot.querySelector('ul');
             expect(ul);
             ul.appendChild(document.createElement('li'));
             const li1 = ul.querySelectorAll('li')[0];
@@ -384,7 +399,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                (elm[ViewModelReflection].component as Component).template.querySelector('doesnotexist');
+                elm.shadowRoot.querySelector('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -400,7 +415,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            expect((elm[ViewModelReflection].component as Component).template.querySelector('doesnotexist')).toBeNull();
+            expect(elm.shadowRoot.querySelector('doesnotexist')).toBeNull();
         });
     });
 
@@ -418,7 +433,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                (elm[ViewModelReflection].component as Component).template.querySelectorAll('doesnotexist');
+                elm.shadowRoot.querySelectorAll('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -493,7 +508,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = (elm[ViewModelReflection].component as Component).template;
+            const root = elm.shadowRoot;
             expect(root.querySelector('div').parentNode).toBe(root);
         });
     });
@@ -511,7 +526,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = (elm[ViewModelReflection].component as Component).template;
+            const root = elm.shadowRoot;
             expect(root.querySelector('div').parentElement).toBe(root);
         });
     });

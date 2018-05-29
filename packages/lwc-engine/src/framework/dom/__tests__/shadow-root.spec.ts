@@ -23,14 +23,13 @@ describe('root', () => {
             class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: MyComponent });
             const vm = elm[ViewModelReflection] as VM;
-            expect(vm.component).toBe((vm.component as Component).root.host);
+            expect(vm.component).toBe(elm.shadowRoot.host);
         });
 
         it('should support this.template.mode', () => {
             class MyComponent extends Element {}
             const elm = createElement('x-foo', { is: MyComponent });
-            const vm = elm[ViewModelReflection] as VM;
-            expect((vm.component as Component).root.mode).toBe('closed');
+            expect(elm.shadowRoot.mode).toBe('closed');
         });
 
         it('should allow searching for elements from template', () => {
@@ -43,7 +42,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const nodes = (elm[ViewModelReflection].component as Component).root.querySelectorAll('p');
+                const nodes = elm.shadowRoot.querySelectorAll('p');
                 expect(nodes).toHaveLength(1);
             });
         });
@@ -60,7 +59,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const node = (elm[ViewModelReflection].component as Component).template.querySelector('p');
+                const node = elm.shadowRoot.querySelector('p');
                 expect(node.tagName).toBe('P');
             });
         });
@@ -76,7 +75,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const nodes = (elm[ViewModelReflection].component as Component).template.querySelectorAll('p');
+                const nodes = elm.shadowRoot.querySelectorAll('p');
                 expect(nodes).toHaveLength(0);
             });
         });
@@ -92,7 +91,7 @@ describe('root', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             return Promise.resolve().then(() => {
-                const node = (elm[ViewModelReflection].component as Component).root.querySelector('p');
+                const node = elm.shadowRoot.querySelector('p');
                 expect(node).toBeNull();
             });
         });
