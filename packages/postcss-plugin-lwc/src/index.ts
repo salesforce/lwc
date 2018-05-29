@@ -1,9 +1,9 @@
 import * as postcss from 'postcss';
 import { PostCSSRuleNode } from 'postcss-selector-parser';
 
-import selectorTransform from './selector-transform';
-import validateCustomProperties from './custom-properties-validate';
-import transformCustomProperties from './custom-properties-transform';
+import selectorScopingTransform from './selector-scoping/transform';
+import validateCustomProperties from './custom-properties/validate';
+import transformCustomProperties from './custom-properties/transform';
 
 import { validateConfig, PluginConfig } from './config';
 
@@ -27,7 +27,7 @@ export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
         }
 
         root.walkRules(rule => {
-            rule.selector = selectorTransform(rule, config);
+            rule.selector = selectorScopingTransform(rule, config);
         });
     };
 });
@@ -37,5 +37,5 @@ export function transformSelector(
     config: PluginConfig,
 ): string {
     validateConfig(config);
-    return selectorTransform(selector, config);
+    return selectorScopingTransform(selector, config);
 }

@@ -1,6 +1,6 @@
 # postcss-plugin-lwc
 
-[Postcss](https://github.com/postcss/postcss) plugin for LWC components stylesheet.
+[Postcss](https://github.com/postcss/postcss) plugin for LWC components styles.
 
 ## Features
 

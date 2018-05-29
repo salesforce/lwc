@@ -1,6 +1,6 @@
-import { Declaration } from "postcss";
+import { Declaration } from 'postcss';
 
-import { VarTransformer } from "./config";
+import { VarTransformer } from '../config';
 
 const VAR_FUNC_REGEX = /(^|[^\w-])var\(/;
 const VAR_ARGUMENTS_REGEX = /[\f\n\r\t ]*([\w-]+)(?:[\f\n\r\t ]*,[\f\n\r\t ]*([\W\w]+))?/;
