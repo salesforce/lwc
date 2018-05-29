@@ -27,15 +27,19 @@ import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse"
 const fallbackDescriptors = {
     querySelector: {
         value: lightDomQuerySelector,
+        configurable: true,
     },
     querySelectorAll: {
         value: lightDomQuerySelectorAll,
+        configurable: true,
     },
     addEventListener: {
         value: addEventListenerPatched,
+        configurable: true,
     },
     removeEventListener: {
         value: removeEventListenerPatched,
+        configurable: true,
     },
 };
 

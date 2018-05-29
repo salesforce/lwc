@@ -361,18 +361,23 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
+            configurable: true,
         },
         setAttribute: {
             value: setAttributePatched,
+            configurable: true,
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
+            configurable: true,
         },
         removeAttribute: {
             value: removeAttributePatched,
+            configurable: true,
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
+            configurable: true,
         },
     };
     // expose getters and setters for each public props on the Element
@@ -386,6 +391,7 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
+            configurable: true,
         };
     }
     return descriptors;

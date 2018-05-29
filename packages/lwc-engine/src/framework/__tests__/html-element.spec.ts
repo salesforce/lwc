@@ -679,7 +679,7 @@ describe('html-element', () => {
             });
         }),
 
-        it('should correctly set child attribute ', () => {
+        it.only('should correctly set child attribute ', () => {
             let childTitle = null;
             function html($api, $cmp) {
                 return [

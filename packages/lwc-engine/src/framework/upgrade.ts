@@ -60,12 +60,6 @@ const rootNodeFallbackDescriptors = {
     querySelector: {
         value: querySelectorPatchedRoot,
     },
-    addEventListener: {
-        value: addEventListenerPatched,
-    },
-    removeEventListener: {
-        value: removeEventListenerPatched,
-    },
 };
 
 /**
@@ -102,7 +96,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
 
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, { mode, fallback, isRoot: true });
-
     if (isTrue(fallback)) {
         // We don't support slots on root nodes
         defineProperties(element, rootNodeFallbackDescriptors);
