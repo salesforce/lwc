@@ -6,6 +6,7 @@ import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom/node";
 import { ViewModelReflection } from "./utils";
 import { setAttribute } from "./dom/element";
+import { addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -60,7 +61,15 @@ const rootNodeFallbackDescriptors = {
     querySelector: {
         value: querySelectorPatchedRoot,
         configurable: true,
-    }
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
 };
 
 /**

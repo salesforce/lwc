@@ -47,7 +47,6 @@ import apiDecorator from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
 import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
-import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
 
 declare interface HashTable<T> {
     [key: string]: T;

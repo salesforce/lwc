@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Component } from "./component";
 import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
-import { addCmpEventListener, removeCmpEventListener, removeTemplateEventListener, addTemplateEventListener } from "./events";
+import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getAttribute,
     getAttributeNS,
@@ -17,11 +17,31 @@ import {
 } from "./dom/attributes";
 import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, getCustomElementVM } from "./vm";
+import { getComponentVM, VM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { CustomEvent } from "./dom/event";
+import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
+import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+
+const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+    },
+};
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
