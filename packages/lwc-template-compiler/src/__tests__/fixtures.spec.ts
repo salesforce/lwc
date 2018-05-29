@@ -35,6 +35,8 @@ describe('fixtures', () => {
                 ...configOverride,
             });
 
+            expect(actual.warnings).toEqual(expetedMetaData.warnings || []);
+
             if (expectedCode && expectedCode.length) {
                 expect(
                     prettier.format(actual.code),
@@ -42,8 +44,6 @@ describe('fixtures', () => {
                     prettier.format(expectedCode),
                 );
             }
-
-            expect(actual.warnings).toEqual(expetedMetaData.warnings || []);
 
             if (actual.metadata) {
                 const actualMeta = actual.metadata;

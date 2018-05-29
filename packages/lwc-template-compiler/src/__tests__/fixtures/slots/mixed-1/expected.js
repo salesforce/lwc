@@ -1,6 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { t: api_text, h: api_element, f: api_flatten } = $api;
-    const { header: slot0, $default$: slot1, footer: slot2 } = $slotset;
+    const { t: api_text, h: api_element, s: api_slot } = $api;
 
     return [
         api_element(
@@ -8,59 +7,76 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 key: 9
             },
-            api_flatten([
+            [
                 api_element(
                     'p',
                     {
                         key: 1
                     },
-                    [
-                        api_text('Before header')
-                    ]
+                    [api_text('Before header')]
                 ),
-                slot0 || [api_text('Default header')],
+                api_slot(
+                    'header',
+                    {
+                        attrs: {
+                            name: 'header'
+                        },
+                        key: 2
+                    },
+                    [api_text('Default header')],
+                    $slotset
+                ),
                 api_element(
                     'p',
                     {
                         key: 3
                     },
-                    [
-                        api_text('In')
-                    ]
+                    [api_text('In')]
                 ),
                 api_element(
                     'p',
                     {
                         key: 4
                     },
-                    [
-                        api_text('between')
-                    ]
+                    [api_text('between')]
                 ),
-                slot1 || [
-                    api_element(
-                        'p',
-                        {
-                            key: 5
+                api_slot(
+                    '',
+                    {
+                        key: 6
+                    },
+                    [
+                        api_element(
+                            'p',
+                            {
+                                key: 5
+                            },
+                            [api_text('Default body')]
+                        )
+                    ],
+                    $slotset
+                ),
+                api_slot(
+                    'footer',
+                    {
+                        attrs: {
+                            name: 'footer'
                         },
-                        [
-                            api_text('Default body')
-                        ]
-                    )
-                ],
-                slot2 || [
-                    api_element(
-                        'p',
-                        {
-                            key: 7
-                        },
-                        [
-                            api_text('Default footer')
-                        ]
-                    )
-                ]
-            ])
+                        key: 8
+                    },
+                    [
+                        api_element(
+                            'p',
+                            {
+                                key: 7
+                            },
+                            [api_text('Default footer')]
+                        )
+                    ],
+                    $slotset
+                )
+            ]
         )
     ];
 }
-tmpl.slots = ['header', '$default$', 'footer'];
+tmpl.slots = ['header', '', 'footer'];
