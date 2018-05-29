@@ -1,26 +1,26 @@
 module.exports = {
     extends: [
-        '@commitlint/config-conventional', // scoped packages are not prefixed
+        '@commitlint/config-conventional' // scoped packages are not prefixed
     ],
     rules: {
         'type-enum': [
-			2,
-			'always',
-			[
-				'build',
-				'chore',
-				'ci',
-				'docs',
-				'feat',
-				'fix',
+            2,
+            'always',
+            [
+                'build',
+                'chore',
+                'ci',
+                'docs',
+                'feat',
+                'fix',
                 'perf',
                 'proposal',
-				'refactor',
-				'revert',
-				'style',
+                'refactor',
+                'revert',
+                'style',
                 'test',
                 'wip'
-			]
-		]
-    },
-}
+            ]
+        ]
+    }
+};
