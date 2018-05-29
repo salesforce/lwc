@@ -27,9 +27,7 @@ import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse"
 function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV === 'test') {
-        if (vm.isRoot) {
-            return vm.cmpRoot;
-        }
+        return vm.cmpRoot;
     }
     // for now, shadowRoot is closed except for test mode
     return null;

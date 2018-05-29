@@ -49,7 +49,6 @@ function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV === 'test') {
         // TODO: remove this backward compatibility branch.
-        // assert.logError(`elm.querySelector() on a root element will return null, instead use elm.shadowRoot.querySelector().`);
         assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
         return shadowRootQuerySelector(vm, selector);
     }
