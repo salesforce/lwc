@@ -412,7 +412,7 @@ export function b(fn: EventListener): EventListener {
     const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
         if (isValidEventForCustomElement(event)) {
-            patchShadowDomEvent(event);
+            patchShadowDomEvent(vm, event);
             invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, fn, vm.component, event);
         }
     };

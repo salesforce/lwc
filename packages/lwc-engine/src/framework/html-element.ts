@@ -27,19 +27,15 @@ import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse"
 const fallbackDescriptors = {
     querySelector: {
         value: lightDomQuerySelector,
-        configurable: true,
     },
     querySelectorAll: {
         value: lightDomQuerySelectorAll,
-        configurable: true,
     },
     addEventListener: {
         value: addEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
     },
     removeEventListener: {
         value: removeEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
     },
 };
 

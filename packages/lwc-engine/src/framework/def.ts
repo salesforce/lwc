@@ -361,23 +361,18 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         setAttribute: {
             value: setAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         removeAttribute: {
             value: removeAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
     };
     // expose getters and setters for each public props on the Element
@@ -391,7 +386,6 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         };
     }
     return descriptors;

@@ -56,19 +56,15 @@ function querySelectorAllPatchedRoot() {
 const rootNodeFallbackDescriptors = {
     querySelectorAll: {
         value: querySelectorAllPatchedRoot,
-        configurable: true,
     },
     querySelector: {
         value: querySelectorPatchedRoot,
-        configurable: true,
     },
     addEventListener: {
         value: addEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
     },
     removeEventListener: {
         value: removeEventListenerPatched,
-        configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
     },
 };
 
