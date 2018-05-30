@@ -27,6 +27,7 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
     if (isUndefined(newStyle) || newStyle === '') {
         removeAttribute.call(elm, 'style');
     } else if (isString(newStyle)) {
+        // The style property is a string when defined via an expression in the template.
         style.cssText = newStyle;
     } else {
         if (!isUndefined(oldStyle)) {
@@ -39,6 +40,9 @@ function updateStyle(oldVnode: VNode, vnode: VNode) {
             oldStyle = EmptyObject;
         }
 
+        // The style property is an object when defined as a string in the template. The compiler
+        // takes care of transforming the inline style into an object. It's faster to set the
+        // different style properties individually instead of via a string.
         for (name in newStyle) {
             const cur = newStyle[name];
             if (cur !== (oldStyle as VNodeStyle)[name]) {
