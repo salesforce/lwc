@@ -2,6 +2,7 @@ import * as api from '../api';
 import { Element } from "../html-element";
 import { createElement } from '../main';
 import { RenderAPI } from '../api';
+import { querySelector } from "../dom/element";
 
 describe('api', () => {
     describe('#c()', () => {
@@ -100,7 +101,7 @@ describe('api', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const span = elm.querySelector('button') as Element;
+            const span = querySelector.call(elm, 'button') as Element;
             expect(span.tagName).toEqual('BUTTON');
             expect(span.getAttribute('is')).toEqual('x-bar');
         });

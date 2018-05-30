@@ -1,5 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../main";
+import { querySelector } from "../dom/element";
 
 describe('patch', () => {
 
@@ -265,7 +266,7 @@ describe('patch', () => {
                 return Promise.resolve();
             })
             .then(() => {
-                expect(element.querySelector('span').textContent).toBe('second');
+                expect(querySelector.call(element, 'span').textContent).toBe('second');
             });
         });
 

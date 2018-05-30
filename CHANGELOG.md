@@ -1,5 +1,54 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.20.3...v) (2018-05-15)
+# [](https://github.com/salesforce/lwc/compare/v0.21.0...v) (2018-05-29)
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/salesforce/lwc/compare/v0.20.5...v0.21.0) (2018-05-29)
+
+
+### Bug Fixes
+
+* **engine:** live bindings for value and checked properties 3nd attempt ([#340](https://github.com/salesforce/lwc/issues/340)) ([ef4acff](https://github.com/salesforce/lwc/commit/ef4acff))
+* **engine:** preserve order of event dispaching between CE and SR ([#309](https://github.com/salesforce/lwc/issues/309)) ([1a1ba17](https://github.com/salesforce/lwc/commit/1a1ba17))
+* **engine:** remove piercing membrane ([#324](https://github.com/salesforce/lwc/issues/324)) ([1e4c7f1](https://github.com/salesforce/lwc/commit/1e4c7f1))
+* **tests:** fixed event integration test ([#346](https://github.com/salesforce/lwc/issues/346)) ([7402138](https://github.com/salesforce/lwc/commit/7402138))
+
+
+### Features
+
+* **compiler:** raptor on platform ([#298](https://github.com/salesforce/lwc/issues/298)) ([922de78](https://github.com/salesforce/lwc/commit/922de78))
+
+
+
+<a name="0.20.5"></a>
+## [0.20.5](https://github.com/salesforce/lwc/compare/v0.20.4...v0.20.5) (2018-05-23)
+
+
+### Bug Fixes
+
+* event retargeting issue with nested component ([#338](https://github.com/salesforce/lwc/issues/338)) ([a21121b](https://github.com/salesforce/lwc/commit/a21121b))
+* getRootNode when composed is false and the element is the root ([#337](https://github.com/salesforce/lwc/issues/337)) ([8dd8392](https://github.com/salesforce/lwc/commit/8dd8392))
+
+
+
+<a name="0.20.4"></a>
+## [0.20.4](https://github.com/salesforce/lwc/compare/v0.20.3...v0.20.4) (2018-05-21)
+
+
+### Bug Fixes
+
+* **engine:** Fixing composed on getRootNode call in pierce ([#313](https://github.com/salesforce/lwc/issues/313)) ([6ad3b7c](https://github.com/salesforce/lwc/commit/6ad3b7c))
+* Ensure uniqueness of public properties are compile time ([#323](https://github.com/salesforce/lwc/issues/323)) ([bf88354](https://github.com/salesforce/lwc/commit/bf88354))
+* Forbid usage of :root pseudo-class selector ([#303](https://github.com/salesforce/lwc/issues/303)) ([7413286](https://github.com/salesforce/lwc/commit/7413286))
+* Linting issue introduced by merge on master ([#315](https://github.com/salesforce/lwc/issues/315)) ([6ad80ca](https://github.com/salesforce/lwc/commit/6ad80ca))
+* Transform standalone pseudo class selectors ([#310](https://github.com/salesforce/lwc/issues/310)) ([9adea2d](https://github.com/salesforce/lwc/commit/9adea2d))
+
+
+### Features
+
+* Add support for style injection in compiler ([#302](https://github.com/salesforce/lwc/issues/302)) ([3b754f8](https://github.com/salesforce/lwc/commit/3b754f8))
+* Restrict usage of attributes in stylesheets ([#316](https://github.com/salesforce/lwc/issues/316)) ([948fbb9](https://github.com/salesforce/lwc/commit/948fbb9)), closes [#261](https://github.com/salesforce/lwc/issues/261)
 
 
 

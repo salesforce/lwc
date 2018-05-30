@@ -2,10 +2,11 @@ import { Element } from "../html-element";
 import { createElement } from "../upgrade";
 import assertLogger from '../assert';
 import { register } from "../services";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 import { VNode } from "../../3rdparty/snabbdom/types";
 import { Component } from "../component";
 import { unwrap } from "../main";
+import { querySelector } from "../dom/element";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -20,13 +21,13 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {})]
+                        return [$api.c('should-set-attribute-on-host-element-when-element-is-nested-in-template-child', MyComponent, {})]
                     }
                 }
             }
-            const element = createElement('x-foo', { is: Parent });
+            const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'should-set-attribute-on-host-element-when-element-is-nested-in-template-child');
             child.setFoo();
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
             expect(child.getAttributeNS('x', 'foo')).toBe('bar');
@@ -70,13 +71,13 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {})]
+                        return [$api.c('should-set-attribute-on-host-element-when-element-is-nested-in-template-child', MyComponent, {})]
                     }
                 }
             }
-            const element = createElement('x-foo', { is: Parent });
+            const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'should-set-attribute-on-host-element-when-element-is-nested-in-template-child');
             child.setFoo();
             expect(child.hasAttribute('foo')).toBe(true);
             expect(child.getAttribute('foo')).toBe('bar');
@@ -89,7 +90,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['setFoo'];
-            const element = createElement('x-foo', { is: MyComponent });
+            const element = createElement('should-set-attribute-on-host-element', { is: MyComponent });
             element.setFoo();
             expect(element.hasAttribute('foo')).toBe(true);
             expect(element.getAttribute('foo')).toBe('bar');
@@ -101,10 +102,10 @@ describe('html-element', () => {
                     super();
                     expect(() => {
                         this.setAttribute('foo', 'bar');
-                    }).toThrowError("Assert Violation: Failed to construct '<x-foo>': The result must not have attributes.");
+                    }).toThrowError("Assert Violation: Failed to construct '<throw-during-construction>': The result must not have attributes.");
                 }
             }
-            createElement('x-foo', { is: MyComponent });
+            createElement('throw-during-construction', { is: MyComponent });
         });
     });
 
@@ -120,7 +121,7 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {
+                        return [$api.c('remove-namespaced-attribute-on-host-element-child', MyComponent, {
                             attrs: {
                                 'x:title': 'foo',
                             }
@@ -128,9 +129,9 @@ describe('html-element', () => {
                     }
                 }
             }
-            const element = createElement('x-foo', { is: Parent });
+            const element = createElement('remove-namespaced-attribute-on-host-element', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'remove-namespaced-attribute-on-host-element-child');
             child.removeTitle();
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
         });
@@ -161,7 +162,7 @@ describe('html-element', () => {
             class Parent extends Element {
                 render() {
                     return ($api) => {
-                        return [$api.c('x-foo', MyComponent, {
+                        return [$api.c('element-is-nested-in-template-child', MyComponent, {
                             attrs: {
                                 title: 'foo',
                             }
@@ -169,9 +170,9 @@ describe('html-element', () => {
                     }
                 }
             }
-            const element = createElement('x-foo', { is: Parent });
+            const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = element.querySelector('x-foo');
+            const child = querySelector.call(element, 'element-is-nested-in-template-child');
             child.removeTitle();
             expect(child.hasAttribute('title')).toBe(false);
         });
@@ -183,7 +184,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['removeTitle'];
-            const element = createElement('x-foo', { is: MyComponent });
+            const element = createElement('should-remove-attribute-on-host-element', { is: MyComponent });
             element.title = 'foo';
             element.removeTitle();
             expect(element.hasAttribute('title')).toBe(false);
@@ -200,7 +201,7 @@ describe('html-element', () => {
                     }).toThrow();
                 }
             };
-            createElement('x-foo', { is: def });
+            createElement('getBoundingClientRect-should-throw-during-construction', { is: def });
             expect.assertions(1);
         });
     });
@@ -213,7 +214,7 @@ describe('html-element', () => {
                     this.classList.add('foo');
                 }
             };
-            expect(() => createElement('x-foo', { is: def })).toThrow();
+            expect(() => createElement('classList-throw-when-adding-classList-during-construction', { is: def })).toThrow();
         });
 
         it('should have a valid classList during connectedCallback', () => {
@@ -224,7 +225,7 @@ describe('html-element', () => {
                     expect(this.classList.contains('foo')).toBe(true);
                 }
             };
-            const elm = createElement('x-foo', { is: def });
+            const elm = createElement('classList-valid-classList-during-connectedCallback', { is: def });
             document.body.appendChild(elm);
             expect(elm.classList.contains('foo')).toBe(true);
         });
@@ -238,7 +239,7 @@ describe('html-element', () => {
                 }
             }
             MyComponent.publicMethods = ['getXTitle'];
-            const elm = createElement('x-foo', { is: MyComponent });
+            const elm = createElement('getAttributeNS-correct-attribute-value', { is: MyComponent });
             elm.setAttributeNS('x', 'title', 'foo');
             expect(elm.getXTitle()).toBe('foo');
         });
@@ -253,7 +254,7 @@ describe('html-element', () => {
                     expect(() => this.getAttribute()).toThrow();
                 }
             };
-            createElement('x-foo', { is: def });
+            createElement('getAttribute-throw-when-no-attribute-name-is-provided', { is: def });
         });
         it('should not throw when attribute name matches a declared public property', () => {
             expect.assertions(1);
@@ -380,7 +381,7 @@ describe('html-element', () => {
                     this.template.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is visible for the root, always
-                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
+                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
                 render() {
@@ -431,7 +432,7 @@ describe('html-element', () => {
                     this.template.addEventListener('xyz', (e) => {
                         expect(e.bubbles).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is host element
-                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
+                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element
                     });
                 }
                 render() {
@@ -622,7 +623,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -646,7 +647,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -702,7 +703,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             });
         });
@@ -718,143 +719,6 @@ describe('html-element', () => {
                 }
             };
             createElement('x-foo', { is: def });
-        });
-    });
-
-    describe('#querySelector()', () => {
-        it('should allow searching for the passed element', () => {
-            let childFromOwner: VNode, childComponent: Component;
-            function html1() {
-                return [childFromOwner];
-            }
-            class Child extends Element {
-                constructor() {
-                    super();
-                    childComponent = this;
-                }
-                render() {
-                    return html1;
-                }
-            }
-            function html2($api) {
-                childFromOwner = $api.h('p', { key: 0 }, []);
-                return [$api.c('x-child', Child, {})];
-            }
-            class MyComponent extends Element {
-                render() {
-                    return html2;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            const node = childComponent.querySelector('p');
-            expect(node.tagName).toBe('P');
-        });
-
-        it('should ignore element from template', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            };
-            const elm = createElement('x-foo', { is: def });
-            document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].component.querySelector('p')).toBeNull();
-        });
-
-        it('should not throw an error if element does not exist', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            };
-            const elm = createElement('x-foo', { is: def });
-            document.body.appendChild(elm);
-            expect(() => {
-                elm[ViewModelReflection].component.querySelector('div');
-            }).not.toThrow();
-        });
-
-        it('should return null if element does not exist', function() {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            };
-            const elm = createElement('x-foo', { is: def });
-            document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].component.querySelector('div')).toBeNull();
-        });
-    });
-
-    describe('#querySelectorAll()', () => {
-
-        it('should allow searching for passed elements', () => {
-            let childFromOwner: VNode, childComponent: Component;
-            function html1() {
-                return [childFromOwner];
-            }
-            class Child extends Element {
-                constructor() {
-                    super();
-                    childComponent = this;
-                }
-                render() {
-                    return html1;
-                }
-            }
-            function html2($api) {
-                childFromOwner = $api.h('p', { key: 0 }, []);
-                return [$api.c('x-child', Child, {})];
-            }
-            class MyComponent extends Element {
-                render() {
-                    return html2;
-                }
-            }
-            const elm = createElement('x-foo', { is: MyComponent });
-            document.body.appendChild(elm);
-            const nodes = childComponent.querySelectorAll('p');
-            expect(nodes).toHaveLength(1);
-        });
-
-        it('should ignore elements from template', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            };
-            const elm = createElement('x-foo', { is: def });
-            document.body.appendChild(elm);
-            expect(elm[ViewModelReflection].component.querySelectorAll('p')).toHaveLength(0);
-        });
-
-        it('should not throw an error if no nodes are found', () => {
-            function html($api) {
-                return [$api.h('p', { key: 0 }, [])];
-            }
-            const def = class MyComponent extends Element {
-                render() {
-                    return html;
-                }
-            };
-            const elm = createElement('x-foo', { is: def });
-            document.body.appendChild(elm);
-            expect(() => {
-                elm[ViewModelReflection].component.querySelectorAll('div');
-            }).not.toThrow();
         });
     });
 
@@ -1570,7 +1434,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('en');
+                        expect(querySelector.call(element, 'div')!.id).toBe('en');
                     });
             });
 
@@ -1694,7 +1558,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('true');
+                        expect(querySelector.call(element, 'div')!.id).toBe('true');
                     });
             });
 
@@ -1818,7 +1682,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('ltr');
+                        expect(querySelector.call(element, 'div')!.id).toBe('ltr');
                     });
             });
 
@@ -1942,7 +1806,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.title).toBe('id');
+                        expect(querySelector.call(element, 'div')!.title).toBe('id');
                     });
             });
 
@@ -2066,7 +1930,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.title).toBe('accessKey');
+                        expect(querySelector.call(element, 'div')!.title).toBe('accessKey');
                     });
             });
 
@@ -2190,7 +2054,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(element.querySelector('div')!.id).toBe('title');
+                        expect(querySelector.call(element, 'div')!.id).toBe('title');
                     });
             });
 
@@ -2252,7 +2116,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2275,7 +2139,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2331,7 +2195,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = parentElm.querySelector('x-child');
+                const childElm = querySelector.call(parentElm, 'x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             })
         })

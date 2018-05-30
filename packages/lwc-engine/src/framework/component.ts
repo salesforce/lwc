@@ -7,13 +7,12 @@ import {
 } from "./invoker";
 import { isArray, ArrayIndexOf, ArraySplice, isObject } from "./language";
 import { invokeServiceHook, Services } from "./services";
-import { getComponentDef, PropsDef, WireHash, TrackDef, ViewModelReflection } from './def';
+import { getComponentDef, PropsDef, WireHash, TrackDef } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
-
 import { Template } from "./template";
-import { ShadowRoot } from "./root";
-import { getRootNode, isChildNode } from "./dom";
+import { ViewModelReflection } from "./utils";
+
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
     [ViewModelReflection]: VM;
@@ -90,15 +89,6 @@ export function clearReactiveListeners(vm: VM) {
         }
         deps.length = 0;
     }
-}
-
-export function isValidEvent(event: Event): boolean {
-    // TODO: this is only needed if ShadowDOM is not used
-    if ((event as any).composed === true) {
-        return true;
-    }
-    // if the closest root contains the currentTarget, the event is valid
-    return isChildNode(getRootNode.call(event.target), event.currentTarget as Node);
 }
 
 export function renderComponent(vm: VM): VNodes {

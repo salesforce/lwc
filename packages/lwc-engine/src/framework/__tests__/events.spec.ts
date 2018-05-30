@@ -1,8 +1,7 @@
 import { Element } from "../html-element";
 import { createElement } from "./../upgrade";
-import { ViewModelReflection } from "../def";
+import { ViewModelReflection } from "../utils";
 import { unwrap } from "../membrane";
-import { create } from "domain";
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -456,7 +455,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -480,7 +479,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
 
@@ -593,7 +592,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(unwrap(evt.target)).toBe(elm);
+                    expect(evt.target).toBe(elm);
                 });
             }
         }
@@ -689,6 +688,100 @@ describe('Shadow Root events', () => {
         document.body.appendChild(elm);
         elm.clickDiv();
         expect(calls).toEqual(['template', 'component']);
+    });
+
+    it('should have correct event target when event originates from child component shadow dom', () => {
+        expect.assertions(2);
+        let childTemplate;
+        class MyChild extends Element {
+            constructor() {
+                super();
+                childTemplate = this.template;
+            }
+
+            clickDiv() {
+                this.template.querySelector('div').click();
+            }
+
+            render() {
+                return function ($api) {
+                    return [$api.h('div', {
+                        key: 0,
+                    }, [])];
+                }
+            }
+        }
+
+        MyChild.publicMethods = ['clickDiv'];
+
+        function html($api, $cmp) {
+            return [$api.c('correct-nested-root-event-target-child', MyChild, {
+                on: {
+                    click: $api.b($cmp.handleClick)
+                }
+            })];
+        }
+
+        class MyComponent extends Element {
+            handleClick(evt) {
+                expect(evt.target.tagName.toLowerCase()).toBe('correct-nested-root-event-target-child');
+                expect(evt.target).toBe(this.template.querySelector('correct-nested-root-event-target-child'));
+            }
+
+            clickChildDiv() {
+                this.template.querySelector('correct-nested-root-event-target-child').clickDiv();
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        MyComponent.publicMethods = ['clickChildDiv'];
+
+        const elm = createElement('correct-nested-root-event-target-parent', { is: MyComponent });
+        document.body.appendChild(elm);
+        return Promise.resolve().then(() => {
+            elm.clickChildDiv();
+        });
+    });
+
+    it('should retarget properly event listener attached on non-root components', () => {
+        expect.assertions(2);
+
+        class GrandChild extends Element {}
+
+        class Child extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', evt => {
+                    expect(evt.target.tagName).toBe('X-GRAND-CHILD');
+                    expect(evt.currentTarget.tagName).toBe('X-CHILD');
+                });
+            }
+
+            render() {
+                return $api => {
+                    return [
+                        $api.c('x-grand-child', GrandChild, {})
+                    ];
+                };
+            }
+        }
+
+        class Root extends Element {
+            render() {
+                return $api => {
+                    return [
+                        $api.c('x-child', Child, {})
+                    ];
+                };
+            }
+        }
+
+        const elm = createElement('x-root', { is: Root });
+        document.body.appendChild(elm);
+
+        HTMLElement.prototype.querySelector.call(elm, 'x-grand-child').click();
     });
 });
 

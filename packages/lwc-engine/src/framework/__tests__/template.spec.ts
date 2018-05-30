@@ -2,8 +2,9 @@ import * as target from '../template';
 import * as globalApi from '../api';
 import { Element } from "../html-element";
 import { createElement } from '../main';
-import { ViewModelReflection } from '../def';
+import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
+import { querySelector } from '../dom/element';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -32,21 +33,6 @@ describe('template', () => {
             expect($cmp && typeof $cmp === 'object').toBe(true);
             expect($slotset && typeof $slotset === 'object').toBe(true);
             expect($memoizer).toEqual({});
-        });
-
-        it('should revoke slotset proxy', () => {
-            let $slotset;
-            createCustomComponent(
-                function($api, $c, $s) {
-                    $slotset = $s;
-                    return [];
-                },
-                { x: [globalApi.h('p', { key: 0 }, [])] },
-            );
-            expect(() => $slotset.x).toThrow('Cannot perform \'get\' on a proxy that has been revoked');
-            expect(() => {
-                $slotset.foo;
-            }).toThrow();
         });
 
         it('should render arrays correctly', function() {
@@ -132,18 +118,6 @@ describe('template', () => {
             expect(counter).toBe(3);
         });
 
-        it('should throw when attempting to set a property member of slotset', () => {
-            expect(() =>
-                createCustomComponent(
-                    function($api, cmp, slotset) {
-                        slotset.x = [];
-                        return [];
-                    },
-                    { x: [globalApi.h('p', { key: 0 }, [])] },
-                ),
-            ).toThrow();
-        });
-
         it('should throw when attempting to set a property member of cmp', () => {
             function template(api, cmp) {
                 cmp.x = [];
@@ -158,15 +132,6 @@ describe('template', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             expect(() => document.body.appendChild(elm)).toThrow();
-        });
-
-        it('should throw when attempting to delete a property member of slotset', () => {
-            expect(() => {
-                createCustomComponent(function(api, cmp, slotset) {
-                    delete slotset.x;
-                    return [];
-                }, { x: [ globalApi.h('p', { key: 0 }, []) ] });
-            }).toThrow();
         });
 
         it('should support switching templates', () => {
@@ -496,7 +461,7 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(element.querySelector('div').getAttribute('title')).toBe('foo');
+            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('foo');
         });
 
         it('should remove attribute when value is null', () => {
@@ -528,10 +493,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(element.querySelector('div').getAttribute('title')).toBe('initial');
+            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(element.querySelector('div').hasAttribute('title')).toBe(false);
+                expect(querySelector.call(element, 'div').hasAttribute('title')).toBe(false);
             });
         });
     });

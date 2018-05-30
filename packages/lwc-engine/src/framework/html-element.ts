@@ -1,27 +1,47 @@
 import assert from "./assert";
-import { Root, shadowRootQuerySelector, shadowRootQuerySelectorAll, ShadowRoot } from "./root";
 import { Component } from "./component";
-import { isObject, ArrayFilter, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, isUndefined, ArraySlice, isNull, forEach } from "./language";
+import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
-    getGlobalHTMLPropertiesInfo,
     getAttribute,
     getAttributeNS,
     removeAttribute,
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
+} from "./dom/element";
+import {
+    getGlobalHTMLPropertiesInfo,
     GlobalHTMLPropDescriptors,
     attemptAriaAttributeFallback,
-    CustomEvent,
-} from "./dom";
-import { getPropNameFromAttrName } from "./utils";
+} from "./dom/attributes";
+import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { wasNodePassedIntoVM, VM } from "./vm";
-import { pierce, pierceProperty } from "./piercing";
-import { ViewModelReflection } from "./def";
+import { getComponentVM, VM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
+import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
+import { dispatchEvent } from "./dom/event-target";
+import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+
+const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true,
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true,
+    },
+};
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -84,11 +104,6 @@ function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;
 }
 
-function querySelectorAllFromComponent(cmp: Component, selectors: string): NodeList {
-    const elm = getLinkedElement(cmp);
-    return elm.querySelectorAll(selectors);
-}
-
 export interface ComposableEvent extends Event {
     composed: boolean;
 }
@@ -109,7 +124,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, fallback } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -124,6 +139,9 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
+    if (isTrue(fallback)) {
+        defineProperties(elm, fallbackDescriptors);
+    }
 }
 
 LWCElement.prototype = {
@@ -131,7 +149,7 @@ LWCElement.prototype = {
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
 
         if (process.env.NODE_ENV !== 'production') {
             if (arguments.length === 0) {
@@ -153,28 +171,33 @@ LWCElement.prototype = {
                 assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
             }
         }
-
-        // Pierce dispatchEvent so locker service has a chance to overwrite
-        const dispatchEvent = pierceProperty(elm, 'dispatchEvent');
         return dispatchEvent.call(elm, event);
     },
 
     addEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
 
             if (arguments.length > 2) {
                 // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments. Options to make the listener passive, once or capture are not allowed at the top level of the component's fragment.`);
+                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
             }
         }
-        addCmpEventListener(vm, type, listener, options);
+        addCmpEventListener(vm, type, listener);
     },
 
     removeEventListener(type: string, listener: EventListener, options?: any) {
-        const vm = getCustomElementVM(this);
-        removeCmpEventListener(vm, type, listener, options);
+        const vm = getComponentVM(this);
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vm);
+
+            if (arguments.length > 2) {
+                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
+            }
+        }
+        removeCmpEventListener(vm, type, listener);
     },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -193,7 +216,7 @@ LWCElement.prototype = {
     },
 
     removeAttribute(attrName: string) {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         // use cached removeAttribute, because elm.setAttribute throws
         // when not called in template
         removeAttribute.call(vm.elm, attrName);
@@ -201,7 +224,7 @@ LWCElement.prototype = {
     },
 
     setAttribute(attrName: string, value: any): void {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
         }
@@ -241,48 +264,30 @@ LWCElement.prototype = {
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         }
         return elm.getBoundingClientRect();
     },
-    querySelector(selectors: string): Node | null {
-        const vm = getCustomElementVM(this);
+    querySelector(selector: string): Node | null {
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        for (let i = 0, len = nodeList.length; i < len; i += 1) {
-            if (wasNodePassedIntoVM(vm, nodeList[i])) {
-                // TODO: locker service might need to return a membrane proxy
-                return pierce(nodeList[i]);
-            }
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (shadowRootQuerySelector(this.template, selectors)) {
-                assert.logWarning(`this.querySelector() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelector() instead.`);
-            }
-        }
-
-        return null;
+        // Delegate to custom element querySelector.
+        // querySelector on the custom element will respect
+        // shadow semantics
+        return vm.elm.querySelector(selector);
     },
-    querySelectorAll(selectors: string): NodeList {
-        const vm = getCustomElementVM(this);
+    querySelectorAll(selector: string): NodeList {
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-
-        const nodeList = querySelectorAllFromComponent(this, selectors);
-        // TODO: locker service might need to do something here
-        const filteredNodes = ArrayFilter.call(nodeList, (node: Node): boolean => wasNodePassedIntoVM(vm, node));
-
-        if (process.env.NODE_ENV !== 'production') {
-            if (filteredNodes.length === 0 && shadowRootQuerySelectorAll(this.template, selectors).length) {
-                assert.logWarning(`this.querySelectorAll() can only return elements that were passed into ${vm.component} via slots. It seems that you are looking for elements from your template declaration, in which case you should use this.template.querySelectorAll() instead.`);
-            }
-        }
-        return pierce(filteredNodes);
+        // Delegate to custom element querySelectorAll.
+        // querySelectorAll on the custom element will respect
+        // shadow semantics
+        return vm.elm.querySelectorAll(selector);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -290,34 +295,29 @@ LWCElement.prototype = {
     },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
+            const vm = getComponentVM(this);
             // TODO: this still fails in dev but works in production, eventually, we should just throw in all modes
             assert.isFalse(isBeingConstructed(vm), `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`);
         }
         return getLinkedElement(this).classList;
     },
     get template(): ShadowRoot {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
-        let { cmpRoot } = vm;
-        // lazy creation of the ShadowRoot Object the first time it is accessed.
-        if (isUndefined(cmpRoot)) {
-            cmpRoot = new Root(vm);
-            vm.cmpRoot = cmpRoot;
-        }
-        return cmpRoot;
+        return vm.cmpRoot;
     },
     get root(): ShadowRoot {
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            const vm = getCustomElementVM(this);
-            assert.logWarning(`"this.template" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
+            assert.vm(vm);
+            assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
-        return this.template;
+        return vm.cmpRoot;
     },
     toString(): string {
-        const vm = getCustomElementVM(this);
+        const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
@@ -338,8 +338,8 @@ if (process.env.NODE_ENV !== 'production') {
             return; // no need to redefine something that we are already exposing
         }
         defineProperty(LWCElement.prototype, propName, {
-            get() {
-                const vm = getCustomElementVM(this as HTMLElement);
+            get(this: Component) {
+                const vm = getComponentVM(this);
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
@@ -373,10 +373,3 @@ freeze(LWCElement);
 seal(LWCElement.prototype);
 
 export { LWCElement as Element };
-
-export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoot): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrCmp[ViewModelReflection]);
-    }
-    return elmOrCmp[ViewModelReflection] as VM;
-}

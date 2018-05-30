@@ -6,7 +6,7 @@ import {
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
 import { getComponentStack, VM } from "./vm";
-import { ComponentConstructor } from "./component";
+import { ComponentConstructor, Component } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
 
@@ -126,7 +126,7 @@ export enum EventListenerContext {
 
 export let componentEventListenerType: EventListenerContext | null = null;
 
-export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, event: Event) {
+export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, thisValue: undefined | Component, event: Event) {
     const { context, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);
@@ -134,7 +134,7 @@ export function invokeEventListener(vm: VM, listenerContext: EventListenerContex
     const componentEventListenerTypeInception = componentEventListenerType;
     componentEventListenerType = listenerContext;
     try {
-        callHook(undefined, fn, [event]);
+        callHook(thisValue, fn, [event]);
     } catch (e) {
         error = Object(e);
     } finally {

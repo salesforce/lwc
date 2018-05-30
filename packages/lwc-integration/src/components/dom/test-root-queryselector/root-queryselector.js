@@ -1,15 +1,17 @@
-import { Element } from 'engine';
+import { Element, track } from 'engine';
 
 export default class RootQuerySelector extends Element {
+    @track
     state = {
         error: undefined
     }
+
     renderedCallback() {
         if (this.state.error) {
             return;
         }
         try {
-            this.root.querySelectorAll('div');
+            this.template.querySelectorAll('div');
         } catch (e) {
             this.state.error = e;
         }

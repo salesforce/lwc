@@ -1,5 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
+import { querySelector, querySelectorAll } from "../dom/element";
 
 function createBoundaryComponent(elementsToRender) {
     function html($api, $cmp) {
@@ -78,7 +79,7 @@ describe('error boundary component', () => {
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
 
                 document.body.appendChild(boundaryHostElm);
-                expect(boundaryHostElm.querySelectorAll('x-boundary-sibling').length).toBe(1);
+                expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
             it('should unmount enitre subtree up to boundary component if child throws inside constructor', () => {
@@ -104,8 +105,8 @@ describe('error boundary component', () => {
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
 
-                expect(elm.querySelector('x-second-level-child')).toBeNull();
-                expect(elm.querySelector('x-first-level-child')).toBeNull();
+                expect(querySelector.call(elm, 'x-second-level-child')).toBeNull();
+                expect(querySelector.call(elm, 'x-first-level-child')).toBeNull();
             }),
 
             it('should throw if error occurs in error boundary constructor', () => {
@@ -200,7 +201,7 @@ describe('error boundary component', () => {
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
-                expect(boundaryHostElm.querySelectorAll('x-boundary-sibling').length).toBe(1);
+                expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
             it('should unmount child and its subtree if boundary child throws inside render', () => {
@@ -225,8 +226,8 @@ describe('error boundary component', () => {
                 const elm = createElement('x-boundary', { is: Boundary });
                 document.body.appendChild(elm);
 
-                expect(elm.querySelector('x-first-level-child')).toBeNull();
-                expect(elm.querySelector('x-second-level-child')).toBeNull();
+                expect(querySelector.call(elm, 'x-first-level-child')).toBeNull();
+                expect(querySelector.call(elm, 'x-second-level-child')).toBeNull();
             }),
 
             it ('should call errorCallback if slot throws an error inside render', () => {
@@ -341,7 +342,7 @@ describe('error boundary component', () => {
                 document.body.appendChild(hostBoundaryElm);
 
                 expect(hostBoundaryElm.getError()).toBe('Child Boundary ErrorCallback Throw');
-                expect(hostBoundaryElm.querySelectorAll('child-error-boundary').length).toBe(0);
+                expect(querySelectorAll.call(hostBoundaryElm, 'child-error-boundary').length).toBe(0);
             });
 
             it('should unmount error boundary child if it throws inside renderedCallback', () => {
@@ -436,7 +437,7 @@ describe('error boundary component', () => {
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
-                expect(boundaryHostElm.querySelectorAll('x-boundary-sibling').length).toBe(1);
+                expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
             it('should unmount boundary child and its subtree if child throws inside renderedCallback', () => {
@@ -532,7 +533,7 @@ describe('error boundary component', () => {
                 const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
-                expect(boundaryHostElm.querySelectorAll('x-boundary-sibling').length).toBe(1);
+                expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
             }),
 
             it('should unmount boundary child and its subtree if boundary child throws inside connectedCallback', () => {

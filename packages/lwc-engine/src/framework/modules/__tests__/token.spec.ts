@@ -1,6 +1,7 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import { Template } from "../../template";
+import { querySelectorAll } from "../../dom/element";
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
@@ -18,7 +19,7 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(cmp.querySelectorAll('[test]')).toHaveLength(1);
+        expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(1);
     });
 
     it('removes children element tokens if the template has no token', () => {
@@ -44,14 +45,14 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(cmp.querySelectorAll('section')).toHaveLength(1);
-        expect(cmp.querySelectorAll('[test]')).toHaveLength(1);
+        expect(querySelectorAll.call(cmp, 'section')).toHaveLength(1);
+        expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(1);
 
         cmp.tmpl = unstyledTmpl;
 
         return Promise.resolve().then(() => {
-            expect(cmp.querySelectorAll('section')).toHaveLength(1);
-            expect(cmp.querySelectorAll('[test]')).toHaveLength(0);
+            expect(querySelectorAll.call(cmp, 'section')).toHaveLength(1);
+            expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(0);
         });
     });
 
@@ -79,14 +80,14 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(cmp.querySelectorAll('[testA]')).toHaveLength(1);
-        expect(cmp.querySelectorAll('[testB]')).toHaveLength(0);
+        expect(querySelectorAll.call(cmp, '[testA]')).toHaveLength(1);
+        expect(querySelectorAll.call(cmp, '[testB]')).toHaveLength(0);
 
         cmp.tmpl = styledTmplB;
 
         return Promise.resolve().then(() => {
-            expect(cmp.querySelectorAll('[testA]')).toHaveLength(0);
-            expect(cmp.querySelectorAll('[testB]')).toHaveLength(1);
+            expect(querySelectorAll.call(cmp, '[testA]')).toHaveLength(0);
+            expect(querySelectorAll.call(cmp, '[testB]')).toHaveLength(1);
         });
     });
 });

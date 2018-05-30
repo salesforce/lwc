@@ -1,9 +1,8 @@
 import assert from "../assert";
 import { isUndefined, keys, StringToLowerCase } from "../language";
-import { EmptyObject, getAttrNameFromPropName } from "../utils";
+import { ViewModelReflection, EmptyObject, getAttrNameFromPropName } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-import { ViewModelReflection } from "../def";
 
 function update(oldVnode: VNode, vnode: VNode) {
     const props = vnode.data.props;

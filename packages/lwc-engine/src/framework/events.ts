@@ -2,17 +2,79 @@ import assert from "./assert";
 import {
     addEventListener,
     removeEventListener,
+} from "./dom/element";
+import {
     getRootNode,
-    isChildNode,
-} from "./dom";
-import { VM } from "./vm";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction } from "./language";
-import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { pierce } from "./piercing";
+    parentNodeGetter,
+} from "./dom/node";
+import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
+import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
+import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
     original: EventListener;
+}
+
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./dom/node";
+
+function isChildNode(root: Element, node: Node): boolean {
+    return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
+}
+
+const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
+const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
+
+const eventShadowDescriptors: PropertyDescriptorMap = {
+    target: {
+        get(this: Event): HTMLElement {
+            const { currentTarget } = this;
+            const originalTarget: HTMLElement = eventTargetGetter.call(this);
+
+            // Executing event listener on component, target is always currentTarget
+            if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
+                return patchShadowDomTraversalMethods(currentTarget as HTMLElement);
+            }
+
+            // Handle events is coming from an slotted elements.
+            // TODO: Add more information why we need to handle the light DOM events here.
+            if (isChildNode(getRootNode.call(originalTarget, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
+                return patchShadowDomTraversalMethods(originalTarget);
+            }
+
+            let vm: VM | undefined;
+            if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
+                // If we are in an event listener attached on the shadow root, then we do not want to look
+                // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
+                // rendered the component (parent component).
+                //
+                // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
+                vm = getCustomElementVM(currentTarget as HTMLElement);
+            } else if (!isUndefined(currentTarget)) {
+                // TODO: When does currentTarget can be undefined
+                vm = getElementOwnerVM(currentTarget as Element);
+            }
+
+            // Handle case when VM is not present for example when attaching an event listener
+            // on the root component of the component tree.
+            if (!isUndefined(vm)) {
+                let node = originalTarget;
+                while (!isNull(node) && vm.uid !== node[OwnerKey]) {
+                    node = parentNodeGetter.call(node);
+                }
+                return patchShadowDomTraversalMethods(node);
+            }
+            return originalTarget;
+        },
+        configurable: true,
+    },
+};
+
+export function patchShadowDomEvent(vm: VM, event: Event) {
+    if (isTrue(vm.fallback)) {
+        defineProperties(event, eventShadowDescriptors);
+    }
 }
 
 const rootEventListenerMap: WeakMap<EventListener, WrappedListener> = new WeakMap();
@@ -38,8 +100,8 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
                 (composed === false && getRootNode.call(event.target) === currentTarget)) {
-                    const e = pierce(event);
-                    invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, e);
+                    patchShadowDomEvent(vm, event);
+                    invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, undefined, event);
             }
         } as WrappedListener;
         wrappedListener!.placement = EventListenerContext.ROOT_LISTENER;
@@ -63,16 +125,9 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
     let wrappedListener = cmpEventListenerMap.get(listener);
     if (isUndefined(wrappedListener)) {
         wrappedListener = function(event: Event) {
-            const { composed, target, currentTarget } = event as any;
-            if (
-                // it is composed, and we should always get it
-                composed === true ||
-                // it is dispatched onto the custom element directly
-                target === currentTarget ||
-                // it is coming from an slotted element
-                isChildNode(getRootNode.call(target, event), currentTarget as Node)) {
-                    const e = pierce(event);
-                    invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, e);
+            if (isValidEventForCustomElement(event)) {
+                patchShadowDomEvent(vm, event);
+                invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, listener, undefined, event);
             }
         } as WrappedListener;
         wrappedListener!.placement = EventListenerContext.COMPONENT_LISTENER;
@@ -165,7 +220,37 @@ function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListene
     }
 }
 
-export function addCmpEventListener(vm: VM, type: string, listener: EventListener, options: any) {
+const NON_COMPOSED = { composed: false };
+export function isValidEventForCustomElement(event: Event): boolean {
+    const { target, currentTarget } = event;
+    const { composed } = event as any;
+    return (
+        // it is composed, and we should always get it, or
+        composed === true ||
+        // it is dispatched onto the custom element directly, or
+        target === currentTarget ||
+        // it is coming from an slotted element
+        isChildNode(getRootNode.call(target, NON_COMPOSED), currentTarget as Node)
+    );
+}
+
+export function addTemplateEventListener(vm: VM, type: string, listener: EventListener) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    // not need to wrap this listener because it is already wrapped by api.b()
+    (listener as WrappedListener).placement = EventListenerContext.COMPONENT_LISTENER;
+    attachDOMListener(vm, type, (listener as WrappedListener));
+}
+
+export function removeTemplateEventListener(vm: VM, type: string, listener: EventListener) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    detachDOMListener(vm, type, (listener as WrappedListener));
+}
+
+export function addCmpEventListener(vm: VM, type: string, listener: EventListener) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
@@ -175,7 +260,15 @@ export function addCmpEventListener(vm: VM, type: string, listener: EventListene
     attachDOMListener(vm, type, wrappedListener);
 }
 
-export function addRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
+export function removeCmpEventListener(vm: VM, type: string, listener: EventListener) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const wrappedListener = getWrappedComponentsListener(vm, listener);
+    detachDOMListener(vm, type, wrappedListener);
+}
+
+export function addRootEventListener(vm: VM, type: string, listener: EventListener) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
@@ -185,15 +278,7 @@ export function addRootEventListener(vm: VM, type: string, listener: EventListen
     attachDOMListener(vm, type, wrappedListener);
 }
 
-export function removeCmpEventListener(vm: VM, type: string, listener: EventListener, options: any) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    const wrappedListener = getWrappedComponentsListener(vm, listener);
-    detachDOMListener(vm, type, wrappedListener);
-}
-
-export function removeRootEventListener(vm: VM, type: string, listener: EventListener, options: any) {
+export function removeRootEventListener(vm: VM, type: string, listener: EventListener) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }

@@ -1,7 +1,7 @@
 import * as target from '../component';
 import { Element } from "../html-element";
 import { createElement } from "../upgrade";
-import { ViewModelReflection } from '../def';
+import { ViewModelReflection } from '../utils';
 
 describe('component', function() {
     describe('#createComponent()', () => {
@@ -163,7 +163,7 @@ describe('component', function() {
             expect(context).toBe(elm[ViewModelReflection].component);
         });
 
-        it('should fail to execute setter function when used directly from DOM', function() {
+        it('should call setter function when used directly from DOM', function() {
             class MyChild extends Element {
                 value = 'pancakes';
                 get breakfast() {
@@ -188,12 +188,13 @@ describe('component', function() {
                 }
                 run() {
                     this.template.querySelector('x-child').breakfast = 'eggs';
+                    return this.template.querySelector('x-child').breakfast;
                 }
             }
             MyComponent.publicMethods = ['run'];
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            expect(() => elm.run()).toThrow();
+            expect(elm.run()).toBe('eggs');
         });
 
         it('should execute setter function with correct context when component is root', function() {

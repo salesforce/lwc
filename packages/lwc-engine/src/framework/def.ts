@@ -30,24 +30,23 @@ import {
 import {
     GlobalAOMProperties,
     getGlobalHTMLPropertiesInfo,
+    defaultDefHTMLPropertyNames,
+    attemptAriaAttributeFallback,
+} from "./dom/attributes";
+import {
     getAttribute,
     setAttribute,
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-    defaultDefHTMLPropertyNames,
-    attemptAriaAttributeFallback,
-} from "./dom";
+} from "./dom/element";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement, getCustomElementVM } from "./html-element";
+import { Element as BaseElement } from "./html-element";
 import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
-import { OwnerKey, VM, VMElement } from "./vm";
-
-// TODO: refactor all the references to this
-export { ViewModelReflection } from "./utils";
+import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
 
 declare interface HashTable<T> {
     [key: string]: T;
@@ -362,23 +361,23 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttribute: {
             value: setAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttribute: {
             value: removeAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
     };
     // expose getters and setters for each public props on the Element
@@ -392,7 +391,7 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         };
     }
     return descriptors;
