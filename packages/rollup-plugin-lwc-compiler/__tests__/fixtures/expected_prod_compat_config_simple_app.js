@@ -5,15 +5,15 @@
         throw new TypeError("Cannot call a class as a function");
     }
     function c(a, b) {
-      for (var c, d = 0; d < j(b, "length"); d++)
-        (c = j(b, d)),
-          k(c, "enumerable", j(c, "enumerable") || !1),
-          k(c, "configurable", !0),
-          l(c, "value") && k(c, "writable", !0),
-          Object.compatDefineProperty(a, j(c, "key"), c);
+      for (var c, d = 0; d < l(b, "length"); d++)
+        (c = l(b, d)),
+          m(c, "enumerable", l(c, "enumerable") || !1),
+          m(c, "configurable", !0),
+          n(c, "value") && m(c, "writable", !0),
+          Object.compatDefineProperty(a, l(c, "key"), c);
     }
     function d(a, b, d) {
-      return b && c(j(a, "prototype"), b), d && c(a, d), a;
+      return b && c(l(a, "prototype"), b), d && c(a, d), a;
     }
     function e(a) {
       if (void 0 === a)
@@ -25,139 +25,141 @@
     function f(a, b) {
       return b && ("object" == typeof b || "function" == typeof b) ? b : e(a);
     }
-    function g(a, b) {
-      if ("function" != typeof b && null !== b)
-        throw new TypeError("Super expression must either be null or a function");
-      m(
-        a,
-        "prototype",
-        Object.create(b && n(b, "prototype"), {
-          constructor: {
-            value: a,
-            enumerable: !1,
-            writable: !0,
-            configurable: !0
-          }
-        })
-      ),
-        b &&
-          (Object.setPrototypeOf
-            ? Object.setPrototypeOf(a, b)
-            : m(a, "__proto__", b));
+    function g(a) {
+      return (
+        (g = Object.setPrototypeOf
+          ? Object.getPrototypeOf
+          : function(a) {
+              return p(a, "__proto__") || Object.getPrototypeOf(a);
+            }),
+        g(a)
+      );
     }
     function h(a, b) {
-      var c = q(a, "d"),
-        d = q(a, "h");
-      return [d("div", { key: 1 }, [c(q(b, "x"))])];
+      return (
+        (h =
+          Object.setPrototypeOf ||
+          function(a, b) {
+            return q(a, "__proto__", b), a;
+          }),
+        h(a, b)
+      );
     }
-    function i(a) {
-      var b = z(a, "c"),
-        c = z(a, "h");
+    function i(a, b) {
+      if ("function" != typeof b && null !== b)
+        throw new TypeError("Super expression must either be null or a function");
+      o(
+        a,
+        "prototype",
+        Object.create(b && r(b, "prototype"), {
+          constructor: { value: a, writable: !0, configurable: !0 }
+        })
+      ),
+        b && h(a, b);
+    }
+    function j(a, b) {
+      var c = u(a, "d"),
+        d = u(a, "h");
+      return [d("div", { key: 1 }, [c(u(b, "x"))])];
+    }
+    function k(a) {
+      var b = D(a, "c"),
+        c = D(a, "h");
       return [
         c("div", { classMap: { container: !0 }, key: 2 }, [
-          b("x-foo", y, { props: { x: "1" }, key: 1 }, [])
+          b("x-foo", C, { props: { x: "1" }, key: 1 }, [])
         ])
       ];
     }
-    var j = Proxy.getKey,
-      k = Proxy.setKey,
-      l = Proxy.inKey,
+    var l = Proxy.getKey,
       m = Proxy.setKey,
-      n = Proxy.getKey,
-      o = void 0,
-      p = void 0,
-      q = Proxy.getKey,
-      r = Proxy.setKey,
-      s = Proxy.callKey1;
-    if (p) {
-      r(h, "token", "x-foo_foo");
-      var t = s(document, "createElement", "style");
-      r(t, "type", "text/css"),
-        r(q(t, "dataset"), "token", "x-foo_foo"),
-        r(t, "textContent", p("x-foo", "x-foo_foo")),
-        s(q(document, "head"), "appendChild", t);
+      n = Proxy.inKey,
+      p = Proxy.getKey,
+      q = Proxy.setKey,
+      o = Proxy.setKey,
+      r = Proxy.getKey,
+      s = void 0,
+      t = void 0,
+      u = Proxy.getKey,
+      v = Proxy.setKey,
+      w = Proxy.callKey1;
+    if (t) {
+      v(j, "token", "x-foo_foo");
+      var x = w(document, "createElement", "style");
+      v(x, "type", "text/css"),
+        v(u(x, "dataset"), "token", "x-foo_foo"),
+        v(x, "textContent", t("x-foo", "x-foo_foo")),
+        w(u(document, "head"), "appendChild", x);
     }
-    var u = Proxy.setKey,
-      v = Proxy.callKey2,
-      w = Proxy.getKey,
-      x = Proxy.concat,
-      y = (function(a) {
+    var y = Proxy.setKey,
+      z = Proxy.callKey2,
+      A = Proxy.getKey,
+      B = Proxy.concat,
+      C = (function(a) {
         function c() {
           var a, d;
           b(this, c);
-          for (var e, g = arguments.length, h = Array(g), i = 0; i < g; i++)
-            u(h, i, arguments[i]);
+          for (var e, h = arguments.length, i = Array(h), j = 0; j < h; j++)
+            y(i, j, arguments[j]);
           return f(
             d,
             ((e = d = f(
               this,
-              v(
-                w((a = w(c, "__proto__") || Object.getPrototypeOf(c)), "call"),
-                "apply",
-                a,
-                x([this], h)
-              )
+              z(A((a = g(c)), "call"), "apply", a, B([this], i))
             )),
-            u(d, "x", void 0),
+            y(d, "x", void 0),
             e)
           );
         }
         return (
-          g(c, a),
+          i(c, a),
           d(c, [
             {
               key: "render",
               value: function() {
-                return h;
+                return j;
               }
             }
           ]),
           c
         );
       })(a.Element);
-    u(y, "publicProps", { x: { config: 0 } });
-    var z = Proxy.getKey,
-      A = Proxy.setKey,
-      B = Proxy.callKey1;
-    if (o) {
-      A(i, "token", "x-app_app");
-      var C = B(document, "createElement", "style");
-      A(C, "type", "text/css"),
-        A(z(C, "dataset"), "token", "x-app_app"),
-        A(C, "textContent", o("x-app", "x-app_app")),
-        B(z(document, "head"), "appendChild", C);
+    y(C, "publicProps", { x: { config: 0 } });
+    var D = Proxy.getKey,
+      E = Proxy.setKey,
+      F = Proxy.callKey1;
+    if (s) {
+      E(k, "token", "x-app_app");
+      var G = F(document, "createElement", "style");
+      E(G, "type", "text/css"),
+        E(D(G, "dataset"), "token", "x-app_app"),
+        E(G, "textContent", s("x-app", "x-app_app")),
+        F(D(document, "head"), "appendChild", G);
     }
-    var D = Proxy.callKey1,
-      E = Proxy.getKey,
-      F = Proxy.setKey,
-      G = (function(a) {
+    var H = Proxy.callKey1,
+      I = Proxy.setKey,
+      J = (function(a) {
         function c() {
           var a;
           return (
-            b(this, c),
-            (a = f(
-              this,
-              D(E(c, "__proto__") || Object.getPrototypeOf(c), "call", this)
-            )),
-            F(a, "list", []),
-            a
+            b(this, c), (a = f(this, H(g(c), "call", this))), I(a, "list", []), a
           );
         }
         return (
-          g(c, a),
+          i(c, a),
           d(c, [
             {
               key: "render",
               value: function() {
-                return i;
+                return k;
               }
             }
           ]),
           c
         );
       })(a.Element),
-      H = Proxy.callKey1,
-      I = H(document, "getElementById", "main"),
-      J = a.createElement("x-app", { is: G });
-    H(I, "appendChild", J);
+      K = Proxy.callKey1,
+      L = K(document, "getElementById", "main"),
+      M = a.createElement("x-app", { is: J });
+    K(L, "appendChild", M);
   })(engine);
