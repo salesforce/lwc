@@ -7,7 +7,7 @@ import {
 import {
     querySelectorAll as nativeQuerySelectorAll,
 } from "./element";
-import { wrapIframeWindow } from "./shadow-root";
+import { wrapIframeWindow } from "./iframe";
 import {
     ArrayFilter,
     defineProperty,

@@ -11,7 +11,6 @@ import {
     removeAttribute,
 } from './element';
 import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
-import { TargetSlot } from "../membrane";
 
 export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
 const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
@@ -204,52 +203,4 @@ if (process.env.NODE_ENV !== 'production') {
         };
         DevModeBlackListDescriptorMap[propName] = descriptor;
     });
-}
-
-export function wrapIframeWindow(win: Window) {
-    return {
-        [TargetSlot]: win,
-        postMessage() {
-            return win.postMessage.apply(win, arguments);
-        },
-        blur() {
-            return win.blur.apply(win, arguments);
-        },
-        close() {
-            return win.close.apply(win, arguments);
-        },
-        focus() {
-            return win.focus.apply(win, arguments);
-        },
-        get closed() {
-            return win.closed;
-        },
-        get frames() {
-            return win.frames;
-        },
-        get length() {
-            return win.length;
-        },
-        get location() {
-            return win.location;
-        },
-        set location(value) {
-            (win.location as any) = value;
-        },
-        get opener() {
-            return win.opener;
-        },
-        get parent() {
-            return win.parent;
-        },
-        get self() {
-            return win.self;
-        },
-        get top() {
-            return win.top;
-        },
-        get window() {
-            return win.window;
-        },
-    };
 }
