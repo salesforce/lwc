@@ -1,11 +1,11 @@
 import assert from "./assert";
-import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue } from "./language";
-import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
+import { vmBeingRendered } from "./invoker";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty, isTrue } from "./language";
+import { EmptyArray, SPACE_CHAR, ViewModelReflection } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { patchShadowDomEvent, isValidEventForCustomElement } from "./events";
+import { getWrappedTemplateListener } from "./events";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: Slotset): VNode;
@@ -399,16 +399,7 @@ export function d(value: any): VNode | null {
 
 // [b]ind function
 export function b(fn: EventListener): EventListener {
-    if (isNull(vmBeingRendered)) {
-        throw new Error();
-    }
-    const vm: VM = vmBeingRendered;
-    return function handler(event: Event) {
-        if (isValidEventForCustomElement(event)) {
-            patchShadowDomEvent(vm, event);
-            invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, fn, vm.component, event);
-        }
-    };
+    return getWrappedTemplateListener(fn);
 }
 
 // [k]ey function
