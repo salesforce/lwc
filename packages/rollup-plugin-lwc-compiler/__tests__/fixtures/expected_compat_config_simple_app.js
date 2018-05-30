@@ -82,7 +82,7 @@
         }
       }));
 
-      if (superClass) setPrototypeOf(subClass, superClass);
+      if (superClass) _setPrototypeOf(subClass, superClass);
     }
 
     var style = undefined;

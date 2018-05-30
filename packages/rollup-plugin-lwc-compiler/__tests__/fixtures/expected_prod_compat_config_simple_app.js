@@ -55,7 +55,7 @@
           constructor: { value: a, writable: !0, configurable: !0 }
         })
       ),
-        b && setPrototypeOf(a, b);
+        b && h(a, b);
     }
     function j(a, b) {
       var c = u(a, "d"),
