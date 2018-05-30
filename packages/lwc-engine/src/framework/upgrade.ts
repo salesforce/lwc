@@ -1,9 +1,11 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom";
+import { EmptyNodeList } from "./dom/node";
+import { ViewModelReflection } from "./utils";
+import { setAttribute } from "./dom/element";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -42,13 +44,36 @@ assign(Node.prototype, {
     },
 });
 
-function querySelectorPatchedRoot() {
+function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
+        return shadowRootQuerySelector(vm, selector);
+    }
     return null;
 }
 
-function querySelectorAllPatchedRoot() {
+function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[] | NodeList {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.querySelectorAll() on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelectorAll().`);
+        return shadowRootQuerySelectorAll(vm, selector);
+    }
     return EmptyNodeList;
 }
+
+const rootNodeFallbackDescriptors = {
+    querySelectorAll: {
+        value: querySelectorAllPatchedRoot,
+        configurable: true,
+    },
+    querySelector: {
+        value: querySelectorPatchedRoot,
+        configurable: true,
+    },
+};
 
 /**
  * This method is almost identical to document.createElement
@@ -61,13 +86,20 @@ function querySelectorAllPatchedRoot() {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: { is: ComponentConstructor }): HTMLElement {
-    if (isUndefined(options) || !isFunction(options.is)) {
+export function createElement(sel: string, options: any = {}): HTMLElement {
+    if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
 
-    const Ctor = options.is;
-    const { forceTagName } = Ctor;
+    const { is: Ctor } = (options as any);
+    let { mode, fallback } = (options as any);
+    // TODO: for now, we default to open, but eventually it should default to 'closed'
+    if (mode !== 'closed') { mode = 'open'; }
+    // TODO: for now, we default to true, but eventually it should default to false
+    if (fallback !== false) { fallback = true; }
+
+    // extracting the registered constructor just in case we need to force the tagName
+    const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
 
     // Create element with correct tagName
@@ -77,19 +109,11 @@ export function createElement(sel: string, options: { is: ComponentConstructor }
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element, Ctor);
-
-    // We don't support slots on root nodes
-    defineProperties(element, {
-        querySelectorAll: {
-            value: querySelectorAllPatchedRoot,
-            configurable: true,
-        },
-        querySelector: {
-            value: querySelectorPatchedRoot,
-            configurable: true,
-        }
-    });
+    createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
+    if (isTrue(fallback)) {
+        // We don't support slots on root nodes
+        defineProperties(element, rootNodeFallbackDescriptors);
+    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
@@ -99,10 +123,7 @@ export function createElement(sel: string, options: { is: ComponentConstructor }
         // We don't want to do this during construction because it breaks another
         // WC invariant.
         if (!isUndefined(forceTagName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(element, 'is');
-            }
-            element.setAttribute('is', sel);
+            setAttribute.call(element, 'is', sel);
         }
         renderVM(vm);
     };

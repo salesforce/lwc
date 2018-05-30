@@ -55,7 +55,7 @@
         c = z(a, "h");
       return [
         c("div", { classMap: { container: !0 }, key: 2 }, [
-          b("x-foo", y, { props: { x: "1" }, key: 1 })
+          b("x-foo", y, { props: { x: "1" }, key: 1 }, [])
         ])
       ];
     }

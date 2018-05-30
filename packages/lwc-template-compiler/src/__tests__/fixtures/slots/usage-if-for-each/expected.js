@@ -9,26 +9,26 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
     } = $api;
 
     return [
-        api_custom_element('a-b', _aB, {
-            classMap: {
-                s2: true
+        api_custom_element(
+            'a-b',
+            _aB,
+            {
+                classMap: {
+                    s2: true
+                },
+                key: 2
             },
-            key: 1,
-            slotset: {
-                $default$: $cmp.isTrue
-                    ? api_iterator($cmp.items, function(item) {
-                        return api_element(
-                            'p',
-                            {
-                                key: api_key(2, item.id)
-                            },
-                            [
-                                api_text('X')
-                            ]
-                        );
-                    })
-                    : []
-            }
-        })
+            $cmp.isTrue
+                ? api_iterator($cmp.items, function (item) {
+                    return api_element(
+                        'p',
+                        {
+                            key: api_key(1, item.id)
+                        },
+                        [api_text('X')]
+                    );
+                })
+                : []
+        )
     ];
 }

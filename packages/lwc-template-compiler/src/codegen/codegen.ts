@@ -6,6 +6,7 @@ type RenderPrimitive =
     | 'iterator'
     | 'flatten'
     | 'element'
+    | 'slot'
     | 'customElement'
     | 'bind'
     | 'text'
@@ -23,6 +24,7 @@ const RENDER_APIS: {
     iterator: { name: 'i', alias: 'api_iterator' },
     flatten: { name: 'f', alias: 'api_flatten' },
     element: { name: 'h', alias: 'api_element' },
+    slot: { name: 's', alias: 'api_slot' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     bind: { name: 'b', alias: 'api_bind' },
     text: { name: 't', alias: 'api_text' },
@@ -55,11 +57,13 @@ export default class CodeGen {
         tagName: string,
         componentClass: t.Identifier,
         data: t.ObjectExpression,
+        children: t.Expression,
     ) {
         return this._renderApiCall(RENDER_APIS.customElement, [
             t.stringLiteral(tagName),
             componentClass,
             data,
+            children,
         ]);
     }
 
@@ -100,6 +104,19 @@ export default class CodeGen {
         }
 
         return slotIdentifier;
+    }
+
+    getSlot(
+        slotName: string,
+        data: t.ObjectExpression,
+        children: t.Expression,
+    ) {
+        return this._renderApiCall(RENDER_APIS.slot, [
+            t.stringLiteral(slotName),
+            data,
+            children,
+            t.identifier('$slotset')
+        ]);
     }
 
     getMemorizationId() {

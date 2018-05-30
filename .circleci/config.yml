@@ -140,16 +140,10 @@ workflows:
       - integration_test_compat:
           requires:
             - build_and_test
-          filters:
-            branches:
-              only: /\w+\/.*/
 
       - integration_test:
           requires:
             - build_and_test
-          filters:
-            branches:
-              ignore: master
 
       - perf_and_compare:
           requires:

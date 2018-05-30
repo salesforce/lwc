@@ -21,7 +21,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                                     is: 'ns-row'
                                 },
                                 key: api_key(1, row.id)
-                            })
+                            }, [])
                             : null;
                     })
                 )

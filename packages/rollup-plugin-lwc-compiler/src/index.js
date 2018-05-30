@@ -1,17 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-const compiler = require('lwc-compiler');
-const pluginUtils = require('rollup-pluginutils');
-const lwcResolver = require('lwc-module-resolver');
-const rollupCompatPlugin = require('rollup-plugin-compat').default;
+const fs = require("fs");
+const path = require("path");
+const babel = require("@babel/core");
+const minify = require("babel-preset-minify");
+const compiler = require("lwc-compiler");
+const pluginUtils = require("rollup-pluginutils");
+const replacePlugin = require("rollup-plugin-replace");
+const lwcResolver = require("lwc-module-resolver");
+const rollupCompatPlugin = require("rollup-plugin-compat").default;
 
-const { DEFAULT_NS, DEFAULT_OPTIONS, DEFAULT_MODE } = require('./constants');
+
+const { DEFAULT_NS, DEFAULT_OPTIONS, DEFAULT_MODE } = require("./constants");
 
 function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
-    const registry = { entry: file, moduleSpecifier: null, moduleName: null, moduleNamespace: DEFAULT_NS };
+    const registry = {
+        entry: file,
+        moduleSpecifier: null,
+        moduleName: null,
+        moduleNamespace: DEFAULT_NS
+    };
     const fileName = path.basename(file, path.extname(file));
     const rootParts = path.dirname(file).split(path.sep);
-    const nameParts = fileName.split('-');
+    const nameParts = fileName.split("-");
     const validModuleName = nameParts.length > 1;
 
     if (mapNamespaceFromPath) {
@@ -19,7 +28,7 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
         registry.moduleNamespace = rootParts.pop();
     } else if (validModuleName) {
         registry.moduleNamespace = nameParts.shift();
-        registry.moduleName = nameParts.join('-');
+        registry.moduleName = nameParts.join("-");
     } else {
         registry.moduleName = fileName;
     }
@@ -28,7 +37,7 @@ function getModuleQualifiedName(file, { mapNamespaceFromPath }) {
 }
 
 function normalizeResult(result) {
-    return { code: result.code || result, map: result.map || { mappings: '' } };
+    return { code: result.code || result, map: result.map || { mappings: "" } };
 }
 
 /*
@@ -44,9 +53,14 @@ function normalizeResult(result) {
 module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const { include, exclude, mapNamespaceFromPath } = pluginOptions;
     const filter = pluginUtils.createFilter(include, exclude);
-    const mergedPluginOptions = Object.assign({}, DEFAULT_OPTIONS, pluginOptions, {
-        mapNamespaceFromPath: Boolean(mapNamespaceFromPath),
-    });
+    const mergedPluginOptions = Object.assign(
+        {},
+        DEFAULT_OPTIONS,
+        pluginOptions,
+        {
+            mapNamespaceFromPath: Boolean(mapNamespaceFromPath)
+        }
+    );
     const { mode, compat } = mergedPluginOptions;
 
     // We will compose compat plugin on top of this one
@@ -56,13 +70,17 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
     const modulePaths = {};
 
     return {
-        name: 'rollup-plugin-lwc-compiler',
+        name: "rollup-plugin-lwc-compiler",
 
         options(rollupOptions) {
             const entry = rollupOptions.input || rollupOptions.entry;
             const entryDir = mergedPluginOptions.rootDir || path.dirname(entry);
-            const externalPaths = mergedPluginOptions.resolveFromPackages ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions) : {};
-            const sourcePaths = mergedPluginOptions.resolveFromSource ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions): {};
+            const externalPaths = mergedPluginOptions.resolveFromPackages
+                ? lwcResolver.resolveLwcNpmModules(mergedPluginOptions)
+                : {};
+            const sourcePaths = mergedPluginOptions.resolveFromSource
+                ? lwcResolver.resolveModulesInDir(entryDir, mergedPluginOptions)
+                : {};
             Object.assign(modulePaths, externalPaths, sourcePaths);
         },
 
@@ -73,8 +91,11 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // Normalize relative import to absolute import
-            if (importee.startsWith('.') && importer) {
-                const normalizedPath = path.resolve(path.dirname(importer), importee);
+            if (importee.startsWith(".") && importer) {
+                const normalizedPath = path.resolve(
+                    path.dirname(importer),
+                    importee
+                );
                 return pluginUtils.addExtension(normalizedPath);
             }
 
@@ -84,10 +105,10 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
 
         load(id) {
             const exists = fs.existsSync(id);
-            const isCSS = path.extname(id) === '.css';
+            const isCSS = path.extname(id) === ".css";
 
             if (!exists && isCSS) {
-                return '';
+                return "";
             }
 
             // Check if compat knows how to load this file
@@ -100,36 +121,63 @@ module.exports = function rollupLwcCompiler(pluginOptions = {}) {
             }
 
             // If we don't find the moduleId, just resolve the module name/namespace
-            const moduleEntry = Object.values(modulePaths).find(r => id === r.entry);
-            const moduleRegistry =  moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
+            const moduleEntry = Object.values(modulePaths).find(
+                r => id === r.entry
+            );
+            const moduleRegistry =
+                moduleEntry || getModuleQualifiedName(id, mergedPluginOptions);
 
             let result = code;
 
             if (!rollupCompatInstance.knownCompatModule(id)) {
                 result = await compiler.transform(code, id, {
                     mode: DEFAULT_MODE, // Use always default mode since any other (prod or compat) will be resolved later
-                    moduleName: moduleRegistry.moduleName,
-                    moduleNamespace: moduleRegistry.moduleNamespace,
+                    name: moduleRegistry.moduleName,
+                    namespace: moduleRegistry.moduleNamespace,
                     moduleSpecifier: moduleRegistry.moduleSpecifier
                 });
             }
 
             result = normalizeResult(result);
 
-            if (mode === 'compat' || mode === 'prod_compat') {
-                result = normalizeResult(rollupCompatInstance.transform(result.code, id));
+            if (mode === "compat" || mode === "prod_compat") {
+                result = normalizeResult(
+                    rollupCompatInstance.transform(result.code, id)
+                );
             }
 
             return { code: result.code, map: result.map };
-
         },
 
         transformBundle(code) {
-            if (mode === 'compat' || mode === 'prod_compat') {
+            if (mode === "compat" || mode === "prod_compat") {
                 code = rollupCompatInstance.transformBundle(code);
             }
+            let result = undefined;
+            if (mode === "prod" || mode === "prod_compat") {
+                const rollupReplace = replacePlugin({
+                    "process.env.NODE_ENV": JSON.stringify("production")
+                });
+                const resultReplace = rollupReplace.transform(
+                    code,
+                    "$__tmpBundleSrc"
+                );
 
-            return compiler.transformBundle(code, { mode });
+                const transformConfig = {
+                    babelrc: false,
+                    sourceMaps: true,
+                    parserOpts: { plugins: ["*"] },
+                    presets: [[minify, { guards: false, evaluate: false }]],
+                };
+
+                const output = babel.transform(
+                    resultReplace ? resultReplace.code : code,
+                    transformConfig
+                );
+
+                result = output.code;
+            }
+            return result || code;
         }
     };
 };
