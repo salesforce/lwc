@@ -50,9 +50,6 @@ import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./traverse";
 // TODO: refactor all the references to this
 export { ViewModelReflection } from "./utils";
 
-declare interface HashTable<T> {
-    [key: string]: T;
-}
 export interface PropDef {
     config: number;
     type: string; // TODO: make this an enum

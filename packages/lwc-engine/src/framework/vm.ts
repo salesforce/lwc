@@ -4,7 +4,7 @@ import { createComponent, linkComponent, renderComponent, clearReactiveListeners
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
 import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { ViewModelReflection, getCtorByTagName } from "./def";
+import { ViewModelReflection } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentNodeGetter, parentElementGetter } from "./dom";
