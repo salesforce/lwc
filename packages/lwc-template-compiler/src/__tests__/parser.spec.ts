@@ -239,43 +239,6 @@ describe('custom component', () => {
     });
 });
 
-describe('slots', () => {
-    it('default slotset', () => {
-        const { root } = parseTemplate(`<template>
-            <x-card>
-                <h1>My title</h1>
-                My content
-            </x-card>
-        </template>`);
-        expect(root.children[0].children).toHaveLength(0);
-        expect(root.children[0].slotSet.$default$).toHaveLength(2);
-    });
-
-    it('mix default and named slots', () => {
-        const { root } = parseTemplate(`<template>
-            <x-card>
-                <h1 slot="title">My title</h1>
-                My content
-                <section slot="footer">My footer</section>
-            </x-card>
-        </template>`);
-        expect(root.children[0].children).toHaveLength(0);
-        expect(root.children[0].slotSet.title).toHaveLength(1);
-        expect(root.children[0].slotSet.$default$).toHaveLength(1);
-        expect(root.children[0].slotSet.footer).toHaveLength(1);
-    });
-
-    it('default slot', () => {
-        const { root } = parseTemplate(`<template><slot></slot></template>`);
-        expect(root.children[0].slotName).toBe('$default$');
-    });
-
-    it('named slot', () => {
-        const { root } = parseTemplate(`<template><slot name="title"></slot></button></template>`);
-        expect(root.children[0].slotName).toBe('title');
-    });
-});
-
 describe('root errors', () => {
     it('empty template error', () => {
         const { warnings } = parseTemplate('');
@@ -477,6 +440,6 @@ describe('metadata', () => {
             <slot name="foo"></slot>
         </template>`);
 
-        expect(Array.from(state.slots)).toEqual(['$default$', 'foo']);
+        expect(Array.from(state.slots)).toEqual(['', 'foo']);
     });
 });

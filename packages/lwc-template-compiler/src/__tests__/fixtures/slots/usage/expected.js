@@ -9,35 +9,35 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 key: 4
             },
             [
-                api_custom_element('ns-cmp', _nsCmp, {
-                    key: 1,
-                    slotset: {
-                        header: [
-                            api_element(
-                                'p',
-                                {
-                                    attrs: {
-                                        slot: 'header'
-                                    },
-                                    key: 2
+                api_custom_element(
+                    'ns-cmp',
+                    _nsCmp,
+                    {
+                        key: 3
+                    },
+                    [
+                        api_element(
+                            'p',
+                            {
+                                attrs: {
+                                    slot: 'header'
                                 },
-                                [api_text('Header Slot Content')]
-                            )
-                        ],
-                        $default$: [
-                            api_element(
-                                'p',
-                                {
-                                    attrs: {
-                                        slot: true
-                                    },
-                                    key: 3
+                                key: 1
+                            },
+                            [api_text('Header Slot Content')]
+                        ),
+                        api_element(
+                            'p',
+                            {
+                                attrs: {
+                                    slot: true
                                 },
-                                [api_text('Default Content')]
-                            )
-                        ]
-                    }
-                })
+                                key: 2
+                            },
+                            [api_text('Default Content')]
+                        )
+                    ]
+                )
             ]
         )
     ];

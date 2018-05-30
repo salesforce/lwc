@@ -1,6 +1,5 @@
 export default function tmpl($api, $cmp, $slotset, $ctx) {
-    const { t: api_text, h: api_element, f: api_flatten } = $api;
-    const { other: slot0, $default$: slot1 } = $slotset;
+    const { t: api_text, h: api_element, s: api_slot } = $api;
 
     return [
         api_element(
@@ -8,31 +7,44 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
             {
                 key: 5
             },
-            api_flatten([
-                slot0 || [
-                    api_element(
-                        'p',
-                        {
-                            key: 1
+            [
+                api_slot(
+                    'other',
+                    {
+                        attrs: {
+                            name: 'other'
                         },
-                        [
-                            api_text('Default slot other content')
-                        ]
-                    )
-                ],
-                slot1 || [
-                    api_element(
-                        'p',
-                        {
-                            key: 3
-                        },
-                        [
-                            api_text('Default slot content')
-                        ]
-                    )
-                ]
-            ])
+                        key: 2
+                    },
+                    [
+                        api_element(
+                            'p',
+                            {
+                                key: 1
+                            },
+                            [api_text('Default slot other content')]
+                        )
+                    ],
+                    $slotset
+                ),
+                api_slot(
+                    '',
+                    {
+                        key: 4
+                    },
+                    [
+                        api_element(
+                            'p',
+                            {
+                                key: 3
+                            },
+                            [api_text('Default slot content')]
+                        )
+                    ],
+                    $slotset
+                )
+            ]
         )
     ];
 }
-tmpl.slots = ['other', '$default$'];
+tmpl.slots = ['other', ''];

@@ -6,5 +6,3 @@ export const TEMPLATE_PARAMS: { [label: string]: string } = {
     SLOT_SET    : '$slotset',
     CONTEXT     : '$ctx',
 };
-
-export const DEFAULT_SLOT_NAME = '$default$';
