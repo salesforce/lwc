@@ -17,14 +17,28 @@ import {
 } from "./dom/attributes";
 import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM } from "./vm";
+import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
 import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
 
+function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        return vm.cmpRoot;
+    }
+    // for now, shadowRoot is closed except for test mode
+    return null;
+}
+
 const fallbackDescriptors = {
+    shadowRoot: {
+        get: ElementShadowRootGetter,
+        configurable: true,
+        enumerable: true,
+    },
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
