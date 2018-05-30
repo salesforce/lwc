@@ -136,10 +136,13 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+
         // local to dev block
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
+
+        assertValidForceTagName(Ctor);
     }
 
     const name: string = Ctor.name;
@@ -502,33 +505,4 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
-}
-
-let TagNameToCtor: HashTable<ComponentConstructor> = create(null);
-
-export function getCtorByTagName(tagName: string): ComponentConstructor | undefined {
-    return TagNameToCtor[tagName];
-    /////// TODO: what is this?
-}
-
-export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV !== 'production') {
-        assertValidForceTagName(Ctor);
-    }
-    if (!isUndefined(TagNameToCtor[tagName])) {
-        if (TagNameToCtor[tagName] === Ctor) {
-            return;
-        } else if (process.env.NODE_ENV !== 'production') {
-            // TODO: eventually we should throw, this is only needed for the tests today
-            assert.logWarning(`Different component class cannot be registered to the same tagName="${tagName}".`);
-        }
-    }
-    TagNameToCtor[tagName] = Ctor;
-}
-
-// This method is internal to the engine and should only be used for testing purposes!
-// The component registry need to get flushed between each test to avoid having the
-// engine warning about multiple class registration with the same tag name.
-export function flushComponentRegistry() {
-    TagNameToCtor = create(null);
 }

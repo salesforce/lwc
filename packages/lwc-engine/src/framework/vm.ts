@@ -162,14 +162,13 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) {
+export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, cmpSlots?: Slotset) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     if (hasOwnProperty.call(elm, ViewModelReflection)) {
         return; // already created
     }
-    const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
     const isRoot = arguments.length === 2; // root elements can't provide slotset
     uid += 1;

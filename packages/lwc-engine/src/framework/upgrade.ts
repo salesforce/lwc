@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
+import { prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom";
 
@@ -61,15 +61,15 @@ function querySelectorAllPatchedRoot() {
  * If the value of `is` attribute is not a constructor,
  * then it throws a TypeError.
  */
-export function createElement(sel: string, options: any = {}): HTMLElement {
+export function createElement(sel: string, options: { is: ComponentConstructor }): HTMLElement {
     if (isUndefined(options) || !isFunction(options.is)) {
         throw new TypeError();
     }
-    registerComponent(sel, options.is);
-    // extracting the registered constructor just in case we need to force the tagName
-    const Ctor = getCtorByTagName(sel);
-    const { forceTagName } = Ctor as ComponentConstructor;
+
+    const Ctor = options.is;
+    const { forceTagName } = Ctor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
+
     // Create element with correct tagName
     const element = document.createElement(tagName);
     if (hasOwnProperty.call(element, ViewModelReflection)) {
@@ -77,7 +77,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element);
+    createVM(sel, element, Ctor);
 
     // We don't support slots on root nodes
     defineProperties(element, {

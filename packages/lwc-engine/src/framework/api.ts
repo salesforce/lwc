@@ -3,7 +3,6 @@ import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, A
 import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
 import { EmptyArray, SPACE_CHAR } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM } from "./vm";
-import { registerComponent } from "./def";
 import { ComponentConstructor, markComponentAsDirty } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { patchShadowDomEvent, isValidEventForCustomElement } from "./events";
@@ -85,7 +84,8 @@ const hook: Hooks = {
         renderVM(vm);
     },
     create(oldVNode: VNode, vnode: VNode) {
-        createVM(vnode.sel as string, vnode.elm as HTMLElement, vnode.data.slotset);
+        const { slotset, ctor } = vnode.data;
+        createVM(vnode.sel as string, vnode.elm as HTMLElement, ctor, slotset);
     },
     destroy(vnode: VNode) {
         removeVM(getCustomElementVM(vnode.elm as HTMLElement));
@@ -210,9 +210,8 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData): VEl
         attrs = assign({}, attrs);
         attrs.is = sel;
     }
-    registerComponent(sel, Ctor);
 
-    data = { hook, key, slotset, attrs, on, props };
+    data = { hook, key, slotset, attrs, on, props, ctor: Ctor };
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();
