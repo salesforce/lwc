@@ -1,5 +1,17 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.0...v) (2018-05-31)
+# [](https://github.com/salesforce/lwc/compare/v0.22.1...v) (2018-05-31)
+
+
+
+<a name="0.22.1"></a>
+## [0.22.1](https://github.com/salesforce/lwc/compare/v0.22.0...v0.22.1) (2018-05-31)
+
+
+### Bug Fixes
+
+* **engine:** fixed [#342](https://github.com/salesforce/lwc/issues/342) - clean up and docs ([#358](https://github.com/salesforce/lwc/issues/358)) ([01c7eb8](https://github.com/salesforce/lwc/commit/01c7eb8))
+* **engine:** fixing event target from slotted element ([#359](https://github.com/salesforce/lwc/issues/359)) ([594e508](https://github.com/salesforce/lwc/commit/594e508))
+* **engine:** going through cmpRoot to get default aria value ([#360](https://github.com/salesforce/lwc/issues/360)) ([6322456](https://github.com/salesforce/lwc/commit/6322456))
 
 
 
