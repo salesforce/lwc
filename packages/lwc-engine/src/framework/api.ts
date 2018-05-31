@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty, isTrue } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue } from "./language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";

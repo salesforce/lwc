@@ -25,7 +25,6 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
-    hasOwnProperty,
 } from "./language";
 import {
     GlobalAOMProperties,
