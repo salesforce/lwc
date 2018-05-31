@@ -20,7 +20,7 @@ export interface HashTable<T> {
     [key: string]: T;
 }
 
-export interface Slotset {
+export interface SlotSet {
     [key: string]: VNodes;
 }
 
@@ -40,7 +40,7 @@ export interface VM {
     // TODO: make this type more restrictive once we know more about it
     rootProps: Record<string, string | null | boolean>;
     cmpState?: HashTable<any>;
-    cmpSlots: Slotset;
+    cmpSlots: SlotSet;
     cmpTrack: HashTable<any>;
     cmpEvents?: Record<string, EventListener[] | undefined>;
     cmpListener?: (event: Event) => void;
@@ -518,23 +518,13 @@ export function getShadowRootVM(root: ShadowRoot): VM {
 }
 
 // slow path routine
-export function allocateInSlot(vm: VM, children: VNodes, compilerSlotSetAllocation: Slotset | undefined) {
+export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
         assert.invariant(isObject(vm.cmpSlots), `When doing manual allocation, there must be a cmpSlots object available.`);
     }
     const { cmpSlots: oldSlots } = vm;
-    // Backward compatible branch:
-    if (!isUndefined(compilerSlotSetAllocation)) {
-        vm.cmpSlots = compilerSlotSetAllocation;
-        // TODO: remove this block and rely on the engine allocation instead of the compiler
-        // TODO: Issue #133
-        if (oldSlots !== compilerSlotSetAllocation && !vm.isDirty) {
-            markComponentAsDirty(vm);
-        }
-        return;
-    }
-    const cmpSlots = vm.cmpSlots = create(null) as Slotset;
+    const cmpSlots = vm.cmpSlots = create(null) as SlotSet;
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
         if (isNull(vnode)) {
