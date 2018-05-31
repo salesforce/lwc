@@ -86,4 +86,19 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
     }
 }
 
+/**
+ * When LWC is used in the context of an Aura application, the compiler produces AMD
+ * modules, that doesn't resolve properly circular dependencies between modules. In order
+ * to circumvent this issue, the module loader returns a factory with a symbol attached
+ * to it.
+ *
+ * This method returns the resolved value if it received a factory as argument. Otherwise
+ * it returns the original value.
+ */
+export function resolveCircularModuleDependency(valueOrFactory: any): any {
+    return hasOwnProperty.call(valueOrFactory, '__circular__') ?
+        valueOrFactory() :
+        valueOrFactory;
+}
+
 export const usesNativeSymbols = typeof Symbol() === 'symbol';

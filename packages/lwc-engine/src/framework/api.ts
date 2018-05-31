@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, hasOwnProperty, isTrue } from "./language";
-import { EmptyArray, SPACE_CHAR, ViewModelReflection } from "./utils";
+import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
@@ -214,12 +214,7 @@ export function s(slotName: string, data: VNodeData, children: VNodes, slotset: 
 
 // [c]ustom element node
 export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, children?: VNodes): VElement {
-    // The compiler produce AMD modules that do not support circular dependencies
-    // We need to create an indirection to circumvent those cases.
-    // We could potentially move this check to the definition
-    if (hasOwnProperty.call(Ctor, '__circular__')) {
-        Ctor = Ctor();
-    }
+    Ctor = resolveCircularModuleDependency(Ctor);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);

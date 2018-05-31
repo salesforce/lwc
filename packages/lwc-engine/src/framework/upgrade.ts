@@ -3,7 +3,7 @@ import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom/node";
-import { ViewModelReflection } from "./utils";
+import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
 
@@ -91,7 +91,9 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         throw new TypeError();
     }
 
-    const { is: Ctor } = (options as any);
+    let { is: Ctor } = (options as any);
+    Ctor = resolveCircularModuleDependency(Ctor);
+
     let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }

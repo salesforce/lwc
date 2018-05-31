@@ -45,7 +45,14 @@ import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
+import {
+    EmptyObject,
+    getPropNameFromAttrName,
+    assertValidForceTagName,
+    ViewModelReflection,
+    getAttrNameFromPropName,
+    resolveCircularModuleDependency
+} from "./utils";
 import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
 
 export interface PropDef {
@@ -103,14 +110,8 @@ const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTM
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function getCtorProto(Ctor: any): any {
-    let proto = getPrototypeOf(Ctor);
-    // The compiler produce AMD modules that do not support circular dependencies
-    // We need to create an indirection to circumvent those cases.
-    // We could potentially move this check to the definition
-    if (hasOwnProperty.call(proto, '__circular__')) {
-        proto = proto();
-    }
-    return proto;
+    const proto = getPrototypeOf(Ctor);
+    return resolveCircularModuleDependency(proto);
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
