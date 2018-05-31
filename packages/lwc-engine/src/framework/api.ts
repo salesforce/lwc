@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { vmBeingRendered } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "./language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
@@ -79,11 +79,18 @@ const hook: Hooks = {
     },
     create(oldVNode: VNode, vnode: VNode) {
         const { fallback, mode, ctor } = vnode.data;
-        createVM(vnode.sel as string, vnode.elm as HTMLElement, ctor, {
+        const elm = vnode.elm as HTMLElement;
+        if (hasOwnProperty.call(elm, ViewModelReflection)) {
+            // There is a possibility that a custom element is registered under tagName,
+            // in which case, the initialization is already carry on, and there is nothing else
+            // to do here since this hook is called right after invoking `document.createElement`.
+            return;
+        }
+        createVM(vnode.sel as string, elm, ctor, {
             mode,
             fallback,
         });
-        const vm: VM = (vnode.elm as HTMLElement)[ViewModelReflection];
+        const vm: VM = elm[ViewModelReflection];
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
             assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
