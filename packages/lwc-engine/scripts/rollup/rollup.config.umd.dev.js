@@ -9,7 +9,7 @@ const { generateTargetName, ignoreCircularDependencies } = require('./engine.rol
 const input = path.resolve(__dirname, '../../src/framework/main.ts');
 const outputDir = path.resolve(__dirname, '../../dist/umd');
 
-const banner = (`/* proxy-compat-disable */`);
+const banner = (`/* proxy-compat-disable */\ntypeof process === 'undefined' && (process = { env: { NODE_ENV: 'dev' } });`);
 const footer = `/** version: ${version} */`;
 
 
@@ -28,8 +28,7 @@ function rollupConfig(config) {
         },
         plugins: [
             nodeResolve(),
-            typescript({ target: target, typescript: require('typescript') }),
-            replace({ 'process.env.NODE_ENV': JSON.stringify('development') })
+            typescript({ target: target, typescript: require('typescript') })
         ]
     }
 }
