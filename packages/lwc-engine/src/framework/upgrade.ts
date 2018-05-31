@@ -106,6 +106,9 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     // Create element with correct tagName
     const element = document.createElement(tagName);
     if (hasOwnProperty.call(element, ViewModelReflection)) {
+        // There is a possibility that a custom element is registered under tagName,
+        // in which case, the initialization is already carry on, and there is nothing else
+        // to do here.
         return element;
     }
 

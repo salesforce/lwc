@@ -2,7 +2,7 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty, isTrue, isFalse, isObject, keys } from "./language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isFalse, isObject, keys } from "./language";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
@@ -173,10 +173,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
-    if (hasOwnProperty.call(elm, ViewModelReflection)) {
-        return; // already created
-    }
-
     const def = getComponentDef(Ctor);
     const { isRoot, mode } = options;
     const fallback = isTrue(options.fallback) || isFalse(usesNativeShadowRoot);
