@@ -399,7 +399,11 @@ export function d(value: any): VNode | null {
 
 // [b]ind function
 export function b(fn: EventListener): EventListener {
-    return getWrappedTemplateListener(fn);
+    if (isNull(vmBeingRendered)) {
+        throw new Error();
+    }
+    const vm: VM = vmBeingRendered;
+    return getWrappedTemplateListener(vm, fn);
 }
 
 // [k]ey function

@@ -140,11 +140,10 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
 }
 
 // This method is for wrapping event listeners bound in the template.
-export function getWrappedTemplateListener(fn: EventListener) {
-    if (isNull(vmBeingRendered)) {
-        throw new Error();
+export function getWrappedTemplateListener(vm: VM, fn: EventListener): EventListener {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
     }
-    const vm: VM = vmBeingRendered;
     return function handler(event: Event) {
         if (isValidEventForCustomElement(event)) {
             patchShadowDomEvent(vm, event);
