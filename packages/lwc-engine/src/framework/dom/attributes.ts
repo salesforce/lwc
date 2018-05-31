@@ -279,7 +279,9 @@ forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
         const vm = this[ViewModelReflection];
         const value = vm.cmpProps[propName] = isNull(newValue) ? null : newValue + ''; // storing the normalized new value
         if (isNull(value)) {
-            newValue = vm.rootProps[propName];
+            // Go through cmpRoot instead of vm.rootProps
+            // because vm.cmpRoot also handles default values
+            newValue = vm.cmpRoot[propName];
             vm.hostAttrs[attrName] = undefined;
         } else {
             vm.hostAttrs[attrName] = 1;
