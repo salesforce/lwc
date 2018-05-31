@@ -679,7 +679,7 @@ describe('html-element', () => {
             });
         }),
 
-        it('should correctly set child attribute ', () => {
+        it('should correctly set child attribute', () => {
             let childTitle = null;
             function html($api, $cmp) {
                 return [
@@ -2168,37 +2168,7 @@ describe('html-element', () => {
 
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
-            })
-        }),
-
-        it('should correctly set child attribute ', () => {
-            let childTitle = null;
-
-            class Parent extends Element {
-                render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { props: { title: 'child title' }})
-                        ]
-                    }
-                }
-            }
-
-            class Child extends Element {
-                renderedCallback() {
-                    childTitle = this.getAttribute('title');
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            parentElm.setAttribute('title', 'parent title');
-            document.body.appendChild(parentElm);
-
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                expect(childElm.getAttribute('title')).toBe('child title');
-            })
-        })
+            });
+        });
     });
-
 });
