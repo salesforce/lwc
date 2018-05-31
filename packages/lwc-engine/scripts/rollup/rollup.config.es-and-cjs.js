@@ -31,8 +31,7 @@ function rollupConfig(config) {
         },
         plugins: [
             nodeResolve(),
-            typescript({ target: target, typescript: require('typescript') }),
-            replace({ 'process.env.NODE_ENV': JSON.stringify('development') })
+            typescript({ target: target, typescript: require('typescript') })
         ]
     }
 }
