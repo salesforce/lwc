@@ -4,7 +4,6 @@ import { createComponent, linkComponent, renderComponent, clearReactiveListeners
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty, isTrue, isFalse, isObject, keys } from "./language";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { getCtorByTagName } from "./def";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentNodeGetter, parentElementGetter } from "./dom/node";
@@ -170,14 +169,14 @@ export interface CreateOptions {
     isRoot?: boolean;
 }
 
-export function createVM(tagName: string, elm: HTMLElement, options: CreateOptions) {
+export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateOptions) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
     if (hasOwnProperty.call(elm, ViewModelReflection)) {
         return; // already created
     }
-    const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
+
     const def = getComponentDef(Ctor);
     const { isRoot, mode } = options;
     const fallback = isTrue(options.fallback) || isFalse(usesNativeShadowRoot);

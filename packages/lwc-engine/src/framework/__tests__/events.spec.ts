@@ -94,7 +94,7 @@ describe('Events on Custom Elements', () => {
         elm = createElement('x-foo', { is: Foo });
         elm.addEventListener('click', clicked2);
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toEqual([1, 2]);
     });
 
@@ -119,7 +119,7 @@ describe('Events on Custom Elements', () => {
         }
         elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toEqual([1]);
     });
 
@@ -144,7 +144,7 @@ describe('Events on Custom Elements', () => {
         elm = createElement('x-foo', { is: Foo });
         elm.addEventListener('click', clicked2);
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toEqual([1]);
     });
 
@@ -167,7 +167,7 @@ describe('Events on Custom Elements', () => {
         }
         elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').dispatchEvent(new CustomEvent('test', { bubbles: true }));  // intentionally without composed: true to see if the root captures can that
+        cmp.template.querySelector('div').dispatchEvent(new CustomEvent('test', { bubbles: true }));  // intentionally without composed: true to see if the root captures can that
         expect(result).toHaveLength(1);
     });
 
@@ -190,7 +190,7 @@ describe('Events on Custom Elements', () => {
         }
         elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
-        cmp.root.querySelector('div').click();
+        cmp.template.querySelector('div').click();
         expect(result).toHaveLength(2);
         expect(result[0]).toBe(undefined); // context must be the component
         expect(result[1]).toBeInstanceOf(Event);

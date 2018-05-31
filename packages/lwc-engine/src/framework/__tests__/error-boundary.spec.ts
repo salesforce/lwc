@@ -76,7 +76,7 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
 
                 document.body.appendChild(boundaryHostElm);
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -198,7 +198,7 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -434,7 +434,7 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);
@@ -530,7 +530,7 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
-                const boundaryHostElm = createElement('x-boundary', {is: BoundryHost});
+                const boundaryHostElm = createElement('x-parent', {is: BoundryHost});
                 document.body.appendChild(boundaryHostElm);
 
                 expect(querySelectorAll.call(boundaryHostElm, 'x-boundary-sibling').length).toBe(1);

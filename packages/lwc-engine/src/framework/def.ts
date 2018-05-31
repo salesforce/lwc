@@ -25,7 +25,6 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
-    hasOwnProperty,
 } from "./language";
 import {
     GlobalAOMProperties,
@@ -45,12 +44,16 @@ import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
+import {
+    EmptyObject,
+    getPropNameFromAttrName,
+    assertValidForceTagName,
+    ViewModelReflection,
+    getAttrNameFromPropName,
+    resolveCircularModuleDependency
+} from "./utils";
 import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
 
-declare interface HashTable<T> {
-    [key: string]: T;
-}
 export interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
@@ -106,14 +109,8 @@ const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTM
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function getCtorProto(Ctor: any): any {
-    let proto = getPrototypeOf(Ctor);
-    // The compiler produce AMD modules that do not support circular dependencies
-    // We need to create an indirection to circumvent those cases.
-    // We could potentially move this check to the definition
-    if (hasOwnProperty.call(proto, '__circular__')) {
-        proto = proto();
-    }
-    return proto;
+    const proto = getPrototypeOf(Ctor);
+    return resolveCircularModuleDependency(proto);
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
@@ -133,10 +130,13 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+
         // local to dev block
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
+
+        assertValidForceTagName(Ctor);
     }
 
     const name: string = Ctor.name;
@@ -473,26 +473,4 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
-}
-
-const TagNameToCtor: HashTable<ComponentConstructor> = create(null);
-
-export function getCtorByTagName(tagName: string): ComponentConstructor | undefined {
-    return TagNameToCtor[tagName];
-    /////// TODO: what is this?
-}
-
-export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV !== 'production') {
-        assertValidForceTagName(Ctor);
-    }
-    if (!isUndefined(TagNameToCtor[tagName])) {
-        if (TagNameToCtor[tagName] === Ctor) {
-            return;
-        } else if (process.env.NODE_ENV !== 'production') {
-            // TODO: eventually we should throw, this is only needed for the tests today
-            assert.logWarning(`Different component class cannot be registered to the same tagName="${tagName}".`);
-        }
-    }
-    TagNameToCtor[tagName] = Ctor;
 }

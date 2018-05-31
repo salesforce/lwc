@@ -1,10 +1,9 @@
 import assert from "./assert";
 import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { registerComponent, getCtorByTagName } from "./def";
 import { ComponentConstructor } from "./component";
 import { EmptyNodeList } from "./dom/node";
-import { ViewModelReflection } from "./utils";
+import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
 
@@ -91,17 +90,19 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
-    const { is } = (options as any);
+
+    const Ctor = resolveCircularModuleDependency((options as any).is);
+
     let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'
     if (mode !== 'closed') { mode = 'open'; }
     // TODO: for now, we default to true, but eventually it should default to false
     if (fallback !== false) { fallback = true; }
-    registerComponent(sel, is);
+
     // extracting the registered constructor just in case we need to force the tagName
-    const Ctor = getCtorByTagName(sel);
     const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
+
     // Create element with correct tagName
     const element = document.createElement(tagName);
     if (hasOwnProperty.call(element, ViewModelReflection)) {
@@ -109,7 +110,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element, { mode, fallback, isRoot: true });
+    createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
     if (isTrue(fallback)) {
         // We don't support slots on root nodes
         defineProperties(element, rootNodeFallbackDescriptors);

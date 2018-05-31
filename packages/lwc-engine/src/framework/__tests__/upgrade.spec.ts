@@ -4,6 +4,15 @@ import { ComponentConstructor } from "../component";
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
+        it('should support constructors with circular dependencies', () => {
+            const factory = () => class extends Element { };
+            factory.__circular__ = true;
+
+            expect(
+                () => createElement('x-foo', { is: factory })
+            ).not.toThrow();
+        });
+
         it('should allow access to profixied default values for public props', () => {
             const x = [1, 2, 3], y = { foo: 1 };
             type MyComponentElement = HTMLElement & {
