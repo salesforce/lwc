@@ -9,7 +9,7 @@ import {
 } from "./dom/node";
 import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
 import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
-import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType, invokeComponentCallback } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
 interface WrappedListener extends EventListener {
@@ -137,6 +137,24 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
         cmpEventListenerMap.set(listener, wrappedListener);
     }
     return wrappedListener;
+}
+
+// This method is for wrapping event listeners bound in the template.
+export function getWrappedTemplateListener(vm: VM, fn: EventListener): EventListener {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    return function handler(event: Event) {
+        if (isValidEventForCustomElement(event)) {
+            patchShadowDomEvent(vm, event);
+
+            // We do not want to call invoker/invokeEventListener because
+            // that method is for calling events added to the custom element from within.
+            // Instead, we can just call the component callback directly because the callback
+            // is guaranteed to not be attached directly to the root or component instance.
+            invokeComponentCallback(vm, fn, [event]);
+        }
+    };
 }
 
 function createElementEventListener(vm: VM) {
