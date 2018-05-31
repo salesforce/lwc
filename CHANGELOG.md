@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.21.0...v) (2018-05-29)
+# [](https://github.com/salesforce/lwc/compare/v0.22.0...v) (2018-05-31)
+
+
+
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/salesforce/lwc/compare/v0.21.0...v0.22.0) (2018-05-31)
+
+
+### Bug Fixes
+
+* **engine:** removing iframe content window unwrapping ([#356](https://github.com/salesforce/lwc/issues/356)) ([14f8e8b](https://github.com/salesforce/lwc/commit/14f8e8b))
+
+
+### Features
+
+* **compiler:** removed compiler slotset ([#348](https://github.com/salesforce/lwc/issues/348)) ([cab0f5b](https://github.com/salesforce/lwc/commit/cab0f5b))
+* **git:** add commit validation types ([#351](https://github.com/salesforce/lwc/issues/351)) ([5c974c9](https://github.com/salesforce/lwc/commit/5c974c9))
 
 
 
