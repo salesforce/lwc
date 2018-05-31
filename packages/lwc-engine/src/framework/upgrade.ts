@@ -91,8 +91,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         throw new TypeError();
     }
 
-    let { is: Ctor } = (options as any);
-    Ctor = resolveCircularModuleDependency(Ctor);
+    const Ctor = resolveCircularModuleDependency((options as any).is);
 
     let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'
