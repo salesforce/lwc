@@ -139,7 +139,6 @@ function getWrappedComponentsListener(vm: VM, listener: EventListener): WrappedL
     return wrappedListener;
 }
 
-
 // This method is for wrapping event listeners bound in the template.
 export function getWrappedTemplateListener(fn: EventListener) {
     if (isNull(vmBeingRendered)) {
