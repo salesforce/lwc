@@ -5,5 +5,5 @@ module.exports = {
     ...BASE_CONFIG,
     displayName: 'lwc-engine',
 
-    setupTestFrameworkScriptFile: path.resolve(__dirname, 'scripts/jest/setup.js'),
+    setupTestFrameworkScriptFile: path.resolve(__dirname, 'scripts/jest/setup-test.js'),
 };

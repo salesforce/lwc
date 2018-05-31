@@ -1,3 +1,12 @@
+/**
+ * List of all tests that are permitted to log a warning or an error.
+ *
+ * The goal is disallow uninstrumented usage of logging in unit tests. All the tests
+ * logging a warning or an error, that are not part of this list will automatically fail.
+ *
+ * BY ADDING A NEW ENTRY IN THIS LIST, YOU WILL BRING SHAME ON YOURSELF AND YOUR FAMILY
+ * OVER MULTIPLE GENERATIONS!!
+ */
 const CONSOLE_WHITELIST = [
     'html-element #removeAttributeNS() should remove attribute on host element',
     'html-element #removeAttribute() should remove attribute on host element when element is nested in template',
