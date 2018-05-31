@@ -532,11 +532,15 @@ describe('Events on Custom Elements', () => {
 describe('Slotted element events', () => {
     it('should have correct target when event comes from slotted element', () => {
         expect.assertions(1);
-        function childHTML ($api, $cmp, $slotset) {
-            return $slotset.x;
+        function childHTML($api, $cmp, $slotset, $ctx) {
+            return [$api.s('x', {
+                key: 0,
+                attrs: {
+                    name: 'x'
+                }
+            }, [], $slotset)];
         }
-
-        childHTML.slots = ['x'];
+        childHTML.slots = ["x"];
         class Child extends Element {
             render() {
                 return childHTML;
@@ -544,18 +548,15 @@ describe('Slotted element events', () => {
         }
 
         function html($api, $cmp, $slotset) {
-            return [$api.c('x-slotted-event-target-child', Child, {
-                slotset: {
-                    x: [
-                        $api.h('div', {
-                            on: {
-                                click: $api.b($cmp.handleClick),
-                            },
-                            key: 0,
-                        }, [])
-                    ]
-                }
-            })]
+            return [$api.c('x-slotted-event-target-child', Child, {}, [$api.h('div', {
+                on: {
+                    click: $api.b($cmp.handleClick),
+                },
+                attrs: {
+                    slot: 'x'
+                },
+                key: 0,
+            }, [])])];
         }
 
         class SlottedEventTarget extends Element {

@@ -2,13 +2,13 @@ import assert from "./assert";
 import { vmBeingRendered } from "./invoker";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "./language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
 import { getWrappedTemplateListener } from "./events";
 
 export interface RenderAPI {
-    s(slotName: string, data: VNodeData, children: VNodes, slotset: Slotset): VNode;
+    s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
     c(tagName: string, Ctor: ComponentConstructor, data: VNodeData, children?: VNodes): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
@@ -98,7 +98,7 @@ const hook: Hooks = {
         if (isTrue(vm.fallback)) {
             // slow path
             const children = vnode.children as VNodes;
-            allocateInSlot(vm, children, vnode.data.slotset);
+            allocateInSlot(vm, children);
             // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
             vnode.children = EmptyArray;
         }
@@ -112,7 +112,7 @@ const hook: Hooks = {
         if (isTrue(vm.fallback)) {
             // slow path
             const children = vnode.children as VNodes;
-            allocateInSlot(vm, children, vnode.data.slotset);
+            allocateInSlot(vm, children);
             // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
             vnode.children = EmptyArray;
         }
@@ -210,7 +210,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
 }
 
 // [s]lot element node
-export function s(slotName: string, data: VNodeData, children: VNodes, slotset: Slotset | undefined): VElement {
+export function s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet | undefined): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -243,7 +243,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
             });
         }
     }
-    const { key, slotset, styleMap, style, on, className, classMap, props } = data;
+    const { key, styleMap, style, on, className, classMap, props } = data;
     let { attrs } = data;
 
     // hack to allow component authors to force the usage of the "is" attribute in their components
@@ -258,7 +258,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         attrs.is = sel;
     }
 
-    data = { hook, key, slotset, attrs, on, props, ctor: Ctor };
+    data = { hook, key, attrs, on, props, ctor: Ctor };
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
     data.token = getCurrentTplToken();

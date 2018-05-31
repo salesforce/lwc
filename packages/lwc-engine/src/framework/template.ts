@@ -4,18 +4,18 @@ import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toStr
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
-import { Slotset, VM, resetShadowRoot } from "./vm";
+import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { Component } from "./component";
 import { removeAttribute, setAttribute } from "./dom/element";
 
 export interface Template {
-    (api: RenderAPI, cmp: object, slotset: Slotset, ctx: Context): undefined | VNodes;
+    (api: RenderAPI, cmp: object, slotset: SlotSet, ctx: Context): undefined | VNodes;
     style?: string;
     token?: string;
 }
 
-const EmptySlots: Slotset = create(null);
+const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV !== 'production') {
