@@ -12,7 +12,7 @@ const compatPolyfills = require('compat-polyfills');
 const mode = process.env.MODE || 'compat';
 const isCompat = /compat/.test(mode);
 
-const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine.js`));
+const engineModeFile = path.join(require.resolve(`lwc-engine/dist/umd/${isCompat ? 'es5': 'es2017'}/engine_debug.js`));
 const wireServicePath = path.join(require.resolve(`lwc-wire-service/dist/umd/${isCompat ? 'es5': 'es2017'}/wire.js`));
 const todoPath = path.join(require.resolve('../src/shared/todo.js'));
 
