@@ -2,7 +2,6 @@ import assert from "./assert";
 import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom/node";
 import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
@@ -49,9 +48,8 @@ function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
     if (process.env.NODE_ENV === 'test') {
         // TODO: remove this backward compatibility branch.
         assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
-        return shadowRootQuerySelector(vm, selector);
     }
-    return null;
+    return shadowRootQuerySelector(vm, selector);
 }
 
 function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[] | NodeList {
@@ -59,9 +57,8 @@ function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[]
     if (process.env.NODE_ENV === 'test') {
         // TODO: remove this backward compatibility branch.
         assert.logError(`Using elm.querySelectorAll() on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelectorAll().`);
-        return shadowRootQuerySelectorAll(vm, selector);
     }
-    return EmptyNodeList;
+    return shadowRootQuerySelectorAll(vm, selector);
 }
 
 const rootNodeFallbackDescriptors = {
