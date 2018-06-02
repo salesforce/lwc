@@ -29,43 +29,87 @@ const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 const eventShadowDescriptors: PropertyDescriptorMap = {
     target: {
         get(this: Event): HTMLElement {
-            const { currentTarget } = this;
-            const originalTarget: HTMLElement = eventTargetGetter.call(this);
-
+            const currentTarget = this.currentTarget as HTMLElement;
+            const originalTarget = eventTargetGetter.call(this);
             // Executing event listener on component, target is always currentTarget
             if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                return patchShadowDomTraversalMethods(currentTarget as HTMLElement);
+                return patchShadowDomTraversalMethods(currentTarget);
+            }
+            const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE); // x-child
+
+            // Before we can process any events, we need to first determing three things:
+            // 1) What VM context was the event attached to? (e.g. in what VM context was addEventListener called in).
+            // 2) What VM owns the context where the event was attached? (e.g. who rendered the VM context from step 1).
+            // 3) What is the event's original target's relationship to 1 and 2?
+
+            // Determining Number 1:
+            // In most cases, the VM context maps to the currentTarget's owner VM. This will correspond to the custom element:
+            //
+            // // x-parent.html
+            // <template>
+            //  <!--
+            //    The event below is attached inside of x-parent's template
+            //    so vm context will be <x-parent>'s owner VM
+            //  -->
+            //  <div onclick={handleClick}</div>
+            // </template>
+            //
+            // In the case of this.template.addEventListener, the VM context needs to be the custom element's VM, NOT the owner VM.
+            //
+            // // x-parent.js
+            // connectedCallback() {
+            //   The event below is attached to x-parent's shadow root.
+            //   Under the hood, we add the event listener to the custom element.
+            //   Because template events happen INSIDE the custom element's shadow,
+            //   we CANNOT get the owner VM. Instead, we must get the custom element's VM instead.
+            //   this.template.addEventListener('click', () => {});
+            // }
+            const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getCustomElementVM(currentTarget).uid : currentTarget[OwnerKey];
+
+            // Determinimg Number 2:
+            // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
+            const myOwnerKey = currentTargetRootNode[OwnerKey];
+
+            // Determining Number 3:
+            // Because we only support bubbling and we are already inside of an event, we know that the original event target
+            // is an ancestor of the currentTarget. The key here, is that we have to determine if the event is coming from an
+            // element inside of the attached shadow context (#1 above) or from the owner context (#2).
+            // We determine this by traversing up the DOM until either 1) We come across an element that has the same VM as #1
+            // Or we come across an element that has the same VM as #2.
+            //
+            // If we come across an element that has the same VM as #1, we have an element that was rendered inside #1 template:
+            //
+            // <template>
+            //   <x-foo onClick={handleClick}> <!-- VM is equal to #1, this is our target
+            //      # shadow
+            //           <div> <-- VM is not equal to #1 or #2, keep going
+            //              <span>  <-- click event happened
+            // </template>
+            //
+            //
+            // If we come across an element that has the same VM as #2, we have an element that was rendered inside #1 slot:
+            // <template>
+            //  <div onClick={handleClick}>
+            //    <slot>
+            //      <x-bar> <-- VM is equal to #2, this is our target
+            //        # x-bar shadow
+            //          <div> <-- VM is not equal to #1 or #2, keep going
+            //            <x-baz>  <-- VM is not equal to #1 or #2, keep going
+            //              # x-baz shadow
+            //                <span></span>  <-- click event happened
+            //            </x-baz>
+            //          </div>
+            //      </x-bar>
+            //    </slot>
+            //  </div>
+            // </template>
+            //
+            let closestTarget = originalTarget;
+            while (closestTarget[OwnerKey] !== myCurrentShadowKey && closestTarget[OwnerKey] !== myOwnerKey) {
+                closestTarget = parentNodeGetter.call(closestTarget);
             }
 
-            // Handle events is coming from an slotted elements.
-            // TODO: Add more information why we need to handle the light DOM events here.
-            if (isChildNode(getRootNode.call(originalTarget, GET_ROOT_NODE_CONFIG_FALSE), currentTarget as Element)) {
-                return patchShadowDomTraversalMethods(originalTarget);
-            }
-
-            let vm: VM | undefined;
-            if (componentEventListenerType === EventListenerContext.ROOT_LISTENER) {
-                // If we are in an event listener attached on the shadow root, then we do not want to look
-                // for the currentTarget owner VM because the currentTarget owner VM would be the VM which
-                // rendered the component (parent component).
-                //
-                // Instead, we want to get the custom element's VM because that VM owns the shadow root itself.
-                vm = getCustomElementVM(currentTarget as HTMLElement);
-            } else if (!isUndefined(currentTarget)) {
-                // TODO: When does currentTarget can be undefined
-                vm = getElementOwnerVM(currentTarget as Element);
-            }
-
-            // Handle case when VM is not present for example when attaching an event listener
-            // on the root component of the component tree.
-            if (!isUndefined(vm)) {
-                let node = originalTarget;
-                while (!isNull(node) && vm.uid !== node[OwnerKey]) {
-                    node = parentNodeGetter.call(node);
-                }
-                return patchShadowDomTraversalMethods(node);
-            }
-            return originalTarget;
+            return patchShadowDomTraversalMethods(closestTarget);
         },
         configurable: true,
     },
