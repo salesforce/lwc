@@ -7,8 +7,8 @@ import {
     getRootNode,
     parentNodeGetter,
 } from "./dom/node";
-import { VM, OwnerKey, getElementOwnerVM, getCustomElementVM } from "./vm";
-import { isNull, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
+import { VM, OwnerKey, getCustomElementVM } from "./vm";
+import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType, invokeComponentCallback } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
