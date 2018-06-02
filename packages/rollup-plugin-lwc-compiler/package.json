@@ -12,10 +12,10 @@
     "lwc-engine": "0.22.1"
   },
   "dependencies": {
-    "es5-proxy-compat": "0.18.7",
+    "es5-proxy-compat": "0.18.8",
     "glob": "^7.1.2",
     "lwc-module-resolver": "0.22.1",
-    "rollup-plugin-compat": "0.18.7",
+    "rollup-plugin-compat": "0.18.8",
     "rollup-pluginutils": "^2.0.1"
   },
   "peerDependencies": {
