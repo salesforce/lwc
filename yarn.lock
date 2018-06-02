@@ -2239,9 +2239,9 @@ browser-resolve@^1.11.2:
   dependencies:
     resolve "1.1.7"
 
-browser-stdout@1.3.0:
-  version "1.3.0"
-  resolved "http://npm.lwcjs.org/browser-stdout/-/browser-stdout-1.3.0/f351d32969d32fa5d7a5567154263d928ae3bd1f.tgz#f351d32969d32fa5d7a5567154263d928ae3bd1f"
+browser-stdout@1.3.1:
+  version "1.3.1"
+  resolved "http://npm.lwcjs.org/browser-stdout/-/browser-stdout-1.3.1/baa559ee14ced73452229bad7326467c61fabd60.tgz#baa559ee14ced73452229bad7326467c61fabd60"
 
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.1.1"
@@ -2676,9 +2676,9 @@ command-join@^2.0.0:
   version "2.0.0"
   resolved "http://npm.lwcjs.org/command-join/-/command-join-2.0.0/52e8b984f4872d952ff1bdc8b98397d27c7144cf.tgz#52e8b984f4872d952ff1bdc8b98397d27c7144cf"
 
-commander@2.11.0:
-  version "2.11.0"
-  resolved "http://npm.lwcjs.org/commander/-/commander-2.11.0/157152fd1e7a6c8d98a5b715cf376df928004563.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
+commander@2.15.1, commander@^2.9.0:
+  version "2.15.1"
+  resolved "http://npm.lwcjs.org/commander/-/commander-2.15.1/df46e867d0fc2aec66a34662b406a9ccafff5b0f.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 commander@2.6.0:
   version "2.6.0"
@@ -2687,10 +2687,6 @@ commander@2.6.0:
 commander@^2.12.1:
   version "2.14.1"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.14.1/2235123e37af8ca3c65df45b026dbd357b01b9aa.tgz#2235123e37af8ca3c65df45b026dbd357b01b9aa"
-
-commander@^2.9.0:
-  version "2.15.1"
-  resolved "http://npm.lwcjs.org/commander/-/commander-2.15.1/df46e867d0fc2aec66a34662b406a9ccafff5b0f.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 comment-parser@^0.5.0:
   version "0.5.0"
@@ -3446,9 +3442,9 @@ detect-newline@^2.1.0:
   version "2.1.0"
   resolved "http://npm.lwcjs.org/detect-newline/-/detect-newline-2.1.0/f41f1c10be4b00e87b5f13da680759f2c5bfd3e2.tgz#f41f1c10be4b00e87b5f13da680759f2c5bfd3e2"
 
-diff@3.3.1:
-  version "3.3.1"
-  resolved "http://npm.lwcjs.org/diff/-/diff-3.3.1/aa8567a6eed03c531fc89d3f711cd0e5259dec75.tgz#aa8567a6eed03c531fc89d3f711cd0e5259dec75"
+diff@3.5.0:
+  version "3.5.0"
+  resolved "http://npm.lwcjs.org/diff/-/diff-3.5.0/800c0dd1e0a8bfbc95835c202ad220fe317e5a12.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
 diff@^3.2.0:
   version "3.4.0"
@@ -4646,9 +4642,9 @@ graceful-fs@^4.1.0, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.3,
   version "4.1.11"
   resolved "http://npm.lwcjs.org/graceful-fs/-/graceful-fs-4.1.11/0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
-growl@1.10.3:
-  version "1.10.3"
-  resolved "http://npm.lwcjs.org/growl/-/growl-1.10.3/1926ba90cf3edfe2adb4927f5880bc22c66c790f.tgz#1926ba90cf3edfe2adb4927f5880bc22c66c790f"
+growl@1.10.5:
+  version "1.10.5"
+  resolved "http://npm.lwcjs.org/growl/-/growl-1.10.5/f2735dc2283674fa67478b10181059355c369e5e.tgz#f2735dc2283674fa67478b10181059355c369e5e"
 
 growly@^1.3.0:
   version "1.3.0"
@@ -5869,14 +5865,14 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-junit-report-builder@~1.2.0:
-  version "1.2.0"
-  resolved "http://npm.lwcjs.org/junit-report-builder/-/junit-report-builder-1.2.0/6897ccd5ee3d805191a4be6f12c7be850e50c0d6.tgz#6897ccd5ee3d805191a4be6f12c7be850e50c0d6"
+junit-report-builder@~1.3.0:
+  version "1.3.1"
+  resolved "http://npm.lwcjs.org/junit-report-builder/-/junit-report-builder-1.3.1/65923e2587a54762e8fb91505ea5604dba519d55.tgz#65923e2587a54762e8fb91505ea5604dba519d55"
   dependencies:
     date-format "0.0.2"
-    lodash "^3.8.0"
+    lodash "^4.17.10"
     mkdirp "^0.5.0"
-    xmlbuilder "^2.6.2"
+    xmlbuilder "^10.0.0"
 
 jwa@^1.1.4:
   version "1.1.5"
@@ -6066,6 +6062,10 @@ lodash.camelcase@4.3.0:
   version "4.3.0"
   resolved "http://npm.lwcjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0/b28aa6288a2b9fc651035c7711f65ab6190331a6.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
 
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "http://npm.lwcjs.org/lodash.get/-/lodash.get-4.4.2/2d177f652fa31e939b4438d5341499dfa3825e99.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+
 lodash.includes@^4.3.0:
   version "4.3.0"
   resolved "http://npm.lwcjs.org/lodash.includes/-/lodash.includes-4.3.0/60bb98a87cb923c68ca1e51325483314849f553f.tgz#60bb98a87cb923c68ca1e51325483314849f553f"
@@ -6167,15 +6167,11 @@ lodash@4.17.2:
   version "4.17.2"
   resolved "http://npm.lwcjs.org/lodash/-/lodash-4.17.2/34a3055babe04ce42467b607d700072c7ff6bf42.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
-lodash@^3.5.0, lodash@^3.8.0:
-  version "3.10.1"
-  resolved "http://npm.lwcjs.org/lodash/-/lodash-3.10.1/5bf45e8e49ba4189e17d482789dfd15bd140b7b6.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-
 lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1, lodash@^4.8.0, lodash@~4.17.4:
   version "4.17.5"
   resolved "http://npm.lwcjs.org/lodash/-/lodash-4.17.5/99a92d65c0272debe8c96b6057bc8fbfa3bed511.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
-lodash@^4.17.5:
+lodash@^4.17.10, lodash@^4.17.5:
   version "4.17.10"
   resolved "http://npm.lwcjs.org/lodash/-/lodash-4.17.10/1b7793cf7259ea38fb3661d4d38b3260af8ae4e7.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -6420,7 +6416,7 @@ minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1/f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
 
-minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@^3.0.4, minimatch@~3.0.2:
+minimatch@3.0.4, minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@^3.0.4, minimatch@~3.0.2:
   version "3.0.4"
   resolved "http://npm.lwcjs.org/minimatch/-/minimatch-3.0.4/5166e286457f03306064be5497e8dbb0c3d32083.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
   dependencies:
@@ -6481,20 +6477,21 @@ mkdirp@0.5.1, mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdi
   dependencies:
     minimist "0.0.8"
 
-mocha@^4.0.0:
-  version "4.1.0"
-  resolved "http://npm.lwcjs.org/mocha/-/mocha-4.1.0/7d86cfbcf35cb829e2754c32e17355ec05338794.tgz#7d86cfbcf35cb829e2754c32e17355ec05338794"
+mocha@^5.0.0:
+  version "5.2.0"
+  resolved "http://npm.lwcjs.org/mocha/-/mocha-5.2.0/6d8ae508f59167f940f2b5b3c4a612ae50c90ae6.tgz#6d8ae508f59167f940f2b5b3c4a612ae50c90ae6"
   dependencies:
-    browser-stdout "1.3.0"
-    commander "2.11.0"
+    browser-stdout "1.3.1"
+    commander "2.15.1"
     debug "3.1.0"
-    diff "3.3.1"
+    diff "3.5.0"
     escape-string-regexp "1.0.5"
     glob "7.1.2"
-    growl "1.10.3"
+    growl "1.10.5"
     he "1.1.1"
+    minimatch "3.0.4"
     mkdirp "0.5.1"
-    supports-color "4.4.0"
+    supports-color "5.4.0"
 
 modify-values@^1.0.0:
   version "1.0.0"
@@ -8601,11 +8598,11 @@ subarg@^1.0.0:
   dependencies:
     minimist "^1.1.0"
 
-supports-color@4.4.0:
-  version "4.4.0"
-  resolved "http://npm.lwcjs.org/supports-color/-/supports-color-4.4.0/883f7ddabc165142b2a61427f3352ded195d1a3e.tgz#883f7ddabc165142b2a61427f3352ded195d1a3e"
+supports-color@5.4.0:
+  version "5.4.0"
+  resolved "http://npm.lwcjs.org/supports-color/-/supports-color-5.4.0/1c6b337402c2137605efe19f10fec390f6faab54.tgz#1c6b337402c2137605efe19f10fec390f6faab54"
   dependencies:
-    has-flag "^2.0.0"
+    has-flag "^3.0.0"
 
 supports-color@^0.2.0:
   version "0.2.0"
@@ -9144,10 +9141,6 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "~1.0.0"
     spdx-expression-parse "~1.0.0"
 
-validator@~9.1.1:
-  version "9.1.2"
-  resolved "http://npm.lwcjs.org/validator/-/validator-9.1.2/5711b6413f78bd9d56003130c81b47c39e86546c.tgz#5711b6413f78bd9d56003130c81b47c39e86546c"
-
 vary@~1.1.2:
   version "1.1.2"
   resolved "http://npm.lwcjs.org/vary/-/vary-1.1.2/2299f02c6ded30d4a5961b0b9f74524a18f634fc.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
@@ -9211,22 +9204,23 @@ wdio-dot-reporter@~0.0.8:
   version "0.0.9"
   resolved "http://npm.lwcjs.org/wdio-dot-reporter/-/wdio-dot-reporter-0.0.9/929b2adafd49d6b0534fda068e87319b47e38fe5.tgz#929b2adafd49d6b0534fda068e87319b47e38fe5"
 
-wdio-junit-reporter@^0.3.1:
-  version "0.3.1"
-  resolved "http://npm.lwcjs.org/wdio-junit-reporter/-/wdio-junit-reporter-0.3.1/77b1bf4450d31b0f95bacc16dc1ba7bfcbd8fe09.tgz#77b1bf4450d31b0f95bacc16dc1ba7bfcbd8fe09"
+wdio-junit-reporter@^0.4.3:
+  version "0.4.3"
+  resolved "http://npm.lwcjs.org/wdio-junit-reporter/-/wdio-junit-reporter-0.4.3/f8fa4c5a438c437bdb447640fcd54fccb2716a08.tgz#f8fa4c5a438c437bdb447640fcd54fccb2716a08"
   dependencies:
-    junit-report-builder "~1.2.0"
+    junit-report-builder "~1.3.0"
+    lodash.get "^4.4.2"
     mkdirp "~0.5.1"
 
-wdio-mocha-framework@^0.5.10:
-  version "0.5.12"
-  resolved "http://npm.lwcjs.org/wdio-mocha-framework/-/wdio-mocha-framework-0.5.12/84633c697275896b46f7922cd7b4cb0cd59049cc.tgz#84633c697275896b46f7922cd7b4cb0cd59049cc"
+wdio-mocha-framework@~0.5.13:
+  version "0.5.13"
+  resolved "http://npm.lwcjs.org/wdio-mocha-framework/-/wdio-mocha-framework-0.5.13/f4da119456cb673b8c058fb60936132ec752a9d4.tgz#f4da119456cb673b8c058fb60936132ec752a9d4"
   dependencies:
     babel-runtime "^6.23.0"
-    mocha "^4.0.0"
+    mocha "^5.0.0"
     wdio-sync "0.7.1"
 
-wdio-sauce-service@^0.4.0:
+wdio-sauce-service@~0.4.8:
   version "0.4.8"
   resolved "http://npm.lwcjs.org/wdio-sauce-service/-/wdio-sauce-service-0.4.8/df66304510d51b8a923a560e19ea5f3cac5cc708.tgz#df66304510d51b8a923a560e19ea5f3cac5cc708"
   dependencies:
@@ -9240,9 +9234,9 @@ wdio-selenium-standalone-service@~0.0.10:
     fs-extra "^0.30.0"
     selenium-standalone "^6.13.0"
 
-wdio-spec-reporter@^0.1.0:
-  version "0.1.3"
-  resolved "http://npm.lwcjs.org/wdio-spec-reporter/-/wdio-spec-reporter-0.1.3/b1acddb01eea42ecc5b19871ed16e21bff2682d7.tgz#b1acddb01eea42ecc5b19871ed16e21bff2682d7"
+wdio-spec-reporter@^0.1.4:
+  version "0.1.4"
+  resolved "http://npm.lwcjs.org/wdio-spec-reporter/-/wdio-spec-reporter-0.1.4/17af34f8e830f3c684f2d6486dba406bfc0648eb.tgz#17af34f8e830f3c684f2d6486dba406bfc0648eb"
   dependencies:
     babel-runtime "~6.26.0"
     chalk "^2.3.0"
@@ -9265,9 +9259,9 @@ wdio-sync@0.7.1:
     fibers "~2.0.0"
     object.assign "^4.0.3"
 
-webdriverio@^4.8.0:
-  version "4.10.2"
-  resolved "http://npm.lwcjs.org/webdriverio/-/webdriverio-4.10.2/0d28622802c966015afe34b3ac566dc339f22e43.tgz#0d28622802c966015afe34b3ac566dc339f22e43"
+webdriverio@^4.12.0:
+  version "4.12.0"
+  resolved "http://npm.lwcjs.org/webdriverio/-/webdriverio-4.12.0/e340def272183c8168a4dd0b382322f9d7bee10d.tgz#e340def272183c8168a4dd0b382322f9d7bee10d"
   dependencies:
     archiver "~2.1.0"
     babel-runtime "^6.26.0"
@@ -9288,7 +9282,6 @@ webdriverio@^4.8.0:
     safe-buffer "~5.1.1"
     supports-color "~5.0.0"
     url "~0.11.0"
-    validator "~9.1.1"
     wdio-dot-reporter "~0.0.8"
     wgxpath "~1.0.0"
 
@@ -9463,11 +9456,9 @@ xmlbuilder@4.2.1, xmlbuilder@^4.1.0:
   dependencies:
     lodash "^4.0.0"
 
-xmlbuilder@^2.6.2:
-  version "2.6.5"
-  resolved "http://npm.lwcjs.org/xmlbuilder/-/xmlbuilder-2.6.5/6ff7ad60fb72d22764f007a164b77f2bf1400526.tgz#6ff7ad60fb72d22764f007a164b77f2bf1400526"
-  dependencies:
-    lodash "^3.5.0"
+xmlbuilder@^10.0.0:
+  version "10.0.0"
+  resolved "http://npm.lwcjs.org/xmlbuilder/-/xmlbuilder-10.0.0/c64e52f8ae097fe5fd46d1c38adaade071ee1b55.tgz#c64e52f8ae097fe5fd46d1c38adaade071ee1b55"
 
 xmlhttprequest-ssl@~1.5.4:
   version "1.5.5"

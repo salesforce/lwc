@@ -43,6 +43,7 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
+    childNodes: { value : [] },
     delegatesFocus: { value: false },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
@@ -180,9 +181,7 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain methods on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
-        const descriptor = {
-            get: errorFn,
-        };
+        const descriptor = { get: errorFn };
         DevModeBlackListDescriptorMap[methodName] = descriptor;
     });
 
@@ -198,9 +197,7 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain properties on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootProperties), (propName: string) => {
-        const descriptor = {
-            get: errorFn
-        };
+        const descriptor = { get: errorFn };
         DevModeBlackListDescriptorMap[propName] = descriptor;
     });
 }
