@@ -149,7 +149,7 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
-    if (isTrue(fallback) && process.env.NODE_ENV !== 'production') {
+    if (isTrue(fallback)) {
         defineProperties(elm, fallbackDescriptors);
     }
 }
