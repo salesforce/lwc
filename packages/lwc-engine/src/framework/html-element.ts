@@ -24,17 +24,18 @@ import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from
 import { dispatchEvent } from "./dom/event-target";
 import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
 
-function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
-    const vm = getCustomElementVM(this);
-    return vm.mode === 'open' ? vm.cmpRoot : null;
-}
+// function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
+//     const vm = getCustomElementVM(this);
+//     return vm.mode === 'open' ? vm.cmpRoot : null;
+// }
 
 const fallbackDescriptors = {
-    shadowRoot: {
-        get: ElementShadowRootGetter,
-        configurable: true,
-        enumerable: true,
-    },
+    // TODO: @dval: Disabling shadowDOM until we fullfill the minimum required semantics by WebDriver
+    // shadowRoot: {
+    //     get: ElementShadowRootGetter,
+    //     configurable: true,
+    //     enumerable: true,
+    // },
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,

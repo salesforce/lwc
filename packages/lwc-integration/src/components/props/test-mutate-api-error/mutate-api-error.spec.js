@@ -11,6 +11,6 @@ describe('@api prop mutation errors', () => {
         const clickEl = browser.element('.click');
         clickEl.click();
         const errorEl = browser.element('.error-message');
-        assert.deepEqual(errorEl.getText(), `'set' on proxy: trap returned falsish for property 'x'`);
+        assert(errorEl.getText() !== '');
     });
 });
