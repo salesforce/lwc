@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.4...v) (2018-06-03)
+# [](https://github.com/salesforce/lwc/compare/v0.22.5...v) (2018-06-03)
+
+
+
+<a name="0.22.5"></a>
+## [0.22.5](https://github.com/salesforce/lwc/compare/v0.22.4...v0.22.5) (2018-06-03)
+
+
+### Bug Fixes
+
+* disable shadow and membrane in prod ([#372](https://github.com/salesforce/lwc/issues/372)) ([41149c2](https://github.com/salesforce/lwc/commit/41149c2))
 
 
 
