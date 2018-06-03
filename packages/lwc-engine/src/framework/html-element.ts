@@ -30,6 +30,11 @@ function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
 }
 
 const fallbackDescriptors = {
+    shadowRoot: {
+        get: ElementShadowRootGetter,
+        configurable: true,
+        enumerable: true,
+    },
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
@@ -144,15 +149,8 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
-    if (isTrue(fallback)) {
+    if (isTrue(fallback) && process.env.NODE_ENV !== 'production') {
         defineProperties(elm, fallbackDescriptors);
-        if (process.env.NODE_ENV !== 'production') {
-            defineProperty(elm, 'shadowRoot', {
-                get: ElementShadowRootGetter,
-                configurable: true,
-                enumerable: true,
-            });
-        }
     }
 }
 
