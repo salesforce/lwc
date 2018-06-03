@@ -105,10 +105,11 @@ const shadowDescriptors: PropertyDescriptorMap = {
         value: lightDomQuerySelectorAll,
         configurable: true,
     },
-    parentNode: {
-        get: parentNodeDescriptorValue,
-        configurable: true,
-    },
+    // TODO: @dval removes as a temporal fix for selenium internals
+    // parentNode: {
+    //     get: parentNodeDescriptorValue,
+    //     configurable: true,
+    // },
     parentElement: {
         get: parentElementDescriptorValue,
         configurable: true,
