@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.3...v) (2018-06-02)
+# [](https://github.com/salesforce/lwc/compare/v0.22.4...v) (2018-06-03)
+
+
+
+<a name="0.22.4"></a>
+## [0.22.4](https://github.com/salesforce/lwc/compare/v0.22.3...v0.22.4) (2018-06-03)
+
+
+### Bug Fixes
+
+* removing shadowRoot property from elements ([#371](https://github.com/salesforce/lwc/issues/371)) ([fb1e968](https://github.com/salesforce/lwc/commit/fb1e968))
 
 
 
