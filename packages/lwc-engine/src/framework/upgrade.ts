@@ -111,7 +111,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
 
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
-    if (isTrue(fallback) && process.env.NODE_ENV !== 'production') {
+    if (isTrue(fallback)) {
         // We don't support slots on root nodes
         defineProperties(element, rootNodeFallbackDescriptors);
     }
