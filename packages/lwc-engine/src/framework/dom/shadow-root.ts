@@ -43,6 +43,12 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
+    host: {
+        get(this: ShadowRoot) {
+            const vm = getShadowRootVM(this);
+            return null;
+        },
+    },
     childNodes: { value : [] },
     delegatesFocus: { value: false },
     querySelector: {
@@ -156,16 +162,8 @@ const ArtificialShadowRootPrototype = create({}, ArtificialShadowRootDescriptors
 let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 
 if (process.env.NODE_ENV !== 'production') {
-    DevModeBlackListDescriptorMap = {
-        // TODO: do we really want this to return the component?
-        // It seems that we can remove this entirely to disable the access to the host from within.
-        host: {
-            get(this: ShadowRoot) {
-                const vm = getShadowRootVM(this);
-                return vm.component;
-            },
-        }
-    };
+    DevModeBlackListDescriptorMap = {};
+
     const BlackListedShadowRootMethods = {
         appendChild: 0,
         cloneNode: 0,
