@@ -24,18 +24,12 @@ import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from
 import { dispatchEvent } from "./dom/event-target";
 import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
 
-// function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
-//     const vm = getCustomElementVM(this);
-//     return vm.mode === 'open' ? vm.cmpRoot : null;
-// }
+function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(this);
+    return vm.mode === 'open' ? vm.cmpRoot : null;
+}
 
 const fallbackDescriptors = {
-    // TODO: @dval: Disabling shadowDOM until we fullfill the minimum required semantics by WebDriver
-    // shadowRoot: {
-    //     get: ElementShadowRootGetter,
-    //     configurable: true,
-    //     enumerable: true,
-    // },
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
@@ -51,7 +45,7 @@ const fallbackDescriptors = {
     removeEventListener: {
         value: removeEventListenerPatched,
         configurable: true,
-    },
+    }
 };
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
@@ -152,6 +146,13 @@ function LWCElement(this: Component) {
     defineProperties(elm, def.descriptors);
     if (isTrue(fallback)) {
         defineProperties(elm, fallbackDescriptors);
+        if (process.env.NODE_ENV !== 'production') {
+            defineProperty(elm, 'shadowRoot', {
+                get: ElementShadowRootGetter,
+                configurable: true,
+                enumerable: true,
+            });
+        }
     }
 }
 
