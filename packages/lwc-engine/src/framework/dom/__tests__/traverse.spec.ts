@@ -508,7 +508,7 @@ describe('#parentNode and #parentElement', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             const root = elm.shadowRoot;
-            expect(root.querySelector('div').parentNode).toBe(root);
+            expect(root.querySelector('div').parentElement).toBe(root);
         });
     });
 

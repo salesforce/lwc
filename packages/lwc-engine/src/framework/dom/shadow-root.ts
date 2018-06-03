@@ -43,9 +43,6 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
-    host: {
-        get() { return null; },
-    },
     childNodes: { value : [] },
     delegatesFocus: { value: false },
     querySelector: {
