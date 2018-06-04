@@ -530,3 +530,29 @@ describe('#parentNode and #parentElement', () => {
         });
     });
 });
+
+
+describe('#childNodes', () => {
+    it.only('should always return an empty array', () => {
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.h('p', {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-foo', { is: Parent });
+        document.body.appendChild(elm);
+        const div = elm.shadowRoot.querySelector('div');
+        expect(div.childNodes).toHaveLength(0);
+    });
+});
