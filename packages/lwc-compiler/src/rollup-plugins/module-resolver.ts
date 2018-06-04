@@ -46,23 +46,23 @@ export default function({
     return {
         name: "lwc-module-resolver",
 
-        resolveId(id: string, importee: string) {
-            if (!isRelativeImport(id) && importee) {
+        resolveId(importee: string, importer: string) {
+            if (!isRelativeImport(importee) && importer) {
                 return;
             }
 
-            const relPath = importee ? path.dirname(importee) : "";
-            let absPath = path.join(relPath, id);
+            const relPath = importer ? path.dirname(importer) : options.baseDir || "";
+            let absPath = path.join(relPath, importee);
 
-            if (!path.extname(id)) {
+            if (!path.extname(importee)) {
                 absPath += ".js";
             }
 
             if (
                 !fileExists(absPath, options) &&
-                !isTemplateCss(id, importee)
+                !isTemplateCss(importee, importer)
             ) {
-                throw new Error(`Could not resolve '${id}' from '${importee}'`);
+                throw new Error(`Could not resolve '${importee}' from '${importer}'`);
             }
             return absPath;
         },

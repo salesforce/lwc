@@ -1,5 +1,9 @@
 import { isBoolean, isString, isUndefined } from "../utils";
 
+const DEFAULT_OPTIONS = {
+    baseDir: "",
+};
+
 const DEFAULT_OUTPUT_CONFIG = {
     env: {
         NODE_ENV: "development"
@@ -28,6 +32,7 @@ export interface CompilerOptions {
     name: string;
     namespace: string;
     files: BundleFiles;
+    baseDir?: string;
     outputConfig?: OutputConfig;
 }
 
@@ -110,6 +115,7 @@ export function normalizeOptions(
     };
 
     return {
+        ...DEFAULT_OPTIONS,
         ...options,
         outputConfig
     };
