@@ -533,7 +533,7 @@ describe('#parentNode and #parentElement', () => {
 
 
 describe('#childNodes', () => {
-    it.only('should always return an empty array', () => {
+    it('should always return an empty array', () => {
         class Parent extends Element {
             render() {
                 return function ($api) {
