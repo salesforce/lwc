@@ -325,6 +325,21 @@ Test.publicProps = {
         }
     });
 
+    pluginTest('throws correct error if property name is maxlength', `
+        import { api } from 'engine';
+        export default class Test {
+            @api maxlength;
+        }
+    `, {
+        error: {
+            message: 'test.js: Ambigious attribute name maxlength. maxlength will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
+            loc: {
+                line: 2,
+                column: 9
+            }
+        }
+    });
+
     pluginTest('does not throw if property name prefixed with "aria"', `
         import { api } from 'engine';
         export default class Test {

@@ -53,9 +53,9 @@ function validatePropertyName(property) {
             `Invalid property name "${propertyName}". "${propertyName}" is a reserved attribute.`
         );
     } else if (AMBIGIOUS_PROP_SET.has(propertyName)) {
-        const { propName = propertyName } = GLOBAL_ATTRIBUTE_MAP.get(propertyName) || {};
+        const camelCased = AMBIGIOUS_PROP_SET.get(propertyName);
         throw property.buildCodeFrameError(
-            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${propName}".`
+            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${camelCased}".`
         );
     }
 }
