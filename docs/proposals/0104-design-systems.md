@@ -45,7 +45,7 @@ interface pluginConfig {
 function getSlicedStyles(template: string, config: pluginConfig): string {
     /**
      * - Parse template, which contains a single root <template> tag.
-     * - Extra all static classnames used by the template.
+     * - Extract all static classnames used by the template.
      * - Dedupe the list of extracted classnames and config.extras and config.remap record fields.
      * - Expand the list of classnames with all friendly classes and associated utility.
      * - Generate styles for the list classes.
@@ -80,14 +80,14 @@ Since rollup does not have an API to contextualize the import, which means that 
 Workflow:
 
 1. During JS compilation, inspect the class declaration for metadata information about the design system (via statics or via a decorator).
-2. If metadata is found about the design system, propagate all the metadata via a serialized query parameter called `config` for all HTML imports (whether they were added manually, or dynamically).
+2. If metadata is found about the design system, propagate all the metadata via a serialized query parameter called `config` for all HTML imports (whether they were added manually, or dynamically). E.g.: https://webpack.js.org/concepts/loaders/#inline
 3. During HTML compilation, if the `config` query parameter is present, insert a new CSS import at the top of the template with a URL that is based on the design system information present in the query parameter, plus the `config` parameter itself, and a new parameter called `template` that contains a string representation of the current `<template>` tag.
 4. Plug a rollup plugin that can identify the URL that represents the design system that the plugin can handle. Pick up the `config` and the `template` parameters, and create a synthetic file that contains the sliced, remapped and contextualized rules that correspond to them.
 
 The rollup plugin is responsible for:
 
  * Parse `template` string passed as query parameter, which contains a single root <template> tag.
- * Extra all static classnames used by the template.
+ * Extract all static classnames used by the template.
  * Dedupe the list of extracted classnames and `config.extras` and `config.remap` record fields.
  * Expand the list of classnames with all friendly classes and associated utility.
  * Generate styles for the list classes.
