@@ -16,7 +16,6 @@ import {
     hasOwnProperty,
     ArrayReduce,
     ArraySlice,
-    isUndefined,
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
