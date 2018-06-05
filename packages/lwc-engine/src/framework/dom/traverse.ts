@@ -121,9 +121,9 @@ export function lightDomChildNodes(this: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
     }
-    const vm = getElementOwnerVM(this) as VM;
+    const ownerVM = getElementOwnerVM(this) as VM;
     const children = nativeChildNodesGetter.call(this);
-    return getAllMatches(vm, children);
+    return getAllMatches(ownerVM, children);
 }
 
 const shadowDescriptors: PropertyDescriptorMap = {
