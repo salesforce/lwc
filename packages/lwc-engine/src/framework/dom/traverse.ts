@@ -112,7 +112,7 @@ export function lightDomCustomElementChildNodes(this: HTMLElement) {
     const customElementVM = getCustomElementVM(this);
     const slots = shadowRootQuerySelectorAll(customElementVM, 'slot');
     const children = ArrayReduce.call(slots, (seed, slot) => {
-        return seed.concat( ArraySlice.call(nativeChildNodesGetter.call(slot)) );
+        return seed.concat(ArraySlice.call(nativeChildNodesGetter.call(slot)));
     }, []);
 
     return getAllMatches(ownerVM, children);
