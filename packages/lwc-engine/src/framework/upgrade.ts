@@ -4,7 +4,7 @@ import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm
 import { ComponentConstructor } from "./component";
 import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes } from "./dom/traverse";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -61,6 +61,16 @@ function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[]
     return shadowRootQuerySelectorAll(vm, selector);
 }
 
+function childNodesPatchedRoot(this: HTMLElement): HTMLElement[] {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.childNodes on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.childNodes.`);
+    }
+
+    return shadowRootChildNodes(vm, this);
+}
+
 const rootNodeFallbackDescriptors = {
     querySelectorAll: {
         value: querySelectorAllPatchedRoot,
@@ -68,6 +78,10 @@ const rootNodeFallbackDescriptors = {
     },
     querySelector: {
         value: querySelectorPatchedRoot,
+        configurable: true,
+    },
+    childNodes: {
+        get: childNodesPatchedRoot,
         configurable: true,
     },
 };

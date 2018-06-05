@@ -1,8 +1,9 @@
 import assert from "../assert";
-import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "../vm";
+import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey, getCustomElementVM } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
+    childNodesGetter as nativeChildNodesGetter,
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll,
@@ -13,11 +14,13 @@ import {
     defineProperty,
     defineProperties,
     hasOwnProperty,
+    ArrayReduce,
+    ArraySlice,
+    isUndefined,
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
 import { getOwnPropertyDescriptor } from "../language";
-import { EmptyArray } from '../utils';
 
 const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -101,11 +104,27 @@ export function shadowRootQuerySelectorAll(vm: VM, selector: string): HTMLElemen
     return getAllMatches(vm, nodeList);
 }
 
-function patchedChildNodesGetter(this: HTMLElement) {
+export function lightDomCustomElementChildNodes(this: HTMLElement) {
     if (process.env.NODE_ENV !== 'production') {
         assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
     }
-    return EmptyArray;
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const customElementVM = getCustomElementVM(this);
+    const slots = shadowRootQuerySelectorAll(customElementVM, 'slot');
+    const children = ArrayReduce.call(slots, (seed, slot) => {
+        return seed.concat( ArraySlice.call(nativeChildNodesGetter.call(slot)) );
+    }, []);
+
+    return getAllMatches(ownerVM, children);
+}
+
+export function lightDomChildNodes(this: HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
+    }
+    const vm = getElementOwnerVM(this) as VM;
+    const children = nativeChildNodesGetter.call(this);
+    return getAllMatches(vm, children);
 }
 
 const shadowDescriptors: PropertyDescriptorMap = {
@@ -127,7 +146,7 @@ const shadowDescriptors: PropertyDescriptorMap = {
         configurable: true,
     },
     childNodes: {
-        get: patchedChildNodesGetter,
+        get: lightDomChildNodes,
         configurable: true,
     }
 };

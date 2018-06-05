@@ -22,7 +22,7 @@ import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
-import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+import { lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
 
 function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(this);
@@ -50,7 +50,11 @@ const fallbackDescriptors = {
     removeEventListener: {
         value: removeEventListenerPatched,
         configurable: true,
-    }
+    },
+    childNodes: {
+        get: lightDomCustomElementChildNodes,
+        configurable: true,
+    },
 };
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
