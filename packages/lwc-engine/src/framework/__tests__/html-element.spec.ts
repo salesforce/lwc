@@ -502,13 +502,13 @@ describe('html-element', () => {
     });
 
     describe('#tracked', () => {
-        it('should warn if component has untracked state property', function() {
+        it('should not warn if component has untracked state property', function() {
             jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
                 state = {};
             }
             const element = createElement('x-foo', { is: MyComponent });
-            expect(assertLogger.logWarning).toHaveBeenCalledWith('Non-trackable component state detected in <x-foo>. Updates to state property will not be reactive. To make state reactive, add @track decorator.');
+            expect(assertLogger.logWarning).not.toHaveBeenCalled();
             assertLogger.logWarning.mockRestore();
         });
         it('should not warn if component has tracked state property', function() {
