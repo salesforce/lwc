@@ -11,6 +11,7 @@ import {
     removeAttribute,
 } from './element';
 import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
+import { childNodesGetter } from "./node";
 
 export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
 const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
@@ -41,16 +42,15 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
     shadowRoot[ViewModelReflection] = vm;
 }
 
+function patchedShadowRootChildNodes(this: ShadowRoot): Element[] {
+    const vm = getShadowRootVM(this);
+    return shadowRootChildNodes(vm, vm.elm);
+}
+
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
     childNodes: {
-        get(this: ShadowRoot): Element[] {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
-            }
-            const vm = getShadowRootVM(this);
-            return shadowRootChildNodes(vm, vm.elm);
-        }
+        get: patchedShadowRootChildNodes,
     },
     delegatesFocus: { value: false },
     querySelector: {
@@ -159,7 +159,18 @@ let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 
 if (process.env.NODE_ENV !== 'production') {
     DevModeBlackListDescriptorMap = {
-
+        childNodes: {
+            get: function (this: ShadowRoot) {
+                const vm = getShadowRootVM(this);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
+                }
+                if (vm.fallback) {
+                    return patchedShadowRootChildNodes.call(this);
+                }
+                return childNodesGetter.call(this);
+            }
+        },
     };
 
     const BlackListedShadowRootMethods = {
