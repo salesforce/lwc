@@ -22,7 +22,7 @@ import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
-import { lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
+import { assignedSlotGetter, lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
 
 function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(this);
@@ -53,6 +53,10 @@ const fallbackDescriptors = {
     },
     childNodes: {
         get: lightDomCustomElementChildNodes,
+        configurable: true,
+    },
+    assignedSlot: {
+        get: assignedSlotGetter,
         configurable: true,
     },
 };

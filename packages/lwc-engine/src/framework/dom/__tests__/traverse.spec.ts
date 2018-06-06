@@ -712,3 +712,190 @@ describe('#childNodes', () => {
         expect(childNodes).toHaveLength(1);
     });
 });
+
+
+describe('assignedSlot', () => {
+    it('should return null when custom element is not in slot', () => {
+        class NoSlot extends Element {}
+
+        function html($api) {
+            return [
+                $api.c('x-assigned-slot-child', NoSlot, {}, []),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-assigned-slot-child');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return null when native element is not in slot', () => {
+        function html($api) {
+            return [
+                $api.h('div', {
+                    key: 0,
+                }, []),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('div');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return correct slot when native element is slotted', () => {
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    }, [
+                        $api.t('test')
+                    ])
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const child = elm.shadowRoot.querySelector('div');
+        expect(child.assignedSlot).toBe(slot);
+    });
+
+    it('should return correct slot when custom element is slotted', () => {
+        class InsideSlot extends Element {}
+
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.c('x-inside-slot', InsideSlot, {
+                        key: 2,
+                    }, [])
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const child = elm.shadowRoot.querySelector('x-inside-slot');
+        expect(child.assignedSlot).toBe(slot);
+    });
+
+    it('should return null when native element default slot content', () => {
+        function html($api) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 1,
+                    }, []),
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('div');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return null when custom element default slot content', () => {
+        class CustomElement extends Element {
+
+        }
+
+        function html($api) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.c('x-default-slot-custom-element', CustomElement, {
+                        key: 1,
+                    }, []),
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-default-slot-custom-element');
+        expect(child.assignedSlot).toBe(null);
+    });
+});

@@ -126,6 +126,14 @@ export function lightDomChildNodes(this: HTMLElement) {
     return getAllMatches(ownerVM, children);
 }
 
+export function assignedSlotGetter(this: HTMLElement) {
+    const parentNode = nativeParentNodeGetter.call(this);
+    if (parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
+        return null;
+    }
+    return parentNode;
+}
+
 const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
@@ -147,7 +155,11 @@ const shadowDescriptors: PropertyDescriptorMap = {
     childNodes: {
         get: lightDomChildNodes,
         configurable: true,
-    }
+    },
+    assignedSlot: {
+        get: assignedSlotGetter,
+        configurable: true,
+    },
 };
 
 const contentWindowDescriptor: PropertyDescriptor = {
