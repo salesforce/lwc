@@ -56,12 +56,9 @@ describe("test index entry points", () => {
             ...COMPILER_CONFIG_BASEDIR
         };
         delete config.baseDir;
-        try {
-            await compile(config);
-        } catch(e) {
-            expect(e.message).toEqual(
-                "Could not resolve 'foo' (as foo.js) from compiler entry point"
-            );
-        }
+
+        await expect(compile(config)).rejects.toMatchObject({
+            message: "Could not resolve 'foo' (as foo.js) from compiler entry point"
+        });
     });
 });
