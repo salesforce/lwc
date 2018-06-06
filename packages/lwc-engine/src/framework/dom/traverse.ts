@@ -19,7 +19,7 @@ import {
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
-import { getOwnPropertyDescriptor } from "../language";
+import { getOwnPropertyDescriptor, isNull } from "../language";
 
 const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -128,7 +128,7 @@ export function lightDomChildNodes(this: HTMLElement) {
 
 export function assignedSlotGetter(this: HTMLElement) {
     const parentNode = nativeParentNodeGetter.call(this);
-    if (parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
+    if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
         return null;
     }
     return parentNode;
