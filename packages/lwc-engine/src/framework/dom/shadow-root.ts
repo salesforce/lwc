@@ -117,12 +117,6 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
 };
 
-function errorFn() {
-    if (process.env.NODE_ENV !== 'production') {
-        throw new Error(`Disallowed feature in ShadowRoot.`);
-    }
-}
-
 function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
     // we use value as the storage mechanism and as the default value for the property
     return {
@@ -164,7 +158,9 @@ const ArtificialShadowRootPrototype = create({}, ArtificialShadowRootDescriptors
 let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 
 if (process.env.NODE_ENV !== 'production') {
-    DevModeBlackListDescriptorMap = {};
+    DevModeBlackListDescriptorMap = {
+
+    };
 
     const BlackListedShadowRootMethods = {
         appendChild: 0,
@@ -181,7 +177,11 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain methods on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
-        const descriptor = { get: errorFn };
+        const descriptor = {
+            get: function () {
+                throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
+            }
+        };
         DevModeBlackListDescriptorMap[methodName] = descriptor;
     });
 
@@ -196,7 +196,11 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain properties on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootProperties), (propName: string) => {
-        const descriptor = { get: errorFn };
+        const descriptor = {
+            get: function () {
+                throw new Error(`Disallowed property "${propName}" in ShadowRoot.`);
+            }
+        };
         DevModeBlackListDescriptorMap[propName] = descriptor;
     });
 }
