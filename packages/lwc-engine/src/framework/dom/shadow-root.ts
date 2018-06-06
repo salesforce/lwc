@@ -160,7 +160,7 @@ let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 if (process.env.NODE_ENV !== 'production') {
     DevModeBlackListDescriptorMap = {
         childNodes: {
-            get: function (this: ShadowRoot) {
+            get(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 if (process.env.NODE_ENV !== 'production') {
                     assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
@@ -189,7 +189,7 @@ if (process.env.NODE_ENV !== 'production') {
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
         const descriptor = {
-            get: function () {
+            get() {
                 throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
             }
         };
@@ -208,7 +208,7 @@ if (process.env.NODE_ENV !== 'production') {
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootProperties), (propName: string) => {
         const descriptor = {
-            get: function () {
+            get() {
                 throw new Error(`Disallowed property "${propName}" in ShadowRoot.`);
             }
         };
