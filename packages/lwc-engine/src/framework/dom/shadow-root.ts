@@ -157,7 +157,7 @@ forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
 const ArtificialShadowRootPrototype = create({}, ArtificialShadowRootDescriptors);
 let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'dev') {
     DevModeBlackListDescriptorMap = {
         childNodes: {
             get(this: ShadowRoot) {
