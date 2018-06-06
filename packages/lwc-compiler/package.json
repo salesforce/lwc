@@ -9,6 +9,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "yarn compile && yarn update:version",
+    "build:umd": "yarn webpack --progress",
     "compile": "echo 'Building compiler...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
     "update:version": "node ./scripts/update-compiler-version.js",
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"

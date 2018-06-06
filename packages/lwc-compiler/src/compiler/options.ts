@@ -32,6 +32,10 @@ export interface CompilerOptions {
     name: string;
     namespace: string;
     files: BundleFiles;
+    /**
+     * An optional directory prefix that contains the specified components
+     * files. Only used when the component that is the compiler's entry point. 
+     */
     baseDir?: string;
     outputConfig?: OutputConfig;
 }

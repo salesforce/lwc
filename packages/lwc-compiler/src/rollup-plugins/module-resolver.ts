@@ -62,7 +62,10 @@ export default function({
                 !fileExists(absPath, options) &&
                 !isTemplateCss(importee, importer)
             ) {
-                throw new Error(`Could not resolve '${importee}' from '${importer}'`);
+                if (importer) {
+                    throw new Error(`Could not resolve '${importee}' (as ${absPath}) from '${importer}'`);
+                }
+                throw new Error(`Could not resolve '${importee}' (as ${absPath}) from compiler entry point`);
             }
             return absPath;
         },

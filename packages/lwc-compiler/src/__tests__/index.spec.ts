@@ -10,6 +10,17 @@ const COMPILER_CONFIG = {
         compat: false
     }
 };
+const COMPILER_CONFIG_BASEDIR = {
+    name: "foo",
+    namespace: "x",
+    files: { "project/src/foo.js": "debugger" },
+    baseDir: "project/src",
+    outputConfig: {
+        env: { NODE_ENV: "development" },
+        minify: false,
+        compat: false
+    }
+};
 
 describe("test index entry points", () => {
     test("able to invoke compiler", async () => {
@@ -31,5 +42,26 @@ describe("test index entry points", () => {
 
     test("able to retrieve version", () => {
         expect(version).toBeDefined();
+    });
+
+    test("specify basedir", async () => {
+        const { result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(true);
+        expect(result).toBeDefined();
+    });
+
+    test("don't specify basedir", async () => {
+        expect.assertions(1);
+        const config = {
+            ...COMPILER_CONFIG_BASEDIR
+        };
+        delete config.baseDir;
+        try {
+            await compile(config);
+        } catch(e) {
+            expect(e.message).toEqual(
+                "Could not resolve 'foo' (as foo.js) from compiler entry point"
+            );
+        }
     });
 });

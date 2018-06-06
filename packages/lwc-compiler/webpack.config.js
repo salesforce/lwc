@@ -7,7 +7,7 @@ const version = JSON.stringify(require("./package.json").version);
 module.exports = {
     entry: path.resolve(__dirname, 'src/index.ts'),
     target: 'web',
-    mode: 'development',
+    mode: 'production',
     output: {
         library: 'compiler',
         libraryTarget: 'umd',
