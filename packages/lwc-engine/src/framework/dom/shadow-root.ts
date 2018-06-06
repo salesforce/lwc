@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString, isFalse } from "../language";
 import { getShadowRootVM, VM } from "../vm";
 import { addRootEventListener, removeRootEventListener } from "../events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes } from "./traverse";
 import {
     GlobalAOMProperties,
 } from './attributes';
@@ -43,7 +43,15 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
-    childNodes: { value : [] },
+    childNodes: {
+        get(this: ShadowRoot): Element[] {
+            if (process.env.NODE_ENV !== 'production') {
+                assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
+            }
+            const vm = getShadowRootVM(this);
+            return shadowRootChildNodes(vm, vm.elm);
+        }
+    },
     delegatesFocus: { value: false },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
@@ -178,7 +186,6 @@ if (process.env.NODE_ENV !== 'production') {
     });
 
     const BlackListedShadowRootProperties = {
-        childNodes: 0,
         firstChild: 0,
         lastChild: 0,
         ownerDocument: 0,

@@ -1,8 +1,9 @@
 import assert from "../assert";
-import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "../vm";
+import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey, getCustomElementVM } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
+    childNodesGetter as nativeChildNodesGetter,
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll,
@@ -13,6 +14,8 @@ import {
     defineProperty,
     defineProperties,
     hasOwnProperty,
+    ArrayReduce,
+    ArraySlice,
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
@@ -45,6 +48,10 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | S
     const vm = getElementOwnerVM(this) as VM;
     const value = nativeParentElementGetter.call(this);
     return getShadowParent(this, vm, value);
+}
+
+export function shadowRootChildNodes(vm: VM, elm: Element) {
+    return getAllMatches(vm, elm.children);
 }
 
 function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
@@ -96,6 +103,29 @@ export function shadowRootQuerySelectorAll(vm: VM, selector: string): HTMLElemen
     return getAllMatches(vm, nodeList);
 }
 
+export function lightDomCustomElementChildNodes(this: HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
+    }
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const customElementVM = getCustomElementVM(this);
+    const slots = shadowRootQuerySelectorAll(customElementVM, 'slot');
+    const children = ArrayReduce.call(slots, (seed, slot) => {
+        return seed.concat(ArraySlice.call(nativeChildNodesGetter.call(slot)));
+    }, []);
+
+    return getAllMatches(ownerVM, children);
+}
+
+export function lightDomChildNodes(this: HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
+    }
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const children = nativeChildNodesGetter.call(this);
+    return getAllMatches(ownerVM, children);
+}
+
 const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
@@ -112,6 +142,10 @@ const shadowDescriptors: PropertyDescriptorMap = {
     // },
     parentElement: {
         get: parentElementDescriptorValue,
+        configurable: true,
+    },
+    childNodes: {
+        get: lightDomChildNodes,
         configurable: true,
     }
 };

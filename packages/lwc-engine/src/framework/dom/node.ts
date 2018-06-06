@@ -78,6 +78,10 @@ const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement')
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
 
+const childNodesGetter = hasOwnProperty.call(Node.prototype, 'childNodes') ?
+    getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!;  // IE11
+
 export {
     // Node.prototype
     compareDocumentPosition,
@@ -87,6 +91,7 @@ export {
     appendChild,
     parentNodeGetter,
     parentElementGetter,
+    childNodesGetter,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,
