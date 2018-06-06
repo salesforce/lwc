@@ -310,14 +310,14 @@ Test.publicProps = {
         }
     });
 
-    pluginTest('throws error if property name is ambigious', `
+    pluginTest('throws error if property name is ambiguous', `
         import { api } from 'engine';
         export default class Test {
             @api tabindex;
         }
     `, {
         error: {
-            message: 'test.js: Ambigious attribute name tabindex. tabindex will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
+            message: 'test.js: Ambiguous attribute name tabindex. tabindex will never be called from template because its corresponding property is camel cased. Consider renaming to "tabIndex".',
             loc: {
                 line: 2,
                 column: 9
@@ -332,7 +332,7 @@ Test.publicProps = {
         }
     `, {
         error: {
-            message: 'test.js: Ambigious attribute name maxlength. maxlength will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
+            message: 'test.js: Ambiguous attribute name maxlength. maxlength will never be called from template because its corresponding property is camel cased. Consider renaming to "maxLength".',
             loc: {
                 line: 2,
                 column: 9
