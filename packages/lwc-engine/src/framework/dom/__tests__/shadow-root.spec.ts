@@ -114,7 +114,7 @@ describe('root', () => {
             const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
             document.body.appendChild(elem);
             const children = elem.shadowRoot.childNodes;
-            expect(children.length).toBe(2);
+            expect(children).toHaveLength(2);
             expect(children[0]).toBe(elem.shadowRoot.querySelector('div'));
             expect(children[1]).toBe(elem.shadowRoot.querySelector('p'));
         });

@@ -18,11 +18,11 @@ describe('Component with a wired method', () => {
         const element = browser.element('wired-method');
         const button = browser.element('button');
         button.click();
-        browser.pause(50);
-        const text = browser.execute(function () {
-            return document.querySelector('wired-method').textContent;
-        });
-
-        assert.equal(text.value, 'Title:task 1 Completed:false');
+        browser.waitUntil(() => {
+            const text = browser.execute(function () {
+                return document.querySelector('wired-method').textContent;
+            });
+            return text.value === 'Title:task 1 Completed:false';
+        }, 500, 'expect text to be different after 0.5s');
     });
 });

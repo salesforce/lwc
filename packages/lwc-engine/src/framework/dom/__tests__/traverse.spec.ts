@@ -66,7 +66,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
             const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
-            expect(nested.length).toBe(2);
+            expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(querySelector.call(element, '.first'));
             expect(nested[1]).toBe(querySelector.call(element, '.second'));
         });
@@ -196,7 +196,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
             const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
-            expect(nested.length).toBe(2);
+            expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(querySelector.call(element, '.first'));
             expect(nested[1]).toBe(querySelector.call(element, '.second'));
         });
@@ -570,7 +570,7 @@ describe('#childNodes', () => {
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
         const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
-        expect(slot.childNodes.length).toBe(0);
+        expect(slot.childNodes).toHaveLength(0);
     });
 
     it('should return correct elements for slots rendering default content', () => {
@@ -606,7 +606,7 @@ describe('#childNodes', () => {
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
         const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
-        expect(slot.childNodes.length).toBe(1);
+        expect(slot.childNodes).toHaveLength(1);
     });
 
     it('should return correct elements for non-slot elements', () => {
@@ -630,7 +630,7 @@ describe('#childNodes', () => {
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('div');
         const childNodes = child.childNodes;
-        expect(childNodes.length).toBe(1);
+        expect(childNodes).toHaveLength(1);
         expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('p'));
     });
 
@@ -668,7 +668,7 @@ describe('#childNodes', () => {
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');
         const childNodes = child.childNodes;
-        expect(childNodes.length).toBe(0);
+        expect(childNodes).toHaveLength(0);
     });
 
     it('should return correct elements for custom elements when children present', () => {
@@ -709,6 +709,6 @@ describe('#childNodes', () => {
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');
         const childNodes = child.childNodes;
-        expect(childNodes.length).toBe(1);
+        expect(childNodes).toHaveLength(1);
     });
 });
