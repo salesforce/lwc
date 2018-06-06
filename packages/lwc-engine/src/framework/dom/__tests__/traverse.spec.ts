@@ -66,7 +66,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
             const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
-            expect(nested.length).toBe(2);
+            expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(querySelector.call(element, '.first'));
             expect(nested[1]).toBe(querySelector.call(element, '.second'));
         });
@@ -196,7 +196,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
             const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
-            expect(nested.length).toBe(2);
+            expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(querySelector.call(element, '.first'));
             expect(nested[1]).toBe(querySelector.call(element, '.second'));
         });
@@ -528,5 +528,187 @@ describe('#parentNode and #parentElement', () => {
             const root = elm.shadowRoot;
             expect(root.querySelector('div').parentElement).toBe(root);
         });
+    });
+});
+
+
+describe('#childNodes', () => {
+    it('should always return an empty array for slots not rendering default content', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    } ,[]),
+                ], $slotset),
+            ];
+        }
+        tmpl.slots = [''];
+
+        class HasSlot extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.c('x-child-node-with-slot', HasSlot, {}, [
+                            $api.h('p', {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        expect(slot.childNodes).toHaveLength(0);
+    });
+
+    it('should return correct elements for slots rendering default content', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    } ,[]),
+                ], $slotset),
+            ];
+        }
+        tmpl.slots = [''];
+
+        class HasSlot extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.c('x-child-node-with-slot', HasSlot, {}, []),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        expect(slot.childNodes).toHaveLength(1);
+    });
+
+    it('should return correct elements for non-slot elements', () => {
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.h('p', {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('div');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
+        expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('p'));
+    });
+
+    it('should return correct elements for custom elements when no children present', () => {
+        function tmpl($api) {
+            return [
+                $api.h('div', {
+                    key: 3,
+                }, []),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should return correct elements for custom elements when children present', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 3,
+                }, [], $slotset),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, [
+                                $api.h('p', {
+                                    key: 4,
+                                } ,[])
+                            ]),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
     });
 });

@@ -86,4 +86,37 @@ describe('root', () => {
         });
 
     });
+
+    describe('childNodes', () => {
+        it('should return array of childnodes', () => {
+            function tmpl($api) {
+                return [
+                    $api.h('div', {
+                        key: 0,
+                    }, [
+                        $api.h('span', {
+                            key: 1,
+                        } , []),
+                    ]),
+                    $api.h('p', {
+                        key: 2,
+                    } , [
+
+                    ]),
+                ];
+            }
+            class MyComponent extends Element {
+                render() {
+                    return tmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const children = elem.shadowRoot.childNodes;
+            expect(children).toHaveLength(2);
+            expect(children[0]).toBe(elem.shadowRoot.querySelector('div'));
+            expect(children[1]).toBe(elem.shadowRoot.querySelector('p'));
+        });
+    });
 });
