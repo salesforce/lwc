@@ -29,7 +29,7 @@ const GLOBAL_ATTRIBUTE_MAP = new Map([
 // We do not want users to define @api properties with these names
 // Because the template will never call them. It'll alawys call the camel
 // cased version.
-const AMBIGIOUS_PROP_SET = new Map([
+const AMBIGUOUS_PROP_SET = new Map([
     ['bgcolor', 'bgColor'],
     ['accesskey', 'accessKey'],
     ['contenteditable', 'contentEditable'],
@@ -73,7 +73,7 @@ const DECORATOR_TYPES = {
 }
 
 module.exports = {
-    AMBIGIOUS_PROP_SET,
+    AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
     GLOBAL_ATTRIBUTE_MAP,
 
