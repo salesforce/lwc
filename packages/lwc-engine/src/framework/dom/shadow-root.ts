@@ -11,6 +11,7 @@ import {
     removeAttribute,
 } from './element';
 import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
+import { childNodesGetter } from "./node";
 
 export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
 const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
@@ -41,16 +42,15 @@ export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
     shadowRoot[ViewModelReflection] = vm;
 }
 
+function patchedShadowRootChildNodes(this: ShadowRoot): Element[] {
+    const vm = getShadowRootVM(this);
+    return shadowRootChildNodes(vm, vm.elm);
+}
+
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     mode: { value: 'closed' },
     childNodes: {
-        get(this: ShadowRoot): Element[] {
-            if (process.env.NODE_ENV !== 'production') {
-                assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
-            }
-            const vm = getShadowRootVM(this);
-            return shadowRootChildNodes(vm, vm.elm);
-        }
+        get: patchedShadowRootChildNodes,
     },
     delegatesFocus: { value: false },
     querySelector: {
@@ -117,12 +117,6 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
 };
 
-function errorFn() {
-    if (process.env.NODE_ENV !== 'production') {
-        throw new Error(`Disallowed feature in ShadowRoot.`);
-    }
-}
-
 function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
     // we use value as the storage mechanism and as the default value for the property
     return {
@@ -164,7 +158,20 @@ const ArtificialShadowRootPrototype = create({}, ArtificialShadowRootDescriptors
 let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
 
 if (process.env.NODE_ENV !== 'production') {
-    DevModeBlackListDescriptorMap = {};
+    DevModeBlackListDescriptorMap = {
+        childNodes: {
+            get(this: ShadowRoot) {
+                const vm = getShadowRootVM(this);
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
+                }
+                if (vm.fallback) {
+                    return patchedShadowRootChildNodes.call(this);
+                }
+                return childNodesGetter.call(this);
+            }
+        },
+    };
 
     const BlackListedShadowRootMethods = {
         appendChild: 0,
@@ -181,7 +188,11 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain methods on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
-        const descriptor = { get: errorFn };
+        const descriptor = {
+            get() {
+                throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
+            }
+        };
         DevModeBlackListDescriptorMap[methodName] = descriptor;
     });
 
@@ -196,7 +207,11 @@ if (process.env.NODE_ENV !== 'production') {
     // This routine will prevent access to certain properties on a shadow root instance to guarantee
     // that all components will work fine in IE11 and other browsers without shadow dom support
     forEach.call(getOwnPropertyNames(BlackListedShadowRootProperties), (propName: string) => {
-        const descriptor = { get: errorFn };
+        const descriptor = {
+            get() {
+                throw new Error(`Disallowed property "${propName}" in ShadowRoot.`);
+            }
+        };
         DevModeBlackListDescriptorMap[propName] = descriptor;
     });
 }
