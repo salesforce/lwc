@@ -16,7 +16,9 @@ function validateWireParameters(path) {
         );
     }
 
-    if (id.isIdentifier() && !path.scope.getBinding(id.node.name).path.isImportSpecifier()) {
+    if (id.isIdentifier()
+        && !path.scope.getBinding(id.node.name).path.isImportSpecifier()
+        && !path.scope.getBinding(id.node.name).path.isImportDefaultSpecifier()) {
         throw id.buildCodeFrameError(
             `@wire expects a function identifier to be imported as first parameter.`
         );
