@@ -12,8 +12,8 @@ describe('Issue 627: Named slot doesn\'t work properly.', () => {
             var text = document.querySelector('x-child').textContent;;
             var exists = document.querySelector('#content-in-slot') !== null;
             return {
-                text,
-                exists,
+                text: text,
+                exists: exists,
             };
         });
         assert.equal(text.value.text, 'Content rendered in slot');
