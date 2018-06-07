@@ -11,9 +11,16 @@ describe('event target query selector', () => {
     it('should return correct elements', function () {
         const hostContainer = browser.element('child-template-element-queryselector');
         hostContainer.click();
-        const shadowDiv = browser.element('.shadow-div');
-        assert.equal(shadowDiv.getAttribute('data-selected'), null);
-        const lightDiv = browser.element('.light-div');
-        assert.equal(lightDiv.getAttribute('data-selected'), 'true');
+
+        const values = browser.execute(function () {
+            var shadowDiv = document.querySelector('.shadow-div');
+            var lightDiv = document.querySelector('.light-div');
+            return {
+                lightDivSelected: lightDiv.getAttribute('data-selected'),
+                shadowDivSelected: shadowDiv.getAttribute('data-selected'),
+            };
+        });
+        assert.equal(values.value.shadowDivSelected, null);
+        assert.equal(values.value.lightDivSelected, 'true');
     });
 });

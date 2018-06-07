@@ -1,6 +1,5 @@
 import { createElement } from "../main";
 import { Element } from "../html-element";
-import { ViewModelReflection } from "../def";
 
 describe('invoker', () => {
 
@@ -155,7 +154,7 @@ describe('invoker', () => {
                 }
             }
             function html($api) {
-                return [$api.c('x-foo', Child, {})];
+                return [$api.c('x-child', Child, {})];
             }
             class MyComponent3 extends Element {
                 renderedCallback() {

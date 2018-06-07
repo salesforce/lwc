@@ -25,34 +25,35 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
-    hasOwnProperty,
 } from "./language";
 import {
     GlobalAOMProperties,
     getGlobalHTMLPropertiesInfo,
+    defaultDefHTMLPropertyNames,
+    attemptAriaAttributeFallback,
+} from "./dom/attributes";
+import {
     getAttribute,
     setAttribute,
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-    defaultDefHTMLPropertyNames,
-    attemptAriaAttributeFallback,
-} from "./dom";
+} from "./dom/element";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
 import { Element as BaseElement } from "./html-element";
-import { EmptyObject, getPropNameFromAttrName, assertValidForceTagName, ViewModelReflection, getAttrNameFromPropName } from "./utils";
+import {
+    EmptyObject,
+    getPropNameFromAttrName,
+    assertValidForceTagName,
+    ViewModelReflection,
+    getAttrNameFromPropName,
+    resolveCircularModuleDependency
+} from "./utils";
 import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
-import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./traverse";
 
-// TODO: refactor all the references to this
-export { ViewModelReflection } from "./utils";
-
-declare interface HashTable<T> {
-    [key: string]: T;
-}
 export interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
@@ -92,7 +93,6 @@ import {
     ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
-import { removeTemplateEventListener, addTemplateEventListener } from "./events";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -109,14 +109,8 @@ const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTM
 const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function getCtorProto(Ctor: any): any {
-    let proto = getPrototypeOf(Ctor);
-    // The compiler produce AMD modules that do not support circular dependencies
-    // We need to create an indirection to circumvent those cases.
-    // We could potentially move this check to the definition
-    if (hasOwnProperty.call(proto, '__circular__')) {
-        proto = proto();
-    }
-    return proto;
+    const proto = getPrototypeOf(Ctor);
+    return resolveCircularModuleDependency(proto);
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
@@ -136,10 +130,13 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+
         // local to dev block
         const ctorName = Ctor.name;
         assert.isTrue(ctorName && isString(ctorName), `${toString(Ctor)} should have a "name" property with string value, but found ${ctorName}.`);
         assert.isTrue(Ctor.constructor, `Missing ${ctorName}.constructor, ${ctorName} should have a "constructor" property.`);
+
+        assertValidForceTagName(Ctor);
     }
 
     const name: string = Ctor.name;
@@ -301,16 +298,6 @@ function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrNa
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    addTemplateEventListener(vm, type, listener);
-}
-
-function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
-    const vm = getCustomElementVM(this as HTMLElement);
-    removeTemplateEventListener(vm, type, listener);
-}
-
 function assertPublicAttributeCollision(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
@@ -374,39 +361,23 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     const descriptors: PropertyDescriptorMap = {
         getAttribute: {
             value: getAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttribute: {
             value: setAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         setAttributeNS: {
             value: setAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttribute: {
             value: removeAttributePatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         },
         removeAttributeNS: {
             value: removeAttributeNSPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-        },
-        querySelector: {
-            value: lightDomQuerySelector,
             configurable: true,
-        },
-        querySelectorAll: {
-            value: lightDomQuerySelectorAll,
-            configurable: true,
-        },
-        addEventListener: {
-            value: addEventListenerPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
-        },
-        removeEventListener: {
-            value: removeEventListenerPatched,
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
         },
     };
     // expose getters and setters for each public props on the Element
@@ -420,7 +391,7 @@ function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsCo
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
-            configurable: true, // TODO: issue #653: Remove configurable once locker-membrane is introduced
+            configurable: true,
         };
     }
     return descriptors;
@@ -502,26 +473,4 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     def = createComponentDef(Ctor);
     CtorToDefMap.set(Ctor, def);
     return def;
-}
-
-const TagNameToCtor: HashTable<ComponentConstructor> = create(null);
-
-export function getCtorByTagName(tagName: string): ComponentConstructor | undefined {
-    return TagNameToCtor[tagName];
-    /////// TODO: what is this?
-}
-
-export function registerComponent(tagName: string, Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV !== 'production') {
-        assertValidForceTagName(Ctor);
-    }
-    if (!isUndefined(TagNameToCtor[tagName])) {
-        if (TagNameToCtor[tagName] === Ctor) {
-            return;
-        } else if (process.env.NODE_ENV !== 'production') {
-            // TODO: eventually we should throw, this is only needed for the tests today
-            assert.logWarning(`Different component class cannot be registered to the same tagName="${tagName}".`);
-        }
-    }
-    TagNameToCtor[tagName] = Ctor;
 }

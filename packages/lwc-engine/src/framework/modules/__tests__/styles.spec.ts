@@ -21,7 +21,7 @@ describe('modules/styles', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        expect(cmp.root.querySelector('div').style.display).toBe('inline');
+        expect(cmp.template.querySelector('div').style.display).toBe('inline');
     });
     it('should add style map to the element', () => {
         const tmpl = $api => [
@@ -41,7 +41,7 @@ describe('modules/styles', () => {
         const elm = createElement('x-cmp', { is: Component });
         document.body.appendChild(elm);
 
-        expect(cmp.root.querySelector('div').style.display).toBe('inline');
+        expect(cmp.template.querySelector('div').style.display).toBe('inline');
     });
     it('should patch style to the element', () => {
         const tmpl = ($api, $cmp) => [
@@ -63,10 +63,10 @@ describe('modules/styles', () => {
         };
         const elm = createElement('x-cmp', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(cmp.root.querySelector('div').style.display).toBe('inline');
+        expect(cmp.template.querySelector('div').style.display).toBe('inline');
         cmp.counter++;
         return Promise.resolve().then(() => {
-            expect(cmp.root.querySelector('div').style.display).toBe('block');
+            expect(cmp.template.querySelector('div').style.display).toBe('block');
         });
     });
     it('should patch style map to the element', () => {
@@ -89,11 +89,11 @@ describe('modules/styles', () => {
         };
         const elm = createElement('x-cmp', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(cmp.root.querySelector('div').style.display).toBe('inline');
+        expect(cmp.template.querySelector('div').style.display).toBe('inline');
         cmp.counter++;
         return Promise.resolve().then(() => {
-            expect(cmp.root.querySelector('div').style.position).toBe('relative');
-            expect(cmp.root.querySelector('div').style.display).toBe('');
+            expect(cmp.template.querySelector('div').style.position).toBe('relative');
+            expect(cmp.template.querySelector('div').style.display).toBe('');
         });
     });
 });

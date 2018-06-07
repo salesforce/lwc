@@ -1,7 +1,7 @@
 import { Element } from "../../html-element";
 import { createElement } from "../../upgrade";
 import api from "../api";
-import { querySelector } from "../../dom";
+import { querySelector } from "../../dom/element";
 
 describe('decorators/api.ts', () => {
     describe('@api x', () => {

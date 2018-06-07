@@ -61,8 +61,7 @@ export function shouldFlatten(element: IRElement): boolean {
     return element.children.some(
         child =>
             isElement(child) &&
-            (isSlot(child) ||
-                !!child.forEach ||
+            (!!child.forEach ||
                 !!child.forOf ||
                 (isTemplate(child) && shouldFlatten(child))),
     );

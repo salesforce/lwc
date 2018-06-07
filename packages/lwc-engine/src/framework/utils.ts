@@ -4,7 +4,7 @@ import { ComponentConstructor } from "./component";
 import {
     AttrNameToPropNameMap,
     PropNameToAttrNameMap,
-} from "./dom";
+} from "./dom/attributes";
 
 export type Callback = () => void;
 
@@ -84,6 +84,21 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
     if (StringIndexOf.call(forceTagName, '-') !== -1) {
         throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. It cannot have a dash (-) on it because that is reserved for existing custom elements.`);
     }
+}
+
+/**
+ * When LWC is used in the context of an Aura application, the compiler produces AMD
+ * modules, that doesn't resolve properly circular dependencies between modules. In order
+ * to circumvent this issue, the module loader returns a factory with a symbol attached
+ * to it.
+ *
+ * This method returns the resolved value if it received a factory as argument. Otherwise
+ * it returns the original value.
+ */
+export function resolveCircularModuleDependency(valueOrFactory: any): any {
+    return hasOwnProperty.call(valueOrFactory, '__circular__') ?
+        valueOrFactory() :
+        valueOrFactory;
 }
 
 export const usesNativeSymbols = typeof Symbol() === 'symbol';

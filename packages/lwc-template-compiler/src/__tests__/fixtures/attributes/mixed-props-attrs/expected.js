@@ -12,7 +12,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 d: $cmp.p.foo
             },
             key: 1
-        }),
+        }, []),
         api_element(
             'a',
             {
@@ -48,7 +48,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 bgColor: 'blue',
             },
             key: 3
-        }),
+        }, []),
         api_element(
             'svg',
             {
@@ -82,7 +82,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 ariaHidden: 'hidden'
             },
             key: 6
-        }),
+        }, []),
         api_element(
             'table',
             {
@@ -104,7 +104,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 min: '3'
             },
             key: 8
-        }),
+        }, []),
         api_custom_element("input", _nsInput, {
             attrs: {
                 is: "ns-input"
@@ -114,7 +114,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 maxLength: "10"
             },
             key: 9
-        }),
+        }, []),
         api_element(
             'div',
             {

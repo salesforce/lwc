@@ -3,13 +3,13 @@ const replace = require('rollup-plugin-replace');
 const typescript = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
-const { version } = require('../package.json');
+const { version } = require('../../package.json');
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 
-const input = path.resolve(__dirname, '../src/framework/main.ts');
-const outputDir = path.resolve(__dirname, '../dist/umd');
+const input = path.resolve(__dirname, '../../src/framework/main.ts');
+const outputDir = path.resolve(__dirname, '../../dist/umd');
 
-const banner = (`/* proxy-compat-disable */`);
+const banner = (`/* proxy-compat-disable */\ntypeof process === 'undefined' && (process = { env: { NODE_ENV: 'dev' } });`);
 const footer = `/** version: ${version} */`;
 
 
@@ -28,8 +28,7 @@ function rollupConfig(config) {
         },
         plugins: [
             nodeResolve(),
-            typescript({ target: target, typescript: require('typescript') }),
-            replace({ 'process.env.NODE_ENV': JSON.stringify('development') })
+            typescript({ target: target, typescript: require('typescript') })
         ]
     }
 }

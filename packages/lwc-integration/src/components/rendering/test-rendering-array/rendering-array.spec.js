@@ -15,9 +15,15 @@ describe('Issue 702: [proxy-compat] Error: Setting property "Symbol(Symbol.itera
     });
 
     it('should render items', function () {
-        const items = browser.elements('compat-item');
-        assert.equal(items.value.length, 2);
-        assert.equal(items.value[0].getText(), 'Item: P1');
-        assert.equal(items.value[1].getText(), 'Item: P2');
+        const text = browser.execute(function () {
+            return [].map.call(document.querySelectorAll('compat-item'), function (item) {
+                return {
+                    text: item.textContent,
+                };
+            });
+        });
+        assert.equal(text.value.length, 2);
+        assert.equal(text.value[0].text, 'Item: P1');
+        assert.equal(text.value[1].text, 'Item: P2');
     });
 });

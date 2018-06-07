@@ -78,7 +78,7 @@ Test.wire = {
         }
     });
 
-    pluginTest('decorator expects a function identifier as first parameter', `
+    pluginTest('decorator accepts a function identifier as first parameter', `
         import { wire } from 'engine';
         import { getFoo } from 'data-service';
         export default class Test {
@@ -103,7 +103,32 @@ Test.wire = {
         }
     });
 
-    pluginTest('decorator expects an optional config object as second parameter', `
+    pluginTest('decorator accepts a default import function identifier as first parameter', `
+        import { wire } from 'engine';
+        import getFoo from 'foo';
+        export default class Test {
+            @wire(getFoo, {}) wiredProp;
+        }
+    `, {
+        output: {
+            code: `import getFoo from 'foo';
+export default class Test {
+  constructor() {
+    this.wiredProp = void 0;
+  }
+
+}
+Test.wire = {
+  wiredProp: {
+    adapter: getFoo,
+    params: {},
+    static: {}
+  }
+};`
+        }
+    })
+
+    pluginTest('decorator accepts an optional config object as second parameter', `
         import { wire } from 'engine';
         import { getFoo } from 'data-service';
         export default class Test {

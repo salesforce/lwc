@@ -17,11 +17,30 @@ import _slicedToArray from 'babel-compat/helpers/slicedToArray';
 import _defineProperty2 from 'babel-compat/helpers/defineProperty';
 import _classCallCheck from 'babel-compat/helpers/classCallCheck';
 import _possibleConstructorReturn from 'babel-compat/helpers/possibleConstructorReturn';
+import _getPrototypeOf from 'babel-compat/helpers/getPrototypeOf';
 import _inherits from 'babel-compat/helpers/inherits';
 
-var _templateObject = /*#__PURE__*/ _taggedTemplateLiteral(["wow\na", "b ", ""], ["wow\\na", "b ", ""]),
-_templateObject2 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""]),
-_templateObject3 = /*#__PURE__*/ _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
+function _templateObject3() {
+var data = _taggedTemplateLiteral(["wow\naB", " ", ""], ["wow\\naB", " ", ""]);
+_templateObject3 = function _templateObject3() {
+return data;
+};
+return data;
+}
+function _templateObject2() {
+var data = _taggedTemplateLiteral(["wow\nab", " ", ""], ["wow\\nab", " ", ""]);
+_templateObject2 = function _templateObject2() {
+return data;
+};
+return data;
+}
+function _templateObject() {
+var data = _taggedTemplateLiteral(["wow\na", "b ", ""], ["wow\\na", "b ", ""]);
+_templateObject = function _templateObject() {
+return data;
+};
+return data;
+}
 
 function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -85,7 +104,7 @@ function (_Foo) {
     function Test() {
     _classCallCheck(this, Test);
 
-    return _possibleConstructorReturn(this, __callKey2(__getKey(Test, "__proto__") || Object.getPrototypeOf(Test), "apply", this, arguments));
+    return _possibleConstructorReturn(this, __callKey2(_getPrototypeOf(Test), "apply", this, arguments));
     }
 
     return Test;
@@ -152,9 +171,9 @@ __callKey1(console, "log", _toConsumableArray(foo)); // babel-plugin-transform-e
 
 
 function literal() {
-    var foo = bar(_templateObject, 42, __callKey0(_, "foobar"));
-    var bar = bar(_templateObject2, 42, __callKey0(_, "foobar"));
-    var baz = bar(_templateObject3, 42, __callKey0(_, "baz"));
+    var foo = bar(_templateObject(), 42, __callKey0(_, "foobar"));
+    var bar = bar(_templateObject2(), 42, __callKey0(_, "foobar"));
+    var baz = bar(_templateObject3(), 42, __callKey0(_, "baz"));
     return [foo, bar, baz];
 } // babel-plugin-transform-es2015-typeof-symbol
 // https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-es2015-typeof-symbol/test/fixtures/symbols/typeof/actual.js

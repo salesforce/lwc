@@ -2,7 +2,7 @@ const { isWireDecorator } = require('./shared');
 const { LWC_PACKAGE_EXPORTS: { WIRE_DECORATOR, TRACK_DECORATOR, API_DECORATOR } } = require('../../constants');
 
 function validateWireParameters(path) {
-    const [id, config] = path.get('expression.arguments');
+    const [id, config] = path.get('arguments');
 
     if (!id) {
         throw path.buildCodeFrameError(
@@ -16,7 +16,9 @@ function validateWireParameters(path) {
         );
     }
 
-    if (id.isIdentifier() && !path.scope.getBinding(id.node.name).path.isImportSpecifier()) {
+    if (id.isIdentifier()
+        && !path.scope.getBinding(id.node.name).path.isImportSpecifier()
+        && !path.scope.getBinding(id.node.name).path.isImportDefaultSpecifier()) {
         throw id.buildCodeFrameError(
             `@wire expects a function identifier to be imported as first parameter.`
         );

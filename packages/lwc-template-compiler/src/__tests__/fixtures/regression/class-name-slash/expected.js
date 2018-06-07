@@ -11,6 +11,6 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 xClass: 'bar'
             },
             key: 1
-        })
+        }, [])
     ];
 }
