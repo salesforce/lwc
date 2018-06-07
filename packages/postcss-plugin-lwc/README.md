@@ -29,13 +29,12 @@ span {
 
 postcss([
     lwcPlugin({
-        tagName: 'x-btn',
         token: 'x-btn_tmpl'
     })
 ]).process(source).then(res => {
     console.log(res)
     /*
-    x-btn[x-btn_tmpl], [is="x-btn"][x-btn_tmpl] {
+    [x-btn_tmpl-host] {
         opacity: 0.4;
     }
 
@@ -48,20 +47,12 @@ postcss([
 
 ## Options
 
-#### `tagName`
-
-Type: `string`
-Required: `true`
-
-The tag name of the host element the styles are applied to.
-
 #### `token`
 
 Type: `string`
 Required: `true`
 
 A unique token to scope the CSS rules. The rules will apply only to element having the token as attribute.
-
 
 ## Caveats
 

@@ -3,7 +3,6 @@
 import * as parser from 'postcss-selector-parser';
 import {
     attribute,
-    tag,
     combinator,
     isTag,
     isPseudoElement,
@@ -28,35 +27,18 @@ import {
     isHostPseudoClass,
 } from './selector-utils';
 
-const HOST_SELECTOR_PLACEHOLDER = '$HOST$';
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 
-function hostPlaceholder() {
-    return tag({ value: HOST_SELECTOR_PLACEHOLDER });
-}
-
-function isHostPlaceholder(node: Node) {
-    return isTag(node) && node.value === HOST_SELECTOR_PLACEHOLDER;
-}
-
 /** Generate a scoping attribute based on the passed token */
-function scopeAttribute({ token }: PluginConfig) {
-    return attribute({
-        attribute: token,
-        value: undefined,
-        raws: {},
-    });
-}
+function scopeAttribute({ token }: PluginConfig, { host } = { host: false }) {
+    let value = token;
 
-/** Generate a host selector by tag name */
-function hostByTag({ tagName }: PluginConfig) {
-    return tag({ value: tagName });
-}
+    if (host) {
+        value += '-host';
+    }
 
-/** Generate a host selector via the "is" attribute: [is="x-foo"] */
-function hostByIsAttribute({ tagName }: PluginConfig) {
     return attribute({
-        attribute: `is="${tagName}"`,
+        attribute: value,
         value: undefined,
         raws: {},
     });
@@ -172,100 +154,85 @@ function scopeSelector(selector: Selector, config: PluginConfig) {
 /**
  * Mark the :host selector with a placeholder. If the selector has a list of
  * contextual selector it will generate a rule for each of them.
- *   :host -> $HOST$
- *   :host(.foo, .bar) -> $HOST$.foo, $HOST$.bar
+ *   :host -> [x-foo_tmpl-host]
+ *   :host(.foo, .bar) -> [x-foo_tmpl-host].foo, [x-foo_tmpl-host].bar
  */
-function transformHost(selector: Selector) {
+function transformHost(selector: Selector, config: PluginConfig) {
+    // Locate the first :host pseudo-class
     const hostNode = findNode(selector, isHostPseudoClass) as
         | Pseudo
         | undefined;
 
     if (hostNode) {
-        const placeholder = hostPlaceholder();
-        hostNode.replaceWith(placeholder);
+        // Store the original location of the :host in the selector
+        const hostIndex = selector.index(hostNode);
 
+        // Swap the :host pseudo-class with the host scoping token
+        const hostScopeAttr = scopeAttribute(config, { host: true });
+        hostNode.replaceWith(hostScopeAttr);
+
+        // Generate a unique contextualized version of the selector for each selector pass as argument
+        // to the :host
         const contextualSelectors = hostNode.nodes.map(
             (contextSelectors: Selector) => {
-                const clone = selector.clone({}) as Selector;
-                const clonePlaceholder = findNode(
-                    clone,
-                    isHostPlaceholder,
-                )! as Tag;
+                const clonedSelector = selector.clone({}) as Selector;
+                const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
 
+                // Add to the compound selector previously containing the :host pseudo class
+                // the contextual selectors.
                 contextSelectors.each(node => {
                     trimNodeWhitespaces(node);
-                    clone.insertAfter(clonePlaceholder, node);
+                    clonedSelector.insertAfter(clonedHostNode, node);
                 });
 
-                return clone;
+                return clonedSelector;
             },
         );
 
+        // Replace the current selector with the different variants
         replaceNodeWith(selector, ...contextualSelectors);
     }
 }
 
 /**
  * Mark transform :host-context by prepending the selector with the contextual selectors.
- *   :host-context(.dark) -> .dark x-foo, .dark [is="x-foo"]
- *
- * If the selector already contains :host, the selector should not be scoped twice.
+ *   :host-context(.bar) -> .bar [x-foo_tmpl-host]
+ *   :host-context(.bar, .baz) -> .bar [x-foo_tmpl-host], .baz [x-foo_tmpl-host]
  */
-function transformHostContext(selector: Selector) {
+function transformHostContext(selector: Selector, config: PluginConfig) {
+    // Locate the first :host-context pseudo-selector
     const hostContextNode = findNode(selector, isHostContextPseudoClass) as
         | Pseudo
         | undefined;
 
-    const hostNode = findNode(selector, isHostPlaceholder);
-
     if (hostContextNode) {
-        hostContextNode.remove();
+        // Swap the :host-context pseudo-class with the host scoping token
+        const hostScopeAttr = scopeAttribute(config, { host: true });
+        hostContextNode.replaceWith(hostScopeAttr);
 
+        // Generate a unique contextualized version of the selector for each selector pass as argument
+        // to the :host-context
         const contextualSelectors = hostContextNode.nodes.map(
             (contextSelectors: Selector) => {
-                const clone = selector.clone({}) as Selector;
+                const cloneSelector = selector.clone({}) as Selector;
 
-                if (!hostNode) {
-                    clone.insertBefore(clone.first, hostPlaceholder());
-                }
-
-                clone.insertBefore(clone.first, combinator({ value: ' ' }));
+                // Prepend the cloned selector with the context selector
+                cloneSelector.insertBefore(
+                    cloneSelector.first,
+                    combinator({ value: ' ' }),
+                );
 
                 contextSelectors.each(node => {
                     trimNodeWhitespaces(node);
-                    clone.insertBefore(clone.first, node);
+                    cloneSelector.insertBefore(cloneSelector.first, node);
                 });
 
-                return clone;
+                return cloneSelector;
             },
         );
 
+        // Replace the current selector with the different variants
         replaceNodeWith(selector, ...contextualSelectors);
-    }
-}
-
-/**
- * Replace the $HOST$ selectors with the actual scoped selectors.
- *   $HOST$ -> x-foo[x-foo_tmpl], [is="x-foo"][x-foo_tmpl]
- */
-function replaceHostPlaceholder(selector: Selector, config: PluginConfig) {
-    const hasHostPlaceholder = findNode(selector, isHostPlaceholder);
-
-    if (hasHostPlaceholder) {
-        const hostActualSelectors = [
-            hostByTag(config),
-            hostByIsAttribute(config),
-        ].map(actualSelector => {
-            const clone = selector.clone({}) as Selector;
-
-            const placeholder = findNode(clone, isHostPlaceholder)!;
-            placeholder.replaceWith(actualSelector);
-            clone.insertAfter(actualSelector, scopeAttribute(config));
-
-            return clone;
-        });
-
-        replaceNodeWith(selector, ...hostActualSelectors);
     }
 }
 
@@ -274,16 +241,19 @@ function selectorProcessor(config: PluginConfig) {
     return parser(root => {
         validateSelectors(root);
 
-        root.each((selector: Selector) => scopeSelector(selector, config));
+        root.each((selector: Selector) => {
+            scopeSelector(selector, config);
+        });
 
-        root.each(transformHost);
-        root.each(transformHostContext);
+        root.each((selector: Selector) => {
+            transformHost(selector, config);
+        });
+
+        root.each((selector: Selector) => {
+            transformHostContext(selector, config);
+        });
 
         customElementSelector(root);
-
-        root.each((selector: Selector) =>
-            replaceHostPlaceholder(selector, config),
-        );
     }) as Processor;
 }
 

@@ -109,10 +109,7 @@ describe('custom-element', () => {
     it('should handle custom elements in the :host-context selector', async () => {
         const { css } = await process(':host-context(x-bar) {}');
         expect(css).toBe(
-            [
-                `x-bar x-foo[x-foo_tmpl],x-bar [is="x-foo"][x-foo_tmpl],`,
-                `[is="x-bar"] x-foo[x-foo_tmpl],[is="x-bar"] [is="x-foo"][x-foo_tmpl] {}`,
-            ].join(''),
+            `x-bar [x-foo_tmpl-host],[is="x-bar"] [x-foo_tmpl-host] {}`,
         );
     });
 });
@@ -120,47 +117,36 @@ describe('custom-element', () => {
 describe(':host', () => {
     it('should handle no context', async () => {
         const { css } = await process(':host {}');
-        expect(css).toBe(`x-foo[x-foo_tmpl],[is="x-foo"][x-foo_tmpl] {}`);
+        expect(css).toBe(`[x-foo_tmpl-host] {}`);
     });
 
     it('should handle class', async () => {
         const { css } = await process(':host(.active) {}');
-        expect(css).toBe(
-            `x-foo[x-foo_tmpl].active,[is="x-foo"][x-foo_tmpl].active {}`,
-        );
+        expect(css).toBe(`[x-foo_tmpl-host].active {}`);
     });
 
     it('should handle attribute', async () => {
         const { css } = await process(':host([draggable]) {}');
-        expect(css).toBe(
-            `x-foo[x-foo_tmpl][draggable],[is="x-foo"][x-foo_tmpl][draggable] {}`,
-        );
+        expect(css).toBe(`[x-foo_tmpl-host][draggable] {}`);
     });
 
     it('should handle multiple selectors', async () => {
         const { css } = await process(':host(.a, .b) > p {}');
         expect(css).toBe(
-            [
-                `x-foo[x-foo_tmpl].a > p[x-foo_tmpl],[is="x-foo"][x-foo_tmpl].a > p[x-foo_tmpl],`,
-                `x-foo[x-foo_tmpl].b > p[x-foo_tmpl],[is="x-foo"][x-foo_tmpl].b > p[x-foo_tmpl] {}`,
-            ].join(''),
+            `[x-foo_tmpl-host].a > p[x-foo_tmpl],[x-foo_tmpl-host].b > p[x-foo_tmpl] {}`,
         );
     });
 
     it('should handle pseudo-element', async () => {
         const { css } = await process(':host(:hover) {}');
-        expect(css).toBe(
-            `x-foo[x-foo_tmpl]:hover,[is="x-foo"][x-foo_tmpl]:hover {}`,
-        );
+        expect(css).toBe(`[x-foo_tmpl-host]:hover {}`);
     });
 });
 
 describe(':host-context', () => {
     it('should handle selector', async () => {
         const { css } = await process(':host-context(.darktheme) {}');
-        expect(css).toBe(
-            `.darktheme x-foo[x-foo_tmpl],.darktheme [is="x-foo"][x-foo_tmpl] {}`,
-        );
+        expect(css).toBe(`.darktheme [x-foo_tmpl-host] {}`);
     });
 
     it('should handle multiple selectors', async () => {
@@ -168,17 +154,7 @@ describe(':host-context', () => {
             ':host-context(.darktheme, .nighttheme) {}',
         );
         expect(css).toBe(
-            [
-                `.darktheme x-foo[x-foo_tmpl],.darktheme [is="x-foo"][x-foo_tmpl],`,
-                `.nighttheme x-foo[x-foo_tmpl],.nighttheme [is="x-foo"][x-foo_tmpl] {}`,
-            ].join(''),
-        );
-    });
-
-    it('should handle getting associated with host', async () => {
-        const { css } = await process(':host-context(.darktheme):host {}');
-        expect(css).toBe(
-            `.darktheme x-foo[x-foo_tmpl],.darktheme [is="x-foo"][x-foo_tmpl] {}`,
+            `.darktheme [x-foo_tmpl-host],.nighttheme [x-foo_tmpl-host] {}`,
         );
     });
 });
