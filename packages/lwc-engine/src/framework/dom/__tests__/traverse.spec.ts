@@ -711,6 +711,128 @@ describe('#childNodes', () => {
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(1);
     });
+
+    it('should return child text content passed via slot', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 3,
+                }, [], $slotset),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, [
+                                $api.t('text')
+                            ]),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
+        expect(childNodes[0].nodeType).toBe(3);
+        expect(childNodes[0].textContent).toBe('text');
+    });
+
+    it('should not return child text from within template', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.t('text'),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should not return dynamic child text from within template', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.d($cmp.dynamicText),
+            ]
+        }
+
+        class Parent extends Element {
+            get dynamicText() {
+                return 'text';
+            }
+
+            render() {
+                return tmpl;
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const childNodes = elm.childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should return correct childNodes from shadowRoot', () => {
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, []),
+                        $api.t('text'),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const childNodes = elm.shadowRoot.childNodes;
+        expect(childNodes).toHaveLength(2);
+        expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('div'));
+        expect(childNodes[1].nodeType).toBe(3);
+        expect(childNodes[1].textContent).toBe('text');
+    });
 });
 
 
@@ -897,5 +1019,47 @@ describe('assignedSlot', () => {
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-default-slot-custom-element');
         expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return correct slot when text is slotted', () => {
+        class InsideSlot extends Element {}
+
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.t('text')
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
+        const text = elm.shadowRoot.querySelector('x-native-slotted-component-child').childNodes[0];
+        expect(text.assignedSlot).toBe(slot);
     });
 });

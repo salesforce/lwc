@@ -61,16 +61,6 @@ function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[]
     return shadowRootQuerySelectorAll(vm, selector);
 }
 
-function childNodesPatchedRoot(this: HTMLElement): HTMLElement[] {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        // TODO: remove this backward compatibility branch.
-        assert.logError(`Using elm.childNodes on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.childNodes.`);
-    }
-
-    return shadowRootChildNodes(vm, this);
-}
-
 const rootNodeFallbackDescriptors = {
     querySelectorAll: {
         value: querySelectorAllPatchedRoot,
@@ -78,10 +68,6 @@ const rootNodeFallbackDescriptors = {
     },
     querySelector: {
         value: querySelectorPatchedRoot,
-        configurable: true,
-    },
-    childNodes: {
-        get: childNodesPatchedRoot,
         configurable: true,
     },
 };
