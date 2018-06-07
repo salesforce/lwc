@@ -53,6 +53,14 @@ function validateTemplate(vm: VM, html: any) {
     validateFields(vm, html);
 }
 
+/**
+ * Returns the scoping token to be used on the host element. The CSS transform use the same token name
+ * postfixed with `-host`.
+ */
+function hostToken(token: string): string {
+    return `${token}-host`;
+}
+
 function applyTokenToHost(vm: VM, html: Template): void {
     const { context } = vm;
 
@@ -65,12 +73,14 @@ function applyTokenToHost(vm: VM, html: Template): void {
         // Remove the token currently applied to the host element if different than the one associated
         // with the current template
         if (!isUndefined(oldToken)) {
-            removeAttribute.call(host, oldToken);
+            const oldHostToken = hostToken(oldToken);
+            removeAttribute.call(host, oldHostToken);
         }
 
         // If the template has a token apply the token to the host element
         if (!isUndefined(newToken)) {
-            setAttribute.call(host, newToken, '');
+            const newHostToken = hostToken(newToken);
+            setAttribute.call(host, newHostToken, '');
         }
     }
 }

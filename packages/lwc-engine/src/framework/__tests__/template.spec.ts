@@ -4,7 +4,7 @@ import { Element } from "../html-element";
 import { createElement } from '../main';
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
-import { querySelector } from '../dom/element';
+import { querySelector, querySelectorAll } from '../dom/element';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -295,7 +295,7 @@ describe('template', () => {
     })
 
     describe('token', () => {
-        it('adds token to the host element if template has a token', () => {
+        it('adds the host token to the host element if template has a token', () => {
             const styledTmpl: Template = () => [];
             styledTmpl.token = 'token';
 
@@ -307,12 +307,36 @@ describe('template', () => {
 
             const cmp = createElement('x-cmp', { is: Component });
 
-            expect(cmp.hasAttribute('token')).toBe(false);
+            expect(cmp.hasAttribute('token-host')).toBe(false);
             document.body.appendChild(cmp);
-            expect(cmp.hasAttribute('token')).toBe(true);
+            expect(cmp.hasAttribute('token-host')).toBe(true);
         });
 
-        it('removes token from the host element when changing template', () => {
+        it('adds the token to all the rendered elements if the template has a token', () => {
+            const styledTmpl: Template = ($api) => [
+                $api.h('div', {
+                    key: 1,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    }, [])
+                ]),
+            ];
+            styledTmpl.token = 'token';
+
+            class Component extends Element {
+                render() {
+                    return styledTmpl;
+                }
+            }
+
+            const cmp = createElement('x-cmp', { is: Component });
+            document.body.appendChild(cmp);
+
+            expect(querySelectorAll.call(cmp, 'div[token]').length).toBe(2);
+        });
+
+        it('removes the host token from the host element when changing template', () => {
             const styledTmpl: Template = () => [];
             styledTmpl.token = 'token';
 
@@ -331,16 +355,16 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            expect(cmp.hasAttribute('token')).toBe(true);
+            expect(cmp.hasAttribute('token-host')).toBe(true);
 
             cmp.tmpl = unstyledTmpl;
 
             return Promise.resolve().then(() => {
-                expect(cmp.hasAttribute('token')).toBe(false);
+                expect(cmp.hasAttribute('token-host')).toBe(false);
             });
         });
 
-        it('swaps the token when replacing the template with a different token', () => {
+        it('swaps the host token when replacing the template with a different token', () => {
             const styledTmplA: Template = () => [];
             styledTmplA.token = 'tokenA';
 
@@ -360,14 +384,14 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            expect(cmp.hasAttribute('tokenA')).toBe(true);
-            expect(cmp.hasAttribute('tokenB')).toBe(false);
+            expect(cmp.hasAttribute('tokenA-host')).toBe(true);
+            expect(cmp.hasAttribute('tokenB-host')).toBe(false);
 
             cmp.tmpl = styledTmplB;
 
             return Promise.resolve().then(() => {
-                expect(cmp.hasAttribute('tokenA')).toBe(false);
-                expect(cmp.hasAttribute('tokenB')).toBe(true);
+                expect(cmp.hasAttribute('tokenA-host')).toBe(false);
+                expect(cmp.hasAttribute('tokenB-host')).toBe(true);
             });
         });
     });
