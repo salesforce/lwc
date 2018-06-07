@@ -2,7 +2,7 @@ import _xFoo from 'x-foo';
 import { Element } from 'engine';
 
 function style(tagName, token) {
-    return `${tagName}[${token}],[is="${tagName}"][${token}] {
+    return `[${token}-host] {
     color: blue;
 }
 div[${token}] {
