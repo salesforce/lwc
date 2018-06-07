@@ -371,7 +371,7 @@ export function f(items: any[]): any[] {
 
 // [t]ext node
 export function t(text: string): VText {
-    let sel, data = { uid: getCurrentOwnerId(), }, children, key, elm; // tslint:disable-line
+    let sel, data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
     return {
         nt: TEXT_NODE,
         sel,
@@ -384,7 +384,7 @@ export function t(text: string): VText {
 }
 
 export function p(text: string): VComment {
-    let sel = '!', data = { uid: getCurrentOwnerId(), }, children, key, elm; // tslint:disable-line
+    let sel = '!', data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
     return {
         nt: COMMENT_NODE,
         sel,
