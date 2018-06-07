@@ -4,7 +4,7 @@ import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm
 import { ComponentConstructor } from "./component";
 import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes } from "./dom/traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
