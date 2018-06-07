@@ -7,10 +7,9 @@ import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
-import uid from "./modules/uid";
 import { isNull, isUndefined, isFalse, isTrue } from './language';
 import { parentNodeGetter } from "./dom/node";
-import { VM } from "./vm";
+import { VM, OwnerKey } from "./vm";
 import { ViewModelReflection } from "./utils";
 
 const {
@@ -43,17 +42,25 @@ export const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
         return createDocumentFragment.call(document);
     },
-    createElement(tagName: string): HTMLElement {
-        return createElement.call(document, tagName);
+    createElement(tagName: string, uid: number): HTMLElement {
+        const element = createElement.call(document, tagName);
+        element[OwnerKey] = uid;
+        return element;
     },
-    createElementNS(namespaceURI: string, qualifiedName: string): Element {
-        return createElementNS.call(document, namespaceURI, qualifiedName);
+    createElementNS(namespaceURI: string, qualifiedName: string, uid: number): Element {
+        const element = createElementNS.call(document, namespaceURI, qualifiedName);
+        element[OwnerKey] = uid;
+        return element;
     },
-    createTextNode(text: string): Text {
-        return createTextNode.call(document, text);
+    createTextNode(text: string, uid: number): Text {
+        const textNode = createTextNode.call(document, text);
+        textNode[OwnerKey] = uid;
+        return textNode;
     },
-    createComment(text: string): Comment {
-        return createComment.call(document, text);
+    createComment(text: string, uid: number): Comment {
+        const comment = createComment.call(document, text);
+        comment[OwnerKey] = uid;
+        return comment;
     },
     insertBefore(parent: Node, newNode: Node, referenceNode: Node | null) {
         const vm: VM = parent[ViewModelReflection];
@@ -93,7 +100,6 @@ const patchVNode = init([
     styles,
     events,
     token,
-    uid,
 ], htmlDomApi);
 
 const patchChildren = patchVNode.children;

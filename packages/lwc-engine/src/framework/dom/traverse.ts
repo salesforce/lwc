@@ -51,7 +51,7 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | S
 }
 
 export function shadowRootChildNodes(vm: VM, elm: Element) {
-    return getAllMatches(vm, elm.children);
+    return getAllMatches(vm, nativeChildNodesGetter.call(elm));
 }
 
 function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {

@@ -8,11 +8,7 @@ describe('Slots with empty iterators should render', () => {
     });
 
     it('should have rendered element in slot correctly', function () {
-        const text = browser.execute(function () {
-            var element = document.querySelector('x-child');
-            return element.textContent;
-        });
-
-        assert.equal(text.value, 'Rendered ok');
+        const element = browser.element('x-child');
+        assert.equal(element.getText(), 'Rendered ok');
     });
 });
