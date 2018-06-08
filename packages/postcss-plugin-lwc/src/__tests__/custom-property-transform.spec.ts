@@ -1,7 +1,7 @@
 import { process } from './shared';
 
 describe('var transform', () => {
-    it('should handle single variables in declaration value', async () => {
+    it('should handle single variable in declaration value', async () => {
         const { css } = await process('div { color: var(--lwc-color); }');
 
         expect(css).toBe(

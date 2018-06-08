@@ -15,13 +15,15 @@ export default postcss.plugin(PLUGIN_NAME, (config: PluginConfig) => {
         const { customProperties } = config;
 
         if (customProperties !== undefined) {
+            const { allowDefinition, transformVar } = customProperties;
+
             root.walkDecls(decl => {
-                if (!customProperties.allowDefinition) {
+                if (!allowDefinition) {
                     validateCustomProperties(decl);
                 }
 
-                if (customProperties.transformVar) {
-                    transformCustomProperties(decl, customProperties.transformVar);
+                if (transformVar) {
+                    transformCustomProperties(decl, transformVar);
                 }
             });
         }

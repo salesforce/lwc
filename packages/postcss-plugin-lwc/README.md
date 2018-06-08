@@ -100,7 +100,7 @@ Type: `(name: string, fallback?: string): string`
 Required: `false`
 Default: `undefined`
 
-Hook that allow to replace `var()` function usage in the stylesheet. The `transformVar` function receives the custom property name and the fallback value when present and should return a string that will inserted in the generated stylesheet.
+Hook that allows to replace `var()` function usage in the stylesheet. The `transformVar` function receives a custom property name and a fallback value, to be used when custom property does not exist. The resulting string is then inserted into generated stylesheet.
 
 ```js
 lwcPlugin({
@@ -133,17 +133,17 @@ div {
 
 ## Attribute usage restrictions
 
-Since LWC uses the HTML attribute syntax to define properties on components, it be misleading to use attribute selectors when styling a component. For this reason the CSS transform restricts the usage of CSS attribute selectors.
+Since LWC uses the HTML attribute syntax to define properties on components, it will be misleading to use attribute selectors when styling a component. For this reason the CSS transform restricts the usage of CSS attribute selectors.
 
 * CSS selectors using [Global HTML attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes) are allowed.
-* Usage of attributes are only allow in compound selectors with known tag selectors
+* Usage of attributes are only allowed in compound selectors with known tag selectors
 
 ```css
 [hidden] {}         /* ✅ OK - global HTML attribute selector */
 x-btn[hidden] {}    /* ✅ OK - global HTML attribute selector */
 
 [min=0] {}          /* 🚨 ERROR - the compound selector is not specific enough */
-input[min=0] {}     /* ✅ OK - "min" attribute is a known special attribute on the "input" element*/
+input[min=0] {}     /* ✅ OK - "min" attribute is a known special attribute on the "input" element */
 x-btn[min=0] {}     /* 🚨 ERROR - invalid usage "min" attribute on "x-btn" */
 ```
 
