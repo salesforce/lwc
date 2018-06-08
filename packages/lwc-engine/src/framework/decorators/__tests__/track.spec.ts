@@ -193,7 +193,6 @@ describe('track.ts', () => {
                 document.body.appendChild(elm);
             }).toThrow();
         });
-
     });
 
     describe('@track regression', () => {

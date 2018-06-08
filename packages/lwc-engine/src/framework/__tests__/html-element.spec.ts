@@ -310,63 +310,46 @@ describe('html-element', () => {
         it('should log warning when element is not connected', function() {
             class Foo extends Element {}
             const elm = createElement('x-foo', { is: Foo });
-            jest.spyOn(assertLogger, 'logWarning');
 
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
-                expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
-                assertLogger.logWarning.mockRestore();
-            });
-        });
-
-        it('should not log warning when element is connected', function() {
-            class Foo extends Element {}
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
-
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
-                expect(assertLogger.logWarning).not.toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+            expect(() => (
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'))
+            )).toLogWarning(
+                'Unreachable event "warning" dispatched from disconnected element <x-foo>.'
+            );
         });
 
         it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
             class Foo extends Element {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
 
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1-$'));
-                expect(assertLogger.logWarning).toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+            expect(() => (
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1-$'))
+            )).toLogWarning(
+                'Invalid event type "foo1-$" dispatched in element <x-foo>.'
+            );
         });
 
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
             class Foo extends Element {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
-            return Promise.resolve().then( () => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('123'));
-                expect(assertLogger.logWarning).toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+
+            expect(() => (
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('123'))
+            )).toLogWarning(
+                'Invalid event type "123" dispatched in element <x-foo>.'
+            );
         });
 
         it('should not log warning for alphanumeric lowercase event name', function() {
             class Foo extends Element {}
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
-            return Promise.resolve().then( () => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1234abc'));
-                expect(assertLogger.logWarning).not.toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+
+            expect(() => (
+                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1234abc'))
+            )).not.toLogWarning();
         });
 
         it('should get native click event in host', function () {
@@ -503,23 +486,25 @@ describe('html-element', () => {
 
     describe('#tracked', () => {
         it('should warn if component has untracked state property', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
                 state = {};
             }
-            const element = createElement('x-foo', { is: MyComponent });
-            expect(assertLogger.logWarning).toHaveBeenCalledWith('Non-trackable component state detected in <x-foo>. Updates to state property will not be reactive. To make state reactive, add @track decorator.');
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                createElement('x-foo', { is: MyComponent })
+            )).toLogWarning(
+                'Non-trackable component state detected in <x-foo>.'
+            );
         });
         it('should not warn if component has tracked state property', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends Element {
                 state = {};
             }
             MyComponent.track = { state: 1 };
-            const element = createElement('x-foo-tracked-state', { is: MyComponent });
-            expect(assertLogger.logWarning).not.toHaveBeenCalled();
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                createElement('x-foo-tracked-state', { is: MyComponent })
+            )).not.toLogWarning();
         });
         it('should be mutable during construction', () => {
             let state;
@@ -607,64 +592,56 @@ describe('html-element', () => {
         }),
 
         it('should log console error when user land code changes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
+            class Child extends Element {}
             class Parent extends Element {
                 render() {
-                    return html;
+                    return function html($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ];
+                    };
                 }
             }
-            class Child extends Element {}
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.setAttribute('title', "value from parent");
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            expect(() => (
+                elm.shadowRoot.querySelector('x-child').setAttribute('title', "value from parent")
+            )).toLogError(
+                'TODO: Multiple errors are thrown'
+            );
         });
 
         it('should log console error when user land code removes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
+            class Child extends Element {}
             class Parent extends Element {
                 render() {
-                    return html;
+                    return function html($api, $cmp) {
+                        return [
+                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                        ];
+                    };
                 }
             }
-            class Child extends Element {}
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
+            const elm = createElement('x-parent', { is: Parent });
+            document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.removeAttribute('title');
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            expect(() => (
+                elm.shadowRoot.querySelector('x-child').removeAttribute('title')
+            )).toLogError(
+                'TODO: Multiple errors are thrown'
+            );
         });
 
         it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
-            jest.spyOn(assertLogger, 'logError');
             class MyComponent extends Element {}
             const elm = createElement('x-foo', {is: MyComponent});
-            elm.setAttribute('tabindex', '0');
-            document.body.appendChild(elm);
 
-            return Promise.resolve().then( () => {
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            expect(() => (
+                elm.setAttribute('tabindex', '0')
+            )).toLogError(
+                'Invalid attribute "tabindex" for [object:vm MyComponent (0)]. Instead access the public property with `element.tabIndex;`.'
+            );
         });
 
         it('should delete existing attribute prior rendering', () => {
@@ -1005,38 +982,6 @@ describe('html-element', () => {
             expect(() => {
                 elm.foo;
             }).not.toThrow();
-        });
-
-        it('should not log a warning when setting tracked value to null', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
-                state = {};
-                connectedCallback() {
-                    this.state.foo = null;
-                    this.state.foo;
-                }
-            }
-            MyComponent.track = { state: 1 };
-            const elm = createElement('x-foo-tracked-null', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
-        });
-
-        it('should not log a warning when initializing api value to null', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-            class MyComponent extends Element {
-                foo = null;
-            }
-            MyComponent.publicProps = {
-                foo: {
-                    config: 0
-                }
-            };
-            const elm = createElement('x-foo-init-api', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
         });
     });
 
@@ -2098,66 +2043,7 @@ describe('html-element', () => {
                 expect(userDefinedTabIndexValue).toBe('0');
             });
 
-        }),
-
-        it('should log console error when user land code changes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-            class Parent extends Element {
-                render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
-                }
-            }
-            class Child extends Element {}
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.setAttribute('title', "value from parent");
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            })
-        })
-
-        it('should log console error when user land code removes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-            class Parent extends Element {
-                render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
-                }
-            }
-            class Child extends Element {}
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.removeAttribute('title');
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            })
-        })
-
-        it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
-            jest.spyOn(assertLogger, 'logError');
-            class MyComponent extends Element {}
-            const elm = createElement('x-foo', {is: MyComponent});
-            elm.setAttribute('foo', 'something');
-            document.body.appendChild(elm);
-
-            return Promise.resolve().then( () => {
-                expect(assertLogger.logError).not.toBeCalled();
-                assertLogger.logError.mockRestore();
-            })
-        })
+        });
 
         it('should delete existing attribute prior rendering', () => {
             const def = class MyComponent extends Element {}

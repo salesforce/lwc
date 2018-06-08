@@ -182,7 +182,7 @@ LWCElement.prototype = {
             }
 
             if (!evtName.match(/^[a-z]+([a-z0-9]+)?$/)) {
-                assert.logWarning(`Invalid event type: '${evtName}' dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
+                assert.logWarning(`Invalid event type "${evtName}" dispatched in element ${this}. Event name should only contain lowercase alphanumeric characters.`);
             }
         }
         return dispatchEvent.call(elm, event);

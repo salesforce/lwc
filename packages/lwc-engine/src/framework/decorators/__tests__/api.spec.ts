@@ -111,7 +111,6 @@ describe('decorators/api.ts', () => {
             expect(elm.x).toBe('foo');
             expect(elm.textContent).toBe('foo');
         });
-
     });
 
     describe('@api get/set x', () => {

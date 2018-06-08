@@ -1,17 +1,17 @@
 const chalk = require('chalk');
 
 const { CONSOLE_WHITELIST } = require('./test-whitelist');
-const { toLogError, toLogWarning } = require('./matchers/console-matchers');
+const { toLogError, toLogWarning } = require('./matchers/log-matchers');
 
 // Extract original methods from console
-const { warn, error } = console;
+const { warn, error, log } = console;
 
 const consoleOverride = methodName => () => {
     const message = [
         `Expect test not to call ${chalk.red.bold(
             `console.${methodName}()`,
         )}.\n`,
-        `If the message expected, make sure you mock the console method in your test.\n`,
+        `If the message expected, make sure you asserts against those logs in the tests.\n`,
         `Use instead: ${chalk.green.bold(
             `expect(<function>).toLogError(<message>)`,
         )} or ${chalk.green.bold(
