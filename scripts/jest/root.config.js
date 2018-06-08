@@ -6,6 +6,7 @@ module.exports = {
         '<rootDir>/packages/lwc-engine',
         '<rootDir>/packages/lwc-jest-preset',
         '<rootDir>/packages/lwc-jest-resolver',
+        '<rootDir>/packages/lwc-jest-serializer',
         '<rootDir>/packages/lwc-jest-transformer',
         '<rootDir>/packages/lwc-module-resolver',
         '<rootDir>/packages/lwc-template-compiler',
