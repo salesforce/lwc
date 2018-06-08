@@ -1,0 +1,9 @@
+{
+  "moduleFileExtensions": ["js", "html"],
+  "transform": {
+    "^.+\\.(js|html|css)$": "lwc-jest-transformer"
+  },
+  "resolver": "lwc-jest-resolver",
+  "verbose": true,
+  "testMatch": [ "**/__tests__/**/?(*.)(spec|test).js" ]
+}
