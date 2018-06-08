@@ -32,6 +32,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             const currentTarget = this.currentTarget as HTMLElement;
             const originalTarget = eventTargetGetter.call(this);
             // Executing event listener on component, target is always currentTarget
+
             if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                 return patchShadowDomTraversalMethods(currentTarget);
             }
@@ -191,12 +192,7 @@ export function getWrappedTemplateListener(vm: VM, fn: EventListener): EventList
     return function handler(event: Event) {
         if (isValidEventForCustomElement(event)) {
             patchShadowDomEvent(vm, event);
-
-            // We do not want to call invoker/invokeEventListener because
-            // that method is for calling events added to the custom element from within.
-            // Instead, we can just call the component callback directly because the callback
-            // is guaranteed to not be attached directly to the root or component instance.
-            invokeComponentCallback(vm, fn, [event]);
+            invokeEventListener(vm, EventListenerContext.NATIVE_ELEMENT, fn, vm.component, event);
         }
     };
 }
