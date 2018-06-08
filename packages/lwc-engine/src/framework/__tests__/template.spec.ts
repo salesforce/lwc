@@ -4,7 +4,6 @@ import { Element } from "../html-element";
 import { createElement } from '../main';
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
-import { querySelector, querySelectorAll } from '../dom/element';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -333,7 +332,8 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            expect(querySelectorAll.call(cmp, 'div[token]').length).toBe(2);
+            const divs = cmp.shadowRoot.querySelectorAll('div[token]');
+            expect(divs.length).toBe(2);
         });
 
         it('removes the host token from the host element when changing template', () => {
@@ -485,7 +485,8 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('foo');
+            const div = element.shadowRoot.querySelector('div');
+            expect(div.getAttribute('title')).toBe('foo');
         });
 
         it('should remove attribute when value is null', () => {
@@ -517,10 +518,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('initial');
+            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(querySelector.call(element, 'div').hasAttribute('title')).toBe(false);
+                expect(element.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
             });
         });
     });
