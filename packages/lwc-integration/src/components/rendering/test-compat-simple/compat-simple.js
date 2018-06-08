@@ -1,5 +1,6 @@
-import { Element, api } from "engine";
+import { Element, api, track } from "engine";
 export default class CompatSimple extends Element {
+    @track
     state = { computed: "default" };
 
     @api
