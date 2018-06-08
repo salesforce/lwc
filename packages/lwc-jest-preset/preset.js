@@ -24,4 +24,9 @@ if (jestPreset.transform) {
         jestPreset.transform[key] = require.resolve(jestPreset.transform[key]);
     });
 }
+if (jestPreset.snapshotSerializers) {
+    Object.keys(jestPreset.snapshotSerializers).forEach(key => {
+        jestPreset.snapshotSerializers[key] = require.resolve(jestPreset.snapshotSerializers[key]);
+    });
+}
 module.exports = jestPreset;
