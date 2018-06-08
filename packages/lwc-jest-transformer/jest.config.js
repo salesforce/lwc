@@ -13,5 +13,5 @@ module.exports = {
     testMatch: [ '**/__tests__/**/?(*.)(test).js' ],
     resolver: 'lwc-jest-resolver',
     displayName: 'lwc-jest-transformer',
-    snapshotSerializers: ['<rootDir>/jest-serializer-shadow.js'],
+    snapshotSerializers: ['lwc-jest-serializer'],
 };

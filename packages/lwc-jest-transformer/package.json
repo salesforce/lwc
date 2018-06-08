@@ -30,7 +30,8 @@
     "jest": "23.1.0",
     "lwc-compiler": "0.22.6",
     "lwc-engine": "0.22.6",
-    "lwc-jest-resolver": "0.22.6"
+    "lwc-jest-resolver": "0.22.6",
+    "lwc-jest-serializer": "0.22.6"
   },
   "engines": {
     "node": ">=8"
