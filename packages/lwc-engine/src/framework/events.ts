@@ -9,7 +9,7 @@ import {
 } from "./dom/node";
 import { VM, OwnerKey, getCustomElementVM } from "./vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
-import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType, invokeComponentCallback } from "./invoker";
+import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
 interface WrappedListener extends EventListener {
