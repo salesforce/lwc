@@ -5,11 +5,11 @@ const typescript = require('typescript');
 const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const babelMinify = require('babel-minify');
-const { version } = require('../package.json');
+const { version } = require('../../package.json');
 const { generateTargetName, ignoreCircularDependencies } = require('./engine.rollup.config.util');
 
-const entry = path.resolve(__dirname, '../src/framework/main.ts');
-const outputDir = path.resolve(__dirname, '../dist/umd');
+const entry = path.resolve(__dirname, '../../src/framework/main.ts');
+const outputDir = path.resolve(__dirname, '../../dist/umd');
 const banner = (`/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;
 

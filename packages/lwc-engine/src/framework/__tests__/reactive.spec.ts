@@ -34,4 +34,10 @@ describe('unwrap', () => {
         const val = el.query();
         expect(unwrap(val)).toBe(document.body.querySelector('div'));
     });
+
+    it('should handle undefined value', () => {
+        expect(() => {
+            unwrap(undefined);
+        }).not.toThrow();
+    });
 })

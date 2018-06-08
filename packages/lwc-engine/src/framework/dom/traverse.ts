@@ -1,19 +1,27 @@
-import assert from "./assert";
-import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey } from "./vm";
+import assert from "../assert";
+import { VM, getElementOwnerVM, isNodeOwnedByVM, OwnerKey, getCustomElementVM } from "../vm";
 import {
-    querySelectorAll as nativeQuerySelectorAll,
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
-    iFrameContentWindowGetter,
-} from "./dom";
-import { wrapIframeWindow, ShadowRoot } from "./root";
+    childNodesGetter as nativeChildNodesGetter,
+} from "./node";
+import {
+    querySelectorAll as nativeQuerySelectorAll,
+} from "./element";
+import { wrapIframeWindow } from "./iframe";
 import {
     ArrayFilter,
     defineProperty,
     defineProperties,
     hasOwnProperty,
-} from "./language";
-import { isBeingConstructed } from "./invoker";
+    ArrayReduce,
+    ArraySlice,
+} from "../language";
+import { isBeingConstructed } from "../invoker";
+
+import { getOwnPropertyDescriptor, isNull } from "../language";
+
+const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
 function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
     if (process.env.NODE_ENV !== 'production') {
@@ -40,6 +48,10 @@ export function parentElementDescriptorValue(this: HTMLElement): HTMLElement | S
     const vm = getElementOwnerVM(this) as VM;
     const value = nativeParentElementGetter.call(this);
     return getShadowParent(this, vm, value);
+}
+
+export function shadowRootChildNodes(vm: VM, elm: Element) {
+    return getAllMatches(vm, elm.children);
 }
 
 function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
@@ -91,6 +103,37 @@ export function shadowRootQuerySelectorAll(vm: VM, selector: string): HTMLElemen
     return getAllMatches(vm, nodeList);
 }
 
+export function lightDomCustomElementChildNodes(this: HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
+    }
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const customElementVM = getCustomElementVM(this);
+    const slots = shadowRootQuerySelectorAll(customElementVM, 'slot');
+    const children = ArrayReduce.call(slots, (seed, slot) => {
+        return seed.concat(ArraySlice.call(nativeChildNodesGetter.call(slot)));
+    }, []);
+
+    return getAllMatches(ownerVM, children);
+}
+
+export function lightDomChildNodes(this: HTMLElement) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live nodelist which is not stable. Use querySelectorAll instead.`);
+    }
+    const ownerVM = getElementOwnerVM(this) as VM;
+    const children = nativeChildNodesGetter.call(this);
+    return getAllMatches(ownerVM, children);
+}
+
+export function assignedSlotGetter(this: HTMLElement) {
+    const parentNode = nativeParentNodeGetter.call(this);
+    if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
+        return null;
+    }
+    return parentNode;
+}
+
 const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
@@ -100,14 +143,23 @@ const shadowDescriptors: PropertyDescriptorMap = {
         value: lightDomQuerySelectorAll,
         configurable: true,
     },
-    parentNode: {
-        get: parentNodeDescriptorValue,
-        configurable: true,
-    },
+    // TODO: @dval removes as a temporal fix for selenium internals
+    // parentNode: {
+    //     get: parentNodeDescriptorValue,
+    //     configurable: true,
+    // },
     parentElement: {
         get: parentElementDescriptorValue,
         configurable: true,
-    }
+    },
+    childNodes: {
+        get: lightDomChildNodes,
+        configurable: true,
+    },
+    assignedSlot: {
+        get: assignedSlotGetter,
+        configurable: true,
+    },
 };
 
 const contentWindowDescriptor: PropertyDescriptor = {

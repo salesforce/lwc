@@ -8,7 +8,9 @@ describe('Title public prop', () => {
     });
 
     it('should have rendered title property propertly', function () {
-        const li = browser.element('x-child');
-        assert.deepEqual(li.getText(), 'Child title');
+        const text = browser.execute(function () {
+            return document.querySelector('x-child').textContent;
+        });
+        assert.deepEqual(text.value, 'Child title');
     });
 });

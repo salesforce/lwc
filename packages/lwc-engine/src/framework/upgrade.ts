@@ -1,9 +1,10 @@
 import assert from "./assert";
-import { isUndefined, isFunction, assign, hasOwnProperty, defineProperties } from "./language";
+import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
-import { registerComponent, getCtorByTagName, prepareForAttributeMutationFromTemplate, ViewModelReflection } from "./def";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom";
+import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
+import { setAttribute } from "./dom/element";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes } from "./dom/traverse";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -42,13 +43,48 @@ assign(Node.prototype, {
     },
 });
 
-function querySelectorPatchedRoot() {
-    return null;
+function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
+    }
+    return shadowRootQuerySelector(vm, selector);
 }
 
-function querySelectorAllPatchedRoot() {
-    return EmptyNodeList;
+function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[] | NodeList {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.querySelectorAll() on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelectorAll().`);
+    }
+    return shadowRootQuerySelectorAll(vm, selector);
 }
+
+function childNodesPatchedRoot(this: HTMLElement): HTMLElement[] {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV === 'test') {
+        // TODO: remove this backward compatibility branch.
+        assert.logError(`Using elm.childNodes on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.childNodes.`);
+    }
+
+    return shadowRootChildNodes(vm, this);
+}
+
+const rootNodeFallbackDescriptors = {
+    querySelectorAll: {
+        value: querySelectorAllPatchedRoot,
+        configurable: true,
+    },
+    querySelector: {
+        value: querySelectorPatchedRoot,
+        configurable: true,
+    },
+    childNodes: {
+        get: childNodesPatchedRoot,
+        configurable: true,
+    },
+};
 
 /**
  * This method is almost identical to document.createElement
@@ -62,34 +98,37 @@ function querySelectorAllPatchedRoot() {
  * then it throws a TypeError.
  */
 export function createElement(sel: string, options: any = {}): HTMLElement {
-    if (isUndefined(options) || !isFunction(options.is)) {
+    if (!isObject(options) || isNull(options)) {
         throw new TypeError();
     }
-    registerComponent(sel, options.is);
+
+    const Ctor = resolveCircularModuleDependency((options as any).is);
+
+    let { mode, fallback } = (options as any);
+    // TODO: for now, we default to open, but eventually it should default to 'closed'
+    if (mode !== 'closed') { mode = 'open'; }
+    // TODO: for now, we default to true, but eventually it should default to false
+    if (fallback !== false) { fallback = true; }
+
     // extracting the registered constructor just in case we need to force the tagName
-    const Ctor = getCtorByTagName(sel);
     const { forceTagName } = Ctor as ComponentConstructor;
     const tagName = isUndefined(forceTagName) ? sel : forceTagName;
+
     // Create element with correct tagName
     const element = document.createElement(tagName);
     if (hasOwnProperty.call(element, ViewModelReflection)) {
+        // There is a possibility that a custom element is registered under tagName,
+        // in which case, the initialization is already carry on, and there is nothing else
+        // to do here.
         return element;
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
-    createVM(sel, element);
-
-    // We don't support slots on root nodes
-    defineProperties(element, {
-        querySelectorAll: {
-            value: querySelectorAllPatchedRoot,
-            configurable: true,
-        },
-        querySelector: {
-            value: querySelectorPatchedRoot,
-            configurable: true,
-        }
-    });
+    createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
+    if (isTrue(fallback)) {
+        // We don't support slots on root nodes
+        defineProperties(element, rootNodeFallbackDescriptors);
+    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);
@@ -99,10 +138,7 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         // We don't want to do this during construction because it breaks another
         // WC invariant.
         if (!isUndefined(forceTagName)) {
-            if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(element, 'is');
-            }
-            element.setAttribute('is', sel);
+            setAttribute.call(element, 'is', sel);
         }
         renderVM(vm);
     };

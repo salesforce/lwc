@@ -1,0 +1,6 @@
+<template>
+    <div onclick={handleClick}>
+        <slot></slot>
+    </div>
+    <div class="correct-event-target" if:true={eventTargetIsCorrectTag}>Event target is correct</div>
+</template>

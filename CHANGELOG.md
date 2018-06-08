@@ -1,5 +1,69 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.21.0...v) (2018-05-29)
+# [](https://github.com/salesforce/lwc/compare/v0.22.5...v) (2018-06-03)
+
+
+
+<a name="0.22.5"></a>
+## [0.22.5](https://github.com/salesforce/lwc/compare/v0.22.4...v0.22.5) (2018-06-03)
+
+
+### Bug Fixes
+
+* disable shadow and membrane in prod ([#372](https://github.com/salesforce/lwc/issues/372)) ([41149c2](https://github.com/salesforce/lwc/commit/41149c2))
+
+
+
+<a name="0.22.4"></a>
+## [0.22.4](https://github.com/salesforce/lwc/compare/v0.22.3...v0.22.4) (2018-06-03)
+
+
+### Bug Fixes
+
+* removing shadowRoot property from elements ([#371](https://github.com/salesforce/lwc/issues/371)) ([fb1e968](https://github.com/salesforce/lwc/commit/fb1e968))
+
+
+
+<a name="0.22.3"></a>
+## [0.22.3](https://github.com/salesforce/lwc/compare/v0.22.2...v0.22.3) (2018-06-02)
+
+
+
+<a name="0.22.2"></a>
+## [0.22.2](https://github.com/salesforce/lwc/compare/v0.22.1...v0.22.2) (2018-06-02)
+
+
+### Bug Fixes
+
+* **engine:** expose shadowRoot if the mode is open ([#367](https://github.com/salesforce/lwc/issues/367)) ([3de5ec3](https://github.com/salesforce/lwc/commit/3de5ec3))
+* **engine:** fixing slotted event targets ([#368](https://github.com/salesforce/lwc/issues/368)) ([def3b83](https://github.com/salesforce/lwc/commit/def3b83))
+
+
+
+<a name="0.22.1"></a>
+## [0.22.1](https://github.com/salesforce/lwc/compare/v0.22.0...v0.22.1) (2018-05-31)
+
+
+### Bug Fixes
+
+* **engine:** fixed [#342](https://github.com/salesforce/lwc/issues/342) - clean up and docs ([#358](https://github.com/salesforce/lwc/issues/358)) ([01c7eb8](https://github.com/salesforce/lwc/commit/01c7eb8))
+* **engine:** fixing event target from slotted element ([#359](https://github.com/salesforce/lwc/issues/359)) ([594e508](https://github.com/salesforce/lwc/commit/594e508))
+* **engine:** going through cmpRoot to get default aria value ([#360](https://github.com/salesforce/lwc/issues/360)) ([6322456](https://github.com/salesforce/lwc/commit/6322456))
+
+
+
+<a name="0.22.0"></a>
+# [0.22.0](https://github.com/salesforce/lwc/compare/v0.21.0...v0.22.0) (2018-05-31)
+
+
+### Bug Fixes
+
+* **engine:** removing iframe content window unwrapping ([#356](https://github.com/salesforce/lwc/issues/356)) ([14f8e8b](https://github.com/salesforce/lwc/commit/14f8e8b))
+
+
+### Features
+
+* **compiler:** removed compiler slotset ([#348](https://github.com/salesforce/lwc/issues/348)) ([cab0f5b](https://github.com/salesforce/lwc/commit/cab0f5b))
+* **git:** add commit validation types ([#351](https://github.com/salesforce/lwc/issues/351)) ([5c974c9](https://github.com/salesforce/lwc/commit/5c974c9))
 
 
 
@@ -321,7 +385,12 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
+
+
+
+<a name="0.17.3"></a>
+## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
 
 
 

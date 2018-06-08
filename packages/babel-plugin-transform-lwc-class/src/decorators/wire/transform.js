@@ -97,7 +97,7 @@ function getWiredParamMetadata(properties) {
 module.exports = function transform(t, klass, decorators) {
     const metadata = [];
     const wiredValues = decorators.filter(isWireDecorator).map(({ path }) => {
-        const [id, config] = path.get('expression.arguments');
+        const [id, config] = path.get('arguments');
 
         const propertyName = path.parentPath.get('key.name').node;
         const isClassMethod = path.parentPath.isClassMethod({

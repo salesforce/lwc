@@ -2,7 +2,7 @@ import * as api from '../api';
 import { Element } from "../html-element";
 import { createElement } from '../main';
 import { RenderAPI } from '../api';
-import { querySelector } from "../dom";
+import { querySelector } from "../dom/element";
 
 describe('api', () => {
     describe('#c()', () => {
@@ -106,22 +106,28 @@ describe('api', () => {
             expect(span.getAttribute('is')).toEqual('x-bar');
         });
 
-        it('should throw when forceTagName cannot have a shadow root attached to it', () => {
+        it('should throw if the forceTagName value is a reserved standard element name', () => {
             class Bar extends Element {
-                static forceTagName = 'div'; // it can't be a div
+                static forceTagName = 'div';
             }
+
             expect(() => {
                 createElement('x-foo', { is: Bar });
-            }).toThrow();
+            }).toThrow(
+                /Invalid static forceTagName property set to "div"/
+            );
         });
 
-        it('should throw when forceTagName cannot have a shadow root attached to it', () => {
+        it('should throw if the forceTagName is a custom element name', () => {
             class Bar extends Element {
-                static forceTagName = 'x-bar'; // it can't be a custom element name
+                static forceTagName = 'x-bar';
             }
+
             expect(() => {
                 createElement('x-foo', { is: Bar });
-            }).toThrow();
+            }).toThrow(
+                /Invalid static forceTagName property set to "x-bar"/
+            );
         });
 
     });

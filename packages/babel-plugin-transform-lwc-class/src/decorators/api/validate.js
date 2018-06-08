@@ -1,6 +1,6 @@
 const { isApiDecorator } = require('./shared');
 const {
-    AMBIGIOUS_PROP_SET,
+    AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
     GLOBAL_ATTRIBUTE_MAP,
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
@@ -52,10 +52,10 @@ function validatePropertyName(property) {
         throw property.buildCodeFrameError(
             `Invalid property name "${propertyName}". "${propertyName}" is a reserved attribute.`
         );
-    } else if (AMBIGIOUS_PROP_SET.has(propertyName)) {
-        const { propName = propertyName } = GLOBAL_ATTRIBUTE_MAP.get(propertyName) || {};
+    } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
+        const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
         throw property.buildCodeFrameError(
-            `Ambigious attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${propName}".`
+            `Ambiguous attribute name ${propertyName}. ${propertyName} will never be called from template because its corresponding property is camel cased. Consider renaming to "${camelCased}".`
         );
     }
 }

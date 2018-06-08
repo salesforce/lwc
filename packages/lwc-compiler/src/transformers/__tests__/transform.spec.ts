@@ -53,7 +53,7 @@ describe("transform", () => {
             // TODO: Figure out how to disable error message code snippet for failing token.
             expect(
                 error.message.indexOf("foo.js: Unexpected token (1:5)")
-            ).toBe(0);
+            ).toBeGreaterThanOrEqual(0);
         }
     });
     it("should apply transformation for valid javascript file", async () => {

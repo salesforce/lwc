@@ -5,11 +5,9 @@ function style(tagName, token) {
     return `${tagName}[${token}],[is="${tagName}"][${token}] {
     color: blue;
 }
-
 div[${token}] {
     color: red;
 }
-
 x-foo[${token}],[is="x-foo"][${token}] {
     color: green;
 }
@@ -26,12 +24,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         key: 1
     }, []), api_custom_element("x-foo", _xFoo, {
         key: 2
-    })];
+    }, [])];
 }
 
 if (style) {
     tmpl.token = 'x-styled_styled';
-
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-styled_styled';

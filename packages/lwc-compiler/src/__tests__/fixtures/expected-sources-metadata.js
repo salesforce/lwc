@@ -9,7 +9,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     } = $api;
     return [api_custom_element("x-bar", _xBar, {
         key: 1
-    })];
+    }, [])];
 }
 if (style) {
     tmpl.token = 'x-foo_foo';

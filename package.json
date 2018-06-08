@@ -7,7 +7,7 @@
     "clean": "lerna run clean && lerna clean --yes && rm -rf node_modules",
     "lint": "tslint -p tsconfig.json && npm run types",
     "types": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --config ./scripts/jest/root.config.js",
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
     "test:performance": "lerna exec --scope benchmark -- best --runner remote",
     "build": "lerna run build --ignore benchmark --ignore lwc-integration",
@@ -33,7 +33,7 @@
     "url": "https://github.com/salesforce/lwc.git"
   },
   "devDependencies": {
-    "@babel/core": "7.0.0-beta.44",
+    "@babel/core": "7.0.0-beta.49",
     "@commitlint/cli": "^6.2.0",
     "@commitlint/config-conventional": "^6.1.3",
     "@types/acorn": "~4.0.3",

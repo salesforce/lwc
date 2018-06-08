@@ -1,28 +1,27 @@
 import assert from "./assert";
 import { getComponentDef } from "./def";
-import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback } from "./component";
+import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, hasOwnProperty } from "./language";
-import { addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
-import { ViewModelReflection, getCtorByTagName } from "./def";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isFalse, isObject, keys } from "./language";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentNodeGetter, parentElementGetter } from "./dom";
+import { parentNodeGetter, parentElementGetter } from "./dom/node";
 
-import { VNode, VNodeData, VNodes } from "../3rdparty/snabbdom/types";
+import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
 import { Component } from "./component";
 import { Context } from "./context";
-import { ShadowRoot, Root } from "./root";
 import { startMeasure, endMeasure } from "./performance-timing";
+import { attachShadow, linkShadow, usesNativeShadowRoot } from "./dom/shadow-root";
 
 export interface HashTable<T> {
     [key: string]: T;
 }
 
-export interface Slotset {
-    [key: string]: VNode[];
+export interface SlotSet {
+    [key: string]: VNodes;
 }
 
 export interface VMElement extends HTMLElement {
@@ -41,18 +40,20 @@ export interface VM {
     // TODO: make this type more restrictive once we know more about it
     rootProps: Record<string, string | null | boolean>;
     cmpState?: HashTable<any>;
-    cmpSlots?: Slotset;
+    cmpSlots: SlotSet;
     cmpTrack: HashTable<any>;
     cmpEvents?: Record<string, EventListener[] | undefined>;
     cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
-    cmpRoot?: ShadowRoot;
+    cmpRoot: ShadowRoot;
     callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
     setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
     getHook: (cmp: Component, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
+    fallback: boolean;
+    mode: string;
     component?: Component;
     deps: VM[][];
     hostAttrs: Record<string, number | undefined>;
@@ -162,23 +163,28 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) {
+export interface CreateOptions {
+    mode: string;
+    fallback: boolean;
+    isRoot?: boolean;
+}
+
+export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateOptions) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
-    if (hasOwnProperty.call(elm, ViewModelReflection)) {
-        return; // already created
-    }
-    const Ctor = getCtorByTagName(tagName) as ComponentConstructor;
     const def = getComponentDef(Ctor);
-    const isRoot = arguments.length === 2; // root elements can't provide slotset
+    const { isRoot, mode } = options;
+    const fallback = isTrue(options.fallback) || isFalse(usesNativeShadowRoot);
     uid += 1;
     const vm: VM = {
         uid,
         idx: 0,
         isScheduled: false,
         isDirty: true,
-        isRoot,
+        isRoot: isTrue(isRoot),
+        fallback,
+        mode,
         def,
         elm: elm as VMElement,
         data: EmptyObject,
@@ -187,11 +193,11 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
         rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
-        cmpSlots,
+        cmpSlots: fallback ? create(null) : undefined,
         cmpEvents: undefined,
         cmpListener: undefined,
         cmpTemplate: undefined,
-        cmpRoot: undefined,
+        cmpRoot: attachShadow(elm, options, fallback),
         callHook,
         setHook,
         getHook,
@@ -207,6 +213,8 @@ export function createVM(tagName: string, elm: HTMLElement, cmpSlots?: Slotset) 
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
     }
+    // linking shadow-root with the VM before anything else.
+    linkShadow(vm.cmpRoot, vm);
     createComponent(vm, Ctor);
     linkComponent(vm);
 }
@@ -231,14 +239,14 @@ export function patchErrorBoundaryVm(errorBoundaryVm: VM) {
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
     const children = renderComponent(errorBoundaryVm);
-    const { elm, children: oldCh } = errorBoundaryVm;
+    const { cmpRoot, children: oldCh } = errorBoundaryVm;
     errorBoundaryVm.isScheduled = false;
     errorBoundaryVm.children = children; // caching the new children collection
 
     // patch function mutates vnodes by adding the element reference,
     // however, if patching fails it contains partial changes.
     // patch failures are caught in flushRehydrationQueue
-    patchChildren(elm, oldCh, children);
+    patchChildren(cmpRoot, oldCh, children);
     processPostPatchCallbacks(errorBoundaryVm);
 }
 
@@ -246,7 +254,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    const { children: oldCh } = vm;
+    const { cmpRoot, children: oldCh } = vm;
     vm.children = children; // caching the new children collection
     if (children.length === 0 && oldCh.length === 0) {
         return; // nothing to do here
@@ -260,7 +268,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(vm.elm, oldCh, children);
+        patchChildren(cmpRoot, oldCh, children);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -360,11 +368,19 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     }
 }
 
+function forceResetShadowContent(vm: VM) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    const parentElm: ShadowRoot | Element = vm.fallback ? vm.elm : vm.cmpRoot;
+    parentElm.innerHTML = "";
+}
+
 export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
     }
-    const { elm, children: oldCh } = vm;
+    const { cmpRoot, children: oldCh } = vm;
     vm.children = EmptyArray;
     if (oldCh.length === 0) {
         return; // optimization for the common case
@@ -373,10 +389,9 @@ export function resetShadowRoot(vm: VM) {
     try {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        patchChildren(elm, oldCh, EmptyArray);
+        patchChildren(cmpRoot, oldCh, EmptyArray);
     } catch (e) {
-        // in the event of patch failure force offender removal
-        vm.elm.innerHTML = "";
+        forceResetShadowContent(vm);
     }
 }
 
@@ -486,19 +501,6 @@ export function getCustomElementVM(elmOrCmp: HTMLElement | Component | ShadowRoo
     return elmOrCmp[ViewModelReflection] as VM;
 }
 
-export function getShadowRoot(vm: VM): ShadowRoot {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    let { cmpRoot } = vm;
-    // lazy creation of the ShadowRoot Object the first time it is accessed.
-    if (isUndefined(cmpRoot)) {
-        cmpRoot = new Root(vm);
-        vm.cmpRoot = cmpRoot;
-    }
-    return cmpRoot;
-}
-
 export function getComponentVM(component: Component): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
@@ -513,4 +515,48 @@ export function getShadowRootVM(root: ShadowRoot): VM {
         assert.vm(root[ViewModelReflection]);
     }
     return root[ViewModelReflection] as VM;
+}
+
+// slow path routine
+export function allocateInSlot(vm: VM, children: VNodes) {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+        assert.invariant(isObject(vm.cmpSlots), `When doing manual allocation, there must be a cmpSlots object available.`);
+    }
+    const { cmpSlots: oldSlots } = vm;
+    const cmpSlots = vm.cmpSlots = create(null) as SlotSet;
+    for (let i = 0, len = children.length; i < len; i += 1) {
+        const vnode = children[i];
+        if (isNull(vnode)) {
+            continue;
+        }
+        const data = (vnode.data as VNodeData);
+        const slotName = ((data.attrs && data.attrs.slot) || '') as string;
+        const vnodes: VNodes = cmpSlots[slotName] = cmpSlots[slotName] || [];
+        vnodes.push(vnode);
+    }
+    if (!vm.isDirty) {
+        // We need to determine if the old allocation is really different from the new one
+        // and mark the vm as dirty
+        const oldKeys = keys(oldSlots);
+        if (oldKeys.length !== keys(cmpSlots).length) {
+            markComponentAsDirty(vm);
+            return;
+        }
+        for (let i = 0, len = oldKeys.length; i < len; i += 1) {
+            const key = oldKeys[i];
+            if (isUndefined(cmpSlots[key]) || oldSlots[key].length !== cmpSlots[key].length) {
+                markComponentAsDirty(vm);
+                return;
+            }
+            const oldVNodes = oldSlots[key];
+            const vnodes = cmpSlots[key];
+            for (let j = 0, a = cmpSlots[key].length; j < a; j += 1) {
+                if (oldVNodes[j] !== vnodes[j]) {
+                    markComponentAsDirty(vm);
+                    return;
+                }
+            }
+        }
+    }
 }

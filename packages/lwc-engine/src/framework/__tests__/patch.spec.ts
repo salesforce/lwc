@@ -1,6 +1,6 @@
 import { Element } from "../html-element";
 import { createElement } from "../main";
-import { querySelector } from "../dom";
+import { querySelector } from "../dom/element";
 
 describe('patch', () => {
 
