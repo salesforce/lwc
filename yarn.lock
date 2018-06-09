@@ -848,6 +848,10 @@
   version "0.0.38"
   resolved "http://npm.lwcjs.org/@types/estree/-/estree-0.0.38/c1be40aa933723c608820a99a373a16d215a1ca2.tgz#c1be40aa933723c608820a99a373a16d215a1ca2"
 
+"@types/estree@0.0.39":
+  version "0.0.39"
+  resolved "http://npm.lwcjs.org/@types/estree/-/estree-0.0.39/e177e699ee1b8c22d23174caaa7422644389509f.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
+
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -1618,12 +1622,12 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
-babel-jest@^22.4.1:
-  version "22.4.1"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.4.1/ff53ebca45957347f27ff4666a31499fbb4c4ddd.tgz#ff53ebca45957347f27ff4666a31499fbb4c4ddd"
+babel-jest@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.4.4/977259240420e227444ebe49e226a61e49ea659d.tgz#977259240420e227444ebe49e226a61e49ea659d"
   dependencies:
     babel-plugin-istanbul "^4.1.5"
-    babel-preset-jest "^22.4.1"
+    babel-preset-jest "^22.4.4"
 
 babel-messages@^6.23.0:
   version "6.23.0"
@@ -1659,6 +1663,10 @@ babel-plugin-istanbul@^4.1.4, babel-plugin-istanbul@^4.1.5:
 babel-plugin-jest-hoist@^22.4.1:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.1/d712fe5da8b6965f3191dacddbefdbdf4fb66d63.tgz#d712fe5da8b6965f3191dacddbefdbdf4fb66d63"
+
+babel-plugin-jest-hoist@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.4/b9851906eab34c7bf6f8c895a2b08bea1a844c0b.tgz#b9851906eab34c7bf6f8c895a2b08bea1a844c0b"
 
 babel-plugin-minify-builtins@^0.4.0-alpha.caaefb4c, babel-plugin-minify-builtins@^0.4.0-alpha.f95869d4:
   version "0.4.0-alpha.f95869d4"
@@ -2068,11 +2076,18 @@ babel-preset-env@1.6.1:
     invariant "^2.2.2"
     semver "^5.3.0"
 
-babel-preset-jest@^22.0.1, babel-preset-jest@^22.1.0, babel-preset-jest@^22.4.1:
+babel-preset-jest@^22.0.1, babel-preset-jest@^22.1.0:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.4.1/efa2e5f5334242a9457a068452d7d09735db172a.tgz#efa2e5f5334242a9457a068452d7d09735db172a"
   dependencies:
     babel-plugin-jest-hoist "^22.4.1"
+    babel-plugin-syntax-object-rest-spread "^6.13.0"
+
+babel-preset-jest@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.4.4/ec9fbd8bcd7dfd24b8b5320e0e688013235b7c39.tgz#ec9fbd8bcd7dfd24b8b5320e0e688013235b7c39"
+  dependencies:
+    babel-plugin-jest-hoist "^22.4.4"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
 babel-preset-minify@0.4.0-alpha.caaefb4c:
@@ -5718,9 +5733,9 @@ jest-changed-files@^22.2.0:
   dependencies:
     throat "^4.0.0"
 
-jest-cli@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-22.4.2/e6546dc651e13d164481aa3e76e53ac4f4edab06.tgz#e6546dc651e13d164481aa3e76e53ac4f4edab06"
+jest-cli@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-22.4.4/68cd2a2aae983adb1e6638248ca21082fd6d9e90.tgz#68cd2a2aae983adb1e6638248ca21082fd6d9e90"
   dependencies:
     ansi-escapes "^3.0.0"
     chalk "^2.0.1"
@@ -5734,18 +5749,18 @@ jest-cli@^22.4.2:
     istanbul-lib-instrument "^1.8.0"
     istanbul-lib-source-maps "^1.2.1"
     jest-changed-files "^22.2.0"
-    jest-config "^22.4.2"
+    jest-config "^22.4.4"
     jest-environment-jsdom "^22.4.1"
     jest-get-type "^22.1.0"
     jest-haste-map "^22.4.2"
     jest-message-util "^22.4.0"
     jest-regex-util "^22.1.0"
     jest-resolve-dependencies "^22.1.0"
-    jest-runner "^22.4.2"
-    jest-runtime "^22.4.2"
+    jest-runner "^22.4.4"
+    jest-runtime "^22.4.4"
     jest-snapshot "^22.4.0"
     jest-util "^22.4.1"
-    jest-validate "^22.4.2"
+    jest-validate "^22.4.4"
     jest-worker "^22.2.2"
     micromatch "^2.3.11"
     node-notifier "^5.2.1"
@@ -5771,6 +5786,22 @@ jest-config@^22.0.1, jest-config@^22.4.2:
     jest-resolve "^22.4.2"
     jest-util "^22.4.1"
     jest-validate "^22.4.2"
+    pretty-format "^22.4.0"
+
+jest-config@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-config/-/jest-config-22.4.4/72a521188720597169cd8b4ff86934ef5752d86a.tgz#72a521188720597169cd8b4ff86934ef5752d86a"
+  dependencies:
+    chalk "^2.0.1"
+    glob "^7.1.1"
+    jest-environment-jsdom "^22.4.1"
+    jest-environment-node "^22.4.1"
+    jest-get-type "^22.1.0"
+    jest-jasmine2 "^22.4.4"
+    jest-regex-util "^22.1.0"
+    jest-resolve "^22.4.2"
+    jest-util "^22.4.1"
+    jest-validate "^22.4.4"
     pretty-format "^22.4.0"
 
 jest-diff@^22.4.0:
@@ -5835,6 +5866,22 @@ jest-jasmine2@^22.4.2:
     jest-util "^22.4.1"
     source-map-support "^0.5.0"
 
+jest-jasmine2@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-jasmine2/-/jest-jasmine2-22.4.4/c55f92c961a141f693f869f5f081a79a10d24e23.tgz#c55f92c961a141f693f869f5f081a79a10d24e23"
+  dependencies:
+    chalk "^2.0.1"
+    co "^4.6.0"
+    expect "^22.4.0"
+    graceful-fs "^4.1.11"
+    is-generator-fn "^1.0.0"
+    jest-diff "^22.4.0"
+    jest-matcher-utils "^22.4.0"
+    jest-message-util "^22.4.0"
+    jest-snapshot "^22.4.0"
+    jest-util "^22.4.1"
+    source-map-support "^0.5.0"
+
 jest-leak-detector@^22.4.0:
   version "22.4.0"
   resolved "http://npm.lwcjs.org/jest-leak-detector/-/jest-leak-detector-22.4.0/64da77f05b001c96d2062226e079f89989c4aa2f.tgz#64da77f05b001c96d2062226e079f89989c4aa2f"
@@ -5880,39 +5927,39 @@ jest-resolve@^22.4.2:
     browser-resolve "^1.11.2"
     chalk "^2.0.1"
 
-jest-runner@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-22.4.2/19390ea9d99f768973e16f95a1efa351c0017e87.tgz#19390ea9d99f768973e16f95a1efa351c0017e87"
+jest-runner@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-22.4.4/dfca7b7553e0fa617e7b1291aeb7ce83e540a907.tgz#dfca7b7553e0fa617e7b1291aeb7ce83e540a907"
   dependencies:
     exit "^0.1.2"
-    jest-config "^22.4.2"
+    jest-config "^22.4.4"
     jest-docblock "^22.4.0"
     jest-haste-map "^22.4.2"
-    jest-jasmine2 "^22.4.2"
+    jest-jasmine2 "^22.4.4"
     jest-leak-detector "^22.4.0"
     jest-message-util "^22.4.0"
-    jest-runtime "^22.4.2"
+    jest-runtime "^22.4.4"
     jest-util "^22.4.1"
     jest-worker "^22.2.2"
     throat "^4.0.0"
 
-jest-runtime@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-22.4.2/0de0444f65ce15ee4f2e0055133fc7c17b9168f3.tgz#0de0444f65ce15ee4f2e0055133fc7c17b9168f3"
+jest-runtime@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-22.4.4/9ba7792fc75582a5be0f79af6f8fe8adea314048.tgz#9ba7792fc75582a5be0f79af6f8fe8adea314048"
   dependencies:
     babel-core "^6.0.0"
-    babel-jest "^22.4.1"
+    babel-jest "^22.4.4"
     babel-plugin-istanbul "^4.1.5"
     chalk "^2.0.1"
     convert-source-map "^1.4.0"
     exit "^0.1.2"
     graceful-fs "^4.1.11"
-    jest-config "^22.4.2"
+    jest-config "^22.4.4"
     jest-haste-map "^22.4.2"
     jest-regex-util "^22.1.0"
     jest-resolve "^22.4.2"
     jest-util "^22.4.1"
-    jest-validate "^22.4.2"
+    jest-validate "^22.4.4"
     json-stable-stringify "^1.0.1"
     micromatch "^2.3.11"
     realpath-native "^1.0.0"
@@ -5958,18 +6005,28 @@ jest-validate@^22.4.2:
     leven "^2.1.0"
     pretty-format "^22.4.0"
 
+jest-validate@^22.4.4:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest-validate/-/jest-validate-22.4.4/1dd0b616ef46c995de61810d85f57119dbbcec4d.tgz#1dd0b616ef46c995de61810d85f57119dbbcec4d"
+  dependencies:
+    chalk "^2.0.1"
+    jest-config "^22.4.4"
+    jest-get-type "^22.1.0"
+    leven "^2.1.0"
+    pretty-format "^22.4.0"
+
 jest-worker@^22.2.2:
   version "22.2.2"
   resolved "http://npm.lwcjs.org/jest-worker/-/jest-worker-22.2.2/c1f5dc39976884b81f68ec50cb8532b2cbab3390.tgz#c1f5dc39976884b81f68ec50cb8532b2cbab3390"
   dependencies:
     merge-stream "^1.0.1"
 
-jest@~22.4.0:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest/-/jest-22.4.2/34012834a49bf1bdd3bc783850ab44e4499afc20.tgz#34012834a49bf1bdd3bc783850ab44e4499afc20"
+jest@~22.4.2:
+  version "22.4.4"
+  resolved "http://npm.lwcjs.org/jest/-/jest-22.4.4/ffb36c9654b339a13e10b3d4b338eb3e9d49f6eb.tgz#ffb36c9654b339a13e10b3d4b338eb3e9d49f6eb"
   dependencies:
     import-local "^1.0.0"
-    jest-cli "^22.4.2"
+    jest-cli "^22.4.4"
 
 jmespath@0.15.0:
   version "0.15.0"
@@ -8425,17 +8482,16 @@ rollup-pluginutils@^2.0.1, rollup-pluginutils@~2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
+rollup@0.60.1:
+  version "0.60.1"
+  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.60.1/07cb66153f1541d5f7e82b8393b405c31647dae9.tgz#07cb66153f1541d5f7e82b8393b405c31647dae9"
+  dependencies:
+    "@types/estree" "0.0.39"
+    "@types/node" "*"
+
 rollup@~0.53.0:
   version "0.53.4"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.53.4/f92ce56ee1d097ad5b6f13951bc80db5fef18113.tgz#f92ce56ee1d097ad5b6f13951bc80db5fef18113"
-
-rollup@~0.56.2:
-  version "0.56.2"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.2/1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a.tgz#1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a"
-
-rollup@~0.56.5:
-  version "0.56.5"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.5/40fe3cf0cd1659d469baad11f4d5b6336c14ce84.tgz#40fe3cf0cd1659d469baad11f4d5b6336c14ce84"
 
 run-async@^2.2.0:
   version "2.3.0"

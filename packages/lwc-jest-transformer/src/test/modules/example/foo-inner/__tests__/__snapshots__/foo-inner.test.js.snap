@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`example-foo-inner default snapshot 1`] = `
+<example-foo-inner>
+  <p
+    class="exampleFooInner"
+  >
+    example-foo-inner
+  </p>
+</example-foo-inner>
+`;

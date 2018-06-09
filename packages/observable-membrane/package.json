@@ -14,7 +14,7 @@
     "watch": "rollup -c -w"
   },
   "devDependencies": {
-    "rollup": "~0.56.2",
+    "rollup": "0.60.1",
     "rollup-plugin-typescript": "^0.8.1"
   }
 }
