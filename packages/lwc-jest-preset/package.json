@@ -13,20 +13,18 @@
   ],
   "main": "preset.js",
   "peerDependencies": {
-    "jest": "20 - 22",
+    "jest": "*",
     "lwc-jest-resolver": "0.22.6",
     "lwc-jest-serializer": "0.22.6",
     "lwc-jest-transformer": "0.22.6"
   },
   "devDependencies": {
-    "eslint": "4.16.0",
-    "eslint-plugin-lwc": "0.3.2",
-    "jest": "^22.4.2",
+    "jest": "~22.4.2",
     "lwc-compiler": "0.22.6",
     "lwc-jest-resolver": "0.22.6",
     "lwc-jest-serializer": "0.22.6",
     "lwc-jest-transformer": "0.22.6",
-    "rollup": "^0.50.0",
+    "rollup": "0.60.1",
     "rollup-plugin-lwc-compiler": "0.22.6"
   }
 }

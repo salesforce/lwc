@@ -2,22 +2,6 @@
 # yarn lockfile v1
 
 
-"@babel/code-frame@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/code-frame/-/code-frame-7.0.0-beta.31/473d021ecc573a2cce1c07d5b509d5215f46ba35.tgz#473d021ecc573a2cce1c07d5b509d5215f46ba35"
-  dependencies:
-    chalk "^2.0.0"
-    esutils "^2.0.2"
-    js-tokens "^3.0.0"
-
-"@babel/code-frame@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/code-frame/-/code-frame-7.0.0-beta.36/2349d7ec04b3a06945ae173280ef8579b63728e4.tgz#2349d7ec04b3a06945ae173280ef8579b63728e4"
-  dependencies:
-    chalk "^2.0.0"
-    esutils "^2.0.2"
-    js-tokens "^3.0.0"
-
 "@babel/code-frame@7.0.0-beta.40", "@babel/code-frame@^7.0.0-beta.35", "@babel/code-frame@^7.0.0-beta.40":
   version "7.0.0-beta.40"
   resolved "http://npm.lwcjs.org/@babel/code-frame/-/code-frame-7.0.0-beta.40/37e2b0cf7c56026b4b21d3927cadf81adec32ac6.tgz#37e2b0cf7c56026b4b21d3927cadf81adec32ac6"
@@ -125,23 +109,6 @@
     "@babel/traverse" "7.0.0-beta.49"
     "@babel/types" "7.0.0-beta.49"
 
-"@babel/helper-function-name@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/helper-function-name/-/helper-function-name-7.0.0-beta.31/afe63ad799209989348b1109b44feb66aa245f57.tgz#afe63ad799209989348b1109b44feb66aa245f57"
-  dependencies:
-    "@babel/helper-get-function-arity" "7.0.0-beta.31"
-    "@babel/template" "7.0.0-beta.31"
-    "@babel/traverse" "7.0.0-beta.31"
-    "@babel/types" "7.0.0-beta.31"
-
-"@babel/helper-function-name@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/helper-function-name/-/helper-function-name-7.0.0-beta.36/366e3bc35147721b69009f803907c4d53212e88d.tgz#366e3bc35147721b69009f803907c4d53212e88d"
-  dependencies:
-    "@babel/helper-get-function-arity" "7.0.0-beta.36"
-    "@babel/template" "7.0.0-beta.36"
-    "@babel/types" "7.0.0-beta.36"
-
 "@babel/helper-function-name@7.0.0-beta.40":
   version "7.0.0-beta.40"
   resolved "http://npm.lwcjs.org/@babel/helper-function-name/-/helper-function-name-7.0.0-beta.40/9d033341ab16517f40d43a73f2d81fc431ccd7b6.tgz#9d033341ab16517f40d43a73f2d81fc431ccd7b6"
@@ -157,18 +124,6 @@
     "@babel/helper-get-function-arity" "7.0.0-beta.49"
     "@babel/template" "7.0.0-beta.49"
     "@babel/types" "7.0.0-beta.49"
-
-"@babel/helper-get-function-arity@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/helper-get-function-arity/-/helper-get-function-arity-7.0.0-beta.31/1176d79252741218e0aec872ada07efb2b37a493.tgz#1176d79252741218e0aec872ada07efb2b37a493"
-  dependencies:
-    "@babel/types" "7.0.0-beta.31"
-
-"@babel/helper-get-function-arity@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/helper-get-function-arity/-/helper-get-function-arity-7.0.0-beta.36/f5383bac9a96b274828b10d98900e84ee43e32b8.tgz#f5383bac9a96b274828b10d98900e84ee43e32b8"
-  dependencies:
-    "@babel/types" "7.0.0-beta.36"
 
 "@babel/helper-get-function-arity@7.0.0-beta.40":
   version "7.0.0-beta.40"
@@ -523,24 +478,6 @@
     "@babel/helper-regex" "7.0.0-beta.49"
     regexpu-core "^4.1.3"
 
-"@babel/template@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/template/-/template-7.0.0-beta.31/577bb29389f6c497c3e7d014617e7d6713f68bda.tgz#577bb29389f6c497c3e7d014617e7d6713f68bda"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.31"
-    "@babel/types" "7.0.0-beta.31"
-    babylon "7.0.0-beta.31"
-    lodash "^4.2.0"
-
-"@babel/template@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/template/-/template-7.0.0-beta.36/02e903de5d68bd7899bce3c5b5447e59529abb00.tgz#02e903de5d68bd7899bce3c5b5447e59529abb00"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.36"
-    "@babel/types" "7.0.0-beta.36"
-    babylon "7.0.0-beta.36"
-    lodash "^4.2.0"
-
 "@babel/template@7.0.0-beta.40":
   version "7.0.0-beta.40"
   resolved "http://npm.lwcjs.org/@babel/template/-/template-7.0.0-beta.40/034988c6424eb5c3268fe6a608626de1f4410fc8.tgz#034988c6424eb5c3268fe6a608626de1f4410fc8"
@@ -558,32 +495,6 @@
     "@babel/parser" "7.0.0-beta.49"
     "@babel/types" "7.0.0-beta.49"
     lodash "^4.17.5"
-
-"@babel/traverse@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/traverse/-/traverse-7.0.0-beta.31/db399499ad74aefda014f0c10321ab255134b1df.tgz#db399499ad74aefda014f0c10321ab255134b1df"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.31"
-    "@babel/helper-function-name" "7.0.0-beta.31"
-    "@babel/types" "7.0.0-beta.31"
-    babylon "7.0.0-beta.31"
-    debug "^3.0.1"
-    globals "^10.0.0"
-    invariant "^2.2.0"
-    lodash "^4.2.0"
-
-"@babel/traverse@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/traverse/-/traverse-7.0.0-beta.36/1dc6f8750e89b6b979de5fe44aa993b1a2192261.tgz#1dc6f8750e89b6b979de5fe44aa993b1a2192261"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.36"
-    "@babel/helper-function-name" "7.0.0-beta.36"
-    "@babel/types" "7.0.0-beta.36"
-    babylon "7.0.0-beta.36"
-    debug "^3.0.1"
-    globals "^11.1.0"
-    invariant "^2.2.0"
-    lodash "^4.2.0"
 
 "@babel/traverse@7.0.0-beta.40", "@babel/traverse@^7.0.0-beta.40":
   version "7.0.0-beta.40"
@@ -613,22 +524,6 @@
     globals "^11.1.0"
     invariant "^2.2.0"
     lodash "^4.17.5"
-
-"@babel/types@7.0.0-beta.31":
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/@babel/types/-/types-7.0.0-beta.31/42c9c86784f674c173fb21882ca9643334029de4.tgz#42c9c86784f674c173fb21882ca9643334029de4"
-  dependencies:
-    esutils "^2.0.2"
-    lodash "^4.2.0"
-    to-fast-properties "^2.0.0"
-
-"@babel/types@7.0.0-beta.36":
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/@babel/types/-/types-7.0.0-beta.36/64f2004353de42adb72f9ebb4665fc35b5499d23.tgz#64f2004353de42adb72f9ebb4665fc35b5499d23"
-  dependencies:
-    esutils "^2.0.2"
-    lodash "^4.2.0"
-    to-fast-properties "^2.0.0"
 
 "@babel/types@7.0.0-beta.40", "@babel/types@^7.0.0-beta.40":
   version "7.0.0-beta.40"
@@ -952,6 +847,10 @@
 "@types/estree@*":
   version "0.0.38"
   resolved "http://npm.lwcjs.org/@types/estree/-/estree-0.0.38/c1be40aa933723c608820a99a373a16d215a1ca2.tgz#c1be40aa933723c608820a99a373a16d215a1ca2"
+
+"@types/estree@0.0.39":
+  version "0.0.39"
+  resolved "http://npm.lwcjs.org/@types/estree/-/estree-0.0.39/e177e699ee1b8c22d23174caaa7422644389509f.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
 
 "@types/events@*":
   version "1.2.0"
@@ -1293,12 +1192,6 @@ append-transform@^0.4.0:
   dependencies:
     default-require-extensions "^1.0.0"
 
-append-transform@^1.0.0:
-  version "1.0.0"
-  resolved "http://npm.lwcjs.org/append-transform/-/append-transform-1.0.0/046a52ae582a228bd72f58acfbe2967c678759ab.tgz#046a52ae582a228bd72f58acfbe2967c678759ab"
-  dependencies:
-    default-require-extensions "^2.0.0"
-
 aproba@^1.0.3, aproba@^1.1.1:
   version "1.2.0"
   resolved "http://npm.lwcjs.org/aproba/-/aproba-1.2.0/6802e6264efd18c790a1b0d517f0f2627bf2c94a.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
@@ -1576,28 +1469,6 @@ babel-core@~7.0.0-0:
   version "7.0.0-bridge.0"
   resolved "http://npm.lwcjs.org/babel-core/-/babel-core-7.0.0-bridge.0/95a492ddd90f9b4e9a4a1da14eb335b87b634ece.tgz#95a492ddd90f9b4e9a4a1da14eb335b87b634ece"
 
-babel-eslint@8.1.0:
-  version "8.1.0"
-  resolved "http://npm.lwcjs.org/babel-eslint/-/babel-eslint-8.1.0/b6f32d598559f96127fa608bd19574626325d5b7.tgz#b6f32d598559f96127fa608bd19574626325d5b7"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.31"
-    "@babel/traverse" "7.0.0-beta.31"
-    "@babel/types" "7.0.0-beta.31"
-    babylon "7.0.0-beta.31"
-    eslint-scope "~3.7.1"
-    eslint-visitor-keys "^1.0.0"
-
-babel-eslint@8.2.1:
-  version "8.2.1"
-  resolved "http://npm.lwcjs.org/babel-eslint/-/babel-eslint-8.2.1/136888f3c109edc65376c23ebf494f36a3e03951.tgz#136888f3c109edc65376c23ebf494f36a3e03951"
-  dependencies:
-    "@babel/code-frame" "7.0.0-beta.36"
-    "@babel/traverse" "7.0.0-beta.36"
-    "@babel/types" "7.0.0-beta.36"
-    babylon "7.0.0-beta.36"
-    eslint-scope "~3.7.1"
-    eslint-visitor-keys "^1.0.0"
-
 babel-eslint@^8.0.3:
   version "8.2.2"
   resolved "http://npm.lwcjs.org/babel-eslint/-/babel-eslint-8.2.2/1102273354c6f0b29b4ea28a65f97d122296b68b.tgz#1102273354c6f0b29b4ea28a65f97d122296b68b"
@@ -1751,26 +1622,12 @@ babel-helpers@^6.24.1:
     babel-runtime "^6.22.0"
     babel-template "^6.24.1"
 
-babel-jest@^22.4.1:
-  version "22.4.1"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.4.1/ff53ebca45957347f27ff4666a31499fbb4c4ddd.tgz#ff53ebca45957347f27ff4666a31499fbb4c4ddd"
-  dependencies:
-    babel-plugin-istanbul "^4.1.5"
-    babel-preset-jest "^22.4.1"
-
 babel-jest@^22.4.4:
   version "22.4.4"
   resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-22.4.4/977259240420e227444ebe49e226a61e49ea659d.tgz#977259240420e227444ebe49e226a61e49ea659d"
   dependencies:
     babel-plugin-istanbul "^4.1.5"
     babel-preset-jest "^22.4.4"
-
-babel-jest@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-jest/-/babel-jest-23.0.1/bbad3bf523fb202da05ed0a6540b48c84eed13a6.tgz#bbad3bf523fb202da05ed0a6540b48c84eed13a6"
-  dependencies:
-    babel-plugin-istanbul "^4.1.6"
-    babel-preset-jest "^23.0.1"
 
 babel-messages@^6.23.0:
   version "6.23.0"
@@ -1803,15 +1660,6 @@ babel-plugin-istanbul@^4.1.4, babel-plugin-istanbul@^4.1.5:
     istanbul-lib-instrument "^1.7.5"
     test-exclude "^4.1.1"
 
-babel-plugin-istanbul@^4.1.6:
-  version "4.1.6"
-  resolved "http://npm.lwcjs.org/babel-plugin-istanbul/-/babel-plugin-istanbul-4.1.6/36c59b2192efce81c5b378321b74175add1c9a45.tgz#36c59b2192efce81c5b378321b74175add1c9a45"
-  dependencies:
-    babel-plugin-syntax-object-rest-spread "^6.13.0"
-    find-up "^2.1.0"
-    istanbul-lib-instrument "^1.10.1"
-    test-exclude "^4.2.1"
-
 babel-plugin-jest-hoist@^22.4.1:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.1/d712fe5da8b6965f3191dacddbefdbdf4fb66d63.tgz#d712fe5da8b6965f3191dacddbefdbdf4fb66d63"
@@ -1819,10 +1667,6 @@ babel-plugin-jest-hoist@^22.4.1:
 babel-plugin-jest-hoist@^22.4.4:
   version "22.4.4"
   resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-22.4.4/b9851906eab34c7bf6f8c895a2b08bea1a844c0b.tgz#b9851906eab34c7bf6f8c895a2b08bea1a844c0b"
-
-babel-plugin-jest-hoist@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-plugin-jest-hoist/-/babel-plugin-jest-hoist-23.0.1/eaa11c964563aea9c21becef2bdf7853f7f3c148.tgz#eaa11c964563aea9c21becef2bdf7853f7f3c148"
 
 babel-plugin-minify-builtins@^0.4.0-alpha.caaefb4c, babel-plugin-minify-builtins@^0.4.0-alpha.f95869d4:
   version "0.4.0-alpha.f95869d4"
@@ -2232,7 +2076,7 @@ babel-preset-env@1.6.1:
     invariant "^2.2.2"
     semver "^5.3.0"
 
-babel-preset-jest@^22.0.1, babel-preset-jest@^22.1.0, babel-preset-jest@^22.4.1:
+babel-preset-jest@^22.0.1, babel-preset-jest@^22.1.0:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.4.1/efa2e5f5334242a9457a068452d7d09735db172a.tgz#efa2e5f5334242a9457a068452d7d09735db172a"
   dependencies:
@@ -2244,13 +2088,6 @@ babel-preset-jest@^22.4.4:
   resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-22.4.4/ec9fbd8bcd7dfd24b8b5320e0e688013235b7c39.tgz#ec9fbd8bcd7dfd24b8b5320e0e688013235b7c39"
   dependencies:
     babel-plugin-jest-hoist "^22.4.4"
-    babel-plugin-syntax-object-rest-spread "^6.13.0"
-
-babel-preset-jest@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/babel-preset-jest/-/babel-preset-jest-23.0.1/631cc545c6cf021943013bcaf22f45d87fe62198.tgz#631cc545c6cf021943013bcaf22f45d87fe62198"
-  dependencies:
-    babel-plugin-jest-hoist "^23.0.1"
     babel-plugin-syntax-object-rest-spread "^6.13.0"
 
 babel-preset-minify@0.4.0-alpha.caaefb4c:
@@ -2360,14 +2197,6 @@ babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.24.1, babel-types@^6.26
     esutils "^2.0.2"
     lodash "^4.17.4"
     to-fast-properties "^1.0.3"
-
-babylon@7.0.0-beta.31:
-  version "7.0.0-beta.31"
-  resolved "http://npm.lwcjs.org/babylon/-/babylon-7.0.0-beta.31/7ec10f81e0e456fd0f855ad60fa30c2ac454283f.tgz#7ec10f81e0e456fd0f855ad60fa30c2ac454283f"
-
-babylon@7.0.0-beta.36:
-  version "7.0.0-beta.36"
-  resolved "http://npm.lwcjs.org/babylon/-/babylon-7.0.0-beta.36/3a3683ba6a9a1e02b0aa507c8e63435e39305b9e.tgz#3a3683ba6a9a1e02b0aa507c8e63435e39305b9e"
 
 babylon@7.0.0-beta.40, babylon@^7.0.0-beta.40:
   version "7.0.0-beta.40"
@@ -3136,10 +2965,6 @@ compare-versions@2.0.1:
   version "2.0.1"
   resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-2.0.1/1edc1f93687fd97a325c59f55e45a07db106aca6.tgz#1edc1f93687fd97a325c59f55e45a07db106aca6"
 
-compare-versions@^3.1.0:
-  version "3.2.1"
-  resolved "http://npm.lwcjs.org/compare-versions/-/compare-versions-3.2.1/a49eb7689d4caaf0b6db5220173fd279614000f7.tgz#a49eb7689d4caaf0b6db5220173fd279614000f7"
-
 compat-polyfills@0.18.9:
   version "0.18.9"
   resolved "http://npm.lwcjs.org/compat-polyfills/-/compat-polyfills-0.18.9/5dead4ec9fdf425812d511d3c147e650a7551b83.tgz#5dead4ec9fdf425812d511d3c147e650a7551b83"
@@ -3772,12 +3597,6 @@ default-require-extensions@^1.0.0:
   dependencies:
     strip-bom "^2.0.0"
 
-default-require-extensions@^2.0.0:
-  version "2.0.0"
-  resolved "http://npm.lwcjs.org/default-require-extensions/-/default-require-extensions-2.0.0/f5f8fbb18a7d6d50b21f641f649ebb522cfe24f7.tgz#f5f8fbb18a7d6d50b21f641f649ebb522cfe24f7"
-  dependencies:
-    strip-bom "^3.0.0"
-
 defaults@^1.0.3:
   version "1.0.3"
   resolved "http://npm.lwcjs.org/defaults/-/defaults-1.0.3/c656051e9817d9ff08ed881477f3fe4019f3ef7d.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
@@ -3907,7 +3726,7 @@ doctrine@1.5.0:
     esutils "^2.0.2"
     isarray "^1.0.0"
 
-doctrine@^2.0.2, doctrine@^2.1.0:
+doctrine@^2.0.2:
   version "2.1.0"
   resolved "http://npm.lwcjs.org/doctrine/-/doctrine-2.1.0/5cd01fc101621b42c4cd7f5d1a66243716d3f39d.tgz#5cd01fc101621b42c4cd7f5d1a66243716d3f39d"
   dependencies:
@@ -4139,11 +3958,7 @@ eslint-module-utils@^2.1.1:
     debug "^2.6.8"
     pkg-dir "^1.0.0"
 
-eslint-plugin-babel@^4.1.1:
-  version "4.1.2"
-  resolved "http://npm.lwcjs.org/eslint-plugin-babel/-/eslint-plugin-babel-4.1.2/79202a0e35757dd92780919b2336f1fa2fe53c1e.tgz#79202a0e35757dd92780919b2336f1fa2fe53c1e"
-
-eslint-plugin-compat@2.2.0, eslint-plugin-compat@^2.1.0:
+eslint-plugin-compat@^2.1.0:
   version "2.2.0"
   resolved "http://npm.lwcjs.org/eslint-plugin-compat/-/eslint-plugin-compat-2.2.0/d612a9988d9fba66bcd8e86fcc1b551753aac995.tgz#d612a9988d9fba66bcd8e86fcc1b551753aac995"
   dependencies:
@@ -4153,27 +3968,12 @@ eslint-plugin-compat@2.2.0, eslint-plugin-compat@^2.1.0:
     mdn-browser-compat-data "^0.0.20"
     requireindex "^1.1.0"
 
-eslint-plugin-eslint-comments@2.0.2, eslint-plugin-eslint-comments@^2.0.1:
+eslint-plugin-eslint-comments@^2.0.1:
   version "2.0.2"
   resolved "http://npm.lwcjs.org/eslint-plugin-eslint-comments/-/eslint-plugin-eslint-comments-2.0.2/006e1c834beffe6ff3014e84a3ae69acfa539a28.tgz#006e1c834beffe6ff3014e84a3ae69acfa539a28"
   dependencies:
     escape-string-regexp "^1.0.5"
     ignore "^3.3.7"
-
-eslint-plugin-import@2.8.0:
-  version "2.8.0"
-  resolved "http://npm.lwcjs.org/eslint-plugin-import/-/eslint-plugin-import-2.8.0/fa1b6ef31fcb3c501c09859c1b86f1fc5b986894.tgz#fa1b6ef31fcb3c501c09859c1b86f1fc5b986894"
-  dependencies:
-    builtin-modules "^1.1.1"
-    contains-path "^0.1.0"
-    debug "^2.6.8"
-    doctrine "1.5.0"
-    eslint-import-resolver-node "^0.3.1"
-    eslint-module-utils "^2.1.1"
-    has "^1.0.1"
-    lodash.cond "^4.3.0"
-    minimatch "^3.0.3"
-    read-pkg-up "^2.0.0"
 
 eslint-plugin-import@^2.8.0:
   version "2.9.0"
@@ -4190,24 +3990,9 @@ eslint-plugin-import@^2.8.0:
     minimatch "^3.0.3"
     read-pkg-up "^2.0.0"
 
-eslint-plugin-jest@21.7.0:
-  version "21.7.0"
-  resolved "http://npm.lwcjs.org/eslint-plugin-jest/-/eslint-plugin-jest-21.7.0/651f1c6ce999af3ac59ab8bf8a376d742fd0fc23.tgz#651f1c6ce999af3ac59ab8bf8a376d742fd0fc23"
-
 eslint-plugin-jest@^21.5.0:
   version "21.12.2"
   resolved "http://npm.lwcjs.org/eslint-plugin-jest/-/eslint-plugin-jest-21.12.2/325f7c6a5078aed51ea087c33c26792337b5ba37.tgz#325f7c6a5078aed51ea087c33c26792337b5ba37"
-
-eslint-plugin-lwc@0.3.2:
-  version "0.3.2"
-  resolved "http://npm.lwcjs.org/eslint-plugin-lwc/-/eslint-plugin-lwc-0.3.2/1265d7c33e7c3b01d6b01aabbc6ae8e6023f87b1.tgz#1265d7c33e7c3b01d6b01aabbc6ae8e6023f87b1"
-  dependencies:
-    babel-eslint "8.2.1"
-    eslint-plugin-compat "2.2.0"
-    eslint-plugin-eslint-comments "2.0.2"
-    eslint-plugin-import "2.8.0"
-    eslint-plugin-jest "21.7.0"
-    minimatch "3.0.4"
 
 eslint-plugin-lwc@^0.2.4:
   version "0.2.4"
@@ -4230,48 +4015,6 @@ eslint-scope@^3.7.1, eslint-scope@~3.7.1:
 eslint-visitor-keys@^1.0.0:
   version "1.0.0"
   resolved "http://npm.lwcjs.org/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0/3f3180fb2e291017716acb4c9d6d5b5c34a6a81d.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
-
-eslint@4.16.0:
-  version "4.16.0"
-  resolved "http://npm.lwcjs.org/eslint/-/eslint-4.16.0/934ada9e98715e1d7bbfd6f6f0519ed2fab35cc1.tgz#934ada9e98715e1d7bbfd6f6f0519ed2fab35cc1"
-  dependencies:
-    ajv "^5.3.0"
-    babel-code-frame "^6.22.0"
-    chalk "^2.1.0"
-    concat-stream "^1.6.0"
-    cross-spawn "^5.1.0"
-    debug "^3.1.0"
-    doctrine "^2.1.0"
-    eslint-scope "^3.7.1"
-    eslint-visitor-keys "^1.0.0"
-    espree "^3.5.2"
-    esquery "^1.0.0"
-    esutils "^2.0.2"
-    file-entry-cache "^2.0.0"
-    functional-red-black-tree "^1.0.1"
-    glob "^7.1.2"
-    globals "^11.0.1"
-    ignore "^3.3.3"
-    imurmurhash "^0.1.4"
-    inquirer "^3.0.6"
-    is-resolvable "^1.0.0"
-    js-yaml "^3.9.1"
-    json-stable-stringify-without-jsonify "^1.0.1"
-    levn "^0.3.0"
-    lodash "^4.17.4"
-    minimatch "^3.0.2"
-    mkdirp "^0.5.1"
-    natural-compare "^1.4.0"
-    optionator "^0.8.2"
-    path-is-inside "^1.0.2"
-    pluralize "^7.0.0"
-    progress "^2.0.0"
-    require-uncached "^1.0.3"
-    semver "^5.3.0"
-    strip-ansi "^4.0.0"
-    strip-json-comments "~2.0.1"
-    table "^4.0.1"
-    text-table "~0.2.0"
 
 eslint@~4.13.0:
   version "4.13.1"
@@ -4478,17 +4221,6 @@ expect@^22.4.0:
     jest-matcher-utils "^22.4.0"
     jest-message-util "^22.4.0"
     jest-regex-util "^22.1.0"
-
-expect@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/expect/-/expect-23.1.0/bfdfd57a2a20170d875999ee9787cc71f01c205f.tgz#bfdfd57a2a20170d875999ee9787cc71f01c205f"
-  dependencies:
-    ansi-styles "^3.2.0"
-    jest-diff "^23.0.1"
-    jest-get-type "^22.1.0"
-    jest-matcher-utils "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
 
 express@^4.14.0, express@^4.15.2:
   version "4.16.2"
@@ -5082,10 +4814,6 @@ global-prefix@^0.1.4:
     ini "^1.3.4"
     is-windows "^0.2.0"
     which "^1.2.12"
-
-globals@^10.0.0:
-  version "10.4.0"
-  resolved "http://npm.lwcjs.org/globals/-/globals-10.4.0/5c477388b128a9e4c5c5d01c7a2aca68c68b2da7.tgz#5c477388b128a9e4c5c5d01c7a2aca68c68b2da7"
 
 globals@^11.0.1:
   version "11.3.0"
@@ -5952,54 +5680,15 @@ istanbul-api@^1.1.14:
     mkdirp "^0.5.1"
     once "^1.4.0"
 
-istanbul-api@^1.3.1:
-  version "1.3.1"
-  resolved "http://npm.lwcjs.org/istanbul-api/-/istanbul-api-1.3.1/4c3b05d18c0016d1022e079b98dc82c40f488954.tgz#4c3b05d18c0016d1022e079b98dc82c40f488954"
-  dependencies:
-    async "^2.1.4"
-    compare-versions "^3.1.0"
-    fileset "^2.0.2"
-    istanbul-lib-coverage "^1.2.0"
-    istanbul-lib-hook "^1.2.0"
-    istanbul-lib-instrument "^1.10.1"
-    istanbul-lib-report "^1.1.4"
-    istanbul-lib-source-maps "^1.2.4"
-    istanbul-reports "^1.3.0"
-    js-yaml "^3.7.0"
-    mkdirp "^0.5.1"
-    once "^1.4.0"
-
 istanbul-lib-coverage@^1.1.1, istanbul-lib-coverage@^1.1.2:
   version "1.1.2"
   resolved "http://npm.lwcjs.org/istanbul-lib-coverage/-/istanbul-lib-coverage-1.1.2/4113c8ff6b7a40a1ef7350b01016331f63afde14.tgz#4113c8ff6b7a40a1ef7350b01016331f63afde14"
-
-istanbul-lib-coverage@^1.2.0:
-  version "1.2.0"
-  resolved "http://npm.lwcjs.org/istanbul-lib-coverage/-/istanbul-lib-coverage-1.2.0/f7d8f2e42b97e37fe796114cb0f9d68b5e3a4341.tgz#f7d8f2e42b97e37fe796114cb0f9d68b5e3a4341"
 
 istanbul-lib-hook@^1.1.0:
   version "1.1.0"
   resolved "http://npm.lwcjs.org/istanbul-lib-hook/-/istanbul-lib-hook-1.1.0/8538d970372cb3716d53e55523dd54b557a8d89b.tgz#8538d970372cb3716d53e55523dd54b557a8d89b"
   dependencies:
     append-transform "^0.4.0"
-
-istanbul-lib-hook@^1.2.0:
-  version "1.2.1"
-  resolved "http://npm.lwcjs.org/istanbul-lib-hook/-/istanbul-lib-hook-1.2.1/f614ec45287b2a8fc4f07f5660af787575601805.tgz#f614ec45287b2a8fc4f07f5660af787575601805"
-  dependencies:
-    append-transform "^1.0.0"
-
-istanbul-lib-instrument@^1.10.1:
-  version "1.10.1"
-  resolved "http://npm.lwcjs.org/istanbul-lib-instrument/-/istanbul-lib-instrument-1.10.1/724b4b6caceba8692d3f1f9d0727e279c401af7b.tgz#724b4b6caceba8692d3f1f9d0727e279c401af7b"
-  dependencies:
-    babel-generator "^6.18.0"
-    babel-template "^6.16.0"
-    babel-traverse "^6.18.0"
-    babel-types "^6.18.0"
-    babylon "^6.18.0"
-    istanbul-lib-coverage "^1.2.0"
-    semver "^5.3.0"
 
 istanbul-lib-instrument@^1.7.5, istanbul-lib-instrument@^1.8.0, istanbul-lib-instrument@^1.9.2:
   version "1.9.2"
@@ -6022,15 +5711,6 @@ istanbul-lib-report@^1.1.3:
     path-parse "^1.0.5"
     supports-color "^3.1.2"
 
-istanbul-lib-report@^1.1.4:
-  version "1.1.4"
-  resolved "http://npm.lwcjs.org/istanbul-lib-report/-/istanbul-lib-report-1.1.4/e886cdf505c4ebbd8e099e4396a90d0a28e2acb5.tgz#e886cdf505c4ebbd8e099e4396a90d0a28e2acb5"
-  dependencies:
-    istanbul-lib-coverage "^1.2.0"
-    mkdirp "^0.5.1"
-    path-parse "^1.0.5"
-    supports-color "^3.1.2"
-
 istanbul-lib-source-maps@^1.2.1, istanbul-lib-source-maps@^1.2.3:
   version "1.2.3"
   resolved "http://npm.lwcjs.org/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.3/20fb54b14e14b3fb6edb6aca3571fd2143db44e6.tgz#20fb54b14e14b3fb6edb6aca3571fd2143db44e6"
@@ -6041,25 +5721,9 @@ istanbul-lib-source-maps@^1.2.1, istanbul-lib-source-maps@^1.2.3:
     rimraf "^2.6.1"
     source-map "^0.5.3"
 
-istanbul-lib-source-maps@^1.2.4:
-  version "1.2.5"
-  resolved "http://npm.lwcjs.org/istanbul-lib-source-maps/-/istanbul-lib-source-maps-1.2.5/ffe6be4e7ab86d3603e4290d54990b14506fc9b1.tgz#ffe6be4e7ab86d3603e4290d54990b14506fc9b1"
-  dependencies:
-    debug "^3.1.0"
-    istanbul-lib-coverage "^1.2.0"
-    mkdirp "^0.5.1"
-    rimraf "^2.6.1"
-    source-map "^0.5.3"
-
 istanbul-reports@^1.1.4:
   version "1.1.4"
   resolved "http://npm.lwcjs.org/istanbul-reports/-/istanbul-reports-1.1.4/5ccba5e22b7b5a5d91d5e0a830f89be334bf97bd.tgz#5ccba5e22b7b5a5d91d5e0a830f89be334bf97bd"
-  dependencies:
-    handlebars "^4.0.3"
-
-istanbul-reports@^1.3.0:
-  version "1.3.0"
-  resolved "http://npm.lwcjs.org/istanbul-reports/-/istanbul-reports-1.3.0/2f322e81e1d9520767597dca3c20a0cce89a3554.tgz#2f322e81e1d9520767597dca3c20a0cce89a3554"
   dependencies:
     handlebars "^4.0.3"
 
@@ -6068,51 +5732,6 @@ jest-changed-files@^22.2.0:
   resolved "http://npm.lwcjs.org/jest-changed-files/-/jest-changed-files-22.2.0/517610c4a8ca0925bdc88b0ca53bd678aa8d019e.tgz#517610c4a8ca0925bdc88b0ca53bd678aa8d019e"
   dependencies:
     throat "^4.0.0"
-
-jest-changed-files@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-changed-files/-/jest-changed-files-23.0.1/f79572d0720844ea5df84c2a448e862c2254f60c.tgz#f79572d0720844ea5df84c2a448e862c2254f60c"
-  dependencies:
-    throat "^4.0.0"
-
-jest-cli@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-22.4.2/e6546dc651e13d164481aa3e76e53ac4f4edab06.tgz#e6546dc651e13d164481aa3e76e53ac4f4edab06"
-  dependencies:
-    ansi-escapes "^3.0.0"
-    chalk "^2.0.1"
-    exit "^0.1.2"
-    glob "^7.1.2"
-    graceful-fs "^4.1.11"
-    import-local "^1.0.0"
-    is-ci "^1.0.10"
-    istanbul-api "^1.1.14"
-    istanbul-lib-coverage "^1.1.1"
-    istanbul-lib-instrument "^1.8.0"
-    istanbul-lib-source-maps "^1.2.1"
-    jest-changed-files "^22.2.0"
-    jest-config "^22.4.2"
-    jest-environment-jsdom "^22.4.1"
-    jest-get-type "^22.1.0"
-    jest-haste-map "^22.4.2"
-    jest-message-util "^22.4.0"
-    jest-regex-util "^22.1.0"
-    jest-resolve-dependencies "^22.1.0"
-    jest-runner "^22.4.2"
-    jest-runtime "^22.4.2"
-    jest-snapshot "^22.4.0"
-    jest-util "^22.4.1"
-    jest-validate "^22.4.2"
-    jest-worker "^22.2.2"
-    micromatch "^2.3.11"
-    node-notifier "^5.2.1"
-    realpath-native "^1.0.0"
-    rimraf "^2.5.4"
-    slash "^1.0.0"
-    string-length "^2.0.0"
-    strip-ansi "^4.0.0"
-    which "^1.2.12"
-    yargs "^10.0.3"
 
 jest-cli@^22.4.4:
   version "22.4.4"
@@ -6153,46 +5772,6 @@ jest-cli@^22.4.4:
     which "^1.2.12"
     yargs "^10.0.3"
 
-jest-cli@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-cli/-/jest-cli-23.1.0/eb8bdd4ce0d15250892e31ad9b69bc99d2a8f6bf.tgz#eb8bdd4ce0d15250892e31ad9b69bc99d2a8f6bf"
-  dependencies:
-    ansi-escapes "^3.0.0"
-    chalk "^2.0.1"
-    exit "^0.1.2"
-    glob "^7.1.2"
-    graceful-fs "^4.1.11"
-    import-local "^1.0.0"
-    is-ci "^1.0.10"
-    istanbul-api "^1.3.1"
-    istanbul-lib-coverage "^1.2.0"
-    istanbul-lib-instrument "^1.10.1"
-    istanbul-lib-source-maps "^1.2.4"
-    jest-changed-files "^23.0.1"
-    jest-config "^23.1.0"
-    jest-environment-jsdom "^23.1.0"
-    jest-get-type "^22.1.0"
-    jest-haste-map "^23.1.0"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve-dependencies "^23.0.1"
-    jest-runner "^23.1.0"
-    jest-runtime "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
-    jest-watcher "^23.1.0"
-    jest-worker "^23.0.1"
-    micromatch "^2.3.11"
-    node-notifier "^5.2.1"
-    realpath-native "^1.0.0"
-    rimraf "^2.5.4"
-    slash "^1.0.0"
-    string-length "^2.0.0"
-    strip-ansi "^4.0.0"
-    which "^1.2.12"
-    yargs "^11.0.0"
-
 jest-config@^22.0.1, jest-config@^22.4.2:
   version "22.4.2"
   resolved "http://npm.lwcjs.org/jest-config/-/jest-config-22.4.2/580ba5819bf81a5e48f4fd470e8b81834f45c855.tgz#580ba5819bf81a5e48f4fd470e8b81834f45c855"
@@ -6225,24 +5804,6 @@ jest-config@^22.4.4:
     jest-validate "^22.4.4"
     pretty-format "^22.4.0"
 
-jest-config@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-config/-/jest-config-23.1.0/708ca0f431d356ee424fb4895d3308006bdd8241.tgz#708ca0f431d356ee424fb4895d3308006bdd8241"
-  dependencies:
-    babel-core "^6.0.0"
-    babel-jest "^23.0.1"
-    chalk "^2.0.1"
-    glob "^7.1.1"
-    jest-environment-jsdom "^23.1.0"
-    jest-environment-node "^23.1.0"
-    jest-get-type "^22.1.0"
-    jest-jasmine2 "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve "^23.1.0"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
-    pretty-format "^23.0.1"
-
 jest-diff@^22.4.0:
   version "22.4.0"
   resolved "http://npm.lwcjs.org/jest-diff/-/jest-diff-22.4.0/384c2b78519ca44ca126382df53f134289232525.tgz#384c2b78519ca44ca126382df53f134289232525"
@@ -6252,33 +5813,11 @@ jest-diff@^22.4.0:
     jest-get-type "^22.1.0"
     pretty-format "^22.4.0"
 
-jest-diff@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-diff/-/jest-diff-23.0.1/3d49137cee12c320a4b4d2b4a6fa6e82d491a16a.tgz#3d49137cee12c320a4b4d2b4a6fa6e82d491a16a"
-  dependencies:
-    chalk "^2.0.1"
-    diff "^3.2.0"
-    jest-get-type "^22.1.0"
-    pretty-format "^23.0.1"
-
 jest-docblock@^22.4.0:
   version "22.4.0"
   resolved "http://npm.lwcjs.org/jest-docblock/-/jest-docblock-22.4.0/dbf1877e2550070cfc4d9b07a55775a0483159b8.tgz#dbf1877e2550070cfc4d9b07a55775a0483159b8"
   dependencies:
     detect-newline "^2.1.0"
-
-jest-docblock@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-docblock/-/jest-docblock-23.0.1/deddd18333be5dc2415260a04ef3fce9276b5725.tgz#deddd18333be5dc2415260a04ef3fce9276b5725"
-  dependencies:
-    detect-newline "^2.1.0"
-
-jest-each@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-each/-/jest-each-23.1.0/16146b592c354867a5ae5e13cdf15c6c65b696c6.tgz#16146b592c354867a5ae5e13cdf15c6c65b696c6"
-  dependencies:
-    chalk "^2.0.1"
-    pretty-format "^23.0.1"
 
 jest-environment-jsdom@^22.4.1:
   version "22.4.1"
@@ -6288,27 +5827,12 @@ jest-environment-jsdom@^22.4.1:
     jest-util "^22.4.1"
     jsdom "^11.5.1"
 
-jest-environment-jsdom@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-environment-jsdom/-/jest-environment-jsdom-23.1.0/85929914e23bed3577dac9755f4106d0697c479c.tgz#85929914e23bed3577dac9755f4106d0697c479c"
-  dependencies:
-    jest-mock "^23.1.0"
-    jest-util "^23.1.0"
-    jsdom "^11.5.1"
-
 jest-environment-node@^22.4.1:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/jest-environment-node/-/jest-environment-node-22.4.1/418850eb654596b8d6e36c2021cbedbc23df8e16.tgz#418850eb654596b8d6e36c2021cbedbc23df8e16"
   dependencies:
     jest-mock "^22.2.0"
     jest-util "^22.4.1"
-
-jest-environment-node@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-environment-node/-/jest-environment-node-23.1.0/452c0bf949cfcbbacda1e1762eeed70bc784c7d5.tgz#452c0bf949cfcbbacda1e1762eeed70bc784c7d5"
-  dependencies:
-    jest-mock "^23.1.0"
-    jest-util "^23.1.0"
 
 jest-get-type@^22.1.0:
   version "22.1.0"
@@ -6323,18 +5847,6 @@ jest-haste-map@^22.4.2:
     jest-docblock "^22.4.0"
     jest-serializer "^22.4.0"
     jest-worker "^22.2.2"
-    micromatch "^2.3.11"
-    sane "^2.0.0"
-
-jest-haste-map@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-haste-map/-/jest-haste-map-23.1.0/18e6c7d5a8d27136f91b7d9852f85de0c7074c49.tgz#18e6c7d5a8d27136f91b7d9852f85de0c7074c49"
-  dependencies:
-    fb-watchman "^2.0.0"
-    graceful-fs "^4.1.11"
-    jest-docblock "^23.0.1"
-    jest-serializer "^23.0.1"
-    jest-worker "^23.0.1"
     micromatch "^2.3.11"
     sane "^2.0.0"
 
@@ -6370,33 +5882,11 @@ jest-jasmine2@^22.4.4:
     jest-util "^22.4.1"
     source-map-support "^0.5.0"
 
-jest-jasmine2@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-jasmine2/-/jest-jasmine2-23.1.0/4afab31729b654ddcd2b074add849396f13b30b8.tgz#4afab31729b654ddcd2b074add849396f13b30b8"
-  dependencies:
-    chalk "^2.0.1"
-    co "^4.6.0"
-    expect "^23.1.0"
-    is-generator-fn "^1.0.0"
-    jest-diff "^23.0.1"
-    jest-each "^23.1.0"
-    jest-matcher-utils "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    pretty-format "^23.0.1"
-
 jest-leak-detector@^22.4.0:
   version "22.4.0"
   resolved "http://npm.lwcjs.org/jest-leak-detector/-/jest-leak-detector-22.4.0/64da77f05b001c96d2062226e079f89989c4aa2f.tgz#64da77f05b001c96d2062226e079f89989c4aa2f"
   dependencies:
     pretty-format "^22.4.0"
-
-jest-leak-detector@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-leak-detector/-/jest-leak-detector-23.0.1/9dba07505ac3495c39d3ec09ac1e564599e861a0.tgz#9dba07505ac3495c39d3ec09ac1e564599e861a0"
-  dependencies:
-    pretty-format "^23.0.1"
 
 jest-matcher-utils@^22.4.0:
   version "22.4.0"
@@ -6405,14 +5895,6 @@ jest-matcher-utils@^22.4.0:
     chalk "^2.0.1"
     jest-get-type "^22.1.0"
     pretty-format "^22.4.0"
-
-jest-matcher-utils@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-matcher-utils/-/jest-matcher-utils-23.0.1/0c6c0daedf9833c2a7f36236069efecb4c3f6e5f.tgz#0c6c0daedf9833c2a7f36236069efecb4c3f6e5f"
-  dependencies:
-    chalk "^2.0.1"
-    jest-get-type "^22.1.0"
-    pretty-format "^23.0.1"
 
 jest-message-util@^22.4.0:
   version "22.4.0"
@@ -6424,31 +5906,13 @@ jest-message-util@^22.4.0:
     slash "^1.0.0"
     stack-utils "^1.0.1"
 
-jest-message-util@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-message-util/-/jest-message-util-23.1.0/9a809ba487ecac5ce511d4e698ee3b5ee2461ea9.tgz#9a809ba487ecac5ce511d4e698ee3b5ee2461ea9"
-  dependencies:
-    "@babel/code-frame" "^7.0.0-beta.35"
-    chalk "^2.0.1"
-    micromatch "^2.3.11"
-    slash "^1.0.0"
-    stack-utils "^1.0.1"
-
 jest-mock@^22.2.0:
   version "22.2.0"
   resolved "http://npm.lwcjs.org/jest-mock/-/jest-mock-22.2.0/444b3f9488a7473adae09bc8a77294afded397a7.tgz#444b3f9488a7473adae09bc8a77294afded397a7"
 
-jest-mock@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-mock/-/jest-mock-23.1.0/a381c31b121ab1f60c462a2dadb7b86dcccac487.tgz#a381c31b121ab1f60c462a2dadb7b86dcccac487"
-
 jest-regex-util@^22.1.0:
   version "22.1.0"
   resolved "http://npm.lwcjs.org/jest-regex-util/-/jest-regex-util-22.1.0/5daf2fe270074b6da63e5d85f1c9acc866768f53.tgz#5daf2fe270074b6da63e5d85f1c9acc866768f53"
-
-jest-regex-util@^23.0.0:
-  version "23.0.0"
-  resolved "http://npm.lwcjs.org/jest-regex-util/-/jest-regex-util-23.0.0/dd5c1fde0c46f4371314cf10f7a751a23f4e8f76.tgz#dd5c1fde0c46f4371314cf10f7a751a23f4e8f76"
 
 jest-resolve-dependencies@^22.1.0:
   version "22.1.0"
@@ -6456,43 +5920,12 @@ jest-resolve-dependencies@^22.1.0:
   dependencies:
     jest-regex-util "^22.1.0"
 
-jest-resolve-dependencies@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-resolve-dependencies/-/jest-resolve-dependencies-23.0.1/d01a10ddad9152c4cecdf5eac2b88571c4b6a64d.tgz#d01a10ddad9152c4cecdf5eac2b88571c4b6a64d"
-  dependencies:
-    jest-regex-util "^23.0.0"
-    jest-snapshot "^23.0.1"
-
 jest-resolve@^22.4.2:
   version "22.4.2"
   resolved "http://npm.lwcjs.org/jest-resolve/-/jest-resolve-22.4.2/25d88aa4147462c9c1c6a1ba16250d3794c24d00.tgz#25d88aa4147462c9c1c6a1ba16250d3794c24d00"
   dependencies:
     browser-resolve "^1.11.2"
     chalk "^2.0.1"
-
-jest-resolve@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-resolve/-/jest-resolve-23.1.0/b9e316eecebd6f00bc50a3960d1527bae65792d2.tgz#b9e316eecebd6f00bc50a3960d1527bae65792d2"
-  dependencies:
-    browser-resolve "^1.11.2"
-    chalk "^2.0.1"
-    realpath-native "^1.0.0"
-
-jest-runner@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-22.4.2/19390ea9d99f768973e16f95a1efa351c0017e87.tgz#19390ea9d99f768973e16f95a1efa351c0017e87"
-  dependencies:
-    exit "^0.1.2"
-    jest-config "^22.4.2"
-    jest-docblock "^22.4.0"
-    jest-haste-map "^22.4.2"
-    jest-jasmine2 "^22.4.2"
-    jest-leak-detector "^22.4.0"
-    jest-message-util "^22.4.0"
-    jest-runtime "^22.4.2"
-    jest-util "^22.4.1"
-    jest-worker "^22.2.2"
-    throat "^4.0.0"
 
 jest-runner@^22.4.4:
   version "22.4.4"
@@ -6509,49 +5942,6 @@ jest-runner@^22.4.4:
     jest-util "^22.4.1"
     jest-worker "^22.2.2"
     throat "^4.0.0"
-
-jest-runner@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-runner/-/jest-runner-23.1.0/fa20a933fff731a5432b3561e7f6426594fa29b5.tgz#fa20a933fff731a5432b3561e7f6426594fa29b5"
-  dependencies:
-    exit "^0.1.2"
-    graceful-fs "^4.1.11"
-    jest-config "^23.1.0"
-    jest-docblock "^23.0.1"
-    jest-haste-map "^23.1.0"
-    jest-jasmine2 "^23.1.0"
-    jest-leak-detector "^23.0.1"
-    jest-message-util "^23.1.0"
-    jest-runtime "^23.1.0"
-    jest-util "^23.1.0"
-    jest-worker "^23.0.1"
-    source-map-support "^0.5.6"
-    throat "^4.0.0"
-
-jest-runtime@^22.4.2:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-22.4.2/0de0444f65ce15ee4f2e0055133fc7c17b9168f3.tgz#0de0444f65ce15ee4f2e0055133fc7c17b9168f3"
-  dependencies:
-    babel-core "^6.0.0"
-    babel-jest "^22.4.1"
-    babel-plugin-istanbul "^4.1.5"
-    chalk "^2.0.1"
-    convert-source-map "^1.4.0"
-    exit "^0.1.2"
-    graceful-fs "^4.1.11"
-    jest-config "^22.4.2"
-    jest-haste-map "^22.4.2"
-    jest-regex-util "^22.1.0"
-    jest-resolve "^22.4.2"
-    jest-util "^22.4.1"
-    jest-validate "^22.4.2"
-    json-stable-stringify "^1.0.1"
-    micromatch "^2.3.11"
-    realpath-native "^1.0.0"
-    slash "^1.0.0"
-    strip-bom "3.0.0"
-    write-file-atomic "^2.1.0"
-    yargs "^10.0.3"
 
 jest-runtime@^22.4.4:
   version "22.4.4"
@@ -6578,39 +5968,9 @@ jest-runtime@^22.4.4:
     write-file-atomic "^2.1.0"
     yargs "^10.0.3"
 
-jest-runtime@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-runtime/-/jest-runtime-23.1.0/b4ae0e87259ecacfd4a884b639db07cf4dd620af.tgz#b4ae0e87259ecacfd4a884b639db07cf4dd620af"
-  dependencies:
-    babel-core "^6.0.0"
-    babel-plugin-istanbul "^4.1.6"
-    chalk "^2.0.1"
-    convert-source-map "^1.4.0"
-    exit "^0.1.2"
-    fast-json-stable-stringify "^2.0.0"
-    graceful-fs "^4.1.11"
-    jest-config "^23.1.0"
-    jest-haste-map "^23.1.0"
-    jest-message-util "^23.1.0"
-    jest-regex-util "^23.0.0"
-    jest-resolve "^23.1.0"
-    jest-snapshot "^23.0.1"
-    jest-util "^23.1.0"
-    jest-validate "^23.0.1"
-    micromatch "^2.3.11"
-    realpath-native "^1.0.0"
-    slash "^1.0.0"
-    strip-bom "3.0.0"
-    write-file-atomic "^2.1.0"
-    yargs "^11.0.0"
-
 jest-serializer@^22.4.0:
   version "22.4.0"
   resolved "http://npm.lwcjs.org/jest-serializer/-/jest-serializer-22.4.0/b5d145b98c4b0d2c20ab686609adbb81fe23b566.tgz#b5d145b98c4b0d2c20ab686609adbb81fe23b566"
-
-jest-serializer@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-serializer/-/jest-serializer-23.0.1/a3776aeb311e90fe83fab9e533e85102bd164165.tgz#a3776aeb311e90fe83fab9e533e85102bd164165"
 
 jest-snapshot@^22.4.0:
   version "22.4.0"
@@ -6623,17 +5983,6 @@ jest-snapshot@^22.4.0:
     natural-compare "^1.4.0"
     pretty-format "^22.4.0"
 
-jest-snapshot@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-snapshot/-/jest-snapshot-23.0.1/6674fa19b9eb69a99cabecd415bddc42d6af3e7e.tgz#6674fa19b9eb69a99cabecd415bddc42d6af3e7e"
-  dependencies:
-    chalk "^2.0.1"
-    jest-diff "^23.0.1"
-    jest-matcher-utils "^23.0.1"
-    mkdirp "^0.5.1"
-    natural-compare "^1.4.0"
-    pretty-format "^23.0.1"
-
 jest-util@^22.4.1:
   version "22.4.1"
   resolved "http://npm.lwcjs.org/jest-util/-/jest-util-22.4.1/dd17c3bdb067f8e90591563ec0c42bf847dc249f.tgz#dd17c3bdb067f8e90591563ec0c42bf847dc249f"
@@ -6644,19 +5993,6 @@ jest-util@^22.4.1:
     is-ci "^1.0.10"
     jest-message-util "^22.4.0"
     mkdirp "^0.5.1"
-    source-map "^0.6.0"
-
-jest-util@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-util/-/jest-util-23.1.0/c0251baf34644c6dd2fea78a962f4263ac55772d.tgz#c0251baf34644c6dd2fea78a962f4263ac55772d"
-  dependencies:
-    callsites "^2.0.0"
-    chalk "^2.0.1"
-    graceful-fs "^4.1.11"
-    is-ci "^1.0.10"
-    jest-message-util "^23.1.0"
-    mkdirp "^0.5.1"
-    slash "^1.0.0"
     source-map "^0.6.0"
 
 jest-validate@^22.4.2:
@@ -6679,55 +6015,18 @@ jest-validate@^22.4.4:
     leven "^2.1.0"
     pretty-format "^22.4.0"
 
-jest-validate@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-validate/-/jest-validate-23.0.1/cd9f01a89d26bb885f12a8667715e9c865a5754f.tgz#cd9f01a89d26bb885f12a8667715e9c865a5754f"
-  dependencies:
-    chalk "^2.0.1"
-    jest-get-type "^22.1.0"
-    leven "^2.1.0"
-    pretty-format "^23.0.1"
-
-jest-watcher@^23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest-watcher/-/jest-watcher-23.1.0/a8d5842e38d9fb4afff823df6abb42a58ae6cdbd.tgz#a8d5842e38d9fb4afff823df6abb42a58ae6cdbd"
-  dependencies:
-    ansi-escapes "^3.0.0"
-    chalk "^2.0.1"
-    string-length "^2.0.0"
-
 jest-worker@^22.2.2:
   version "22.2.2"
   resolved "http://npm.lwcjs.org/jest-worker/-/jest-worker-22.2.2/c1f5dc39976884b81f68ec50cb8532b2cbab3390.tgz#c1f5dc39976884b81f68ec50cb8532b2cbab3390"
   dependencies:
     merge-stream "^1.0.1"
 
-jest-worker@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/jest-worker/-/jest-worker-23.0.1/9e649dd963ff4046026f91c4017f039a6aa4a7bc.tgz#9e649dd963ff4046026f91c4017f039a6aa4a7bc"
-  dependencies:
-    merge-stream "^1.0.1"
-
-jest@23.1.0:
-  version "23.1.0"
-  resolved "http://npm.lwcjs.org/jest/-/jest-23.1.0/bbb7f893100a11a742dd8bd0d047a54b0968ad1a.tgz#bbb7f893100a11a742dd8bd0d047a54b0968ad1a"
-  dependencies:
-    import-local "^1.0.0"
-    jest-cli "^23.1.0"
-
-jest@^22.4.2:
+jest@~22.4.2:
   version "22.4.4"
   resolved "http://npm.lwcjs.org/jest/-/jest-22.4.4/ffb36c9654b339a13e10b3d4b338eb3e9d49f6eb.tgz#ffb36c9654b339a13e10b3d4b338eb3e9d49f6eb"
   dependencies:
     import-local "^1.0.0"
     jest-cli "^22.4.4"
-
-jest@~22.4.0:
-  version "22.4.2"
-  resolved "http://npm.lwcjs.org/jest/-/jest-22.4.2/34012834a49bf1bdd3bc783850ab44e4499afc20.tgz#34012834a49bf1bdd3bc783850ab44e4499afc20"
-  dependencies:
-    import-local "^1.0.0"
-    jest-cli "^22.4.2"
 
 jmespath@0.15.0:
   version "0.15.0"
@@ -7097,10 +6396,6 @@ lodash._reinterpolate@~3.0.0:
 lodash.camelcase@4.3.0:
   version "4.3.0"
   resolved "http://npm.lwcjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0/b28aa6288a2b9fc651035c7711f65ab6190331a6.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
-
-lodash.cond@^4.3.0:
-  version "4.5.2"
-  resolved "http://npm.lwcjs.org/lodash.cond/-/lodash.cond-4.5.2/f471a1da486be60f6ab955d17115523dd1d255d5.tgz#f471a1da486be60f6ab955d17115523dd1d255d5"
 
 lodash.get@^4.4.2:
   version "4.4.2"
@@ -8483,13 +7778,6 @@ pretty-format@^22.4.0:
     ansi-regex "^3.0.0"
     ansi-styles "^3.2.0"
 
-pretty-format@^23.0.1:
-  version "23.0.1"
-  resolved "http://npm.lwcjs.org/pretty-format/-/pretty-format-23.0.1/d61d065268e4c759083bccbca27a01ad7c7601f4.tgz#d61d065268e4c759083bccbca27a01ad7c7601f4"
-  dependencies:
-    ansi-regex "^3.0.0"
-    ansi-styles "^3.2.0"
-
 private@^0.1.6, private@^0.1.7:
   version "0.1.8"
   resolved "http://npm.lwcjs.org/private/-/private-0.1.8/2381edb3689f7a53d653190060fcf822d2f368ff.tgz#2381edb3689f7a53d653190060fcf822d2f368ff"
@@ -9194,21 +8482,16 @@ rollup-pluginutils@^2.0.1, rollup-pluginutils@~2.0.1:
     estree-walker "^0.3.0"
     micromatch "^2.3.11"
 
-rollup@^0.50.0:
-  version "0.50.1"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.50.1/e4dafcbf8d2bb0d9f5589d0cc6f64d76b8815730.tgz#e4dafcbf8d2bb0d9f5589d0cc6f64d76b8815730"
+rollup@0.60.1:
+  version "0.60.1"
+  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.60.1/07cb66153f1541d5f7e82b8393b405c31647dae9.tgz#07cb66153f1541d5f7e82b8393b405c31647dae9"
+  dependencies:
+    "@types/estree" "0.0.39"
+    "@types/node" "*"
 
 rollup@~0.53.0:
   version "0.53.4"
   resolved "http://npm.lwcjs.org/rollup/-/rollup-0.53.4/f92ce56ee1d097ad5b6f13951bc80db5fef18113.tgz#f92ce56ee1d097ad5b6f13951bc80db5fef18113"
-
-rollup@~0.56.2:
-  version "0.56.2"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.2/1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a.tgz#1788cf56d4350b6d8ecf76b5d654c59c7bf9c24a"
-
-rollup@~0.56.5:
-  version "0.56.5"
-  resolved "http://npm.lwcjs.org/rollup/-/rollup-0.56.5/40fe3cf0cd1659d469baad11f4d5b6336c14ce84.tgz#40fe3cf0cd1659d469baad11f4d5b6336c14ce84"
 
 run-async@^2.2.0:
   version "2.3.0"
@@ -9583,7 +8866,7 @@ source-map-support@^0.5.0:
   dependencies:
     source-map "^0.6.0"
 
-source-map-support@^0.5.3, source-map-support@^0.5.6:
+source-map-support@^0.5.3:
   version "0.5.6"
   resolved "http://npm.lwcjs.org/source-map-support/-/source-map-support-0.5.6/4435cee46b1aab62b8e8610ce60f788091c51c13.tgz#4435cee46b1aab62b8e8610ce60f788091c51c13"
   dependencies:
@@ -10018,16 +9301,6 @@ test-exclude@^4.1.1:
   dependencies:
     arrify "^1.0.1"
     micromatch "^2.3.11"
-    object-assign "^4.1.0"
-    read-pkg-up "^1.0.1"
-    require-main-filename "^1.0.1"
-
-test-exclude@^4.2.1:
-  version "4.2.1"
-  resolved "http://npm.lwcjs.org/test-exclude/-/test-exclude-4.2.1/dfa222f03480bca69207ca728b37d74b45f724fa.tgz#dfa222f03480bca69207ca728b37d74b45f724fa"
-  dependencies:
-    arrify "^1.0.1"
-    micromatch "^3.1.8"
     object-assign "^4.1.0"
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"

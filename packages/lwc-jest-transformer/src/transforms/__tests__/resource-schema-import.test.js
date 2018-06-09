@@ -9,9 +9,9 @@ describe('@resource-url import', () => {
         let myResource;
 
         try {
-          myResource = require('@resource-url/c.foo').default;
+          myResource = require("@resource-url/c.foo").default;
         } catch (e) {
-          myResource = 'c.foo';
+          myResource = "c.foo";
         }
     `);
 
@@ -23,9 +23,9 @@ describe('@resource-url import', () => {
         let myResource;
 
         try {
-          myResource = require('@resource-url/c.foo').default;
+          myResource = require("@resource-url/c.foo").default;
         } catch (e) {
-          myResource = 'c.foo';
+          myResource = "c.foo";
         }
     `);
 

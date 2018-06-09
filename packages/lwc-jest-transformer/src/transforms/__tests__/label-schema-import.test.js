@@ -9,9 +9,9 @@ describe('@label import', () => {
         let myLabel;
 
         try {
-          myLabel = require('@label/c.foo').default;
+          myLabel = require("@label/c.foo").default;
         } catch (e) {
-          myLabel = 'c.foo';
+          myLabel = "c.foo";
         }
     `);
 
@@ -23,9 +23,9 @@ describe('@label import', () => {
         let myLabel;
 
         try {
-          myLabel = require('@label/c.foo').default;
+          myLabel = require("@label/c.foo").default;
         } catch (e) {
-          myLabel = 'c.foo';
+          myLabel = "c.foo";
         }
     `);
 
