@@ -65,7 +65,6 @@ exports.html = function (cmpName, isCompat) {
     <html>
         <head>
             <title>${cmpName}</title>
-
         </head>
         <body>
             ${isCompat ? COMPAT : ''}

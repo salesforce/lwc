@@ -51,32 +51,32 @@ const compatBrowsers = [
         platform: 'Windows 10',
         version: '11.103'
     },
-    // {
-    //     // ideally this would be 10.1 (or latest 10.x available) but there is
-    //     // a bug in SafariDriver for 10.1 and window management
-    //     commonName: 'safari10',
-    //     browserName: 'safari',
-    //     platform: 'OS X 10.11',
-    //     version: '10.0'
-    // },
-    // {
-    //     commonName: 'safari9',
-    //     browserName: 'safari',
-    //     platform: 'OS X 10.11',
-    //     version: '9.0'
-    // },
-    // {
-    //     commonName: 'chrome30',
-    //     browserName: 'chrome',
-    //     platform: 'Windows 8.1',
-    //     version: '30.0'
-    // },
-    // {
-    //     commonName: 'firefox45',
-    //     browserName: 'firefox',
-    //     platform: 'Windows 8',
-    //     version: '45.0'
-    // },
+    {
+        // ideally this would be 10.1 (or latest 10.x available) but there is
+        // a bug in SafariDriver for 10.1 and window management
+        commonName: 'safari10',
+        browserName: 'safari',
+        platform: 'OS X 10.11',
+        version: '10.0'
+    },
+    {
+        commonName: 'safari9',
+        browserName: 'safari',
+        platform: 'OS X 10.11',
+        version: '9.0'
+    },
+    {
+        commonName: 'chrome30',
+        browserName: 'chrome',
+        platform: 'Windows 8.1',
+        version: '30.0'
+    },
+    {
+        commonName: 'firefox45',
+        browserName: 'firefox',
+        platform: 'Windows 8',
+        version: '45.0'
+    },
 ];
 
 const sauce = {

@@ -1,5 +1,4 @@
 const assert = require('assert');
-
 describe('Testing component: compat-simple', () => {
     const COMPAT_SIMPLE_URL = 'http://localhost:4567/compat-simple';
 
