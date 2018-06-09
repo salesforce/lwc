@@ -122,6 +122,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
 export enum EventListenerContext {
     COMPONENT_LISTENER = 1,
     ROOT_LISTENER = 2,
+    NATIVE_ELEMENT = 3,
 }
 
 export let componentEventListenerType: EventListenerContext | null = null;
