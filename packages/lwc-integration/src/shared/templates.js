@@ -71,12 +71,6 @@ exports.html = function (cmpName, isCompat) {
             ${isCompat ? COMPAT : ''}
             <script src="../../shared/engine.js"></script>
             <script src="./${cmpName}.js"></script>
-            <script>
-            document.body.appendChild(document.createElement('h3'))
-                if (goog) {
-                    document.body.appendChild(document.createElement('span'))
-                }
-            </script>
         </body>
     </html>
 `;
