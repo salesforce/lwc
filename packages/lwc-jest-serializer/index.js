@@ -1,4 +1,4 @@
-export function test(value) {
+module.exports.test = function test(value) {
     if (!value) {
         return false;
     }
@@ -14,14 +14,10 @@ export function test(value) {
     )
 }
 
-const {
-    getOwnPropertyDescriptor,
-    defineProperty,
-} = Object;
-
+const { getOwnPropertyDescriptor, defineProperty } = Object;
 const childNodesGetter = getOwnPropertyDescriptor(Node.prototype, 'childNodes').get;
 
-export function serialize(node, config, ...everythingElse) {
+module.exports.serialize = function(node, config, ...everythingElse) {
     const htmlSerializer = config.plugins.filter((p) => {
         return p.test(node) && p.test !== test;
     })[0];
