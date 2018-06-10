@@ -14,12 +14,11 @@
   "main": "preset.js",
   "peerDependencies": {
     "jest": "*",
-    "lwc-jest-resolver": "0.22.6",
-    "lwc-jest-serializer": "0.22.6",
-    "lwc-jest-transformer": "0.22.6"
+    "lwc-jest-resolver": "0.22.x",
+    "lwc-jest-serializer": "0.22.x",
+    "lwc-jest-transformer": "0.22.x"
   },
   "devDependencies": {
-    "jest": "~22.4.2",
     "lwc-compiler": "0.22.7",
     "lwc-jest-resolver": "0.22.7",
     "lwc-jest-serializer": "0.22.7",
