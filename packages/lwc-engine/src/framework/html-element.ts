@@ -316,20 +316,26 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelector.
-        // querySelector on the custom element will respect
+        // fallback to a patched querySelector to respect
         // shadow semantics
-        return callHostQuerySelector(vm.elm, selector);
+        if (isTrue(vm.fallback)) {
+            return callHostQuerySelector(vm.elm, selector);
+        }
+        // Delegate to custom element querySelector for native.
+        return vm.elm.querySelector(selector);
     },
     querySelectorAll(selector: string): NodeList {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelectorAll.
-        // querySelectorAll on the custom element will respect
+        // fallback to a patched querySelectorAll to respect
         // shadow semantics
-        return callHostQuerySelectorAll(vm.elm, selector);
+        if (isTrue(vm.fallback)) {
+            return callHostQuerySelectorAll(vm.elm, selector);
+        }
+        // Delegate to custom element querySelectorAll for native.
+        return vm.elm.querySelectorAll(selector);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
