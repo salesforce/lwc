@@ -24,12 +24,18 @@ function isChildNode(root: Element, node: Node): boolean {
 }
 
 const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
+const currentTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'currentTarget')!.get!;
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const eventShadowDescriptors: PropertyDescriptorMap = {
+    currentTarget: {
+        get(this: Event): HTMLElement {
+            return patchShadowDomTraversalMethods(currentTargetGetter.call(this));
+        }
+    },
     target: {
         get(this: Event): HTMLElement {
-            const currentTarget = this.currentTarget as HTMLElement;
+            const currentTarget = currentTargetGetter.call(this) as HTMLElement;
             const originalTarget = eventTargetGetter.call(this);
             // Executing event listener on component, target is always currentTarget
 
