@@ -12,6 +12,7 @@ import {
 } from './element';
 import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
 import { childNodesGetter } from "./node";
+import { callHostQuerySelector } from "../html-element";
 
 export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
 const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
@@ -59,7 +60,7 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             const node = shadowRootQuerySelector(vm, selector);
             if (process.env.NODE_ENV !== 'production') {
                 if (isNull(node)) {
-                    if (vm.elm.querySelector(selector)) {
+                    if (callHostQuerySelector(vm.elm, selector)) {
                         assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                     }
                 }
@@ -73,8 +74,7 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             const nodeList = shadowRootQuerySelectorAll(vm, selector);
             if (process.env.NODE_ENV !== 'production') {
                 if (nodeList.length === 0) {
-                    const results = vm.elm.querySelectorAll(selector);
-                    if (results.length) {
+                    if (callHostQuerySelector(vm.elm, selector)) {
                         assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                     }
                 }

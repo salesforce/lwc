@@ -24,39 +24,63 @@ import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from
 import { dispatchEvent } from "./dom/event-target";
 import { assignedSlotGetter, lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
 
-function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
-    const vm = getCustomElementVM(this);
+export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(elm);
     return vm.mode === 'open' ? vm.cmpRoot : null;
+}
+
+export function callHostQuerySelector(elm: HTMLElement, selector: string): Element | null {
+    return lightDomQuerySelector.call(elm, selector);
+}
+
+export function callHostQuerySelectorAll(elm: HTMLElement, selector: string): NodeList {
+    return lightDomQuerySelectorAll.call(elm, selector);
+}
+
+export function addHostEventListener(elm: HTMLElement, args: any[]) {
+    addEventListenerPatched.apply(elm, args);
+}
+
+export function removeHostEventListener(elm: HTMLElement, args: any[]) {
+    removeEventListenerPatched.apply(elm, args);
+}
+
+export function getHostChildNodes(elm: HTMLElement) {
+    return lightDomCustomElementChildNodes.call(elm);
+}
+
+export function getHostAssignedSlot(elm: HTMLElement) {
+    return assignedSlotGetter.call(elm);
 }
 
 const fallbackDescriptors = {
     shadowRoot: {
-        get: ElementShadowRootGetter,
+        get(this: HTMLElement) { return getHostShadowRoot(this); },
         configurable: true,
         enumerable: true,
     },
     querySelector: {
-        value: lightDomQuerySelector,
+        value(this: HTMLElement, selector: string) { return callHostQuerySelector(this, selector); },
         configurable: true,
     },
     querySelectorAll: {
-        value: lightDomQuerySelectorAll,
+        value(this: HTMLElement, selector: string) { return callHostQuerySelectorAll(this, selector); },
         configurable: true,
     },
     addEventListener: {
-        value: addEventListenerPatched,
+        value(this: HTMLElement) { return addHostEventListener(this, ArraySlice.call(arguments)); },
         configurable: true,
     },
     removeEventListener: {
-        value: removeEventListenerPatched,
+        value(this: HTMLElement) { return removeHostEventListener(this, ArraySlice.call(arguments)); },
         configurable: true,
     },
     childNodes: {
-        get: lightDomCustomElementChildNodes,
+        get(this: HTMLElement) { return getHostChildNodes(this); },
         configurable: true,
     },
     assignedSlot: {
-        get: assignedSlotGetter,
+        get(this: HTMLElement) { return getHostAssignedSlot(this); },
         configurable: true,
     },
 };
@@ -295,7 +319,7 @@ LWCElement.prototype = {
         // Delegate to custom element querySelector.
         // querySelector on the custom element will respect
         // shadow semantics
-        return vm.elm.querySelector(selector);
+        return callHostQuerySelector(vm.elm, selector);
     },
     querySelectorAll(selector: string): NodeList {
         const vm = getComponentVM(this);
@@ -305,7 +329,7 @@ LWCElement.prototype = {
         // Delegate to custom element querySelectorAll.
         // querySelectorAll on the custom element will respect
         // shadow semantics
-        return vm.elm.querySelectorAll(selector);
+        return callHostQuerySelectorAll(vm.elm, selector);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
