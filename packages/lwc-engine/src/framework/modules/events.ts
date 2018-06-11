@@ -1,4 +1,4 @@
-import { isUndefined } from "../language";
+import { isUndefined, isTrue } from "../language";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { ViewModelReflection } from "../utils";
 import { removeHostEventListener, addHostEventListener } from "../html-element";
@@ -35,8 +35,8 @@ function removeAllEventListeners(vnode: InteractiveVNode) {
         const isCustomElement = !isUndefined(vm);
         let name;
         for (name in on) {
-            // intentionally using removeEventListener from elm to allow patching
-            if (isCustomElement) {
+            if (isCustomElement && isTrue(vm.fallback)) {
+                // using the patched removeEventListener
                 removeHostEventListener(elm as HTMLElement, [name, listener]);
             } else {
                 elm.removeEventListener(name, listener);
@@ -68,10 +68,10 @@ function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
 
     let name;
     for (name in on) {
-        if (isCustomElement) {
+        if (isCustomElement && isTrue(vm.fallback)) {
+            // using the patched addHostEventListener
             addHostEventListener(elm as HTMLElement, [name, listener]);
         } else {
-            // intentionally using addEventListener from elm to allow patching
             elm.addEventListener(name, listener);
         }
     }

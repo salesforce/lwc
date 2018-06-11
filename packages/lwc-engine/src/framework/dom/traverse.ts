@@ -75,15 +75,15 @@ function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
     return null;
 }
 
-export function lightDomQuerySelectorAll(this: HTMLElement, selectors: string): HTMLElement[] {
+export function lightDomQuerySelectorAll(this: HTMLElement, selector: string): HTMLElement[] {
     const vm = getElementOwnerVM(this) as VM;
-    const matches = nativeQuerySelectorAll.call(this, selectors);
+    const matches = nativeQuerySelectorAll.call(this, selector);
     return getAllMatches(vm, matches);
 }
 
-export function lightDomQuerySelector(this: HTMLElement, selectors: string): HTMLElement | null {
+export function lightDomQuerySelector(this: HTMLElement, selector: string): HTMLElement | null {
     const vm = getElementOwnerVM(this) as VM;
-    const nodeList = nativeQuerySelectorAll.call(this, selectors);
+    const nodeList = nativeQuerySelectorAll.call(this, selector);
     return getFirstMatch(vm, nodeList);
 }
 
