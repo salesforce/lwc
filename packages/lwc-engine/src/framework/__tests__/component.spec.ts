@@ -1,19 +1,7 @@
-import * as target from '../component';
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
 import { ViewModelReflection } from '../utils';
+import { createElement, Element } from "../main";
 
 describe('component', function() {
-    describe('#createComponent()', () => {
-        it('should throw for non-object values', () => {
-            expect(() => target.createComponent(undefined)).toThrow();
-            expect(() => target.createComponent("")).toThrow();
-            expect(() => target.createComponent(NaN)).toThrow();
-            expect(() => target.createComponent(function() {})).toThrow();
-            expect(() => target.createComponent(1)).toThrow();
-        });
-    });
-
     describe('public computed props', () => {
         it('should allow public getters', function() {
             class MyComponent extends Element  {

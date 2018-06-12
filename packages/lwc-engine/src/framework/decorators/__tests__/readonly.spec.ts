@@ -1,5 +1,4 @@
-import { Membrane } from "../../membrane";
-import readonly from "../readonly";
+import { readonly } from "../../main";
 
 describe('readonly.ts', () => {
     describe('readonly()', () => {

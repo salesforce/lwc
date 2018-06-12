@@ -1,6 +1,5 @@
 import { wrapIframeWindow } from "../iframe";
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
+import { createElement, Element } from "../../main";
 
 describe('wrapped iframe window', () => {
     describe('methods', function () {

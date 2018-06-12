@@ -1,9 +1,7 @@
-import { Element } from "../../html-element";
+import { createElement, Element } from "../../main";
 import { h } from "../../api";
-import { createElement } from "../../upgrade";
 import { ViewModelReflection } from "../../utils";
 import { VM } from "../../vm";
-import { Component } from "../../component";
 
 describe('root', () => {
     describe('integration', () => {

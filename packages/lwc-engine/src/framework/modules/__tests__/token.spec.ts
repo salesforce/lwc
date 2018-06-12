@@ -1,7 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import { Template } from "../../template";
-import { querySelectorAll } from "../../dom/element";
+import { createElement, Element } from "../../main";
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
@@ -19,7 +16,7 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(1);
+        expect(cmp.shadowRoot.querySelectorAll('[test]')).toHaveLength(1);
     });
 
     it('removes children element tokens if the template has no token', () => {
@@ -45,24 +42,24 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(querySelectorAll.call(cmp, 'section')).toHaveLength(1);
-        expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(1);
+        expect(cmp.shadowRoot.querySelectorAll('section')).toHaveLength(1);
+        expect(cmp.shadowRoot.querySelectorAll('[test]')).toHaveLength(1);
 
         cmp.tmpl = unstyledTmpl;
 
         return Promise.resolve().then(() => {
-            expect(querySelectorAll.call(cmp, 'section')).toHaveLength(1);
-            expect(querySelectorAll.call(cmp, '[test]')).toHaveLength(0);
+            expect(cmp.shadowRoot.querySelectorAll('section')).toHaveLength(1);
+            expect(cmp.shadowRoot.querySelectorAll('[test]')).toHaveLength(0);
         });
     });
 
     it('replace children element tokens when swapping template', () => {
-        const styledTmplA: Template = $api => [
+        const styledTmplA = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplA.token = 'testA';
 
-        const styledTmplB: Template = $api => [
+        const styledTmplB = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplB.token = 'testB';
@@ -80,14 +77,14 @@ describe('modules/token', () => {
         const cmp = createElement('x-cmp', { is: Component });
         document.body.appendChild(cmp);
 
-        expect(querySelectorAll.call(cmp, '[testA]')).toHaveLength(1);
-        expect(querySelectorAll.call(cmp, '[testB]')).toHaveLength(0);
+        expect(cmp.shadowRoot.querySelectorAll('[testA]')).toHaveLength(1);
+        expect(cmp.shadowRoot.querySelectorAll('[testB]')).toHaveLength(0);
 
         cmp.tmpl = styledTmplB;
 
         return Promise.resolve().then(() => {
-            expect(querySelectorAll.call(cmp, '[testA]')).toHaveLength(0);
-            expect(querySelectorAll.call(cmp, '[testB]')).toHaveLength(1);
+            expect(cmp.shadowRoot.querySelectorAll('[testA]')).toHaveLength(0);
+            expect(cmp.shadowRoot.querySelectorAll('[testB]')).toHaveLength(1);
         });
     });
 });

@@ -1,6 +1,4 @@
-import { Element } from "../html-element";
-import { createElement } from "./../upgrade";
-import { unwrap } from "../membrane";
+import { createElement, Element } from "../main";
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {

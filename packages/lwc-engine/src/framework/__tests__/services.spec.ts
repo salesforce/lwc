@@ -1,6 +1,5 @@
 import * as target from '../services';
-import { Element } from "../html-element";
-import { createElement } from '../upgrade';
+import { createElement, Element } from '../main';
 
 function resetServices() {
     Object.keys(target.Services).forEach((name) => {
@@ -9,9 +8,7 @@ function resetServices() {
 }
 
 describe('services', () => {
-
     describe('register()', () => {
-
         beforeEach(function() {
             resetServices();
         });

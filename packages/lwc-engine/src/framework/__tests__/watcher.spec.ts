@@ -1,11 +1,7 @@
-import { Element } from "../html-element";
-import { createElement } from '../main';
-import { ViewModelReflection } from "../utils";
+import { createElement, Element } from '../main';
 
 describe('watcher', () => {
-
     describe('integration', () => {
-
         it('should not rerender the component if nothing changes', () => {
             let counter = 0;
             class MyComponent1 extends Element {
@@ -88,14 +84,19 @@ describe('watcher', () => {
                     super();
                     this.round = 0;
                 }
+                updateRound() {
+                    return this.round += 1;
+                }
                 render() {
                     return html2;
                 }
             }
             MyComponent4.track = { round: 1 };
+            MyComponent4.publicMethods = [ 'updateRound' ];
             const elm = createElement('x-foo', { is: MyComponent4 });
             document.body.appendChild(elm);
-            elm[ViewModelReflection].component.round += 1;
+
+            elm.updateRound();
             Promise.resolve().then(_ => {
                 expect(counter).toBe(2);
             });

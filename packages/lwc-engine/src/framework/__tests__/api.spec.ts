@@ -1,7 +1,5 @@
 import * as api from '../api';
-import { Element } from "../html-element";
-import { createElement } from '../main';
-import { RenderAPI } from '../api';
+import { createElement, Element } from '../main';
 import { querySelector } from "../dom/element";
 
 describe('api', () => {
@@ -101,9 +99,10 @@ describe('api', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const span = querySelector.call(elm, 'button') as Element;
-            expect(span.tagName).toEqual('BUTTON');
-            expect(span.getAttribute('is')).toEqual('x-bar');
+
+            const button = elm.shadowRoot.querySelector('button') as Element;
+            expect(button.tagName).toEqual('BUTTON');
+            expect(button.getAttribute('is')).toEqual('x-bar');
         });
 
         it('should throw if the forceTagName value is a reserved standard element name', () => {

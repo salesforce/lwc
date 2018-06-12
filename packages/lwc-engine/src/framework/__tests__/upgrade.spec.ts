@@ -1,6 +1,4 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
-import { ComponentConstructor } from "../component";
+import { createElement, Element } from '../main';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {

@@ -1,4 +1,4 @@
-import decorate from "../decorate";
+import { decorate } from "../../main";
 
 describe('decorate.ts', () => {
     describe('decorate() api', () => {
