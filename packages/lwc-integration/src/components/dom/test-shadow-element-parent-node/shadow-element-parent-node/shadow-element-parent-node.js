@@ -1,4 +1,4 @@
-import { Element, track, unwrap } from 'engine';
+import { Element, track } from 'engine';
 
 export default class ShadowElementParentNode extends Element {
     @track parentIsRoot = false;
@@ -7,6 +7,6 @@ export default class ShadowElementParentNode extends Element {
         if (this.parentIsRoot === true) {
             return;
         }
-        this.parentIsRoot = unwrap(this.template.querySelector('div').parentNode) === this.template;
+        this.parentIsRoot = this.template.querySelector('div').parentNode === this.template;
     }
 }
