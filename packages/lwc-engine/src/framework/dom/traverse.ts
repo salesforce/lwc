@@ -137,7 +137,7 @@ export function assignedSlotGetter(this: HTMLElement) {
     return parentNode;
 }
 
-export const shadowRootDescriptors: PropertyDescriptorMap = {
+export const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
