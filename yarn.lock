@@ -3410,7 +3410,7 @@ css-loader@^0.9.1:
     loader-utils "~0.2.2"
     source-map "~0.1.38"
 
-css-parse@^2.0.0, css-parse@~2.0.0:
+css-parse@~2.0.0:
   version "2.0.0"
   resolved "http://npm.lwcjs.org/css-parse/-/css-parse-2.0.0/a468ee667c16d81ccf05c58c38d2a97c780dbfd4.tgz#a468ee667c16d81ccf05c58c38d2a97c780dbfd4"
   dependencies:
