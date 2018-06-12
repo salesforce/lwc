@@ -1,33 +1,15 @@
-import { isNull, hasOwnProperty, ArrayMap, isArray, isObject, isFunction } from "../language";
+import { isNull, hasOwnProperty, ArrayMap } from "../language";
 import { shadowDescriptors } from "./traverse";
 import { ViewModelReflection } from "../utils";
 const proxies = new WeakMap<object, object>();
-type MembraneShadowTarget = Object | any[] | ((...args) => any);
-
-function createShadowTarget(value: any): MembraneShadowTarget {
-    let shadowTarget: MembraneShadowTarget | undefined = undefined;
-    if (isArray(value)) {
-        shadowTarget = [];
-    } else if (isObject(value)) {
-        shadowTarget = {};
-    } else if (isFunction(value)) {
-        shadowTarget = () => {}; // tslint:disable-line
-    }
-    return shadowTarget as MembraneShadowTarget;
-}
 
 function isReplicable(value: any): boolean {
     const type = typeof value;
     return value && (type === 'object' || type === 'function');
 }
 
-class TraverseMembraneHandler {
-    originalTarget: any;
-    constructor(originalTarget: any) {
-        this.originalTarget = originalTarget;
-    }
-    get(shadowTarget: any, key: PropertyKey): any {
-        const { originalTarget } = this;
+const TraverseMembraneHandler = {
+    get(originalTarget: any, key: PropertyKey): any {
         if (key === TargetSlot) {
             return originalTarget;
         } else if (key === ViewModelReflection) {
@@ -37,7 +19,7 @@ class TraverseMembraneHandler {
         if (hasOwnProperty.call(shadowDescriptors, key)) {
             const descriptor = shadowDescriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
-                value = descriptor.value;
+                value = wrap(descriptor.value);
             } else {
                 value = descriptor!.get!.call(originalTarget);
             }
@@ -45,16 +27,15 @@ class TraverseMembraneHandler {
             value = originalTarget[key];
         }
 
-        return wrap(value);
-    }
-    apply(target: (...any) => any, thisArg: any, args: any[]): any {
-        const { originalTarget } = this;
+        return value;
+    },
+    apply(originalTarget: (...any) => any, thisArg: any, args: any[]): any {
         const unwrappedContext = unwrap(thisArg);
         const unwrappedArgs = ArrayMap.call(args, (arg) => unwrap(arg));
         const value = originalTarget.apply(unwrappedContext, unwrappedArgs);
         return wrap(value);
     }
-}
+};
 
 const TargetSlot = Symbol();
 
@@ -83,7 +64,7 @@ export function wrap(value: any) {
     if (r) {
         return r;
     }
-    const proxy = new Proxy(createShadowTarget(unwrapped), new TraverseMembraneHandler(unwrapped));
+    const proxy = new Proxy(unwrapped, TraverseMembraneHandler);
     proxies.set(unwrapped, proxy);
     return proxy;
 }

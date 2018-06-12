@@ -133,7 +133,7 @@ export function assignedSlotGetter(this: HTMLElement) {
     if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
         return null;
     }
-    return parentNode;
+    return patchShadowDomTraversalMethods(parentNode);
 }
 
 export const shadowDescriptors: PropertyDescriptorMap = {
