@@ -42,7 +42,7 @@ class TraverseMembraneHandler {
                 value = descriptor!.get!.call(originalTarget);
             }
         } else {
-            value = originalTarget[key]
+            value = originalTarget[key];
         }
 
         return wrap(value);
