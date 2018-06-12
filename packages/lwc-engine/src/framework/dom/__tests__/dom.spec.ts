@@ -1,6 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import { querySelector } from "../element";
+import { createElement, Element } from "../../main";
 import { getRootNode } from "../node";
 
 describe('dom', () => {
@@ -43,7 +41,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = querySelector.call(elm, 'x-child');
+            const child = elm.shadowRoot.querySelector('x-child');
             const match = getRootNode.call(child, { composed: true });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -100,7 +98,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = querySelector.call(elm, 'x-child');
+            const child = elm.shadowRoot.querySelector('x-child');
             const match = getRootNode.call(child, { composed: false });
             // We can't assert against document directly, because
             // for some reasons, jest is locking up with document here
@@ -187,7 +185,7 @@ describe('dom', () => {
 
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            const child = querySelector.call(elm, 'x-foo');
+            const child = elm.shadowRoot.querySelector('x-foo');
             child.trigger();
         });
     });

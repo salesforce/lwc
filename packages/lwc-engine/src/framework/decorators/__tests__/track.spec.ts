@@ -1,7 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import track from "../track";
-import readonly from "../readonly";
+import { createElement, Element, track, readonly } from "../../main";
 
 describe('track.ts', () => {
     describe('integration', () => {

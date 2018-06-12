@@ -1,6 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import wire from "../wire";
+import { createElement, Element, wire } from "../../main";
 
 describe('wire.ts', () => {
     describe('integration', () => {

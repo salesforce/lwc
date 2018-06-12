@@ -1,6 +1,4 @@
-import { Element } from "../html-element";
-import * as api from "../api";
-import { createElement } from '../upgrade';
+import { createElement, Element } from '../main';
 
 describe('class-list', () => {
     describe('integration', () => {

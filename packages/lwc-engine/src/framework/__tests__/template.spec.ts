@@ -1,10 +1,8 @@
 import * as target from '../template';
 import * as globalApi from '../api';
-import { Element } from "../html-element";
-import { createElement } from '../main';
+import { createElement, Element } from '../main';
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
-import { querySelector } from '../dom/element';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -461,7 +459,7 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('foo');
+            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('foo');
         });
 
         it('should remove attribute when value is null', () => {
@@ -493,10 +491,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('initial');
+            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(querySelector.call(element, 'div').hasAttribute('title')).toBe(false);
+                expect(element.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
             });
         });
     });

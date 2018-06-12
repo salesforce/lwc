@@ -1,11 +1,7 @@
-import { Element } from "../html-element";
-import { createElement } from "../main";
-import { querySelector } from "../dom/element";
+import { createElement, Element } from '../main';
 
 describe('patch', () => {
-
     describe('#patch()', () => {
-
         it('should call connectedCallback syncronously', () => {
             let flag = false;
             class MyComponent extends Element {
@@ -266,7 +262,7 @@ describe('patch', () => {
                 return Promise.resolve();
             })
             .then(() => {
-                expect(querySelector.call(element, 'span').textContent).toBe('second');
+                expect(element.shadowRoot.querySelector('span').textContent).toBe('second');
             });
         });
 

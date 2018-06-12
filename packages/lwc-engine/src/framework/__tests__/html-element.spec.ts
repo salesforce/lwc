@@ -1,12 +1,6 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
+import { createElement, Element, unwrap } from "../main";
 import assertLogger from '../assert';
-import { register } from "../services";
 import { ViewModelReflection } from "../utils";
-import { VNode } from "../../3rdparty/snabbdom/types";
-import { Component } from "../component";
-import { unwrap } from "../main";
-import { querySelector } from "../dom/element";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -27,8 +21,9 @@ describe('html-element', () => {
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.setFoo();
+
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
             expect(child.getAttributeNS('x', 'foo')).toBe('bar');
         });
@@ -77,8 +72,9 @@ describe('html-element', () => {
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.setFoo();
+
             expect(child.hasAttribute('foo')).toBe(true);
             expect(child.getAttribute('foo')).toBe('bar');
         });
@@ -131,8 +127,9 @@ describe('html-element', () => {
             }
             const element = createElement('remove-namespaced-attribute-on-host-element', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.removeTitle();
+
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
         });
 
@@ -172,8 +169,9 @@ describe('html-element', () => {
             }
             const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = element.shadowRoot.querySelector('x-child');
             child.removeTitle();
+
             expect(child.hasAttribute('title')).toBe(false);
         });
 
@@ -623,8 +621,9 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 childElm.setAttribute('title', "value from parent");
+
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
@@ -647,8 +646,9 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 childElm.removeAttribute('title');
+
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
@@ -703,7 +703,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             });
         });
@@ -1434,7 +1434,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('en');
+                        expect(element.shadowRoot.querySelector('div').id).toBe('en');
                     });
             });
 
@@ -1558,7 +1558,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('true');
+                        expect(element.shadowRoot.querySelector('div').id).toBe('true');
                     });
             });
 
@@ -1682,7 +1682,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('ltr');
+                        expect(element.shadowRoot.querySelector('div').id).toBe('ltr');
                     });
             });
 
@@ -1806,7 +1806,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.title).toBe('id');
+                        expect(element.shadowRoot.querySelector('div').title).toBe('id');
                     });
             });
 
@@ -1930,7 +1930,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.title).toBe('accessKey');
+                        expect(element.shadowRoot.querySelector('div').title).toBe('accessKey');
                     });
             });
 
@@ -2054,7 +2054,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('title');
+                        expect(element.shadowRoot.querySelector('div').id).toBe('title');
                     });
             });
 
@@ -2116,7 +2116,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 childElm.setAttribute('title', "value from parent");
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2139,7 +2139,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 childElm.removeAttribute('title');
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
@@ -2195,7 +2195,7 @@ describe('html-element', () => {
             document.body.appendChild(parentElm);
 
             return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
+                const childElm = parentElm.shadowRoot.querySelector('x-child');
                 expect(childElm.getAttribute('title')).toBe('child title');
             })
         })

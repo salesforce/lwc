@@ -1,10 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import assertLogger from '../../assert';
-import { register } from "../../services";
-import { VNode } from "../../../3rdparty/snabbdom/types";
-import { Component } from "../../component";
-import { unwrap } from "../../main";
+import { createElement, Element } from "../../main";
 import { querySelector } from "../element";
 
 describe('#lightDomQuerySelectorAll()', () => {
