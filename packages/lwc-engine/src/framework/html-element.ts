@@ -29,6 +29,11 @@ function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
     return vm.mode === 'open' ? vm.cmpRoot : null;
 }
 
+export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(elm);
+    return vm.mode === 'open' ? vm.cmpRoot : null;
+}
+
 const fallbackDescriptors = {
     shadowRoot: {
         get: ElementShadowRootGetter,

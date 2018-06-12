@@ -1,5 +1,5 @@
 import { wrapIframeWindow } from "../iframe";
-import { Element } from "../../html-element";
+import { Element, getHostShadowRoot } from "../../html-element";
 import { createElement } from "../../upgrade";
 
 describe('wrapped iframe window', () => {
@@ -125,7 +125,7 @@ describe('wrapped iframe window', () => {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const nativeIframeContentWindow = document.querySelector('iframe').contentWindow;
-            const wrappedIframe = elm.shadowRoot.querySelector('iframe'); // will return monkey patched contentWindow
+            const wrappedIframe = getHostShadowRoot(elm).querySelector('iframe'); // will return monkey patched contentWindow
             const contentWindowGetter = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
             expect(nativeIframeContentWindow === contentWindowGetter.call(wrappedIframe)).toBe(true);
         });
