@@ -11,6 +11,7 @@ import { VM, OwnerKey, getCustomElementVM } from "./vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
+import { unwrap } from "./dom/traverse-membrane";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -143,7 +144,8 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
             // * if the event is dispatched directly on the host, it is not observable from root
             // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
             //   it is not observable from the root
-            const { composed, target, currentTarget } = event as any;
+            const { composed, target: wrapped, currentTarget } = event as any;
+            const target = unwrap(wrapped);
             if (
                 // it is composed and was not dispatched onto the custom element directly
                 (composed === true && target !== currentTarget) ||
