@@ -1,4 +1,4 @@
-import { Element } from "../html-element";
+import { Element, getHostShadowRoot } from "../html-element";
 import { createElement } from "./../upgrade";
 import { unwrap } from "../membrane";
 
@@ -817,7 +817,9 @@ describe('Shadow Root events', () => {
 
         const elm = createElement('x-add-event-listener', { is: MyComponent });
         document.body.appendChild(elm);
-        elm.shadowRoot.querySelector('div').dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }))
+        getHostShadowRoot(elm)
+            .querySelector('div')
+            .dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
     });
 });
 

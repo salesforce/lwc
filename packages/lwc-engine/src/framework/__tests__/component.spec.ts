@@ -1,5 +1,5 @@
 import * as target from '../component';
-import { Element } from "../html-element";
+import { Element, getHostShadowRoot } from "../html-element";
 import { createElement } from "../upgrade";
 import { ViewModelReflection } from '../utils';
 
@@ -51,7 +51,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.lunch).toBe('salad');
-            expect(elm.shadowRoot.querySelector('x-component').breakfast).toBe('pancakes');
+            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function() {
@@ -358,7 +358,7 @@ describe('component', function() {
                 }
             });
             document.body.appendChild(elm);
-            expect(elm.shadowRoot.querySelector('section').style.cssText).toBe('color: red;');
+            expect(getHostShadowRoot(elm).querySelector('section').style.cssText).toBe('color: red;');
             expect(calledCSSText).toBe(true);
         });
 
@@ -455,7 +455,7 @@ describe('component', function() {
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const section = elm.shadowRoot.querySelector('section');
+            const section = getHostShadowRoot(elm).querySelector('section');
             section.style.removeProperty = function() {
                 called = true;
             };
