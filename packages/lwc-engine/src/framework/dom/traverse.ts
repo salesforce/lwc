@@ -15,6 +15,7 @@ import {
     ArrayReduce,
     ArraySlice,
     isFalse,
+    ArrayPush,
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
@@ -55,15 +56,17 @@ export function shadowRootChildNodes(vm: VM, elm: Element) {
 }
 
 function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
-    return ArrayFilter.call(nodeList, (match) => {
-        const isOwned = isNodeOwnedByVM(vm, match);
+    const filteredAndPatched = [];
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        const node = nodeList[i];
+        const isOwned = isNodeOwnedByVM(vm, node);
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            patchShadowDomTraversalMethods(match);
+            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node as HTMLElement));
         }
-        return isOwned;
-    });
+    }
+    return filteredAndPatched;
 }
 
 function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
@@ -134,7 +137,7 @@ export function assignedSlotGetter(this: HTMLElement) {
     return parentNode;
 }
 
-export const shadowDescriptors: PropertyDescriptorMap = {
+export const shadowRootDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
