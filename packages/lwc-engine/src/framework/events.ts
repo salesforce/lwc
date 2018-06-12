@@ -24,12 +24,18 @@ function isChildNode(root: Element, node: Node): boolean {
 }
 
 const eventTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'target')!.get!;
+const eventCurrentTargetGetter = getOwnPropertyDescriptor(Event.prototype, 'currentTarget')!.get!;
 const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const eventShadowDescriptors: PropertyDescriptorMap = {
+    currentTarget: {
+        get(this: Event): HTMLElement {
+            return patchShadowDomTraversalMethods(eventCurrentTargetGetter.call(this));
+        }
+    },
     target: {
         get(this: Event): HTMLElement {
-            const currentTarget = this.currentTarget as HTMLElement;
+            const currentTarget = eventCurrentTargetGetter.call(this) as HTMLElement;
             const originalTarget = eventTargetGetter.call(this);
             // Executing event listener on component, target is always currentTarget
 
@@ -137,7 +143,9 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
             // * if the event is dispatched directly on the host, it is not observable from root
             // * if the event is dispatched in an element that does not belongs to the shadow and it is not composed,
             //   it is not observable from the root
-            const { composed, target, currentTarget } = event as any;
+            const { composed } = event as any;
+            const target = eventTargetGetter.call(event);
+            const currentTarget = eventCurrentTargetGetter.call(event);
             if (
                 // it is composed and was not dispatched onto the custom element directly
                 (composed === true && target !== currentTarget) ||

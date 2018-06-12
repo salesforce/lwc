@@ -10,16 +10,16 @@ import {
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
-    ArrayFilter,
     defineProperty,
-    defineProperties,
-    hasOwnProperty,
     ArrayReduce,
     ArraySlice,
+    isFalse,
+    ArrayPush,
 } from "../language";
 import { isBeingConstructed } from "../invoker";
 
 import { getOwnPropertyDescriptor, isNull } from "../language";
+import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
 
 const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
@@ -55,21 +55,23 @@ export function shadowRootChildNodes(vm: VM, elm: Element) {
 }
 
 function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
-    return ArrayFilter.call(nodeList, (match) => {
-        const isOwned = isNodeOwnedByVM(vm, match);
+    const filteredAndPatched = [];
+    for (let i = 0, len = nodeList.length; i < len; i += 1) {
+        const node = nodeList[i];
+        const isOwned = isNodeOwnedByVM(vm, node);
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            patchShadowDomTraversalMethods(match);
+            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node as HTMLElement));
         }
-        return isOwned;
-    });
+    }
+    return filteredAndPatched;
 }
 
 function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return patchShadowDomTraversalMethods(nodeList[i]as HTMLElement);
+            return patchShadowDomTraversalMethods(nodeList[i] as HTMLElement);
         }
     }
     return null;
@@ -131,10 +133,10 @@ export function assignedSlotGetter(this: HTMLElement) {
     if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getElementOwnerVM(parentNode) === getElementOwnerVM(this)) {
         return null;
     }
-    return parentNode;
+    return patchShadowDomTraversalMethods(parentNode);
 }
 
-const shadowDescriptors: PropertyDescriptorMap = {
+export const shadowDescriptors: PropertyDescriptorMap = {
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
@@ -143,11 +145,10 @@ const shadowDescriptors: PropertyDescriptorMap = {
         value: lightDomQuerySelectorAll,
         configurable: true,
     },
-    // TODO: @dval removes as a temporal fix for selenium internals
-    // parentNode: {
-    //     get: parentNodeDescriptorValue,
-    //     configurable: true,
-    // },
+    parentNode: {
+        get: parentNodeDescriptorValue,
+        configurable: true,
+    },
     parentElement: {
         get: parentElementDescriptorValue,
         configurable: true,
@@ -173,19 +174,33 @@ const contentWindowDescriptor: PropertyDescriptor = {
     configurable: true,
 };
 
+function nodeIsPatched(node: Node) {
+    // TODO: Remove comment once membrane is gone
+    // return isFalse(hasOwnProperty.call(node, 'querySelector'));
+    return traverseMembraneContains(node);
+}
+
+function patchDomNode(node): HTMLElement {
+    return traverseMembraneWrap(node);
+}
+
+// For the time being, we have to use a proxy to get Shadow Semantics.
+// The other possibility is to monkey patch the element itself, but this
+// is very difficult to integrate because almost no integration tests
+// understand what to do with shadow root. Using a Proxy here allows us
+// to enforce shadow semantics from within components and still allows browser
+// to use "light" apis as expected.
 export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
     // Patching is done at the HTMLElement instance level.
     // Avoid monkey patching shadow methods twice for perf reasons.
     // If the node has querySelector defined on it, we have already
     // seen it and can move on.
-    if (!hasOwnProperty.call(node, 'querySelector')) {
-        defineProperties(node, shadowDescriptors);
-
+    if (isFalse(nodeIsPatched(node))) {
         if (node.tagName === 'IFRAME') {
             // We need to patch iframe.contentWindow because raw access to the contentWindow
             // Will break in compat mode
             defineProperty(node, 'contentWindow', contentWindowDescriptor);
         }
     }
-    return node;
+    return patchDomNode(node);
 }

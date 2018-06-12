@@ -1,4 +1,4 @@
-import { Element, track } from 'engine';
+import { Element, track, unwrap } from 'engine';
 
 export default class ShadowElementParentElement extends Element {
     @track parentIsRoot = false;

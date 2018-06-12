@@ -381,7 +381,7 @@ describe('html-element', () => {
                     this.template.addEventListener('click', (e) => {
                         expect(e.composed).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is visible for the root, always
-                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element instead of root since root is just an illusion for now.
                     });
                 }
                 render() {
@@ -432,7 +432,7 @@ describe('html-element', () => {
                     this.template.addEventListener('xyz', (e) => {
                         expect(e.bubbles).toBe(true);
                         expect(e.target).toBe(this.template.querySelector('div')); // notice that target is host element
-                        expect(e.currentTarget).toBe(elm); // notice that currentTarget is host element
+                        expect(unwrap(e.currentTarget)).toBe(elm); // notice that currentTarget is host element
                     });
                 }
                 render() {

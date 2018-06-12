@@ -53,6 +53,33 @@ export function getHostAssignedSlot(elm: HTMLElement) {
     return assignedSlotGetter.call(elm);
 }
 
+export const fallbackDescriptors = {
+    querySelector: {
+        value: lightDomQuerySelector,
+        configurable: true,
+    },
+    querySelectorAll: {
+        value: lightDomQuerySelectorAll,
+        configurable: true,
+    },
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true,
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true,
+    },
+    childNodes: {
+        get: lightDomCustomElementChildNodes,
+        configurable: true,
+    },
+    assignedSlot: {
+        get: assignedSlotGetter,
+        configurable: true,
+    },
+};
+
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {

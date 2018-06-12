@@ -67,8 +67,8 @@ describe('#lightDomQuerySelectorAll()', () => {
             document.body.appendChild(element);
             const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
-            expect(nested[0]).toBe(querySelector.call(element, '.first'));
-            expect(nested[1]).toBe(querySelector.call(element, '.second'));
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
 
         it('should ignore elements passed to its slot', () => {
@@ -197,8 +197,8 @@ describe('#lightDomQuerySelectorAll()', () => {
             document.body.appendChild(element);
             const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
-            expect(nested[0]).toBe(querySelector.call(element, '.first'));
-            expect(nested[1]).toBe(querySelector.call(element, '.second'));
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
     });
 });
@@ -260,7 +260,7 @@ describe('#lightDomQuerySelector()', () => {
         const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
         document.body.appendChild(element);
         const div = getHostShadowRoot(element).querySelector('x-parent').querySelector('div');
-        expect(div).toBe(querySelector.call(element, '.first'));
+        expect(div).toBe(getHostShadowRoot(element).querySelector('.first'));
     });
 
     it('should ignore element from template', () => {
