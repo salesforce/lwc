@@ -4,6 +4,13 @@ import { ViewModelReflection } from "../utils";
 import { fallbackDescriptors } from "../html-element";
 const proxies = new WeakMap<object, object>();
 
+
+// We ONLY want to have DOM nodes and DOM methods
+// going into the traverse membrane. This check is
+// a little too broad, because any function that passes
+// through here will be inserted into the membrane,
+// but the only case where this would happen would be:
+// node()(), so this should be sufficient for now.
 function isReplicable(value: any): boolean {
     return value instanceof Node || isFunction(value);
 }
@@ -13,6 +20,10 @@ const traverseMembraneHandler = {
         if (key === TargetSlot) {
             return originalTarget;
         }
+
+        // We have to check if we are dealing with a custom or native element
+        // The shadow descriptors are different depending on whether we have a custom element
+        // or native, so we have to get the correct descriptors accordingly.
         const descriptors = isUndefined(originalTarget[ViewModelReflection]) ? shadowDescriptors : fallbackDescriptors;
         if (hasOwnProperty.call(descriptors, key)) {
             const descriptor = descriptors[key];

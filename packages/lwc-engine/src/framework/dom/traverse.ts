@@ -184,6 +184,12 @@ function patchDomNode(node): HTMLElement {
     return traverseMembraneWrap(node);
 }
 
+// For the time being, we have to use a proxy to get Shadow Semantics.
+// The other possibility is to monkey patch the element itself, but this
+// is very difficult to integrate because almost no integration tests
+// understand what to do with shadow root. Using a Proxy here allows us
+// to enforce shadow semantics from within components and still allows browser
+// to use "light" apis as expected.
 export function patchShadowDomTraversalMethods(node: HTMLElement): HTMLElement {
     // Patching is done at the HTMLElement instance level.
     // Avoid monkey patching shadow methods twice for perf reasons.
