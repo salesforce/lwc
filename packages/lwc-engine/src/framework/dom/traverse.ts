@@ -10,7 +10,6 @@ import {
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
-    ArrayFilter,
     defineProperty,
     ArrayReduce,
     ArraySlice,
