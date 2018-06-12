@@ -228,8 +228,44 @@ const config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // before: function (capabilities, specs) {
-    // },
+    before: function (capabilities, specs) {
+        if (capabilities.browserName !== 'internet explorer') {
+            return;
+        }
+
+        // IE11 getText patch
+        browser.addCommand('getText', function (selector) {
+            const element = this.lastResult ? this.lastResult : this.element(selector);
+
+            return Promise.resolve(this.execute(function (selector) {
+                function elementText(element) {
+                    var text = '';
+                    var childNodes = element.childNodes;
+                    if (element.shadowRoot) {
+                        childNodes = childNodes.concat(element.shadowRoot.childNodes);
+                    }
+
+                    var len = childNodes.length;
+
+                    for(var i = 0; i < len; i += 1) {
+                        var node = childNodes[i];
+                        var nodeType = node.nodeType;
+                        if (nodeType === 1) {
+                            text += elementText(node);
+                        } else if (nodeType === 3) {
+                            text += node.textContent;
+                        }
+                    }
+                    return text;
+                }
+
+                return elementText(selector);
+            }, element.value))
+            .then((text) => {
+                return text.value;
+            });
+        }, true);
+    },
     //
     /**
      * Hook that gets executed before the suite starts
