@@ -1,5 +1,6 @@
 import { isNull, hasOwnProperty, ArrayMap, isArray, isObject, isFunction } from "../language";
 import { shadowDescriptors } from "./traverse";
+import { ViewModelReflection } from "../utils";
 const proxies = new WeakMap<object, object>();
 type MembraneShadowTarget = Object | any[] | ((...args) => any);
 
@@ -29,9 +30,10 @@ class TraverseMembraneHandler {
         const { originalTarget } = this;
         if (key === TargetSlot) {
             return originalTarget;
+        } else if (key === ViewModelReflection) {
+            return originalTarget[key];
         }
-
-        let value = originalTarget[key];
+        let value;
         if (hasOwnProperty.call(shadowDescriptors, key)) {
             const descriptor = shadowDescriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
@@ -39,6 +41,8 @@ class TraverseMembraneHandler {
             } else {
                 value = descriptor!.get!.call(originalTarget);
             }
+        } else {
+            value = originalTarget[key]
         }
 
         return wrap(value);

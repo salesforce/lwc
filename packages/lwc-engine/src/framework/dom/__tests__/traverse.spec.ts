@@ -534,7 +534,7 @@ describe('#parentNode and #parentElement', () => {
 });
 
 
-describe('#childNodes', () => {
+describe.only('#childNodes', () => {
     it('should always return an empty array for slots not rendering default content', () => {
         function tmpl($api, $cmp, $slotset) {
             return [
@@ -677,7 +677,7 @@ describe('#childNodes', () => {
         expect(childNodes).toHaveLength(0);
     });
 
-    it('should return correct elements for custom elements when children present', () => {
+    it.only('should return correct elements for custom elements when children present', () => {
         function tmpl($api, $cmp, $slotset) {
             return [
                 $api.s('', {
