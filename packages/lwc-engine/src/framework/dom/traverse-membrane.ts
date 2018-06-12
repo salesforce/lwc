@@ -1,4 +1,4 @@
-import { isNull, hasOwnProperty, ArrayMap } from "../language";
+import { isNull, hasOwnProperty, ArrayMap, isUndefined } from "../language";
 import { shadowDescriptors } from "./traverse";
 import { ViewModelReflection } from "../utils";
 import { fallbackDescriptors } from "../html-element";
@@ -15,7 +15,7 @@ const traverseMembraneHandler = {
             return originalTarget;
         }
         let value;
-        const descriptors = originalTarget[ViewModelReflection] ? fallbackDescriptors : shadowDescriptors;
+        const descriptors = isUndefined(originalTarget[ViewModelReflection]) ? shadowDescriptors : fallbackDescriptors;
         if (hasOwnProperty.call(descriptors, key)) {
             const descriptor = descriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
