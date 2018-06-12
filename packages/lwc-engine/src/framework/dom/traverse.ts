@@ -71,7 +71,7 @@ function getAllMatches(vm: VM, nodeList: NodeList): HTMLElement[] {
 function getFirstMatch(vm: VM, nodeList: NodeList): HTMLElement | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         if (isNodeOwnedByVM(vm, nodeList[i])) {
-            return patchShadowDomTraversalMethods(nodeList[i]as HTMLElement);
+            return patchShadowDomTraversalMethods(nodeList[i] as HTMLElement);
         }
     }
     return null;
@@ -125,6 +125,9 @@ export function lightDomChildNodes(this: HTMLElement) {
     }
     const ownerVM = getElementOwnerVM(this) as VM;
     const children = nativeChildNodesGetter.call(this);
+    if (children[0]) {
+        console.log(ownerVM.elm.tagName, this.tagName);
+    }
     return getAllMatches(ownerVM, children);
 }
 

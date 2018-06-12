@@ -1,6 +1,7 @@
 import { isNull, hasOwnProperty, ArrayMap } from "../language";
 import { shadowDescriptors } from "./traverse";
 import { ViewModelReflection } from "../utils";
+import { fallbackDescriptors } from "../html-element";
 const proxies = new WeakMap<object, object>();
 
 function isReplicable(value: any): boolean {
@@ -8,16 +9,15 @@ function isReplicable(value: any): boolean {
     return value && (type === 'object' || type === 'function');
 }
 
-const TraverseMembraneHandler = {
+const traverseMembraneHandler = {
     get(originalTarget: any, key: PropertyKey): any {
         if (key === TargetSlot) {
             return originalTarget;
-        } else if (key === ViewModelReflection) {
-            return originalTarget[key];
         }
         let value;
-        if (hasOwnProperty.call(shadowDescriptors, key)) {
-            const descriptor = shadowDescriptors[key];
+        const descriptors = originalTarget[ViewModelReflection] ? fallbackDescriptors : shadowDescriptors;
+        if (hasOwnProperty.call(descriptors, key)) {
+            const descriptor = descriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
                 value = wrap(descriptor.value);
             } else {
@@ -64,7 +64,7 @@ export function wrap(value: any) {
     if (r) {
         return r;
     }
-    const proxy = new Proxy(unwrapped, TraverseMembraneHandler);
+    const proxy = new Proxy(unwrapped, traverseMembraneHandler);
     proxies.set(unwrapped, proxy);
     return proxy;
 }

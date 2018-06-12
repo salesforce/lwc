@@ -454,7 +454,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
 
@@ -478,7 +478,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
 
@@ -592,7 +592,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
         }
