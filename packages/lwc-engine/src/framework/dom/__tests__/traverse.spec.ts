@@ -1,4 +1,4 @@
-import { Element, getHostShadowRoot } from "../../html-element";
+import { Element, getHostShadowRoot, getHostChildNodes } from "../../html-element";
 import { createElement } from "../../upgrade";
 import assertLogger from '../../assert';
 import { register } from "../../services";
@@ -509,7 +509,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
+            const root = getHostShadowRoot(elm);
             expect(root.querySelector('div').parentElement).toBe(root);
         });
     });
@@ -527,7 +527,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
+            const root = getHostShadowRoot(elm);
             expect(root.querySelector('div').parentElement).toBe(root);
         });
     });
@@ -813,7 +813,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = elm.childNodes;
+        const childNodes = getHostChildNodes(elm);
         expect(childNodes).toHaveLength(0);
     });
 

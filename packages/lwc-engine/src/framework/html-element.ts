@@ -53,38 +53,6 @@ export function getHostAssignedSlot(elm: HTMLElement) {
     return assignedSlotGetter.call(elm);
 }
 
-const fallbackDescriptors = {
-    shadowRoot: {
-        get(this: HTMLElement) { return getHostShadowRoot(this); },
-        configurable: true,
-        enumerable: true,
-    },
-    querySelector: {
-        value(this: HTMLElement, selector: string) { return callHostQuerySelector(this, selector); },
-        configurable: true,
-    },
-    querySelectorAll: {
-        value(this: HTMLElement, selector: string) { return callHostQuerySelectorAll(this, selector); },
-        configurable: true,
-    },
-    addEventListener: {
-        value(this: HTMLElement) { return addHostEventListener(this, ArraySlice.call(arguments)); },
-        configurable: true,
-    },
-    removeEventListener: {
-        value(this: HTMLElement) { return removeHostEventListener(this, ArraySlice.call(arguments)); },
-        configurable: true,
-    },
-    childNodes: {
-        get(this: HTMLElement) { return getHostChildNodes(this); },
-        configurable: true,
-    },
-    assignedSlot: {
-        get(this: HTMLElement) { return getHostAssignedSlot(this); },
-        configurable: true,
-    },
-};
-
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
     if (!isFunction(get)) {
@@ -166,7 +134,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, fallback } = vm;
+    const { elm, def } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -181,9 +149,6 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
-    if (isTrue(fallback)) {
-        defineProperties(elm, fallbackDescriptors);
-    }
 }
 
 LWCElement.prototype = {
