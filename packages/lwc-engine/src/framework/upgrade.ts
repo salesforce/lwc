@@ -1,10 +1,9 @@
 import assert from "./assert";
-import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
+import { isUndefined, assign, hasOwnProperty, isNull, isObject } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
 import { ComponentConstructor } from "./component";
 import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom/element";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
 const ConnectingSlot = Symbol();
@@ -42,35 +41,6 @@ assign(Node.prototype, {
         return replacedNode;
     },
 });
-
-function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        // TODO: remove this backward compatibility branch.
-        assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
-    }
-    return shadowRootQuerySelector(vm, selector);
-}
-
-function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[] | NodeList {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        // TODO: remove this backward compatibility branch.
-        assert.logError(`Using elm.querySelectorAll() on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelectorAll().`);
-    }
-    return shadowRootQuerySelectorAll(vm, selector);
-}
-
-const rootNodeFallbackDescriptors = {
-    querySelectorAll: {
-        value: querySelectorAllPatchedRoot,
-        configurable: true,
-    },
-    querySelector: {
-        value: querySelectorPatchedRoot,
-        configurable: true,
-    },
-};
 
 /**
  * This method is almost identical to document.createElement
@@ -111,10 +81,6 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
 
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
-    if (isTrue(fallback)) {
-        // We don't support slots on root nodes
-        defineProperties(element, rootNodeFallbackDescriptors);
-    }
     // Handle insertion and removal from the DOM manually
     element[ConnectingSlot] = () => {
         const vm = getCustomElementVM(element);

@@ -1,6 +1,6 @@
 import * as target from '../template';
 import * as globalApi from '../api';
-import { Element } from "../html-element";
+import { Element, getHostShadowRoot } from "../html-element";
 import { createElement } from '../main';
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
@@ -42,9 +42,15 @@ describe('template', () => {
                     ]);
                 });
             });
-            expect(elm.shadowRoot.querySelectorAll('div').length).toBe(2);
-            expect(elm.shadowRoot.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(elm.shadowRoot.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div').length
+            ).toBe(2);
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div')[0].textContent
+            ).toBe('a');
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div')[1].textContent
+            ).toBe('b');
         });
 
         it('should render sets correctly', function() {
@@ -58,9 +64,15 @@ describe('template', () => {
                     ]);
                 });
             });
-            expect(elm.shadowRoot.querySelectorAll('div').length).toBe(2);
-            expect(elm.shadowRoot.querySelectorAll('div')[0].textContent).toBe('a');
-            expect(elm.shadowRoot.querySelectorAll('div')[1].textContent).toBe('b');
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div').length
+            ).toBe(2);
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div')[0].textContent
+            ).toBe('a');
+            expect(
+                getHostShadowRoot(elm).querySelectorAll('div')[1].textContent
+            ).toBe('b');
         });
 
         // this test depends on the memoization

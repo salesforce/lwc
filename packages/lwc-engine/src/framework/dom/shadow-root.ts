@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString, isFalse } from "../language";
 import { getShadowRootVM, VM } from "../vm";
 import { addRootEventListener, removeRootEventListener } from "../events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, lightDomQuerySelector } from "./traverse";
 import {
     GlobalAOMProperties,
 } from './attributes';
@@ -58,8 +58,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             const vm = getShadowRootVM(this);
             const node = shadowRootQuerySelector(vm, selector);
             if (process.env.NODE_ENV !== 'production') {
-                if (isNull(node)) {
-                    if (vm.elm.querySelector(selector)) {
+                if (isNull(node) && isFalse(vm.isRoot)) {
+                    // note: we don't show errors for root elements since their light dom is always empty in fallback mode
+                    if (lightDomQuerySelector.call(vm.elm, selector)) {
                         assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                     }
                 }
@@ -72,9 +73,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             const vm = getShadowRootVM(this);
             const nodeList = shadowRootQuerySelectorAll(vm, selector);
             if (process.env.NODE_ENV !== 'production') {
-                if (nodeList.length === 0) {
-                    const results = vm.elm.querySelectorAll(selector);
-                    if (results.length) {
+                if (nodeList.length === 0 && isFalse(vm.isRoot)) {
+                    // note: we don't show errors for root elements since their light dom is always empty in fallback mode
+                    if (lightDomQuerySelector.call(vm.elm, selector)) {
                         assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                     }
                 }

@@ -1,4 +1,4 @@
-import { Element } from "../../html-element";
+import { Element, getHostShadowRoot, getHostChildNodes } from "../../html-element";
 import { createElement } from "../../upgrade";
 import assertLogger from '../../assert';
 import { register } from "../../services";
@@ -65,10 +65,10 @@ describe('#lightDomQuerySelectorAll()', () => {
 
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
-            const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
+            const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
-            expect(nested[0]).toBe(querySelector.call(element, '.first'));
-            expect(nested[1]).toBe(querySelector.call(element, '.second'));
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
 
         it('should ignore elements passed to its slot', () => {
@@ -119,7 +119,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             }
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            expect(elm.shadowRoot.querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
+            expect(getHostShadowRoot(elm).querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
         });
 
         it('should not throw an error if no nodes are found', () => {
@@ -134,7 +134,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const elm = createElement('should-not-throw-an-error-if-no-nodes-are-found', { is: def });
             document.body.appendChild(elm);
             expect(() => {
-                elm.shadowRoot.querySelectorAll('div');
+                getHostShadowRoot(elm).querySelectorAll('div');
             }).not.toThrow();
         });
     });
@@ -195,10 +195,10 @@ describe('#lightDomQuerySelectorAll()', () => {
 
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
-            const nested = element.shadowRoot.querySelector('x-parent').querySelectorAll('div');
+            const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
             expect(nested).toHaveLength(2);
-            expect(nested[0]).toBe(querySelector.call(element, '.first'));
-            expect(nested[1]).toBe(querySelector.call(element, '.second'));
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
     });
 });
@@ -259,8 +259,8 @@ describe('#lightDomQuerySelector()', () => {
 
         const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
         document.body.appendChild(element);
-        const div = element.shadowRoot.querySelector('x-parent').querySelector('div');
-        expect(div).toBe(querySelector.call(element, '.first'));
+        const div = getHostShadowRoot(element).querySelector('x-parent').querySelector('div');
+        expect(div).toBe(getHostShadowRoot(element).querySelector('.first'));
     });
 
     it('should ignore element from template', () => {
@@ -282,7 +282,7 @@ describe('#lightDomQuerySelector()', () => {
         }
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
-        expect(elm.shadowRoot.querySelector('x-child').querySelector('p')).toBeNull();
+        expect(getHostShadowRoot(elm).querySelector('x-child').querySelector('p')).toBeNull();
     });
 
     it('should not throw an error if element does not exist', () => {
@@ -297,7 +297,7 @@ describe('#lightDomQuerySelector()', () => {
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
         expect(() => {
-            elm.shadowRoot.querySelector('div');
+            getHostShadowRoot(elm).querySelector('div');
         }).not.toThrow();
     });
 
@@ -312,7 +312,7 @@ describe('#lightDomQuerySelector()', () => {
         };
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
-        expect(elm.shadowRoot.querySelector('div')).toBeNull();
+        expect(getHostShadowRoot(elm).querySelector('div')).toBeNull();
     });
 });
 
@@ -327,7 +327,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = elm.shadowRoot.querySelector('ul');
+            const ul = getHostShadowRoot(elm).querySelector('ul');
             expect(ul);
             const li = ul.querySelector('li');
             expect(li);
@@ -358,7 +358,7 @@ describe('#shadowRootQuerySelector', () => {
 
         const elm = createElement('membrane-parent-query-selector-child-custom-element', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(elm.shadowRoot.querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div')).toBe(null);
+        expect(getHostShadowRoot(elm).querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div')).toBe(null);
     });
 
     it('should querySelectorAll on element from template', () => {
@@ -371,7 +371,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm.shadowRoot.querySelectorAll('ul')[0];
+            const ul = getHostShadowRoot(elm).querySelectorAll('ul')[0];
             expect(ul);
             const li = ul.querySelectorAll('li')[0];
             expect(li);
@@ -388,7 +388,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm.shadowRoot.querySelector('ul');
+            const ul = getHostShadowRoot(elm).querySelector('ul');
             expect(ul);
             ul.appendChild(document.createElement('li'));
             const li1 = ul.querySelectorAll('li')[0];
@@ -410,7 +410,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                elm.shadowRoot.querySelector('doesnotexist');
+                getHostShadowRoot(elm).querySelector('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -426,7 +426,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('doesnotexist')).toBeNull();
+            expect(getHostShadowRoot(elm).querySelector('doesnotexist')).toBeNull();
         });
     });
 
@@ -444,7 +444,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                elm.shadowRoot.querySelectorAll('doesnotexist');
+                getHostShadowRoot(elm).querySelectorAll('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -488,7 +488,9 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('membrane-child-parent-shadow-root-parent', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            elm.shadowRoot.querySelector('x-child-parent-shadow-root').shadowRoot.querySelector('div').click();
+            getHostShadowRoot(
+                getHostShadowRoot(elm).querySelector('x-child-parent-shadow-root')
+            ).querySelector('div').click();
         });
     });
 });
@@ -507,7 +509,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
+            const root = getHostShadowRoot(elm);
             expect(root.querySelector('div').parentElement).toBe(root);
         });
     });
@@ -525,7 +527,7 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
+            const root = getHostShadowRoot(elm);
             expect(root.querySelector('div').parentElement).toBe(root);
         });
     });
@@ -569,7 +571,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-child-node-with-slot')
+        ).querySelector('slot');
         expect(slot.childNodes).toHaveLength(0);
     });
 
@@ -605,7 +609,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-child-node-with-slot').shadowRoot.querySelector('slot');
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-child-node-with-slot')
+        ).querySelector('slot');
         expect(slot.childNodes).toHaveLength(1);
     });
 
@@ -628,10 +634,10 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('div');
+        const child = getHostShadowRoot(elm).querySelector('div');
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(1);
-        expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('p'));
+        expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('p'));
     });
 
     it('should return correct elements for custom elements when no children present', () => {
@@ -666,7 +672,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-child');
+        const child = getHostShadowRoot(elm).querySelector('x-child');
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(0);
     });
@@ -707,7 +713,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-child');
+        const child = getHostShadowRoot(elm).querySelector('x-child');
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(1);
     });
@@ -746,7 +752,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-child');
+        const child = getHostShadowRoot(elm).querySelector('x-child');
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(1);
         expect(childNodes[0].nodeType).toBe(3);
@@ -783,7 +789,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-child');
+        const child = getHostShadowRoot(elm).querySelector('x-child');
         const childNodes = child.childNodes;
         expect(childNodes).toHaveLength(0);
     });
@@ -807,7 +813,7 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = elm.childNodes;
+        const childNodes = getHostChildNodes(elm);
         expect(childNodes).toHaveLength(0);
     });
 
@@ -827,9 +833,9 @@ describe('#childNodes', () => {
 
         const elm = createElement('x-child-node-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = elm.shadowRoot.childNodes;
+        const childNodes = getHostShadowRoot(elm).childNodes;
         expect(childNodes).toHaveLength(2);
-        expect(childNodes[0]).toBe(elm.shadowRoot.querySelector('div'));
+        expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('div'));
         expect(childNodes[1].nodeType).toBe(3);
         expect(childNodes[1].textContent).toBe('text');
     });
@@ -854,7 +860,7 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-assigned-slot', { is: MyComponent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-assigned-slot-child');
+        const child = getHostShadowRoot(elm).querySelector('x-assigned-slot-child');
         expect(child.assignedSlot).toBe(null);
     });
 
@@ -875,7 +881,7 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-assigned-slot', { is: MyComponent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('div');
+        const child = getHostShadowRoot(elm).querySelector('div');
         expect(child.assignedSlot).toBe(null);
     });
 
@@ -918,8 +924,10 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('div');
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const child = getHostShadowRoot(elm).querySelector('div');
         expect(child.assignedSlot).toBe(slot);
     });
 
@@ -962,8 +970,10 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
-        const child = elm.shadowRoot.querySelector('x-inside-slot');
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const child = getHostShadowRoot(elm).querySelector('x-inside-slot');
         expect(child.assignedSlot).toBe(slot);
     });
 
@@ -988,7 +998,7 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-assigned-slot', { is: MyComponent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('div');
+        const child = getHostShadowRoot(elm).querySelector('div');
         expect(child.assignedSlot).toBe(null);
     });
 
@@ -1017,7 +1027,7 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-assigned-slot', { is: MyComponent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-default-slot-custom-element');
+        const child = getHostShadowRoot(elm).querySelector('x-default-slot-custom-element');
         expect(child.assignedSlot).toBe(null);
     });
 
@@ -1058,8 +1068,10 @@ describe('assignedSlot', () => {
 
         const elm = createElement('x-native-slotted-component', { is: MyComponent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-native-slotted-component-child').shadowRoot.querySelector('slot');
-        const text = elm.shadowRoot.querySelector('x-native-slotted-component-child').childNodes[0];
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const text = getHostShadowRoot(elm).querySelector('x-native-slotted-component-child').childNodes[0];
         expect(text.assignedSlot).toBe(slot);
     });
 });

@@ -1,9 +1,17 @@
 import assert from "./assert";
 import { toString } from "./language";
-import { ReactiveMembrane, unwrap } from "observable-membrane";
+import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
+import { unwrap as traverseUnwrap } from "./dom/traverse-membrane";
 
 function format(value: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        // For now, if we determine that value is a piercing membrane
+        // we want to throw a big error.
+        if (traverseUnwrap(value) !== value) {
+            throw new ReferenceError(`Invalid attempt to get access to a piercing membrane ${toString(value)} via a reactive membrane.`);
+        }
+    }
     return value;
 }
 
@@ -22,4 +30,16 @@ export function dangerousObjectMutation(obj: any): any {
 
 // Universal unwrap mechanism that works for observable membrane
 // and wrapped iframe contentWindow
-export { unwrap };
+export const unwrap = function(value: any): any {
+     // observable membrane goes first because it is in the critical path
+     let unwrapped = observableUnwrap(value);
+     if (unwrapped !== value) {
+         return unwrapped;
+     }
+     // piercing membrane is not that important, it goes second
+     unwrapped = traverseUnwrap(value);
+     if (unwrapped !== value) {
+         return unwrapped;
+     }
+     return value;
+};

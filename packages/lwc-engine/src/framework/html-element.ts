@@ -24,17 +24,36 @@ import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from
 import { dispatchEvent } from "./dom/event-target";
 import { assignedSlotGetter, lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
 
-function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
-    const vm = getCustomElementVM(this);
+export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(elm);
     return vm.mode === 'open' ? vm.cmpRoot : null;
 }
 
-const fallbackDescriptors = {
-    shadowRoot: {
-        get: ElementShadowRootGetter,
-        configurable: true,
-        enumerable: true,
-    },
+export function callHostQuerySelector(elm: HTMLElement, selector: string): Element | null {
+    return lightDomQuerySelector.call(elm, selector);
+}
+
+export function callHostQuerySelectorAll(elm: HTMLElement, selector: string): NodeList {
+    return lightDomQuerySelectorAll.call(elm, selector);
+}
+
+export function addHostEventListener(elm: HTMLElement, args: any[]) {
+    addEventListenerPatched.apply(elm, args);
+}
+
+export function removeHostEventListener(elm: HTMLElement, args: any[]) {
+    removeEventListenerPatched.apply(elm, args);
+}
+
+export function getHostChildNodes(elm: HTMLElement) {
+    return lightDomCustomElementChildNodes.call(elm);
+}
+
+export function getHostAssignedSlot(elm: HTMLElement) {
+    return assignedSlotGetter.call(elm);
+}
+
+export const fallbackDescriptors = {
     querySelector: {
         value: lightDomQuerySelector,
         configurable: true,
@@ -142,7 +161,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, fallback } = vm;
+    const { elm, def } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -157,9 +176,6 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
-    if (isTrue(fallback)) {
-        defineProperties(elm, fallbackDescriptors);
-    }
 }
 
 LWCElement.prototype = {
@@ -292,9 +308,12 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelector.
-        // querySelector on the custom element will respect
+        // fallback to a patched querySelector to respect
         // shadow semantics
+        if (isTrue(vm.fallback)) {
+            return callHostQuerySelector(vm.elm, selector);
+        }
+        // Delegate to custom element querySelector for native.
         return vm.elm.querySelector(selector);
     },
     querySelectorAll(selector: string): NodeList {
@@ -302,9 +321,12 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelectorAll.
-        // querySelectorAll on the custom element will respect
+        // fallback to a patched querySelectorAll to respect
         // shadow semantics
+        if (isTrue(vm.fallback)) {
+            return callHostQuerySelectorAll(vm.elm, selector);
+        }
+        // Delegate to custom element querySelectorAll for native.
         return vm.elm.querySelectorAll(selector);
     },
     get tagName(): string {
