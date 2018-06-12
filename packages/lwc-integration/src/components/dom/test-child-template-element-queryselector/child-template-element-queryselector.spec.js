@@ -9,8 +9,9 @@ describe('event target query selector', () => {
     });
 
     it('should return correct elements', function () {
-        const hostContainer = browser.element('child-template-element-queryselector');
-        hostContainer.click();
+        browser.execute(function () {
+            document.querySelector('child-template-element-queryselector').click();
+        });
         const shadowDiv = browser.element('.shadow-div');
         assert.equal(shadowDiv.getAttribute('data-selected'), null);
         const lightDiv = browser.element('.light-div');

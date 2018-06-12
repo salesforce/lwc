@@ -8,9 +8,8 @@ describe('Event target in slot elements', () => {
     });
 
     it('should receive event with correct target', function () {
-        browser.execute(function () {
-            document.querySelector('p').click();
-        });
+        browser.click('p');
+        browser.waitForVisible('.correct-event-target');
         assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');
     });
 });
