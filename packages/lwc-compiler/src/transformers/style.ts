@@ -46,7 +46,6 @@ export default function transformStyle(
     const plugins = [
         postcssPluginRaptor({
             token: TOKEN_PLACEHOLDER,
-            tagName: TAG_NAME_PLACEHOLDER
         })
     ];
 

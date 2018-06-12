@@ -13,7 +13,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'x-class_and_template_class_and_template';
+    tmpl.hostToken = 'x-class_and_template_class_and_template-host';
+    tmpl.shadowToken = 'x-class_and_template_class_and_template';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';

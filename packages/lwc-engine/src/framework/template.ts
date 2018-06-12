@@ -11,8 +11,18 @@ import { removeAttribute, setAttribute } from "./dom/element";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotset: SlotSet, ctx: Context): undefined | VNodes;
-    style?: string;
-    token?: string;
+
+    /**
+     * HTML attribute that need to be applied to the host element.
+     * This attribute is used for the `:host` pseudo class CSS selector.
+     */
+    hostToken?: string;
+
+    /**
+     * HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs in fallback mode.
+     */
+    shadowToken?: string;
 }
 
 const EmptySlots: SlotSet = create(null);
@@ -53,11 +63,14 @@ function validateTemplate(vm: VM, html: any) {
     validateFields(vm, html);
 }
 
+/**
+ * Apply/Update the styling token applied to the host element.
+ */
 function applyTokenToHost(vm: VM, html: Template): void {
     const { context } = vm;
 
-    const oldToken = context.tplToken;
-    const newToken = html.token;
+    const oldToken = context.hostToken;
+    const newToken = html.hostToken;
 
     if (oldToken !== newToken) {
         const host = vm.elm;
@@ -92,8 +105,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         vm.cmpTemplate = html;
 
+        // Populate context with template information
         context.tplCache = create(null);
-        context.tplToken = html.token;
+        context.hostToken = html.hostToken;
+        context.shadowToken = html.shadowToken;
 
         if (process.env.NODE_ENV !== 'production') {
             validateTemplate(vm, html);

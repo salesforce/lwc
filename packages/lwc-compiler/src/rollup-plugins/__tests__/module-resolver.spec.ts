@@ -45,7 +45,8 @@ describe("module resolver", () => {
                 }, [api_text(\"Manually Imported Template\")])];
                 }
                 if (style) {
-                tmpl.token = 'x-class_and_template_class_and_template';
+                tmpl.hostToken = 'x-class_and_template_class_and_template-host';
+                tmpl.shadowToken = 'x-class_and_template_class_and_template';
                 const style$$1 = document.createElement('style');
                 style$$1.type = 'text/css';
                 style$$1.dataset.token = 'x-class_and_template_class_and_template';
@@ -93,7 +94,8 @@ describe("module resolver", () => {
                 }, [api_text(\"Another Template\")])];
                 }
                 if (style) {
-                tmpl.token = 'x-class_and_template_anotherTemplate';
+                tmpl.hostToken = 'x-class_and_template_anotherTemplate-host';
+                tmpl.shadowToken = 'x-class_and_template_anotherTemplate';
                 const style$$1 = document.createElement('style');
                 style$$1.type = 'text/css';
                 style$$1.dataset.token = 'x-class_and_template_anotherTemplate';

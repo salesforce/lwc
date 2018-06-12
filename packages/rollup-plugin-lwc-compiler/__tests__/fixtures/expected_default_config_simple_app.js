@@ -20,7 +20,8 @@
     }
 
     if (style$1) {
-      tmpl.token = "x-foo_foo";
+      tmpl.hostToken = 'x-foo_foo-host';
+      tmpl.shadowToken = 'x-foo_foo';
 
       const style = document.createElement("style");
       style.type = "text/css";

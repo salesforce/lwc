@@ -5,7 +5,6 @@ import { PluginConfig } from '../config';
 
 export const FILE_NAME = '/test.css';
 
-export const DEFAULT_TAGNAME = 'x-foo';
 export const DEFAULT_TOKEN = 'x-foo_tmpl';
 export const DEFAULT_CUSTOM_PROPERTIES_CONFIG = {
     allowDefinition: false,
@@ -17,7 +16,6 @@ export const DEFAULT_CUSTOM_PROPERTIES_CONFIG = {
 export function process(
     source: string,
     options: PluginConfig = {
-        tagName: DEFAULT_TAGNAME,
         token: DEFAULT_TOKEN,
         customProperties: DEFAULT_CUSTOM_PROPERTIES_CONFIG,
     },

@@ -4,7 +4,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     return [];
 }
 if (style) {
-    tmpl.token = 'x-node_env_node_env';
+    tmpl.hostToken = 'x-node_env_node_env-host';
+    tmpl.shadowToken = 'x-node_env_node_env';
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-node_env_node_env';

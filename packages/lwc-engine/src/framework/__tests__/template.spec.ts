@@ -4,7 +4,6 @@ import { Element } from "../html-element";
 import { createElement } from '../main';
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
-import { querySelector } from '../dom/element';
 
 function createCustomComponent(html: Template, slotset?) {
     class MyComponent extends Element {
@@ -295,9 +294,9 @@ describe('template', () => {
     })
 
     describe('token', () => {
-        it('adds token to the host element if template has a token', () => {
+        it('adds the host token to the host element if template has a token', () => {
             const styledTmpl: Template = () => [];
-            styledTmpl.token = 'token';
+            styledTmpl.hostToken = 'token-host';
 
             class Component extends Element {
                 render() {
@@ -307,14 +306,39 @@ describe('template', () => {
 
             const cmp = createElement('x-cmp', { is: Component });
 
-            expect(cmp.hasAttribute('token')).toBe(false);
+            expect(cmp.hasAttribute('token-host')).toBe(false);
             document.body.appendChild(cmp);
-            expect(cmp.hasAttribute('token')).toBe(true);
+            expect(cmp.hasAttribute('token-host')).toBe(true);
         });
 
-        it('removes token from the host element when changing template', () => {
+        it('adds the token to all the rendered elements if the template has a token', () => {
+            const styledTmpl: Template = ($api) => [
+                $api.h('div', {
+                    key: 1,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    }, [])
+                ]),
+            ];
+            styledTmpl.shadowToken = 'token';
+
+            class Component extends Element {
+                render() {
+                    return styledTmpl;
+                }
+            }
+
+            const cmp = createElement('x-cmp', { is: Component });
+            document.body.appendChild(cmp);
+
+            const divs = cmp.shadowRoot.querySelectorAll('div[token]');
+            expect(divs.length).toBe(2);
+        });
+
+        it('removes the host token from the host element when changing template', () => {
             const styledTmpl: Template = () => [];
-            styledTmpl.token = 'token';
+            styledTmpl.hostToken = 'token-host';
 
             const unstyledTmpl: Template = () => [];
 
@@ -331,21 +355,21 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            expect(cmp.hasAttribute('token')).toBe(true);
+            expect(cmp.hasAttribute('token-host')).toBe(true);
 
             cmp.tmpl = unstyledTmpl;
 
             return Promise.resolve().then(() => {
-                expect(cmp.hasAttribute('token')).toBe(false);
+                expect(cmp.hasAttribute('token-host')).toBe(false);
             });
         });
 
-        it('swaps the token when replacing the template with a different token', () => {
+        it('swaps the host token when replacing the template with a different token', () => {
             const styledTmplA: Template = () => [];
-            styledTmplA.token = 'tokenA';
+            styledTmplA.hostToken = 'tokenA-host';
 
             const styledTmplB: Template = () => [];
-            styledTmplB.token = 'tokenB';
+            styledTmplB.hostToken = 'tokenB-host';
 
             class Component extends Element {
                 tmpl = styledTmplA;
@@ -360,14 +384,14 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            expect(cmp.hasAttribute('tokenA')).toBe(true);
-            expect(cmp.hasAttribute('tokenB')).toBe(false);
+            expect(cmp.hasAttribute('tokenA-host')).toBe(true);
+            expect(cmp.hasAttribute('tokenB-host')).toBe(false);
 
             cmp.tmpl = styledTmplB;
 
             return Promise.resolve().then(() => {
-                expect(cmp.hasAttribute('tokenA')).toBe(false);
-                expect(cmp.hasAttribute('tokenB')).toBe(true);
+                expect(cmp.hasAttribute('tokenA-host')).toBe(false);
+                expect(cmp.hasAttribute('tokenB-host')).toBe(true);
             });
         });
     });
@@ -461,7 +485,8 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('foo');
+            const div = element.shadowRoot.querySelector('div');
+            expect(div.getAttribute('title')).toBe('foo');
         });
 
         it('should remove attribute when value is null', () => {
@@ -493,10 +518,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(querySelector.call(element, 'div').getAttribute('title')).toBe('initial');
+            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(querySelector.call(element, 'div').hasAttribute('title')).toBe(false);
+                expect(element.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
             });
         });
     });

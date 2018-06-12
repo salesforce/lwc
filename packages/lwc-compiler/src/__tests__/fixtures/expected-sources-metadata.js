@@ -12,7 +12,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
     }, [])];
 }
 if (style) {
-    tmpl.token = 'x-foo_foo';
+    tmpl.hostToken = 'x-foo_foo-host';
+    tmpl.shadowToken = 'x-foo_foo';
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-foo_foo';
