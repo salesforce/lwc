@@ -8,15 +8,8 @@ describe('Issue 627: Named slot doesn\'t work properly.', () => {
     });
 
     it('should have rendered element in slot correctly', function () {
-        const text = browser.execute(function () {
-            var text = document.querySelector('x-child').textContent;;
-            var exists = document.querySelector('#content-in-slot') !== null;
-            return {
-                text: text,
-                exists: exists,
-            };
-        });
-        assert.equal(text.value.text, 'Content rendered in slot');
-        assert.equal(text.value.exists, true);
+        const element = browser.element('x-child');
+        assert.equal(element.getText(), 'Content rendered in slot');
+        assert.ok(browser.element('#content-in-slot'));
     });
 });

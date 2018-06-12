@@ -1,5 +1,37 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.5...v) (2018-06-03)
+# [](https://github.com/salesforce/lwc/compare/v0.22.8...v) (2018-06-12)
+
+
+
+<a name="0.22.8"></a>
+## [0.22.8](https://github.com/salesforce/lwc/compare/v0.22.7...v0.22.8) (2018-06-12)
+
+
+
+<a name="0.22.7"></a>
+## [0.22.7](https://github.com/salesforce/lwc/compare/v0.22.6...v0.22.7) (2018-06-10)
+
+
+
+<a name="0.22.6"></a>
+## [0.22.6](https://github.com/salesforce/lwc/compare/v0.22.5...v0.22.6) (2018-06-08)
+
+
+### Bug Fixes
+
+* **compiler:** displaying correct ambigious attribute name ([#377](https://github.com/salesforce/lwc/issues/377)) ([4c0720a](https://github.com/salesforce/lwc/commit/4c0720a))
+* **engine:** Adding warning on native shadow childNodes ([#382](https://github.com/salesforce/lwc/issues/382)) ([156b03d](https://github.com/salesforce/lwc/commit/156b03d))
+* **engine:** handling dispatching events inside of root event handlers ([#391](https://github.com/salesforce/lwc/issues/391)) ([02b9402](https://github.com/salesforce/lwc/commit/02b9402))
+* **engine:** including text nodes to childNodes ([#389](https://github.com/salesforce/lwc/issues/389)) ([9cbd853](https://github.com/salesforce/lwc/commit/9cbd853))
+* **engine:** remove non-track state warning ([#376](https://github.com/salesforce/lwc/issues/376)) ([485357e](https://github.com/salesforce/lwc/commit/485357e))
+* **engine:** shadow root childNodes ([#374](https://github.com/salesforce/lwc/issues/374)) ([a4c21a0](https://github.com/salesforce/lwc/commit/a4c21a0))
+
+
+### Features
+
+* **compiler:** support default import identifier for wire decorator ([#378](https://github.com/salesforce/lwc/issues/378)) ([905dd78](https://github.com/salesforce/lwc/commit/905dd78))
+* **engine:** slot assignedSlot property ([#381](https://github.com/salesforce/lwc/issues/381)) ([6a36afc](https://github.com/salesforce/lwc/commit/6a36afc))
+* **lwc-compiler:** add baseDir support ([#375](https://github.com/salesforce/lwc/issues/375)) ([d1cf4a7](https://github.com/salesforce/lwc/commit/d1cf4a7))
 
 
 
@@ -385,12 +417,7 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
-
-
-
-<a name="0.17.3"></a>
-## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
 
 
 

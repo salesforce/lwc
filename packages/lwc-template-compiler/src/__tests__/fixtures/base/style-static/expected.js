@@ -8,10 +8,7 @@ export default function tmpl($api, $cmp, $slotset, $ctx) {
                 styleMap: {
                     fontSize: '12px',
                     color: 'red',
-                    marginLeft: '5px',
-                    marginRight: '5px',
-                    marginTop: '10px',
-                    marginBottom: '10px'
+                    margin: '10px 5px 10px'
                 },
                 key: 1
             },

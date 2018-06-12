@@ -1,6 +1,6 @@
 {
   "name": "lwc-compiler",
-  "version": "0.22.5",
+  "version": "0.22.8",
   "description": "LWC compiler",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/index.d.ts",
@@ -19,16 +19,16 @@
     "@babel/plugin-proposal-class-properties": "7.0.0-beta.49",
     "@babel/plugin-proposal-object-rest-spread": "7.0.0-beta.49",
     "@types/chokidar": "^1.7.5",
-    "babel-plugin-transform-lwc-class": "0.22.5",
+    "babel-plugin-transform-lwc-class": "0.22.8",
     "babel-preset-compat": "0.18.9",
     "babel-preset-minify": "0.4.0-alpha.caaefb4c",
     "cssnano": "^3.10.0",
-    "lwc-template-compiler": "0.22.5",
+    "lwc-template-compiler": "0.22.8",
     "parse5": "^3.0.3",
     "postcss": "~6.0.19",
-    "postcss-plugin-lwc": "0.22.5",
+    "postcss-plugin-lwc": "0.22.8",
     "postcss-selector-parser": "^3.1.1",
-    "rollup": "~0.56.5",
+    "rollup": "0.60.1",
     "rollup-plugin-replace": "^2.0.0"
   },
   "devDependencies": {

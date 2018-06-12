@@ -1,5 +1,11 @@
+export type VarTransformer = (name: string, fallback: string) => string;
+
 export interface PluginConfig {
     token: string;
+    customProperties?: {
+        allowDefinition?: boolean;
+        transformVar?: VarTransformer;
+    };
 }
 
 export function validateConfig(options: PluginConfig) {

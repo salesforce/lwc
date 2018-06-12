@@ -783,6 +783,42 @@ describe('Shadow Root events', () => {
 
         HTMLElement.prototype.querySelector.call(elm, 'x-grand-child').click();
     });
+
+    it('should have correct target when native event gets dispatched from within shadow root event handler', () => {
+        expect.assertions(1);
+        let clickSpy;
+        function html($api, $cmp) {
+            return [
+                $api.h('div', {
+                    key: 0,
+                    on: {
+                        click: $api.b($cmp.onDivClick)
+                    }
+                }, [])];
+        }
+
+        class MyComponent extends Element {
+            constructor() {
+                super();
+                this.template.addEventListener('foo', (evt) => {
+                    const div = this.template.querySelector('div');
+                    div.click();
+                });
+            }
+
+            onDivClick(evt) {
+                expect(evt.target).toBe(this.template.querySelector('div'));
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        elm.shadowRoot.querySelector('div').dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }))
+    });
 });
 
 describe('Removing events from shadowroot', () => {

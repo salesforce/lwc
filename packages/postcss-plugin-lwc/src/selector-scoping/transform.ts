@@ -16,8 +16,7 @@ import {
     PostCSSRuleNode,
 } from 'postcss-selector-parser';
 
-import validateSelectors from './selector-validate';
-import { PluginConfig } from './config';
+import validateSelectors from './validate';
 import {
     isCustomElement,
     findNode,
@@ -25,7 +24,8 @@ import {
     trimNodeWhitespaces,
     isHostContextPseudoClass,
     isHostPseudoClass,
-} from './selector-utils';
+} from './utils';
+import { PluginConfig } from '../config';
 
 const CUSTOM_ELEMENT_SELECTOR_PREFIX = '$CUSTOM$';
 

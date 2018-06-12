@@ -1,9 +1,9 @@
 export interface DOMAPI {
   createFragment: () => DocumentFragment;
-  createElement: (tagName: string) => HTMLElement;
-  createElementNS: (namespaceURI: string, qualifiedName: string) => Element;
-  createTextNode: (text: string) => Text;
-  createComment: (text: string) => Comment;
+  createElement: (tagName: string, uid: number) => HTMLElement;
+  createElementNS: (namespaceURI: string, qualifiedName: string, uid: number) => Element;
+  createTextNode: (text: string, uid: number) => Text;
+  createComment: (text: string, uid: number) => Comment;
   insertBefore: (parentNode: Node, newNode: Node, referenceNode: Node | null) => void;
   removeChild: (node: Node, child: Node) => void;
   appendChild: (node: Node, child: Node) => void;
@@ -76,7 +76,7 @@ export interface VNodeData {
   props?: Props;
   attrs?: Attrs;
   class?: Classes;
-  style?: VNodeStyle;
+  style?: VNodeStyle | string;
 //   dataset?: Dataset;
   on?: On;
 //   hero?: Hero;

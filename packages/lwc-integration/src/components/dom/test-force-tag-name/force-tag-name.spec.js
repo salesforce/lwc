@@ -15,20 +15,11 @@ describe('Issue 572: [brain-dump] problems with accessibility and semantic marku
     });
 
     it('should have rendered a li with correct is attribute', function () {
-        const elements = browser.execute(function () {
-            var items = document.querySelectorAll('li');
-            return [].map.call(items, function (li) {
-                return {
-                    is: li.getAttribute('is'),
-                    text: li.textContent,
-                }
-            });
-        });
-
-        assert.equal(elements.value.length, 2);
-        assert.equal(elements.value[0].is, 'list-item');
-        assert.equal(elements.value[1].is, 'list-item');
-        assert.equal(elements.value[0].text, 'Item 1');
-        assert.equal(elements.value[1].text, 'Item 2');
+        const items = browser.elements('li');
+        assert.equal(items.value.length, 2);
+        assert.equal(items.value[0].getAttribute('is'), 'list-item');
+        assert.equal(items.value[1].getAttribute('is'), 'list-item');
+        assert.equal(items.value[0].getText(), 'Item 1');
+        assert.equal(items.value[1].getText(), 'Item 2');
     });
 });
