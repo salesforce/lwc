@@ -13,7 +13,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'x-default_default';
+    tmpl.hostToken = 'x-default_default-host';
+    tmpl.shadowToken = 'x-default_default';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';

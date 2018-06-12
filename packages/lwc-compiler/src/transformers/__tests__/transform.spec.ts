@@ -114,7 +114,8 @@ describe("transform", () => {
             }, [api_text(\"Hello\")])];
             }
             if (stylesheet) {
-            tmpl.token = 'x-foo_foo';
+            tmpl.hostToken = 'x-foo_foo-host';
+            tmpl.shadowToken = 'x-foo_foo';
             const style = document.createElement('style');
             style.type = 'text/css';
             style.dataset.token = 'x-foo_foo'

@@ -13,7 +13,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'myns-relative_import_relative_import';
+    tmpl.hostToken = 'myns-relative_import_relative-host';
+    tmpl.shadowToken = 'myns-relative_import_relative';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';

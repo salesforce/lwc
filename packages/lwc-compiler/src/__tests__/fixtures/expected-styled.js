@@ -28,7 +28,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'x-styled_styled';
+    tmpl.hostToken = 'x-styled_styled-host';
+    tmpl.shadowToken = 'x-styled_styled';
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-styled_styled';
