@@ -4,7 +4,6 @@ import { ViewModelReflection } from "../utils";
 import { fallbackDescriptors } from "../html-element";
 const proxies = new WeakMap<object, object>();
 
-
 // We ONLY want to have DOM nodes and DOM methods
 // going into the traverse membrane. This check is
 // a little too broad, because any function that passes
