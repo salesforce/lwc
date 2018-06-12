@@ -10,7 +10,7 @@ function createShadowTarget(value: any): MembraneShadowTarget {
     } else if (isObject(value)) {
         shadowTarget = {};
     } else if (isFunction(value)) {
-        shadowTarget = function () {}
+        shadowTarget = () => {}; // tslint:disable-line
     }
     return shadowTarget as MembraneShadowTarget;
 }
@@ -50,7 +50,7 @@ class TraverseMembraneHandler {
         const value = originalTarget.apply(unwrappedContext, unwrappedArgs);
         return wrap(value);
     }
-};
+}
 
 const TargetSlot = Symbol();
 

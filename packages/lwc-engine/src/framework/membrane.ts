@@ -23,7 +23,7 @@ export function dangerousObjectMutation(obj: any): any {
 
 // Universal unwrap mechanism that works for observable membrane
 // and wrapped iframe contentWindow
-export const unwrap = function (value: any): any {
+export const unwrap = function(value: any): any {
      // observable membrane goes first because it is in the critical path
      let unwrapped = observableUnwrap(value);
      if (unwrapped !== value) {
@@ -35,4 +35,4 @@ export const unwrap = function (value: any): any {
          return unwrapped;
      }
      return value;
-}
+};
