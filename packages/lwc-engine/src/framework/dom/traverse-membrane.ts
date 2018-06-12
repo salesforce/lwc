@@ -1,12 +1,11 @@
-import { isNull, hasOwnProperty, ArrayMap, isUndefined } from "../language";
+import { isNull, hasOwnProperty, ArrayMap, isUndefined, isFunction } from "../language";
 import { shadowDescriptors } from "./traverse";
 import { ViewModelReflection } from "../utils";
 import { fallbackDescriptors } from "../html-element";
 const proxies = new WeakMap<object, object>();
 
 function isReplicable(value: any): boolean {
-    const type = typeof value;
-    return value && (type === 'object' || type === 'function');
+    return value instanceof Node || isFunction(value);
 }
 
 const traverseMembraneHandler = {
@@ -14,20 +13,17 @@ const traverseMembraneHandler = {
         if (key === TargetSlot) {
             return originalTarget;
         }
-        let value;
         const descriptors = isUndefined(originalTarget[ViewModelReflection]) ? shadowDescriptors : fallbackDescriptors;
         if (hasOwnProperty.call(descriptors, key)) {
             const descriptor = descriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
-                value = wrap(descriptor.value);
+                return wrap(descriptor.value);
             } else {
-                value = descriptor!.get!.call(originalTarget);
+                return descriptor!.get!.call(originalTarget);
             }
         } else {
-            value = originalTarget[key];
+            return wrap(originalTarget[key]);
         }
-
-        return value;
     },
     apply(originalTarget: (...any) => any, thisArg: any, args: any[]): any {
         const unwrappedContext = unwrap(thisArg);
