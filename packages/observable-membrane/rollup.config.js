@@ -47,6 +47,7 @@ function rollupConfig({ formats, prod }) {
         ].join('');
 
         return {
+            name: 'ObservableMembrane',
             format,
             file: path.join(targetDirectory, targetName),
         }

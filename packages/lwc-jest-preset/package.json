@@ -1,0 +1,29 @@
+{
+  "name": "lwc-jest-preset",
+  "version": "0.22.8",
+  "description": "Jest preset configuration and stubs to help test LWC",
+  "scripts": {
+    "lint": "eslint src/",
+    "build": "rollup -c",
+    "test": "jest"
+  },
+  "keywords": [
+    "Jest",
+    "LWC"
+  ],
+  "main": "preset.js",
+  "peerDependencies": {
+    "jest": "*",
+    "lwc-jest-resolver": "0.22.x",
+    "lwc-jest-serializer": "0.22.x",
+    "lwc-jest-transformer": "0.22.x"
+  },
+  "devDependencies": {
+    "lwc-compiler": "0.22.8",
+    "lwc-jest-resolver": "0.22.8",
+    "lwc-jest-serializer": "0.22.8",
+    "lwc-jest-transformer": "0.22.8",
+    "rollup": "0.60.1",
+    "rollup-plugin-lwc-compiler": "0.22.8"
+  }
+}
