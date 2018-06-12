@@ -11,8 +11,18 @@ import { removeAttribute, setAttribute } from "./dom/element";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotset: SlotSet, ctx: Context): undefined | VNodes;
-    style?: string;
-    token?: string;
+
+    /**
+     * HTML attribute that need to be applied to the host element.
+     * This attribute is used for the `:host` pseudo class CSS selector.
+     */
+    hostToken?: string;
+
+    /**
+     * HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs in fallback mode.
+     */
+    shadowToken?: string;
 }
 
 const EmptySlots: SlotSet = create(null);
@@ -54,18 +64,13 @@ function validateTemplate(vm: VM, html: any) {
 }
 
 /**
- * Returns the scoping token to be used on the host element. The CSS transform use the same token name
- * postfixed with `-host`.
+ * Apply/Update the styling token applied to the host element.
  */
-function hostToken(token: string): string {
-    return `${token}-host`;
-}
-
 function applyTokenToHost(vm: VM, html: Template): void {
     const { context } = vm;
 
-    const oldToken = context.tplToken;
-    const newToken = html.token;
+    const oldToken = context.hostToken;
+    const newToken = html.hostToken;
 
     if (oldToken !== newToken) {
         const host = vm.elm;
@@ -73,14 +78,12 @@ function applyTokenToHost(vm: VM, html: Template): void {
         // Remove the token currently applied to the host element if different than the one associated
         // with the current template
         if (!isUndefined(oldToken)) {
-            const oldHostToken = hostToken(oldToken);
-            removeAttribute.call(host, oldHostToken);
+            removeAttribute.call(host, oldToken);
         }
 
         // If the template has a token apply the token to the host element
         if (!isUndefined(newToken)) {
-            const newHostToken = hostToken(newToken);
-            setAttribute.call(host, newHostToken, '');
+            setAttribute.call(host, newToken, '');
         }
     }
 }
@@ -102,8 +105,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         vm.cmpTemplate = html;
 
+        // Populate context with template information
         context.tplCache = create(null);
-        context.tplToken = html.token;
+        context.hostToken = html.hostToken;
+        context.shadowToken = html.shadowToken;
 
         if (process.env.NODE_ENV !== 'production') {
             validateTemplate(vm, html);

@@ -4,8 +4,9 @@ export const TopLevelContextSymbol = Symbol();
 
 export interface Context {
     [TopLevelContextSymbol]?: boolean;
-    tplToken?: string;
-    tplCache?: Template | undefined;
+    hostToken?: string;
+    shadowToken?: string;
+    tplCache?: Template;
     [key: string]: any;
 }
 

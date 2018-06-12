@@ -8,7 +8,7 @@ describe('modules/token', () => {
         const tmpl = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
-        tmpl.token = 'test';
+        tmpl.shadowToken = 'test';
 
         class Component extends Element {
             render() {
@@ -26,7 +26,7 @@ describe('modules/token', () => {
         const styledTmpl = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
-        styledTmpl.token = 'test';
+        styledTmpl.shadowToken = 'test';
 
         const unstyledTmpl = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
@@ -60,12 +60,12 @@ describe('modules/token', () => {
         const styledTmplA: Template = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
-        styledTmplA.token = 'testA';
+        styledTmplA.shadowToken = 'testA';
 
         const styledTmplB: Template = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
-        styledTmplB.token = 'testB';
+        styledTmplB.shadowToken = 'testB';
 
         class Component extends Element {
             tmpl = styledTmplA;

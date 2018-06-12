@@ -149,12 +149,12 @@ function getCurrentFallback(): boolean {
     return isNull(vmBeingRendered) || vmBeingRendered.fallback;
 }
 
-function getCurrentTplToken(): string | undefined {
+function getCurrentShadowToken(): string | undefined {
     // For root elements and other special cases the vm is not set.
     if (isNull(vmBeingRendered)) {
         return;
     }
-    return vmBeingRendered.context.tplToken;
+    return vmBeingRendered.context.shadowToken;
 }
 
 function normalizeStyleString(value: any): string | undefined {
@@ -190,7 +190,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
     const { classMap, className, style, styleMap, key } = data;
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
-    data.token = getCurrentTplToken();
+    data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
     let text, elm; // tslint:disable-line
     const vnode: VElement = {
@@ -261,7 +261,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
     data = { hook, key, attrs, on, props, ctor: Ctor };
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
-    data.token = getCurrentTplToken();
+    data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
     data.fallback = getCurrentFallback();
     data.mode = 'open'; // TODO: this should be defined in Ctor

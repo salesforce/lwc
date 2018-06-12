@@ -296,7 +296,7 @@ describe('template', () => {
     describe('token', () => {
         it('adds the host token to the host element if template has a token', () => {
             const styledTmpl: Template = () => [];
-            styledTmpl.token = 'token';
+            styledTmpl.hostToken = 'token-host';
 
             class Component extends Element {
                 render() {
@@ -321,7 +321,7 @@ describe('template', () => {
                     }, [])
                 ]),
             ];
-            styledTmpl.token = 'token';
+            styledTmpl.shadowToken = 'token';
 
             class Component extends Element {
                 render() {
@@ -338,7 +338,7 @@ describe('template', () => {
 
         it('removes the host token from the host element when changing template', () => {
             const styledTmpl: Template = () => [];
-            styledTmpl.token = 'token';
+            styledTmpl.hostToken = 'token-host';
 
             const unstyledTmpl: Template = () => [];
 
@@ -366,10 +366,10 @@ describe('template', () => {
 
         it('swaps the host token when replacing the template with a different token', () => {
             const styledTmplA: Template = () => [];
-            styledTmplA.token = 'tokenA';
+            styledTmplA.hostToken = 'tokenA-host';
 
             const styledTmplB: Template = () => [];
-            styledTmplB.token = 'tokenB';
+            styledTmplB.hostToken = 'tokenB-host';
 
             class Component extends Element {
                 tmpl = styledTmplA;
