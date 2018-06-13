@@ -19,7 +19,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-foo_foo';
-    style$$1.textContent = style('x-foo', 'x-foo_foo');
+    style$$1.textContent = style('x-foo_foo');
     document.head.appendChild(style$$1);
 }
 
@@ -36,8 +36,6 @@ class ClassAndTemplate extends engine.Element {
     }
 
 }
-
-ClassAndTemplate.style = tmpl.style;
 
 return ClassAndTemplate;
 

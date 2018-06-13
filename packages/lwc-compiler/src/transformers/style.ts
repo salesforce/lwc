@@ -6,7 +6,6 @@ import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 
 const TOKEN_PLACEHOLDER = "__TOKEN__";
-const TAG_NAME_PLACEHOLDER = "__TAG_NAME__";
 
 const EMPTY_CSS_OUTPUT = `
 const style = undefined;
@@ -14,13 +13,11 @@ export default style;
 `;
 
 function generateScopedStyle(src: string) {
-    src = src
-        .replace(new RegExp(TOKEN_PLACEHOLDER, "g"), "${token}")
-        .replace(new RegExp(TAG_NAME_PLACEHOLDER, "g"), "${tagName}");
+    const srcWithTemplateString = src.replace(new RegExp(TOKEN_PLACEHOLDER, "g"), "${token}");
 
     return [
-        "function style(tagName, token) {",
-        "   return `" + src + "`;",
+        "function style(token) {",
+        "   return `" + srcWithTemplateString + "`;",
         "}",
         "export default style;"
     ].join("\n");

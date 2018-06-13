@@ -17,7 +17,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-foo_foo';
-    style$$1.textContent = style('x-foo', 'x-foo_foo');
+    style$$1.textContent = style('x-foo_foo');
     document.head.appendChild(style$$1);
 }
 class Metadata extends Element {
@@ -56,7 +56,6 @@ Metadata.wire = {
         method: 1
     }
 };
-Metadata.style = tmpl.style;
 const HELLOWORLD = "hello world!";
 function ohai(name) {
     return "ohai, " + name;
