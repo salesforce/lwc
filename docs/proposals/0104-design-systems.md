@@ -24,13 +24,14 @@ Insert the entire design system global css on every component:
 #### Pros:
 
 * No much work do to in compiler.
+* Google folks favor this since the UA can cache the source and do little to get the styles.
 
 #### Cons:
 
 * Does not solve all problems related to applying styles to the HOST since the host element can only be styled with `:host` selector, and that must be individually defined per component, instead of a single host style.
-* Potential perf penalty for a CSS blob that is sufficiently big to crash a browser.
+* Potential perf penalty for a CSS blob that is sufficiently big to crash a browser. (we should prove this).
 
-RESOLUTION: This is a no-go since it is very limited, and has perf implications.
+RESOLUTION: This is a no-go since it is very limited, and has potential perf implications.
 
 ### 2. Slicing and Remap Plugin
 
@@ -44,7 +45,7 @@ interface pluginConfig {
 }
 function getSlicedStyles(template: string, config: pluginConfig): string {
     /**
-     * - Parse template, which contains a single root <template> tag.
+     * - Parse template, which contains a single root `<template>` tag.
      * - Extract all static classnames used by the template.
      * - Dedupe the list of extracted classnames and config.extras and config.remap record fields.
      * - Expand the list of classnames with all friendly classes and associated utility.
@@ -73,27 +74,27 @@ The compiler will invoke this plugin method per template, and will provide the c
 
 Rely on the already existing well defined Rollup API to provide a way to add design system styles into your component.
 
-The challenge with this approach is how to pass information (metadata) from the JS file to the HTML file, augment that metadata with the Template source, and eventually get the rollup plugin for the design system to handle the creation of the style block that contains the fully sliced, remapped and contextualized rules.
+The challenge with this approach is how to define the metadata augmented with the Template source, and eventually get the rollup plugin for the design system to handle the creation of the style block that contains the fully sliced, remapped and contextualized rules.
 
-Since rollup does not have an API to contextualize the import, which means that it doesn't offer a way to pass metadata from the JS file to the HTML import to the CSS import, we can rely on the query parameters for that. This is a technique popularized in the Rollup community that is good enough for our use-case.
+Since rollup does not have an API to contextualize the import, which means that it doesn't offer a way to pass metadata from one file to another, we can rely on the query parameters for that. This is a technique popularized in the Rollup community that is good enough for our use-case.
 
 Workflow:
 
-1. During JS compilation, inspect the class declaration for metadata information about the design system (via statics or via a decorator).
-2. If metadata is found about the design system, propagate all the metadata via a serialized query parameter called `config` for all HTML imports (whether they were added manually, or dynamically). E.g.: https://webpack.js.org/concepts/loaders/#inline
-3. During HTML compilation, if the `config` query parameter is present, insert a new CSS import at the top of the template with a URL that is based on the design system information present in the query parameter, plus the `config` parameter itself, and a new parameter called `template` that contains a string representation of the current `<template>` tag.
-4. Plug a rollup plugin that can identify the URL that represents the design system that the plugin can handle. Pick up the `config` and the `template` parameters, and create a synthetic file that contains the sliced, remapped and contextualized rules that correspond to them.
-
-The rollup plugin is responsible for:
-
- * Parse `template` string passed as query parameter, which contains a single root <template> tag.
- * Extract all static classnames used by the template.
- * Dedupe the list of extracted classnames and `config.extras` and `config.remap` record fields.
- * Expand the list of classnames with all friendly classes and associated utility.
- * Generate styles for the list classes.
- * Parse styles and carry on remap of styles
- * Apply contextualization for `:host` rules
- * Return the styles for shadow root
+1. During JS compilation, HTML files are imported (manually or auto-insertion by compiler).
+1. During compilation of every HTML file, the compiler will auto-insert an import for a design system file called `./foo.design.json?template=<raw-value-of-template-tag>`.
+1. Use a rollup plugin that can identify the URL that represents the design system file that the plugin can handle:
+    1. Read the content of the file or rely on some default generic configuration if the file doesn't exist and store it in `config`.
+    1. Parse `template` string passed as query parameter, which contains a single root `<template>` tag.
+    1. Extract all static classnames used by the template.
+    1. De-dupe the list of extracted classnames and `config.extras` and `config.remap` record fields.
+    1. Expand the list of classnames with all friendly classes and associated utility.
+    1. Apply linting logic for the template markup (not needed in the first version).
+    1. Generate styles for the list classes.
+    1. Parse styles and carry on remap of styles
+    1. Apply contextualization for `:host` rules
+    1. Create a synthetic CSS file that contains the result style (sliced, remapped and contextualized).
+1. Use a rollup plugin that can transform the CSS source into a JS function:
+    1. Apply the same transformation used for any other component's css files.
 
 #### Pros:
 
@@ -105,7 +106,7 @@ The rollup plugin is responsible for:
 
 #### Cons: 
 
-* Relies on a side-channel ad-hoc communication between the different files via query parameters.
+* Relies on a side-channel ad-hoc communication between the HTML file and design system plugin.
 
 ## Resolution
 
