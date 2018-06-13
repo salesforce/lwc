@@ -533,6 +533,73 @@ describe('#parentNode and #parentElement', () => {
     });
 });
 
+describe('proxy', () => {
+    it('should allow setting properties manually', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        root.querySelector('div').id = 'something';
+        expect(root.querySelector('div').getAttribute('id')).toBe('something');
+    });
+    it('should allow setting innerHTML manually', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        root.querySelector('div').innerHTML = 'something';
+        expect(root.querySelector('div').textContent).toBe('something');
+    });
+    it('should unwrap arguments when invoking a method on a proxy', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [$api.h('p', { key: 1 }, [])])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        const div = root.querySelector('div');
+        const p = root.querySelector('p');
+        expect(div.contains(p)).toBe(true);
+    });
+    it('should allow setting attributes manually', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        root.querySelector('div').setAttribute('id', 'something');
+        expect(root.querySelector('div').id).toBe('something');
+    });
+});
 
 describe('#childNodes', () => {
     it('should always return an empty array for slots not rendering default content', () => {
