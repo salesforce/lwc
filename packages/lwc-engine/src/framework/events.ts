@@ -8,7 +8,7 @@ import {
     parentNodeGetter,
 } from "./dom/node";
 import { VM, OwnerKey, getCustomElementVM } from "./vm";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue } from "./language";
+import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue, isNull } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
 
@@ -29,22 +29,38 @@ const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const eventShadowDescriptors: PropertyDescriptorMap = {
     currentTarget: {
-        get(this: Event): HTMLElement {
-            return patchShadowDomTraversalMethods(eventCurrentTargetGetter.call(this));
+        get(this: Event): HTMLElement | null {
+            const currentTarget = eventCurrentTargetGetter.call(this);
+            if (isNull(currentTarget) || isUndefined(currentTarget[OwnerKey])) {
+                // event is already beyond the boundaries of our controlled shadow roots
+                return currentTarget;
+            }
+            return patchShadowDomTraversalMethods(currentTarget);
         }
     },
     target: {
         get(this: Event): HTMLElement {
             const currentTarget = eventCurrentTargetGetter.call(this) as HTMLElement;
             const originalTarget = eventTargetGetter.call(this);
-            // Executing event listener on component, target is always currentTarget
 
+            if (isNull(currentTarget)) {
+                // the event was inspected asynchronously, in which case we need to return the
+                // top custom element the belongs to the body.
+                let outerMostElement = originalTarget;
+                let parentNode;
+                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(outerMostElement[OwnerKey])) {
+                    outerMostElement = parentNode;
+                }
+                return outerMostElement;
+            }
+
+            // Executing event listener on component, target is always currentTarget
             if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
                 return patchShadowDomTraversalMethods(currentTarget);
             }
             const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE); // x-child
 
-            // Before we can process any events, we need to first determing three things:
+            // Before we can process any events, we need to first determine three things:
             // 1) What VM context was the event attached to? (e.g. in what VM context was addEventListener called in).
             // 2) What VM owns the context where the event was attached? (e.g. who rendered the VM context from step 1).
             // 3) What is the event's original target's relationship to 1 and 2?
@@ -73,7 +89,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             // }
             const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getCustomElementVM(currentTarget).uid : currentTarget[OwnerKey];
 
-            // Determinimg Number 2:
+            // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
             const myOwnerKey = currentTargetRootNode[OwnerKey];
 
@@ -116,6 +132,20 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
                 closestTarget = parentNodeGetter.call(closestTarget);
             }
 
+            /**
+             * <div> <-- document.querySelector('div').addEventListener('click')
+             *    <x-foo></x-foo> <-- this.addEventListener('click') in constructor
+             * </div>
+             *
+             * or
+             *
+             * <x-foo></x-foo> <-- document.querySelector('x-foo').addEventListener('click')
+             * while the event is patched because the component is listening for it internally
+             * via this.addEventListener('click') in constructor or something similar
+             */
+            if (isUndefined(closestTarget[OwnerKey])) {
+                return closestTarget;
+            }
             return patchShadowDomTraversalMethods(closestTarget);
         },
         configurable: true,
