@@ -19,7 +19,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-default_default';
-    style$$1.textContent = style('x-default', 'x-default_default');
+    style$$1.textContent = style('x-default_default');
     document.head.appendChild(style$$1);
 }
 
@@ -29,6 +29,5 @@ class Default extends Element {
   }
 
 }
-Default.style = tmpl.style;
 
 export default Default;

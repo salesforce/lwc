@@ -19,7 +19,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'myns-relative_import_relative_import';
-    style$$1.textContent = style('myns-relative_import', 'myns-relative_import_relative_import');
+    style$$1.textContent = style('myns-relative_import_relative_import');
     document.head.appendChild(style$$1);
 }
 
@@ -43,7 +43,6 @@ class RelativeImport extends engine.Element {
     }
 
 }
-RelativeImport.style = tmpl.style;
 
 return RelativeImport;
 

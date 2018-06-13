@@ -1,7 +1,7 @@
 import _xFoo from 'x-foo';
 import { Element } from 'engine';
 
-function style(tagName, token) {
+function style(token) {
     return `[${token}-host] {
     color: blue;
 }
@@ -33,7 +33,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-styled_styled';
-    style$$1.textContent = style('x-styled', 'x-styled_styled');
+    style$$1.textContent = style('x-styled_styled');
     document.head.appendChild(style$$1);
 }
 
@@ -43,6 +43,5 @@ class Styled extends Element {
   }
 
 }
-Styled.style = tmpl.style;
 
 export default Styled;

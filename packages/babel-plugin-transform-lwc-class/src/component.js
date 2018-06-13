@@ -1,6 +1,6 @@
 const { basename } = require('path');
 const moduleImports = require("@babel/helper-module-imports");
-const { findClassMethod, staticClassProperty, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
+const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
 
@@ -62,17 +62,11 @@ module.exports = function ({ types: t }) {
 
     function importDefaultTemplate(path, state) {
         const componentName = getBaseName(state);
-        return moduleImports.addDefault(path,`./${componentName}.html`, { nameHint: 'tmpl' })
+        return moduleImports.addDefault(path, `./${componentName}.html`, { nameHint: 'tmpl' });
     }
 
     function wireTemplateToClass(path, state, classBody) {
         const templateIdentifier = importDefaultTemplate(path, state);
-
-        const styleProperty = staticClassProperty(
-            t,
-            LWC_COMPONENT_PROPERTIES.STYLE,
-            t.memberExpression(templateIdentifier, t.identifier(LWC_COMPONENT_PROPERTIES.STYLE)),
-        );
 
         const renderMethod = t.classMethod(
             'method',
@@ -80,12 +74,11 @@ module.exports = function ({ types: t }) {
             [],
             t.blockStatement([
                 t.returnStatement(templateIdentifier),
-            ])
+            ]),
         );
 
         classBody.pushContainer('body', [
             renderMethod,
-            styleProperty,
         ]);
     }
-}
+};

@@ -9,7 +9,7 @@ if (style) {
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-node_env_node_env';
-    style$$1.textContent = style('x-node_env', 'x-node_env_node_env');
+    style$$1.textContent = style('x-node_env_node_env');
     document.head.appendChild(style$$1);
 }
 class ClassAndTemplate extends Element {
@@ -20,5 +20,4 @@ class ClassAndTemplate extends Element {
         return tmpl;
     }
 }
-ClassAndTemplate.style = tmpl.style;
 export default ClassAndTemplate;

@@ -70,7 +70,6 @@ describe("transform", () => {
                     return _tmpl;
                 }
             }
-            Foo.style = _tmpl.style;
         `;
 
         const { code } = await transform(actual, "foo.js", {
@@ -119,7 +118,7 @@ describe("transform", () => {
             const style = document.createElement('style');
             style.type = 'text/css';
             style.dataset.token = 'x-foo_foo'
-            style.textContent = stylesheet('x-foo', 'x-foo_foo');
+            style.textContent = stylesheet('x-foo_foo');
             document.head.appendChild(style);
             }
         `;
@@ -152,7 +151,7 @@ describe("transform", () => {
         `;
 
         const expected = `
-            function style(tagName, token) {
+            function style(token) {
                 return \`
             div[\${token}] {
                 background-color: red;

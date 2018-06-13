@@ -47,7 +47,7 @@ function attachStyleToTemplate(
         `    const style = document.createElement('style');`,
         `    style.type = 'text/css';`,
         `    style.dataset.token = '${shadowToken}'`,
-        `    style.textContent = stylesheet('${tagName}', '${shadowToken}');`,
+        `    style.textContent = stylesheet('${shadowToken}');`,
         `    document.head.appendChild(style);`,
         `}`
     ].join("\n");
