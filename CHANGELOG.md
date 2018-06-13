@@ -1,5 +1,23 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.8...v) (2018-06-12)
+# [](https://github.com/salesforce/lwc/compare/v0.23.0...v) (2018-06-13)
+
+
+
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/salesforce/lwc/compare/v0.22.8...v0.23.0) (2018-06-13)
+
+
+### Bug Fixes
+
+* simplify style logic in template compiler ([#314](https://github.com/salesforce/lwc/issues/314)) ([598d940](https://github.com/salesforce/lwc/commit/598d940))
+* Use token for the styling host element instead of tag name ([#390](https://github.com/salesforce/lwc/issues/390)) ([cccc63d](https://github.com/salesforce/lwc/commit/cccc63d)), closes [#383](https://github.com/salesforce/lwc/issues/383)
+* **engine:** adding more tests for proxies ([#407](https://github.com/salesforce/lwc/issues/407)) ([7c2ae0a](https://github.com/salesforce/lwc/commit/7c2ae0a))
+* **engine:** allowing global listeners ([#404](https://github.com/salesforce/lwc/issues/404)) ([da2d3c7](https://github.com/salesforce/lwc/commit/da2d3c7))
+
+
+### Features
+
+* Add customProperties config to postcss-lwc-plugin ([#349](https://github.com/salesforce/lwc/issues/349)) ([231e00d](https://github.com/salesforce/lwc/commit/231e00d))
 
 
 
@@ -417,7 +435,12 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
+
+
+
+<a name="0.17.3"></a>
+## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
 
 
 
