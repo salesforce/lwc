@@ -1,5 +1,16 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.23.0...v) (2018-06-13)
+# [](https://github.com/salesforce/lwc/compare/v0.23.1...v) (2018-06-13)
+
+
+
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/salesforce/lwc/compare/v0.23.0...v0.23.1) (2018-06-13)
+
+
+### Bug Fixes
+
+* **engine:** never use a dot notation of patched objects ([#410](https://github.com/salesforce/lwc/issues/410)) ([2c6b1f4](https://github.com/salesforce/lwc/commit/2c6b1f4))
+* **jest-preset:** remove trailing comma from json ([#409](https://github.com/salesforce/lwc/issues/409)) ([369e073](https://github.com/salesforce/lwc/commit/369e073))
 
 
 
@@ -435,12 +446,7 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
-
-
-
-<a name="0.17.3"></a>
-## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
 
 
 
