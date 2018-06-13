@@ -552,19 +552,21 @@ describe('proxy', () => {
     });
     it('should allow setting innerHTML manually', () => {
         function html($api) {
-            return [$api.h('div', { key: 0 }, [])];
+            return [$api.h('span', { key: 0 }, [])];
         }
         class MyComponent extends Element {
             render() {
                 return html;
+            }
+            renderedCallback() {
+                this.template.querySelector('span').innerHTML = '<i>something</i>';
             }
         }
 
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         const root = getHostShadowRoot(elm);
-        root.querySelector('div').innerHTML = 'something';
-        expect(root.querySelector('div').textContent).toBe('something');
+        expect(root.querySelector('span').textContent).toBe('something');
     });
     it('should unwrap arguments when invoking a method on a proxy', () => {
         function html($api) {
