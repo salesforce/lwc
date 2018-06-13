@@ -6,5 +6,5 @@
   "resolver": "lwc-jest-resolver",
   "verbose": true,
   "testMatch": [ "**/__tests__/**/?(*.)(spec|test).js" ],
-  "snapshotSerializers": ["lwc-jest-serializer"],
+  "snapshotSerializers": ["lwc-jest-serializer"]
 }
