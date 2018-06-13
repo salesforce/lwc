@@ -36,7 +36,9 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
                 return currentTarget;
             }
             return patchShadowDomTraversalMethods(currentTarget);
-        }
+        },
+        enumerable: true,
+        configurable: true,
     },
     target: {
         get(this: Event): HTMLElement {
@@ -148,6 +150,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             }
             return patchShadowDomTraversalMethods(closestTarget);
         },
+        enumerable: true,
         configurable: true,
     },
 };
@@ -182,7 +185,7 @@ function getWrappedRootListener(vm: VM, listener: EventListener): WrappedListene
                 // it is coming from an slotted element
                 isChildNode(getRootNode.call(target, event), currentTarget as Node) ||
                 // it is not composed and its is coming from from shadow
-                (composed === false && getRootNode.call(event.target) === currentTarget)) {
+                (composed === false && getRootNode.call(target) === currentTarget)) {
                     patchShadowDomEvent(vm, event);
                     invokeEventListener(vm, EventListenerContext.ROOT_LISTENER, listener, undefined, event);
             }
@@ -318,7 +321,8 @@ function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListene
 
 const NON_COMPOSED = { composed: false };
 export function isValidEventForCustomElement(event: Event): boolean {
-    const { target, currentTarget } = event;
+    const target = eventTargetGetter.call(event);
+    const currentTarget = eventCurrentTargetGetter.call(event);
     const { composed } = event as any;
     return (
         // it is composed, and we should always get it, or
