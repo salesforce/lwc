@@ -344,7 +344,7 @@ describe('template', () => {
             const cmp = createElement('x-cmp', { is: Component });
             document.body.appendChild(cmp);
 
-            const divs = cmp.shadowRoot.querySelectorAll('div[token]');
+            const divs = getHostShadowRoot(cmp).querySelectorAll('div[token]');
             expect(divs.length).toBe(2);
         });
 
@@ -497,7 +497,7 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            const div = element.shadowRoot.querySelector('div');
+            const div = getHostShadowRoot(element).querySelector('div');
             expect(div.getAttribute('title')).toBe('foo');
         });
 
@@ -530,10 +530,10 @@ describe('template', () => {
             const element = createElement('x-attr-cmp', { is: MyComponent });
             document.body.appendChild(element);
 
-            expect(element.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial');
+            expect(getHostShadowRoot(element).querySelector('div').getAttribute('title')).toBe('initial');
             element.setInner(null);
             return Promise.resolve().then(() => {
-                expect(element.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
+                expect(getHostShadowRoot(element).querySelector('div').hasAttribute('title')).toBe(false);
             });
         });
     });
