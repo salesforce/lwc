@@ -35,6 +35,13 @@ const traverseMembraneHandler = {
             return wrap(originalTarget[key]);
         }
     },
+    set(originalTarget: any, key: PropertyKey, value: any): boolean {
+        if (key === TargetSlot) {
+            return false;
+        }
+        originalTarget[key] = unwrap(value);
+        return true;
+    },
     apply(originalTarget: (...any) => any, thisArg: any, args: any[]): any {
         const unwrappedContext = unwrap(thisArg);
         const unwrappedArgs = ArrayMap.call(args, (arg) => unwrap(arg));
