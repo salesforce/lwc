@@ -53,6 +53,12 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
                 while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(outerMostElement[OwnerKey])) {
                     outerMostElement = parentNode;
                 }
+
+                // This value will always be the root LWC node.
+                // There is a chance that this value will be accessed
+                // inside of an async event handler in the component tree,
+                // but because we don't know if it is being accessed
+                // inside the tree or outside the tree, we do not patch.
                 return outerMostElement;
             }
 
