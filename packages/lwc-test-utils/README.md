@@ -17,12 +17,13 @@ yarn add -D 'lwc-test-utils'
 In your test:
 
 ```js
-import { templateQuerySelector, templateQuerySelectorAll } from 'lwc-test-utils';
+import { getShadowRoot } from 'lwc-test-utils';
 
-// create element under test and query for an inner element
+// create element under test and query for custom element in the Shadow DOM
 const element = createElement('my-custom-component', { is: MyCustomComponent });
 document.body.appendChild(element);
-const fancyButton = templateQuerySelector(element, 'fancy-button');
+const shadowRoot = getShadowRoot(element);
+const fancyButton = shadowRoot.querySelector('fancy-button');
 ```
 
 ### Jest Preset Configuration
