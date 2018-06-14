@@ -1,3 +1,5 @@
+import { getOwnPropertyDescriptor } from "../language";
+
 const {
     addEventListener,
     removeEventListener,
@@ -11,6 +13,8 @@ const {
     querySelectorAll,
 } = Element.prototype;
 
+const innerHTMLSetter = getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set;
+
 export {
     addEventListener,
     removeEventListener,
@@ -22,4 +26,5 @@ export {
     removeAttributeNS,
     querySelector,
     querySelectorAll,
+    innerHTMLSetter,
 };

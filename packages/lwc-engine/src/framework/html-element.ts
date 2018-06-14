@@ -20,65 +20,14 @@ import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } 
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isString, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
+import { CustomEvent, fallbackListenerPatchDescriptors } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
-import { assignedSlotGetter, lightDomQuerySelector, lightDomQuerySelectorAll, lightDomCustomElementChildNodes } from "./dom/traverse";
+import { getPatchedCustomElement } from "./dom/traverse";
 
 export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(elm);
     return vm.mode === 'open' ? vm.cmpRoot : null;
 }
-
-export function callHostQuerySelector(elm: HTMLElement, selector: string): Element | null {
-    return lightDomQuerySelector.call(elm, selector);
-}
-
-export function callHostQuerySelectorAll(elm: HTMLElement, selector: string): NodeList {
-    return lightDomQuerySelectorAll.call(elm, selector);
-}
-
-export function addHostEventListener(elm: HTMLElement, args: any[]) {
-    addEventListenerPatched.apply(elm, args);
-}
-
-export function removeHostEventListener(elm: HTMLElement, args: any[]) {
-    removeEventListenerPatched.apply(elm, args);
-}
-
-export function getHostChildNodes(elm: HTMLElement) {
-    return lightDomCustomElementChildNodes.call(elm);
-}
-
-export function getHostAssignedSlot(elm: HTMLElement) {
-    return assignedSlotGetter.call(elm);
-}
-
-export const fallbackDescriptors = {
-    querySelector: {
-        value: lightDomQuerySelector,
-        configurable: true,
-    },
-    querySelectorAll: {
-        value: lightDomQuerySelectorAll,
-        configurable: true,
-    },
-    addEventListener: {
-        value: addEventListenerPatched,
-        configurable: true,
-    },
-    removeEventListener: {
-        value: removeEventListenerPatched,
-        configurable: true,
-    },
-    childNodes: {
-        get: lightDomCustomElementChildNodes,
-        configurable: true,
-    },
-    assignedSlot: {
-        get: assignedSlotGetter,
-        configurable: true,
-    },
-};
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -161,7 +110,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, fallback } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -176,6 +125,9 @@ function LWCElement(this: Component) {
     // linking elm and its component with VM
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
+    if (isTrue(fallback)) {
+        defineProperties(elm, fallbackListenerPatchDescriptors);
+    }
 }
 
 LWCElement.prototype = {
@@ -303,31 +255,33 @@ LWCElement.prototype = {
         }
         return elm.getBoundingClientRect();
     },
-    querySelector(selector: string): Node | null {
+    querySelector(selector: string): Element | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
+        let elm: HTMLElement = vm.elm;
         // fallback to a patched querySelector to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            return callHostQuerySelector(vm.elm, selector);
+            elm = getPatchedCustomElement(elm);
         }
-        // Delegate to custom element querySelector for native.
-        return vm.elm.querySelector(selector);
+        // Delegate to custom element querySelector.
+        return elm.querySelector(selector);
     },
     querySelectorAll(selector: string): NodeList {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
+        let elm: HTMLElement = vm.elm;
         // fallback to a patched querySelectorAll to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            return callHostQuerySelectorAll(vm.elm, selector);
+            elm = getPatchedCustomElement(elm);
         }
-        // Delegate to custom element querySelectorAll for native.
-        return vm.elm.querySelectorAll(selector);
+        // Delegate to custom element querySelectorAll.
+        return elm.querySelectorAll(selector);
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
