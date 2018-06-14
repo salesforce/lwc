@@ -303,6 +303,7 @@ LWCElement.prototype = {
         return vm.cmpRoot;
     },
     get root(): ShadowRoot {
+        // TODO: issue #418
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);

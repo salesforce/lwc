@@ -111,10 +111,3 @@ export function markComponentAsDirty(vm: VM) {
     }
     vm.isDirty = true;
 }
-
-export function getCustomElementComponent(elmOrRoot: HTMLElement | ShadowRoot): Component {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrRoot[ViewModelReflection]);
-    }
-    return (elmOrRoot[ViewModelReflection] as VM).component as Component;
-}
