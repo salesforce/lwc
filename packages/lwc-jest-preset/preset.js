@@ -11,6 +11,7 @@ jestPreset.moduleNameMapper = {
     '^instrumentation-service$': require.resolve('./dist/auraInstrumentationStub.js'),
     '^aura-storage$': require.resolve('./dist/auraStorageStub.js'),
     '^logger$': require.resolve('./dist/loggerStub.js'),
+    '^lwc-test-utils$': require.resolve('lwc-test-utils'),
 };
 // Jest by default looks for transformer/resolver modules using the cwd of where
 // jest was launched from. When running against projects that are not NPMs
