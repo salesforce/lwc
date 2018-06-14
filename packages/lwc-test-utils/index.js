@@ -7,7 +7,7 @@
  *
  * @param {LWCElement} element The Lightning web component element to retrieve
  * the shadowRoot property off of
- * @returns {ShadowRoot} The shadowRoot property of the given element
+ * @returns {ShadowRoot} The shadow root of the given element
  */
 export function getShadowRoot(element) {
     if (!element || !element.$$ShadowRoot$$) {
