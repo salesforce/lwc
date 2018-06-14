@@ -1,4 +1,4 @@
-import { getOwnPropertyDescriptor } from "../language";
+import { getOwnPropertyDescriptor, hasOwnProperty } from "../language";
 
 const {
     addEventListener,
@@ -13,7 +13,9 @@ const {
     querySelectorAll,
 } = Element.prototype;
 
-const innerHTMLSetter = getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set;
+const innerHTMLSetter = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
+    getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!;  // IE11
 
 export {
     addEventListener,

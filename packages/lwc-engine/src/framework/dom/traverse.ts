@@ -169,9 +169,7 @@ export const NodePatchDescriptors: PropertyDescriptorMap = {
     },
     textContent: {
         get: lightDomTextContentGetter,
-        set(this: Node, value: string) {
-            textContextSetter!.call(this, value);
-        },
+        set: textContextSetter,
         configurable: true,
         enumerable: true,
     },
@@ -198,9 +196,7 @@ export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDe
     },
     innerHTML: {
         get: lightDomInnerHTMLGetter,
-        set(value: string) {
-            innerHTMLSetter!.call(this, value);
-        },
+        set: innerHTMLSetter,
         configurable: true,
         enumerable: true,
     },
