@@ -10,8 +10,10 @@ import {
     setAttribute,
     removeAttribute,
 } from './element';
-import { ViewModelReflection, getAttrNameFromPropName } from "../utils";
+import { ViewModelReflection, getAttrNameFromPropName, usesNativeSymbols } from "../utils";
 import { childNodesGetter } from "./node";
+
+export const ShadowRootKey = usesNativeSymbols && process.env.NODE_ENV !== 'test' ? Symbol('ShadowRoot') : '$$ShadowRoot$$';
 
 export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
 const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
@@ -35,6 +37,7 @@ export function attachShadow(elm, options, fallback): ShadowRoot {
         // the component will not work when running in fallback mode.
         defineProperties(sr, DevModeBlackListDescriptorMap);
     }
+    elm[ShadowRootKey] = sr;
     return sr as ShadowRoot;
 }
 

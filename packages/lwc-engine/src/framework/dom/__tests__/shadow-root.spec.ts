@@ -85,6 +85,13 @@ describe('root', () => {
             });
         });
 
+        it('should expose the shadow root via $$ShadowRoot$$ when in test mode', () => {
+            class MyComponent extends Element {}
+            const elm = createElement('x-foo', { is: MyComponent });
+            document.body.appendChild(elm);
+            expect(elm.$$ShadowRoot$$).toBeDefined();
+        });
+
     });
 
     describe('childNodes', () => {
