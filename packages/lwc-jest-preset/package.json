@@ -11,7 +11,7 @@
     "Jest",
     "LWC"
   ],
-  "main": "preset.js",
+  "main": "jest-preset.js",
   "peerDependencies": {
     "jest": ">= 23.0.0"
   },
