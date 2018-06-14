@@ -64,6 +64,8 @@ export interface VText extends VNode {
   key: undefined;
 }
 
+export type CustomElementContext = Record<string, Record<string, any>>;
+
 export interface VNodeData {
   props?: Props;
   attrs?: Attrs;
@@ -71,6 +73,7 @@ export interface VNodeData {
   style?: any;
   classMap?: Classes;
   styleMap?: VNodeStyle;
+  context?: CustomElementContext;
   on?: On;
   ns?: string; // for SVGs
   create: CreateHook;

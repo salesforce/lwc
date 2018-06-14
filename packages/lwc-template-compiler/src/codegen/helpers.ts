@@ -2,10 +2,11 @@ import * as t from 'babel-types';
 import toCamelCase from 'camelcase';
 
 import State from '../state';
-import { isElement } from '../shared/ir';
+import { isElement, isComponentProp } from '../shared/ir';
 import { IRElement } from '../shared/types';
-import { TEMPLATE_FUNCTION_NAME } from '../shared/constants';
+import { TEMPLATE_FUNCTION_NAME, TEMPLATE_PARAMS } from '../shared/constants';
 import { kebabcaseToCamelcase } from "../shared/naming";
+import CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
@@ -73,6 +74,34 @@ export function destructuringAssignmentFromObject(
             target,
         ),
     ]);
+}
+
+export function memorizeHandler(codeGen: CodeGen, element,
+                                componentHandler: t.Expression, handler: t.Expression): t.Expression {
+    // #439 - The handler can only be memorized if it is bound to component instance
+    const id = getMemberExpressionRoot(componentHandler as t.MemberExpression);
+    const shouldMemorizeHandler = isComponentProp(id, element);
+
+    // Apply memorization if the handler is memorizable.
+    //   $cmp.handlePress -> _m1 || ($ctx._m1 = b($cmp.handlePress))
+    if (shouldMemorizeHandler) {
+        const memorizedId = codeGen.getMemorizationId();
+        const memorization = t.assignmentExpression(
+            '=',
+            t.memberExpression(
+                t.identifier(TEMPLATE_PARAMS.CONTEXT),
+                memorizedId,
+            ),
+            handler,
+        );
+
+        handler = t.logicalExpression(
+            '||',
+            memorizedId,
+            memorization,
+        );
+    }
+    return handler;
 }
 
 export function generateTemplateMetadata(state: State): t.ExpressionStatement[] {

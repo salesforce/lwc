@@ -1,0 +1,12 @@
+<template>
+    <div>
+        Hello from  container
+    </div>
+
+    <integration-root locator:id="root-container" locator:context={containerContext}>
+        <button onclick={containerClick}
+                locator:id="slot-in-container" locator:context={containerSlotContext}>
+            Hello from slot injected by container
+        </button>
+    </integration-root>
+</template>

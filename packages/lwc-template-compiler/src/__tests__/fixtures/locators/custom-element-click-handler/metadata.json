@@ -1,0 +1,16 @@
+{
+    "warnings": [],
+    "metadata": {
+        "definedSlots": [],
+        "templateUsedIds": [
+            "handleClick",
+            "locatorProvider"
+        ],
+        "templateDependencies": [
+            {
+                "moduleName": "x/someCmp",
+                "tagName": "x-some-cmp"
+            }
+        ]
+    }
+}
