@@ -15,6 +15,7 @@ import { getInnerHTML } from "./inner-html";
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
 const escapeAttrRegExp = /[&\u00A0"]/g;
 const escapeDataRegExp = /[&\u00A0<>]/g;
+const replace = String.prototype.replace;
 
 function escapeReplace(c) {
     switch (c) {
@@ -32,11 +33,11 @@ function escapeReplace(c) {
 }
 
 function escapeAttr(s) {
-    return s.replace(escapeAttrRegExp, escapeReplace);
+    return replace.call(s, escapeAttrRegExp, escapeReplace);
 }
 
 function escapeData(s) {
-    return s.replace(escapeDataRegExp, escapeReplace);
+    return replace.call(s, escapeDataRegExp, escapeReplace);
 }
 
 // http://www.whatwg.org/specs/web-apps/current-work/#void-elements
