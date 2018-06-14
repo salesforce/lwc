@@ -1,5 +1,20 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.23.1...v) (2018-06-13)
+# [](https://github.com/salesforce/lwc/compare/v0.23.2...v) (2018-06-14)
+
+
+
+<a name="0.23.2"></a>
+## [0.23.2](https://github.com/salesforce/lwc/compare/v0.23.1...v0.23.2) (2018-06-14)
+
+
+### Bug Fixes
+
+* **engine:** adding integration tests for async events ([#411](https://github.com/salesforce/lwc/issues/411)) ([4e2e222](https://github.com/salesforce/lwc/commit/4e2e222))
+
+
+### Features
+
+* **test-utils:** add lwc-test-utils with templateQuerySelector API ([#414](https://github.com/salesforce/lwc/issues/414)) ([c07376c](https://github.com/salesforce/lwc/commit/c07376c))
 
 
 
