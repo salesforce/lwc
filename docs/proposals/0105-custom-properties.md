@@ -150,8 +150,9 @@ customProperties['--box-margin'] || `${customProperties['--box-margin-top'] || '
 
 ## Caveats
 
-* Custom properties don't cascade. All the custom properties need to be defined statically outside.
+### Cascading and Updates
 
+Since substitution is done prior injection in the DOM, custom properties doesn't support cascading and dynamic updates from javascript.
 
 ### Invalid Variables
 
