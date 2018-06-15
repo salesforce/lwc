@@ -1,5 +1,5 @@
 <template>
-    <td>{row.id}</td>
-    <td><a onclick={handleSelect} data-id={row.id}>{row.label}</a></td>
-    <td><a onclick={handleRemove} data-id={row.id}>Remove</a></td>
+    <span>{row.id}</span>
+    <a onclick={handleSelect} data-id={row.id}>{row.label}</a>
+    <a onclick={handleRemove} data-id={row.id}>Remove</a>
 </template>
