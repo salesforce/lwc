@@ -29,21 +29,21 @@ const GET_ROOT_NODE_CONFIG_FALSE = { composed: false };
 
 const eventShadowDescriptors: PropertyDescriptorMap = {
     currentTarget: {
-        get(this: Event): HTMLElement | null {
-            const currentTarget = eventCurrentTargetGetter.call(this);
+        get(this: Event): EventTarget | null {
+            const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             if (isNull(currentTarget) || isUndefined(currentTarget[OwnerKey])) {
                 // event is already beyond the boundaries of our controlled shadow roots
                 return currentTarget;
             }
-            return patchShadowDomTraversalMethods(currentTarget);
+            return patchShadowDomTraversalMethods(currentTarget as Element);
         },
         enumerable: true,
         configurable: true,
     },
     target: {
-        get(this: Event): HTMLElement {
-            const currentTarget = eventCurrentTargetGetter.call(this) as HTMLElement;
-            const originalTarget = eventTargetGetter.call(this);
+        get(this: Event): EventTarget {
+            const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
+            const originalTarget: EventTarget = eventTargetGetter.call(this);
 
             if (isNull(currentTarget)) {
                 // the event was inspected asynchronously, in which case we need to return the
@@ -64,7 +64,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
 
             // Executing event listener on component, target is always currentTarget
             if (componentEventListenerType === EventListenerContext.COMPONENT_LISTENER) {
-                return patchShadowDomTraversalMethods(currentTarget);
+                return patchShadowDomTraversalMethods(currentTarget as Element);
             }
             const currentTargetRootNode = getRootNode.call(currentTarget, GET_ROOT_NODE_CONFIG_FALSE); // x-child
 
@@ -95,7 +95,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             //   we CANNOT get the owner VM. Instead, we must get the custom element's VM instead.
             //   this.template.addEventListener('click', () => {});
             // }
-            const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getCustomElementVM(currentTarget).uid : currentTarget[OwnerKey];
+            const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getCustomElementVM(currentTarget as HTMLElement).uid : currentTarget[OwnerKey];
 
             // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
@@ -154,7 +154,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             if (isUndefined(closestTarget[OwnerKey])) {
                 return closestTarget;
             }
-            return patchShadowDomTraversalMethods(closestTarget);
+            return patchShadowDomTraversalMethods(closestTarget as Element);
         },
         enumerable: true,
         configurable: true,

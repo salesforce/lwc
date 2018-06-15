@@ -1,13 +1,8 @@
-import { Element, getHostShadowRoot, getHostChildNodes } from "../../html-element";
+import { Element, getHostShadowRoot } from "../../html-element";
 import { createElement } from "../../upgrade";
-import assertLogger from '../../assert';
-import { register } from "../../services";
-import { VNode } from "../../../3rdparty/snabbdom/types";
-import { Component } from "../../component";
-import { unwrap } from "../../main";
 import { querySelector } from "../element";
 
-describe('#lightDomQuerySelectorAll()', () => {
+describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
         it('should allow searching for passed elements', () => {
             function tmpl$1($api, $cmp, $slotset, $ctx) {
@@ -203,7 +198,7 @@ describe('#lightDomQuerySelectorAll()', () => {
     });
 });
 
-describe('#lightDomQuerySelector()', () => {
+describe('#LightDom querySelector()', () => {
     it('should allow searching for the passed element', () => {
         function tmpl$1($api, $cmp, $slotset, $ctx) {
             return [$api.s('', {
@@ -316,7 +311,7 @@ describe('#lightDomQuerySelector()', () => {
     });
 });
 
-describe('#shadowRootQuerySelector', () => {
+describe('#shadowRoot querySelector', () => {
     it('should querySelector on element from template', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
         class MyComponent extends Element {
@@ -378,7 +373,7 @@ describe('#shadowRootQuerySelector', () => {
         });
     });
 
-    it('should ignore elements not defined in template', () => {
+    it('should adopt elements not defined in template as part of the shadow', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
         class MyComponent extends Element {
             render() {
@@ -392,9 +387,11 @@ describe('#shadowRootQuerySelector', () => {
             expect(ul);
             ul.appendChild(document.createElement('li'));
             const li1 = ul.querySelectorAll('li')[0];
-            expect(li1).toBeUndefined();
+            expect(li1).toBeDefined();
             const li2 = ul.querySelector('li');
-            expect(li2).toBeNull();
+            expect(li2).toBe(li1);
+            const li3 = ul.childNodes[0];
+            expect(li3).toBe(li1);
         });
     });
 
@@ -867,22 +864,33 @@ describe('#childNodes', () => {
         function tmpl($api, $cmp, $slotset) {
             return [
                 $api.d($cmp.dynamicText),
-            ]
+            ];
         }
 
-        class Parent extends Element {
+        class Child extends Element {
             get dynamicText() {
                 return 'text';
             }
-
             render() {
                 return tmpl;
             }
         }
 
-        const elm = createElement('x-child-node-parent', { is: Parent });
+        function tmplParent($api, $cmp, $slotset) {
+            return [
+                $api.c('x-child', Child, {}, []),
+            ];
+        }
+        class Parent extends Element {
+
+            render() {
+                return tmplParent;
+            }
+        }
+
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = getHostChildNodes(elm);
+        const childNodes = getHostShadowRoot(elm).querySelector('x-child').childNodes;
         expect(childNodes).toHaveLength(0);
     });
 
