@@ -53,7 +53,8 @@ Today the compiler ignores custom properties definition and usage. Therefore, cu
 ```css
 /* Original CSS */
 h1 {
-    color: var(--text-color, red);
+    color: var(--text-color);
+    background-color: var(--bg-color, green);
 }
 ```
 
@@ -62,7 +63,8 @@ h1 {
 export default function style(token) {
     return `
         h1[${token}] {
-            color: var(--text-color, red);
+            color: var(--text-color);
+            background-color: var(--bg-color, green);
         }
     `
 }
@@ -90,6 +92,8 @@ interface StyleSheetConfig {
 }
 ```
 
+When the custom property resolution startegy is set to `module`, instead of relying on the native custom properties behavior, the [var substitution](https://drafts.csswg.org/css-variables/#substitute-a-var) is done at runtime prior the injection of the stylesheet in the DOM.
+
 ```js
 /**
  * Output scoped style with config:
@@ -106,15 +110,57 @@ import customProperties from '@custom-properties';
 export default function style(token) {
     return `
         h1[${token}] {
-            color: ${customProperties['--text-color'] || 'red'};
+            color: ${customProperties['--text-color'] || 'invalid--text-color'};
+            background-color: ${customProperties['--bg-color'] || 'green'};
         }
     `
 }
 ```
 
+The `name` property defined the module identifier, the custom properties should be resolved from. This module should export by default an object where the keys are the custom properties name and the values are the custom properties values.
+
+```js
+export default {
+    '--text-color': 'blue',
+    '--bg-color': 'yellow',
+};
+```
+
+In the generated javascript code the `var()` substitution is done via a OR logical expression (`||`):
+* the left-hand side expression is a member expression to lookup the custom property value in the custom properties object.
+* the right-hand side expression is:
+    * if no fallback value is provided, a string string literal with the value of the custom property name with `invalid` (see: [Caveats - Invalid Variables](#invalid-variables)).
+    * else, a string string literal with the value of the fallback. If there is any reference to `var()` in the fallback, the `var()` should also be substituted.
+
+```js
+// No fallback: var(--text-color);
+customProperties['--text-color'] || 'invalid--text-color';
+
+// Fallback: var(--text-color, red);
+customProperties['--text-color'] || 'red';
+
+// Fallback with reference to var: var(--text-color, var(--default-color));
+customProperties['--text-color'] || customProperties['--default-color'] || 'invalid--default-color';
+
+
+// Complex fallback with reference to var: var(--box-margin, var(--box-margin-top) 1rem var(--box-margin-bottom));
+customProperties['--box-margin'] || `${customProperties['--box-margin-top'] || 'invalid--box-margin-top'} 1 rem ${customProperties['--box-margin-bottom'] || 'invalid--box-margin-bottom'}`;
+```
+
+
 ## Caveats
 
 * Custom properties don't cascade. All the custom properties need to be defined statically outside.
+
+
+### Invalid Variables
+
+According to the spec, the substitution of the custom property with its initial value makes the declaration invalid. An invalid variable is equivalent to the `unset` value ([spec](https://drafts.csswg.org/css-variables/#invalid-variables)).
+
+To minimize the discrepancies between the browsers an invalid variable is substituted with CSS keyword formed with the custom property name prefixed with `invalid`. This approach is privileged over:
+
+* the `unset` keyword, which is not supported by IE11. This would make the result of the substitution inconsistent between browsers.
+* to an empty string (`''`), since the `var()` substitution with an empty string can lead to unexpected behavior. Take for example: `margin: 10px var(--missing-variable);`, if the the `var()` gets substituted with an empty string the resulted declaration (`margin: 10px ;`) is a valid declaration with a different semantic than the original declaration. The substitution with an invalid CSS keyword (`margin: 10px invalid--missing-variable;`) would indicate to the CSS parser that is declaration is invalid. The result of this approach has both benefit to be closer to the original spec behavior while easing the debuggability of the of invalid variables.
 
 ## Alternatives
 
