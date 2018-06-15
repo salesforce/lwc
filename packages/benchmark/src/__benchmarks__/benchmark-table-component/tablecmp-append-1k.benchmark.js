@@ -9,7 +9,7 @@ benchmark(`benchmark-table-component/append/1k`, () => {
     let store;
 
     before(async () => {
-        tableElement = createElement('benchmark-table-component', { is: Table, fallback: false });
+        tableElement = createElement('benchmark-table-component', { is: Table });
         await insertTableComponent(tableElement);
 
         store = new Store();
