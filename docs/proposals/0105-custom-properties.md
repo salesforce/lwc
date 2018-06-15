@@ -129,8 +129,8 @@ export default {
 In the generated javascript code the `var()` substitution is done via a OR logical expression (`||`):
 * the left-hand side expression is a member expression to lookup the custom property value in the custom properties object.
 * the right-hand side expression is:
-    * if no fallback value is provided, a string string literal with the value of the custom property name with `invalid` (see: [Caveats - Invalid Variables](#invalid-variables)).
-    * else, a string string literal with the value of the fallback. If there is any reference to `var()` in the fallback, the `var()` should also be substituted.
+    * if no fallback value is provided, a string literal with the value of the custom property name with `invalid` (see: [Caveats - Invalid Variables](#invalid-variables)).
+    * else, a string literal with the value of the fallback. If there is any reference to `var()` in the fallback, the `var()` should also be substituted.
 
 ```js
 // No fallback: var(--text-color);
