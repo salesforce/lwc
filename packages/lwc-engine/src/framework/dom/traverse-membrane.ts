@@ -1,7 +1,5 @@
-import { isNull, hasOwnProperty, ArrayMap, isUndefined, isFunction } from "../language";
-import { shadowDescriptors } from "./traverse";
-import { ViewModelReflection } from "../utils";
-import { fallbackDescriptors } from "../html-element";
+import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../language";
+import { ElementPatchDescriptors } from "./traverse";
 const proxies = new WeakMap<object, object>();
 
 // We ONLY want to have DOM nodes and DOM methods
@@ -20,12 +18,8 @@ const traverseMembraneHandler = {
             return originalTarget;
         }
 
-        // We have to check if we are dealing with a custom or native element
-        // The shadow descriptors are different depending on whether we have a custom element
-        // or native, so we have to get the correct descriptors accordingly.
-        const descriptors = isUndefined(originalTarget[ViewModelReflection]) ? shadowDescriptors : fallbackDescriptors;
-        if (hasOwnProperty.call(descriptors, key)) {
-            const descriptor = descriptors[key];
+        if (hasOwnProperty.call(ElementPatchDescriptors, key)) {
+            const descriptor = ElementPatchDescriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
                 return wrap(descriptor.value);
             } else {
@@ -65,7 +59,7 @@ export function contains(value: any) {
     return proxies.has(value);
 }
 
-export function wrap(value: any) {
+export function wrap(value: any): any {
     if (isNull(value)) {
         return value;
     }

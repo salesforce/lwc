@@ -34,3 +34,16 @@ export function removeEventListenerPatched(this: EventTarget, type: string, list
     const vm = getCustomElementVM(this as HTMLElement);
     removeTemplateEventListener(vm, type, listener);
 }
+
+export const fallbackListenerPatchDescriptors: PropertyDescriptorMap = {
+    addEventListener: {
+        value: addEventListenerPatched,
+        configurable: true,
+        enumerable: true,
+    },
+    removeEventListener: {
+        value: removeEventListenerPatched,
+        configurable: true,
+        enumerable: true,
+    },
+};

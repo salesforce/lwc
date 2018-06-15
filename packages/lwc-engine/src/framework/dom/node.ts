@@ -53,8 +53,6 @@ function findComposedRootNode(node: Node): Node {
     return node;
 }
 
-export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
-
 /**
  * Dummy implementation of the Node.prototype.getRootNode.
  * Spec: https://dom.spec.whatwg.org/#dom-node-getrootnode
@@ -73,6 +71,7 @@ function getRootNode(
         findShadowRoot(this);
 }
 
+const textContextSetter = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set;
 const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
@@ -92,6 +91,7 @@ export {
     parentNodeGetter,
     parentElementGetter,
     childNodesGetter,
+    textContextSetter,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,

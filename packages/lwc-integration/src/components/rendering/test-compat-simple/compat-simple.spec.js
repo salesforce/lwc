@@ -24,7 +24,10 @@ describe('Testing component: compat-simple', () => {
             var el = document.querySelector('compat-simple');
             el.changeComputedText();
         });
-        assert.equal(element.getText(), 'default#changed');
+        return Promise.resolve(() => {
+            assert.equal(element.getText(), 'default#changed');
+        });
+        
     });
 
 });

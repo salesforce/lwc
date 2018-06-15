@@ -2,7 +2,7 @@ import assert from "../assert";
 import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString, isFalse } from "../language";
 import { getShadowRootVM, VM } from "../vm";
 import { addRootEventListener, removeRootEventListener } from "../events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, lightDomQuerySelector } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
 import {
     GlobalAOMProperties,
 } from './attributes';
@@ -51,11 +51,21 @@ function patchedShadowRootChildNodes(this: ShadowRoot): Element[] {
 }
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
-    mode: { value: 'closed' },
+    mode: {
+        value: 'closed',
+        enumerable: true,
+        configurable: true,
+    },
     childNodes: {
         get: patchedShadowRootChildNodes,
+        enumerable: true,
+        configurable: true,
     },
-    delegatesFocus: { value: false },
+    delegatesFocus: {
+        value: false,
+        enumerable: true,
+        configurable: true,
+    },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
             const vm = getShadowRootVM(this);
@@ -63,13 +73,15 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             if (process.env.NODE_ENV !== 'production') {
                 if (isNull(node) && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (lightDomQuerySelector.call(vm.elm, selector)) {
+                    if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
                         assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                     }
                 }
             }
             return node as Element;
-        }
+        },
+        enumerable: true,
+        configurable: true,
     },
     querySelectorAll: {
         value(this: ShadowRoot, selector: string): Element[] {
@@ -78,13 +90,15 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             if (process.env.NODE_ENV !== 'production') {
                 if (nodeList.length === 0 && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (lightDomQuerySelector.call(vm.elm, selector)) {
+                    if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
                         assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                     }
                 }
             }
             return nodeList;
-        }
+        },
+        enumerable: true,
+        configurable: true,
     },
     addEventListener: {
         value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
@@ -98,7 +112,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
                 }
             }
             addRootEventListener(vm, type, listener);
-        }
+        },
+        enumerable: true,
+        configurable: true,
     },
     removeEventListener: {
         value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
@@ -112,12 +128,14 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
                 }
             }
             removeRootEventListener(vm, type, listener);
-        }
+        },
+        enumerable: true,
+        configurable: true,
     },
     toString: {
         value() {
             return `[object ShadowRoot]`;
-        }
+        },
     },
 };
 
@@ -167,7 +185,7 @@ if (process.env.NODE_ENV !== 'production') {
             get(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.logWarning(`this.template.childNodes returns a live nodelist and should not be relied upon. Instead, use this.template.querySelectorAll.`);
+                    assert.logWarning(`this.template.childNodes returns a live NodeList and should not be relied upon. Instead, use this.template.querySelectorAll.`);
                 }
                 if (vm.fallback) {
                     return patchedShadowRootChildNodes.call(this);

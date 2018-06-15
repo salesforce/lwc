@@ -2,7 +2,7 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isFalse, isObject, keys } from "./language";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isFalse, isObject, keys, hasOwnProperty } from "./language";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
@@ -414,7 +414,9 @@ export function isNodeOwnedByVM(vm: VM, node: Node): boolean {
         assert.invariant(node instanceof Node, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
         assert.childNode(vm.elm, node, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${vm}`);
     }
-    return node[OwnerKey] === vm.uid;
+    // If the node is not signed, the only chance is that it is in fact a child node
+    // inserted manually. If it is signed, then it must match.
+    return isFalse(hasOwnProperty.call(node, OwnerKey)) || node[OwnerKey] === vm.uid;
 }
 
 export function wasNodePassedIntoVM(vm: VM, node: Node): boolean {
@@ -473,7 +475,7 @@ export function getComponentStack(vm: VM): string {
     return wcStack.reverse().join('\n\t');
 }
 
-export function getElementOwnerVM(elm: Element | undefined): VM | undefined {
+export function getNodeOwnerVM(elm: Node): VM | undefined {
     if (!(elm instanceof Node)) {
         return;
     }

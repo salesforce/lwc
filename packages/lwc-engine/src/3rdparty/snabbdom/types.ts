@@ -1,3 +1,12 @@
+/**
+@license
+Copyright (c) 2015 Simon Friis Vindum.
+This code may only be used under the MIT License found at
+https://github.com/snabbdom/snabbdom/blob/master/LICENSE
+Code distributed by Snabbdom as part of the Snabbdom project at
+https://github.com/snabbdom/snabbdom/
+*/
+
 export interface DOMAPI {
   createFragment: () => DocumentFragment;
   createElement: (tagName: string, uid: number) => HTMLElement;
