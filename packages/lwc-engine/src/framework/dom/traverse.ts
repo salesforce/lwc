@@ -125,7 +125,7 @@ function lightDomChildNodesGetter(this: HTMLElement): Node[] {
         const customElementVM = getCustomElementVM(this);
         // lwc element, in which case we need to get only the nodes
         // that were slotted
-        const slots = shadowRootQuerySelectorAll(customElementVM, 'slot');
+        const slots = nativeQuerySelectorAll.call(customElementVM.elm, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
             return seed.concat(ArraySlice.call(nativeChildNodesGetter.call(slot)));
         }, []);
