@@ -127,7 +127,10 @@ function lightDomChildNodesGetter(this: HTMLElement): Node[] {
         // that were slotted
         const slots = nativeQuerySelectorAll.call(customElementVM.elm, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
-            return seed.concat(ArraySlice.call(nativeChildNodesGetter.call(slot)));
+            if (isNodeOwnedByVM(customElementVM, slot)) {
+                ArrayPush.apply(seed, ArraySlice.call(nativeChildNodesGetter.call(slot)));
+            }
+            return seed;
         }, []);
     } else {
         // regular element
