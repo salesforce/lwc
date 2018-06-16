@@ -120,31 +120,10 @@ export default function style(token) {
 In the config, the `name` property designates the resolver module identifier. This module should export by default a function accepting the custom property name and an optional fallback value and should return a string. The value returned by the resolver will get substituted in the stylesheet.
 
 ```js
-<<<<<<< HEAD
 const CSS_VARIABLES = {
     '--text-color': 'red',
     '--bg-color': 'yellow'
 }
-=======
-export default {
-    '--text-color': 'blue',
-    '--bg-color': 'yellow',
-};
-```
-
-In the generated javascript code the `var()` substitution is done via a OR logical expression (`||`):
-* the left-hand side expression is a member expression to lookup the custom property value in the custom properties object.
-* the right-hand side expression is:
-    * if no fallback value is provided, a string literal with the value of the custom property name with `invalid` (see: [Caveats - Invalid Variables](#invalid-variables)).
-    * else, a string literal with the value of the fallback. If there is any reference to `var()` in the fallback, the `var()` should also be substituted.
-
-```js
-// No fallback: var(--text-color);
-customProperties['--text-color'] || 'invalid--text-color';
-
-// Fallback: var(--text-color, red);
-customProperties['--text-color'] || 'red';
->>>>>>> f39d1b8d16195a66d241a14b059421c4b2de7880
 
 export default function resolveCustomProperty(name, fallback) {
     if (CSS_VARIABLES.hasOwnProperty(name)) {
