@@ -1,10 +1,12 @@
 import * as postcss from "postcss";
 import * as cssnano from "cssnano";
+import * as balanced from "balanced-match";
 import postcssPluginLwc from "postcss-plugin-lwc";
+
+import { isUndefined } from "../utils";
 
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
-import { isUndefined } from "../utils";
 
 /**
  * A placeholder string used to locate the style scoping token generated during
@@ -18,6 +20,14 @@ const style = undefined;
 export default style;
 `;
 
+/**
+ * A set of recognizable strings used when transforming the CSS to later find easily
+ * occurrences of var() functions in the generated CSS.
+ */
+const VAR_FUNCTION_PLACEHOLDER_PRE = '__VAR(';
+const VAR_FUNCTION_PLACEHOLDER_POST = ')RAV__';
+const VAR_FUNCTION_PLACEHOLDER_SEPARATOR = '||';
+
 /** The javascript identifier used when custom properties get resolved from a module */
 const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
 
@@ -27,21 +37,37 @@ function replaceTokenPlaceholderToLookup(src: string): string {
 }
 
 function varFunctionToVarPlaceholder(name: string, fallback: string): string {
-    return isUndefined(fallback) ? `__VAR(${name})__` : `__VAR(${name},${fallback})__`;
+    const args = isUndefined(fallback)
+        ? name
+        : name + VAR_FUNCTION_PLACEHOLDER_SEPARATOR + fallback;
+    return VAR_FUNCTION_PLACEHOLDER_PRE + args + VAR_FUNCTION_PLACEHOLDER_POST;
 }
 
 function replaceVarPlaceholderToLookup(src: string): string {
-    const placeholderRegexp = /__VAR\((.+)\)__/g;
+    let match;
 
-    return src.replace(placeholderRegexp, (_, value: string) => {
-        // Extract the custom property name and fallback value from the placeholder
-        const [propertyName, fallback] = value.split(',');
+    while (
+        match = balanced(VAR_FUNCTION_PLACEHOLDER_PRE, VAR_FUNCTION_PLACEHOLDER_POST, src)
+    ) {
+        const { pre, body, post } = match;
 
-        // Construct the lookup expression for the custom property value.
-        const customPropertyRuntimeValue = CUSTOM_PROPERTIES_IDENTIFIER + '["' + propertyName + '"]';
-        const fallbackRuntimeValue = isUndefined(fallback) ? '""' : '`' + fallback + '`';
-        return '${' + customPropertyRuntimeValue + ' || ' + fallbackRuntimeValue + '}';
-    });
+        const separatorLocation = body.indexOf(VAR_FUNCTION_PLACEHOLDER_SEPARATOR);
+        const propertyName = body.slice(0, separatorLocation);
+
+        let fallback = undefined;
+        if (separatorLocation !== -1) {
+            fallback = body.slice(separatorLocation + VAR_FUNCTION_PLACEHOLDER_SEPARATOR.length);
+        }
+        const args = [propertyName, fallback].filter(x => x).map(prop => '`' + prop + '`').join(', ');
+
+        const customPropertyExpression = '${' + CUSTOM_PROPERTIES_IDENTIFIER + '(' + args + ')}';
+
+        src = pre + customPropertyExpression + post;
+
+        console.log(src);
+    }
+
+    return src;
 }
 
 function generateStyle(src: string, resolveFromModule?: string) {

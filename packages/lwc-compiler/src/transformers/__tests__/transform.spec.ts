@@ -258,8 +258,9 @@ describe('CSS transform', () => {
 
             function style(token) {
                 return \`div[\${token}] {
-                    color: \${customProperties["--bg-color"] || ""};
-                    font-size: \${customProperties["--font-size"] || \`16px\`};
+                    color: \${customProperties(\`--bg-color\`)};
+                    font-size: \${customProperties(\`--font-size\`, \`16px\`)};
+                    margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
                 }\`;
             }
             export default style;
