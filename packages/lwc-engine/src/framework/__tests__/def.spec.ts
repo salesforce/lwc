@@ -1,5 +1,5 @@
+import { Element } from '../main';
 import * as target from "../def";
-import { Element } from "../html-element";
 
 describe('def', () => {
     describe('#getComponentDef()', () => {

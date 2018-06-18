@@ -1,5 +1,4 @@
-import { createElement } from "../main";
-import { Element } from "../html-element";
+import { createElement, Element } from '../main';
 
 describe('invoker', () => {
 

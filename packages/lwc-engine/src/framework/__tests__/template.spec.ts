@@ -1,7 +1,8 @@
+import { createElement, Element } from '../main';
+
 import * as target from '../template';
 import * as globalApi from '../api';
-import { Element, getHostShadowRoot } from "../html-element";
-import { createElement } from '../main';
+import { getHostShadowRoot } from "../html-element";
 import { ViewModelReflection } from '../utils';
 import { Template } from '../template';
 

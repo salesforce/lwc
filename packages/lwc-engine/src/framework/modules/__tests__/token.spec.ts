@@ -1,7 +1,5 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import { Template } from "../../template";
-import { querySelectorAll } from "../../dom/element";
+import { createElement, Element } from '../../main';
+import { querySelectorAll } from '../../dom/element';
 
 describe('modules/token', () => {
     it('adds token to all the children elements', () => {
@@ -57,12 +55,12 @@ describe('modules/token', () => {
     });
 
     it('replace children element tokens when swapping template', () => {
-        const styledTmplA: Template = $api => [
+        const styledTmplA = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplA.shadowToken = 'testA';
 
-        const styledTmplB: Template = $api => [
+        const styledTmplB = $api => [
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
         styledTmplB.shadowToken = 'testB';

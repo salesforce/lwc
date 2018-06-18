@@ -1,6 +1,5 @@
-import { Element, getHostShadowRoot } from "../html-element";
-import { createElement } from "./../upgrade";
-import { unwrap } from "../membrane";
+import { createElement, Element, unwrap } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {

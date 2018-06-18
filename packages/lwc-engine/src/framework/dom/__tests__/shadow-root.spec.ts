@@ -1,9 +1,7 @@
-import { Element, getHostShadowRoot } from "../../html-element";
-import { h } from "../../api";
-import { createElement } from "../../upgrade";
+import { createElement, Element } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 import { ViewModelReflection } from "../../utils";
-import { VM } from "../../vm";
-import { Component } from "../../component";
+import { h } from "../../api";
 
 describe('root', () => {
     describe('integration', () => {

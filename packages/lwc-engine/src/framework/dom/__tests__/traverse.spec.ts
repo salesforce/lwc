@@ -1,5 +1,5 @@
-import { Element, getHostShadowRoot } from "../../html-element";
-import { createElement } from "../../upgrade";
+import { createElement, Element } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 import { querySelector } from "../element";
 
 describe('#LightDom querySelectorAll()', () => {

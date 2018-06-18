@@ -1,8 +1,5 @@
-// import * as target from '../watcher';
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
+import { createElement, Element } from '../main';
 import { ViewModelReflection } from "../utils";
-import { VM } from "../vm";
 
 describe('vm', () => {
     describe('insertion index', () => {
