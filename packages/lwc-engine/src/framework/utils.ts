@@ -1,12 +1,8 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace, hasOwnProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty } from "./language";
 import { ComponentConstructor } from "./component";
-import {
-    AttrNameToPropNameMap,
-    PropNameToAttrNameMap,
-} from "./dom/attributes";
 
-export type Callback = () => void;
+type Callback = () => void;
 
 let nextTickCallbackQueue: Callback[] = [];
 export const SPACE_CHAR = 32;
@@ -35,32 +31,6 @@ export function addCallbackToNextTick(callback: Callback) {
     }
     // TODO: eventually, we might want to have priority when inserting callbacks
     ArrayPush.call(nextTickCallbackQueue, callback);
-}
-
-const CAMEL_REGEX = /-([a-z])/g;
-
-/**
- * This method maps between attribute names
- * and the corresponding property name.
- */
-export function getPropNameFromAttrName(attrName: string): string {
-    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
-        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-    }
-    return AttrNameToPropNameMap[attrName];
-}
-
-const CAPS_REGEX = /[A-Z]/g;
-
-/**
- * This method maps between property names
- * and the corresponding attribute name.
- */
-export function getAttrNameFromPropName(propName: string): string {
-    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
-        PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
-    }
-    return PropNameToAttrNameMap[propName];
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements

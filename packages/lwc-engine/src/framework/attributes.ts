@@ -1,21 +1,17 @@
-import assert from '../assert';
+import assert from './assert';
 import {
     StringToLowerCase,
     StringReplace,
     create,
-    hasOwnProperty,
     forEach,
-    getOwnPropertyNames,
-    getOwnPropertyDescriptor,
     isUndefined,
-    isNull,
-} from '../language';
-import { ViewModelReflection } from "../utils";
-import { VM } from '../vm';
-import { removeAttribute, setAttribute } from './element';
+    getPropertyDescriptor,
+    hasOwnProperty,
+} from './language';
+import { createCustomElementAOMPropertyDescriptor } from './dom/aom';
 
 // These properties get added to LWCElement.prototype publicProps automatically
-export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
+const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
 
 // Few more exceptions that are using the attribute name to match the property in lowercase.
 // this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
@@ -40,75 +36,56 @@ const HTMLPropertyNamesWithLowercasedReflectiveAttributes = [
 // that doesn't follow the regular transformation process. e.g.: `aria-labeledby` <=> `ariaLabelBy`
 const ARIA_REGEX = /^aria/;
 
-export function attemptAriaAttributeFallback(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    // if the map is known (because all AOM attributes are known)
-    if (hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
-        const propName = AttrNameToPropNameMap[attrName];
-        // and if the corresponding prop is an actual AOM property
-        if (hasOwnProperty.call(GlobalAOMProperties, propName)) {
-            vm.hostAttrs[attrName] = undefined; // marking the set is needed for the AOM polyfill
-            const shadowValue = vm.cmpRoot![propName];
-            if (shadowValue !== null) {
-                setAttribute.call(vm.elm, attrName, shadowValue);
-            }
-        }
-    }
-}
-
-// Global Aria and Role Properties derived from ARIA and Role Attributes with their
-// respective default value.
+// Global Aria and Role Properties derived from ARIA and Role Attributes.
 // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
-export const GlobalAOMProperties: Record<string, any> = {
-    ariaAutoComplete: null,
-    ariaChecked: null,
-    ariaCurrent: null,
-    ariaDisabled: null,
-    ariaExpanded: null,
-    ariaHasPopUp: null,
-    ariaHidden: null,
-    ariaInvalid: null,
-    ariaLabel: null,
-    ariaLevel: null,
-    ariaMultiLine: null,
-    ariaMultiSelectable: null,
-    ariaOrientation: null,
-    ariaPressed: null,
-    ariaReadOnly: null,
-    ariaRequired: null,
-    ariaSelected: null,
-    ariaSort: null,
-    ariaValueMax: null,
-    ariaValueMin: null,
-    ariaValueNow: null,
-    ariaValueText: null,
-    ariaLive: null,
-    ariaRelevant: null,
-    ariaAtomic: null,
-    ariaBusy: null,
-    ariaActiveDescendant: null,
-    ariaControls: null,
-    ariaDescribedBy: null,
-    ariaFlowTo: null,
-    ariaLabelledBy: null,
-    ariaOwns: null,
-    ariaPosInSet: null,
-    ariaSetSize: null,
-    ariaColCount: null,
-    ariaColIndex: null,
-    ariaDetails: null,
-    ariaErrorMessage: null,
-    ariaKeyShortcuts: null,
-    ariaModal: null,
-    ariaPlaceholder: null,
-    ariaRoleDescription: null,
-    ariaRowCount: null,
-    ariaRowIndex: null,
-    ariaRowSpan: null,
-    role: null,
-};
+export const ElementAOMPropertyNames = [
+    'ariaAutoComplete',
+    'ariaChecked',
+    'ariaCurrent',
+    'ariaDisabled',
+    'ariaExpanded',
+    'ariaHasPopUp',
+    'ariaHidden',
+    'ariaInvalid',
+    'ariaLabel',
+    'ariaLevel',
+    'ariaMultiLine',
+    'ariaMultiSelectable',
+    'ariaOrientation',
+    'ariaPressed',
+    'ariaReadOnly',
+    'ariaRequired',
+    'ariaSelected',
+    'ariaSort',
+    'ariaValueMax',
+    'ariaValueMin',
+    'ariaValueNow',
+    'ariaValueText',
+    'ariaLive',
+    'ariaRelevant',
+    'ariaAtomic',
+    'ariaBusy',
+    'ariaActiveDescendant',
+    'ariaControls',
+    'ariaDescribedBy',
+    'ariaFlowTo',
+    'ariaLabelledBy',
+    'ariaOwns',
+    'ariaPosInSet',
+    'ariaSetSize',
+    'ariaColCount',
+    'ariaColIndex',
+    'ariaDetails',
+    'ariaErrorMessage',
+    'ariaKeyShortcuts',
+    'ariaModal',
+    'ariaPlaceholder',
+    'ariaRoleDescription',
+    'ariaRowCount',
+    'ariaRowIndex',
+    'ariaRowSpan',
+    'role',
+];
 
 const OffsetPropertiesError = 'This property will round the value to an integer, and it is considered an anti-pattern. Instead, you can use \`this.getBoundingClientRect()\` to obtain `left`, `top`, `right`, `bottom`, `x`, `y`, `width`, and `height` fractional values describing the overall border-box in pixels.';
 
@@ -258,60 +235,31 @@ export function getGlobalHTMLPropertiesInfo() {
 // TODO: complete this list with Node properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Node
 
-export const GlobalHTMLPropDescriptors: PropertyDescriptorMap = create(null);
-export const AttrNameToPropNameMap: Record<string, string> = create(null);
-export const PropNameToAttrNameMap: Record<string, string> = create(null);
+export const CustomElementGlobalPropertyDescriptors: PropertyDescriptorMap = create(null);
+const AttrNameToPropNameMap: Record<string, string> = create(null);
+const PropNameToAttrNameMap: Record<string, string> = create(null);
 
-// Synthetic creation of all AOM property descriptors
-forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
+// Synthetic creation of all AOM property descriptors for Custom Elements
+forEach.call(ElementAOMPropertyNames, (propName: string) => {
     const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
-
-    function get(this: HTMLElement) {
-        const vm = this[ViewModelReflection];
-        if (!hasOwnProperty.call(vm.cmpProps, propName)) {
-            return null;
-        }
-        return vm.cmpProps[propName];
-    }
-
-    function set(this: HTMLElement, newValue: any) {
-        // TODO: fallback to the root's AOM default semantics
-        const vm = this[ViewModelReflection];
-        const value = vm.cmpProps[propName] = isNull(newValue) ? null : newValue + ''; // storing the normalized new value
-        if (isNull(value)) {
-            // Go through cmpRoot instead of vm.rootProps
-            // because vm.cmpRoot also handles default values
-            newValue = vm.cmpRoot[propName];
-            vm.hostAttrs[attrName] = undefined;
-        } else {
-            vm.hostAttrs[attrName] = 1;
-        }
-        if (isNull(newValue)) {
-            removeAttribute.call(this, attrName);
-        } else {
-            setAttribute.call(this, attrName, newValue);
-        }
-    }
-
-    // TODO: eventually this descriptors should come from HTMLElement.prototype.*
-    GlobalHTMLPropDescriptors[propName] = {
-        set,
-        get,
-        configurable: true,
-        enumerable: true,
-    };
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
+    CustomElementGlobalPropertyDescriptors[propName] = createCustomElementAOMPropertyDescriptor(propName, attrName, null);
 });
 
 forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-    const descriptor = getOwnPropertyDescriptor(HTMLElement.prototype, propName);
+    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
+    // this category, so, better to be sure.
+    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
     if (!isUndefined(descriptor)) {
-        GlobalHTMLPropDescriptors[propName] = descriptor;
-        const attrName = StringToLowerCase.call(propName);
-        AttrNameToPropNameMap[attrName] = propName;
-        PropNameToAttrNameMap[propName] = attrName;
+        CustomElementGlobalPropertyDescriptors[propName] = descriptor;
+    } else if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`This environment does not support global HTML property '${propName}'.`);
     }
+    const attrName = StringToLowerCase.call(propName);
+    AttrNameToPropNameMap[attrName] = propName;
+    PropNameToAttrNameMap[propName] = attrName;
 });
 
 forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, (propName) => {
@@ -320,8 +268,28 @@ forEach.call(HTMLPropertyNamesWithLowercasedReflectiveAttributes, (propName) => 
     PropNameToAttrNameMap[propName] = attrName;
 });
 
-if (isUndefined(GlobalHTMLPropDescriptors.id)) {
-    // In IE11, id property is on Element.prototype instead of HTMLElement
-    GlobalHTMLPropDescriptors.id = getOwnPropertyDescriptor(Element.prototype, 'id') as PropertyDescriptor;
-    AttrNameToPropNameMap.id = PropNameToAttrNameMap.id = 'id';
+const CAMEL_REGEX = /-([a-z])/g;
+
+/**
+ * This method maps between attribute names
+ * and the corresponding property name.
+ */
+export function getPropNameFromAttrName(attrName: string): string {
+    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
+        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
+    }
+    return AttrNameToPropNameMap[attrName];
+}
+
+const CAPS_REGEX = /[A-Z]/g;
+
+/**
+ * This method maps between property names
+ * and the corresponding attribute name.
+ */
+export function getAttrNameFromPropName(propName: string): string {
+    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
+        PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
+    }
+    return PropNameToAttrNameMap[propName];
 }
