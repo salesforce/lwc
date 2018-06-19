@@ -8,7 +8,7 @@ import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
 import { isNull, isUndefined, isFalse, isTrue } from './language';
-import { parentNodeGetter } from "./dom/node";
+import { parentNodeGetter } from "./dom-api";
 import { VM, OwnerKey } from "./vm";
 import { ViewModelReflection } from "./utils";
 
@@ -38,7 +38,7 @@ function remapNodeIfFallbackIsNeeded(vm: VM | undefined, node: Node): Node {
     return (isUndefined(vm) || isFalse(vm.fallback) || vm.cmpRoot !== node) ?
         node : vm.elm;
 }
-export const htmlDomApi: DOMAPI = {
+const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
         return createDocumentFragment.call(document);
     },

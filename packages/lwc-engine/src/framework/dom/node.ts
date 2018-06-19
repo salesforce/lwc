@@ -5,7 +5,7 @@ import {
     getOwnPropertyDescriptor,
     isTrue,
 } from '../language';
-import { ViewModelReflection } from "../utils";
+import { getNodeKey } from '../vm';
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -36,7 +36,7 @@ function findShadowRoot(node: Node): Node {
     let nodeParent;
     while (
         !isNull(nodeParent = parentNodeGetter.call(node)) &&
-        isUndefined(node[ViewModelReflection])
+        isUndefined(getNodeKey(node))
     ) {
         node = nodeParent;
     }

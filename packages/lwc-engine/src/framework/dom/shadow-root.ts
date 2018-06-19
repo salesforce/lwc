@@ -1,63 +1,92 @@
 import assert from "../assert";
-import { isUndefined, defineProperty, isNull, defineProperties, create, getOwnPropertyNames, forEach, hasOwnProperty, toString, isFalse } from "../language";
-import { getShadowRootVM, VM } from "../vm";
+import { isNull, create, hasOwnProperty, isFalse, ArrayIndexOf, assign, isUndefined } from "../language";
+import { getShadowRootVM } from "../vm";
 import { addRootEventListener, removeRootEventListener } from "../events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
-import {
-    GlobalAOMProperties,
-} from './attributes';
-import {
-    setAttribute,
-    removeAttribute,
-} from './element';
-import { ViewModelReflection, getAttrNameFromPropName, usesNativeSymbols } from "../utils";
-import { childNodesGetter } from "./node";
+import { createShadowRootAOMDescriptorMap } from './aom';
+import { usesNativeSymbols } from "../utils";
+import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
+import { getTextContent } from "../../3rdparty/polymer/text-content";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINS } from "./node";
+
+let ArtificialShadowRootPrototype;
 
 export const ShadowRootKey = usesNativeSymbols && process.env.NODE_ENV !== 'test' ? Symbol('ShadowRoot') : '$$ShadowRoot$$';
 
-export const usesNativeShadowRoot = typeof (window as any).ShadowRoot !== "undefined";
-const ShadowRootPrototype = usesNativeShadowRoot ? (window as any).ShadowRoot.prototype : undefined;
-const attachShadowOriginal = usesNativeShadowRoot ? Element.prototype.attachShadow : undefined;
-
-export function attachShadow(elm, options, fallback): ShadowRoot {
-    let sr: ShadowRoot;
-    if (isFalse(fallback)) {
-        if (process.env.NODE_ENV !== 'production') {
-            if (isFalse(usesNativeShadowRoot)) {
-                throw new Error(`ShadowDOM is not supported.`);
-            }
-        }
-        sr = (attachShadowOriginal as any).call(elm, options);
-    } else {
-        sr = create(ArtificialShadowRootPrototype) as ShadowRoot;
+export function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowRoot {
+    if (hasOwnProperty.call(this, ShadowRootKey)) {
+        throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
-    if (process.env.NODE_ENV !== 'production') {
-        // blacklisting properties in dev mode only to avoid people doing the wrong
-        // thing when using the real shadow root, because if that's the case,
-        // the component will not work when running in fallback mode.
-        defineProperties(sr, DevModeBlackListDescriptorMap);
+    const { mode } = options;
+    if (isUndefined(ArtificialShadowRootPrototype)) {
+        // Adding AOM properties to the faux shadow root prototype
+        // Note: lazy creation to avoid circular deps
+        ArtificialShadowRootPrototype = create(null, assign(ArtificialShadowRootDescriptors, createShadowRootAOMDescriptorMap()));
     }
-    elm[ShadowRootKey] = sr;
-    return sr as ShadowRoot;
+    return create(ArtificialShadowRootPrototype, {
+        mode: {
+            get() { return mode; },
+            enumerable: true,
+            configurable: true,
+        },
+    }) as ShadowRoot;
 }
 
-export function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
-    shadowRoot[ViewModelReflection] = vm;
+function patchedShadowRootChildNodesGetter(this: ShadowRoot): Element[] {
+    return shadowRootChildNodes(this);
 }
 
-function patchedShadowRootChildNodes(this: ShadowRoot): Element[] {
-    const vm = getShadowRootVM(this);
-    return shadowRootChildNodes(vm, vm.elm);
+function patchedShadowRootFirstChildGetter(this: ShadowRoot): Node | null {
+    const { childNodes } = this;
+    return childNodes[0] || null;
+}
+
+function patchedShadowRootLastChildGetter(this: ShadowRoot): Node | null {
+    const { childNodes } = this;
+    return childNodes[childNodes.length] || null;
+}
+
+function patchedShadowRootInnerHTMLGetter(this: ShadowRoot): string {
+    const { childNodes } = this;
+    let innerHTML = '';
+    for (let i = 0, len = childNodes.length; i < len; i += 1) {
+        innerHTML += getInnerHTML(childNodes[i]);
+    }
+    return innerHTML;
+}
+
+function patchedShadowRootTextContentGetter(this: ShadowRoot): string {
+    const { childNodes } = this;
+    let textContent = '';
+    for (let i = 0, len = childNodes.length; i < len; i += 1) {
+        textContent += getTextContent(childNodes[i]);
+    }
+    return textContent;
 }
 
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
-    mode: {
-        value: 'closed',
+    firstChild: {
+        get: patchedShadowRootFirstChildGetter,
+        enumerable: true,
+        configurable: true,
+    },
+    lastChild: {
+        get: patchedShadowRootLastChildGetter,
+        enumerable: true,
+        configurable: true,
+    },
+    innerHTML: {
+        get: patchedShadowRootInnerHTMLGetter,
+        enumerable: true,
+        configurable: true,
+    },
+    textContent: {
+        get: patchedShadowRootTextContentGetter,
         enumerable: true,
         configurable: true,
     },
     childNodes: {
-        get: patchedShadowRootChildNodes,
+        get: patchedShadowRootChildNodesGetter,
         enumerable: true,
         configurable: true,
     },
@@ -66,10 +95,17 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
         enumerable: true,
         configurable: true,
     },
+    hasChildNodes: {
+        value(this: ShadowRoot): boolean {
+            return this.childNodes.length > 0;
+        },
+        enumerable: true,
+        configurable: true,
+    },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
             const vm = getShadowRootVM(this);
-            const node = shadowRootQuerySelector(vm, selector);
+            const node = shadowRootQuerySelector(this, selector);
             if (process.env.NODE_ENV !== 'production') {
                 if (isNull(node) && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
@@ -86,7 +122,7 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     querySelectorAll: {
         value(this: ShadowRoot, selector: string): Element[] {
             const vm = getShadowRootVM(this);
-            const nodeList = shadowRootQuerySelectorAll(vm, selector);
+            const nodeList = shadowRootQuerySelectorAll(this, selector);
             if (process.env.NODE_ENV !== 'production') {
                 if (nodeList.length === 0 && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
@@ -103,13 +139,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     addEventListener: {
         value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
             const vm = getShadowRootVM(this);
+            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
-
-                if (arguments.length > 2) {
-                    // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                    assert.logWarning(`this.template.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-                }
             }
             addRootEventListener(vm, type, listener);
         },
@@ -119,15 +151,38 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     removeEventListener: {
         value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
             const vm = getShadowRootVM(this);
+            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
-
-                if (arguments.length > 2) {
-                    // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                    assert.logWarning(`this.template.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-                }
             }
             removeRootEventListener(vm, type, listener);
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    compareDocumentPosition: {
+        value(this: ShadowRoot, otherNode: Node): number {
+            if (this === otherNode) {
+                // it is the root itself
+                return 0;
+            }
+            if (this.contains(otherNode)) {
+                // it belongs to the shadow root instance
+                return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            } else if (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINS) {
+                // it is a child element but does not belong to the shadow root instance
+                return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            } else {
+                // it is not a descendant
+                return 35; // 100011 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_PRECEDING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            }
+        },
+        enumerable: true,
+        configurable: true,
+    },
+    contains: {
+        value(this: ShadowRoot, otherNode: Node): boolean {
+            return ArrayIndexOf.call(this.querySelectorAll('*'), otherNode) !== -1;
         },
         enumerable: true,
         configurable: true,
@@ -138,102 +193,3 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
         },
     },
 };
-
-function createAccessibilityDescriptorForShadowRoot(propName: string, attrName: string, defaultValue: any): PropertyDescriptor {
-    // we use value as the storage mechanism and as the default value for the property
-    return {
-        enumerable: false,
-        get(this: ShadowRoot): any {
-            const vm = getShadowRootVM(this);
-            if (!hasOwnProperty.call(vm.rootProps, propName)) {
-                return defaultValue;
-            }
-            return vm.rootProps[propName];
-        },
-        set(this: ShadowRoot, newValue: any) {
-            const vm = getShadowRootVM(this);
-            vm.rootProps[propName] = newValue;
-            if (!isUndefined(vm.hostAttrs[attrName])) {
-                return;
-            }
-            if (isNull(newValue)) {
-                removeAttribute.call(vm.elm, attrName);
-                return;
-            }
-            setAttribute.call(vm.elm, attrName, newValue);
-        }
-    };
-}
-
-// This routine will add all AOM DOM properties to ShadowRoot.prototype to polyfill AOM capabilities when needed
-forEach.call(getOwnPropertyNames(GlobalAOMProperties), (propName: string) => {
-    const descriptor = createAccessibilityDescriptorForShadowRoot(propName, getAttrNameFromPropName(propName), GlobalAOMProperties[propName]);
-    if (!isUndefined(ShadowRootPrototype) && !hasOwnProperty.call(ShadowRootPrototype, propName)) {
-        // conditionally polyfilling the original ShadowRoot.prototype
-        defineProperty(ShadowRootPrototype, propName, descriptor);
-    }
-    // always adding it to ArtificialShadowRootDescriptors
-    ArtificialShadowRootDescriptors[propName] = descriptor;
-});
-
-const ArtificialShadowRootPrototype = create({}, ArtificialShadowRootDescriptors);
-let DevModeBlackListDescriptorMap: PropertyDescriptorMap;
-
-if (process.env.NODE_ENV !== 'production') {
-    DevModeBlackListDescriptorMap = {
-        childNodes: {
-            get(this: ShadowRoot) {
-                const vm = getShadowRootVM(this);
-                if (process.env.NODE_ENV !== 'production') {
-                    assert.logWarning(`this.template.childNodes returns a live NodeList and should not be relied upon. Instead, use this.template.querySelectorAll.`);
-                }
-                if (vm.fallback) {
-                    return patchedShadowRootChildNodes.call(this);
-                }
-                return childNodesGetter.call(this);
-            }
-        },
-    };
-
-    const BlackListedShadowRootMethods = {
-        appendChild: 0,
-        cloneNode: 0,
-        compareDocumentPosition: 0,
-        contains: 0,
-        insertBefore: 0,
-        hasChildNodes: 0,
-        getElementById: 0,
-        getSelection: 0,
-        elementFromPoint: 0,
-        elementsFromPoint: 0,
-    };
-    // This routine will prevent access to certain methods on a shadow root instance to guarantee
-    // that all components will work fine in IE11 and other browsers without shadow dom support
-    forEach.call(getOwnPropertyNames(BlackListedShadowRootMethods), (methodName: string) => {
-        const descriptor = {
-            get() {
-                throw new Error(`Disallowed method "${methodName}" in ShadowRoot.`);
-            }
-        };
-        DevModeBlackListDescriptorMap[methodName] = descriptor;
-    });
-
-    const BlackListedShadowRootProperties = {
-        firstChild: 0,
-        lastChild: 0,
-        ownerDocument: 0,
-        innerHTML: 0,
-        outerHTML: 0,
-        textContent: 0,
-    };
-    // This routine will prevent access to certain properties on a shadow root instance to guarantee
-    // that all components will work fine in IE11 and other browsers without shadow dom support
-    forEach.call(getOwnPropertyNames(BlackListedShadowRootProperties), (propName: string) => {
-        const descriptor = {
-            get() {
-                throw new Error(`Disallowed property "${propName}" in ShadowRoot.`);
-            }
-        };
-        DevModeBlackListDescriptorMap[propName] = descriptor;
-    });
-}

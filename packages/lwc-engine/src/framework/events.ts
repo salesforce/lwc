@@ -2,12 +2,12 @@ import assert from "./assert";
 import {
     addEventListener,
     removeEventListener,
-} from "./dom/element";
+} from "./dom-api";
 import {
     getRootNode,
     parentNodeGetter,
 } from "./dom/node";
-import { VM, OwnerKey, getCustomElementVM } from "./vm";
+import { VM, getNodeOwnerKey, getNodeKey } from "./vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isTrue, isNull } from "./language";
 import { isRendering, vmBeingRendered, invokeEventListener, EventListenerContext, componentEventListenerType } from "./invoker";
 import { patchShadowDomTraversalMethods } from "./dom/traverse";
@@ -31,7 +31,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
     currentTarget: {
         get(this: Event): EventTarget | null {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
-            if (isNull(currentTarget) || isUndefined(currentTarget[OwnerKey])) {
+            if (isNull(currentTarget) || isUndefined(getNodeOwnerKey(currentTarget as Node))) {
                 // event is already beyond the boundaries of our controlled shadow roots
                 return currentTarget;
             }
@@ -50,7 +50,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
                 // top custom element the belongs to the body.
                 let outerMostElement = originalTarget;
                 let parentNode;
-                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(outerMostElement[OwnerKey])) {
+                while ((parentNode = parentNodeGetter.call(outerMostElement)) && !isUndefined(getNodeOwnerKey(outerMostElement as Node))) {
                     outerMostElement = parentNode;
                 }
 
@@ -95,11 +95,11 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             //   we CANNOT get the owner VM. Instead, we must get the custom element's VM instead.
             //   this.template.addEventListener('click', () => {});
             // }
-            const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getCustomElementVM(currentTarget as HTMLElement).uid : currentTarget[OwnerKey];
+            const myCurrentShadowKey = (componentEventListenerType === EventListenerContext.ROOT_LISTENER) ? getNodeKey(currentTarget as Node) : getNodeOwnerKey(currentTarget as Node);
 
             // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
-            const myOwnerKey = currentTargetRootNode[OwnerKey];
+            const myOwnerKey = getNodeOwnerKey(currentTargetRootNode);
 
             // Determining Number 3:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
@@ -136,7 +136,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
             // </template>
             //
             let closestTarget = originalTarget;
-            while (closestTarget[OwnerKey] !== myCurrentShadowKey && closestTarget[OwnerKey] !== myOwnerKey) {
+            while (getNodeOwnerKey(closestTarget as Node) !== myCurrentShadowKey && getNodeOwnerKey(closestTarget as Node) !== myOwnerKey) {
                 closestTarget = parentNodeGetter.call(closestTarget);
             }
 
@@ -151,7 +151,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
              * while the event is patched because the component is listening for it internally
              * via this.addEventListener('click') in constructor or something similar
              */
-            if (isUndefined(closestTarget[OwnerKey])) {
+            if (isUndefined(getNodeOwnerKey(closestTarget as Node))) {
                 return closestTarget;
             }
             return patchShadowDomTraversalMethods(closestTarget as Element);
@@ -161,7 +161,7 @@ const eventShadowDescriptors: PropertyDescriptorMap = {
     },
 };
 
-export function patchShadowDomEvent(vm: VM, event: Event) {
+function patchShadowDomEvent(vm: VM, event: Event) {
     if (isTrue(vm.fallback)) {
         defineProperties(event, eventShadowDescriptors);
     }
@@ -326,7 +326,7 @@ function detachDOMListener(vm: VM, type: string, wrappedListener: WrappedListene
 }
 
 const NON_COMPOSED = { composed: false };
-export function isValidEventForCustomElement(event: Event): boolean {
+function isValidEventForCustomElement(event: Event): boolean {
     const target = eventTargetGetter.call(event);
     const currentTarget = eventCurrentTargetGetter.call(event);
     const { composed } = event as any;
