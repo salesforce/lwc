@@ -9,7 +9,7 @@
  * the shadowRoot property off of
  * @returns {ShadowRoot} The shadow root of the given element
  */
-export function getShadowRoot(element) {
+module.exports.getShadowRoot = function(element) {
     if (!element || !element.$$ShadowRoot$$) {
         const tagName = element && element.tagName && element.tagName.toLowerCase();
         throw new Error(`Attempting to retrieve the shadow root of '${tagName || element}' but no shadowRoot property found`);
