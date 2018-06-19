@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { Component } from "./component";
-import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
+import { toString, isObject, defineProperties, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "./language";
 import { addCmpEventListener, removeCmpEventListener } from "./events";
 import {
     getAttribute,
@@ -9,20 +9,17 @@ import {
     removeAttributeNS,
     setAttribute,
     setAttributeNS,
-} from "./dom/element";
-import {
-    getGlobalHTMLPropertiesInfo,
-    GlobalHTMLPropDescriptors,
-    attemptAriaAttributeFallback,
-} from "./dom/attributes";
-import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
+} from "./dom-api";
+import { attemptAriaAttributeFallback } from "./dom/aom";
+import { ViewModelReflection } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
-import { ArrayReduce, isString, isFunction } from "./language";
+import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { CustomEvent, fallbackListenerPatchDescriptors } from "./dom/event";
 import { dispatchEvent } from "./dom/event-target";
 import { getPatchedCustomElement } from "./dom/traverse";
+import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
 
 export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(elm);
@@ -81,16 +78,11 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     };
 }
 
-const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPropDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
-    seed[propName] = getHTMLPropDescriptor(propName, GlobalHTMLPropDescriptors[propName]);
-    return seed;
-}, {});
-
 function getLinkedElement(cmp: Component): HTMLElement {
     return cmp[ViewModelReflection].elm;
 }
 
-export interface ComposableEvent extends Event {
+interface ComposableEvent extends Event {
     composed: boolean;
 }
 
@@ -127,6 +119,10 @@ function LWCElement(this: Component) {
     defineProperties(elm, def.descriptors);
     if (isTrue(fallback)) {
         defineProperties(elm, fallbackListenerPatchDescriptors);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
+        patchComponentWithRestrictions(component);
     }
 }
 
@@ -166,7 +162,7 @@ LWCElement.prototype = {
             assert.vm(vm);
 
             if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
                 assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
             }
         }
@@ -179,7 +175,7 @@ LWCElement.prototype = {
             assert.vm(vm);
 
             if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
+                // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
                 assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
             }
         }
@@ -221,30 +217,12 @@ LWCElement.prototype = {
         return setAttribute.call(getLinkedElement(this), attrName, value);
     },
 
-    getAttributeNS(ns: string, attrName: string) {
-        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
+    getAttribute(attrName: string): string | null {
+        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
     },
 
-    getAttribute(attrName: string): string | null {
-        // logging errors for experimental and special attributes
-        if (process.env.NODE_ENV !== 'production') {
-            const vm = this[ViewModelReflection];
-            assert.vm(vm);
-            if (isString(attrName)) {
-                const propName = getPropNameFromAttrName(attrName);
-                const info = getGlobalHTMLPropertiesInfo();
-                if (info[propName] && info[propName].attribute) {
-                    const { error, experimental } = info[propName];
-                    if (error) {
-                        assert.logError(error);
-                    } else if (experimental) {
-                        assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
-                    }
-                }
-            }
-        }
-
-        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
+    getAttributeNS(ns: string, attrName: string) {
+        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
     },
 
     getBoundingClientRect(): ClientRect {
@@ -311,6 +289,10 @@ LWCElement.prototype = {
         }
         return vm.cmpRoot;
     },
+    get shadowRoot(): ShadowRoot | null {
+        // from within, the shadowRoot is always in "closed" mode
+        return null;
+    },
     toString(): string {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -323,48 +305,18 @@ LWCElement.prototype = {
     },
 };
 
-defineProperties(LWCElement.prototype, htmlElementDescriptors);
-
-// Global HTML Attributes
-if (process.env.NODE_ENV !== 'production') {
-    const info = getGlobalHTMLPropertiesInfo();
-    forEach.call(getOwnPropertyNames(info), (propName: string) => {
-        if (propName in LWCElement.prototype) {
-            return; // no need to redefine something that we are already exposing
-        }
-        defineProperty(LWCElement.prototype, propName, {
-            get(this: Component) {
-                const vm = getComponentVM(this);
-                const { error, attribute, readOnly, experimental } = info[propName];
-                const msg: any[] = [];
-                msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
-                if (error) {
-                    msg.push(error);
-                } else {
-                    if (experimental) {
-                        msg.push(`This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`);
-                    }
-                    if (readOnly) {
-                        // TODO - need to improve this message
-                        msg.push(`Property is read-only.`);
-                    }
-                    if (attribute) {
-                        msg.push(`"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
-                        msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
-                        msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
-                    }
-                }
-                console.log(msg.join('\n')); // tslint:disable-line
-                return; // explicit undefined
-            },
-            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
-            set() {}, // tslint:disable-line
-            enumerable: false,
-        });
-    });
+/**
+ * This abstract operation is supposed to be called once, with a descriptor map that contains
+ * all standard properties that a Custom Element can support (including AOM properties), which
+ * determines what kind of capabilities the Base Element should support. When creating the descriptors
+ * for be Base Element, it also include the reactivity bit, so those standard properties are reactive.
+ */
+export function createBaseElementStandardPropertyDescriptors(StandardPropertyDescriptors: PropertyDescriptorMap): PropertyDescriptorMap {
+    const descriptors = ArrayReduce.call(getOwnPropertyNames(StandardPropertyDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
+        seed[propName] = getHTMLPropDescriptor(propName, StandardPropertyDescriptors[propName]);
+        return seed;
+    }, create(null));
+    return descriptors;
 }
-
-freeze(LWCElement);
-seal(LWCElement.prototype);
 
 export { LWCElement as Element };

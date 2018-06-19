@@ -5,7 +5,7 @@ import {
 } from '../language';
 import { EmptyObject } from '../utils';
 import { VNode, Module, VNodeStyle } from "../../3rdparty/snabbdom/types";
-import { removeAttribute } from '../dom/element';
+import { removeAttribute } from '../dom-api';
 
 function updateStyle(oldVnode: VNode, vnode: VNode) {
     const { style: newStyle } = vnode.data;
