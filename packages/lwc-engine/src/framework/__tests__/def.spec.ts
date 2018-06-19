@@ -120,7 +120,7 @@ describe('def', () => {
                 ariaRowIndex: null,
                 ariaRowSpan: null,
                 dir: null,
-                draggable: null,
+                // draggable: null, // this is not supported in jsdom just yet
                 hidden: null,
                 id: null,
                 lang: null,

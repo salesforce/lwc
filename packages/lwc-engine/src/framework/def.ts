@@ -25,34 +25,37 @@ import {
     ArraySlice,
     isNull,
     ArrayReduce,
+    defineProperties,
+    seal,
 } from "./language";
 import {
-    GlobalAOMProperties,
     getGlobalHTMLPropertiesInfo,
-    defaultDefHTMLPropertyNames,
+    CustomElementGlobalPropertyDescriptors,
+    getPropNameFromAttrName,
+    getAttrNameFromPropName,
+} from "./attributes";
+import {
     attemptAriaAttributeFallback,
-} from "./dom/attributes";
+    createShadowRootAOMDescriptorMap,
+} from "./dom/aom";
 import {
     getAttribute,
     setAttribute,
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-} from "./dom/element";
+} from "./dom-api";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement } from "./html-element";
+import { Element as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
-    getPropNameFromAttrName,
     assertValidForceTagName,
-    ViewModelReflection,
-    getAttrNameFromPropName,
     resolveCircularModuleDependency
 } from "./utils";
-import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
+import { VM, VMElement, getCustomElementVM, getNodeKey, getNodeOwnerKey } from "./vm";
 
 export interface PropDef {
     config: number;
@@ -93,6 +96,7 @@ import {
     ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
+import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
@@ -105,8 +109,15 @@ function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
     return seed;
 }
 
-const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
-const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
+let HTML_PROPS: PropsDef;
+
+function getGlobalPropertyDefs() {
+    if (isUndefined(HTML_PROPS)) {
+        // Lazy initialization to avoid circular deps
+        HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(CustomElementGlobalPropertyDescriptors), propertiesReducer, create(null));
+    }
+    return HTML_PROPS;
+}
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
@@ -128,6 +139,10 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 }
 
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
+    if (globalInitialization) {
+        // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
+        globalInitialization();
+    }
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
 
@@ -191,7 +206,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         render = render || superDef.render;
     }
 
-    props = assign(create(null), HTML_PROPS, props);
+    props = assign(create(null), getGlobalPropertyDefs(), props);
     const descriptors = createCustomElementDescriptorMap(props, methods);
 
     const def: ComponentDef = {
@@ -317,7 +332,7 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (!isAttributeChangeControlled(attrName) && !isUndefined(elm[OwnerKey])) {
+    if (!isAttributeChangeControlled(attrName) && !isUndefined(getNodeOwnerKey(elm))) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
     // attribute change control must be released every time its value is checked
@@ -349,7 +364,7 @@ export function prepareForAttributeMutationFromTemplate(elm: Element, key: strin
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    if (elm[ViewModelReflection]) {
+    if (!isUndefined(getNodeKey(elm))) {
         // TODO: we should guarantee that the methods of the element are all patched
         controlledAttributeChange = true;
         controlledAttributeName = key;
@@ -474,3 +489,24 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     CtorToDefMap.set(Ctor, def);
     return def;
 }
+
+// Initialization Routines
+let globalInitialization: any = () => {
+    // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
+    if (typeof (window as any).ShadowRoot !== "undefined") {
+        // Patching the prototype of native ShadowRoot.prototype with all the AOM properties
+        // so we don't have to patch on every instance. This seems to be safe enough since
+        // no browser is implementing them just yet.
+        defineProperties((window as any).ShadowRoot.prototype, createShadowRootAOMDescriptorMap());
+    }
+
+    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(CustomElementGlobalPropertyDescriptors));
+
+    if (process.env.NODE_ENV !== 'production') {
+        patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+    }
+
+    freeze(BaseElement);
+    seal(BaseElement.prototype);
+    globalInitialization = void(0);
+};

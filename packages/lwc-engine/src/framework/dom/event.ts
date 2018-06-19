@@ -27,11 +27,13 @@ export const CustomEvent = (window as any).CustomEvent;
 
 export function addEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
     const vm = getCustomElementVM(this as HTMLElement);
+    // TODO: issue #420
     addTemplateEventListener(vm, type, listener);
 }
 
 export function removeEventListenerPatched(this: EventTarget, type: string, listener: EventListener) {
     const vm = getCustomElementVM(this as HTMLElement);
+    // TODO: issue #420
     removeTemplateEventListener(vm, type, listener);
 }
 
