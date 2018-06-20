@@ -104,9 +104,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
-            const vm = getShadowRootVM(this);
             const node = shadowRootQuerySelector(this, selector);
             if (process.env.NODE_ENV !== 'production') {
+                const vm = getShadowRootVM(this);
                 if (isNull(node) && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
                     if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
@@ -121,9 +121,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     querySelectorAll: {
         value(this: ShadowRoot, selector: string): Element[] {
-            const vm = getShadowRootVM(this);
             const nodeList = shadowRootQuerySelectorAll(this, selector);
             if (process.env.NODE_ENV !== 'production') {
+                const vm = getShadowRootVM(this);
                 if (nodeList.length === 0 && isFalse(vm.isRoot)) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
                     if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
