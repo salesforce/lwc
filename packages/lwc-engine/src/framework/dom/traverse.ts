@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { getNodeKey, getNodeOwnerKey, getShadowRoot, getCustomElement } from "../vm";
+import { getNodeKey, getNodeOwnerKey } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
@@ -28,6 +28,7 @@ import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } fr
 import { getOuterHTML } from "../../3rdparty/polymer/outer-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
+import { getHost, getShadowRoot } from "./shadow-root";
 
 export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
     return traverseMembraneWrap(element);
@@ -95,7 +96,7 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRo
 }
 
 export function shadowRootChildNodes(root: ShadowRoot) {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
@@ -141,13 +142,13 @@ function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Elemen
 }
 
 export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
 export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
 }
