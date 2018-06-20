@@ -3,7 +3,7 @@ import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
 import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys } from "./language";
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, setInternalField, getInternalField, createSymbol } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentElementGetter } from "./dom-api";
@@ -14,7 +14,6 @@ import { ComponentDef } from "./def";
 import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
-import { ShadowRootKey } from "./dom/shadow-root";
 import { patchCustomElement } from "./dom/faux";
 import { patchShadowRootWithRestrictions } from "./restrictions";
 
@@ -24,12 +23,8 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export interface VMElement extends HTMLElement {
-    [ViewModelReflection]: VM;
-}
-
 export interface VM {
-    readonly elm: VMElement;
+    readonly elm: HTMLElement;
     readonly def: ComponentDef;
     readonly context: Context;
     uid: number;
@@ -74,14 +69,10 @@ function getHook(cmp: Component, prop: PropertyKey): any {
 }
 
 function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
-    if ((shadowRoot as any /* typescript has not updated their interface yet */).mode === 'open') {
-        // expose the shadow via a hidden symbol for testing purposes
-        vm.elm[ShadowRootKey] = shadowRoot;
-    }
-    shadowRoot[ViewModelReflection] = vm;
+    setInternalField(shadowRoot, ViewModelReflection, vm);
 }
 
-export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
+export const OwnerKey = createSymbol('OwnerKey');
 
 function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -197,7 +188,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         fallback,
         mode,
         def,
-        elm: elm as VMElement,
+        elm: elm as HTMLElement,
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
@@ -444,10 +435,10 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
 
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
-    let vm: VM;
+    let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = elm[ViewModelReflection];
+        vm = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
@@ -461,7 +452,7 @@ export function getComponentStack(vm: VM): string {
     const wcStack: string[] = [];
     let elm: HTMLElement | null = vm.elm;
     do {
-        const currentVm: VM | undefined = elm[ViewModelReflection];
+        const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
@@ -473,57 +464,38 @@ export function getComponentStack(vm: VM): string {
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
-}
-
-export function getShadowRoot(node: Node): ShadowRoot | null {
-    const vm: VM = node[ViewModelReflection];
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    if (isUndefined(vm)) {
-        return null;
-    }
-    return vm.cmpRoot;
-}
-
-export function getCustomElement(root: ShadowRoot): HTMLElement {
-    const vm: VM = root[ViewModelReflection];
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    return vm.elm;
+    return getInternalField(node, OwnerKey);
 }
 
 export function getNodeKey(node: Node): number | undefined {
-    const vm: VM = node[ViewModelReflection];
+    const vm: VM | undefined = getInternalField(node, ViewModelReflection);
     if (isUndefined(vm)) {
         return;
     }
     return vm.uid;
 }
 
-export function getCustomElementVM(elmOrCmp: HTMLElement): VM {
+export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrCmp[ViewModelReflection]);
+        assert.vm(getInternalField(elm, ViewModelReflection));
     }
-    return elmOrCmp[ViewModelReflection] as VM;
+    return getInternalField(elm, ViewModelReflection) as VM;
 }
 
 export function getComponentVM(component: Component): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(component[ViewModelReflection]);
+        assert.vm(getInternalField(component, ViewModelReflection));
     }
-    return component[ViewModelReflection] as VM;
+    return getInternalField(component, ViewModelReflection) as VM;
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(root[ViewModelReflection]);
+        assert.vm(getInternalField(root, ViewModelReflection));
     }
-    return root[ViewModelReflection] as VM;
+    return getInternalField(root, ViewModelReflection) as VM;
 }
 
 // slow path routine

@@ -2,12 +2,12 @@ import assert from "../assert";
 import {
     addEventListener,
     removeEventListener,
-} from "../dom-api";
+} from "./element";
 import {
     getRootNode,
     parentNodeGetter,
 } from "./node";
-import { getNodeOwnerKey, getNodeKey, getCustomElement } from "../vm";
+import { getNodeOwnerKey, getNodeKey } from "../vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { patchShadowDomTraversalMethods } from "./traverse";
@@ -25,6 +25,7 @@ enum EventListenerContext {
 const eventToContextMap: WeakMap<Event, number> = new WeakMap();
 
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
+import { getHost } from "./shadow-root";
 
 function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
@@ -358,13 +359,13 @@ export function addShadowRootEventListener(sr: ShadowRoot, type: string, listene
             assert.logWarning(`The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed: ${toString(options)} in ${toString(sr)}`);
         }
     }
-    const elm = getCustomElement(sr);
+    const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     attachDOMListener(elm, type, wrappedListener);
 }
 
 export function removeShadowRootEventListener(sr: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
-    const elm = getCustomElement(sr);
+    const elm = getHost(sr);
     const wrappedListener = getWrappedShadowRootListener(sr, listener);
     detachDOMListener(elm, type, wrappedListener);
 }

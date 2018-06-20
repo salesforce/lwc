@@ -1,5 +1,6 @@
 import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../language";
 import { ElementPatchDescriptors } from "./traverse";
+import { createSymbol } from "../utils";
 const proxies = new WeakMap<object, object>();
 
 // We ONLY want to have DOM nodes and DOM methods
@@ -44,12 +45,13 @@ const traverseMembraneHandler = {
     }
 };
 
-const TargetSlot = Symbol();
+const TargetSlot = createSymbol('targetSlot');
 
 // TODO: we are using a funky and leaky abstraction here to try to identify if
 // the proxy is a compat proxy, and define the unwrap method accordingly.
-// @ts-ignore
+// @ts-ignore: getting getKey from Proxy intrinsic
 const { getKey: ProxyGetKey } = Proxy;
+
 const getKey = ProxyGetKey ? ProxyGetKey : (o: any, key: PropertyKey): any => o[key];
 export function unwrap(value: object | undefined | null) {
     return (value && getKey(value, TargetSlot)) || value;
