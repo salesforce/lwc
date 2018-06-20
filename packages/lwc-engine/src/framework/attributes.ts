@@ -1,4 +1,3 @@
-import assert from './assert';
 import {
     StringToLowerCase,
     StringReplace,
@@ -6,7 +5,6 @@ import {
     forEach,
     isUndefined,
     getPropertyDescriptor,
-    hasOwnProperty,
 } from './language';
 import { createCustomElementAOMPropertyDescriptor } from './dom/aom';
 
@@ -254,8 +252,6 @@ forEach.call(defaultDefHTMLPropertyNames, (propName) => {
     const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
     if (!isUndefined(descriptor)) {
         CustomElementGlobalPropertyDescriptors[propName] = descriptor;
-    } else if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`This environment does not support global HTML property '${propName}'.`);
     }
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
@@ -275,7 +271,7 @@ const CAMEL_REGEX = /-([a-z])/g;
  * and the corresponding property name.
  */
 export function getPropNameFromAttrName(attrName: string): string {
-    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
+    if (isUndefined(AttrNameToPropNameMap[attrName])) {
         AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
     }
     return AttrNameToPropNameMap[attrName];
@@ -288,7 +284,7 @@ const CAPS_REGEX = /[A-Z]/g;
  * and the corresponding attribute name.
  */
 export function getAttrNameFromPropName(propName: string): string {
-    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
+    if (isUndefined(PropNameToAttrNameMap[propName])) {
         PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
     }
     return PropNameToAttrNameMap[propName];

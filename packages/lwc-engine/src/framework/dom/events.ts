@@ -336,7 +336,7 @@ export function addCustomElementEventListener(elm: HTMLElement, type: string, li
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into a lighting element node
         if (!isUndefined(options)) {
-            assert.logWarning(`Discourage feature for method 'addEventListener' in 'LightingElement': It does not support more than 2 arguments, instead received ${toString(options)} in ${elm}. Options to make the listener passive, once or capture are not allowed.`);
+            assert.logWarning(`The 'addEventListener' method in 'LightningElement' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed: ${toString(options)} in ${toString(elm)}`);
         }
     }
     const wrappedListener = getWrappedCustomElementListener(elm, listener);
@@ -355,7 +355,7 @@ export function addShadowRootEventListener(sr: ShadowRoot, type: string, listene
         // TODO: issue #420
         // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
         if (!isUndefined(options)) {
-            assert.logWarning(`Discourage feature for method 'addEventListener' in 'ShadowRoot': It does not support more than 2 arguments, instead received ${toString(options)} in ${sr}. Options to make the listener passive, once or capture are not allowed.`);
+            assert.logWarning(`The 'addEventListener' method in 'ShadowRoot' does not support more than 2 arguments. Options to make the listener passive, once, or capture are not allowed: ${toString(options)} in ${toString(sr)}`);
         }
     }
     const elm = getCustomElement(sr);

@@ -428,7 +428,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.vm(vm);
     }
     const { elm } = vm;
-    // TODO: shadowDOM will preventing this walking process, we
+    // TODO: bug #435 - shadowDOM will preventing this walking process, we
     // need to find a different way to find the right boundary
     const parentElm = elm && parentElementGetter.call(elm);
     return getErrorBoundaryVM(parentElm);
@@ -451,7 +451,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        // TODO: shadowDOM will preventing this walking process, we
+        // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     }
@@ -465,7 +465,7 @@ export function getComponentStack(vm: VM): string {
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
-        // TODO: shadowDOM will preventing this walking process, we
+        // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     } while (!isNull(elm));
