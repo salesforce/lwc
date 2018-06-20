@@ -1,6 +1,5 @@
 import { isUndefined } from "../language";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
-import { patchEvent } from "../dom/faux";
 
 function handleEvent(event: Event, vnode: VNode) {
     const { type } = event;
@@ -8,7 +7,6 @@ function handleEvent(event: Event, vnode: VNode) {
     const handler = on && on[type];
     // call event handler if exists
     if (handler) {
-        patchEvent(event);
         handler.call(undefined, event);
     }
 }
