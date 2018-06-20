@@ -125,22 +125,17 @@ export enum EventListenerContext {
     NATIVE_ELEMENT = 3,
 }
 
-export let componentEventListenerType: EventListenerContext | null = null;
-
-export function invokeEventListener(vm: VM, listenerContext: EventListenerContext, fn: EventListener, thisValue: undefined | Component, event: Event) {
+export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | Component, event: Event) {
     const { context, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);
     let error;
-    const componentEventListenerTypeInception = componentEventListenerType;
-    componentEventListenerType = listenerContext;
     try {
         callHook(thisValue, fn, [event]);
     } catch (e) {
         error = Object(e);
     } finally {
         establishContext(ctx);
-        componentEventListenerType = componentEventListenerTypeInception;
         if (error) {
             error.wcStack = getComponentStack(vm);
             // rethrowing the original error annotated after restoring the context

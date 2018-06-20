@@ -491,6 +491,9 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 }
 
 // Initialization Routines
+import "../polyfills/proxy-concat/main";
+import "../polyfills/event-composed/main";
+
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
     if (typeof (window as any).ShadowRoot !== "undefined") {

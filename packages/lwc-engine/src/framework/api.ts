@@ -1,11 +1,10 @@
 import assert from "./assert";
-import { vmBeingRendered } from "./invoker";
+import { vmBeingRendered, invokeEventListener } from "./invoker";
 import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "./language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { getWrappedTemplateListener } from "./events";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
@@ -410,7 +409,9 @@ export function b(fn: EventListener): EventListener {
         throw new Error();
     }
     const vm: VM = vmBeingRendered;
-    return getWrappedTemplateListener(vm, fn);
+    return function(event: Event) {
+        invokeEventListener(vm, fn, vm.component, event);
+    };
 }
 
 // [k]ey function
