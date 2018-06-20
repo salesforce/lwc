@@ -1,13 +1,13 @@
-import { isBoolean, isString, isUndefined } from "../utils";
+import { isBoolean, isString, isUndefined, isObject } from "../utils";
 
 const DEFAULT_OPTIONS = {
     baseDir: "",
 };
 
-const DEFAULT_STYLESHEET_CONFIG = {
+const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
     customProperties: {
         allowDefinition: false,
-        resolveFromModule: undefined
+        resolution: { type: 'native' }
     }
 };
 
@@ -24,9 +24,13 @@ export type OutputProxyCompatConfig =
     | { module: string }
     | { independent: string };
 
+export type CustomPropertiesResolution =
+    | { type: 'native' }
+    | { type: 'module', name: string };
+
 export interface CustomPropertiesConfig {
     allowDefinition?: boolean;
-    resolveFromModule?: string;
+    resolution?: CustomPropertiesResolution;
 }
 
 export interface StylesheetConfig {
@@ -65,7 +69,7 @@ export interface NormalizedCompilerOptions extends CompilerOptions {
 export interface NormalizedStylesheetConfig extends StylesheetConfig {
     customProperties: {
         allowDefinition: boolean;
-        resolveFromModule?: string;
+        resolution: CustomPropertiesResolution;
     };
 }
 
@@ -126,7 +130,7 @@ function validateStylesheetConfig(config: StylesheetConfig) {
     const { customProperties } = config;
 
     if (!isUndefined(customProperties)) {
-        const { allowDefinition, resolveFromModule } = customProperties;
+        const { allowDefinition, resolution } = customProperties;
 
         if (!isUndefined(allowDefinition) && !isBoolean(allowDefinition)) {
             throw new TypeError(`Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "${
@@ -134,10 +138,20 @@ function validateStylesheetConfig(config: StylesheetConfig) {
             }".`);
         }
 
-        if (!isUndefined(resolveFromModule) && !isString(resolveFromModule)) {
-            throw new TypeError(`Expected a string for stylesheetConfig.customProperties.resolveFromModule, received "${
-                resolveFromModule
-            }".`);
+        if (!isUndefined(resolution)) {
+            if (!isObject(resolution)) {
+                throw new TypeError(`Expected an object for stylesheetConfig.customProperties.resolution, received "${
+                    resolution
+                }".`);
+            }
+
+            const { type } = resolution;
+
+            if (type !== 'native' && type !== 'module') {
+                throw new TypeError(`Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "${
+                    type
+                }".`);
+            }
         }
     }
 }

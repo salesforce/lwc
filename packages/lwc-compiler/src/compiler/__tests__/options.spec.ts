@@ -1,136 +1,134 @@
-import { compile } from "../compiler";
-import { pretify, readFixture } from "../../__tests__/utils";
+import { compile } from '../compiler';
 
-const VALID_CONFIG = {
-    outputConfig: {
-        env: {},
-        minify: false,
-        compat: false,
-        format: "amd"
-    },
-    name: "class_and_template",
-    namespace: "x",
-    files: {
-        "class_and_template.js": readFixture(
-            "class_and_template/class_and_template.js"
-        ),
-        "class_and_template.html": readFixture(
-            "class_and_template/class_and_template.html"
-        )
-    }
-};
-
-describe("compiler options", () => {
-    it("should validate presence of options", async () => {
+describe('compiler options', () => {
+    it('should validate presence of options', async () => {
         await expect(compile()).rejects.toMatchObject({
-            message: 'Expected options object, received "undefined".'
+            message: 'Expected options object, received "undefined".',
         });
     });
 
-    it("should validate bundle name option", async () => {
+    it('should validate bundle name option', async () => {
         await expect(compile({})).rejects.toMatchObject({
-            message: 'Expected a string for name, received "undefined".'
+            message: 'Expected a string for name, received "undefined".',
         });
     });
 
-    it("should validate bundle namespace option", async () => {
-        await expect(compile({ name: "foo" })).rejects.toMatchObject({
-            message: 'Expected a string for namespace, received "undefined".'
+    it('should validate bundle namespace option', async () => {
+        await expect(compile({ name: 'foo' })).rejects.toMatchObject({
+            message: 'Expected a string for namespace, received "undefined".',
         });
     });
 
-    it("should validate presence of files option", async () => {
+    it('should validate presence of files option', async () => {
         await expect(
             compile({
-                name: "/x/foo/foo.js",
-                namespace: "x",
-                files: {}
-            })
+                name: '/x/foo/foo.js',
+                namespace: 'x',
+                files: {},
+            }),
         ).rejects.toMatchObject({
-            message: "Expected an object with files to be compiled."
+            message: 'Expected an object with files to be compiled.',
         });
     });
 
-    it("should validate files option value type", async () => {
+    it('should validate files option value type', async () => {
         await expect(
             compile({
-                name: "foo",
-                namespace: "x",
+                name: 'foo',
+                namespace: 'x',
                 files: {
-                    "foo.js": true
-                }
-            })
+                    'foo.js': true,
+                },
+            }),
         ).rejects.toMatchObject({
             message:
-                'Unexpected file content for "foo.js". Expected a string, received "true".'
+                'Unexpected file content for "foo.js". Expected a string, received "true".',
         });
     });
 
-    it("should validate outputConfig.minify", async () => {
+    it('should validate outputConfig.minify', async () => {
         await expect(
             compile({
-                name: "foo",
-                namespace: "x",
-                files: { x: "foo" },
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
                 outputConfig: {
-                    minify: "true"
-                }
-            })
+                    minify: 'true',
+                },
+            }),
         ).rejects.toMatchObject({
             message:
-                'Expected a boolean for outputConfig.minify, received "true".'
+                'Expected a boolean for outputConfig.minify, received "true".',
         });
     });
 
-    it("should validate outputConfig.compat", async () => {
+    it('should validate outputConfig.compat', async () => {
         await expect(
             compile({
-                name: "foo",
-                namespace: "x",
-                files: { x: "foo" },
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
                 outputConfig: {
-                    compat: "true"
-                }
-            })
+                    compat: 'true',
+                },
+            }),
         ).rejects.toMatchObject({
             message:
-                'Expected a boolean for outputConfig.compat, received "true".'
+                'Expected a boolean for outputConfig.compat, received "true".',
         });
     });
 
     it('should validate stylesheetConfig.customProperties.allowDefinition', async () => {
         await expect(
             compile({
-                name: "foo",
-                namespace: "x",
-                files: { x: "foo" },
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
                 stylesheetConfig: {
                     customProperties: {
                         allowDefinition: 'foo',
-                    }
-                }
-            })
+                    },
+                },
+            }),
         ).rejects.toMatchObject({
             message:
-                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".'
+                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".',
         });
     });
 
-    it('should validate stylesheetConfig.customProperties.resolveFromModule', async () => {
+    it('should validate stylesheetConfig.customProperties.resolution', async () => {
         await expect(
             compile({
-                name: "foo",
-                namespace: "x",
-                files: { x: "foo" },
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
                 stylesheetConfig: {
                     customProperties: {
-                        resolveFromModule: true,
-                    }
-                }
-            })
+                        resolution: true,
+                    },
+                },
+            }),
         ).rejects.toMatchObject({
             message:
-                'Expected a string for stylesheetConfig.customProperties.resolveFromModule, received "true".'
+                'Expected an object for stylesheetConfig.customProperties.resolution, received "true".',
+        });
+    });
+
+    it('should validate stylesheetConfig.customProperties.resolution.type', async () => {
+        await expect(
+            compile({
+                name: 'foo',
+                namespace: 'x',
+                files: { x: 'foo' },
+                stylesheetConfig: {
+                    customProperties: {
+                        resolution: { type: 'foo' },
+                    },
+                },
+            }),
+        ).rejects.toMatchObject({
+            message:
+                'Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "foo".',
         });
     });
 });

@@ -228,7 +228,7 @@ describe('CSS transform', () => {
         });
     });
 
-    it('should not transform var functions if resolveFromModule is undefined', async () => {
+    it('should not transform var functions if custom properties a resolved natively', async () => {
         const actual = `div { color: var(--bg-color); }`;
         const expected = `
             function style(token) {
@@ -239,14 +239,14 @@ describe('CSS transform', () => {
 
         const { code } = await transform(actual, 'foo.css', {
             stylesheetConfig: {
-                customProperties: { resolveFromModule: undefined },
+                customProperties: { resolution: { type: 'native' } },
             },
         });
 
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it('should transform var functions to lookup if resolveFromModule is defined', async () => {
+    it('should transform var functions if custom properties a resolved via a module', async () => {
         const actual = `div {
             color: var(--bg-color);
             font-size: var(--font-size, 16px);
@@ -268,7 +268,7 @@ describe('CSS transform', () => {
 
         const { code } = await transform(actual, 'foo.css', {
             stylesheetConfig: {
-                customProperties: { resolveFromModule: '@customProperties' },
+                customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
         });
 

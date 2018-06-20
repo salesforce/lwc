@@ -2,7 +2,7 @@ import * as postcss from "postcss";
 import * as cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
-import { NormalizedCompilerOptions } from "../compiler/options";
+import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
 
@@ -24,8 +24,8 @@ const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
 /**
  * Transform the var() function to a javascript call expression with the name and fallback value.
  */
-function transformVar(resolveFromModule?: string) {
-    if (!isUndefined(resolveFromModule)) {
+function transformVar(resolution: CustomPropertiesResolution) {
+    if (resolution.type === 'module') {
         return (name: string, fallback?: string): string => {
             let args: string = '`' + name + '`';
 
@@ -60,7 +60,7 @@ export default async function transformStyle(
             token: TOKEN_PLACEHOLDER,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
-                transformVar: transformVar(customProperties.resolveFromModule),
+                transformVar: transformVar(customProperties.resolution),
             }
         })
     ];
@@ -81,8 +81,8 @@ export default async function transformStyle(
     let code: string = '';
     if (res.css && res.css.length) {
         // Add import statement for the custom resolver at the top of the file.
-        if (customProperties.resolveFromModule) {
-            code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolveFromModule}';\n`;
+        if (customProperties.resolution.type === 'module') {
+            code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolution.name}';\n`;
         }
 
         code += [
