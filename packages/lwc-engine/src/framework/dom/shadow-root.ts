@@ -1,7 +1,7 @@
 import assert from "../assert";
 import { isNull, create, hasOwnProperty, isFalse, ArrayIndexOf, assign, isUndefined } from "../language";
 import { getShadowRootVM } from "../vm";
-import { addRootEventListener, removeRootEventListener } from "../events";
+import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
 import { createShadowRootAOMDescriptorMap } from './aom';
 import { usesNativeSymbols } from "../utils";
@@ -13,8 +13,8 @@ let ArtificialShadowRootPrototype;
 
 export const ShadowRootKey = usesNativeSymbols && process.env.NODE_ENV !== 'test' ? Symbol('ShadowRoot') : '$$ShadowRoot$$';
 
-export function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowRoot {
-    if (hasOwnProperty.call(this, ShadowRootKey)) {
+export function attachShadow(elm: HTMLElement, options: ShadowRootInit): ShadowRoot {
+    if (hasOwnProperty.call(elm, ShadowRootKey)) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode } = options;
@@ -137,25 +137,15 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
         configurable: true,
     },
     addEventListener: {
-        value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-            const vm = getShadowRootVM(this);
-            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            addRootEventListener(vm, type, listener);
+        value(this: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            addShadowRootEventListener(this, type, listener, options);
         },
         enumerable: true,
         configurable: true,
     },
     removeEventListener: {
-        value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-            const vm = getShadowRootVM(this);
-            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            removeRootEventListener(vm, type, listener);
+        value(this: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            removeShadowRootEventListener(this, type, listener, options);
         },
         enumerable: true,
         configurable: true,

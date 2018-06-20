@@ -6,7 +6,7 @@ import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTru
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter } from "./dom/node";
+import { parentElementGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -15,7 +15,7 @@ import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { ShadowRootKey } from "./dom/shadow-root";
-import { patchCustomElement } from "./dom/patch";
+import { patchCustomElement } from "./dom/faux";
 import { patchShadowRootWithRestrictions } from "./restrictions";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
@@ -42,8 +42,6 @@ export interface VM {
     cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: Record<string, any>;
-    cmpEvents?: Record<string, EventListener[] | undefined>;
-    cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
     callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
@@ -207,8 +205,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
-        cmpEvents: undefined,
-        cmpListener: undefined,
         cmpTemplate: undefined,
         cmpRoot: elm.attachShadow(options),
         callHook,
@@ -432,6 +428,8 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.vm(vm);
     }
     const { elm } = vm;
+    // TODO: shadowDOM will preventing this walking process, we
+    // need to find a different way to find the right boundary
     const parentElm = elm && parentElementGetter.call(elm);
     return getErrorBoundaryVM(parentElm);
 }
@@ -453,7 +451,7 @@ function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        // TODO: if shadowDOM start preventing this walking process, we will
+        // TODO: shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     }
@@ -467,6 +465,8 @@ export function getComponentStack(vm: VM): string {
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
+        // TODO: shadowDOM will preventing this walking process, we
+        // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');

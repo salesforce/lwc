@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { getPropertyDescriptor, defineProperties, toString, getOwnPropertyNames, forEach, assign, isString, defineProperty } from "./language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, defineProperty } from "./language";
 import { Component } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
 import { isBeingConstructed } from "./invoker";
@@ -31,23 +31,10 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     // blacklisting properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running in fallback mode.
-    const originalAddEventListener = sr.addEventListener;
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr);
     assign(descriptors, {
-        addEventListener: {
-            value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'ShadowRoot': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-        },
         querySelector: {
             value(this: ShadowRoot, selector: string) {
                 const vm = getShadowRootVM(this);
@@ -106,22 +93,8 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalAddEventListener = elm.addEventListener;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
-    return assign(descriptors, {
-        addEventListener: {
-            value(this: HTMLElement, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the owner attempts to add a listener programmatically via the DOM
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'LightingElement': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-        },
-    });
+    return assign(descriptors, {});
 }
 
 function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptorMap {
@@ -129,21 +102,8 @@ function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptor
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalAddEventListener = cmp.addEventListener;
     const originalSetAttribute = cmp.setAttribute;
     return {
-        addEventListener: {
-            value(this: Component, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the component author attempts to add a listener programmatically inside the Component
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'LightingElement': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-        },
         setAttribute: {
             value(this: Component, attrName: string, value: any) {
                 // logging errors for experimental and special attributes

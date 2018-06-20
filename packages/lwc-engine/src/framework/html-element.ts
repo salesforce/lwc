@@ -1,7 +1,6 @@
 import assert from "./assert";
-import { Component } from "./component";
-import { toString, isObject, defineProperties, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "./language";
-import { addCmpEventListener, removeCmpEventListener } from "./events";
+import { Component, getWrappedComponentsListener } from "./component";
+import { isObject, defineProperties, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "./language";
 import {
     getAttribute,
     getAttributeNS,
@@ -16,10 +15,11 @@ import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } 
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { CustomEvent, fallbackListenerPatchDescriptors } from "./dom/event";
-import { dispatchEvent } from "./dom/event-target";
-import { getPatchedCustomElement } from "./dom/traverse";
+import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
+import { getWrappedNode, patchCustomElement } from "./dom/faux";
+
+const GlobalEvent = Event; // caching global reference to avoid poisoning
 
 export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
     const vm = getCustomElementVM(elm);
@@ -118,7 +118,7 @@ function LWCElement(this: Component) {
     component[ViewModelReflection] = elm[ViewModelReflection] = vm;
     defineProperties(elm, def.descriptors);
     if (isTrue(fallback)) {
-        defineProperties(elm, fallbackListenerPatchDescriptors);
+        patchCustomElement(elm);
     }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
@@ -137,7 +137,7 @@ LWCElement.prototype = {
             if (arguments.length === 0) {
                 throw new Error(`Failed to execute 'dispatchEvent' on ${this}: 1 argument required, but only 0 present.`);
             }
-            if (!(event instanceof CustomEvent) && !(event instanceof Event)) {
+            if (!(event instanceof GlobalEvent)) {
                 throw new Error(`Failed to execute 'dispatchEvent' on ${this}: parameter 1 is not of type 'Event'.`);
             }
             const { type: evtName, composed, bubbles } = event;
@@ -156,30 +156,24 @@ LWCElement.prototype = {
         return dispatchEvent.call(elm, event);
     },
 
-    addEventListener(type: string, listener: EventListener, options?: any) {
+    addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
-
-            if (arguments.length > 2) {
-                // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-            }
+            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
+            assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
         }
-        addCmpEventListener(vm, type, listener);
+        const wrappedListener = getWrappedComponentsListener(vm, listener);
+        vm.elm.addEventListener(type, wrappedListener, options);
     },
 
-    removeEventListener(type: string, listener: EventListener, options?: any) {
+    removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
-
-            if (arguments.length > 2) {
-                // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-            }
         }
-        removeCmpEventListener(vm, type, listener);
+        const wrappedListener = getWrappedComponentsListener(vm, listener);
+        vm.elm.removeEventListener(type, wrappedListener, options);
     },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
@@ -242,7 +236,7 @@ LWCElement.prototype = {
         // fallback to a patched querySelector to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            elm = getPatchedCustomElement(elm);
+            elm = getWrappedNode(elm);
         }
         // Delegate to custom element querySelector.
         return elm.querySelector(selector);
@@ -256,7 +250,7 @@ LWCElement.prototype = {
         // fallback to a patched querySelectorAll to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            elm = getPatchedCustomElement(elm);
+            elm = getWrappedNode(elm);
         }
         // Delegate to custom element querySelectorAll.
         return elm.querySelectorAll(selector);

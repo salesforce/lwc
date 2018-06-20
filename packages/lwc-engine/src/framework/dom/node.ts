@@ -4,6 +4,7 @@ import {
     hasOwnProperty,
     getOwnPropertyDescriptor,
     isTrue,
+    defineProperties,
 } from '../language';
 import { getNodeKey } from '../vm';
 
@@ -97,3 +98,11 @@ export {
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,
 };
+
+const NodePatchDescriptors: PropertyDescriptorMap = {};
+
+export function patchNode(node: Node) {
+    // TODO: we are nos invoking this yet, but it will be interesting to do
+    // so for any element from the template.
+    defineProperties(node, NodePatchDescriptors);
+}
