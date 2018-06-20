@@ -14,7 +14,7 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     return {
         childNodes: {
             get(this: Node) {
-                assert.logWarning(`Discourage access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll'.`);
+                assert.logWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
                 return originalChildNodesDescriptor!.get!.call(this);
             },
             enumerable: true,
