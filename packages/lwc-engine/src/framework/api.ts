@@ -5,6 +5,7 @@ import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDepen
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
+import { patchEvent } from "./dom/faux";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
@@ -410,6 +411,9 @@ export function b(fn: EventListener): EventListener {
     }
     const vm: VM = vmBeingRendered;
     return function(event: Event) {
+        if (vm.fallback) {
+            patchEvent(event);
+        }
         invokeEventListener(vm, fn, vm.component, event);
     };
 }
