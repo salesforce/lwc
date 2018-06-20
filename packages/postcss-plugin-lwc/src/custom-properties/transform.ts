@@ -1,4 +1,5 @@
 import { Declaration } from 'postcss';
+import * as balanced from 'balanced-match';
 
 import { VarTransformer } from '../config';
 
@@ -8,41 +9,6 @@ const VAR_FUNC_REGEX = /(^|[^\w-])var\(/;
 // Match on "<property-name>" and "<property-name>, <fallback-value>"
 const VAR_ARGUMENTS_REGEX = /[\f\n\r\t ]*([\w-]+)(?:[\f\n\r\t ]*,[\f\n\r\t ]*([\W\w]+))?/;
 
-/**
- * Returns the index of the matching closing parenthesis. If no matching parenthesis is found
- * the method returns -1.
- */
-function indexOfMatchingParenthesis(value: string, start: number): number {
-    let i = start;
-
-    // Counter keeping track of the function call nesting count.
-    let nesting = 0;
-
-    while (i < value.length) {
-        const ch = value.charAt(i);
-
-        // When the function arguments contains an open parenthesis, it means that the function
-        // arguments contains nested function calls.
-        // For example: `var(--min-width, calc(100% - 80px));`
-        if (ch === '(') {
-            nesting += 1;
-        }
-
-        if (ch === ')') {
-            if (nesting === 0) {
-                return i;
-            } else {
-                nesting -= 1;
-            }
-        }
-
-        i += 1;
-    }
-
-    // Handle case where no matching closing parenthesis has been found.
-    return -1;
-}
-
 function transform(decl: Declaration, transformer: VarTransformer, value: string): string {
     const varMatch = VAR_FUNC_REGEX.exec(value);
 
@@ -51,42 +17,35 @@ function transform(decl: Declaration, transformer: VarTransformer, value: string
         return value;
     }
 
-    const [, prefix] = varMatch;
+    // Prefix is either an empty string or a whitespace depending if the `var()` function is
+    // in the middle of the value or not. We need to preserve this whitespace in the final
+    // output.
+    const prefixWhitespace = varMatch[1];
+    const start = varMatch.index;
 
-    // Extract start and end location of the function call
-    const varStart = varMatch.index;
-    const varEnd = indexOfMatchingParenthesis(value, varStart + varMatch[0].length);
-
-    if (varEnd === -1) {
-        throw decl.error(
-            `Missing closing ")" for "${value.slice(varStart)}"`
-        );
+    const parenthesisMatch = balanced('(', ')', value.slice(start));
+    if (!parenthesisMatch) {
+        throw decl.error(`Missing closing ")" for "${value}"`);
     }
 
-    // Extract function call arguments
-    const varFunction = value.slice(varStart, varEnd + 1);
-    const varArguments = value.slice(varStart + varMatch[0].length, varEnd);
-    const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(varArguments);
-
+    // Extract the `var()` function arguments
+    const varArgumentsMatch = VAR_ARGUMENTS_REGEX.exec(parenthesisMatch.body);
     if (varArgumentsMatch === null) {
-        throw decl.error(
-            `Invalid var function signature for "${varFunction}"`
-        );
+        throw decl.error(`Invalid var function signature for "${value}"`);
     }
 
     const [, name, fallback] = varArgumentsMatch;
-    const transformationResult = transformer(name, fallback);
+    const res = transformer(name, fallback);
 
-    if (typeof transformationResult !== 'string') {
-        throw new TypeError(`Expected a string, but received instead "${typeof transformationResult}"`);
+    if (typeof res !== 'string') {
+        throw new TypeError(`Expected a string, but received instead "${typeof res}"`);
     }
 
     // Recursively calling transform to processed the remaining `var` function calls.
-    const processed = value.slice(0, varStart);
-    const toProcess = transformationResult + value.slice(varEnd + 1);
-    const tail = transform(decl, transformer, toProcess);
+    const head = value.slice(0, varMatch.index);
+    const tail = transform(decl, transformer, res + parenthesisMatch.post);
 
-    return processed + prefix + tail;
+    return head + prefixWhitespace + tail;
 }
 
 export default function(decl: Declaration, transformer: VarTransformer) {

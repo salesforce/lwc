@@ -21,3 +21,11 @@ export function isString(o: any): o is string {
 export function isBoolean(o: any): o is boolean {
     return typeof o === 'boolean';
 }
+
+/**
+ * Returns true if the value is an object
+ * @param {any} o
+ */
+export function isObject(o: any): o is object {
+    return typeof o === 'object';
+}

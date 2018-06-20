@@ -10,6 +10,7 @@
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "dependencies": {
+    "balanced-match": "^1.0.0",
     "postcss": "^6.0.13",
     "postcss-selector-parser": "3.1.1"
   }

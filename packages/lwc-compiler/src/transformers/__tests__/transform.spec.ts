@@ -1,62 +1,22 @@
-import { transform } from "../../transformers/transformer";
-import { pretify } from "../../__tests__/utils";
+import { transform } from '../../transformers/transformer';
+import { pretify } from '../../__tests__/utils';
 
-const VALID_TEST_JS = `
-import label from '@label/mylabel';
-function isTrue() {
-    return label;
-}
-isTrue();
-`.trim();
-
-describe("transform", () => {
-    it("should validate presence of src", () => {
+describe('transform', () => {
+    it('should validate presence of src', () => {
         expect(() => transform()).toThrow(
-            /Expect a string for source. Received undefined/
+            /Expect a string for source. Received undefined/,
         );
     });
 
-    it("should validate presence of id", () => {
+    it('should validate presence of id', () => {
         expect(() => transform(`console.log('Hello')`)).toThrow(
-            /Expect a string for id. Received undefined/
+            /Expect a string for id. Received undefined/,
         );
     });
+});
 
-    it("should throw if invalid resolveProxyCompat value is specified in compat mode", async () => {
-        expect.assertions(1);
-        try {
-            const result = await transform(`debugger`, "foo.js", {
-                namespace: "x",
-                name: "foo",
-                outputConfig: {
-                    compat: true,
-                    resolveProxyCompat: {
-                        badkey: "hello"
-                    }
-                }
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
-            );
-        }
-    });
-
-    it("should throw when invalid javascript file is specified", async () => {
-        expect.assertions(1);
-        try {
-            await transform(`const`, "foo.js", {
-                namespace: "x",
-                name: "foo"
-            });
-        } catch (error) {
-            // TODO: Figure out how to disable error message code snippet for failing token.
-            expect(
-                error.message.indexOf("foo.js: Unexpected token (1:5)")
-            ).toBeGreaterThanOrEqual(0);
-        }
-    });
-    it("should apply transformation for valid javascript file", async () => {
+describe('Javascript transform', () => {
+    it('should apply transformation for valid javascript file', async () => {
         const actual = `
             import { Element } from 'engine';
             export default class Foo extends Element {}
@@ -72,29 +32,91 @@ describe("transform", () => {
             }
         `;
 
-        const { code } = await transform(actual, "foo.js", {
-            namespace: "x",
-            name: "foo"
+        const { code } = await transform(actual, 'foo.js', {
+            namespace: 'x',
+            name: 'foo',
         });
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it("should throw when invalid template file is specified", async () => {
+    it('outputs proper metadata', async () => {
+        const content = `
+            import { Element, api } from 'engine';
+            /** Foo doc */
+            export default class Foo extends Element {
+                _privateTodo;
+                @api get todo () {
+                    return this._privateTodo;
+                }
+                @api set todo (val) {
+                    return this._privateTodo = val;
+                }
+                @api
+                index;
+            }
+        `;
+
+        const result = await transform(content, 'foo.js', {
+            namespace: 'x',
+            name: 'foo',
+        });
+
+        const metadata = result.metadata;
+
+        expect(metadata.decorators).toEqual([
+            {
+                type: 'api',
+                targets: [
+                    { type: 'property', name: 'todo' },
+                    { type: 'property', name: 'index' },
+                ],
+            },
+        ]);
+        expect(metadata.doc).toBe('Foo doc');
+        expect(metadata.declarationLoc).toEqual({
+            start: { line: 4, column: 12 },
+            end: { line: 14, column: 13 },
+        });
+    });
+
+    it('should throw when processing an invalid javascript file', async () => {
         expect.assertions(1);
         try {
-            await transform(`<html`, "foo.html", {
-                namespace: "x",
-                name: "foo"
+            await transform(`const`, 'foo.js', {
+                namespace: 'x',
+                name: 'foo',
             });
         } catch (error) {
             // TODO: Figure out how to disable error message code snippet for failing token.
             expect(
-                error.message.indexOf("Invalid HTML syntax: eof-in-tag.")
-            ).toBe(0);
+                error.message.indexOf('foo.js: Unexpected token (1:5)'),
+            ).toBeGreaterThanOrEqual(0);
         }
     });
 
-    it("should apply transformation for template file", async () => {
+    it('should throw if invalid resolveProxyCompat value is specified in compat mode', async () => {
+        expect.assertions(1);
+        try {
+            const result = await transform(`debugger`, 'foo.js', {
+                namespace: 'x',
+                name: 'foo',
+                outputConfig: {
+                    compat: true,
+                    resolveProxyCompat: {
+                        badkey: 'hello',
+                    },
+                },
+            });
+        } catch (error) {
+            expect(error.message).toBe(
+                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"',
+            );
+        }
+    });
+});
+
+describe('HTML transform', () => {
+    it('should apply transformation for template file', async () => {
         const actual = `
             <template>
                 <div>Hello</div>
@@ -123,27 +145,44 @@ describe("transform", () => {
             }
         `;
 
-        const { code } = await transform(actual, "foo.html", {
-            namespace: "x",
-            name: "foo"
+        const { code } = await transform(actual, 'foo.html', {
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it("should throw when invalid template file is specified", async () => {
+    it('should throw when processing an invalid HTML file', async () => {
         expect.assertions(1);
         try {
-            await transform(`<`, "foo.css", {
-                namespace: "x",
-                name: "foo"
+            await transform(`<html`, 'foo.html', {
+                namespace: 'x',
+                name: 'foo',
             });
         } catch (error) {
-            expect(error.message).toBe("<css input>:1:1: Unknown word");
+            // TODO: Figure out how to disable error message code snippet for failing token.
+            expect(
+                error.message.indexOf('Invalid HTML syntax: eof-in-tag.'),
+            ).toBe(0);
+        }
+    });
+});
+
+describe('CSS transform', () => {
+    it('should throw when processing an invalid CSS file', async () => {
+        expect.assertions(1);
+        try {
+            await transform(`<`, 'foo.css', {
+                namespace: 'x',
+                name: 'foo',
+            });
+        } catch (error) {
+            expect(error.message).toBe('<css input>:1:1: Unknown word');
         }
     });
 
-    it("should apply transformation for stylesheet file", async () => {
+    it('should apply transformation for stylesheet file', async () => {
         const actual = `
             div {
                 background-color: red;
@@ -161,51 +200,78 @@ describe("transform", () => {
             export default style;
         `;
 
-        const { code } = await transform(actual, "foo.css", {
-            namespace: "x",
-            name: "foo"
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));
     });
 
-    it("javascript metadata", async () => {
-        const content = `
-            import { Element, api } from 'engine';
-            /** Foo doc */
-            export default class Foo extends Element {
-                _privateTodo;
-                @api get todo () {
-                    return this._privateTodo;
-                }
-                @api set todo (val) {
-                    return this._privateTodo = val;
-                }
-                @api
-                index;
+    it('should throw an error when processing a file with custom properties and allowDefinition is set to false', async () => {
+        await expect(
+            transform(`:host { --bg-color: red; }`, 'foo.css', {
+                stylesheetConfig: {
+                    customProperties: { allowDefinition: true },
+                },
+            })
+        ).resolves.toMatchObject({
+            code: expect.any(String)
+        });
+
+        await expect(transform(`:host { --bg-color: red; }`, 'foo.css', {
+            stylesheetConfig: {
+                customProperties: { allowDefinition: false },
+            },
+        })).rejects.toMatchObject({
+            reason: 'Invalid definition of custom property "--bg-color".'
+        });
+    });
+
+    it('should not transform var functions if custom properties a resolved natively', async () => {
+        const actual = `div { color: var(--bg-color); }`;
+        const expected = `
+            function style(token) {
+                return \`div[\${token}] { color: var(--bg-color); }\`;
             }
+            export default style;
         `;
 
-        const result = await transform(content, "foo.js", {
-            namespace: "x",
-            name: "foo"
+        const { code } = await transform(actual, 'foo.css', {
+            stylesheetConfig: {
+                customProperties: { resolution: { type: 'native' } },
+            },
         });
 
-        const metadata = result.metadata;
+        expect(pretify(code)).toBe(pretify(expected));
+    });
 
-        expect(metadata.decorators).toEqual([
-            {
-                type: "api",
-                targets: [
-                    { type: "property", name: "todo" },
-                    { type: "property", name: "index" }
-                ]
+    it('should transform var functions if custom properties a resolved via a module', async () => {
+        const actual = `div {
+            color: var(--bg-color);
+            font-size: var(--font-size, 16px);
+            margin: var(--margin-small, var(--margin-medium, 20px));
+        }`;
+
+        const expected = `
+            import customProperties from '@customProperties';
+
+            function style(token) {
+                return \`div[\${token}] {
+                    color: \${customProperties(\`--bg-color\`)};
+                    font-size: \${customProperties(\`--font-size\`, \`16px\`)};
+                    margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
+                }\`;
             }
-        ]);
-        expect(metadata.doc).toBe("Foo doc");
-        expect(metadata.declarationLoc).toEqual({
-            start: { line: 4, column: 12 },
-            end: { line: 14, column: 13 }
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            stylesheetConfig: {
+                customProperties: { resolution: { type: 'module', name: '@customProperties' } },
+            },
         });
+
+        expect(pretify(code)).toBe(pretify(expected));
     });
 });
