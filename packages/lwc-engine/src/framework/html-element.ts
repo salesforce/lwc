@@ -10,7 +10,7 @@ import {
     setAttributeNS,
 } from "./dom-api";
 import { attemptAriaAttributeFallback } from "./dom/aom";
-import { ViewModelReflection } from "./utils";
+import { ViewModelReflection, setInternalField } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
@@ -44,7 +44,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
         enumerable,
         configurable,
         get(this: Component) {
-            const vm: VM = this[ViewModelReflection];
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
@@ -58,7 +58,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             return get.call(vm.elm);
         },
         set(this: Component, newValue: any) {
-            const vm = this[ViewModelReflection];
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
@@ -79,7 +79,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
 }
 
 function getLinkedElement(cmp: Component): HTMLElement {
-    return cmp[ViewModelReflection].elm;
+    return getComponentVM(cmp).elm;
 }
 
 interface ComposableEvent extends Event {
@@ -115,7 +115,8 @@ function LWCElement(this: Component) {
         vm.getHook = getHook;
     }
     // linking elm and its component with VM
-    component[ViewModelReflection] = elm[ViewModelReflection] = vm;
+    setInternalField(component, ViewModelReflection, vm);
+    setInternalField(elm, ViewModelReflection, vm);
     defineProperties(elm, def.descriptors);
     if (isTrue(fallback)) {
         patchCustomElement(elm);
@@ -178,7 +179,7 @@ LWCElement.prototype = {
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
         }
         // use cached setAttributeNS, because elm.setAttribute throws
         // when not called in template

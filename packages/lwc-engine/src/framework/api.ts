@@ -90,7 +90,7 @@ const hook: Hooks = {
             mode,
             fallback,
         });
-        const vm: VM = elm[ViewModelReflection];
+        const vm = getCustomElementVM(elm);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
             assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);

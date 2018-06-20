@@ -12,11 +12,9 @@ import { PropsDef, WireHash, TrackDef } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
-import { ViewModelReflection } from "./utils";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
-    [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
     readonly root: ShadowRoot;
     render?: () => (void | Template);

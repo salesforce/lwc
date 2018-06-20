@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, defineProperty } from "./language";
 import { ComponentConstructor } from "./component";
 
 type Callback = () => void;
@@ -9,7 +9,7 @@ export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
-export const ViewModelReflection = Symbol();
+export const ViewModelReflection = createSymbol('ViewModel');
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
@@ -71,4 +71,26 @@ export function resolveCircularModuleDependency(valueOrFactory: any): any {
         valueOrFactory;
 }
 
-export const usesNativeSymbols = typeof Symbol() === 'symbol';
+/**
+ * In IE11, symbols that we plan to apply everywhere are expensive
+ * due to the nature of the symbol polyfill. This method abstract the
+ * creation of symbols, so we can fallback to string when native symbols
+ * are not supported.
+ */
+export function createSymbol(key: string): symbol {
+    // @ts-ignore: using a string as a symbol for perf reasons
+    return typeof Symbol() === 'symbol' ? Symbol(key) : `$$lwc-${key}$$`;
+}
+
+export function setInternalField(o: object, fieldName: symbol, value: any) {
+    defineProperty(o, fieldName, {
+        value,
+        enumerable: false,
+        writable: false,
+        configurable: false,
+    });
+}
+
+export function getInternalField(o: object, fieldName: symbol): any {
+    return o[fieldName];
+}

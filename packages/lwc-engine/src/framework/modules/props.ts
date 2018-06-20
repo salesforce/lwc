@@ -1,6 +1,6 @@
 import assert from "../assert";
 import { isUndefined, keys, StringToLowerCase } from "../language";
-import { ViewModelReflection, EmptyObject } from "../utils";
+import { ViewModelReflection, EmptyObject, getInternalField } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { getAttrNameFromPropName } from "../attributes";
@@ -23,7 +23,7 @@ function update(oldVnode: VNode, vnode: VNode) {
     let cur: any;
     let old: any;
     const elm = vnode.elm as Element;
-    const vm = elm[ViewModelReflection];
+    const vm = getInternalField(elm, ViewModelReflection);
     oldProps = isUndefined(oldProps) ? EmptyObject : oldProps;
 
     for (key in props) {

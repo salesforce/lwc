@@ -55,7 +55,7 @@ import {
     assertValidForceTagName,
     resolveCircularModuleDependency
 } from "./utils";
-import { VM, VMElement, getCustomElementVM, getNodeKey, getNodeOwnerKey } from "./vm";
+import { VM, getCustomElementVM, getNodeKey, getNodeOwnerKey } from "./vm";
 
 export interface PropDef {
     config: number;
@@ -239,7 +239,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 }
 
 function createGetter(key: string) {
-    return function(this: VMElement): any {
+    return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { getHook } = vm;
         return getHook(vm.component as Component, key);
@@ -247,7 +247,7 @@ function createGetter(key: string) {
 }
 
 function createSetter(key: string) {
-    return function(this: VMElement, newValue: any): any {
+    return function(this: HTMLElement, newValue: any): any {
         const vm = getCustomElementVM(this);
         const { setHook } = vm;
         setHook(vm.component as Component, key, newValue);
@@ -255,14 +255,14 @@ function createSetter(key: string) {
 }
 
 function createMethodCaller(method: PublicMethod): PublicMethod {
-    return function(this: VMElement): any {
+    return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { callHook } = vm;
         return callHook(vm.component as Component, method, ArraySlice.call(arguments));
     };
 }
 
-function getAttributePatched(this: VMElement, attrName: string): string | null {
+function getAttributePatched(this: HTMLElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
         assertPublicAttributeCollision(vm, attrName);
@@ -271,7 +271,7 @@ function getAttributePatched(this: VMElement, attrName: string): string | null {
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
+function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
@@ -282,7 +282,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string, newValue: any) {
+function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -292,7 +292,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
     setAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function removeAttributePatched(this: VMElement, attrName: string) {
+function removeAttributePatched(this: HTMLElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
@@ -303,7 +303,7 @@ function removeAttributePatched(this: VMElement, attrName: string) {
     attemptAriaAttributeFallback(vm, attrName);
 }
 
-function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {
+function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
