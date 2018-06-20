@@ -97,4 +97,40 @@ describe("compiler options", () => {
                 'Expected a boolean for outputConfig.compat, received "true".'
         });
     });
+
+    it('should validate stylesheetConfig.customProperties.allowDefinition', async () => {
+        await expect(
+            compile({
+                name: "foo",
+                namespace: "x",
+                files: { x: "foo" },
+                stylesheetConfig: {
+                    customProperties: {
+                        allowDefinition: 'foo',
+                    }
+                }
+            })
+        ).rejects.toMatchObject({
+            message:
+                'Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "foo".'
+        });
+    });
+
+    it('should validate stylesheetConfig.customProperties.resolveFromModule', async () => {
+        await expect(
+            compile({
+                name: "foo",
+                namespace: "x",
+                files: { x: "foo" },
+                stylesheetConfig: {
+                    customProperties: {
+                        resolveFromModule: true,
+                    }
+                }
+            })
+        ).rejects.toMatchObject({
+            message:
+                'Expected a string for stylesheetConfig.customProperties.resolveFromModule, received "true".'
+        });
+    });
 });

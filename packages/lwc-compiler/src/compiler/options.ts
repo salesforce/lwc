@@ -129,15 +129,15 @@ function validateStylesheetConfig(config: StylesheetConfig) {
         const { allowDefinition, resolveFromModule } = customProperties;
 
         if (!isUndefined(allowDefinition) && !isBoolean(allowDefinition)) {
-            throw new TypeError(`Expected a boolean for stylesheetConfig.allowDefinition, received ${
+            throw new TypeError(`Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "${
                 allowDefinition
-            }`);
+            }".`);
         }
 
         if (!isUndefined(resolveFromModule) && !isString(resolveFromModule)) {
-            throw new TypeError(`Expected a string for stylesheetConfig.resolveFromModule, received ${
+            throw new TypeError(`Expected a string for stylesheetConfig.customProperties.resolveFromModule, received "${
                 resolveFromModule
-            }`);
+            }".`);
         }
     }
 }

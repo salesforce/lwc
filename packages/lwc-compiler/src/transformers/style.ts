@@ -22,8 +22,7 @@ export default style;
 const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
 
 /**
- * Transform the var function to a call expression to the custom properties resolver with
- * the name and fallback value.
+ * Transform the var() function to a javascript call expression with the name and fallback value.
  */
 function transformVar(resolveFromModule?: string) {
     if (!isUndefined(resolveFromModule)) {

@@ -15,7 +15,7 @@ describe('transform', () => {
     });
 });
 
-describe('javascript transform', () => {
+describe('Javascript transform', () => {
     it('should apply transformation for valid javascript file', async () => {
         const actual = `
             import { Element } from 'engine';
