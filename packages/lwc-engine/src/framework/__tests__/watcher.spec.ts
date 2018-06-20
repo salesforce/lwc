@@ -1,5 +1,4 @@
 import { createElement, Element } from '../main';
-import { ViewModelReflection } from "../utils";
 
 describe('watcher', () => {
 
@@ -87,14 +86,20 @@ describe('watcher', () => {
                     super();
                     this.round = 0;
                 }
+                updateRound() {
+                    this.round += 1;
+                }
                 render() {
                     return html2;
                 }
             }
             MyComponent4.track = { round: 1 };
+            MyComponent4.publicMethods = ['updateRound'];
+
             const elm = createElement('x-foo', { is: MyComponent4 });
             document.body.appendChild(elm);
-            elm[ViewModelReflection].component.round += 1;
+            elm.updateRound();
+
             Promise.resolve().then(_ => {
                 expect(counter).toBe(2);
             });

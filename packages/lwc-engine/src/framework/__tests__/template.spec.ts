@@ -1,19 +1,13 @@
 import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
-import * as target from '../template';
-import * as globalApi from '../api';
-import { getHostShadowRoot } from "../html-element";
-import { ViewModelReflection } from '../utils';
-import { Template } from '../template';
-
-function createCustomComponent(html: Template, slotset?) {
+function createCustomComponent(html) {
     class MyComponent extends Element {
         render() {
             return html;
         }
     }
     const elm = createElement('x-foo', { is: MyComponent });
-    elm[ViewModelReflection].cmpSlots = slotset;
     document.body.appendChild(elm);
     return elm;
 }
@@ -29,7 +23,8 @@ describe('template', () => {
                 $memoizer = $m;
                 return [];
             });
-            expect($api).toBe(globalApi);
+
+            expect($api && typeof $api === 'object').toBe(true);
             expect($cmp && typeof $cmp === 'object').toBe(true);
             expect($slotset && typeof $slotset === 'object').toBe(true);
             expect($memoizer).toEqual({});
@@ -196,15 +191,24 @@ describe('template', () => {
 
         it('should profixied default objects', () => {
             const x = [1, 2, 3];
+
             class MyComponent extends Element {
                 constructor() {
                     super();
                     this.x = x;
                 }
+
+                getX() {
+                    return this.x;
+                }
             }
+
             MyComponent.publicProps = { x: true };
+            MyComponent.publicMethods = ['getX'];
+
             const elm = createElement('x-foo', { is: MyComponent });
-            expect(elm.x).toBe(elm[ViewModelReflection].component.x);
+
+            expect(elm.x).toBe(elm.getX());
             expect(elm.x).not.toBe(x);
             expect(elm.x).toEqual(x);
         });
@@ -250,32 +254,32 @@ describe('template', () => {
     describe('evaluateTemplate()', () => {
         it('should throw for undefined value', () => {
             expect(() => {
-                target.evaluateTemplate({ component: 1 }, undefined);
+                createCustomComponent(() => undefined)
             }).toThrow();
         });
 
         it('should throw for null value', () => {
             expect(() => {
-                target.evaluateTemplate({ component: 1 }, null);
+                createCustomComponent(() =>  null)
             }).toThrow();
         });
         it('should throw for empty values', () => {
             expect(() => {
-                target.evaluateTemplate({ component: 1 }, "");
+                createCustomComponent(() =>  '')
             }).toThrow();
         });
 
         it('should throw for dom elements', () => {
             const elm = document.createElement('p');
             expect(() => {
-                target.evaluateTemplate({ component: 1 }, elm);
+                createCustomComponent(() =>  elm)
             }).toThrow();
         });
 
         it('should throw for array of dom elements', () => {
             const elm = document.createElement('p');
             expect(() => {
-                target.evaluateTemplate({ component: 1 }, [elm]);
+                createCustomComponent(() =>  [elm])
             }).toThrow();
         });
     });
@@ -308,7 +312,7 @@ describe('template', () => {
 
     describe('token', () => {
         it('adds the host token to the host element if template has a token', () => {
-            const styledTmpl: Template = () => [];
+            const styledTmpl = () => [];
             styledTmpl.hostToken = 'token-host';
 
             class Component extends Element {
@@ -325,7 +329,7 @@ describe('template', () => {
         });
 
         it('adds the token to all the rendered elements if the template has a token', () => {
-            const styledTmpl: Template = ($api) => [
+            const styledTmpl = ($api) => [
                 $api.h('div', {
                     key: 1,
                 }, [
@@ -350,10 +354,10 @@ describe('template', () => {
         });
 
         it('removes the host token from the host element when changing template', () => {
-            const styledTmpl: Template = () => [];
+            const styledTmpl = () => [];
             styledTmpl.hostToken = 'token-host';
 
-            const unstyledTmpl: Template = () => [];
+            const unstyledTmpl = () => [];
 
             class Component extends Element {
                 tmpl = styledTmpl;
@@ -378,10 +382,10 @@ describe('template', () => {
         });
 
         it('swaps the host token when replacing the template with a different token', () => {
-            const styledTmplA: Template = () => [];
+            const styledTmplA = () => [];
             styledTmplA.hostToken = 'tokenA-host';
 
-            const styledTmplB: Template = () => [];
+            const styledTmplB = () => [];
             styledTmplB.hostToken = 'tokenB-host';
 
             class Component extends Element {

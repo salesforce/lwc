@@ -1,17 +1,10 @@
 import { createElement, Element } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
-import { ViewModelReflection } from "../../utils";
-import { h } from "../../api";
+import { getHostShadowRoot } from '../../html-element';
+import { h } from '../../api';
 
 describe('root', () => {
     describe('integration', () => {
-
-        it.skip('should support this.template.host', () => {
-            class MyComponent extends Element {}
-            const elm = createElement('x-foo', { is: MyComponent });
-            const vm = elm[ViewModelReflection] as VM;
-            expect(vm.component).toBe(getHostShadowRoot(elm).host);
-        });
+        it.skip('should support this.template.host', () => {});
 
         it('should support this.template.mode', () => {
             class MyComponent extends Element {}
