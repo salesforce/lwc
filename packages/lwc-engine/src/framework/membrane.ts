@@ -2,13 +2,13 @@ import assert from "./assert";
 import { toString } from "./language";
 import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
-import { unwrap as traverseUnwrap } from "./dom/traverse-membrane";
+import { getRawNode } from "./dom/faux";
 
 function format(value: any) {
     if (process.env.NODE_ENV !== 'production') {
         // For now, if we determine that value is a piercing membrane
         // we want to throw a big error.
-        if (traverseUnwrap(value) !== value) {
+        if (getRawNode(value) !== value) {
             throw new ReferenceError(`Invalid attempt to get access to a piercing membrane ${toString(value)} via a reactive membrane.`);
         }
     }
@@ -37,7 +37,7 @@ export const unwrap = function(value: any): any {
          return unwrapped;
      }
      // piercing membrane is not that important, it goes second
-     unwrapped = traverseUnwrap(value);
+     unwrapped = getRawNode(value);
      if (unwrapped !== value) {
          return unwrapped;
      }

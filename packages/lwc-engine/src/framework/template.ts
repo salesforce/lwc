@@ -7,7 +7,7 @@ import { Context } from "./context";
 import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { Component } from "./component";
-import { removeAttribute, setAttribute } from "./dom/element";
+import { removeAttribute, setAttribute } from "./dom-api";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
