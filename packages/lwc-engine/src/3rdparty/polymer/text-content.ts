@@ -10,13 +10,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 // This code is inspired by Polymer ShadyDOM Polyfill
 
+import { getFilteredChildNodes } from "../../framework/dom/traverse";
+
 export function getTextContent(node: Node): string {
     switch (node.nodeType) {
         case Node.ELEMENT_NODE:
-            const { childNodes } = node;
+            const childNodes = getFilteredChildNodes(node);
             let content = '';
             for (let i = 0, len = childNodes.length; i < len; i += 1) {
-                content += childNodes[i].textContent;
+                content += getTextContent(childNodes[i]);
             }
             return content;
         default:

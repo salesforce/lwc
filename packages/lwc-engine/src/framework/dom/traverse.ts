@@ -64,7 +64,7 @@ export function shadowRootChildNodes(vm: VM, elm: Element) {
     return getAllMatches(vm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(vm: VM, nodeList: NodeList): Element[] {
+function getAllMatches(vm: VM, nodeList: NodeList | Element[]): Element[] {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -115,40 +115,51 @@ export function shadowRootQuerySelectorAll(vm: VM, selector: string): Element[] 
     return getAllMatches(vm, nodeList);
 }
 
-function lightDomChildNodesGetter(this: HTMLElement): Node[] {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`childNodes on ${this} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
-    }
-    const ownerVM = getNodeOwnerVM(this) as VM;
+export function getFilteredChildNodes(node: Node): Element[] {
+    const ownerVM = getNodeOwnerVM(node) as VM;
     let children;
-    if (hasOwnProperty.call(this, ViewModelReflection)) {
-        const customElementVM = getCustomElementVM(this);
+    if (hasOwnProperty.call(node, ViewModelReflection)) {
+        // node itself is a custom element
+        const vm = getCustomElementVM(node as HTMLElement);
         // lwc element, in which case we need to get only the nodes
         // that were slotted
-        const slots = nativeQuerySelectorAll.call(customElementVM.elm, 'slot');
+        const slots = nativeQuerySelectorAll.call(node, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
-            if (isNodeOwnedByVM(customElementVM, slot)) {
+            if (isNodeOwnedByVM(vm, slot)) {
                 ArrayPush.apply(seed, ArraySlice.call(nativeChildNodesGetter.call(slot)));
             }
             return seed;
         }, []);
     } else {
         // regular element
-        children = nativeChildNodesGetter.call(this);
+        children = nativeChildNodesGetter.call(node);
     }
-    return getAllMatches(ownerVM, children);
+    return ArrayReduce.call(children, (seed, child) => {
+        if (isNodeOwnedByVM(ownerVM, child)) {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
+function lightDomChildNodesGetter(this: HTMLElement): Node[] {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.logWarning(`childNodes on ${this} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+    }
+    const ownerVM = getNodeOwnerVM(this) as VM;
+    return getAllMatches(ownerVM, getFilteredChildNodes(this));
 }
 
 function lightDomInnerHTMLGetter(this: Element): string {
-    return getInnerHTML(patchShadowDomTraversalMethods(this));
+    return getInnerHTML(this);
 }
 
 function lightDomOuterHTMLGetter(this: Element): string {
-    return getOuterHTML(patchShadowDomTraversalMethods(this));
+    return getOuterHTML(this);
 }
 
 function lightDomTextContentGetter(this: Node): string {
-    return getTextContent(patchShadowDomTraversalMethods(this));
+    return getTextContent(this);
 }
 
 function assignedSlotGetter(this: Node): HTMLElement | null {
