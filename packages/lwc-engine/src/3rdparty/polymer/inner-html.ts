@@ -11,10 +11,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 // This code is inspired by Polymer ShadyDOM Polyfill
 
 import { getOuterHTML } from "./outer-html";
+import { getFilteredChildNodes } from "../../framework/dom/traverse";
 
 export function getInnerHTML(node: Node): string {
     let s = '';
-    const { childNodes } = node;
+    const childNodes = getFilteredChildNodes(node);
     for (let i = 0, len = childNodes.length; i < len; i += 1) {
         s += getOuterHTML(childNodes[i]);
     }
