@@ -11,6 +11,8 @@ import { getNodeOwnerKey, getNodeKey } from "../vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { patchShadowDomTraversalMethods } from "./traverse";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
+import { getHost } from "./shadow-root";
 
 interface WrappedListener extends EventListener {
     placement: EventListenerContext;
@@ -22,10 +24,7 @@ enum EventListenerContext {
     SHADOW_ROOT_LISTENER = 2,
 }
 
-const eventToContextMap: WeakMap<Event, number> = new WeakMap();
-
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
-import { getHost } from "./shadow-root";
+const eventToContextMap: WeakMap<Event, EventListenerContext> = new WeakMap();
 
 function isChildNode(root: Element, node: Node): boolean {
     return !!(compareDocumentPosition.call(root, node) & DOCUMENT_POSITION_CONTAINED_BY);
