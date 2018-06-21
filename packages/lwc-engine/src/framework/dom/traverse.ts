@@ -152,12 +152,8 @@ export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): 
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
-    const owner = getNodeOwner(node);
-    if (isNull(owner)) {
-        return [];
-    }
     let children;
-    if (isUndefined(getNodeKey(node))) {
+    if (!isUndefined(getNodeKey(node))) {
         // node itself is a custom element
         // lwc element, in which case we need to get only the nodes
         // that were slotted
@@ -171,6 +167,10 @@ export function getFilteredChildNodes(node: Node): Element[] {
     } else {
         // regular element
         children = nativeChildNodesGetter.call(node);
+    }
+    const owner = getNodeOwner(node);
+    if (isNull(owner)) {
+        return [];
     }
     return ArrayReduce.call(children, (seed, child) => {
         if (isNodeOwnedBy(owner, child)) {
