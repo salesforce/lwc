@@ -83,12 +83,7 @@ export function createSymbol(key: string): symbol {
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {
-    defineProperty(o, fieldName, {
-        value,
-        enumerable: false,
-        writable: false,
-        configurable: false,
-    });
+    defineProperty(o, fieldName, { value });
 }
 
 export function getInternalField(o: object, fieldName: symbol): any {
