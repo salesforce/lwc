@@ -17,7 +17,7 @@ import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
-import { getWrappedNode, patchCustomElement } from "./dom/faux";
+import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -102,7 +102,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, fallback } = vm;
+    const { elm, def } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -118,9 +118,6 @@ function LWCElement(this: Component) {
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     defineProperties(elm, def.descriptors);
-    if (isTrue(fallback)) {
-        patchCustomElement(elm);
-    }
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
@@ -233,28 +230,28 @@ LWCElement.prototype = {
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        let elm: HTMLElement = vm.elm;
+        const { elm } = vm;
         // fallback to a patched querySelector to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            elm = getWrappedNode(elm);
+            return lightDomQuerySelector(elm, selector);
         }
         // Delegate to custom element querySelector.
         return elm.querySelector(selector);
     },
-    querySelectorAll(selector: string): NodeList {
+    querySelectorAll(selector: string): Element[] {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        let elm: HTMLElement = vm.elm;
+        const { elm } = vm;
         // fallback to a patched querySelectorAll to respect
         // shadow semantics
         if (isTrue(vm.fallback)) {
-            elm = getWrappedNode(elm);
+            return lightDomQuerySelectorAll(elm, selector);
         }
         // Delegate to custom element querySelectorAll.
-        return elm.querySelectorAll(selector);
+        return ArraySlice.call(elm.querySelectorAll(selector));
     },
     get tagName(): string {
         const elm = getLinkedElement(this);

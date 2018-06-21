@@ -123,22 +123,30 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
-    const owner = getNodeOwner(this);
+export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
+    const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return [];
     }
-    const matches = nativeQuerySelectorAll.call(this, selector);
+    const matches = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(owner, matches);
 }
 
-function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
-    const owner = getNodeOwner(this);
+export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
+    const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return null;
     }
-    const nodeList = nativeQuerySelectorAll.call(this, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(owner, nodeList);
+}
+
+function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
+    return lightDomQuerySelectorAll(this, selector);
+}
+
+function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
+    return lightDomQuerySelector(this, selector);
 }
 
 export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {

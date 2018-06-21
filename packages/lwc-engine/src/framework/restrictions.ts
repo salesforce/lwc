@@ -177,7 +177,6 @@ export function patchLightningElementPrototypeWithRestrictions(proto: object) {
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
             set() {}, // tslint:disable-line
-            enumerable: false,
         });
     });
 }
