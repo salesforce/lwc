@@ -32,8 +32,6 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: Record<string, any>;
-    // TODO: make this type more restrictive once we know more about it
-    rootProps: Record<string, string | null | boolean>;
     cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: Record<string, any>;
@@ -49,7 +47,6 @@ export interface VM {
     mode: string;
     component?: Component;
     deps: VM[][];
-    hostAttrs: Record<string, number | undefined>;
     toString(): string;
 }
 
@@ -192,7 +189,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
-        rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
@@ -203,7 +199,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         getHook,
         component: undefined,
         children: EmptyArray,
-        hostAttrs: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -475,6 +470,14 @@ export function getNodeKey(node: Node): number | undefined {
     return vm.uid;
 }
 
+export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
+    const vm: VM | undefined = getInternalField(sr, ViewModelReflection);
+    if (isUndefined(vm)) {
+        return null;
+    }
+    return vm.elm;
+}
+
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(getInternalField(elm, ViewModelReflection));
@@ -499,6 +502,8 @@ export function getShadowRootVM(root: ShadowRoot): VM {
 }
 
 // slow path routine
+// NOTE: we should probably more this routine to the faux shadow folder
+// and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);

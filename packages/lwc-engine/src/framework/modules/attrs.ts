@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { prepareForAttributeMutationFromTemplate } from '../def';
+import { prepareForValidAttributeMutation } from '../def';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../language';
 import { EmptyObject } from '../utils';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
@@ -35,7 +35,7 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         const old = (oldAttrs as any)[key];
         if (old !== cur) {
             if (process.env.NODE_ENV !== 'production') {
-                prepareForAttributeMutationFromTemplate(elm, key);
+                prepareForValidAttributeMutation(elm, key);
             }
             if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace

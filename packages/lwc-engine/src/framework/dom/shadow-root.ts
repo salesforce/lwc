@@ -1,18 +1,19 @@
 import assert from "../assert";
-import { isNull, create, ArrayIndexOf, assign, isUndefined, toString, } from "../language";
+import { isNull, create, ArrayIndexOf, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
 import { getNodeKey } from "../vm";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
-import { createShadowRootAOMDescriptorMap } from './aom';
 import { getInternalField, setInternalField, createSymbol } from "../utils";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINS } from "./node";
+import { ElementAOMPropertyNames } from "../attributes";
 
 let ArtificialShadowRootPrototype;
 
 const HostKey = createSymbol('host');
 const ShadowRootKey = createSymbol('shadowRoot');
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export function getHost(root: ShadowRoot): HTMLElement {
     if (process.env.NODE_ENV !== 'production') {
@@ -26,6 +27,22 @@ export function getShadowRoot(elm: HTMLElement): ShadowRoot {
         assert.invariant(getInternalField(elm, ShadowRootKey), `A Custom Element with a shadow attached must be provided as the first argument.`);
     }
     return getInternalField(elm, ShadowRootKey);
+}
+
+// Synthetic creation of all AOM property descriptors for Shadow Roots
+function createShadowRootAOMDescriptorMap(): PropertyDescriptorMap {
+    return ArrayReduce.call(ElementAOMPropertyNames, (seed: PropertyDescriptorMap, propName: string) => {
+        let descriptor: PropertyDescriptor | undefined;
+        if (isNativeShadowRootAvailable) {
+            descriptor = getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, propName);
+        } else {
+            descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
+        }
+        if (!isUndefined(descriptor)) {
+            seed[propName] = descriptor;
+        }
+        return seed;
+    }, create(null));
 }
 
 export function attachShadow(elm: HTMLElement, options: ShadowRootInit): ShadowRoot {
@@ -86,7 +103,16 @@ function patchedShadowRootTextContentGetter(this: ShadowRoot): string {
     return textContent;
 }
 
+function hostGetter(this: ShadowRoot): HTMLElement {
+    return getHost(this);
+}
+
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
+    host: {
+        get: hostGetter,
+        enumerable: true,
+        configurable: true,
+    },
     firstChild: {
         get: patchedShadowRootFirstChildGetter,
         enumerable: true,
