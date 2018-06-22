@@ -24,35 +24,36 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
-    ArrayReduce,
+    defineProperties,
+    seal,
+    forEach,
+    getPropertyDescriptor,
 } from "./language";
 import {
-    GlobalAOMProperties,
     getGlobalHTMLPropertiesInfo,
+    getPropNameFromAttrName,
+    getAttrNameFromPropName,
+    ElementAOMPropertyNames,
     defaultDefHTMLPropertyNames,
-    attemptAriaAttributeFallback,
-} from "./dom/attributes";
+} from "./attributes";
 import {
     getAttribute,
     setAttribute,
     setAttributeNS,
     removeAttribute,
     removeAttributeNS,
-} from "./dom/element";
+} from "./dom-api";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement } from "./html-element";
+import { Element as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
-    getPropNameFromAttrName,
     assertValidForceTagName,
-    ViewModelReflection,
-    getAttrNameFromPropName,
     resolveCircularModuleDependency
 } from "./utils";
-import { OwnerKey, VM, VMElement, getCustomElementVM } from "./vm";
+import { VM, getCustomElementVM, getNodeKey, getNodeOwnerKey } from "./vm";
 
 export interface PropDef {
     config: number;
@@ -93,20 +94,9 @@ import {
     ComponentConstructor, ErrorCallback, Component
  } from './component';
 import { Template } from "./template";
+import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
-
-function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
-    seed[propName] = {
-        config: 3,
-        type: 'any',
-        attr: getAttrNameFromPropName(propName),
-    };
-    return seed;
-}
-
-const reducedDefaultHTMLPropertyNames: PropsDef = ArrayReduce.call(defaultDefHTMLPropertyNames, propertiesReducer, create(null));
-const HTML_PROPS: PropsDef = ArrayReduce.call(getOwnPropertyNames(GlobalAOMProperties), propertiesReducer, reducedDefaultHTMLPropertyNames);
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
@@ -128,6 +118,10 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 }
 
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
+    if (globalInitialization) {
+        // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
+        globalInitialization();
+    }
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
 
@@ -224,7 +218,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
 }
 
 function createGetter(key: string) {
-    return function(this: VMElement): any {
+    return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { getHook } = vm;
         return getHook(vm.component as Component, key);
@@ -232,7 +226,7 @@ function createGetter(key: string) {
 }
 
 function createSetter(key: string) {
-    return function(this: VMElement, newValue: any): any {
+    return function(this: HTMLElement, newValue: any): any {
         const vm = getCustomElementVM(this);
         const { setHook } = vm;
         setHook(vm.component as Component, key, newValue);
@@ -240,14 +234,14 @@ function createSetter(key: string) {
 }
 
 function createMethodCaller(method: PublicMethod): PublicMethod {
-    return function(this: VMElement): any {
+    return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { callHook } = vm;
         return callHook(vm.component as Component, method, ArraySlice.call(arguments));
     };
 }
 
-function getAttributePatched(this: VMElement, attrName: string): string | null {
+function getAttributePatched(this: HTMLElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
         assertPublicAttributeCollision(vm, attrName);
@@ -256,10 +250,8 @@ function getAttributePatched(this: VMElement, attrName: string): string | null {
     return getAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
+function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
-    // marking the set is needed for the AOM polyfill
-    vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeCollision(vm, attrName);
@@ -267,7 +259,7 @@ function setAttributePatched(this: VMElement, attrName: string, newValue: any) {
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
 
-function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string, newValue: any) {
+function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -277,7 +269,7 @@ function setAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName:
     setAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function removeAttributePatched(this: VMElement, attrName: string) {
+function removeAttributePatched(this: HTMLElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
@@ -285,10 +277,9 @@ function removeAttributePatched(this: VMElement, attrName: string) {
         assertPublicAttributeCollision(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
-    attemptAriaAttributeFallback(vm, attrName);
 }
 
-function removeAttributeNSPatched(this: VMElement, attrNameSpace: string, attrName: string) {
+function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -317,7 +308,7 @@ function assertTemplateMutationViolation(vm: VM, attrName: string) {
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (!isAttributeChangeControlled(attrName) && !isUndefined(elm[OwnerKey])) {
+    if (!isAttributeChangeControlled(attrName) && !isUndefined(getNodeOwnerKey(elm))) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
     // attribute change control must be released every time its value is checked
@@ -344,12 +335,12 @@ function resetAttributeChangeControl() {
     controlledAttributeName = undefined;
 }
 
-export function prepareForAttributeMutationFromTemplate(elm: Element, key: string) {
+export function prepareForValidAttributeMutation(elm: Element, key: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    if (elm[ViewModelReflection]) {
+    if (!isUndefined(getNodeKey(elm))) {
         // TODO: we should guarantee that the methods of the element are all patched
         controlledAttributeChange = true;
         controlledAttributeName = key;
@@ -474,3 +465,54 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
     CtorToDefMap.set(Ctor, def);
     return def;
 }
+
+// Initialization Routines
+import "../polyfills/proxy-concat/main";
+import "../polyfills/event-composed/main";
+import "../polyfills/aria-properties/main";
+
+const HTML_PROPS: PropsDef = create(null);
+const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
+
+let globalInitialization: any = () => {
+    // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
+    forEach.call(ElementAOMPropertyNames, (propName: string) => {
+        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+        // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
+        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+        if (!isUndefined(descriptor)) {
+            const attrName = getAttrNameFromPropName(propName);
+            HTML_PROPS[propName] = {
+                config: 3,
+                type: 'any',
+                attr: attrName,
+            };
+            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
+
+        }
+    });
+    forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+        // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
+        // this category, so, better to be sure.
+        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+        if (!isUndefined(descriptor)) {
+            const attrName = getAttrNameFromPropName(propName);
+            HTML_PROPS[propName] = {
+                config: 3,
+                type: 'any',
+                attr: attrName,
+            };
+            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
+        }
+    });
+    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
+
+    if (process.env.NODE_ENV !== 'production') {
+        patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+    }
+
+    freeze(BaseElement);
+    seal(BaseElement.prototype);
+    globalInitialization = void(0);
+};
