@@ -24,20 +24,18 @@ import {
     isUndefined,
     ArraySlice,
     isNull,
-    ArrayReduce,
     defineProperties,
     seal,
+    forEach,
+    getPropertyDescriptor,
 } from "./language";
 import {
     getGlobalHTMLPropertiesInfo,
-    CustomElementGlobalPropertyDescriptors,
     getPropNameFromAttrName,
     getAttrNameFromPropName,
+    ElementAOMPropertyNames,
+    defaultDefHTMLPropertyNames,
 } from "./attributes";
-import {
-    attemptAriaAttributeFallback,
-    createShadowRootAOMDescriptorMap,
-} from "./dom/aom";
 import {
     getAttribute,
     setAttribute,
@@ -99,25 +97,6 @@ import { Template } from "./template";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
-
-function propertiesReducer(seed: PropsDef, propName: string): PropsDef {
-    seed[propName] = {
-        config: 3,
-        type: 'any',
-        attr: getAttrNameFromPropName(propName),
-    };
-    return seed;
-}
-
-let HTML_PROPS: PropsDef;
-
-function getGlobalPropertyDefs() {
-    if (isUndefined(HTML_PROPS)) {
-        // Lazy initialization to avoid circular deps
-        HTML_PROPS = ArrayReduce.call(getOwnPropertyNames(CustomElementGlobalPropertyDescriptors), propertiesReducer, create(null));
-    }
-    return HTML_PROPS;
-}
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
@@ -206,7 +185,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         render = render || superDef.render;
     }
 
-    props = assign(create(null), getGlobalPropertyDefs(), props);
+    props = assign(create(null), HTML_PROPS, props);
     const descriptors = createCustomElementDescriptorMap(props, methods);
 
     const def: ComponentDef = {
@@ -273,8 +252,6 @@ function getAttributePatched(this: HTMLElement, attrName: string): string | null
 
 function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
-    // marking the set is needed for the AOM polyfill
-    vm.hostAttrs[attrName] = 1; // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
         assertTemplateMutationViolation(vm, attrName);
         assertPublicAttributeCollision(vm, attrName);
@@ -300,7 +277,6 @@ function removeAttributePatched(this: HTMLElement, attrName: string) {
         assertPublicAttributeCollision(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
-    attemptAriaAttributeFallback(vm, attrName);
 }
 
 function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
@@ -359,7 +335,7 @@ function resetAttributeChangeControl() {
     controlledAttributeName = undefined;
 }
 
-export function prepareForAttributeMutationFromTemplate(elm: Element, key: string) {
+export function prepareForValidAttributeMutation(elm: Element, key: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -493,17 +469,44 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
 import "../polyfills/event-composed/main";
+import "../polyfills/aria-properties/main";
+
+const HTML_PROPS: PropsDef = create(null);
+const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
 
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-    if (typeof (window as any).ShadowRoot !== "undefined") {
-        // Patching the prototype of native ShadowRoot.prototype with all the AOM properties
-        // so we don't have to patch on every instance. This seems to be safe enough since
-        // no browser is implementing them just yet.
-        defineProperties((window as any).ShadowRoot.prototype, createShadowRootAOMDescriptorMap());
-    }
+    forEach.call(ElementAOMPropertyNames, (propName: string) => {
+        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+        // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
+        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+        if (!isUndefined(descriptor)) {
+            const attrName = getAttrNameFromPropName(propName);
+            HTML_PROPS[propName] = {
+                config: 3,
+                type: 'any',
+                attr: attrName,
+            };
+            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
 
-    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(CustomElementGlobalPropertyDescriptors));
+        }
+    });
+    forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+        // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
+        // this category, so, better to be sure.
+        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+        if (!isUndefined(descriptor)) {
+            const attrName = getAttrNameFromPropName(propName);
+            HTML_PROPS[propName] = {
+                config: 3,
+                type: 'any',
+                attr: attrName,
+            };
+            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
+        }
+    });
+    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
 
     if (process.env.NODE_ENV !== 'production') {
         patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
