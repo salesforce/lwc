@@ -31,18 +31,10 @@ import {
 } from "./language";
 import {
     getGlobalHTMLPropertiesInfo,
-    getPropNameFromAttrName,
     getAttrNameFromPropName,
     ElementAOMPropertyNames,
     defaultDefHTMLPropertyNames,
 } from "./attributes";
-import {
-    getAttribute,
-    setAttribute,
-    setAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-} from "./dom-api";
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
@@ -53,7 +45,7 @@ import {
     assertValidForceTagName,
     resolveCircularModuleDependency
 } from "./utils";
-import { VM, getCustomElementVM, getNodeKey, getNodeOwnerKey } from "./vm";
+import { getCustomElementVM } from "./vm";
 
 export interface PropDef {
     config: number;
@@ -185,8 +177,9 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         render = render || superDef.render;
     }
 
+    const localKeyDescriptors = createCustomElementDescriptorMap(props, methods);
+    const descriptors = assign(localKeyDescriptors, globalKeyDescriptors);
     props = assign(create(null), HTML_PROPS, props);
-    const descriptors = createCustomElementDescriptorMap(props, methods);
 
     const def: ComponentDef = {
         name,
@@ -217,20 +210,35 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
     return def;
 }
 
+// across components, the public props are almost much the same, we just cache
+// the getter and setter for perf reasons considering that most of them are standard
+// global properties, but they need to be monkey patch so we can delegate their
+// behavior to the corresponding instance.
+const cachedGetterByKey: Record<string, (this: HTMLElement) => any> = create(null);
+const cachedSetterByKey: Record<string, (this: HTMLElement, newValue: any) => any> = create(null);
+
 function createGetter(key: string) {
-    return function(this: HTMLElement): any {
-        const vm = getCustomElementVM(this);
-        const { getHook } = vm;
-        return getHook(vm.component as Component, key);
-    };
+    let fn = cachedGetterByKey[key];
+    if (isUndefined(fn)) {
+        fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
+            const vm = getCustomElementVM(this);
+            const { getHook } = vm;
+            return getHook(vm.component as Component, key);
+        };
+    }
+    return fn;
 }
 
 function createSetter(key: string) {
-    return function(this: HTMLElement, newValue: any): any {
-        const vm = getCustomElementVM(this);
-        const { setHook } = vm;
-        setHook(vm.component as Component, key, newValue);
-    };
+    let fn = cachedSetterByKey[key];
+    if (isUndefined(fn)) {
+        fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
+            const vm = getCustomElementVM(this);
+            const { setHook } = vm;
+            setHook(vm.component as Component, key, newValue);
+        };
+    }
+    return fn;
 }
 
 function createMethodCaller(method: PublicMethod): PublicMethod {
@@ -241,147 +249,22 @@ function createMethodCaller(method: PublicMethod): PublicMethod {
     };
 }
 
-function getAttributePatched(this: HTMLElement, attrName: string): string | null {
-    if (process.env.NODE_ENV !== 'production') {
-        const vm = getCustomElementVM(this);
-        assertPublicAttributeCollision(vm, attrName);
-    }
-
-    return getAttribute.apply(this, ArraySlice.call(arguments));
-}
-
-function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
-    }
-    setAttribute.apply(this, ArraySlice.call(arguments));
-}
-
-function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, newValue: any) {
-    const vm = getCustomElementVM(this);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
-    }
-    setAttributeNS.apply(this, ArraySlice.call(arguments));
-}
-
-function removeAttributePatched(this: HTMLElement, attrName: string) {
-    const vm = getCustomElementVM(this);
-    // marking the set is needed for the AOM polyfill
-    if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
-    }
-    removeAttribute.apply(this, ArraySlice.call(arguments));
-}
-
-function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
-    const vm = getCustomElementVM(this);
-
-    if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
-    }
-    removeAttributeNS.apply(this, ArraySlice.call(arguments));
-}
-
-function assertPublicAttributeCollision(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const propName = isString(attrName) ? getPropNameFromAttrName(attrName.toLocaleLowerCase()) : null;
-    const { def: { props: propsConfig } } = vm;
-
-    if (propsConfig && propName && propsConfig[propName]) {
-        assert.logError(`Invalid attribute "${attrName.toLocaleLowerCase()}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
-    }
-}
-
-function assertTemplateMutationViolation(vm: VM, attrName: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { elm } = vm;
-    if (!isAttributeChangeControlled(attrName) && !isUndefined(getNodeOwnerKey(elm))) {
-        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
-    }
-    // attribute change control must be released every time its value is checked
-    resetAttributeChangeControl();
-}
-
-let controlledAttributeChange: boolean = false;
-let controlledAttributeName: string | void;
-
-function isAttributeChangeControlled(attrName: string): boolean {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return controlledAttributeChange && attrName === controlledAttributeName;
-}
-
-function resetAttributeChangeControl() {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    controlledAttributeChange = false;
-    controlledAttributeName = undefined;
-}
-
-export function prepareForValidAttributeMutation(elm: Element, key: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    if (!isUndefined(getNodeKey(elm))) {
-        // TODO: we should guarantee that the methods of the element are all patched
-        controlledAttributeChange = true;
-        controlledAttributeName = key;
-    }
-}
-
 function createCustomElementDescriptorMap(publicProps: PropsDef, publicMethodsConfig: MethodDef): PropertyDescriptorMap {
-    // replacing mutators and accessors on the element itself to catch any mutation
-    const descriptors: PropertyDescriptorMap = {
-        getAttribute: {
-            value: getAttributePatched,
-            configurable: true,
-        },
-        setAttribute: {
-            value: setAttributePatched,
-            configurable: true,
-        },
-        setAttributeNS: {
-            value: setAttributeNSPatched,
-            configurable: true,
-        },
-        removeAttribute: {
-            value: removeAttributePatched,
-            configurable: true,
-        },
-        removeAttributeNS: {
-            value: removeAttributeNSPatched,
-            configurable: true,
-        },
-    };
+    const descriptors: PropertyDescriptorMap = create(null);
     // expose getters and setters for each public props on the Element
     for (const key in publicProps) {
         descriptors[key] = {
             get: createGetter(key),
             set: createSetter(key),
+            enumerable: true,
+            configurable: true,
         };
     }
     // expose public methods as props on the Element
     for (const key in publicMethodsConfig) {
         descriptors[key] = {
             value: createMethodCaller(publicMethodsConfig[key]),
+            writable: true,
             configurable: true,
         };
     }
@@ -473,6 +356,7 @@ import "../polyfills/aria-properties/main";
 
 const HTML_PROPS: PropsDef = create(null);
 const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
+const globalKeyDescriptors: PropertyDescriptorMap = create(null);
 
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
@@ -487,8 +371,13 @@ let globalInitialization: any = () => {
                 type: 'any',
                 attr: attrName,
             };
+            globalKeyDescriptors[propName] = {
+                get: createGetter(propName),
+                set: createSetter(propName),
+                enumerable: true,
+                configurable: true,
+            };
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-
         }
     });
     forEach.call(defaultDefHTMLPropertyNames, (propName) => {
@@ -502,6 +391,12 @@ let globalInitialization: any = () => {
                 config: 3,
                 type: 'any',
                 attr: attrName,
+            };
+            globalKeyDescriptors[propName] = {
+                get: createGetter(propName),
+                set: createSetter(propName),
+                enumerable: true,
+                configurable: true,
             };
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
         }

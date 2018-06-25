@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { prepareForValidAttributeMutation } from '../def';
+import { prepareForValidAttributeMutation } from '../restrictions';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../language';
 import { EmptyObject } from '../utils';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
