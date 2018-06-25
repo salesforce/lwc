@@ -9,7 +9,7 @@ import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
-import { prepareForValidAttributeMutation } from "./def";
+import { prepareForValidAttributeMutation } from "./restrictions";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -94,7 +94,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, cmpRoot } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -106,9 +106,10 @@ function LWCElement(this: Component) {
         vm.setHook = setHook;
         vm.getHook = getHook;
     }
-    // linking elm and its component with VM
+    // linking elm, shadow root and component with the VM
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
+    setInternalField(cmpRoot, ViewModelReflection, vm);
     defineProperties(elm, def.descriptors);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);

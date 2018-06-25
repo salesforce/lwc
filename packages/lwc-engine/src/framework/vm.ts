@@ -2,8 +2,8 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys } from "./language";
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, setInternalField, getInternalField, createSymbol } from "./utils";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse } from "./language";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, getInternalField, createSymbol } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentElementGetter } from "./dom-api";
@@ -63,10 +63,6 @@ function setHook(cmp: Component, prop: PropertyKey, newValue: any) {
 
 function getHook(cmp: Component, prop: PropertyKey): any {
     return cmp[prop];
-}
-
-function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
-    setInternalField(shadowRoot, ViewModelReflection, vm);
 }
 
 export const OwnerKey = createSymbol('OwnerKey');
@@ -171,7 +167,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode } = options;
-    const fallback = isTrue(options.fallback) || isNativeShadowRootAvailable;
+    const fallback = isTrue(options.fallback) || isFalse(isNativeShadowRootAvailable);
     if (fallback) {
         patchCustomElement(elm);
     }
@@ -208,11 +204,8 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
     }
-    // linking shadow-root with the VM before anything else.
-    const { cmpRoot } = vm;
-    linkShadow(cmpRoot, vm);
     if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(cmpRoot);
+        patchShadowRootWithRestrictions(vm.cmpRoot);
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);

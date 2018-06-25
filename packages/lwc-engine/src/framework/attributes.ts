@@ -231,7 +231,6 @@ export function getGlobalHTMLPropertiesInfo() {
 // TODO: complete this list with Node properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Node
 
-// export const CustomElementGlobalPropertyDescriptors: PropertyDescriptorMap = create(null);
 const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);
 
