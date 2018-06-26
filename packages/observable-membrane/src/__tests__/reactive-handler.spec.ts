@@ -711,4 +711,23 @@ describe('ReactiveHandler', () => {
         expect(accessSpy).toHaveBeenCalledTimes(2);
         expect(accessSpy).toHaveBeenLastCalledWith(obj.foo, 'bar');
     });
+
+    it('should not throw when frozen read only proxy is converted to reactive only', () => {
+        const value = {};
+        const object = {
+            foo: value,
+        };
+
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: () => {},
+        });
+
+        const reactive = membrane.getReadOnlyProxy(object);
+        Object.freeze(reactive);
+        const readOnly = membrane.getProxy(reactive);
+        expect(() => {
+            readOnly.foo;
+        }).not.toThrow();
+    });
 });

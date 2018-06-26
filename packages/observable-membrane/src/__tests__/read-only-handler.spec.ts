@@ -316,4 +316,23 @@ describe('ReadOnlyHandler', () => {
             writeAndRead.x.foo = 'baz';
         }).toThrow();
     });
+
+    it('should not throw when frozen reactive proxy is converted to read only', () => {
+        const value = {};
+        const object = {
+            foo: value,
+        };
+
+        const membrane = new ReactiveMembrane((value) => value, {
+            propertyMemberChange: () => {},
+            propertyMemberAccess: () => {},
+        });
+
+        const reactive = membrane.getProxy(object);
+        Object.freeze(reactive);
+        const readOnly = membrane.getReadOnlyProxy(reactive);
+        expect(() => {
+            readOnly.foo;
+        }).not.toThrow();
+    });
 });
