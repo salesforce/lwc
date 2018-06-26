@@ -1,12 +1,6 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
+import { createElement, Element, register, unwrap } from '../main';
+import { getHostShadowRoot } from '../html-element';
 import assertLogger from '../assert';
-import { register } from "../services";
-import { ViewModelReflection } from "../utils";
-import { VNode } from "../../3rdparty/snabbdom/types";
-import { Component } from "../component";
-import { unwrap } from "../main";
-import { querySelector } from "../dom/element";
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
@@ -27,8 +21,9 @@ describe('html-element', () => {
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = getHostShadowRoot(element).querySelector('x-child');
             child.setFoo();
+
             expect(child.hasAttributeNS('x', 'foo')).toBe(true);
             expect(child.getAttributeNS('x', 'foo')).toBe('bar');
         });
@@ -77,8 +72,10 @@ describe('html-element', () => {
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+
+            const child = getHostShadowRoot(element).querySelector('x-child');
             child.setFoo();
+
             expect(child.hasAttribute('foo')).toBe(true);
             expect(child.getAttribute('foo')).toBe('bar');
         });
@@ -131,7 +128,7 @@ describe('html-element', () => {
             }
             const element = createElement('remove-namespaced-attribute-on-host-element', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = getHostShadowRoot(element).querySelector('x-child');
             child.removeTitle();
             expect(child.hasAttributeNS('x', 'title')).toBe(false);
         });
@@ -172,7 +169,7 @@ describe('html-element', () => {
             }
             const element = createElement('element-is-nested-in-template', { is: Parent });
             document.body.appendChild(element);
-            const child = querySelector.call(element, 'x-child');
+            const child = getHostShadowRoot(element).querySelector('x-child');
             child.removeTitle();
             expect(child.hasAttribute('title')).toBe(false);
         });
@@ -308,65 +305,86 @@ describe('html-element', () => {
         });
 
         it('should log warning when element is not connected', function() {
-            class Foo extends Element {}
-            const elm = createElement('x-foo', { is: Foo });
             jest.spyOn(assertLogger, 'logWarning');
 
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
-                expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
-                assertLogger.logWarning.mockRestore();
-            });
+            class Foo extends Element {
+                dispatch(evt) {
+                    this.dispatchEvent(evt);
+                }
+            }
+            Foo.publicMethods = ['dispatch'];
+
+            const elm = createElement('x-foo', { is: Foo });
+            elm.dispatch(new CustomEvent('warning'));
+
+            expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
+            assertLogger.logWarning.mockRestore();
         });
 
         it('should not log warning when element is connected', function() {
-            class Foo extends Element {}
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
 
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('warning'));
-                expect(assertLogger.logWarning).not.toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+            class Foo extends Element {
+                dispatch(evt) {
+                    this.dispatchEvent(evt);
+                }
+            }
+            Foo.publicMethods = ['dispatch'];
+
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+
+            elm.dispatch(new CustomEvent('warning'));
+
+            expect(assertLogger.logWarning).not.toBeCalled();
+            assertLogger.logWarning.mockRestore();
         });
 
         it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
-            class Foo extends Element {}
-            const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
             jest.spyOn(assertLogger, 'logWarning');
 
-            return Promise.resolve().then(() => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1-$'));
-                expect(assertLogger.logWarning).toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+            class Foo extends Element {
+                connectedCallback() {
+                    this.dispatchEvent(new CustomEvent('foo1-$'));
+                }
+            }
+
+            const elm = createElement('x-foo', { is: Foo });
+            document.body.appendChild(elm);
+
+            expect(assertLogger.logWarning).toBeCalled();
+            assertLogger.logWarning.mockRestore();
         });
 
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
-            class Foo extends Element {}
+            jest.spyOn(assertLogger, 'logWarning');
+
+            class Foo extends Element {
+                connectedCallback() {
+                    this.dispatchEvent(new CustomEvent('123'));
+                }
+            }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
-            return Promise.resolve().then( () => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('123'));
-                expect(assertLogger.logWarning).toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+
+            expect(assertLogger.logWarning).toBeCalled();
+            assertLogger.logWarning.mockRestore();
         });
 
         it('should not log warning for alphanumeric lowercase event name', function() {
-            class Foo extends Element {}
+            jest.spyOn(assertLogger, 'logWarning');
+
+            class Foo extends Element {
+                connectedCallback() {
+                    this.dispatchEvent(new CustomEvent('foo1234abc'));
+                }
+            }
+
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            jest.spyOn(assertLogger, 'logWarning');
-            return Promise.resolve().then( () => {
-                elm[ViewModelReflection].component.dispatchEvent(new CustomEvent('foo1234abc'));
-                expect(assertLogger.logWarning).not.toBeCalled();
-                assertLogger.logWarning.mockRestore();
-            });
+
+            expect(assertLogger.logWarning).not.toBeCalled();
+            assertLogger.logWarning.mockRestore();
         });
 
         it('should get native click event in host', function () {
@@ -622,12 +640,11 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.setAttribute('title', "value from parent");
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            childElm.setAttribute('title', "value from parent");
+
+            expect(assertLogger.logError).toBeCalled();
+            assertLogger.logError.mockRestore();
         });
 
         it('should log console error when user land code removes attribute via querySelector', () => {
@@ -646,12 +663,11 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.removeAttribute('title');
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            });
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            childElm.removeAttribute('title');
+
+            expect(assertLogger.logError).toBeCalled();
+            assertLogger.logError.mockRestore();
         });
 
         it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
@@ -702,10 +718,8 @@ describe('html-element', () => {
             parentElm.setAttribute('title', 'parent title');
             document.body.appendChild(parentElm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                expect(childElm.getAttribute('title')).toBe('child title');
-            });
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            expect(childElm.getAttribute('title')).toBe('child title');
         });
     });
 
@@ -724,21 +738,33 @@ describe('html-element', () => {
 
     describe('#data layer', () => {
         it('should allow custom instance getter and setter', () => {
-            let a, ctx;
-            class MyComponent extends Element  {}
+            let cmp, a, ctx;
+
+            class MyComponent extends Element  {
+                constructor() {
+                    super();
+                    cmp = this;
+                }
+                setFoo() {
+                    Object.defineProperty(this, 'foo', {
+                        set(value) {
+                            ctx = this;
+                            a = value;
+                        }
+                    });
+                }
+            }
             MyComponent.publicProps = { foo: true };
+            MyComponent.publicMethods = ['setFoo'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             elm.foo = 1;
             document.body.appendChild(elm);
-            Object.defineProperty(elm[ViewModelReflection].component, 'foo', {
-                set(value) {
-                    ctx = this;
-                    a = value;
-                }
-            });
+            elm.setFoo();
             elm.foo = 2;
+
             expect(a).toBe(2);
-            expect(elm[ViewModelReflection].component).toBe(ctx);
+            expect(cmp).toBe(ctx);
         });
     });
 
@@ -758,13 +784,18 @@ describe('html-element', () => {
         });
 
         it('should have a valid value after initial render', function() {
-            class MyComponent extends Element {}
+            class MyComponent extends Element {
+                getTabIndex() {
+                    return this.tabIndex;
+                }
+            }
+            MyComponent.publicMethods = ['getTabIndex'];
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
             document.body.appendChild(elm);
 
-            expect(elm[ViewModelReflection].component.tabIndex).toBe(3);
+            expect(elm.getTabIndex()).toBe(3);
         });
 
         it('should set tabindex correctly', function() {
@@ -772,16 +803,19 @@ describe('html-element', () => {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
+
+                getTabIndex() {
+                    return this.tabIndex;
+                }
             }
+            MyComponent.publicMethods = ['getTabIndex'];
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => {
-                expect(elm.tabIndex).toBe(2);
-                expect(elm[ViewModelReflection].component.tabIndex).toBe(2);
-            });
+            expect(elm.tabIndex).toBe(2);
+            expect(elm.getTabIndex()).toBe(2);
         });
 
         it('should not trigger render cycle', function() {
@@ -810,17 +844,21 @@ describe('html-element', () => {
                 connectedCallback() {
                     this.tabIndex = 2;
                 }
+
+                getTabIndex() {
+                    return this.tabIndex;
+                }
             }
+            MyComponent.publicMethods = ['getTabIndex'];
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.setAttribute('tabindex', 3);
             document.body.appendChild(elm);
             elm.setAttribute('tabindex', 4);
 
-            return Promise.resolve().then(() => {
-                expect(elm.tabIndex).toBe(4);
-                expect(elm[ViewModelReflection].component.tabIndex).toBe(4);
-            });
+
+            expect(elm.tabIndex).toBe(4);
+            expect(elm.getTabIndex()).toBe(4);
         });
 
         it('should throw if setting tabIndex during render', function() {
@@ -1434,7 +1472,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('en');
+                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('en');
                     });
             });
 
@@ -1558,7 +1596,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('true');
+                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('true');
                     });
             });
 
@@ -1682,7 +1720,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('ltr');
+                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('ltr');
                     });
             });
 
@@ -1806,7 +1844,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.title).toBe('id');
+                        expect(getHostShadowRoot(element).querySelector('div').title).toBe('id');
                     });
             });
 
@@ -1930,7 +1968,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.title).toBe('accessKey');
+                        expect(getHostShadowRoot(element).querySelector('div').title).toBe('accessKey');
                     });
             });
 
@@ -2054,7 +2092,7 @@ describe('html-element', () => {
                 return Promise.resolve()
                     .then(() => {
                         expect(renderCount).toBe(2);
-                        expect(querySelector.call(element, 'div')!.id).toBe('title');
+                        expect(getHostShadowRoot(element).querySelector('div').id).toBe('title');
                     });
             });
 
@@ -2115,12 +2153,11 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.setAttribute('title', "value from parent");
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            })
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            childElm.setAttribute('title', "value from parent");
+
+            expect(assertLogger.logError).toBeCalled();
+            assertLogger.logError.mockRestore();
         })
 
         it('should log console error when user land code removes attribute via querySelector', () => {
@@ -2138,12 +2175,10 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             document.body.appendChild(parentElm);
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                childElm.removeAttribute('title');
-                expect(assertLogger.logError).toBeCalled();
-                assertLogger.logError.mockRestore();
-            })
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+            childElm.removeAttribute('title');
+            expect(assertLogger.logError).toBeCalled();
+            assertLogger.logError.mockRestore();
         })
 
         it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
@@ -2193,11 +2228,9 @@ describe('html-element', () => {
             const parentElm = createElement('x-parent', { is: Parent });
             parentElm.setAttribute('title', 'parent title');
             document.body.appendChild(parentElm);
+            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
 
-            return Promise.resolve().then( () => {
-                const childElm = querySelector.call(parentElm, 'x-child');
-                expect(childElm.getAttribute('title')).toBe('child title');
-            })
+            expect(childElm.getAttribute('title')).toBe('child title');
         })
     });
 

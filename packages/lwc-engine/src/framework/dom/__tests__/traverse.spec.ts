@@ -1,6 +1,5 @@
-import { Element, getHostShadowRoot } from "../../html-element";
-import { createElement } from "../../upgrade";
-import { querySelector } from "../element";
+import { createElement, Element } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
@@ -64,35 +63,6 @@ describe('#LightDom querySelectorAll()', () => {
             expect(nested).toHaveLength(2);
             expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
             expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
-        });
-
-        it('should ignore elements passed to its slot', () => {
-            function parentHTML($api) {
-                return [
-                    $api.c('x-child', Child, {}),
-                ];
-            }
-
-            class Parent extends Element {
-                queryChildDiv() {
-                    return this.querySelectorAll('div');
-                }
-            }
-
-            Parent.methods = ['queryChildDiv'];
-
-            function renderChildHTML($api, $cmp, $slotset) {
-                return $slotset.x;
-            }
-
-            class Child extends Element {
-                render() {
-                    return renderChildHTML;
-                }
-            }
-
-            const elm = createElement('x-parent', { is: Parent });
-            expect(elm.querySelector('div')).toBe(querySelector.call(elm, 'div'));
         });
 
         it('should ignore elements from template', () => {

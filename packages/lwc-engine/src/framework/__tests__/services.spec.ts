@@ -1,6 +1,5 @@
+import { createElement, Element } from "../main";
 import * as target from '../services';
-import { Element } from "../html-element";
-import { createElement } from '../upgrade';
 
 function resetServices() {
     Object.keys(target.Services).forEach((name) => {

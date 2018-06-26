@@ -1,6 +1,5 @@
-import { Element } from "../html-element";
-import { createElement } from "../main";
-import { querySelector } from "../dom/element";
+import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('patch', () => {
 
@@ -266,7 +265,7 @@ describe('patch', () => {
                 return Promise.resolve();
             })
             .then(() => {
-                expect(querySelector.call(element, 'span').textContent).toBe('second');
+                expect(getHostShadowRoot(element).querySelector('span').textContent).toBe('second');
             });
         });
 

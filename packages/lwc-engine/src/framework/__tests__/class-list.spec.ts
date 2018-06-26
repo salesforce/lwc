@@ -1,6 +1,5 @@
-import { Element, getHostShadowRoot } from "../html-element";
-import * as api from "../api";
-import { createElement } from '../upgrade';
+import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('class-list', () => {
     describe('integration', () => {

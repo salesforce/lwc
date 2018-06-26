@@ -1,19 +1,7 @@
-import * as target from '../component';
-import { Element, getHostShadowRoot } from "../html-element";
-import { createElement } from "../upgrade";
-import { ViewModelReflection } from '../utils';
+import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('component', function() {
-    describe('#createComponent()', () => {
-        it('should throw for non-object values', () => {
-            expect(() => target.createComponent(undefined)).toThrow();
-            expect(() => target.createComponent("")).toThrow();
-            expect(() => target.createComponent(NaN)).toThrow();
-            expect(() => target.createComponent(function() {})).toThrow();
-            expect(() => target.createComponent(1)).toThrow();
-        });
-    });
-
     describe('public computed props', () => {
         it('should allow public getters', function() {
             class MyComponent extends Element  {
@@ -141,13 +129,17 @@ describe('component', function() {
         });
 
         it('should call public getter with correct context', function() {
+            let component;
             let context;
 
             class MyComponent extends Element  {
-                value = 'pancakes';
+                constructor() {
+                    super();
+                    component = this;
+                }
+
                 get breakfast() {
                     context = this;
-                    return this.value;
                 }
             }
 
@@ -160,7 +152,8 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             elm.breakfast;
-            expect(context).toBe(elm[ViewModelReflection].component);
+
+            expect(context).toBe(component);
         });
 
         it('should call setter function when used directly from DOM', function() {
@@ -235,10 +228,17 @@ describe('component', function() {
 
         it('should call setter with correct context when template value is updated', function() {
             let callCount = 0;
+            let component;
             let context;
 
             class MyComponent extends Element  {
                 value = 'pancakes';
+
+                constructor() {
+                    super();
+                    component = this;
+                }
+
                 get breakfast() {
                     return this.value;
                 }
@@ -258,17 +258,25 @@ describe('component', function() {
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.breakfast = 'eggs';
+
             expect(callCount).toBe(1);
-            expect(context).toBe(elm[ViewModelReflection].component);
+            expect(context).toBe(component);
         });
 
         it('should call setter when default value is provided', function() {
             let callCount = 0;
+            let component;
             let context;
 
             class MyComponent extends Element  {
                 value;
                 breakfast = 'pancakes';
+
+                constructor() {
+                    super();
+                    component = this;
+                }
+
                 get breakfast() {
                     return this.value;
                 }
@@ -287,8 +295,9 @@ describe('component', function() {
             };
 
             const elm = createElement('x-foo', { is: MyComponent });
+
             expect(callCount).toBe(1);
-            expect(context).toBe(elm[ViewModelReflection].component);
+            expect(context).toBe(component);
         });
 
         it('should throw when configured prop is missing getter', function() {
@@ -429,39 +438,48 @@ describe('component', function() {
         });
 
         it('should diff between style objects and strings correctly', function() {
-            let called = false;
             function html($api, $cmp, $slotset, $ctx) {
                 return [$api.h(
                     "section",
                     {
                         key: 0,
-                        style: $cmp.state.customStyle
+                        style: $cmp.customStyle
                     },
                     []
                 )];
             }
             class MyComponent extends Element  {
-                state = {
-                    customStyle: {
-                        color: 'red'
-                    }
+                customStyle: {
+                    color: 'red'
                 };
+
+                updateStyle(str) {
+                    this.customStyle = 'color:green;';
+                }
 
                 render() {
                     return html;
                 }
             }
-            MyComponent.track = { state: 1 };
+
+            MyComponent.track = { customStyle: 1 };
+            MyComponent.publicMethods = ['updateStyle'];
 
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
+
             const section = getHostShadowRoot(elm).querySelector('section');
-            section.style.removeProperty = function() {
-                called = true;
-            };
-            elm[ViewModelReflection].component.state.customStyle = 'color:green';
-            return Promise.resolve().then(_ => {
-                expect(called).toBe(false);
+
+            const removePropertyMock = jest.fn();
+            section.style.removeProperty = removePropertyMock;
+            const setPropertyMock = jest.fn();
+            section.style.setProperty = setPropertyMock;
+
+
+            elm.updateStyle();
+            return Promise.resolve().then(() => {
+                expect(removePropertyMock).not.toBeCalled();
+                expect(setPropertyMock).toBeCalledWith('color', 'green', '');
             });
         });
     });
@@ -498,9 +516,16 @@ describe('component', function() {
         });
 
         it('should call function with correct context and arguments', function() {
-            let context, args;
+            let component;
+            let context;
+            let args;
 
             class MyComponent extends Element  {
+                constructor() {
+                    super();
+                    component = this;
+                }
+
                 m() {
                     context = this;
                     args = Array.prototype.slice.call(arguments);
@@ -510,7 +535,8 @@ describe('component', function() {
 
             const elm = createElement('x-foo', { is: MyComponent });
             elm.m(1, 2);
-            expect(context).toBe(elm[ViewModelReflection].component);
+
+            expect(context).toBe(component);
             expect(args).toEqual([1, 2]);
         });
 

@@ -1,6 +1,6 @@
+import { createElement, Element } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 import { wrapIframeWindow } from "../iframe";
-import { Element, getHostShadowRoot } from "../../html-element";
-import { createElement } from "../../upgrade";
 
 describe('wrapped iframe window', () => {
     describe('methods', function () {

@@ -1,5 +1,4 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
+import { createElement, Element } from '../main';
 import { querySelector, querySelectorAll } from "../dom/element";
 
 function createBoundaryComponent(elementsToRender) {
