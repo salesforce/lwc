@@ -54,19 +54,10 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): ReactiveState
     }
 
     reactiveState = ObjectDefineProperties(ObjectCreate(null), {
-        shadowTarget: {
-            get(this: ReactiveState) {
-                const shadowTarget = createShadowTarget(value);
-                ObjectDefineProperty(this, 'shadowTarget', { value: shadowTarget });
-                return shadowTarget;
-            },
-            configurable: true,
-        },
         reactive: {
             get(this: ReactiveState) {
-                const { shadowTarget } = this;
                 const reactiveHandler = new ReactiveProxyHandler(membrane, value);
-                const proxy = new Proxy(shadowTarget, reactiveHandler);
+                const proxy = new Proxy(createShadowTarget(value), reactiveHandler);
                 ObjectDefineProperty(this, 'reactive', { value: proxy });
                 return proxy;
             },
@@ -74,9 +65,8 @@ function getReactiveState(membrane: ReactiveMembrane, value: any): ReactiveState
         },
         readOnly: {
             get(this: ReactiveState) {
-                const { shadowTarget } = this;
                 const readOnlyHandler = new ReadOnlyHandler(membrane, value);
-                const proxy = new Proxy(shadowTarget, readOnlyHandler);
+                const proxy = new Proxy(createShadowTarget(value), readOnlyHandler);
                 ObjectDefineProperty(this, 'readOnly', { value: proxy });
                 return proxy;
             },
