@@ -15,7 +15,6 @@ import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "./dom/faux";
-import { patchShadowRootWithRestrictions } from "./restrictions";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -203,9 +202,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(vm.cmpRoot);
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);

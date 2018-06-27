@@ -1,8 +1,8 @@
 import assert from "./assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, defineProperty, isUndefined, ArraySlice } from "./language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, defineProperty, isUndefined, ArraySlice, toString } from "./language";
 import { Component } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
-import { isBeingConstructed } from "./invoker";
+import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getShadowRootVM, getNodeKey, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
 import {
     getAttribute,
@@ -40,17 +40,24 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     // the component will not work when running in fallback mode.
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
+    const originalAddEventListener = sr.addEventListener;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr);
     assign(descriptors, {
+        addEventListener: {
+            value(this: ShadowRoot, type: string) {
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(sr)} by adding an event listener for "${type}".`);
+                return originalAddEventListener.apply(this, arguments);
+            }
+        },
         querySelector: {
-            value(this: ShadowRoot, selector: string) {
+            value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelector.apply(this, arguments);
             }
         },
         querySelectorAll: {
-            value(this: ShadowRoot, selector: string) {
+            value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelectorAll.apply(this, arguments);
@@ -210,7 +217,14 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
         throw new ReferenceError();
     }
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    const originalAddEventListener = elm.addEventListener;
     return assign(descriptors, {
+        addEventListener: {
+            value(this: ShadowRoot, type: string) {
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(elm)} by adding an event listener for "${type}".`);
+                return originalAddEventListener.apply(this, arguments);
+            }
+        },
         // replacing mutators and accessors on the element itself to catch any mutation
         getAttribute: {
             value: getAttributePatched,

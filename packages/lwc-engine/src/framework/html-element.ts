@@ -7,7 +7,7 @@ import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
-import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
+import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
 import { prepareForValidAttributeMutation } from "./restrictions";
 
@@ -110,10 +110,13 @@ function LWCElement(this: Component) {
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
+    // TODO: this should be a prototype chain adjustment instead of
+    // a bunch of descriptors on the element itself for perf reasons.
     defineProperties(elm, def.descriptors);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
+        patchShadowRootWithRestrictions(cmpRoot);
     }
 }
 
