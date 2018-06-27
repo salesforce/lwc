@@ -1,17 +1,13 @@
-import assert from './assert';
 import {
     StringToLowerCase,
     StringReplace,
     create,
     forEach,
     isUndefined,
-    getPropertyDescriptor,
-    hasOwnProperty,
 } from './language';
-import { createCustomElementAOMPropertyDescriptor } from './dom/aom';
 
 // These properties get added to LWCElement.prototype publicProps automatically
-const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
+export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];
 
 // Few more exceptions that are using the attribute name to match the property in lowercase.
 // this list was compiled from https://msdn.microsoft.com/en-us/library/ms533062(v=vs.85).aspx
@@ -235,7 +231,6 @@ export function getGlobalHTMLPropertiesInfo() {
 // TODO: complete this list with Node properties
 // https://developer.mozilla.org/en-US/docs/Web/API/Node
 
-export const CustomElementGlobalPropertyDescriptors: PropertyDescriptorMap = create(null);
 const AttrNameToPropNameMap: Record<string, string> = create(null);
 const PropNameToAttrNameMap: Record<string, string> = create(null);
 
@@ -244,19 +239,9 @@ forEach.call(ElementAOMPropertyNames, (propName: string) => {
     const attrName = StringToLowerCase.call(StringReplace.call(propName, ARIA_REGEX, 'aria-'));
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
-    CustomElementGlobalPropertyDescriptors[propName] = createCustomElementAOMPropertyDescriptor(propName, attrName, null);
 });
 
 forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
-    // this category, so, better to be sure.
-    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-    if (!isUndefined(descriptor)) {
-        CustomElementGlobalPropertyDescriptors[propName] = descriptor;
-    } else if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`This environment does not support global HTML property '${propName}'.`);
-    }
     const attrName = StringToLowerCase.call(propName);
     AttrNameToPropNameMap[attrName] = propName;
     PropNameToAttrNameMap[propName] = attrName;
@@ -275,7 +260,7 @@ const CAMEL_REGEX = /-([a-z])/g;
  * and the corresponding property name.
  */
 export function getPropNameFromAttrName(attrName: string): string {
-    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
+    if (isUndefined(AttrNameToPropNameMap[attrName])) {
         AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
     }
     return AttrNameToPropNameMap[attrName];
@@ -288,7 +273,7 @@ const CAPS_REGEX = /[A-Z]/g;
  * and the corresponding attribute name.
  */
 export function getAttrNameFromPropName(propName: string): string {
-    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
+    if (isUndefined(PropNameToAttrNameMap[propName])) {
         PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
     }
     return PropNameToAttrNameMap[propName];

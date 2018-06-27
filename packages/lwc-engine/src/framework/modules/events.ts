@@ -61,7 +61,6 @@ function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
     }
 }
 
-// @ts-ignore
 const eventListenersModule: Module = {
     update: updateAllEventListeners,
     create: createAllEventListeners,

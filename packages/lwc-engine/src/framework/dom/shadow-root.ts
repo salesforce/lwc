@@ -1,20 +1,52 @@
 import assert from "../assert";
-import { isNull, create, hasOwnProperty, isFalse, ArrayIndexOf, assign, isUndefined } from "../language";
-import { getShadowRootVM } from "../vm";
-import { addRootEventListener, removeRootEventListener } from "../events";
+import { isNull, create, ArrayIndexOf, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
+import { getNodeKey } from "../vm";
+import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
-import { createShadowRootAOMDescriptorMap } from './aom';
-import { usesNativeSymbols } from "../utils";
+import { getInternalField, setInternalField, createSymbol } from "../utils";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINS } from "./node";
+import { ElementAOMPropertyNames } from "../attributes";
 
 let ArtificialShadowRootPrototype;
 
-export const ShadowRootKey = usesNativeSymbols && process.env.NODE_ENV !== 'test' ? Symbol('ShadowRoot') : '$$ShadowRoot$$';
+const HostKey = createSymbol('host');
+const ShadowRootKey = createSymbol('shadowRoot');
+const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
-export function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): ShadowRoot {
-    if (hasOwnProperty.call(this, ShadowRootKey)) {
+export function getHost(root: ShadowRoot): HTMLElement {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(root[HostKey], `A 'ShadowRoot' node must be attached to an 'HTMLElement' node.`);
+    }
+    return root[HostKey];
+}
+
+export function getShadowRoot(elm: HTMLElement): ShadowRoot {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(getInternalField(elm, ShadowRootKey), `A Custom Element with a shadow attached must be provided as the first argument.`);
+    }
+    return getInternalField(elm, ShadowRootKey);
+}
+
+// Synthetic creation of all AOM property descriptors for Shadow Roots
+function createShadowRootAOMDescriptorMap(): PropertyDescriptorMap {
+    return ArrayReduce.call(ElementAOMPropertyNames, (seed: PropertyDescriptorMap, propName: string) => {
+        let descriptor: PropertyDescriptor | undefined;
+        if (isNativeShadowRootAvailable) {
+            descriptor = getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, propName);
+        } else {
+            descriptor = getOwnPropertyDescriptor(Element.prototype, propName);
+        }
+        if (!isUndefined(descriptor)) {
+            seed[propName] = descriptor;
+        }
+        return seed;
+    }, create(null));
+}
+
+export function attachShadow(elm: HTMLElement, options: ShadowRootInit): ShadowRoot {
+    if (getInternalField(elm, ShadowRootKey)) {
         throw new Error(`Failed to execute 'attachShadow' on 'Element': Shadow root cannot be created on a host which already hosts a shadow tree.`);
     }
     const { mode } = options;
@@ -23,13 +55,20 @@ export function attachShadowGetter(this: HTMLElement, options: ShadowRootInit): 
         // Note: lazy creation to avoid circular deps
         ArtificialShadowRootPrototype = create(null, assign(ArtificialShadowRootDescriptors, createShadowRootAOMDescriptorMap()));
     }
-    return create(ArtificialShadowRootPrototype, {
+    const sr = create(ArtificialShadowRootPrototype, {
         mode: {
             get() { return mode; },
             enumerable: true,
             configurable: true,
         },
     }) as ShadowRoot;
+    setInternalField(sr, HostKey, elm);
+    setInternalField(elm, ShadowRootKey, sr);
+    // expose the shadow via a hidden symbol for testing purposes
+    if (process.env.NODE_ENV === 'test') {
+        elm['$$ShadowRoot$$'] = sr; // tslint:disable-line
+    }
+    return sr;
 }
 
 function patchedShadowRootChildNodesGetter(this: ShadowRoot): Element[] {
@@ -64,7 +103,16 @@ function patchedShadowRootTextContentGetter(this: ShadowRoot): string {
     return textContent;
 }
 
+function hostGetter(this: ShadowRoot): HTMLElement {
+    return getHost(this);
+}
+
 const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
+    host: {
+        get: hostGetter,
+        enumerable: true,
+        configurable: true,
+    },
     firstChild: {
         get: patchedShadowRootFirstChildGetter,
         enumerable: true,
@@ -104,13 +152,14 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     querySelector: {
         value(this: ShadowRoot, selector: string): Element | null {
-            const vm = getShadowRootVM(this);
             const node = shadowRootQuerySelector(this, selector);
             if (process.env.NODE_ENV !== 'production') {
-                if (isNull(node) && isFalse(vm.isRoot)) {
+                const host = getHost(this);
+                const isRoot = isUndefined(getNodeKey(host));
+                if (isNull(node) && !isRoot) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
-                        assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
+                    if (getPatchedCustomElement(host).querySelector(selector)) {
+                        assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${toString(host)}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                     }
                 }
             }
@@ -121,13 +170,14 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     querySelectorAll: {
         value(this: ShadowRoot, selector: string): Element[] {
-            const vm = getShadowRootVM(this);
             const nodeList = shadowRootQuerySelectorAll(this, selector);
             if (process.env.NODE_ENV !== 'production') {
-                if (nodeList.length === 0 && isFalse(vm.isRoot)) {
+                const host = getHost(this);
+                const isRoot = isUndefined(getNodeKey(host));
+                if (nodeList.length === 0 && !isRoot) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (getPatchedCustomElement(vm.elm).querySelector(selector)) {
-                        assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${vm}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
+                    if (getPatchedCustomElement(host).querySelector(selector)) {
+                        assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${toString(host)}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                     }
                 }
             }
@@ -137,25 +187,15 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
         configurable: true,
     },
     addEventListener: {
-        value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-            const vm = getShadowRootVM(this);
-            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            addRootEventListener(vm, type, listener);
+        value(this: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            addShadowRootEventListener(this, type, listener, options);
         },
         enumerable: true,
         configurable: true,
     },
     removeEventListener: {
-        value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-            const vm = getShadowRootVM(this);
-            // TODO: issue #420 can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-            if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
-            }
-            removeRootEventListener(vm, type, listener);
+        value(this: ShadowRoot, type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
+            removeShadowRootEventListener(this, type, listener, options);
         },
         enumerable: true,
         configurable: true,

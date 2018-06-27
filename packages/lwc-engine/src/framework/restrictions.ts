@@ -1,9 +1,16 @@
 import assert from "./assert";
-import { getPropertyDescriptor, defineProperties, toString, getOwnPropertyNames, forEach, assign, isString, defineProperty } from "./language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, defineProperty, isUndefined, ArraySlice, toString } from "./language";
 import { Component } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
-import { isBeingConstructed } from "./invoker";
-import { getShadowRootVM } from "./vm";
+import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
+import { getShadowRootVM, getNodeKey, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
+import {
+    getAttribute,
+    setAttribute,
+    setAttributeNS,
+    removeAttribute,
+    removeAttributeNS,
+} from "./dom-api";
 
 function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
@@ -14,7 +21,7 @@ function getNodeRestrictionsDescriptors(node: Node): PropertyDescriptorMap {
     return {
         childNodes: {
             get(this: Node) {
-                assert.logWarning(`Discourage access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll'.`);
+                assert.logWarning(`Discouraged access to property 'childNodes' on 'Node': It returns a live NodeList and should not be relied upon. Instead, use 'querySelectorAll' which returns a static NodeList.`);
                 return originalChildNodesDescriptor!.get!.call(this);
             },
             enumerable: true,
@@ -31,32 +38,26 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     // blacklisting properties in dev mode only to avoid people doing the wrong
     // thing when using the real shadow root, because if that's the case,
     // the component will not work when running in fallback mode.
-    const originalAddEventListener = sr.addEventListener;
     const originalQuerySelector = sr.querySelector;
     const originalQuerySelectorAll = sr.querySelectorAll;
+    const originalAddEventListener = sr.addEventListener;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(sr);
     assign(descriptors, {
         addEventListener: {
-            value(this: ShadowRoot, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the component author attempts to add a listener programmatically into its Component's shadow root
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'ShadowRoot': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
+            value(this: ShadowRoot, type: string) {
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(sr)} by adding an event listener for "${type}".`);
+                return originalAddEventListener.apply(this, arguments);
+            }
         },
         querySelector: {
-            value(this: ShadowRoot, selector: string) {
+            value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelector.apply(this, arguments);
             }
         },
         querySelectorAll: {
-            value(this: ShadowRoot, selector: string) {
+            value(this: ShadowRoot) {
                 const vm = getShadowRootVM(this);
                 assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
                 return originalQuerySelectorAll.apply(this, arguments);
@@ -101,24 +102,148 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
     return descriptors;
 }
 
+// Custom Elements Restrictions:
+// -----------------------------
+
+function getAttributePatched(this: HTMLElement, attrName: string): string | null {
+    if (process.env.NODE_ENV !== 'production') {
+        const vm = getCustomElementVM(this);
+        assertPublicAttributeCollision(vm, attrName);
+    }
+
+    return getAttribute.apply(this, ArraySlice.call(arguments));
+}
+
+function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
+    const vm = getCustomElementVM(this);
+    if (process.env.NODE_ENV !== 'production') {
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
+    }
+    setAttribute.apply(this, ArraySlice.call(arguments));
+}
+
+function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string, newValue: any) {
+    const vm = getCustomElementVM(this);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
+    }
+    setAttributeNS.apply(this, ArraySlice.call(arguments));
+}
+
+function removeAttributePatched(this: HTMLElement, attrName: string) {
+    const vm = getCustomElementVM(this);
+    // marking the set is needed for the AOM polyfill
+    if (process.env.NODE_ENV !== 'production') {
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
+    }
+    removeAttribute.apply(this, ArraySlice.call(arguments));
+}
+
+function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrName: string) {
+    const vm = getCustomElementVM(this);
+
+    if (process.env.NODE_ENV !== 'production') {
+        assertTemplateMutationViolation(vm, attrName);
+        assertPublicAttributeCollision(vm, attrName);
+    }
+    removeAttributeNS.apply(this, ArraySlice.call(arguments));
+}
+
+function assertPublicAttributeCollision(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const propName = isString(attrName) ? getPropNameFromAttrName(attrName.toLocaleLowerCase()) : null;
+    const { def: { props: propsConfig } } = vm;
+
+    if (propsConfig && propName && propsConfig[propName]) {
+        assert.logError(`Invalid attribute "${attrName.toLocaleLowerCase()}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+    }
+}
+
+function assertTemplateMutationViolation(vm: VM, attrName: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const { elm } = vm;
+    if (!isAttributeChangeControlled(attrName) && !isUndefined(getNodeOwnerKey(elm))) {
+        assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
+    }
+    // attribute change control must be released every time its value is checked
+    resetAttributeChangeControl();
+}
+
+let controlledAttributeChange: boolean = false;
+let controlledAttributeName: string | void;
+
+function isAttributeChangeControlled(attrName: string): boolean {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    return controlledAttributeChange && attrName === controlledAttributeName;
+}
+
+function resetAttributeChangeControl() {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    controlledAttributeChange = false;
+    controlledAttributeName = undefined;
+}
+
+export function prepareForValidAttributeMutation(elm: Element, key: string) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    if (!isUndefined(getNodeKey(elm))) {
+        // TODO: we should guarantee that the methods of the element are all patched
+        controlledAttributeChange = true;
+        controlledAttributeName = key;
+    }
+}
+
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalAddEventListener = elm.addEventListener;
     const descriptors: PropertyDescriptorMap = getNodeRestrictionsDescriptors(elm);
+    const originalAddEventListener = elm.addEventListener;
     return assign(descriptors, {
         addEventListener: {
-            value(this: HTMLElement, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the owner attempts to add a listener programmatically via the DOM
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'LightingElement': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
+            value(this: ShadowRoot, type: string) {
+                assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${toString(elm)} by adding an event listener for "${type}".`);
+                return originalAddEventListener.apply(this, arguments);
+            }
+        },
+        // replacing mutators and accessors on the element itself to catch any mutation
+        getAttribute: {
+            value: getAttributePatched,
+            configurable: true,
+        },
+        setAttribute: {
+            value: setAttributePatched,
+            configurable: true,
+        },
+        setAttributeNS: {
+            value: setAttributeNSPatched,
+            configurable: true,
+        },
+        removeAttribute: {
+            value: removeAttributePatched,
+            configurable: true,
+        },
+        removeAttributeNS: {
+            value: removeAttributeNSPatched,
             configurable: true,
         },
     });
@@ -129,21 +254,8 @@ function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptor
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const originalAddEventListener = cmp.addEventListener;
     const originalSetAttribute = cmp.setAttribute;
     return {
-        addEventListener: {
-            value(this: Component, type: string, listener: EventListener, options: any) {
-                // TODO: issue #420
-                // this is triggered when the component author attempts to add a listener programmatically inside the Component
-                if (arguments.length > 2) {
-                    assert.logWarning(`Discourage feature for method 'addEventListener' in 'LightingElement': It does not support more than 2 arguments, instead received ${toString(options)} in ${this}. Options to make the listener passive, once or capture are not allowed.`);
-                }
-                originalAddEventListener.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-        },
         setAttribute: {
             value(this: Component, attrName: string, value: any) {
                 // logging errors for experimental and special attributes
@@ -217,7 +329,6 @@ export function patchLightningElementPrototypeWithRestrictions(proto: object) {
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
             set() {}, // tslint:disable-line
-            enumerable: false,
         });
     });
 }

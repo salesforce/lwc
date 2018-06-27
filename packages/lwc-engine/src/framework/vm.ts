@@ -2,11 +2,11 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys } from "./language";
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, usesNativeSymbols } from "./utils";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse } from "./language";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, getInternalField, createSymbol } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
-import { parentElementGetter } from "./dom/node";
+import { parentElementGetter } from "./dom-api";
 
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
@@ -14,9 +14,7 @@ import { ComponentDef } from "./def";
 import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
-import { ShadowRootKey } from "./dom/shadow-root";
-import { patchCustomElement } from "./dom/patch";
-import { patchShadowRootWithRestrictions } from "./restrictions";
+import { patchCustomElement } from "./dom/faux";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -24,12 +22,8 @@ export interface SlotSet {
     [key: string]: VNodes;
 }
 
-export interface VMElement extends HTMLElement {
-    [ViewModelReflection]: VM;
-}
-
 export interface VM {
-    readonly elm: VMElement;
+    readonly elm: HTMLElement;
     readonly def: ComponentDef;
     readonly context: Context;
     uid: number;
@@ -37,13 +31,9 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: Record<string, any>;
-    // TODO: make this type more restrictive once we know more about it
-    rootProps: Record<string, string | null | boolean>;
     cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: Record<string, any>;
-    cmpEvents?: Record<string, EventListener[] | undefined>;
-    cmpListener?: (event: Event) => void;
     cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
     callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
@@ -56,7 +46,6 @@ export interface VM {
     mode: string;
     component?: Component;
     deps: VM[][];
-    hostAttrs: Record<string, number | undefined>;
     toString(): string;
 }
 
@@ -75,15 +64,7 @@ function getHook(cmp: Component, prop: PropertyKey): any {
     return cmp[prop];
 }
 
-function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
-    if ((shadowRoot as any /* typescript has not updated their interface yet */).mode === 'open') {
-        // expose the shadow via a hidden symbol for testing purposes
-        vm.elm[ShadowRootKey] = shadowRoot;
-    }
-    shadowRoot[ViewModelReflection] = vm;
-}
-
-export const OwnerKey = usesNativeSymbols ? Symbol('key') : '$$OwnerKey$$';
+export const OwnerKey = createSymbol('OwnerKey');
 
 function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -185,7 +166,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode } = options;
-    const fallback = isTrue(options.fallback) || isNativeShadowRootAvailable;
+    const fallback = isTrue(options.fallback) || isFalse(isNativeShadowRootAvailable);
     if (fallback) {
         patchCustomElement(elm);
     }
@@ -199,16 +180,13 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         fallback,
         mode,
         def,
-        elm: elm as VMElement,
+        elm: elm as HTMLElement,
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
-        rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
-        cmpEvents: undefined,
-        cmpListener: undefined,
         cmpTemplate: undefined,
         cmpRoot: elm.attachShadow(options),
         callHook,
@@ -216,7 +194,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         getHook,
         component: undefined,
         children: EmptyArray,
-        hostAttrs: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -225,12 +202,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-    }
-    // linking shadow-root with the VM before anything else.
-    const { cmpRoot } = vm;
-    linkShadow(cmpRoot, vm);
-    if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(cmpRoot);
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);
@@ -432,6 +403,8 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
         assert.vm(vm);
     }
     const { elm } = vm;
+    // TODO: bug #435 - shadowDOM will preventing this walking process, we
+    // need to find a different way to find the right boundary
     const parentElm = elm && parentElementGetter.call(elm);
     return getErrorBoundaryVM(parentElm);
 }
@@ -446,14 +419,14 @@ function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
 
 function getErrorBoundaryVM(startingElement: Element | null): VM | undefined {
     let elm: Element | null = startingElement;
-    let vm: VM;
+    let vm: VM | undefined;
 
     while (!isNull(elm)) {
-        vm = elm[ViewModelReflection];
+        vm = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(vm) && !isUndefined(vm.def.errorCallback)) {
             return vm;
         }
-        // TODO: if shadowDOM start preventing this walking process, we will
+        // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     }
@@ -463,70 +436,63 @@ export function getComponentStack(vm: VM): string {
     const wcStack: string[] = [];
     let elm: HTMLElement | null = vm.elm;
     do {
-        const currentVm: VM | undefined = elm[ViewModelReflection];
+        const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
             ArrayPush.call(wcStack, (currentVm.component as Component).toString());
         }
+        // TODO: bug #435 - shadowDOM will preventing this walking process, we
+        // need to find a different way to find the right boundary
         elm = parentElementGetter.call(elm);
     } while (!isNull(elm));
     return wcStack.reverse().join('\n\t');
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return node[OwnerKey];
-}
-
-export function getShadowRoot(node: Node): ShadowRoot | null {
-    const vm: VM = node[ViewModelReflection];
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    if (isUndefined(vm)) {
-        return null;
-    }
-    return vm.cmpRoot;
-}
-
-export function getCustomElement(root: ShadowRoot): HTMLElement {
-    const vm: VM = root[ViewModelReflection];
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
-    }
-    return vm.elm;
+    return getInternalField(node, OwnerKey);
 }
 
 export function getNodeKey(node: Node): number | undefined {
-    const vm: VM = node[ViewModelReflection];
+    const vm: VM | undefined = getInternalField(node, ViewModelReflection);
     if (isUndefined(vm)) {
         return;
     }
     return vm.uid;
 }
 
-export function getCustomElementVM(elmOrCmp: HTMLElement): VM {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrCmp[ViewModelReflection]);
+export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
+    const vm: VM | undefined = getInternalField(sr, ViewModelReflection);
+    if (isUndefined(vm)) {
+        return null;
     }
-    return elmOrCmp[ViewModelReflection] as VM;
+    return vm.elm;
+}
+
+export function getCustomElementVM(elm: HTMLElement): VM {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(getInternalField(elm, ViewModelReflection));
+    }
+    return getInternalField(elm, ViewModelReflection) as VM;
 }
 
 export function getComponentVM(component: Component): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(component[ViewModelReflection]);
+        assert.vm(getInternalField(component, ViewModelReflection));
     }
-    return component[ViewModelReflection] as VM;
+    return getInternalField(component, ViewModelReflection) as VM;
 }
 
 export function getShadowRootVM(root: ShadowRoot): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(root[ViewModelReflection]);
+        assert.vm(getInternalField(root, ViewModelReflection));
     }
-    return root[ViewModelReflection] as VM;
+    return getInternalField(root, ViewModelReflection) as VM;
 }
 
 // slow path routine
+// NOTE: we should probably more this routine to the faux shadow folder
+// and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);
