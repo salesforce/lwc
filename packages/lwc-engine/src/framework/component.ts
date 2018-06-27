@@ -4,18 +4,17 @@ import {
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
+    invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isObject } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "./language";
 import { invokeServiceHook, Services } from "./services";
 import { PropsDef, WireHash, TrackDef } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
-import { ViewModelReflection } from "./utils";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
-    [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
     readonly root: ShadowRoot;
     render?: () => (void | Template);
@@ -110,4 +109,23 @@ export function markComponentAsDirty(vm: VM) {
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
     vm.isDirty = true;
+}
+
+const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap();
+
+export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.vm(vm);
+    }
+    if (!isFunction(listener)) {
+        throw new TypeError(); // avoiding problems with non-valid listeners
+    }
+    let wrappedListener = cmpEventListenerMap.get(listener);
+    if (isUndefined(wrappedListener)) {
+        wrappedListener = function(event: Event) {
+            invokeEventListener(vm, listener, undefined, event);
+        };
+        cmpEventListenerMap.set(listener, wrappedListener);
+    }
+    return wrappedListener;
 }

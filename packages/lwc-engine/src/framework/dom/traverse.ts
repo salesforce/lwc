@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { getNodeKey, getNodeOwnerKey, getShadowRoot, getCustomElement } from "../vm";
+import { getNodeKey, getNodeOwnerKey } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     parentElementGetter as nativeParentElementGetter,
@@ -21,12 +21,14 @@ import {
     ArrayPush,
     assign,
     isUndefined,
+    toString,
 } from "../language";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
 import { getOuterHTML } from "../../3rdparty/polymer/outer-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
+import { getHost, getShadowRoot } from "./shadow-root";
 
 export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
     return traverseMembraneWrap(element);
@@ -43,9 +45,11 @@ function getNodeOwner(node: Node): HTMLElement | null {
     while (!isNull(node) && isUndefined((ownerKey = getNodeOwnerKey(node)))) {
         node = parentNodeGetter.call(node);
     }
+    // either we hit the wall, or we node is root element (which does not have an owner key)
     if (isUndefined(ownerKey) || isNull(node)) {
         return null;
     }
+    // At this point, node is a valid node with owner identity, now we need to find the owner node
     // search for a custom element with a VM that owns the first element with owner identity attached to it
     while (!isNull(node) && (getNodeKey(node) !== ownerKey)) {
         node = parentNodeGetter.call(node);
@@ -94,7 +98,7 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRo
 }
 
 export function shadowRootChildNodes(root: ShadowRoot) {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
@@ -121,32 +125,40 @@ function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     return null;
 }
 
-function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
-    const owner = getNodeOwner(this);
+export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
+    const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return [];
     }
-    const matches = nativeQuerySelectorAll.call(this, selector);
+    const matches = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(owner, matches);
 }
 
-function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
-    const owner = getNodeOwner(this);
+export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
+    const owner = getNodeOwner(elm);
     if (isNull(owner)) {
         return null;
     }
-    const nodeList = nativeQuerySelectorAll.call(this, selector);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(owner, nodeList);
 }
 
+function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
+    return lightDomQuerySelectorAll(this, selector);
+}
+
+function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
+    return lightDomQuerySelector(this, selector);
+}
+
 export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getFirstMatch(elm, nodeList);
 }
 
 export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
-    const elm = getCustomElement(root);
+    const elm = getHost(root);
     const nodeList = nativeQuerySelectorAll.call(elm, selector);
     return getAllMatches(elm, nodeList);
 }
@@ -182,7 +194,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
 
 function lightDomChildNodesGetter(this: HTMLElement): Node[] {
     if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`childNodes on ${this} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+        assert.logWarning(`childNodes on ${toString(this)} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
     }
     const owner = getNodeOwner(this);
     if (isNull(owner)) {
