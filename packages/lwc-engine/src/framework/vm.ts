@@ -2,8 +2,8 @@ import assert from "./assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys } from "./language";
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, setInternalField, getInternalField, createSymbol } from "./utils";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse } from "./language";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, getInternalField, createSymbol } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentElementGetter } from "./dom-api";
@@ -15,7 +15,6 @@ import { Component } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "./dom/faux";
-import { patchShadowRootWithRestrictions } from "./restrictions";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -32,8 +31,6 @@ export interface VM {
     data: VNodeData;
     children: VNodes;
     cmpProps: Record<string, any>;
-    // TODO: make this type more restrictive once we know more about it
-    rootProps: Record<string, string | null | boolean>;
     cmpState?: Record<string, any>;
     cmpSlots: SlotSet;
     cmpTrack: Record<string, any>;
@@ -49,7 +46,6 @@ export interface VM {
     mode: string;
     component?: Component;
     deps: VM[][];
-    hostAttrs: Record<string, number | undefined>;
     toString(): string;
 }
 
@@ -66,10 +62,6 @@ function setHook(cmp: Component, prop: PropertyKey, newValue: any) {
 
 function getHook(cmp: Component, prop: PropertyKey): any {
     return cmp[prop];
-}
-
-function linkShadow(shadowRoot: ShadowRoot, vm: VM) {
-    setInternalField(shadowRoot, ViewModelReflection, vm);
 }
 
 export const OwnerKey = createSymbol('OwnerKey');
@@ -174,7 +166,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
     }
     const def = getComponentDef(Ctor);
     const { isRoot, mode } = options;
-    const fallback = isTrue(options.fallback) || isNativeShadowRootAvailable;
+    const fallback = isTrue(options.fallback) || isFalse(isNativeShadowRootAvailable);
     if (fallback) {
         patchCustomElement(elm);
     }
@@ -192,7 +184,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         data: EmptyObject,
         context: create(null),
         cmpProps: create(null),
-        rootProps: create(null),
         cmpTrack: create(null),
         cmpState: undefined,
         cmpSlots: fallback ? create(null) : undefined,
@@ -203,7 +194,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         getHook,
         component: undefined,
         children: EmptyArray,
-        hostAttrs: create(null),
         // used to track down all object-key pairs that makes this vm reactive
         deps: [],
     };
@@ -212,12 +202,6 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
         vm.toString = (): string => {
             return `[object:vm ${def.name} (${vm.idx})]`;
         };
-    }
-    // linking shadow-root with the VM before anything else.
-    const { cmpRoot } = vm;
-    linkShadow(cmpRoot, vm);
-    if (process.env.NODE_ENV !== 'production') {
-        patchShadowRootWithRestrictions(cmpRoot);
     }
     // create component instance associated to the vm and the element
     createComponent(vm, Ctor);
@@ -475,6 +459,14 @@ export function getNodeKey(node: Node): number | undefined {
     return vm.uid;
 }
 
+export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
+    const vm: VM | undefined = getInternalField(sr, ViewModelReflection);
+    if (isUndefined(vm)) {
+        return null;
+    }
+    return vm.elm;
+}
+
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(getInternalField(elm, ViewModelReflection));
@@ -499,6 +491,8 @@ export function getShadowRootVM(root: ShadowRoot): VM {
 }
 
 // slow path routine
+// NOTE: we should probably more this routine to the faux shadow folder
+// and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(vm);

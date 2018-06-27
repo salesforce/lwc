@@ -119,12 +119,6 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     return result || [];
 }
 
-export enum EventListenerContext {
-    COMPONENT_LISTENER = 1,
-    ROOT_LISTENER = 2,
-    NATIVE_ELEMENT = 3,
-}
-
 export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | Component, event: Event) {
     const { context, callHook } = vm;
     const ctx = currentContext;

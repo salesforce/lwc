@@ -45,9 +45,11 @@ function getNodeOwner(node: Node): HTMLElement | null {
     while (!isNull(node) && isUndefined((ownerKey = getNodeOwnerKey(node)))) {
         node = parentNodeGetter.call(node);
     }
+    // either we hit the wall, or we node is root element (which does not have an owner key)
     if (isUndefined(ownerKey) || isNull(node)) {
         return null;
     }
+    // At this point, node is a valid node with owner identity, now we need to find the owner node
     // search for a custom element with a VM that owns the first element with owner identity attached to it
     while (!isNull(node) && (getNodeKey(node) !== ownerKey)) {
         node = parentNodeGetter.call(node);

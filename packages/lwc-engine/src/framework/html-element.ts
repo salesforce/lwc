@@ -1,23 +1,15 @@
 import assert from "./assert";
 import { Component, getWrappedComponentsListener } from "./component";
 import { isObject, defineProperties, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "./language";
-import {
-    getAttribute,
-    getAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    setAttribute,
-    setAttributeNS,
-} from "./dom-api";
-import { attemptAriaAttributeFallback } from "./dom/aom";
 import { ViewModelReflection, setInternalField } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent } from "./dom-api";
-import { patchComponentWithRestrictions, patchCustomElementWithRestrictions } from "./restrictions";
+import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
+import { prepareForValidAttributeMutation } from "./restrictions";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -102,7 +94,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def } = vm;
+    const { elm, def, cmpRoot } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -114,13 +106,17 @@ function LWCElement(this: Component) {
         vm.setHook = setHook;
         vm.getHook = getHook;
     }
-    // linking elm and its component with VM
+    // linking elm, shadow root and component with the VM
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
+    setInternalField(cmpRoot, ViewModelReflection, vm);
+    // TODO: this should be a prototype chain adjustment instead of
+    // a bunch of descriptors on the element itself for perf reasons.
     defineProperties(elm, def.descriptors);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
+        patchShadowRootWithRestrictions(cmpRoot);
     }
 }
 
@@ -175,46 +171,47 @@ LWCElement.prototype = {
     },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
+        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            prepareForValidAttributeMutation(elm, attrName);
         }
-        // use cached setAttributeNS, because elm.setAttribute throws
-        // when not called in template
-        return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
+        return elm.setAttributeNS.apply(elm, arguments);
     },
 
     removeAttributeNS(ns: string, attrName: string): void {
-        // use cached removeAttributeNS, because elm.setAttribute throws
-        // when not called in template
-        return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
+        const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForValidAttributeMutation(elm, attrName);
+        }
+        return elm.removeAttributeNS.apply(elm, arguments);
     },
 
     removeAttribute(attrName: string) {
-        const vm = getComponentVM(this);
-        // use cached removeAttribute, because elm.setAttribute throws
-        // when not called in template
-        removeAttribute.call(vm.elm, attrName);
-        attemptAriaAttributeFallback(vm, attrName);
+        const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForValidAttributeMutation(elm, attrName);
+        }
+        elm.removeAttribute.apply(elm, arguments);
     },
 
     setAttribute(attrName: string, value: any): void {
-        const vm = getComponentVM(this);
+        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            prepareForValidAttributeMutation(elm, attrName);
         }
-        // marking the set is needed for the AOM polyfill
-        vm.hostAttrs[attrName] = 1;
-        // use cached setAttribute, because elm.setAttribute throws
-        // when not called in template
-        return setAttribute.call(getLinkedElement(this), attrName, value);
+        return elm.setAttribute.apply(elm, arguments);
     },
 
     getAttribute(attrName: string): string | null {
-        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
+        const elm = getLinkedElement(this);
+        return elm.getAttribute.apply(elm, arguments);
     },
 
     getAttributeNS(ns: string, attrName: string) {
-        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
+        const elm = getLinkedElement(this);
+        return elm.getAttributeNS.apply(elm, arguments);
     },
 
     getBoundingClientRect(): ClientRect {
@@ -292,7 +289,7 @@ LWCElement.prototype = {
         }
         const { elm } = vm;
         const { tagName } = elm;
-        const is = getAttribute.call(elm, 'is');
+        const is = elm.getAttribute('is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
     },
 };
