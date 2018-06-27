@@ -21,6 +21,8 @@ import {
     isUndefined,
     toString,
     ArrayFilter,
+    isTrue,
+    ArrayMap,
 } from "../language";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
@@ -112,7 +114,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node as HTMLElement));
+            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node));
         }
     }
     return filteredAndPatched;
@@ -166,8 +168,25 @@ export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): 
 }
 
 function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
+    if (isNull(owner)) {
+        return [];
+    }
     return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (!isNodeOwnedBy(slot, child)) {
+        if (!isNodeOwnedBy(owner, child)) {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
+function getFilteredSlotOwnNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
+    if (isNull(owner)) {
+        return [];
+    }
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (isNodeOwnedBy(owner, child)) {
             ArrayPush.call(seed, child);
         }
         return seed;
@@ -240,22 +259,29 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);
 }
 
-function slotAssignedNodesValue(this: HTMLElement): Node[] {
-    const owner = getNodeOwner(this);
-    if (isNull(owner)) {
-        return [];
-    }
-    const nodes = getFilteredSlotAssignedNodes(this);
-    return getAllMatches(owner, nodes);
+interface AssignedNodesOptions {
+    flatten?: boolean;
 }
 
-function slotAssignedElementsValue(this: HTMLElement): Element[] {
-    const owner = getNodeOwner(this);
+function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
+    const flatten = !isUndefined(options) && isTrue(options.flatten);
+    const owner = flatten ? this : getNodeOwner(this);
     if (isNull(owner)) {
         return [];
     }
-    const elements: Element[] = ArrayFilter.call(getFilteredSlotAssignedNodes(this), node => node instanceof Element);
-    return getAllMatches(owner, elements);
+    const nodes = flatten ? getFilteredSlotOwnNodes(this) : getFilteredSlotAssignedNodes(this);
+    return ArrayMap.call(nodes, patchShadowDomTraversalMethods);
+}
+
+function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
+    const flatten = !isUndefined(options) && isTrue(options.flatten);
+    const owner = flatten ? this : getNodeOwner(this);
+    if (isNull(owner)) {
+        return [];
+    }
+    const nodes = flatten ? getFilteredSlotOwnNodes(this) : getFilteredSlotAssignedNodes(this);
+    const elements: Element[] = ArrayFilter.call(nodes, node => node instanceof Element);
+    return ArrayMap.call(elements, patchShadowDomTraversalMethods);
 }
 
 function slotNameGetter(this: HTMLElement): string {
