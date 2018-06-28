@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, defineProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, defineProperty, getOwnPropertyDescriptor, getOwnPropertyNames, ArrayReduce, getPrototypeOf } from "./language";
 import { ComponentConstructor } from "./component";
 
 type Callback = () => void;
@@ -88,4 +88,15 @@ export function setInternalField(o: object, fieldName: symbol, value: any) {
 
 export function getInternalField(o: object, fieldName: symbol): any {
     return o[fieldName];
+}
+
+export function replicateProtoChain(proto: object, oldBase: object, newBase: object): object {
+    if (proto === oldBase) {
+        return newBase;
+    }
+    const descriptors: PropertyDescriptorMap = ArrayReduce.call(getOwnPropertyNames(proto), (seed, propName: string): PropertyDescriptorMap => {
+        seed[propName] = getOwnPropertyDescriptor(proto, propName);
+        return seed;
+    }, create(null));
+    return create(replicateProtoChain(getPrototypeOf(proto), oldBase, newBase), descriptors);
 }
