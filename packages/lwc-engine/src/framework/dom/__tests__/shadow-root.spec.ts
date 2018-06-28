@@ -193,7 +193,7 @@ describe('root', () => {
                 getHostShadowRoot(elem).querySelector('p')
             );
         });
-        it('should return the last child', () => {
+        it('could be a text node', () => {
             function tmpl($api) {
                 return [
                     $api.h('div', {
