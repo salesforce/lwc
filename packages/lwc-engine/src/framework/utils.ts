@@ -1,19 +1,15 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, StringReplace, hasOwnProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, defineProperty } from "./language";
 import { ComponentConstructor } from "./component";
-import {
-    AttrNameToPropNameMap,
-    PropNameToAttrNameMap,
-} from "./dom/attributes";
 
-export type Callback = () => void;
+type Callback = () => void;
 
 let nextTickCallbackQueue: Callback[] = [];
 export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
-export const ViewModelReflection = Symbol();
+export const ViewModelReflection = createSymbol('ViewModel');
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
@@ -35,32 +31,6 @@ export function addCallbackToNextTick(callback: Callback) {
     }
     // TODO: eventually, we might want to have priority when inserting callbacks
     ArrayPush.call(nextTickCallbackQueue, callback);
-}
-
-const CAMEL_REGEX = /-([a-z])/g;
-
-/**
- * This method maps between attribute names
- * and the corresponding property name.
- */
-export function getPropNameFromAttrName(attrName: string): string {
-    if (!hasOwnProperty.call(AttrNameToPropNameMap, attrName)) {
-        AttrNameToPropNameMap[attrName] = StringReplace.call(attrName, CAMEL_REGEX, (g: string): string => g[1].toUpperCase());
-    }
-    return AttrNameToPropNameMap[attrName];
-}
-
-const CAPS_REGEX = /[A-Z]/g;
-
-/**
- * This method maps between property names
- * and the corresponding attribute name.
- */
-export function getAttrNameFromPropName(propName: string): string {
-    if (!hasOwnProperty.call(PropNameToAttrNameMap, propName)) {
-        PropNameToAttrNameMap[propName] = StringReplace.call(propName, CAPS_REGEX, (match: string): string => '-' + match.toLowerCase());
-    }
-    return PropNameToAttrNameMap[propName];
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
@@ -101,4 +71,21 @@ export function resolveCircularModuleDependency(valueOrFactory: any): any {
         valueOrFactory;
 }
 
-export const usesNativeSymbols = typeof Symbol() === 'symbol';
+/**
+ * In IE11, symbols that we plan to apply everywhere are expensive
+ * due to the nature of the symbol polyfill. This method abstract the
+ * creation of symbols, so we can fallback to string when native symbols
+ * are not supported.
+ */
+export function createSymbol(key: string): symbol {
+    // @ts-ignore: using a string as a symbol for perf reasons
+    return typeof Symbol() === 'symbol' ? Symbol(key) : `$$lwc-${key}$$`;
+}
+
+export function setInternalField(o: object, fieldName: symbol, value: any) {
+    defineProperty(o, fieldName, { value });
+}
+
+export function getInternalField(o: object, fieldName: symbol): any {
+    return o[fieldName];
+}
