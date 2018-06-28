@@ -89,19 +89,15 @@ function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot 
     return getShadowParent(this, value);
 }
 
-function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
-    const value = nativeParentElementGetter.call(this);
-    if (isNull(value)) {
-        return value;
-    }
-    const owner = getNodeOwner(this);
-
+function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
+    const parentNode = parentNodeDescriptorValue.call(this);
+    const ownerShadow = getShadowRoot(getNodeOwner(this) as HTMLElement);
     // If we have traversed to the host element,
     // we need to return null
-    if (owner === value) {
+    if (ownerShadow === parentNode) {
         return null;
     }
-    return getShadowParent(this, value);
+    return parentNode;
 }
 
 export function shadowRootChildNodes(root: ShadowRoot) {
