@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, defineProperty } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty } from "./language";
 import { ComponentConstructor } from "./component";
 
 type Callback = () => void;
@@ -83,7 +83,8 @@ export function createSymbol(key: string): symbol {
 }
 
 export function setInternalField(o: object, fieldName: symbol, value: any) {
-    defineProperty(o, fieldName, { value });
+    // TODO: improve this to use defineProperty(o, fieldName, { value }) or a weakmap
+    o[fieldName] = value;
 }
 
 export function getInternalField(o: object, fieldName: symbol): any {
