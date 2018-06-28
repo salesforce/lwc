@@ -1,13 +1,14 @@
 import assert from "../assert";
-import { isNull, create, ArrayIndexOf, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
+import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
 import { getNodeKey } from "../vm";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createSymbol } from "../utils";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINS } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
 import { ElementAOMPropertyNames } from "../attributes";
+import { unwrap } from "./traverse-membrane";
 
 let ArtificialShadowRootPrototype;
 
@@ -202,6 +203,9 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     compareDocumentPosition: {
         value(this: ShadowRoot, otherNode: Node): number {
+            // this API might be called with proxies
+            otherNode = unwrap(otherNode);
+            const host = getHost(this);
             if (this === otherNode) {
                 // it is the root itself
                 return 0;
@@ -209,7 +213,7 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
             if (this.contains(otherNode)) {
                 // it belongs to the shadow root instance
                 return 20; // 10100 === DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
-            } else if (compareDocumentPosition.call(this, otherNode) & DOCUMENT_POSITION_CONTAINS) {
+            } else if (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) {
                 // it is a child element but does not belong to the shadow root instance
                 return 37; // 100101 === DOCUMENT_POSITION_DISCONNECTED & DOCUMENT_POSITION_FOLLOWING & DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
             } else {
@@ -222,7 +226,12 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
     },
     contains: {
         value(this: ShadowRoot, otherNode: Node): boolean {
-            return ArrayIndexOf.call(this.querySelectorAll('*'), otherNode) !== -1;
+            // this API might be called with proxies
+            otherNode = unwrap(otherNode);
+            const host = getHost(this);
+            // must be child of the host and owned by it.
+            return (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+                isNodeOwnedBy(host, otherNode);
         },
         enumerable: true,
         configurable: true,

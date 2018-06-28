@@ -60,7 +60,7 @@ function getNodeOwner(node: Node): HTMLElement | null {
     return node as HTMLElement;
 }
 
-function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
+export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(node instanceof Node && owner instanceof HTMLElement, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
         assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${owner}`);
