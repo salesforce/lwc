@@ -4,8 +4,9 @@ import {
     hasOwnProperty,
     getOwnPropertyDescriptor,
     isTrue,
+    defineProperties,
 } from '../language';
-import { ViewModelReflection } from "../utils";
+import { getNodeKey } from '../vm';
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -36,7 +37,7 @@ function findShadowRoot(node: Node): Node {
     let nodeParent;
     while (
         !isNull(nodeParent = parentNodeGetter.call(node)) &&
-        isUndefined(node[ViewModelReflection])
+        isUndefined(getNodeKey(node))
     ) {
         node = nodeParent;
     }
@@ -97,3 +98,11 @@ export {
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,
 };
+
+const NodePatchDescriptors: PropertyDescriptorMap = {};
+
+export function patchNode(node: Node) {
+    // TODO: we are nos invoking this yet, but it will be interesting to do
+    // so for any element from the template.
+    defineProperties(node, NodePatchDescriptors);
+}

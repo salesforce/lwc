@@ -1311,7 +1311,7 @@ describe('html-element', () => {
                 it('external getAttribute reflect default value when aria-checked has been removed', () => {
                     class MyComponent extends Element {
                         connectedCallback() {
-                            this.template.ariaChecked = 'true'
+                            this.template.ariaChecked = 'true';
                         }
                     }
                     const element = createElement('prop-get-attribute-null-aria-checked', { is: MyComponent });

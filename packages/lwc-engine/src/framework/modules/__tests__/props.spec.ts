@@ -3,7 +3,7 @@ import target from '../props';
 
 describe('module/props', () => {
 
-    it('should not set the input element value when the new value matches (reconcilation)', () => {
+    it('should not set the input element value when the new value matches (reconciliation)', () => {
         const elm = {};
         let read = false;
         Object.defineProperty(elm, 'value', {
@@ -11,7 +11,7 @@ describe('module/props', () => {
                 read = true;
                 return "new value";
             },
-            set: () => { throw new Error('setter for input.value was called accidentaly'); },
+            set: () => { throw new Error('setter for input.value was called accidentally'); },
             configurable: false,
             enumerable: true,
         });
@@ -23,7 +23,7 @@ describe('module/props', () => {
         expect(elm.value).toBe("new value");
     });
 
-    it('should set the input element value when the new value does not match (reconcilation)', () => {
+    it('should set the input element value when the new value does not match (reconciliation)', () => {
         const elm = {};
         let v = "user input";
         Object.defineProperty(elm, 'value', {
@@ -47,8 +47,8 @@ describe('module/props', () => {
     it('should not touch the element when the values are the same', () => {
         const elm = document.createElement('div');
         Object.defineProperty(elm, 'foo', {
-            get: () => { throw new Error('getter for element.foo was called accidentaly'); },
-            set: () => { throw new Error('setter for element.foo was called accidentaly'); },
+            get: () => { throw new Error('getter for element.foo was called accidentally'); },
+            set: () => { throw new Error('setter for element.foo was called accidentally'); },
             configurable: false,
             enumerable: true,
         });
