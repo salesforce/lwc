@@ -82,7 +82,7 @@ function patchedShadowRootFirstChildGetter(this: ShadowRoot): Node | null {
 
 function patchedShadowRootLastChildGetter(this: ShadowRoot): Node | null {
     const { childNodes } = this;
-    return childNodes[childNodes.length] || null;
+    return childNodes[childNodes.length - 1] || null;
 }
 
 function patchedShadowRootInnerHTMLGetter(this: ShadowRoot): string {
