@@ -2,7 +2,6 @@ import assert from "../assert";
 import { getNodeKey, getNodeOwnerKey } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
-    parentElementGetter as nativeParentElementGetter,
     childNodesGetter as nativeChildNodesGetter,
     textContextSetter,
     parentNodeGetter,
