@@ -382,4 +382,29 @@ describe('root', () => {
             expect(root.hasChildNodes()).toBe(true);
         });
     });
+
+    describe('.parentElement', () => {
+        it('should return null on child node', () => {
+            function tmpl($api) {
+                return [
+                    $api.h('div', {
+                        key: 0,
+                    }, []),
+                    $api.h('p', {
+                        key: 2,
+                    }, []),
+                ];
+            }
+            class MyComponent extends Element {
+                render() {
+                    return tmpl;
+                }
+            }
+
+            const elem = createElement('x-shadow-child-nodes', { is: MyComponent });
+            document.body.appendChild(elem);
+            const first = getHostShadowRoot(elem).firstChild;
+            expect(first.parentElement).toBe(null);
+        });
+    });
 });

@@ -94,6 +94,13 @@ function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRo
     if (isNull(value)) {
         return value;
     }
+    const owner = getNodeOwner(this);
+
+    // If we have traversed to the host element,
+    // we need to return null
+    if (owner === value) {
+        return null;
+    }
     return getShadowParent(this, value);
 }
 
