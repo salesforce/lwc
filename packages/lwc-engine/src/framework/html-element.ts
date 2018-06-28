@@ -1,12 +1,12 @@
 import assert from "./assert";
 import { Component, getWrappedComponentsListener } from "./component";
-import { isObject, defineProperties, getOwnPropertyNames, ArraySlice, isNull, isTrue, create } from "./language";
-import { ViewModelReflection, setInternalField } from "./utils";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf } from "./language";
+import { ViewModelReflection, setInternalField, replicateProtoChain } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent } from "./dom-api";
+import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
 import { prepareForValidAttributeMutation } from "./restrictions";
@@ -110,9 +110,13 @@ function LWCElement(this: Component) {
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
-    // TODO: this should be a prototype chain adjustment instead of
-    // a bunch of descriptors on the element itself for perf reasons.
-    defineProperties(elm, def.descriptors);
+    let { elmProto } = def;
+    if (elm.constructor.prototype !== BaseCustomElementProto) {
+        // this is slow path for component instances using `is` attribute or `forceTagName`, which
+        // are set to be removed in the near future.
+        elmProto = replicateProtoChain(elmProto, BaseCustomElementProto, elm.constructor.prototype);
+    }
+    setPrototypeOf(elm, elmProto);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
