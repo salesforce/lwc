@@ -8,7 +8,7 @@ benchmark(`benchmark-table/create/1k`, () => {
     let tableElement;
 
     before(() => {
-        tableElement = createElement('benchmark-table', { is: Table, fallback: false });
+        tableElement = createElement('benchmark-table', { is: Table });
         return insertTableComponent(tableElement);
     });
 
