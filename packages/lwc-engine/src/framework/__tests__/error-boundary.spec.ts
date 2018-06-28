@@ -309,19 +309,23 @@ describe('error boundary component', () => {
                 }).toThrow();
             }),
 
-            it('should unomunt child error boundary component if it throws inside errorCallback', () => {
+            it.skip('should delegate to the outer boundary when the inner boundary throws inside errorCallback during rehydration of a child', () => {
+                // TODO: issue #453
                 class ChildBoundaryContent extends Element {
+                    render() {
+                        if (this.childError) {
+                            throw new Error('throwing in the second rehydration process');
+                        }
+                    }
                     renderedCallback() {
-                        throw new Error("Child RenderedCallback Throw");
+                        this.childError = true;
                     }
                 }
+                ChildBoundaryContent.track = { childError: 1 };
                 function html($api, $cmp) {
                     return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
                 }
                 class ChildErrorBoundary extends Element {
-                    getError() {
-                        return this.error;
-                    }
                     errorCallback(error, info) {
                         throw new Error('Child Boundary ErrorCallback Throw');
                     }
@@ -329,8 +333,37 @@ describe('error boundary component', () => {
                         return html;
                     }
                 }
-                ChildErrorBoundary.publicMethods = ['getError'];
-                ChildErrorBoundary.track = { error: 1 };
+
+                const HostErrorBoundary = createBoundaryComponent([{
+                    name: 'child-error-boundary',
+                    ctor: ChildErrorBoundary
+                }]);
+
+                const hostBoundaryElm = createElement('host-boundary', {is: HostErrorBoundary});
+                document.body.appendChild(hostBoundaryElm);
+
+                expect(hostBoundaryElm.getError()).toBe('Child Boundary ErrorCallback Throw');
+                expect(hostBoundaryElm.querySelectorAll('child-error-boundary').length).toBe(0);
+            });
+
+            it('should unomunt child error boundary component if it throws inside errorCallback', () => {
+                class ChildBoundaryContent extends Element {
+                    renderedCallback() {
+                        // TODO: we should also tests this while throwing in the next tick during rehydration
+                        throw new Error("Child RenderedCallback Throw");
+                    }
+                }
+                function html($api, $cmp) {
+                    return [$api.c('child-boundary-content', ChildBoundaryContent, {})];
+                }
+                class ChildErrorBoundary extends Element {
+                    errorCallback(error, info) {
+                        throw new Error('Child Boundary ErrorCallback Throw');
+                    }
+                    render() {
+                        return html;
+                    }
+                }
 
                 const HostErrorBoundary = createBoundaryComponent([{
                     name: 'child-error-boundary',

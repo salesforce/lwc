@@ -251,6 +251,8 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         }
 
         if (!isUndefined(error)) {
+            // we better force to clean up the content of the shadow so the host can be later on removed, or re-rendered.
+            resetShadowRoot(vm);
             const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
             if (isUndefined(errorBoundaryVm)) {
                 throw error; // tslint:disable-line
@@ -302,6 +304,8 @@ function flushRehydrationQueue() {
             rehydrate(vm);
         } catch (error) {
             const errorBoundaryVm = getErrorBoundaryVMFromParentElement(vm);
+            // we better force to clean up the content of the shadow so the host can be later on removed, or re-rendered.
+            resetShadowRoot(vm); // remove offenders
             if (isUndefined(errorBoundaryVm)) {
                 if (i + 1 < len) {
                     // pieces of the queue are still pending to be rehydrated, those should have priority
@@ -327,7 +331,6 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
     if (isUndefined(error.wcStack)) {
         error.wcStack = getComponentStack(failedVm);
     }
-    resetShadowRoot(failedVm); // remove offenders
     const { errorCallback } = errorBoundaryVm.def;
 
     if (process.env.NODE_ENV !== 'production') {

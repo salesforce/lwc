@@ -637,5 +637,102 @@ describe('component', function() {
                 elm.removeChildAttribute();
             }).not.toThrow();
         });
-     });
+    });
+
+    describe('regressions', () => {
+        it('should not throw when removing a component that have thrown during in the constructor', () => {
+            class XChild extends Element  {
+                constructor() {
+                    super();
+                    throw new Error('throw during construction');
+                }
+            }
+
+            class XSibling extends Element {}
+
+            class XParent extends Element {
+                renderChild() {
+                    this.isVisible = true;
+                }
+
+                render() {
+                    return ($api, $cmp) =>
+                        $cmp.isVisible
+                        ? [
+                            $api.c('x-child', XChild, {}),
+                            $api.c('x-sibling', XSibling, {}),
+                        ]
+                        : [];
+                }
+            }
+            XParent.track = { isVisible: 1 };
+            XParent.publicMethods = ['renderChild'];
+
+            const el = createElement('x-parent', { is: XParent });
+            document.body.appendChild(el);
+
+            el.renderChild();
+
+            return Promise.resolve().then(() => {
+                expect(() => {
+                    document.body.removeChild(el);
+                }).not.toThrow();
+            });
+        });
+    });
+
+    it('should not throw when removing a component that have thrown during in setter when the same component is slotted', () => {
+        class XChild extends Element  {
+            set err(val) {
+                throw new Error('throw during set');
+            }
+        }
+        XChild.publicProps = {
+            err: {
+                config: 1
+            }
+        };
+
+        class XContainer extends Element {
+            render() {
+                return (_$api, _$cmp, $slotset) => $slotset.x;
+            }
+        }
+
+        class XParent extends Element {
+            renderChild() {
+                this.isVisible = true;
+            }
+
+            render() {
+                return ($api, $cmp) =>
+                    $cmp.isVisible
+                    ? [
+                        $api.c('x-container', XContainer, {
+                            slotset: {
+                                x: [
+                                    $api.c('x-child', XChild, {
+                                        props: { err: 'error' }
+                                    })
+                                ]
+                            }
+                        }),
+                    ]
+                    : [];
+            }
+        }
+        XParent.track = { isVisible: 1 };
+        XParent.publicMethods = ['renderChild'];
+
+        const el = createElement('x-parent', { is: XParent });
+        document.body.appendChild(el);
+
+        el.renderChild();
+
+        return Promise.resolve().then(() => {
+            expect(() => {
+                document.body.removeChild(el);
+            }).not.toThrow();
+        });
+    });
 });

@@ -68,7 +68,8 @@ describe('error boundary integration', () => {
         assert.equal(browser.isExisting('nested-post-error-child-view'), false);
     }),
 
-    it('should fail to unmount alternatvie offender when root element is not a boundary', () => {
+    it.skip('should fail to unmount alternatvie offender when root element is not a boundary', () => {
+        // TODO: issue #453
         browser.element('#boundary-alternative-view-throw').click();
         // ensure offender still exists since boundary failed to recover
         assert.equal(browser.isExisting('post-error-child-view'), true);
