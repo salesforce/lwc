@@ -7,6 +7,6 @@ export default class ShadowElementParentElement extends Element {
         if (this.parentIsRoot === true) {
             return;
         }
-        this.parentIsRoot = this.template.querySelector('div').parentElement === this.template;
+        this.parentIsRoot = this.template.querySelector('div').parentElement === null;
     }
 }

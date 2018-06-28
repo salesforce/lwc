@@ -2,7 +2,6 @@ import assert from "../assert";
 import { getNodeKey, getNodeOwnerKey } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
-    parentElementGetter as nativeParentElementGetter,
     childNodesGetter as nativeChildNodesGetter,
     textContextSetter,
     parentNodeGetter,
@@ -89,12 +88,15 @@ function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot 
     return getShadowParent(this, value);
 }
 
-function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
-    const value = nativeParentElementGetter.call(this);
-    if (isNull(value)) {
-        return value;
+function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
+    const parentNode = parentNodeDescriptorValue.call(this);
+    const ownerShadow = getShadowRoot(getNodeOwner(this) as HTMLElement);
+    // If we have traversed to the host element,
+    // we need to return null
+    if (ownerShadow === parentNode) {
+        return null;
     }
-    return getShadowParent(this, value);
+    return parentNode;
 }
 
 export function shadowRootChildNodes(root: ShadowRoot) {

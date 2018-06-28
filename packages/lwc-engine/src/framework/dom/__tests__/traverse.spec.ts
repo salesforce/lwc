@@ -477,11 +477,11 @@ describe('#parentNode and #parentElement', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             const root = getHostShadowRoot(elm);
-            expect(root.querySelector('div').parentElement).toBe(root);
+            expect(root.querySelector('div').parentNode).toBe(root);
         });
     });
 
-    it('should allow walking back to the shadow root via parentElement', () => {
+    it('should not allow walking back to the shadow root via parentElement', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
@@ -495,7 +495,7 @@ describe('#parentNode and #parentElement', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             const root = getHostShadowRoot(elm);
-            expect(root.querySelector('div').parentElement).toBe(root);
+            expect(root.querySelector('div').parentElement).toBe(null);
         });
     });
 });
