@@ -116,3 +116,13 @@ export function toString(obj: any): string {
         return obj + '';
     }
 }
+
+export function getPropertyDescriptor(o: any, p: PropertyKey): PropertyDescriptor | undefined {
+    do {
+        const d = getOwnPropertyDescriptor(o, p);
+        if (!isUndefined(d)) {
+            return d;
+        }
+        o = getPrototypeOf(o);
+     } while (o !== null);
+}
