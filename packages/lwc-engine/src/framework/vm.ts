@@ -253,6 +253,9 @@ function patchShadowRoot(vm: VM, children: VNodes) {
         if (!isUndefined(error)) {
             const errorBoundaryVm = getErrorBoundaryVMFromOwnElement(vm);
             if (isUndefined(errorBoundaryVm)) {
+                // if no error boundary is found, we better force to clean up
+                // the content of the shadow so the host can be later on removed, or re-rendered.
+                resetShadowRoot(vm);
                 throw error; // tslint:disable-line
             }
             recoverFromLifeCycleError(vm, errorBoundaryVm, error);
