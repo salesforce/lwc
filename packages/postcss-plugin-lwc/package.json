@@ -1,7 +1,7 @@
 {
   "name": "postcss-plugin-lwc",
-  "version": "0.22.0",
-  "description": "Postcss plugin for LWC style scoping",
+  "version": "0.23.2",
+  "description": "Postcss plugin for LWC components styles",
   "main": "dist/commonjs/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
@@ -10,6 +10,7 @@
     "test": "DIR=`pwd` && cd ../../ && jest $DIR"
   },
   "dependencies": {
+    "balanced-match": "^1.0.0",
     "postcss": "^6.0.13",
     "postcss-selector-parser": "3.1.1"
   }

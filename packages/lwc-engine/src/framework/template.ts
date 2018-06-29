@@ -4,18 +4,28 @@ import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toStr
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
-import { Slotset, VM, resetShadowRoot } from "./vm";
+import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { Component } from "./component";
-import { removeAttribute, setAttribute } from "./dom/element";
+import { removeAttribute, setAttribute } from "./dom-api";
 
 export interface Template {
-    (api: RenderAPI, cmp: object, slotset: Slotset, ctx: Context): undefined | VNodes;
-    style?: string;
-    token?: string;
+    (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
+
+    /**
+     * HTML attribute that need to be applied to the host element.
+     * This attribute is used for the `:host` pseudo class CSS selector.
+     */
+    hostToken?: string;
+
+    /**
+     * HTML attribute that need to the applied to all the element that the template produces.
+     * This attribute is used for style encapsulation when the engine runs in fallback mode.
+     */
+    shadowToken?: string;
 }
 
-const EmptySlots: Slotset = create(null);
+const EmptySlots: SlotSet = create(null);
 
 function validateSlots(vm: VM, html: any) {
     if (process.env.NODE_ENV !== 'production') {
@@ -53,26 +63,26 @@ function validateTemplate(vm: VM, html: any) {
     validateFields(vm, html);
 }
 
+/**
+ * Apply/Update the styling token applied to the host element.
+ */
 function applyTokenToHost(vm: VM, html: Template): void {
-    const { context } = vm;
+    const { context, elm } = vm;
 
-    const oldToken = context.tplToken;
-    const newToken = html.token;
+    const oldToken = context.hostToken;
+    const newToken = html.hostToken;
 
-    if (oldToken !== newToken) {
-        const host = vm.elm;
-
-        // Remove the token currently applied to the host element if different than the one associated
-        // with the current template
-        if (!isUndefined(oldToken)) {
-            removeAttribute.call(host, oldToken);
-        }
-
-        // If the template has a token apply the token to the host element
-        if (!isUndefined(newToken)) {
-            setAttribute.call(host, newToken, '');
-        }
+    // Remove the token currently applied to the host element if different than the one associated
+    // with the current template
+    if (!isUndefined(oldToken)) {
+        removeAttribute.call(elm, oldToken);
     }
+    // If the template has a token apply the token to the host element
+    if (!isUndefined(newToken)) {
+        setAttribute.call(elm, newToken, '');
+    }
+    context.hostToken = html.hostToken;
+    context.shadowToken = html.shadowToken;
 }
 
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
@@ -88,12 +98,13 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         if (!isUndefined(cmpTemplate)) {
             resetShadowRoot(vm);
         }
-        applyTokenToHost(vm, html);
-
         vm.cmpTemplate = html;
 
+        // Populate context with template information
         context.tplCache = create(null);
-        context.tplToken = html.token;
+
+        // TODO: tokens are only needed in fallback mode
+        applyTokenToHost(vm, html);
 
         if (process.env.NODE_ENV !== 'production') {
             validateTemplate(vm, html);

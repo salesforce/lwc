@@ -31,7 +31,6 @@ function removeAllEventListeners(vnode: InteractiveVNode) {
         const elm = vnode.elm as Element;
         let name;
         for (name in on) {
-            // intentionally using removeEventListener from elm to allow patching
             elm.removeEventListener(name, listener);
         }
         vnode.listener = undefined;
@@ -58,12 +57,10 @@ function createAllEventListeners(oldVnode: InteractiveVNode, vnode: InteractiveV
 
     let name;
     for (name in on) {
-        // intentionally using addEventListener from elm to allow patching
         elm.addEventListener(name, listener);
     }
 }
 
-// @ts-ignore
 const eventListenersModule: Module = {
     update: updateAllEventListeners,
     create: createAllEventListeners,

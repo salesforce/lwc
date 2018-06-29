@@ -1,4 +1,5 @@
 const assert = require('assert');
+
 describe('Title public prop', () => {
     const URL = 'http://localhost:4567/title-prop';
     let element;
@@ -8,7 +9,8 @@ describe('Title public prop', () => {
     });
 
     it('should have rendered title property propertly', function () {
-        const li = browser.element('x-child');
-        assert.deepEqual(li.getText(), 'Child title');
+        const element = browser.element('x-child');
+        const text = element.getText();
+        assert.deepEqual(text, 'Child title');
     });
 });

@@ -1,7 +1,5 @@
-import { unwrap } from '../main';
-import { Element } from "../html-element";
+import { createElement, Element, unwrap } from '../main';
 import { reactiveMembrane } from '../membrane';
-import { createElement } from "../upgrade";
 
 describe('unwrap', () => {
     it('should return value when not a proxy', () => {

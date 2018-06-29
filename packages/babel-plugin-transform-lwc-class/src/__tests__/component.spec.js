@@ -55,8 +55,7 @@ export default class Test extends Component {
     return _tmpl;
   }
 
-}
-Test.style = _tmpl.style;`
+}`
         }
     });
 });
@@ -92,8 +91,7 @@ export default class Test extends Element {
     return _tmpl;
   }
 
-}
-Test.style = _tmpl.style;`
+}`
         }
     });
 
@@ -130,8 +128,7 @@ export default class Test2 extends Element {
     return _tmpl;
   }
 
-}
-Test2.style = _tmpl.style;`
+}`
         }
     })
 });

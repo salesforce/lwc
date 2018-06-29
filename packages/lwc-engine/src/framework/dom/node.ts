@@ -4,8 +4,9 @@ import {
     hasOwnProperty,
     getOwnPropertyDescriptor,
     isTrue,
+    defineProperties,
 } from '../language';
-import { ViewModelReflection } from "../utils";
+import { getNodeKey } from '../vm';
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -36,7 +37,7 @@ function findShadowRoot(node: Node): Node {
     let nodeParent;
     while (
         !isNull(nodeParent = parentNodeGetter.call(node)) &&
-        isUndefined(node[ViewModelReflection])
+        isUndefined(getNodeKey(node))
     ) {
         node = nodeParent;
     }
@@ -52,8 +53,6 @@ function findComposedRootNode(node: Node): Node {
 
     return node;
 }
-
-export const EmptyNodeList = document.createElement('div').querySelectorAll('*');
 
 /**
  * Dummy implementation of the Node.prototype.getRootNode.
@@ -73,10 +72,15 @@ function getRootNode(
         findShadowRoot(this);
 }
 
+const textContextSetter = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set;
 const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
+
+const childNodesGetter = hasOwnProperty.call(Node.prototype, 'childNodes') ?
+    getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get! :
+    getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!;  // IE11
 
 export {
     // Node.prototype
@@ -87,8 +91,18 @@ export {
     appendChild,
     parentNodeGetter,
     parentElementGetter,
+    childNodesGetter,
+    textContextSetter,
 
     // Node
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_CONTAINED_BY,
 };
+
+const NodePatchDescriptors: PropertyDescriptorMap = {};
+
+export function patchNode(node: Node) {
+    // TODO: we are nos invoking this yet, but it will be interesting to do
+    // so for any element from the template.
+    defineProperties(node, NodePatchDescriptors);
+}

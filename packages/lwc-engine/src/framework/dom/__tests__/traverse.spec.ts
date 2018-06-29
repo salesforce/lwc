@@ -1,53 +1,53 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import assertLogger from '../../assert';
-import { register } from "../../services";
-import { VNode } from "../../../3rdparty/snabbdom/types";
-import { Component } from "../../component";
-import { unwrap } from "../../main";
-import { querySelector } from "../element";
+import { createElement, Element } from '../../main';
+import { getHostShadowRoot } from "../../html-element";
 
-describe('#lightDomQuerySelectorAll()', () => {
+describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {
         it('should allow searching for passed elements', () => {
             function tmpl$1($api, $cmp, $slotset, $ctx) {
-                const {
-                    "$default$": slot0
-                } = $slotset;
-
-                return slot0 || [];
+                return [$api.s('', {
+                    key: 0,
+                    attrs: {
+                        name: ''
+                    }
+                }, [], $slotset)];
             }
-            tmpl$1.slots = ["$default$"];
+            tmpl$1.slots = [""];
 
             class Parent extends Element {
-                selectAllDivs() {
-                    return this.querySelectorAll('div');
-                }
-
                 render() {
                     return tmpl$1;
                 }
 
             }
-            Parent.publicMethods = ["selectAllDivs"];
 
             function tmpl$2($api, $cmp, $slotset, $ctx) {
                 const {
                     t: api_text,
                     h: api_element,
                     c: api_custom_element
-                    } = $api;
+                } = $api;
 
-                    return [api_custom_element("x-parent", Parent, {
+                return [
+                    api_custom_element("x-parent", Parent, {
                         key: 1,
-                        "slotset": {
-                            "$default$": [api_element("div", {
-                                key: 2
-                            }, [api_text("First")]), api_element("div", {
-                                key: 3
-                            }, [api_text("Second")])]
-                        }
-                    })];
+                    }, [
+                        api_element("div", {
+                                key: 2,
+                                classMap: {
+                                    first: true
+                                }
+                            },
+                            [api_text("First")]
+                        ), api_element("div", {
+                                key: 3,
+                                classMap: {
+                                    second: true
+                                }
+                            },
+                            [api_text("Second")]
+                        )
+                    ])];
             }
 
             class LightdomQuerySelector extends Element {
@@ -59,39 +59,10 @@ describe('#lightDomQuerySelectorAll()', () => {
 
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
-            const nested = querySelector.call(element, 'x-parent').selectAllDivs();
-            expect(nested.length).toBe(2);
-            expect(nested[0]).toBe(querySelector.call(element, 'x-parent div:nth-child(1)'));
-            expect(nested[1]).toBe(querySelector.call(element, 'x-parent div:nth-child(2)'));
-        });
-
-        it('should ignore elements passed to its slot', () => {
-            function parentHTML($api) {
-                return [
-                    $api.c('x-child', Child, {}),
-                ];
-            }
-
-            class Parent extends Element {
-                queryChildDiv() {
-                    return this.querySelectorAll('div');
-                }
-            }
-
-            Parent.methods = ['queryChildDiv'];
-
-            function renderChildHTML($api, $cmp, $slotset) {
-                return $slotset.x;
-            }
-
-            class Child extends Element {
-                render() {
-                    return renderChildHTML;
-                }
-            }
-
-            const elm = createElement('x-parent', { is: Parent });
-            expect(elm.querySelector('div')).toBe(querySelector.call(elm, 'div'));
+            const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
+            expect(nested).toHaveLength(2);
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
 
         it('should ignore elements from template', () => {
@@ -113,7 +84,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             }
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            expect(elm.shadowRoot.querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
+            expect(getHostShadowRoot(elm).querySelector('x-child').querySelectorAll('p')).toHaveLength(0);
         });
 
         it('should not throw an error if no nodes are found', () => {
@@ -128,7 +99,7 @@ describe('#lightDomQuerySelectorAll()', () => {
             const elm = createElement('should-not-throw-an-error-if-no-nodes-are-found', { is: def });
             document.body.appendChild(elm);
             expect(() => {
-                elm.shadowRoot.querySelectorAll('div');
+                getHostShadowRoot(elm).querySelectorAll('div');
             }).not.toThrow();
         });
     });
@@ -136,13 +107,14 @@ describe('#lightDomQuerySelectorAll()', () => {
     describe('Invoked from element instance', () => {
         it('should allow searching for passed elements', () => {
             function tmpl$1($api, $cmp, $slotset, $ctx) {
-                const {
-                    "$default$": slot0
-                } = $slotset;
-
-                return slot0 || [];
+                return [$api.s('', {
+                    key: 0,
+                    attrs: {
+                        name: ''
+                    }
+                }, [], $slotset)];
             }
-            tmpl$1.slots = ["$default$"];
+            tmpl$1.slots = [""];
 
             class Parent extends Element {
                 render() {
@@ -156,63 +128,64 @@ describe('#lightDomQuerySelectorAll()', () => {
                     t: api_text,
                     h: api_element,
                     c: api_custom_element
-                    } = $api;
+                } = $api;
 
-                    return [api_custom_element("x-parent", Parent, {
+                return [
+                    api_custom_element("x-parent", Parent, {
                         key: 1,
-                        "slotset": {
-                            "$default$": [api_element("div", {
-                                key: 2
-                            }, [api_text("First")]), api_element("div", {
-                                key: 3
-                            }, [api_text("Second")])]
-                        }
-                    })];
+                    }, [
+                        api_element("div", {
+                                key: 2,
+                                classMap: {
+                                    first: true
+                                }
+                            },
+                            [api_text("First")]
+                        ), api_element("div", {
+                                key: 3,
+                                classMap: {
+                                    second: true
+                                }
+                            },
+                            [api_text("Second")]
+                        )
+                    ])];
             }
 
             class LightdomQuerySelector extends Element {
-                selectDivs() {
-                    return this.template.querySelector('x-parent').querySelectorAll('div');
-                }
-
                 render() {
                     return tmpl$2;
                 }
             }
-            LightdomQuerySelector.publicMethods = ['selectDivs'];
 
             const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
             document.body.appendChild(element);
-            const nested = element.selectDivs();
-            expect(nested.length).toBe(2);
-            expect(nested[0]).toBe(querySelector.call(element, 'x-parent div:nth-child(1)'));
-            expect(nested[1]).toBe(querySelector.call(element, 'x-parent div:nth-child(2)'));
+            const nested = getHostShadowRoot(element).querySelector('x-parent').querySelectorAll('div');
+            expect(nested).toHaveLength(2);
+            expect(nested[0]).toBe(getHostShadowRoot(element).querySelector('.first'));
+            expect(nested[1]).toBe(getHostShadowRoot(element).querySelector('.second'));
         });
     });
 });
 
-describe('#lightDomQuerySelector()', () => {
+describe('#LightDom querySelector()', () => {
     it('should allow searching for the passed element', () => {
         function tmpl$1($api, $cmp, $slotset, $ctx) {
-            const {
-                "$default$": slot0
-            } = $slotset;
-
-            return slot0 || [];
+            return [$api.s('', {
+                key: 0,
+                attrs: {
+                    name: ''
+                }
+            }, [], $slotset)];
         }
-        tmpl$1.slots = ["$default$"];
+        tmpl$1.slots = [""];
 
         class Parent extends Element {
-            selectFirstDiv() {
-                return this.querySelector('div');
-            }
-
             render() {
                 return tmpl$1;
             }
 
         }
-        Parent.publicMethods = ["selectFirstDiv"];
 
         function tmpl$2($api, $cmp, $slotset, $ctx) {
             const {
@@ -221,16 +194,26 @@ describe('#lightDomQuerySelector()', () => {
                 c: api_custom_element
             } = $api;
 
-            return [api_custom_element("x-parent", Parent, {
-                key: 1,
-                "slotset": {
-                    "$default$": [api_element("div", {
-                        key: 2
-                    }, [api_text("First")]), api_element("div", {
-                        key: 3
-                    }, [api_text("Second")])]
-                }
-            })];
+            return [
+                api_custom_element("x-parent", Parent, {
+                    key: 1,
+                }, [
+                    api_element("div", {
+                            key: 2,
+                            classMap: {
+                                first: true
+                            }
+                        },
+                        [api_text("First")]
+                    ), api_element("div", {
+                            key: 3,
+                            classMap: {
+                                second: true
+                            }
+                        },
+                        [api_text("Second")]
+                    )
+                ])];
         }
 
         class LightdomQuerySelector extends Element {
@@ -241,8 +224,8 @@ describe('#lightDomQuerySelector()', () => {
 
         const element = createElement('lightdom-queryselector', { is: LightdomQuerySelector });
         document.body.appendChild(element);
-        const div = querySelector.call(element, 'x-parent').selectFirstDiv();
-        expect(div).toBe(querySelector.call(element, 'x-parent div'));
+        const div = getHostShadowRoot(element).querySelector('x-parent').querySelector('div');
+        expect(div).toBe(getHostShadowRoot(element).querySelector('.first'));
     });
 
     it('should ignore element from template', () => {
@@ -264,7 +247,7 @@ describe('#lightDomQuerySelector()', () => {
         }
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
-        expect(elm.shadowRoot.querySelector('x-child').querySelector('p')).toBeNull();
+        expect(getHostShadowRoot(elm).querySelector('x-child').querySelector('p')).toBeNull();
     });
 
     it('should not throw an error if element does not exist', () => {
@@ -279,11 +262,11 @@ describe('#lightDomQuerySelector()', () => {
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
         expect(() => {
-            elm.shadowRoot.querySelector('div');
+            getHostShadowRoot(elm).querySelector('div');
         }).not.toThrow();
     });
 
-    it('should return null if element does not exist', function() {
+    it('should return null if element does not exist', function () {
         function html($api) {
             return [$api.h('p', { key: 0 }, [])];
         }
@@ -294,11 +277,11 @@ describe('#lightDomQuerySelector()', () => {
         };
         const elm = createElement('x-foo', { is: def });
         document.body.appendChild(elm);
-        expect(elm.shadowRoot.querySelector('div')).toBeNull();
+        expect(getHostShadowRoot(elm).querySelector('div')).toBeNull();
     });
 });
 
-describe('#shadowRootQuerySelector', () => {
+describe('#shadowRoot querySelector', () => {
     it('should querySelector on element from template', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
         class MyComponent extends Element {
@@ -309,7 +292,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = elm.shadowRoot.querySelector('ul');
+            const ul = getHostShadowRoot(elm).querySelector('ul');
             expect(ul);
             const li = ul.querySelector('li');
             expect(li);
@@ -318,14 +301,13 @@ describe('#shadowRootQuerySelector', () => {
 
     it('should not reach into child components template when querySelector invoked on child custom element', () => {
         expect.assertions(1);
-        let childTemplate;
         class MyChild extends Element {
             render() {
-                return function ($api) {
+                return function($api) {
                     return [$api.h('div', {
                         key: 0,
                     }, [])];
-                }
+                };
             }
         }
 
@@ -334,20 +316,14 @@ describe('#shadowRootQuerySelector', () => {
         }
 
         class MyComponent extends Element {
-            queryChild() {
-                return this.template.querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div');
-            }
-
             render() {
                 return html;
             }
         }
 
-        MyComponent.publicMethods = ['queryChild'];
-
         const elm = createElement('membrane-parent-query-selector-child-custom-element', { is: MyComponent });
         document.body.appendChild(elm);
-        expect(elm.queryChild()).toBe(null);
+        expect(getHostShadowRoot(elm).querySelector('membrane-parent-query-selector-child-custom-element-child').querySelector('div')).toBe(null);
     });
 
     it('should querySelectorAll on element from template', () => {
@@ -360,14 +336,14 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm.shadowRoot.querySelectorAll('ul')[0];
+            const ul = getHostShadowRoot(elm).querySelectorAll('ul')[0];
             expect(ul);
             const li = ul.querySelectorAll('li')[0];
             expect(li);
         });
     });
 
-    it('should ignore elements not defined in template', () => {
+    it('should adopt elements not defined in template as part of the shadow', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
         class MyComponent extends Element {
             render() {
@@ -377,13 +353,15 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const ul = (elm.shadowRoot.querySelector('ul');
+            const ul = getHostShadowRoot(elm).querySelector('ul');
             expect(ul);
             ul.appendChild(document.createElement('li'));
             const li1 = ul.querySelectorAll('li')[0];
-            expect(li1).toBeUndefined();
+            expect(li1).toBeDefined();
             const li2 = ul.querySelector('li');
-            expect(li2).toBeNull();
+            expect(li2).toBe(li1);
+            const li3 = ul.childNodes[0];
+            expect(li3).toBe(li1);
         });
     });
 
@@ -399,7 +377,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                elm.shadowRoot.querySelector('doesnotexist');
+                getHostShadowRoot(elm).querySelector('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -415,7 +393,7 @@ describe('#shadowRootQuerySelector', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('doesnotexist')).toBeNull();
+            expect(getHostShadowRoot(elm).querySelector('doesnotexist')).toBeNull();
         });
     });
 
@@ -433,7 +411,7 @@ describe('#shadowRootQuerySelector', () => {
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
             expect(() => {
-                elm.shadowRoot.querySelectorAll('doesnotexist');
+                getHostShadowRoot(elm).querySelectorAll('doesnotexist');
             }).not.toThrow();
         });
     });
@@ -447,20 +425,14 @@ describe('#shadowRootQuerySelector', () => {
                 childTemplate = this.template;
             }
 
-            clickDiv() {
-                this.template.querySelector('div').click();
-            }
-
             render() {
-                return function ($api) {
+                return function($api) {
                     return [$api.h('div', {
                         key: 0,
                     }, [])];
-                }
+                };
             }
         }
-
-        MyChild.publicMethods = ['clickDiv'];
 
         function html($api, $cmp) {
             return [$api.c('x-child-parent-shadow-root', MyChild, {
@@ -475,21 +447,17 @@ describe('#shadowRootQuerySelector', () => {
                 expect(evt.target.parentNode).not.toBe(childTemplate);
             }
 
-            clickChildDiv() {
-                this.template.querySelector('x-child-parent-shadow-root').clickDiv();
-            }
-
             render() {
                 return html;
             }
         }
 
-        MyComponent.publicMethods = ['clickChildDiv'];
-
         const elm = createElement('membrane-child-parent-shadow-root-parent', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            elm.clickChildDiv();
+            getHostShadowRoot(
+                getHostShadowRoot(elm).querySelector('x-child-parent-shadow-root')
+            ).querySelector('div').click();
         });
     });
 });
@@ -508,12 +476,12 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
+            const root = getHostShadowRoot(elm);
             expect(root.querySelector('div').parentNode).toBe(root);
         });
     });
 
-    it('should allow walking back to the shadow root via parentElement', () => {
+    it('should not allow walking back to the shadow root via parentElement', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
@@ -526,8 +494,631 @@ describe('#parentNode and #parentElement', () => {
         const elm = createElement('x-foo', { is: MyComponent });
         document.body.appendChild(elm);
         return Promise.resolve().then(() => {
-            const root = elm.shadowRoot;
-            expect(root.querySelector('div').parentElement).toBe(root);
+            const root = getHostShadowRoot(elm);
+            expect(root.querySelector('div').parentElement).toBe(null);
         });
+    });
+});
+
+describe('proxy', () => {
+    it('should allow setting properties manually', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        root.querySelector('div').id = 'something';
+        expect(root.querySelector('div').getAttribute('id')).toBe('something');
+    });
+    it('should allow setting innerHTML manually', () => {
+        function html($api) {
+            return [$api.h('span', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+            renderedCallback() {
+                this.template.querySelector('span').innerHTML = '<i>something</i>';
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        expect(root.querySelector('span').textContent).toBe('something');
+    });
+    it('should unwrap arguments when invoking a method on a proxy', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [$api.h('p', { key: 1 }, [])])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        const div = root.querySelector('div');
+        const p = root.querySelector('p');
+        expect(div.contains(p)).toBe(true);
+    });
+    it('should allow setting attributes manually', () => {
+        function html($api) {
+            return [$api.h('div', { key: 0 }, [])];
+        }
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-foo', { is: MyComponent });
+        document.body.appendChild(elm);
+        const root = getHostShadowRoot(elm);
+        root.querySelector('div').setAttribute('id', 'something');
+        expect(root.querySelector('div').id).toBe('something');
+    });
+});
+
+describe('#childNodes', () => {
+    it('should always return an empty array for slots not rendering default content', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    } ,[]),
+                ], $slotset),
+            ];
+        }
+        tmpl.slots = [''];
+
+        class HasSlot extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.c('x-child-node-with-slot', HasSlot, {}, [
+                            $api.h('p', {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-child-node-with-slot')
+        ).querySelector('slot');
+        expect(slot.childNodes).toHaveLength(0);
+    });
+
+    it('should return correct elements for slots rendering default content', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    } ,[]),
+                ], $slotset),
+            ];
+        }
+        tmpl.slots = [''];
+
+        class HasSlot extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.c('x-child-node-with-slot', HasSlot, {}, []),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-child-node-with-slot')
+        ).querySelector('slot');
+        expect(slot.childNodes).toHaveLength(1);
+    });
+
+    it('should return correct elements for non-slot elements', () => {
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.h('p', {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('div');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
+        expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('p'));
+    });
+
+    it('should return correct elements for custom elements when no children present', () => {
+        function tmpl($api) {
+            return [
+                $api.h('div', {
+                    key: 3,
+                }, []),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should return correct elements for custom elements when children present', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 3,
+                }, [], $slotset),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, [
+                                $api.h('p', {
+                                    key: 4,
+                                } ,[])
+                            ]),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
+    });
+
+    it('should return child text content passed via slot', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 3,
+                }, [], $slotset),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, [
+                                $api.t('text')
+                            ]),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(1);
+        expect(childNodes[0].nodeType).toBe(3);
+        expect(childNodes[0].textContent).toBe('text');
+    });
+
+    it('should not return child text from within template', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.t('text'),
+            ]
+        }
+        class Child extends Element {
+            render() {
+                return tmpl;
+            }
+        }
+
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, [
+                            $api.c('x-child', Child, {
+                                key: 1,
+                            }, []),
+                        ]),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-child');
+        const childNodes = child.childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should not return dynamic child text from within template', () => {
+        function tmpl($api, $cmp, $slotset) {
+            return [
+                $api.d($cmp.dynamicText),
+            ];
+        }
+
+        class Child extends Element {
+            get dynamicText() {
+                return 'text';
+            }
+            render() {
+                return tmpl;
+            }
+        }
+
+        function tmplParent($api, $cmp, $slotset) {
+            return [
+                $api.c('x-child', Child, {}, []),
+            ];
+        }
+        class Parent extends Element {
+
+            render() {
+                return tmplParent;
+            }
+        }
+
+        const elm = createElement('x-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const childNodes = getHostShadowRoot(elm).querySelector('x-child').childNodes;
+        expect(childNodes).toHaveLength(0);
+    });
+
+    it('should return correct childNodes from shadowRoot', () => {
+        class Parent extends Element {
+            render() {
+                return function ($api) {
+                    return [
+                        $api.h('div', {
+                            key: 0,
+                        }, []),
+                        $api.t('text'),
+                    ];
+                }
+            }
+        }
+
+        const elm = createElement('x-child-node-parent', { is: Parent });
+        document.body.appendChild(elm);
+        const childNodes = getHostShadowRoot(elm).childNodes;
+        expect(childNodes).toHaveLength(2);
+        expect(childNodes[0]).toBe(getHostShadowRoot(elm).querySelector('div'));
+        expect(childNodes[1].nodeType).toBe(3);
+        expect(childNodes[1].textContent).toBe('text');
+    });
+});
+
+
+describe('assignedSlot', () => {
+    it('should return null when custom element is not in slot', () => {
+        class NoSlot extends Element {}
+
+        function html($api) {
+            return [
+                $api.c('x-assigned-slot-child', NoSlot, {}, []),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-assigned-slot-child');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return null when native element is not in slot', () => {
+        function html($api) {
+            return [
+                $api.h('div', {
+                    key: 0,
+                }, []),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('div');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return correct slot when native element is slotted', () => {
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 2,
+                    }, [
+                        $api.t('test')
+                    ])
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const child = getHostShadowRoot(elm).querySelector('div');
+        expect(child.assignedSlot).toBe(slot);
+    });
+
+    it('should return correct slot when custom element is slotted', () => {
+        class InsideSlot extends Element {}
+
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.c('x-inside-slot', InsideSlot, {
+                        key: 2,
+                    }, [])
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const child = getHostShadowRoot(elm).querySelector('x-inside-slot');
+        expect(child.assignedSlot).toBe(slot);
+    });
+
+    it('should return null when native element default slot content', () => {
+        function html($api) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.h('div', {
+                        key: 1,
+                    }, []),
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('div');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return null when custom element default slot content', () => {
+        class CustomElement extends Element {
+
+        }
+
+        function html($api) {
+            return [
+                $api.s('', {
+                    key: 0,
+                }, [
+                    $api.c('x-default-slot-custom-element', CustomElement, {
+                        key: 1,
+                    }, []),
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-assigned-slot', { is: MyComponent });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-default-slot-custom-element');
+        expect(child.assignedSlot).toBe(null);
+    });
+
+    it('should return correct slot when text is slotted', () => {
+        class InsideSlot extends Element {}
+
+        function slottedHtml($api, $cmp, $slotset) {
+            return [
+                $api.s('', {
+                    key: 1,
+                }, [], $slotset),
+            ];
+        }
+
+        slottedHtml.slots = [""];
+
+        class WithSlot extends Element {
+            render() {
+                return slottedHtml;
+            }
+        }
+
+        function html($api) {
+            return [
+                $api.c('x-native-slotted-component-child', WithSlot, {
+                    key: 0,
+                }, [
+                    $api.t('text')
+                ]),
+            ];
+        }
+
+        class MyComponent extends Element {
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-native-slotted-component', { is: MyComponent });
+        document.body.appendChild(elm);
+        const slot = getHostShadowRoot(
+            getHostShadowRoot(elm).querySelector('x-native-slotted-component-child')
+        ).querySelector('slot');
+        const text = getHostShadowRoot(elm).querySelector('x-native-slotted-component-child').childNodes[0];
+        expect(text.assignedSlot).toBe(slot);
     });
 });

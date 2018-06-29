@@ -1,3 +1,12 @@
+/**
+@license
+Copyright (c) 2015 Simon Friis Vindum.
+This code may only be used under the MIT License found at
+https://github.com/snabbdom/snabbdom/blob/master/LICENSE
+Code distributed by Snabbdom as part of the Snabbdom project at
+https://github.com/snabbdom/snabbdom/
+*/
+
 /* tslint:disable:one-variable-per-declaration no-shadowed-variable */
 
 import {
@@ -164,8 +173,8 @@ export function init(
         if (isElementVNode(vnode)) {
             const { data, tag } = vnode;
             const elm = (vnode.elm = isDef((i = data.ns))
-                ? api.createElementNS(i, tag)
-                : api.createElement(tag));
+                ? api.createElementNS(i, tag, data.uid)
+                : api.createElement(tag, data.uid));
             if (isDef((i = data.hook)) && isDef(i.create)) {
                 i.create(emptyNode, vnode);
             }
@@ -181,15 +190,15 @@ export function init(
                     }
                 }
             } else if (!isUndef(vnode.text)) {
-                api.appendChild(elm, api.createTextNode(vnode.text));
+                api.appendChild(elm, api.createTextNode(vnode.text, vnode.data.uid));
             }
             if (isDef((i = data.hook)) && isDef(i.insert)) {
                 insertedVnodeQueue.push(vnode);
             }
         } else if (isTextVNode(vnode)) {
-            vnode.elm = api.createTextNode(vnode.text);
+            vnode.elm = api.createTextNode(vnode.text, vnode.data.uid);
         } else if (isCommentVNode(vnode)) {
-            vnode.elm = api.createComment(vnode.text);
+            vnode.elm = api.createComment(vnode.text, vnode.data.uid);
         } else if (isFragmentVNode(vnode)) {
             vnode.elm = api.createFragment();
         } else {

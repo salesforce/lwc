@@ -13,12 +13,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'myns-relative_import_relative_import';
+    tmpl.hostToken = 'myns-relative_import_relative-host';
+    tmpl.shadowToken = 'myns-relative_import_relative';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'myns-relative_import_relative_import';
-    style$$1.textContent = style('myns-relative_import', 'myns-relative_import_relative_import');
+    style$$1.textContent = style('myns-relative_import_relative_import');
     document.head.appendChild(style$$1);
 }
 
@@ -42,7 +43,6 @@ class RelativeImport extends engine.Element {
     }
 
 }
-RelativeImport.style = tmpl.style;
 
 return RelativeImport;
 

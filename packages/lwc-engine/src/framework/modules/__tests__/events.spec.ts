@@ -1,17 +1,12 @@
-import { h, c, t, RenderAPI } from "../../api";
-import { Element } from "../../html-element";
-import { VNode } from "../../../3rdparty/snabbdom/types";
-import { createElement } from "../../upgrade";
-import { Component } from "../../component";
+import { createElement, Element } from '../../main';
 
 describe('module/events', () => {
-
     it('attaches click event handler to element', function() {
-        let result: Event[] = [], cmp: Component;
-        function html($api: RenderAPI) {
+        let result: Event[] = [], cmp;
+        function html($api) {
             return [
                 $api.h('div', {key: 1, on: {click(ev: Event) { result.push(ev); }}}, [
-                    $api.h('a', { key: 0 }, [t('Click my parent')]),
+                    $api.h('a', { key: 0 }, [$api.t('Click my parent')]),
                 ])
             ];
         }
@@ -31,21 +26,21 @@ describe('module/events', () => {
     });
 
     it('does not attach new listener', function() {
-        let result: Number[] = [], component: Component, second = false;
-        function html($api: RenderAPI, $cmp: Component) {
+        let result: Number[] = [], component, second = false;
+        function html($api, $cmp) {
             const c = $cmp.counter;
             // using the same key
             if (c === 0) {
                 return [
                     $api.h('div', {key: 1, on: {click: $api.b($cmp.clickOne)}}, [
-                        $api.h('a', {key: 0}, [t('Click my parent')]),
+                        $api.h('a', {key: 0}, [$api.t('Click my parent')]),
                     ])
                 ];
             } else if (c === 1) {
                 second = true;
                 return [
                     $api.h('div', {key: 1, on:  {click: $api.b($cmp.clickTwo)}}, [
-                        $api.h('a', {key: 0}, [t('Click my parent')]),
+                        $api.h('a', {key: 0}, [$api.t('Click my parent')]),
                     ])
                 ];
             }
@@ -75,21 +70,21 @@ describe('module/events', () => {
     });
 
     it('should reuse the listener', function() {
-        let result: Number[] = [], component: Component, second = false;
-        function html($api: RenderAPI, $cmp: Component) {
+        let result: Number[] = [], component, second = false;
+        function html($api, $cmp) {
             const c = $cmp.counter;
             // using different keys
             if (c === 0) {
                 return [
                     $api.h('p', { key: 1, on: {click: $api.b($cmp.clicked)}}, [
-                        $api.h('a', { key: 0 }, [t('Click my parent')]),
+                        $api.h('a', { key: 0 }, [$api.t('Click my parent')]),
                     ])
                 ];
             } else if (c === 1) {
                 second = true;
                 return [
                     $api.h('div', { key: 2, on:  {click: $api.b($cmp.clicked)}}, [
-                        $api.h('a', { key: 3 }, [t('Click my parent')]),
+                        $api.h('a', { key: 3 }, [$api.t('Click my parent')]),
                     ])
                 ];
             }
@@ -118,11 +113,11 @@ describe('module/events', () => {
     });
 
     it('must not expose the virtual node to the event handler', function() {
-        let result: any[] = [], cmp: Component;
-        function html($api: RenderAPI, $cmp: Component) {
+        let result: any[] = [], cmp;
+        function html($api, $cmp) {
             return [
                 $api.h('div', {key: 0, on: {click: $api.b($cmp.clicked)}}, [
-                    $api.h('a', {key: 1}, [t('Click my parent')]),
+                    $api.h('a', {key: 1}, [$api.t('Click my parent')]),
                 ])
             ];
         }
@@ -148,9 +143,9 @@ describe('module/events', () => {
     });
 
     it('attaches click event handler to custom element', function() {
-        let result: Event[] = [], cmp: Component;
+        let result: Event[] = [], cmp;
         class MyChild extends Element {}
-        function html($api: RenderAPI) {
+        function html($api) {
             return [
                 $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}})
             ];
@@ -171,9 +166,9 @@ describe('module/events', () => {
     });
 
     it('attaches custom event handler to custom element', function() {
-        let result: Event[] = [], cmp: Component;
+        let result: Event[] = [], cmp;
         class MyChild extends Element {}
-        function html($api: RenderAPI) {
+        function html($api) {
             return [
                 $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}})
             ];

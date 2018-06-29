@@ -4,18 +4,17 @@ import {
     invokeComponentRenderMethod,
     isRendering,
     vmBeingRendered,
+    invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isObject } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "./language";
 import { invokeServiceHook, Services } from "./services";
-import { getComponentDef, PropsDef, WireHash, TrackDef } from './def';
+import { PropsDef, WireHash, TrackDef } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
-import { ViewModelReflection } from "./utils";
 
 export type ErrorCallback = (error: any, stack: string) => void;
 export interface Component {
-    [ViewModelReflection]: VM;
     readonly classList: DOMTokenList;
     readonly root: ShadowRoot;
     render?: () => (void | Template);
@@ -51,10 +50,6 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isObject(vm.component), `Invalid construction for ${vm}, maybe you are missing the call to super() on classes extending Element.`);
-        const { track } = getComponentDef(Ctor);
-        if ('state' in (vm.component as Component) && (!track || !track.state)) {
-            assert.logWarning(`Non-trackable component state detected in ${vm.component}. Updates to state property will not be reactive. To make state reactive, add @track decorator.`);
-        }
     }
 }
 
@@ -116,9 +111,21 @@ export function markComponentAsDirty(vm: VM) {
     vm.isDirty = true;
 }
 
-export function getCustomElementComponent(elmOrRoot: HTMLElement | ShadowRoot): Component {
+const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap();
+
+export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(elmOrRoot[ViewModelReflection]);
+        assert.vm(vm);
     }
-    return (elmOrRoot[ViewModelReflection] as VM).component as Component;
+    if (!isFunction(listener)) {
+        throw new TypeError(); // avoiding problems with non-valid listeners
+    }
+    let wrappedListener = cmpEventListenerMap.get(listener);
+    if (isUndefined(wrappedListener)) {
+        wrappedListener = function(event: Event) {
+            invokeEventListener(vm, listener, undefined, event);
+        };
+        cmpEventListenerMap.set(listener, wrappedListener);
+    }
+    return wrappedListener;
 }

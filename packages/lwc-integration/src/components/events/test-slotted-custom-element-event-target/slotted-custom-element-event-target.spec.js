@@ -1,0 +1,18 @@
+const assert = require('assert');
+
+describe('Event target in slot elements', () => {
+    const URL = 'http://localhost:4567/slotted-custom-element-event-target/';
+
+    before(() => {
+        browser.url(URL);
+    });
+
+    it('should receive event with correct target', function () {
+        browser.execute(function () {
+            document.querySelector('x-child').click();
+        });
+        return Promise.resolve(() => {
+            assert.strictEqual(browser.getText('.correct-event-target'), 'Event target is correct');
+        });
+    });
+});

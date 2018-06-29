@@ -14,12 +14,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'x-cmp1_cmp1';
+    tmpl.hostToken = 'x-cmp1_cmp1-host';
+    tmpl.shadowToken = 'x-cmp1_cmp1';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-cmp1_cmp1';
-    style$$1.textContent = style('x-cmp1', 'x-cmp1_cmp1');
+    style$$1.textContent = style('x-cmp1_cmp1');
     document.head.appendChild(style$$1);
 }
 
@@ -33,6 +34,5 @@ class Cmp1 extends Element {
     }
 
 }
-Cmp1.style = tmpl.style;
 
 export default Cmp1;

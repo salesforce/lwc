@@ -1,61 +1,22 @@
 import assert from "./assert";
-import { Component } from "./component";
-import { toString, isObject, freeze, seal, defineProperty, defineProperties, getOwnPropertyNames, ArraySlice, isNull, forEach, isTrue } from "./language";
-import { addCmpEventListener, removeCmpEventListener } from "./events";
-import {
-    getAttribute,
-    getAttributeNS,
-    removeAttribute,
-    removeAttributeNS,
-    setAttribute,
-    setAttributeNS,
-} from "./dom/element";
-import {
-    getGlobalHTMLPropertiesInfo,
-    GlobalHTMLPropDescriptors,
-    attemptAriaAttributeFallback,
-} from "./dom/attributes";
-import { ViewModelReflection, getPropNameFromAttrName } from "./utils";
+import { Component, getWrappedComponentsListener } from "./component";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf } from "./language";
+import { ViewModelReflection, setInternalField, replicateProtoChain } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
-import { ArrayReduce, isString, isFunction } from "./language";
+import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { CustomEvent, addEventListenerPatched, removeEventListenerPatched } from "./dom/event";
-import { dispatchEvent } from "./dom/event-target";
-import { lightDomQuerySelector, lightDomQuerySelectorAll } from "./dom/traverse";
+import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
+import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
+import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
+import { prepareForValidAttributeMutation } from "./restrictions";
 
-function ElementShadowRootGetter(this: HTMLElement): ShadowRoot | null {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        return vm.cmpRoot;
-    }
-    // for now, shadowRoot is closed except for test mode
-    return null;
+const GlobalEvent = Event; // caching global reference to avoid poisoning
+
+export function getHostShadowRoot(elm: HTMLElement): ShadowRoot | null {
+    const vm = getCustomElementVM(elm);
+    return vm.mode === 'open' ? vm.cmpRoot : null;
 }
-
-const fallbackDescriptors = {
-    shadowRoot: {
-        get: ElementShadowRootGetter,
-        configurable: true,
-        enumerable: true,
-    },
-    querySelector: {
-        value: lightDomQuerySelector,
-        configurable: true,
-    },
-    querySelectorAll: {
-        value: lightDomQuerySelectorAll,
-        configurable: true,
-    },
-    addEventListener: {
-        value: addEventListenerPatched,
-        configurable: true,
-    },
-    removeEventListener: {
-        value: removeEventListenerPatched,
-        configurable: true,
-    },
-};
 
 function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor) {
     const { get, set, enumerable, configurable } = descriptor;
@@ -75,7 +36,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
         enumerable,
         configurable,
         get(this: Component) {
-            const vm: VM = this[ViewModelReflection];
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
             }
@@ -89,7 +50,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             return get.call(vm.elm);
         },
         set(this: Component, newValue: any) {
-            const vm = this[ViewModelReflection];
+            const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
@@ -109,16 +70,11 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     };
 }
 
-const htmlElementDescriptors = ArrayReduce.call(getOwnPropertyNames(GlobalHTMLPropDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
-    seed[propName] = getHTMLPropDescriptor(propName, GlobalHTMLPropDescriptors[propName]);
-    return seed;
-}, {});
-
 function getLinkedElement(cmp: Component): HTMLElement {
-    return cmp[ViewModelReflection].elm;
+    return getComponentVM(cmp).elm;
 }
 
-export interface ComposableEvent extends Event {
+interface ComposableEvent extends Event {
     composed: boolean;
 }
 
@@ -138,7 +94,7 @@ function LWCElement(this: Component) {
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, fallback } = vm;
+    const { elm, def, cmpRoot } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -150,11 +106,21 @@ function LWCElement(this: Component) {
         vm.setHook = setHook;
         vm.getHook = getHook;
     }
-    // linking elm and its component with VM
-    component[ViewModelReflection] = elm[ViewModelReflection] = vm;
-    defineProperties(elm, def.descriptors);
-    if (isTrue(fallback)) {
-        defineProperties(elm, fallbackDescriptors);
+    // linking elm, shadow root and component with the VM
+    setInternalField(component, ViewModelReflection, vm);
+    setInternalField(elm, ViewModelReflection, vm);
+    setInternalField(cmpRoot, ViewModelReflection, vm);
+    let { elmProto } = def;
+    if (elm.constructor.prototype !== BaseCustomElementProto) {
+        // this is slow path for component instances using `is` attribute or `forceTagName`, which
+        // are set to be removed in the near future.
+        elmProto = replicateProtoChain(elmProto, BaseCustomElementProto, elm.constructor.prototype);
+    }
+    setPrototypeOf(elm, elmProto);
+    if (process.env.NODE_ENV !== 'production') {
+        patchCustomElementWithRestrictions(elm);
+        patchComponentWithRestrictions(component);
+        patchShadowRootWithRestrictions(cmpRoot);
     }
 }
 
@@ -169,7 +135,7 @@ LWCElement.prototype = {
             if (arguments.length === 0) {
                 throw new Error(`Failed to execute 'dispatchEvent' on ${this}: 1 argument required, but only 0 present.`);
             }
-            if (!(event instanceof CustomEvent) && !(event instanceof Event)) {
+            if (!(event instanceof GlobalEvent)) {
                 throw new Error(`Failed to execute 'dispatchEvent' on ${this}: parameter 1 is not of type 'Event'.`);
             }
             const { type: evtName, composed, bubbles } = event;
@@ -188,91 +154,68 @@ LWCElement.prototype = {
         return dispatchEvent.call(elm, event);
     },
 
-    addEventListener(type: string, listener: EventListener, options?: any) {
+    addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
-
-            if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.addEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-            }
+            assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
+            assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
         }
-        addCmpEventListener(vm, type, listener);
+        const wrappedListener = getWrappedComponentsListener(vm, listener);
+        vm.elm.addEventListener(type, wrappedListener, options);
     },
 
-    removeEventListener(type: string, listener: EventListener, options?: any) {
+    removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
-
-            if (arguments.length > 2) {
-                // TODO: can we synthetically implement `passive` and `once`? Capture is probably ok not supporting it.
-                assert.logWarning(`this.removeEventListener() on ${vm} does not support more than 2 arguments, instead received ${toString(options)}. Options to make the listener passive, once or capture are not allowed.`);
-            }
         }
-        removeCmpEventListener(vm, type, listener);
+        const wrappedListener = getWrappedComponentsListener(vm, listener);
+        vm.elm.removeEventListener(type, wrappedListener, options);
     },
 
     setAttributeNS(ns: string, attrName: string, value: any): void {
+        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(this[ViewModelReflection]), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            prepareForValidAttributeMutation(elm, attrName);
         }
-        // use cached setAttributeNS, because elm.setAttribute throws
-        // when not called in template
-        return setAttributeNS.call(getLinkedElement(this), ns, attrName, value);
+        return elm.setAttributeNS.apply(elm, arguments);
     },
 
     removeAttributeNS(ns: string, attrName: string): void {
-        // use cached removeAttributeNS, because elm.setAttribute throws
-        // when not called in template
-        return removeAttributeNS.call(getLinkedElement(this), ns, attrName);
+        const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForValidAttributeMutation(elm, attrName);
+        }
+        return elm.removeAttributeNS.apply(elm, arguments);
     },
 
     removeAttribute(attrName: string) {
-        const vm = getComponentVM(this);
-        // use cached removeAttribute, because elm.setAttribute throws
-        // when not called in template
-        removeAttribute.call(vm.elm, attrName);
-        attemptAriaAttributeFallback(vm, attrName);
+        const elm = getLinkedElement(this);
+        if (process.env.NODE_ENV !== 'production') {
+            prepareForValidAttributeMutation(elm, attrName);
+        }
+        elm.removeAttribute.apply(elm, arguments);
     },
 
     setAttribute(attrName: string, value: any): void {
-        const vm = getComponentVM(this);
+        const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
+            assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
+            prepareForValidAttributeMutation(elm, attrName);
         }
-        // marking the set is needed for the AOM polyfill
-        vm.hostAttrs[attrName] = 1;
-        // use cached setAttribute, because elm.setAttribute throws
-        // when not called in template
-        return setAttribute.call(getLinkedElement(this), attrName, value);
-    },
-
-    getAttributeNS(ns: string, attrName: string) {
-        return getAttributeNS.call(getLinkedElement(this), ns, attrName);
+        return elm.setAttribute.apply(elm, arguments);
     },
 
     getAttribute(attrName: string): string | null {
-        // logging errors for experimental and special attributes
-        if (process.env.NODE_ENV !== 'production') {
-            const vm = this[ViewModelReflection];
-            assert.vm(vm);
-            if (isString(attrName)) {
-                const propName = getPropNameFromAttrName(attrName);
-                const info = getGlobalHTMLPropertiesInfo();
-                if (info[propName] && info[propName].attribute) {
-                    const { error, experimental } = info[propName];
-                    if (error) {
-                        assert.logError(error);
-                    } else if (experimental) {
-                        assert.logError(`Attribute \`${attrName}\` is an experimental attribute that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attrName}" are ignored.`);
-                    }
-                }
-            }
-        }
+        const elm = getLinkedElement(this);
+        return elm.getAttribute.apply(elm, arguments);
+    },
 
-        return getAttribute.apply(getLinkedElement(this), ArraySlice.call(arguments));
+    getAttributeNS(ns: string, attrName: string) {
+        const elm = getLinkedElement(this);
+        return elm.getAttributeNS.apply(elm, arguments);
     },
 
     getBoundingClientRect(): ClientRect {
@@ -283,25 +226,33 @@ LWCElement.prototype = {
         }
         return elm.getBoundingClientRect();
     },
-    querySelector(selector: string): Node | null {
+    querySelector(selector: string): Element | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelector() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelector.
-        // querySelector on the custom element will respect
+        const { elm } = vm;
+        // fallback to a patched querySelector to respect
         // shadow semantics
-        return vm.elm.querySelector(selector);
+        if (isTrue(vm.fallback)) {
+            return lightDomQuerySelector(elm, selector);
+        }
+        // Delegate to custom element querySelector.
+        return elm.querySelector(selector);
     },
-    querySelectorAll(selector: string): NodeList {
+    querySelectorAll(selector: string): Element[] {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(vm), `this.querySelectorAll() cannot be called during the construction of the custom element for ${this} because no children has been added to this element yet.`);
         }
-        // Delegate to custom element querySelectorAll.
-        // querySelectorAll on the custom element will respect
+        const { elm } = vm;
+        // fallback to a patched querySelectorAll to respect
         // shadow semantics
-        return vm.elm.querySelectorAll(selector);
+        if (isTrue(vm.fallback)) {
+            return lightDomQuerySelectorAll(elm, selector);
+        }
+        // Delegate to custom element querySelectorAll.
+        return ArraySlice.call(elm.querySelectorAll(selector));
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
@@ -323,12 +274,17 @@ LWCElement.prototype = {
         return vm.cmpRoot;
     },
     get root(): ShadowRoot {
+        // TODO: issue #418
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
             assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return vm.cmpRoot;
+    },
+    get shadowRoot(): ShadowRoot | null {
+        // from within, the shadowRoot is always in "closed" mode
+        return null;
     },
     toString(): string {
         const vm = getComponentVM(this);
@@ -337,53 +293,23 @@ LWCElement.prototype = {
         }
         const { elm } = vm;
         const { tagName } = elm;
-        const is = getAttribute.call(elm, 'is');
+        const is = elm.getAttribute('is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
     },
 };
 
-defineProperties(LWCElement.prototype, htmlElementDescriptors);
-
-// Global HTML Attributes
-if (process.env.NODE_ENV !== 'production') {
-    const info = getGlobalHTMLPropertiesInfo();
-    forEach.call(getOwnPropertyNames(info), (propName: string) => {
-        if (propName in LWCElement.prototype) {
-            return; // no need to redefine something that we are already exposing
-        }
-        defineProperty(LWCElement.prototype, propName, {
-            get(this: Component) {
-                const vm = getComponentVM(this);
-                const { error, attribute, readOnly, experimental } = info[propName];
-                const msg: any[] = [];
-                msg.push(`Accessing the global HTML property "${propName}" in ${vm} is disabled.`);
-                if (error) {
-                    msg.push(error);
-                } else {
-                    if (experimental) {
-                        msg.push(`This is an experimental property that is not standardized or supported by all browsers. Property "${propName}" and attribute "${attribute}" are ignored.`);
-                    }
-                    if (readOnly) {
-                        // TODO - need to improve this message
-                        msg.push(`Property is read-only.`);
-                    }
-                    if (attribute) {
-                        msg.push(`"Instead access it via the reflective attribute "${attribute}" with one of these techniques:`);
-                        msg.push(`  * Use \`this.getAttribute("${attribute}")\` to access the attribute value. This option is best suited for accessing the value in a getter during the rendering process.`);
-                        msg.push(`  * Declare \`static observedAttributes = ["${attribute}"]\` and use \`attributeChangedCallback(attrName, oldValue, newValue)\` to get a notification each time the attribute changes. This option is best suited for reactive programming, eg. fetching new data each time the attribute is updated.`);
-                    }
-                }
-                console.log(msg.join('\n')); // tslint:disable-line
-                return; // explicit undefined
-            },
-            // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
-            set() {}, // tslint:disable-line
-            enumerable: false,
-        });
-    });
+/**
+ * This abstract operation is supposed to be called once, with a descriptor map that contains
+ * all standard properties that a Custom Element can support (including AOM properties), which
+ * determines what kind of capabilities the Base Element should support. When creating the descriptors
+ * for be Base Element, it also include the reactivity bit, so those standard properties are reactive.
+ */
+export function createBaseElementStandardPropertyDescriptors(StandardPropertyDescriptors: PropertyDescriptorMap): PropertyDescriptorMap {
+    const descriptors = ArrayReduce.call(getOwnPropertyNames(StandardPropertyDescriptors), (seed: PropertyDescriptorMap, propName: string) => {
+        seed[propName] = getHTMLPropDescriptor(propName, StandardPropertyDescriptors[propName]);
+        return seed;
+    }, create(null));
+    return descriptors;
 }
-
-freeze(LWCElement);
-seal(LWCElement.prototype);
 
 export { LWCElement as Element };

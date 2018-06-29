@@ -1,6 +1,4 @@
-import { Element } from "../../html-element";
-import { createElement } from "../../upgrade";
-import { Template } from "../../template";
+import { createElement, Element } from '../../main';
 
 describe('modules/styles', () => {
     it('should add style to the element', () => {

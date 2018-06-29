@@ -1,22 +1,21 @@
 import assert from "./assert";
-import { isUndefined, assign, hasOwnProperty, defineProperties, isNull, isObject, isTrue } from "./language";
-import { createVM, removeVM, appendVM, renderVM, getCustomElementVM } from "./vm";
+import { isUndefined, assign, isNull, isObject } from "./language";
+import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
-import { EmptyNodeList } from "./dom/node";
-import { ViewModelReflection, resolveCircularModuleDependency } from "./utils";
-import { setAttribute } from "./dom/element";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll } from "./dom/traverse";
+import { resolveCircularModuleDependency, setInternalField, getInternalField, createSymbol } from "./utils";
+import { setAttribute } from "./dom-api";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
-const ConnectingSlot = Symbol();
-const DisconnectingSlot = Symbol();
+const ConnectingSlot = createSymbol('connecting');
+const DisconnectingSlot = createSymbol('disconnecting');
 
 function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(node, `callNodeSlot() should not be called for a non-object`);
     }
-    if (!isUndefined(node[slot])) {
-        node[slot]();
+    const fn = getInternalField(node, slot);
+    if (!isUndefined(fn)) {
+        fn();
     }
     return node; // for convenience
 }
@@ -43,37 +42,6 @@ assign(Node.prototype, {
         return replacedNode;
     },
 });
-
-function querySelectorPatchedRoot(this: HTMLElement, selector): Node | null {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        // TODO: remove this backward compatibility branch.
-        assert.logError(`Using elm.querySelector() on a root element created via createElement() in a test will return null very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelector().`);
-        return shadowRootQuerySelector(vm, selector);
-    }
-    return null;
-}
-
-function querySelectorAllPatchedRoot(this: HTMLElement, selector): HTMLElement[] | NodeList {
-    const vm = getCustomElementVM(this);
-    if (process.env.NODE_ENV === 'test') {
-        // TODO: remove this backward compatibility branch.
-        assert.logError(`Using elm.querySelectorAll() on a root element created via createElement() in a test will return an empty NodeList very soon to enforce ShadowDOM semantics, instead use elm.shadowRoot.querySelectorAll().`);
-        return shadowRootQuerySelectorAll(vm, selector);
-    }
-    return EmptyNodeList;
-}
-
-const rootNodeFallbackDescriptors = {
-    querySelectorAll: {
-        value: querySelectorAllPatchedRoot,
-        configurable: true,
-    },
-    querySelector: {
-        value: querySelectorPatchedRoot,
-        configurable: true,
-    },
-};
 
 /**
  * This method is almost identical to document.createElement
@@ -105,18 +73,17 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
 
     // Create element with correct tagName
     const element = document.createElement(tagName);
-    if (hasOwnProperty.call(element, ViewModelReflection)) {
+    if (!isUndefined(getNodeKey(element))) {
+        // There is a possibility that a custom element is registered under tagName,
+        // in which case, the initialization is already carry on, and there is nothing else
+        // to do here.
         return element;
     }
 
     // In case the element is not initialized already, we need to carry on the manual creation
     createVM(sel, element, Ctor, { mode, fallback, isRoot: true });
-    if (isTrue(fallback)) {
-        // We don't support slots on root nodes
-        defineProperties(element, rootNodeFallbackDescriptors);
-    }
     // Handle insertion and removal from the DOM manually
-    element[ConnectingSlot] = () => {
+    setInternalField(element, ConnectingSlot, () => {
         const vm = getCustomElementVM(element);
         removeVM(vm); // moving the element from one place to another is observable via life-cycle hooks
         appendVM(vm);
@@ -127,10 +94,10 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
             setAttribute.call(element, 'is', sel);
         }
         renderVM(vm);
-    };
-    element[DisconnectingSlot] = () => {
+    });
+    setInternalField(element, DisconnectingSlot, () => {
         const vm = getCustomElementVM(element);
         removeVM(vm);
-    };
+    });
     return element;
 }

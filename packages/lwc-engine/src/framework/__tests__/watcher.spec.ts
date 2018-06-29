@@ -1,6 +1,4 @@
-import { Element } from "../html-element";
-import { createElement } from '../main';
-import { ViewModelReflection } from "../utils";
+import { createElement, Element } from '../main';
 
 describe('watcher', () => {
 
@@ -64,9 +62,15 @@ describe('watcher', () => {
 
         it('should rerender the component if any reactive slot changes', () => {
             let counter = 0;
-            function html1($api, $cmp, $slotset) {
-                return $slotset.x || [];
+            function html1($api, $cmp, $slotset, $ctx) {
+                return [$api.s('x', {
+                    key: 0,
+                    attrs: {
+                        name: 'x'
+                    }
+                }, [], $slotset)];
             }
+            html1.slots = ["x"];
             class Child extends Element {
                 render() {
                     counter++;
@@ -75,54 +79,29 @@ describe('watcher', () => {
             }
             function html2($api, $cmp) {
                 const r = $cmp.round;
-                return [$api.c('x-child', Child, {
-                    slotset: r === 0 ? {} : { x: [$api.h('p', { key: 0 }, [])] }
-                })];
+                return [$api.c('x-child', Child, {}, r === 0 ? [] : [$api.h('p', { key: 0, attrs: { slot: 'x' } }, [])])];
             }
             class MyComponent4 extends Element {
                 constructor() {
                     super();
                     this.round = 0;
                 }
+                updateRound() {
+                    this.round += 1;
+                }
                 render() {
                     return html2;
                 }
             }
             MyComponent4.track = { round: 1 };
+            MyComponent4.publicMethods = ['updateRound'];
+
             const elm = createElement('x-foo', { is: MyComponent4 });
             document.body.appendChild(elm);
-            elm[ViewModelReflection].component.round += 1;
+            elm.updateRound();
+
             Promise.resolve().then(_ => {
                 expect(counter).toBe(2);
-            });
-        });
-
-        it('should not rerender the component if a non-reactive slot changes', () => {
-            let counter = 0;
-            let data;
-            class Child extends Element {
-                render() {
-                    counter++;
-                }
-            }
-            function html($api) {
-                return [$api.c('x-child', Child, data)];
-            }
-            class MyComponent4 extends Element {
-                constructor() {
-                    super();
-                    data = this.data = { slotset: {} };
-                }
-                render() {
-                    return html;
-                }
-            }
-            MyComponent4.track = { data: 1 };
-            const elm = createElement('x-foo', { is: MyComponent4 });
-            document.body.appendChild(elm);
-            data.slotset.x = []; // new array
-            Promise.resolve().then(_ => {
-                expect(counter).toBe(1);
             });
         });
 

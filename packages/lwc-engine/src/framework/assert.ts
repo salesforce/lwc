@@ -2,8 +2,6 @@ import { VM } from "./vm";
 import { VNode } from "../3rdparty/snabbdom/types";
 import { StringSplit } from "./language";
 
-import { DOCUMENT_POSITION_CONTAINS, compareDocumentPosition } from "./dom/node";
-
 const assert = {
     invariant(value: any, msg: string) {
         if (!value) {
@@ -30,6 +28,10 @@ const assert = {
         throw new Error(msg);
     },
     logError(msg: string) {
+        if (process.env.NODE_ENV === 'test') {
+            console.error(msg); // tslint:disable-line
+            return;
+        }
         try {
             throw new Error(msg);
         } catch (e) {
@@ -37,6 +39,10 @@ const assert = {
         }
     },
     logWarning(msg: string) {
+        if (process.env.NODE_ENV === 'test') {
+            console.warn(msg); // tslint:disable-line
+            return;
+        }
         try {
             throw new Error(msg);
         } catch (e) {
@@ -56,9 +62,6 @@ const assert = {
             console.groupEnd(); // tslint:disable-line
         }
     },
-    childNode(container: Node, node: Node, msg: string) {
-        assert.isTrue(compareDocumentPosition.call(node, container) & DOCUMENT_POSITION_CONTAINS, msg || `${node} must be a child node of ${container}`);
-    }
 };
 
 export default assert;

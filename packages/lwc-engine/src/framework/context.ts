@@ -1,17 +1,13 @@
 import { Template } from "./template";
 
-export const TopLevelContextSymbol = Symbol();
-
 export interface Context {
-    [TopLevelContextSymbol]?: boolean;
-    tplToken?: string;
-    tplCache?: Template | undefined;
+    hostToken?: string;
+    shadowToken?: string;
+    tplCache?: Template;
     [key: string]: any;
 }
 
 export let currentContext: Context = {};
-
-currentContext[TopLevelContextSymbol] = true;
 
 export function establishContext(ctx: Context) {
     currentContext = ctx;

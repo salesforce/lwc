@@ -1,6 +1,5 @@
-import { Element } from "../html-element";
-import { createElement } from "./../upgrade";
-import { unwrap } from "../membrane";
+import { createElement, Element, unwrap } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
@@ -454,7 +453,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
 
@@ -478,7 +477,7 @@ describe('Events on Custom Elements', () => {
         class MyComponent extends Element {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
 
@@ -532,11 +531,15 @@ describe('Events on Custom Elements', () => {
 describe('Slotted element events', () => {
     it('should have correct target when event comes from slotted element', () => {
         expect.assertions(1);
-        function childHTML ($api, $cmp, $slotset) {
-            return $slotset.x;
+        function childHTML($api, $cmp, $slotset, $ctx) {
+            return [$api.s('x', {
+                key: 0,
+                attrs: {
+                    name: 'x'
+                }
+            }, [], $slotset)];
         }
-
-        childHTML.slots = ['x'];
+        childHTML.slots = ["x"];
         class Child extends Element {
             render() {
                 return childHTML;
@@ -544,18 +547,15 @@ describe('Slotted element events', () => {
         }
 
         function html($api, $cmp, $slotset) {
-            return [$api.c('x-slotted-event-target-child', Child, {
-                slotset: {
-                    x: [
-                        $api.h('div', {
-                            on: {
-                                click: $api.b($cmp.handleClick),
-                            },
-                            key: 0,
-                        }, [])
-                    ]
-                }
-            })]
+            return [$api.c('x-slotted-event-target-child', Child, {}, [$api.h('div', {
+                on: {
+                    click: $api.b($cmp.handleClick),
+                },
+                attrs: {
+                    slot: 'x'
+                },
+                key: 0,
+            }, [])])];
         }
 
         class SlottedEventTarget extends Element {
@@ -591,7 +591,7 @@ describe('Component events', () => {
                     this.dispatchEvent(new CustomEvent('foo'));
                 });
                 this.addEventListener('foo', (evt) => {
-                    expect(evt.target).toBe(elm);
+                    expect(unwrap(evt.target)).toBe(elm);
                 });
             }
         }
@@ -781,6 +781,44 @@ describe('Shadow Root events', () => {
         document.body.appendChild(elm);
 
         HTMLElement.prototype.querySelector.call(elm, 'x-grand-child').click();
+    });
+
+    it('should have correct target when native event gets dispatched from within shadow root event handler', () => {
+        expect.assertions(1);
+        let clickSpy;
+        function html($api, $cmp) {
+            return [
+                $api.h('div', {
+                    key: 0,
+                    on: {
+                        click: $api.b($cmp.onDivClick)
+                    }
+                }, [])];
+        }
+
+        class MyComponent extends Element {
+            constructor() {
+                super();
+                this.template.addEventListener('foo', (evt) => {
+                    const div = this.template.querySelector('div');
+                    div.click();
+                });
+            }
+
+            onDivClick(evt) {
+                expect(evt.target).toBe(this.template.querySelector('div'));
+            }
+
+            render() {
+                return html;
+            }
+        }
+
+        const elm = createElement('x-add-event-listener', { is: MyComponent });
+        document.body.appendChild(elm);
+        getHostShadowRoot(elm)
+            .querySelector('div')
+            .dispatchEvent(new CustomEvent('foo', { bubbles: true, composed: true }));
     });
 });
 

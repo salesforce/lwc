@@ -1,4 +1,3 @@
-import { Membrane } from "../../membrane";
 import readonly from "../readonly";
 
 describe('readonly.ts', () => {

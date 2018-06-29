@@ -7,11 +7,10 @@ import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
-import uid from "./modules/uid";
 import { isNull, isUndefined, isFalse, isTrue } from './language';
-import { parentNodeGetter } from "./dom/node";
-import { VM } from "./vm";
-import { ViewModelReflection } from "./utils";
+import { parentNodeGetter } from "./dom-api";
+import { VM, OwnerKey } from "./vm";
+import { ViewModelReflection, getInternalField, setInternalField } from "./utils";
 
 const {
     createElement,
@@ -39,36 +38,44 @@ function remapNodeIfFallbackIsNeeded(vm: VM | undefined, node: Node): Node {
     return (isUndefined(vm) || isFalse(vm.fallback) || vm.cmpRoot !== node) ?
         node : vm.elm;
 }
-export const htmlDomApi: DOMAPI = {
+const htmlDomApi: DOMAPI = {
     createFragment(): DocumentFragment {
         return createDocumentFragment.call(document);
     },
-    createElement(tagName: string): HTMLElement {
-        return createElement.call(document, tagName);
+    createElement(tagName: string, uid: number): HTMLElement {
+        const element = createElement.call(document, tagName);
+        setInternalField(element, OwnerKey, uid);
+        return element;
     },
-    createElementNS(namespaceURI: string, qualifiedName: string): Element {
-        return createElementNS.call(document, namespaceURI, qualifiedName);
+    createElementNS(namespaceURI: string, qualifiedName: string, uid: number): Element {
+        const element = createElementNS.call(document, namespaceURI, qualifiedName);
+        setInternalField(element, OwnerKey, uid);
+        return element;
     },
-    createTextNode(text: string): Text {
-        return createTextNode.call(document, text);
+    createTextNode(text: string, uid: number): Text {
+        const textNode = createTextNode.call(document, text);
+        setInternalField(textNode, OwnerKey, uid);
+        return textNode;
     },
-    createComment(text: string): Comment {
-        return createComment.call(document, text);
+    createComment(text: string, uid: number): Comment {
+        const comment = createComment.call(document, text);
+        setInternalField(comment, OwnerKey, uid);
+        return comment;
     },
     insertBefore(parent: Node, newNode: Node, referenceNode: Node | null) {
-        const vm: VM = parent[ViewModelReflection];
+        const vm: VM | undefined = getInternalField(parent, ViewModelReflection);
         parent = remapNodeIfFallbackIsNeeded(vm, parent);
         insertBefore.call(parent, newNode, referenceNode);
     },
     removeChild(node: Node, child: Node) {
         if (!isNull(node)) {
-            const vm: VM = node[ViewModelReflection];
+            const vm: VM | undefined = getInternalField(node, ViewModelReflection);
             node = remapNodeIfFallbackIsNeeded(vm, node);
             removeChild.call(node, child);
         }
     },
     appendChild(node: Node, child: Node) {
-        const vm: VM = node[ViewModelReflection];
+        const vm: VM | undefined = getInternalField(node, ViewModelReflection);
         if (process.env.NODE_ENV !== 'production') {
             if (!isUndefined(vm) && isTrue(vm.fallback)) {
                 assert.vm(vm);
@@ -93,7 +100,6 @@ const patchVNode = init([
     styles,
     events,
     token,
-    uid,
 ], htmlDomApi);
 
 const patchChildren = patchVNode.children;

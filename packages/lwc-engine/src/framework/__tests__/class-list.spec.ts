@@ -1,6 +1,5 @@
-import { Element } from "../html-element";
-import * as api from "../api";
-import { createElement } from '../upgrade';
+import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('class-list', () => {
     describe('integration', () => {
@@ -16,7 +15,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -32,7 +31,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -52,7 +51,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('bar baz foo');
         });
 
@@ -72,7 +71,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('');
         });
 
@@ -92,7 +91,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('foo');
         });
 
@@ -112,7 +111,7 @@ describe('class-list', () => {
             }
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
-            const childElm = elm.shadowRoot.querySelector('x-child');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
             expect(childElm.className).toBe('bar foo');
         });
 

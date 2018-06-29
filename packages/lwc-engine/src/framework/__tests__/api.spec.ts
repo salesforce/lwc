@@ -1,8 +1,6 @@
 import * as api from '../api';
-import { Element } from "../html-element";
-import { createElement } from '../main';
-import { RenderAPI } from '../api';
-import { querySelector } from "../dom/element";
+import { createElement, Element } from '../main';
+import { getHostShadowRoot } from '../html-element';
 
 describe('api', () => {
     describe('#c()', () => {
@@ -101,7 +99,8 @@ describe('api', () => {
             }
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
-            const span = querySelector.call(elm, 'button') as Element;
+
+            const span = getHostShadowRoot(elm).querySelector('button');
             expect(span.tagName).toEqual('BUTTON');
             expect(span.getAttribute('is')).toEqual('x-bar');
         });

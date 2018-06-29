@@ -14,12 +14,13 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 
 if (style) {
-    tmpl.token = 'x-external_external';
+    tmpl.hostToken = 'x-external_external-host';
+    tmpl.shadowToken = 'x-external_external';
 
     const style$$1 = document.createElement('style');
     style$$1.type = 'text/css';
     style$$1.dataset.token = 'x-external_external';
-    style$$1.textContent = style('x-external', 'x-external_external');
+    style$$1.textContent = style('x-external_external');
     document.head.appendChild(style$$1);
 }
 
@@ -35,6 +36,5 @@ class Foo extends Element {
     }
 
 }
-Foo.style = tmpl.style;
 
 export default Foo;

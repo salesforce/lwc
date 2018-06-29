@@ -1,5 +1,4 @@
-import { Element } from "../html-element";
-import { createElement } from "../upgrade";
+import { createElement, Element } from '../main';
 import { querySelector, querySelectorAll } from "../dom/element";
 
 function createBoundaryComponent(elementsToRender) {
@@ -236,19 +235,22 @@ describe('error boundary component', () => {
                         throw Error('Slot cmp throws in render method');
                     }
                 }
-                function html1($api, $cmp, $slotset) {
-                    return $slotset.x;
+                function html1($api, $cmp, $slotset, $ctx) {
+                    return [$api.s('x', {
+                        key: 0,
+                        attrs: {
+                            name: 'x'
+                        }
+                    }, [], $slotset)];
                 }
+                html1.slots = ["x"];
                 class ChildWithSlot extends Element {
                     render() {
                         return html1;
                     }
                 }
                 function html2($api, $cmp) {
-                    // TODO: There is no way to set 'slot' value onto the template to be matched agains slotset key.
-                    // Not setting it causes the following warning:
-                    // - Ignoring unknown provided slot name "x" in [object:vm ChildWithSlot (7)]. This is probably a typo on the slot attribute.
-                    return [ $api.c('x-child-with-slot', ChildWithSlot, { slotset: { x: [ $api.c('x-slot-cmp', SlotCmp, {})]}}) ];
+                    return [ $api.c('x-child-with-slot', ChildWithSlot, { key: 0 }, [ $api.c('x-slot-cmp', SlotCmp, { attrs: { slot: 'x' } })]) ];
                 }
                 class BoundaryWithSlot extends Element {
                     getError() {

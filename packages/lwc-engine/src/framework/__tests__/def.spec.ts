@@ -1,18 +1,18 @@
-import * as target from "../def";
-import { Element } from "../html-element";
+import { Element } from '../main';
+import { getComponentDef } from '../def';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
         it('should understand empty constructors', () => {
             const def = class MyComponent extends Element {};
             expect(() => {
-                target.getComponentDef(def);
+                getComponentDef(def);
             }).not.toThrow();
         });
 
         it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
             class MyComponent extends Element {}
-            const def = target.getComponentDef(MyComponent);
+            const def = getComponentDef(MyComponent);
             expect(() => {
                 def.name = 'something else';
             }).toThrow();
@@ -23,7 +23,7 @@ describe('def', () => {
 
         it('should throw for stateful components not extending Element', () => {
             const def = class MyComponent {};
-            expect(() => target.getComponentDef(def)).toThrow();
+            expect(() => getComponentDef(def)).toThrow();
         });
 
         it('should understand static publicMethods', () => {
@@ -32,13 +32,13 @@ describe('def', () => {
                 bar() {}
             }
             MyComponent.publicMethods = ['foo', 'bar'];
-            expect(Object.keys(target.getComponentDef(MyComponent).methods)).toEqual(['foo', 'bar']);
+            expect(Object.keys(getComponentDef(MyComponent).methods)).toEqual(['foo', 'bar']);
         });
 
         it('should understand static wire', () => {
             class MyComponent extends Element  {}
             MyComponent.wire = { x: { type: 'record' } };
-            expect(target.getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
+            expect(getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
         });
 
         it('should infer config and type from public props without explicitly specifying them', () => {
@@ -53,7 +53,7 @@ describe('def', () => {
                 },
                 xBar: {},
             };
-            const { props } = target.getComponentDef(MyComponent);
+            const { props } = getComponentDef(MyComponent);
             expect(props.foo).toEqual({
                 config: 1,
                 type: 'any',
@@ -69,7 +69,7 @@ describe('def', () => {
         it('should provide default html props', () => {
             function foo() {}
             class MyComponent extends Element  {}
-            expect(Object.keys(target.getComponentDef(MyComponent).props).reduce((reducer, propName) => {
+            expect(Object.keys(getComponentDef(MyComponent).props).reduce((reducer, propName) => {
                 reducer[propName] = null;
                 return reducer;
             }, {})).toEqual({
@@ -120,7 +120,7 @@ describe('def', () => {
                 ariaRowIndex: null,
                 ariaRowSpan: null,
                 dir: null,
-                draggable: null,
+                // draggable: null, // this is not supported in jsdom just yet (https://github.com/jsdom/jsdom/issues/2268)
                 hidden: null,
                 id: null,
                 lang: null,
@@ -133,7 +133,7 @@ describe('def', () => {
         it('should provide definition for each individual html prop', () => {
             function foo() {}
             class MyComponent extends Element  {}
-            const { props } = target.getComponentDef(MyComponent);
+            const { props } = getComponentDef(MyComponent);
             // aria multi-capital
             expect(props.ariaActiveDescendant).toEqual({
                 config: 3,
@@ -196,7 +196,7 @@ describe('def', () => {
                 fizz: {}
             };
 
-            const { props } = target.getComponentDef(MySubComponent);
+            const { props } = getComponentDef(MySubComponent);
             expect(props.foo).toEqual({
                 config: 1,
                 type: 'any',
@@ -233,7 +233,7 @@ describe('def', () => {
             };
 
             expect(() => {
-                target.getComponentDef(MyComponent);
+                getComponentDef(MyComponent);
             }).toThrow();
         });
 
@@ -252,7 +252,7 @@ describe('def', () => {
 
             MySubComponent.publicMethods = ['fizz', 'buzz'];
 
-            expect(Object.keys(target.getComponentDef(MySubComponent).methods)).toEqual([
+            expect(Object.keys(getComponentDef(MySubComponent).methods)).toEqual([
                 'foo',
                 'bar',
                 'fizz',
@@ -265,7 +265,7 @@ describe('def', () => {
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { y: { type: 'record' } };
-            expect(target.getComponentDef(MySubComponent).wire).toEqual({
+            expect(getComponentDef(MySubComponent).wire).toEqual({
                 x: {
                     type: 'record'
                 },
@@ -280,7 +280,7 @@ describe('def', () => {
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { x: { type: 'subrecord' } };
-            expect(target.getComponentDef(MySubComponent).wire).toEqual({
+            expect(getComponentDef(MySubComponent).wire).toEqual({
                 x: {
                     type: 'subrecord'
                 }
@@ -292,7 +292,7 @@ describe('def', () => {
             MyComponent.publicProps = {
                 foo: {}
             };
-            expect(target.getComponentDef(MyComponent).props.foo).toEqual({
+            expect(getComponentDef(MyComponent).props.foo).toEqual({
                 config: 0,
                 type: 'any',
                 attr: 'foo',
@@ -305,7 +305,7 @@ describe('def', () => {
                 readOnly: {}
             };
             // non-global html property with weird map
-            expect(target.getComponentDef(MyComponent).props.readOnly).toEqual({
+            expect(getComponentDef(MyComponent).props.readOnly).toEqual({
                 config: 0,
                 type: 'any',
                 attr: 'readonly',

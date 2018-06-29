@@ -1,4 +1,15 @@
-import { isBoolean, isString, isUndefined } from "../utils";
+import { isBoolean, isString, isUndefined, isObject } from "../utils";
+
+const DEFAULT_OPTIONS = {
+    baseDir: "",
+};
+
+const DEFAULT_STYLESHEET_CONFIG: NormalizedStylesheetConfig = {
+    customProperties: {
+        allowDefinition: false,
+        resolution: { type: 'native' }
+    }
+};
 
 const DEFAULT_OUTPUT_CONFIG = {
     env: {
@@ -12,6 +23,19 @@ export type OutputProxyCompatConfig =
     | { global: string }
     | { module: string }
     | { independent: string };
+
+export type CustomPropertiesResolution =
+    | { type: 'native' }
+    | { type: 'module', name: string };
+
+export interface CustomPropertiesConfig {
+    allowDefinition?: boolean;
+    resolution?: CustomPropertiesResolution;
+}
+
+export interface StylesheetConfig {
+    customProperties?: CustomPropertiesConfig;
+}
 
 export interface OutputConfig {
     env?: { [name: string]: string };
@@ -28,11 +52,25 @@ export interface CompilerOptions {
     name: string;
     namespace: string;
     files: BundleFiles;
+    /**
+     * An optional directory prefix that contains the specified components
+     * files. Only used when the component that is the compiler's entry point.
+     */
+    baseDir?: string;
+    stylesheetConfig?: StylesheetConfig;
     outputConfig?: OutputConfig;
 }
 
 export interface NormalizedCompilerOptions extends CompilerOptions {
     outputConfig: NormalizedOutputConfig;
+    stylesheetConfig: NormalizedStylesheetConfig;
+}
+
+export interface NormalizedStylesheetConfig extends StylesheetConfig {
+    customProperties: {
+        allowDefinition: boolean;
+        resolution: CustomPropertiesResolution;
+    };
 }
 
 export interface NormalizedOutputConfig extends OutputConfig {
@@ -46,6 +84,7 @@ export interface NormalizedOutputConfig extends OutputConfig {
 export function validateNormalizedOptions(options: NormalizedCompilerOptions) {
     validateOptions(options);
     validateOutputConfig(options.outputConfig);
+    validateStylesheetConfig(options.stylesheetConfig);
 }
 
 export function validateOptions(options: CompilerOptions) {
@@ -78,8 +117,42 @@ export function validateOptions(options: CompilerOptions) {
         }
     }
 
+    if (!isUndefined(options.stylesheetConfig)) {
+        validateStylesheetConfig(options.stylesheetConfig);
+    }
+
     if (!isUndefined(options.outputConfig)) {
         validateOutputConfig(options.outputConfig);
+    }
+}
+
+function validateStylesheetConfig(config: StylesheetConfig) {
+    const { customProperties } = config;
+
+    if (!isUndefined(customProperties)) {
+        const { allowDefinition, resolution } = customProperties;
+
+        if (!isUndefined(allowDefinition) && !isBoolean(allowDefinition)) {
+            throw new TypeError(`Expected a boolean for stylesheetConfig.customProperties.allowDefinition, received "${
+                allowDefinition
+            }".`);
+        }
+
+        if (!isUndefined(resolution)) {
+            if (!isObject(resolution)) {
+                throw new TypeError(`Expected an object for stylesheetConfig.customProperties.resolution, received "${
+                    resolution
+                }".`);
+            }
+
+            const { type } = resolution;
+
+            if (type !== 'native' && type !== 'module') {
+                throw new TypeError(`Expected either "native" or "module" for stylesheetConfig.customProperties.resolution.type, received "${
+                    type
+                }".`);
+            }
+        }
     }
 }
 
@@ -109,8 +182,17 @@ export function normalizeOptions(
         ...options.outputConfig
     };
 
+    const stylesheetConfig: NormalizedStylesheetConfig = {
+        customProperties: {
+            ...DEFAULT_STYLESHEET_CONFIG.customProperties,
+            ...(options.stylesheetConfig && options.stylesheetConfig.customProperties),
+        }
+    };
+
     return {
+        ...DEFAULT_OPTIONS,
         ...options,
+        stylesheetConfig,
         outputConfig
     };
 }

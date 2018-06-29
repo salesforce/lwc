@@ -1,5 +1,129 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.22.0...v) (2018-05-31)
+# [](https://github.com/salesforce/lwc/compare/v0.23.2...v) (2018-06-14)
+
+
+
+<a name="0.23.2"></a>
+## [0.23.2](https://github.com/salesforce/lwc/compare/v0.23.1...v0.23.2) (2018-06-14)
+
+
+### Bug Fixes
+
+* **engine:** adding integration tests for async events ([#411](https://github.com/salesforce/lwc/issues/411)) ([4e2e222](https://github.com/salesforce/lwc/commit/4e2e222))
+
+
+### Features
+
+* **test-utils:** add lwc-test-utils with templateQuerySelector API ([#414](https://github.com/salesforce/lwc/issues/414)) ([c07376c](https://github.com/salesforce/lwc/commit/c07376c))
+
+
+
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/salesforce/lwc/compare/v0.23.0...v0.23.1) (2018-06-13)
+
+
+### Bug Fixes
+
+* **engine:** never use a dot notation of patched objects ([#410](https://github.com/salesforce/lwc/issues/410)) ([2c6b1f4](https://github.com/salesforce/lwc/commit/2c6b1f4))
+* **jest-preset:** remove trailing comma from json ([#409](https://github.com/salesforce/lwc/issues/409)) ([369e073](https://github.com/salesforce/lwc/commit/369e073))
+
+
+
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/salesforce/lwc/compare/v0.22.8...v0.23.0) (2018-06-13)
+
+
+### Bug Fixes
+
+* simplify style logic in template compiler ([#314](https://github.com/salesforce/lwc/issues/314)) ([598d940](https://github.com/salesforce/lwc/commit/598d940))
+* Use token for the styling host element instead of tag name ([#390](https://github.com/salesforce/lwc/issues/390)) ([cccc63d](https://github.com/salesforce/lwc/commit/cccc63d)), closes [#383](https://github.com/salesforce/lwc/issues/383)
+* **engine:** adding more tests for proxies ([#407](https://github.com/salesforce/lwc/issues/407)) ([7c2ae0a](https://github.com/salesforce/lwc/commit/7c2ae0a))
+* **engine:** allowing global listeners ([#404](https://github.com/salesforce/lwc/issues/404)) ([da2d3c7](https://github.com/salesforce/lwc/commit/da2d3c7))
+
+
+### Features
+
+* Add customProperties config to postcss-lwc-plugin ([#349](https://github.com/salesforce/lwc/issues/349)) ([231e00d](https://github.com/salesforce/lwc/commit/231e00d))
+
+
+
+<a name="0.22.8"></a>
+## [0.22.8](https://github.com/salesforce/lwc/compare/v0.22.7...v0.22.8) (2018-06-12)
+
+
+
+<a name="0.22.7"></a>
+## [0.22.7](https://github.com/salesforce/lwc/compare/v0.22.6...v0.22.7) (2018-06-10)
+
+
+
+<a name="0.22.6"></a>
+## [0.22.6](https://github.com/salesforce/lwc/compare/v0.22.5...v0.22.6) (2018-06-08)
+
+
+### Bug Fixes
+
+* **compiler:** displaying correct ambigious attribute name ([#377](https://github.com/salesforce/lwc/issues/377)) ([4c0720a](https://github.com/salesforce/lwc/commit/4c0720a))
+* **engine:** Adding warning on native shadow childNodes ([#382](https://github.com/salesforce/lwc/issues/382)) ([156b03d](https://github.com/salesforce/lwc/commit/156b03d))
+* **engine:** handling dispatching events inside of root event handlers ([#391](https://github.com/salesforce/lwc/issues/391)) ([02b9402](https://github.com/salesforce/lwc/commit/02b9402))
+* **engine:** including text nodes to childNodes ([#389](https://github.com/salesforce/lwc/issues/389)) ([9cbd853](https://github.com/salesforce/lwc/commit/9cbd853))
+* **engine:** remove non-track state warning ([#376](https://github.com/salesforce/lwc/issues/376)) ([485357e](https://github.com/salesforce/lwc/commit/485357e))
+* **engine:** shadow root childNodes ([#374](https://github.com/salesforce/lwc/issues/374)) ([a4c21a0](https://github.com/salesforce/lwc/commit/a4c21a0))
+
+
+### Features
+
+* **compiler:** support default import identifier for wire decorator ([#378](https://github.com/salesforce/lwc/issues/378)) ([905dd78](https://github.com/salesforce/lwc/commit/905dd78))
+* **engine:** slot assignedSlot property ([#381](https://github.com/salesforce/lwc/issues/381)) ([6a36afc](https://github.com/salesforce/lwc/commit/6a36afc))
+* **lwc-compiler:** add baseDir support ([#375](https://github.com/salesforce/lwc/issues/375)) ([d1cf4a7](https://github.com/salesforce/lwc/commit/d1cf4a7))
+
+
+
+<a name="0.22.5"></a>
+## [0.22.5](https://github.com/salesforce/lwc/compare/v0.22.4...v0.22.5) (2018-06-03)
+
+
+### Bug Fixes
+
+* disable shadow and membrane in prod ([#372](https://github.com/salesforce/lwc/issues/372)) ([41149c2](https://github.com/salesforce/lwc/commit/41149c2))
+
+
+
+<a name="0.22.4"></a>
+## [0.22.4](https://github.com/salesforce/lwc/compare/v0.22.3...v0.22.4) (2018-06-03)
+
+
+### Bug Fixes
+
+* removing shadowRoot property from elements ([#371](https://github.com/salesforce/lwc/issues/371)) ([fb1e968](https://github.com/salesforce/lwc/commit/fb1e968))
+
+
+
+<a name="0.22.3"></a>
+## [0.22.3](https://github.com/salesforce/lwc/compare/v0.22.2...v0.22.3) (2018-06-02)
+
+
+
+<a name="0.22.2"></a>
+## [0.22.2](https://github.com/salesforce/lwc/compare/v0.22.1...v0.22.2) (2018-06-02)
+
+
+### Bug Fixes
+
+* **engine:** expose shadowRoot if the mode is open ([#367](https://github.com/salesforce/lwc/issues/367)) ([3de5ec3](https://github.com/salesforce/lwc/commit/3de5ec3))
+* **engine:** fixing slotted event targets ([#368](https://github.com/salesforce/lwc/issues/368)) ([def3b83](https://github.com/salesforce/lwc/commit/def3b83))
+
+
+
+<a name="0.22.1"></a>
+## [0.22.1](https://github.com/salesforce/lwc/compare/v0.22.0...v0.22.1) (2018-05-31)
+
+
+### Bug Fixes
+
+* **engine:** fixed [#342](https://github.com/salesforce/lwc/issues/342) - clean up and docs ([#358](https://github.com/salesforce/lwc/issues/358)) ([01c7eb8](https://github.com/salesforce/lwc/commit/01c7eb8))
+* **engine:** fixing event target from slotted element ([#359](https://github.com/salesforce/lwc/issues/359)) ([594e508](https://github.com/salesforce/lwc/commit/594e508))
+* **engine:** going through cmpRoot to get default aria value ([#360](https://github.com/salesforce/lwc/issues/360)) ([6322456](https://github.com/salesforce/lwc/commit/6322456))
 
 
 

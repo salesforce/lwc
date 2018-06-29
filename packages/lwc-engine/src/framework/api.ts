@@ -1,14 +1,14 @@
 import assert from "./assert";
-import { vmBeingRendered, invokeEventListener, EventListenerContext } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue } from "./language";
+import { vmBeingRendered, invokeEventListener } from "./invoker";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "./language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency } from "./utils";
-import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, Slotset, allocateInSlot } from "./vm";
+import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { patchShadowDomEvent, isValidEventForCustomElement } from "./events";
+import { patchEvent } from "./dom/faux";
 
 export interface RenderAPI {
-    s(slotName: string, data: VNodeData, children: VNodes, slotset: Slotset): VNode;
+    s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
     h(tagName: string, data: VNodeData, children: VNodes): VNode;
     c(tagName: string, Ctor: ComponentConstructor, data: VNodeData, children?: VNodes): VNode;
     i(items: any[], factory: () => VNode | VNode): VNodes;
@@ -79,11 +79,18 @@ const hook: Hooks = {
     },
     create(oldVNode: VNode, vnode: VNode) {
         const { fallback, mode, ctor } = vnode.data;
-        createVM(vnode.sel as string, vnode.elm as HTMLElement, ctor, {
+        const elm = vnode.elm as HTMLElement;
+        if (hasOwnProperty.call(elm, ViewModelReflection)) {
+            // There is a possibility that a custom element is registered under tagName,
+            // in which case, the initialization is already carry on, and there is nothing else
+            // to do here since this hook is called right after invoking `document.createElement`.
+            return;
+        }
+        createVM(vnode.sel as string, elm, ctor, {
             mode,
             fallback,
         });
-        const vm: VM = (vnode.elm as HTMLElement)[ViewModelReflection];
+        const vm = getCustomElementVM(elm);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
             assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
@@ -91,7 +98,7 @@ const hook: Hooks = {
         if (isTrue(vm.fallback)) {
             // slow path
             const children = vnode.children as VNodes;
-            allocateInSlot(vm, children, vnode.data.slotset);
+            allocateInSlot(vm, children);
             // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
             vnode.children = EmptyArray;
         }
@@ -105,7 +112,7 @@ const hook: Hooks = {
         if (isTrue(vm.fallback)) {
             // slow path
             const children = vnode.children as VNodes;
-            allocateInSlot(vm, children, vnode.data.slotset);
+            allocateInSlot(vm, children);
             // every child vnode is now allocated, and the host should receive none directly, it receives them via the shadow!
             vnode.children = EmptyArray;
         }
@@ -142,12 +149,12 @@ function getCurrentFallback(): boolean {
     return isNull(vmBeingRendered) || vmBeingRendered.fallback;
 }
 
-function getCurrentTplToken(): string | undefined {
+function getCurrentShadowToken(): string | undefined {
     // For root elements and other special cases the vm is not set.
     if (isNull(vmBeingRendered)) {
         return;
     }
-    return vmBeingRendered.context.tplToken;
+    return vmBeingRendered.context.shadowToken;
 }
 
 function normalizeStyleString(value: any): string | undefined {
@@ -183,7 +190,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
     const { classMap, className, style, styleMap, key } = data;
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
-    data.token = getCurrentTplToken();
+    data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
     let text, elm; // tslint:disable-line
     const vnode: VElement = {
@@ -203,7 +210,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
 }
 
 // [s]lot element node
-export function s(slotName: string, data: VNodeData, children: VNodes, slotset: Slotset | undefined): VElement {
+export function s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet | undefined): VElement {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
@@ -236,7 +243,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
             });
         }
     }
-    const { key, slotset, styleMap, style, on, className, classMap, props } = data;
+    const { key, styleMap, style, on, className, classMap, props } = data;
     let { attrs } = data;
 
     // hack to allow component authors to force the usage of the "is" attribute in their components
@@ -251,10 +258,10 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         attrs.is = sel;
     }
 
-    data = { hook, key, slotset, attrs, on, props, ctor: Ctor };
+    data = { hook, key, attrs, on, props, ctor: Ctor };
     data.class = classMap || getMapFromClassName(normalizeStyleString(className));
     data.style = styleMap || normalizeStyleString(style);
-    data.token = getCurrentTplToken();
+    data.token = getCurrentShadowToken();
     data.uid = getCurrentOwnerId();
     data.fallback = getCurrentFallback();
     data.mode = 'open'; // TODO: this should be defined in Ctor
@@ -364,7 +371,7 @@ export function f(items: any[]): any[] {
 
 // [t]ext node
 export function t(text: string): VText {
-    let sel, data = {}, children, key, elm; // tslint:disable-line
+    let sel, data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
     return {
         nt: TEXT_NODE,
         sel,
@@ -377,7 +384,7 @@ export function t(text: string): VText {
 }
 
 export function p(text: string): VComment {
-    let sel = '!', data = {}, children, key, elm; // tslint:disable-line
+    let sel = '!', data = { uid: getCurrentOwnerId() }, children, key, elm; // tslint:disable-line
     return {
         nt: COMMENT_NODE,
         sel,
@@ -403,11 +410,11 @@ export function b(fn: EventListener): EventListener {
         throw new Error();
     }
     const vm: VM = vmBeingRendered;
-    return function handler(event: Event) {
-        if (isValidEventForCustomElement(event)) {
-            patchShadowDomEvent(vm, event);
-            invokeEventListener(vm, EventListenerContext.COMPONENT_LISTENER, fn, vm.component, event);
+    return function(event: Event) {
+        if (vm.fallback) {
+            patchEvent(event);
         }
+        invokeEventListener(vm, fn, vm.component, event);
     };
 }
 
