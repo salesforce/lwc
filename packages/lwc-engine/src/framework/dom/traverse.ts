@@ -9,18 +9,18 @@ import {
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import {
-    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter,
+    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute,
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
     defineProperty,
     ArrayReduce,
-    ArraySlice,
     isFalse,
     ArrayPush,
     assign,
     isUndefined,
     toString,
+    ArrayFilter,
 } from "../language";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
@@ -104,7 +104,7 @@ export function shadowRootChildNodes(root: ShadowRoot) {
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Element[]): Element[] {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element[] {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -165,6 +165,15 @@ export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): 
     return getAllMatches(elm, nodeList);
 }
 
+function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (!isNodeOwnedBy(slot, child)) {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
     if (!isUndefined(getNodeKey(node))) {
@@ -174,7 +183,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
         const slots = nativeQuerySelectorAll.call(node, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
             if (isNodeOwnedBy(node as HTMLElement, slot)) {
-                ArrayPush.apply(seed, ArraySlice.call(nativeChildNodesGetter.call(slot)));
+                ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
             }
             return seed;
         }, []);
@@ -231,6 +240,29 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);
 }
 
+function slotAssignedNodesValue(this: HTMLElement): Node[] {
+    const owner = getNodeOwner(this);
+    if (isNull(owner)) {
+        return [];
+    }
+    const nodes = getFilteredSlotAssignedNodes(this);
+    return getAllMatches(owner, nodes);
+}
+
+function slotAssignedElementsValue(this: HTMLElement): Element[] {
+    const owner = getNodeOwner(this);
+    if (isNull(owner)) {
+        return [];
+    }
+    const elements: Element[] = ArrayFilter.call(getFilteredSlotAssignedNodes(this), node => node instanceof Element);
+    return getAllMatches(owner, elements);
+}
+
+function slotNameGetter(this: HTMLElement): string {
+    const name = getAttribute.call(this, 'name');
+    return isNull(name) ? '' : name;
+}
+
 export const NodePatchDescriptors: PropertyDescriptorMap = {
     childNodes: {
         get: lightDomChildNodesGetter,
@@ -263,11 +295,13 @@ export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDe
         value: lightDomQuerySelectorValue,
         configurable: true,
         enumerable: true,
+        writable: true,
     },
     querySelectorAll: {
         value: lightDomQuerySelectorAllValue,
         configurable: true,
         enumerable: true,
+        writable: true,
     },
     innerHTML: {
         get: lightDomInnerHTMLGetter,
@@ -277,6 +311,27 @@ export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDe
     },
     outerHTML: {
         get: lightDomOuterHTMLGetter,
+        configurable: true,
+        enumerable: true,
+    },
+});
+
+export const SlotPatchDescriptors: PropertyDescriptorMap = assign(ElementPatchDescriptors, {
+    assignedElements: {
+        value: slotAssignedElementsValue,
+        configurable: true,
+        enumerable: true,
+        writable: true,
+    },
+    assignedNodes: {
+        value: slotAssignedNodesValue,
+        configurable: true,
+        enumerable: true,
+        writable: true,
+    },
+    name: {
+        // in browsers that do not support shadow dom, slot's name attribute is not reflective
+        get: slotNameGetter,
         configurable: true,
         enumerable: true,
     },

@@ -1,5 +1,5 @@
 import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../language";
-import { ElementPatchDescriptors } from "./traverse";
+import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
 import { createSymbol } from "../utils";
 const proxies = new WeakMap<object, object>();
 
@@ -19,8 +19,23 @@ const traverseMembraneHandler = {
             return originalTarget;
         }
 
-        if (hasOwnProperty.call(ElementPatchDescriptors, key)) {
-            const descriptor = ElementPatchDescriptors[key];
+        const { tagName } = originalTarget;
+        let descriptors: PropertyDescriptorMap;
+        switch (tagName) {
+            case undefined:
+                // node
+                descriptors = NodePatchDescriptors;
+                break;
+            case 'SLOT':
+                // slot
+                descriptors = SlotPatchDescriptors;
+                break;
+            default:
+                // element
+                descriptors = ElementPatchDescriptors;
+        }
+        if (hasOwnProperty.call(descriptors, key)) {
+            const descriptor = descriptors[key];
             if (hasOwnProperty.call(descriptor, 'value')) {
                 return wrap(descriptor.value);
             } else {
