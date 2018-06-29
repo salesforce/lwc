@@ -1,10 +1,12 @@
 import assert from "../assert";
-import { VM, getNodeOwnerVM, isNodeOwnedByVM, OwnerKey, getCustomElementVM } from "../vm";
+import { getNodeKey, getNodeOwnerKey } from "../vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
-    parentElementGetter as nativeParentElementGetter,
     childNodesGetter as nativeChildNodesGetter,
     textContextSetter,
+    parentNodeGetter,
+    compareDocumentPosition,
+    DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter,
@@ -17,15 +19,15 @@ import {
     isFalse,
     ArrayPush,
     assign,
-    hasOwnProperty,
+    isUndefined,
+    toString,
 } from "../language";
-import { isBeingConstructed } from "../invoker";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
 import { getOuterHTML } from "../../3rdparty/polymer/outer-html";
 import { getTextContent } from "../../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
-import { ViewModelReflection } from "../utils";
+import { getHost, getShadowRoot } from "./shadow-root";
 
 export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
     return traverseMembraneWrap(element);
@@ -33,15 +35,45 @@ export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
 
 const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
-function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+function getNodeOwner(node: Node): HTMLElement | null {
+    if (!(node instanceof Node)) {
+        return null;
     }
+    let ownerKey;
+    // search for the first element with owner identity (just in case of manually inserted elements)
+    while (!isNull(node) && isUndefined((ownerKey = getNodeOwnerKey(node)))) {
+        node = parentNodeGetter.call(node);
+    }
+    // either we hit the wall, or we node is root element (which does not have an owner key)
+    if (isUndefined(ownerKey) || isNull(node)) {
+        return null;
+    }
+    // At this point, node is a valid node with owner identity, now we need to find the owner node
+    // search for a custom element with a VM that owns the first element with owner identity attached to it
+    while (!isNull(node) && (getNodeKey(node) !== ownerKey)) {
+        node = parentNodeGetter.call(node);
+    }
+    if (isNull(node)) {
+        return null;
+    }
+    return node as HTMLElement;
+}
 
-    if (value === vm.elm) {
+export function isNodeOwnedBy(owner: HTMLElement, node: Node): boolean {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(node instanceof Node && owner instanceof HTMLElement, `isNodeOwnedByVM() should be called with a node as the second argument instead of ${node}`);
+        assert.isTrue(compareDocumentPosition.call(node, owner) & DOCUMENT_POSITION_CONTAINS, `isNodeOwnedByVM() should never be called with a node that is not a child node of ${owner}`);
+    }
+    const ownerKey = getNodeOwnerKey(node);
+    return isUndefined(ownerKey) || getNodeKey(owner) === ownerKey;
+}
+
+function getShadowParent(node: HTMLElement, value: undefined | HTMLElement): ShadowRoot | HTMLElement | null {
+    const owner = getNodeOwner(node);
+    if (value === owner) {
         // walking up via parent chain might end up in the shadow root element
-        return vm.cmpRoot!;
-    } else if (value instanceof Element && node[OwnerKey] === value[OwnerKey]) {
+        return getShadowRoot(owner);
+    } else if (value instanceof Element && getNodeOwnerKey(node) === getNodeOwnerKey(value)) {
         // cutting out access to something outside of the shadow of the current target (usually slots)
         return patchShadowDomTraversalMethods(value);
     }
@@ -49,26 +81,34 @@ function getShadowParent(node: HTMLElement, vm: VM, value: undefined | HTMLEleme
 }
 
 function parentNodeDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
-    const vm = getNodeOwnerVM(this) as VM;
     const value = nativeParentNodeGetter.call(this);
-    return getShadowParent(this, vm, value);
+    if (isNull(value)) {
+        return value;
+    }
+    return getShadowParent(this, value);
 }
 
-function parentElementDescriptorValue(this: HTMLElement): HTMLElement | ShadowRoot | null {
-    const vm = getNodeOwnerVM(this) as VM;
-    const value = nativeParentElementGetter.call(this);
-    return getShadowParent(this, vm, value);
+function parentElementDescriptorValue(this: HTMLElement): HTMLElement | null {
+    const parentNode = parentNodeDescriptorValue.call(this);
+    const ownerShadow = getShadowRoot(getNodeOwner(this) as HTMLElement);
+    // If we have traversed to the host element,
+    // we need to return null
+    if (ownerShadow === parentNode) {
+        return null;
+    }
+    return parentNode;
 }
 
-export function shadowRootChildNodes(vm: VM, elm: Element) {
-    return getAllMatches(vm, nativeChildNodesGetter.call(elm));
+export function shadowRootChildNodes(root: ShadowRoot) {
+    const elm = getHost(root);
+    return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(vm: VM, nodeList: NodeList | Element[]): Element[] {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Element[]): Element[] {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
-        const isOwned = isNodeOwnedByVM(vm, node);
+        const isOwned = isNodeOwnedBy(owner, node);
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
@@ -78,54 +118,62 @@ function getAllMatches(vm: VM, nodeList: NodeList | Element[]): Element[] {
     return filteredAndPatched;
 }
 
-function getFirstMatch(vm: VM, nodeList: NodeList): Element | null {
+function getFirstMatch(owner: HTMLElement, nodeList: NodeList): Element | null {
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
-        if (isNodeOwnedByVM(vm, nodeList[i])) {
+        if (isNodeOwnedBy(owner, nodeList[i])) {
             return patchShadowDomTraversalMethods(nodeList[i] as Element);
         }
     }
     return null;
 }
 
+export function lightDomQuerySelectorAll(elm: Element, selector: string): Element[] {
+    const owner = getNodeOwner(elm);
+    if (isNull(owner)) {
+        return [];
+    }
+    const matches = nativeQuerySelectorAll.call(elm, selector);
+    return getAllMatches(owner, matches);
+}
+
+export function lightDomQuerySelector(elm: Element, selector: string): Element | null {
+    const owner = getNodeOwner(elm);
+    if (isNull(owner)) {
+        return null;
+    }
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    return getFirstMatch(owner, nodeList);
+}
+
 function lightDomQuerySelectorAllValue(this: HTMLElement, selector: string): Element[] {
-    const vm = getNodeOwnerVM(this) as VM;
-    const matches = nativeQuerySelectorAll.call(this, selector);
-    return getAllMatches(vm, matches);
+    return lightDomQuerySelectorAll(this, selector);
 }
 
 function lightDomQuerySelectorValue(this: HTMLElement, selector: string): Element | null {
-    const vm = getNodeOwnerVM(this) as VM;
-    const nodeList = nativeQuerySelectorAll.call(this, selector);
-    return getFirstMatch(vm, nodeList);
+    return lightDomQuerySelector(this, selector);
 }
 
-export function shadowRootQuerySelector(vm: VM, selector: string): Element | null {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.template.querySelector() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
-    }
-    const nodeList = nativeQuerySelectorAll.call(vm.elm, selector);
-    return getFirstMatch(vm, nodeList);
+export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Element | null {
+    const elm = getHost(root);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    return getFirstMatch(elm, nodeList);
 }
 
-export function shadowRootQuerySelectorAll(vm: VM, selector: string): Element[] {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.isFalse(isBeingConstructed(vm), `this.template.querySelectorAll() cannot be called during the construction of the custom element for ${vm} because no content has been rendered yet.`);
-    }
-    const nodeList = nativeQuerySelectorAll.call(vm.elm, selector);
-    return getAllMatches(vm, nodeList);
+export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
+    const elm = getHost(root);
+    const nodeList = nativeQuerySelectorAll.call(elm, selector);
+    return getAllMatches(elm, nodeList);
 }
 
 export function getFilteredChildNodes(node: Node): Element[] {
-    const ownerVM = getNodeOwnerVM(node) as VM;
     let children;
-    if (hasOwnProperty.call(node, ViewModelReflection)) {
+    if (!isUndefined(getNodeKey(node))) {
         // node itself is a custom element
-        const vm = getCustomElementVM(node as HTMLElement);
         // lwc element, in which case we need to get only the nodes
         // that were slotted
         const slots = nativeQuerySelectorAll.call(node, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
-            if (isNodeOwnedByVM(vm, slot)) {
+            if (isNodeOwnedBy(node as HTMLElement, slot)) {
                 ArrayPush.apply(seed, ArraySlice.call(nativeChildNodesGetter.call(slot)));
             }
             return seed;
@@ -134,8 +182,12 @@ export function getFilteredChildNodes(node: Node): Element[] {
         // regular element
         children = nativeChildNodesGetter.call(node);
     }
+    const owner = getNodeOwner(node);
+    if (isNull(owner)) {
+        return [];
+    }
     return ArrayReduce.call(children, (seed, child) => {
-        if (isNodeOwnedByVM(ownerVM, child)) {
+        if (isNodeOwnedBy(owner, child)) {
             ArrayPush.call(seed, child);
         }
         return seed;
@@ -144,10 +196,13 @@ export function getFilteredChildNodes(node: Node): Element[] {
 
 function lightDomChildNodesGetter(this: HTMLElement): Node[] {
     if (process.env.NODE_ENV !== 'production') {
-        assert.logWarning(`childNodes on ${this} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
+        assert.logWarning(`childNodes on ${toString(this)} returns a live NodeList which is not stable. Use querySelectorAll instead.`);
     }
-    const ownerVM = getNodeOwnerVM(this) as VM;
-    return getAllMatches(ownerVM, getFilteredChildNodes(this));
+    const owner = getNodeOwner(this);
+    if (isNull(owner)) {
+        return [];
+    }
+    return getAllMatches(owner, getFilteredChildNodes(this));
 }
 
 function lightDomInnerHTMLGetter(this: Element): string {
@@ -164,7 +219,13 @@ function lightDomTextContentGetter(this: Node): string {
 
 function assignedSlotGetter(this: Node): HTMLElement | null {
     const parentNode: HTMLElement = nativeParentNodeGetter.call(this);
-    if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getNodeOwnerVM(parentNode) === getNodeOwnerVM(this)) {
+    /**
+     * if it doesn't have a parent node,
+     * or the parent is not an slot element
+     * or they both belong to the same template (default content)
+     * we should assume that it is not slotted
+     */
+    if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
         return null;
     }
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);

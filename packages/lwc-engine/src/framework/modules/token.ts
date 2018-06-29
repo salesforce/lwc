@@ -1,6 +1,6 @@
 import { isUndefined } from "../language";
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
-import { removeAttribute, setAttribute } from "../dom/element";
+import { removeAttribute, setAttribute } from "../dom-api";
 
 function updateToken(oldVnode: VNode, vnode: VNode) {
     const { data: { token: oldToken } } = oldVnode;
