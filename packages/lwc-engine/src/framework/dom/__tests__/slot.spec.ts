@@ -39,7 +39,8 @@ describe('assignedNodes', () => {
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it('should find flattened slotables', () => {
+        it.skip('should find flattened slotables', () => {
+            // flatten is not supported in LWC
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             const assigned = slot.assignedNodes({ flatten: true });
@@ -94,7 +95,8 @@ describe('assignedNodes', () => {
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it('should find flattened slotables for the outer slot', () => {
+        it.skip('should find flattened slotables for the outer slot', () => {
+            // flatten is not supported in LWC
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('[name="outer"]');
             const assigned = slot.assignedNodes({ flatten: true });
@@ -103,7 +105,8 @@ describe('assignedNodes', () => {
             expect(assigned[0].name).toBe('inner');
         });
 
-        it('should find flattened slotables for the inner slot', () => {
+        it.skip('should find flattened slotables for the inner slot', () => {
+            // flatten is not supported in LWC
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('[name="inner"]');
             const assigned = slot.assignedNodes({ flatten: true });
@@ -184,6 +187,7 @@ describe('assignedNodes', () => {
             });
 
             it.skip('should find flattened slotables (assigned) for the outer slot', () => {
+                // flatten is not supported in LWC
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
@@ -195,6 +199,7 @@ describe('assignedNodes', () => {
             });
 
             it.skip('should find flattened slotables (fallback) for the inner slot', () => {
+                // flatten is not supported in LWC
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');
@@ -274,7 +279,8 @@ describe('assignedNodes', () => {
                 expect(assigned[0].tagName).toBe('P');
             });
 
-            it('should find flattened slotables (fallback) for the outer slot', () => {
+            it.skip('should find flattened slotables (fallback) for the outer slot', () => {
+                // flatten is not supported in LWC
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
@@ -285,6 +291,7 @@ describe('assignedNodes', () => {
             });
 
             it.skip('should find flattened slotables (fallback) for the inner slot', () => {
+                // flatten is not supported in LWC
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');

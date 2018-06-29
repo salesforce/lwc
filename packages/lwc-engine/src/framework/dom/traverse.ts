@@ -180,19 +180,6 @@ function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     }, []);
 }
 
-function getFilteredSlotOwnNodes(slot: HTMLElement): Node[] {
-    const owner = getNodeOwner(slot);
-    if (isNull(owner)) {
-        return [];
-    }
-    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (isNodeOwnedBy(owner, child)) {
-            ArrayPush.call(seed, child);
-        }
-        return seed;
-    }, []);
-}
-
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
     if (!isUndefined(getNodeKey(node))) {
@@ -265,21 +252,29 @@ interface AssignedNodesOptions {
 
 function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
     const flatten = !isUndefined(options) && isTrue(options.flatten);
-    const owner = flatten ? this : getNodeOwner(this);
+    if (flatten) {
+        // faux-shadow doesn't support flatten
+        return [];
+    }
+    const owner = getNodeOwner(this);
     if (isNull(owner)) {
         return [];
     }
-    const nodes = flatten ? getFilteredSlotOwnNodes(this) : getFilteredSlotAssignedNodes(this);
+    const nodes = getFilteredSlotAssignedNodes(this);
     return ArrayMap.call(nodes, patchShadowDomTraversalMethods);
 }
 
 function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
     const flatten = !isUndefined(options) && isTrue(options.flatten);
-    const owner = flatten ? this : getNodeOwner(this);
+    if (flatten) {
+        // faux-shadow doesn't support flatten
+        return [];
+    }
+    const owner = getNodeOwner(this);
     if (isNull(owner)) {
         return [];
     }
-    const nodes = flatten ? getFilteredSlotOwnNodes(this) : getFilteredSlotAssignedNodes(this);
+    const nodes = getFilteredSlotAssignedNodes(this);
     const elements: Element[] = ArrayFilter.call(nodes, node => node instanceof Element);
     return ArrayMap.call(elements, patchShadowDomTraversalMethods);
 }
