@@ -1,5 +1,23 @@
 const babelTemplate = require('@babel/template').default;
 
+const defaultTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = FALLBACK_DATA;
+    }
+`);
+
+const resolvedPromiseTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = function() { return Promise.resolve(); };
+    }
+`);
+
 /*
  * For certain imports (@salesforce/label for example), transform a default import
  * statement into a try/catch that attempts to `require` the original import
@@ -23,32 +41,41 @@ const babelTemplate = require('@babel/template').default;
  *     myImport = c.specialLabel;
  * }
  */
-function defaultScopedImportTransform(t, path, importIdentifier) {
-    const tmpl = babelTemplate(`
-        let RESOURCE_NAME;
-        try {
-            RESOURCE_NAME = require(IMPORT_SOURCE).default;
-        } catch (e) {
-            RESOURCE_NAME = RESOURCE_PATH;
-        }
-    `);
-
+function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
     const importSource = path.get('source.value').node;
     const importSpecifiers = path.get('specifiers');
+
     if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
         throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@salesforce/label/c.foo'"`);
     }
 
     const resourceName = importSpecifiers[0].get('local').node.name;
-    const resourcePath = importSource.substring(importIdentifier.length);
+    // if no fallback value provided, use the resource path from the import statement
+    fallbackData = fallbackData || importSource.substring(importIdentifier.length);
 
-    path.replaceWithMultiple(tmpl({
+    path.replaceWithMultiple(defaultTemplate({
         RESOURCE_NAME: t.identifier(resourceName),
         IMPORT_SOURCE: t.stringLiteral(importSource),
-        RESOURCE_PATH: t.stringLiteral(resourcePath)
+        FALLBACK_DATA: t.stringLiteral(fallbackData)
     }));
 }
 
+function resolvedPromiseScopedImportTransform(t, path) {
+    const importSource = path.get('source.value').node;
+    const importSpecifiers = path.get('specifiers');
+
+    if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
+        throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@salesforce/label/c.foo'"`);
+    }
+
+    const resourceName = importSpecifiers[0].get('local').node.name;
+
+    path.replaceWithMultiple(resolvedPromiseTemplate({
+        RESOURCE_NAME: t.identifier(resourceName),
+        IMPORT_SOURCE: t.stringLiteral(importSource),
+    }));
+}
 module.exports = {
-    defaultScopedImportTransform
+    stringScopedImportTransform,
+    resolvedPromiseScopedImportTransform,
 };
