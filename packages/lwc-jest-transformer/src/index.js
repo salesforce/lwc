@@ -6,8 +6,8 @@ const crypto = require('crypto');
 const engineVersion = require('lwc-engine/package.json').version;
 const compilerVersion = require('lwc-compiler/package.json').version;
 const { waitForPromise } = require('./utils');
-const labelSchemaImport = require('./transforms/label-schema-import');
-const resourceSchemaImport = require('./transforms/resource-schema-import');
+const labelScopedImport = require('./transforms/label-scoped-import');
+const resourceScopedImport = require('./transforms/resource-scoped-import');
 
 const BABEL_CONFIG = {
     "presets": [
@@ -15,8 +15,8 @@ const BABEL_CONFIG = {
     ],
     "plugins": [
         babelCommonJs,
-        labelSchemaImport,
-        resourceSchemaImport,
+        labelScopedImport,
+        resourceScopedImport,
     ]
 };
 
