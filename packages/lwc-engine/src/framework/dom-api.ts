@@ -21,6 +21,8 @@ const dispatchEvent = 'EventTarget' in window ?
     EventTarget.prototype.dispatchEvent :
     Node.prototype.dispatchEvent; // IE11
 
+const BaseCustomElementProto = document.createElement('x-lwc').constructor.prototype;
+
 export {
     dispatchEvent,
     setAttribute,
@@ -33,4 +35,6 @@ export {
     parentElementGetter,
     addEventListener,
     removeEventListener,
+
+    BaseCustomElementProto,
 };

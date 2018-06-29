@@ -46,6 +46,7 @@ import {
     resolveCircularModuleDependency
 } from "./utils";
 import { getCustomElementVM } from "./vm";
+import { BaseCustomElementProto } from "./dom-api";
 
 export interface PropDef {
     config: number;
@@ -75,7 +76,7 @@ export interface ComponentDef {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
-    descriptors: PropertyDescriptorMap;
+    elmProto: object;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
     renderedCallback?: () => void;
@@ -164,6 +165,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback,
         render,
     } = proto;
+    let superElmProto = globalElmProto;
     const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
@@ -175,10 +177,11 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         renderedCallback = renderedCallback || superDef.renderedCallback;
         errorCallback  = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
+        superElmProto = superDef.elmProto;
     }
 
     const localKeyDescriptors = createCustomElementDescriptorMap(props, methods);
-    const descriptors = assign(localKeyDescriptors, globalKeyDescriptors);
+    const elmProto = create(superElmProto, localKeyDescriptors);
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
@@ -187,7 +190,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
-        descriptors,
+        elmProto,
         connectedCallback,
         disconnectedCallback,
         renderedCallback,
@@ -356,7 +359,7 @@ import "../polyfills/aria-properties/main";
 
 const HTML_PROPS: PropsDef = create(null);
 const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
-const globalKeyDescriptors: PropertyDescriptorMap = create(null);
+const globalElmProto: object = create(BaseCustomElementProto);
 
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
@@ -371,12 +374,12 @@ let globalInitialization: any = () => {
                 type: 'any',
                 attr: attrName,
             };
-            globalKeyDescriptors[propName] = {
+            defineProperty(globalElmProto, propName, {
                 get: createGetter(propName),
                 set: createSetter(propName),
                 enumerable: true,
                 configurable: true,
-            };
+            });
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
         }
     });
@@ -392,12 +395,12 @@ let globalInitialization: any = () => {
                 type: 'any',
                 attr: attrName,
             };
-            globalKeyDescriptors[propName] = {
+            defineProperty(globalElmProto, propName, {
                 get: createGetter(propName),
                 set: createSetter(propName),
                 enumerable: true,
                 configurable: true,
-            };
+            });
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
         }
     });
