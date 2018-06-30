@@ -625,6 +625,8 @@ describe('html-element', () => {
         }),
 
         it('should log console error when user land code changes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+
             class Child extends Element {}
             class Parent extends Element {
                 render() {
@@ -637,15 +639,17 @@ describe('html-element', () => {
             }
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
+
             childElm.setAttribute('title', "value from parent");
-
             expect(assertLogger.logError).toBeCalled();
             assertLogger.logError.mockRestore();
         });
 
         it('should log console error when user land code removes attribute via querySelector', () => {
+            jest.spyOn(assertLogger, 'logError');
+
             class Child extends Element {}
             class Parent extends Element {
                 render() {
@@ -659,9 +663,9 @@ describe('html-element', () => {
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
 
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
-            childElm.removeAttribute('title');
+            const childElm = getHostShadowRoot(elm).querySelector('x-child');
 
+            childElm.removeAttribute('title');
             expect(assertLogger.logError).toBeCalled();
             assertLogger.logError.mockRestore();
         });
@@ -687,33 +691,6 @@ describe('html-element', () => {
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
             });
-        }),
-
-        it('should correctly set child attribute', () => {
-            let childTitle = null;
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
-            class Parent extends Element {
-                render() {
-                    return html;
-                }
-            }
-
-            class Child extends Element {
-                renderedCallback() {
-                    childTitle = this.getAttribute('title');
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            parentElm.setAttribute('title', 'parent title');
-            document.body.appendChild(parentElm);
-
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
-            expect(childElm.getAttribute('title')).toBe('child title');
         });
     });
 
@@ -2098,29 +2075,7 @@ describe('html-element', () => {
                 expect(userDefinedTabIndexValue).toBe('0');
             });
 
-        }),
-
-        it('should log console error when user land code changes attribute via querySelector', () => {
-            jest.spyOn(assertLogger, 'logError');
-            class Parent extends Element {
-                render() {
-                    return function($api, $cmp) {
-                        return [
-                            $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                        ]
-                    }
-                }
-            }
-            class Child extends Element {}
-            const parentElm = createElement('x-parent', { is: Parent });
-            document.body.appendChild(parentElm);
-
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
-            childElm.setAttribute('title', "value from parent");
-
-            expect(assertLogger.logError).toBeCalled();
-            assertLogger.logError.mockRestore();
-        })
+        });
 
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
@@ -2165,10 +2120,10 @@ describe('html-element', () => {
 
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
-            })
+            });
         }),
 
-        it('should correctly set child attribute ', () => {
+        it('should correctly set child attribute', () => {
             let childTitle = null;
 
             class Parent extends Element {
@@ -2193,6 +2148,6 @@ describe('html-element', () => {
             const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
 
             expect(childElm.getAttribute('title')).toBe('child title');
-        })
+        });
     });
 });

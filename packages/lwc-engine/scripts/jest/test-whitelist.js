@@ -17,11 +17,6 @@ const CONSOLE_WHITELIST = [
     '#childNodes should return correct elements for non-slot elements',
     '#childNodes should return correct elements for slots rendering default content',
 
-    '#lightDomQuerySelector() should not throw an error if element does not exist',
-    '#lightDomQuerySelector() should return null if element does not exist',
-
-    '#lightDomQuerySelectorAll() Invoked from within component should ignore elements passed to its slot',
-    '#lightDomQuerySelectorAll() Invoked from within component should not throw an error if no nodes are found',
     '#shadowRoot querySelector should adopt elements not defined in template as part of the shadow',
 
     '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
