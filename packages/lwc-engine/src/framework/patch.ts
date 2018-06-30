@@ -46,8 +46,10 @@ const htmlDomApi: DOMAPI = {
     createElement(tagName: string, uid: number): HTMLElement {
         const element = createElement.call(document, tagName);
         setInternalField(element, OwnerKey, uid);
-        if (tagName === 'slot') {
-            patchSlotElementWithRestrictions(element as HTMLSlotElement);
+        if (process.env.NODE_ENV !== 'production') {
+            if (tagName === 'slot') {
+                patchSlotElementWithRestrictions(element as HTMLSlotElement);
+            }
         }
         return element;
     },

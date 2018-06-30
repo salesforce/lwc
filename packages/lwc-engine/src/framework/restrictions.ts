@@ -323,31 +323,7 @@ function getSlotElementRestrictionsDescriptors(slot: HTMLSlotElement): PropertyD
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const {
-        assignedNodes: originalAssignedNodes,
-        // @ts-ignore TypeScript does not have assignedElement in the standard libs just yet
-        assignedElement: originalAssignedElements,
-    } = slot;
-    return {
-        assignedNodes: {
-            value(this: HTMLSlotElement, options?: AssignedNodesOptions) {
-                assert.isFalse(options && options.flatten, `assignedNodes({ flatten: true }) in HTMLSlotElement is supported. Only "flatten: false" is supported in all browsers.`);
-                originalAssignedNodes.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-            writable: true,
-        },
-        assignedElements: {
-            value(this: HTMLSlotElement, options?: AssignedNodesOptions) {
-                assert.isFalse(options && options.flatten, `assignedElement({ flatten: true }) in HTMLSlotElement is supported. Only "flatten: false" is supported in all browsers.`);
-                originalAssignedElements.apply(this, arguments);
-            },
-            enumerable: true,
-            configurable: true,
-            writable: true,
-        }
-    };
+    return {};
 }
 
 export function patchNodeWithRestrictions(node: Node) {

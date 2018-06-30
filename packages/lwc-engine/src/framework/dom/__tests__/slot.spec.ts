@@ -39,8 +39,7 @@ describe('assignedNodes', () => {
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it.skip('should find flattened slotables', () => {
-            // flatten is not supported in LWC
+        it('should find flattened slotables', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             const assigned = slot.assignedNodes({ flatten: true });
@@ -95,18 +94,15 @@ describe('assignedNodes', () => {
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it.skip('should find flattened slotables for the outer slot', () => {
-            // flatten is not supported in LWC
+        it('should find flattened slotables for the outer slot', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('[name="outer"]');
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(1);
-            expect(assigned[0].tagName).toBe('SLOT');
-            expect(assigned[0].name).toBe('inner');
+            expect(assigned[0].tagName).toBe('DIV');
         });
 
-        it.skip('should find flattened slotables for the inner slot', () => {
-            // flatten is not supported in LWC
+        it('should find flattened slotables for the inner slot', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('[name="inner"]');
             const assigned = slot.assignedNodes({ flatten: true });
@@ -177,34 +173,32 @@ describe('assignedNodes', () => {
             });
 
             it.skip('should not find any slotable for the inner slot', () => {
+                // not possible in fallback mode because if the content of the outer is
+                // slotted correctly, its fallback with the inner is not going to be added
+                // to the dom.
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');
-                // skipping this one because in fallback, if content is slotted for the outer, the inner slot
-                // is not added to the DOM at all.
                 const assigned = slot.assignedNodes();
                 expect(assigned).toHaveLength(0);
             });
 
-            it.skip('should find flattened slotables (assigned) for the outer slot', () => {
-                // flatten is not supported in LWC
+            it('should find flattened slotables (assigned) for the outer slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
                 const assigned = slot.assignedNodes({ flatten: true });
-                // skipping this one because in fallback, if content is slotted for the outer, the default content
-                // is not added to the DOM at all.
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('P');
             });
 
             it.skip('should find flattened slotables (fallback) for the inner slot', () => {
-                // flatten is not supported in LWC
+                // not possible in fallback mode because if the content of the outer is
+                // slotted correctly, its fallback with the inner is not going to be added
+                // to the dom.
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');
-                // skipping this one because in fallback, if content is slotted for the outer, the inner slot
-                // is not added to the DOM at all.
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
                 expect(assigned[0].tagName).toBe('DIV');
@@ -279,28 +273,69 @@ describe('assignedNodes', () => {
                 expect(assigned[0].tagName).toBe('P');
             });
 
-            it.skip('should find flattened slotables (fallback) for the outer slot', () => {
-                // flatten is not supported in LWC
+            it('should find flattened slotables (fallback) for the outer slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
                 const assigned = slot.assignedNodes({ flatten: true });
                 expect(assigned).toHaveLength(1);
-                expect(assigned[0].tagName).toBe('SLOT');
-                expect(assigned[0].name).toBe('inner');
+                expect(assigned[0].tagName).toBe('P');
             });
 
-            it.skip('should find flattened slotables (fallback) for the inner slot', () => {
-                // flatten is not supported in LWC
+            it('should find flattened slotables (fallback) for the inner slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');
                 const assigned = slot.assignedNodes({ flatten: true });
-                // Skipping this because in fallback mode the default content (surfaced via flatten) is not supported
-                // if slotted content is provided.
                 expect(assigned).toHaveLength(1);
-                expect(assigned[0].tagName).toBe('DIV');
+                expect(assigned[0].tagName).toBe('P');
             });
         });
+    });
+});
+
+describe('slot.name', () => {
+    describe('in fallback', () => {
+
+        it('should resolve the right property name on every slot', () => {
+            let element;
+            function html($api, $cmp, $slotset) {
+                return [
+                    $api.s('', { key: 0 }, [
+                        $api.h('h1', { key: 1 }, [])
+                    ], $slotset),
+                    $api.s('foo', { key: 3, attrs: { name: "foo" } }, [
+                        $api.h('h2', { key: 4 }, [])
+                    ], $slotset)
+                ];
+            }
+            html.slots = ['', 'foo'];
+
+            class MyComponent extends Element {
+                render() {
+                    return html;
+                }
+            }
+
+            /*
+            <x-nodes>
+                <slot>
+                    <h1 />
+                </slot>
+                <slot name="foo">
+                    <h2 />
+                </slot>
+            </x-nodes>
+            */
+            element = createElement('x-assigned-nodes', { is: MyComponent });
+            document.body.appendChild(element);
+            const slots = getHostShadowRoot(element).querySelectorAll('slot');
+            expect(slots.length).toBe(2);
+            expect(slots[0].name).toBe('');
+            expect(slots[1].name).toBe('foo');
+            expect(slots[0].getAttribute('name')).toBe(null);
+            expect(slots[1].getAttribute('name')).toBe('foo');
+        });
+
     });
 });
