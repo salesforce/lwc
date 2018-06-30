@@ -16,32 +16,24 @@ const CONSOLE_WHITELIST = [
     '#childNodes should return correct elements for custom elements when no children present',
     '#childNodes should return correct elements for non-slot elements',
     '#childNodes should return correct elements for slots rendering default content',
-
     '#shadowRoot querySelector should adopt elements not defined in template as part of the shadow',
-
     '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
     '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements'
     '#shadowRootQuerySelector should return null if querySelector does not match any elements',
-
     'api #c() should coerce style to string when is object',
     'api #h() should coerce style to string when is object',
     'api #i() should support various types',
-
     'assignedSlot should return correct slot when text is slotted',
-
     'component public computed props should call setter function when used directly from DOM',
     'component public methods should allow calling getAttribute on child when referenced with querySelector',
     'component public methods should allow calling removeAttribute on child when referenced with querySelector'
     'component public methods should allow calling setAttribute on child when referenced with querySelector',
-
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods connectedCallback should unmount boundary child and its subtree if boundary child throws inside connectedCallback',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods error boundary failures in rendering alternative view should rethrow error to the parent error boundary when child boundary fails to render alternative view',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods renderedCallback should invoke parent boundary if child`s immediate boundary fails inside renderedCallback',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods renderedCallback should unmount boundary child and its subtree if child throws inside renderedCallback',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods renderedCallback should unmount error boundary child if it throws inside renderedCallback',
-
     'Events on Custom Elements should add event listeners in connectedCallback when created via render',
-
     'html-element #dispatchEvent should log warning when element is not connected',
     'html-element #dispatchEvent should log warning when event name contains non-alphanumeric lowercase characters',
     'html-element #dispatchEvent should log warning when event name does not start with alphabetic lowercase characters',
@@ -85,9 +77,7 @@ const CONSOLE_WHITELIST = [
     'html-element global HTML Properties should not log error message when arbitrary attribute is set via elm.setAttribute',
     'html-element global HTML Properties should set user specified value during setAttribute call',
     'html-element life-cycles should not throw error when accessing a non-observable property from tracked property when not rendering',
-
     'invoker integration should invoke connectedCallback() before any child is inserted into the dom',
-
     'root .compareDocumentPosition should implements shadow dom semantics',
     'root .contains should implements shadow dom semantics',
     'root .firstChild could be a text node',
@@ -102,13 +92,10 @@ const CONSOLE_WHITELIST = [
     'root childNodes should return array of childnodes',
     'root integration should ignore element from other owner',
     'root integration should ignore elements from other owner',
-
     'template integration should render arrays correctly',
     'template integration should render sets correctly',
-
     'track.ts integration should not proxify exotic objects',
     'track.ts integration should not proxify non-observable object',
-
     'wire.ts integration should not proxify exotic objects',
     'wire.ts integration should not proxify non-observable object',
 ];
