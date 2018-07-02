@@ -1,7 +1,7 @@
 import { createElement } from 'engine';
 import Labels from 'example-labels';
 
-jest.mock('@label/c.mocked', () => {
+jest.mock('@salesforce/label/c.mocked', () => {
     return { default: "value set in test" };
 }, { virtual: true });
 

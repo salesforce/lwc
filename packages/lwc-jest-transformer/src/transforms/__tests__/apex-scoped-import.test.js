@@ -6,14 +6,14 @@ const DEFAULT_FUNCTION = function() { return Promise.resolve(); };
 
 describe('@salesforce/apex import', () => {
     test('does default transformation', `
-        import fooMethod from '@salesforce/apex/FooController.fooMethod';
+        import myMethod from '@salesforce/apex/FooController.fooMethod';
     `, `
-        let fooMethod;
+        let myMethod;
 
         try {
-          fooMethod = require("@salesforce/apex/FooController.fooMethod").default;
+          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          fooMethod = function () {
+          myMethod = function () {
             return Promise.resolve();
           };
         }
@@ -21,15 +21,15 @@ describe('@salesforce/apex import', () => {
 
     test('allows non-@salesforce/apex named imports', `
         import { otherNamed } from './something-valid';
-        import fooMethod from '@salesforce/apex/FooController.fooMethod';
+        import myMethod from '@salesforce/apex/FooController.fooMethod';
     `, `
         import { otherNamed } from './something-valid';
-        let fooMethod;
+        let myMethod;
 
         try {
-          fooMethod = require("@salesforce/apex/FooController.fooMethod").default;
+          myMethod = require("@salesforce/apex/FooController.fooMethod").default;
         } catch (e) {
-          fooMethod = function () {
+          myMethod = function () {
             return Promise.resolve();
           };
         }
