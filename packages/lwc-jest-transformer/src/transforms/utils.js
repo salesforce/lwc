@@ -18,7 +18,7 @@ const resolvedPromiseTemplate = babelTemplate(`
     }
 `);
 
-const schemaSObjectTemplate = babelTemplate(`
+const schemaObjectTemplate = babelTemplate(`
     let RESOURCE_NAME;
     try {
         RESOURCE_NAME = require(IMPORT_SOURCE).default;
@@ -27,7 +27,7 @@ const schemaSObjectTemplate = babelTemplate(`
     }
 `);
 
-const schemaFullTemplate = babelTemplate(`
+const schemaObjectAndFieldTemplate = babelTemplate(`
     let RESOURCE_NAME;
     try {
         RESOURCE_NAME = require(IMPORT_SOURCE).default;
@@ -88,13 +88,13 @@ function schemaScopedImportTransform(t, path, importIdentifier) {
     const idx = resourcePath.indexOf('.');
 
     if (idx === -1) {
-        path.replaceWithMultiple(schemaSObjectTemplate({
+        path.replaceWithMultiple(schemaObjectTemplate({
             RESOURCE_NAME: t.identifier(resourceName),
             IMPORT_SOURCE: t.stringLiteral(importSource),
             OBJECT_API_NAME: t.stringLiteral(resourcePath),
         }));
     } else {
-        path.replaceWithMultiple(schemaFullTemplate({
+        path.replaceWithMultiple(schemaObjectAndFieldTemplate({
             RESOURCE_NAME: t.identifier(resourceName),
             IMPORT_SOURCE: t.stringLiteral(importSource),
             OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
