@@ -12,8 +12,7 @@ describe('@salesforce/schema import', () => {
           objectApiName = require("@salesforce/schema/Opportunity").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: "Opportunity",
-            fieldApiName: undefined
+            objectApiName: "Opportunity"
           };
         }
     `);
@@ -59,8 +58,7 @@ describe('@salesforce/schema import', () => {
           objectApiName = require("@salesforce/schema/Opportunity").default;
         } catch (e) {
           objectApiName = {
-            objectApiName: "Opportunity",
-            fieldApiName: undefined
+            objectApiName: "Opportunity"
           };
         }
     `);

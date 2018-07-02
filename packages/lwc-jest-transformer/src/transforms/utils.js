@@ -18,7 +18,16 @@ const resolvedPromiseTemplate = babelTemplate(`
     }
 `);
 
-const schemaObjectTemplate = babelTemplate(`
+const schemaSObjectTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME };
+    }
+`);
+
+const schemaFullTemplate = babelTemplate(`
     let RESOURCE_NAME;
     try {
         RESOURCE_NAME = require(IMPORT_SOURCE).default;
@@ -74,25 +83,24 @@ function resolvedPromiseScopedImportTransform(t, path) {
 
 function schemaScopedImportTransform(t, path, importIdentifier) {
     const { importSource, resourceName } = getImportInfo(path);
-    let objectApiName, fieldApiName;
 
     const resourcePath = importSource.substring(importIdentifier.length + 1);
     const idx = resourcePath.indexOf('.');
 
     if (idx === -1) {
-        objectApiName = resourcePath;
-        fieldApiName = t.identifier('undefined');
+        path.replaceWithMultiple(schemaSObjectTemplate({
+            RESOURCE_NAME: t.identifier(resourceName),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            OBJECT_API_NAME: t.stringLiteral(resourcePath),
+        }));
     } else {
-        objectApiName = resourcePath.substring(0, idx);
-        fieldApiName = t.stringLiteral(resourcePath.substring(idx + 1));
+        path.replaceWithMultiple(schemaFullTemplate({
+            RESOURCE_NAME: t.identifier(resourceName),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
+            FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
+        }));
     }
-
-    path.replaceWithMultiple(schemaObjectTemplate({
-        RESOURCE_NAME: t.identifier(resourceName),
-        IMPORT_SOURCE: t.stringLiteral(importSource),
-        OBJECT_API_NAME: t.stringLiteral(objectApiName),
-        FIELD_API_NAME: fieldApiName,
-    }));
 }
 
 function getImportInfo(path) {
