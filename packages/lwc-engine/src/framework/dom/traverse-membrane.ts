@@ -18,32 +18,32 @@ const traverseMembraneHandler = {
         if (key === TargetSlot) {
             return originalTarget;
         }
-
-        const { tagName } = originalTarget;
-        let descriptors: PropertyDescriptorMap;
-        switch (tagName) {
-            case undefined:
-                // node
-                descriptors = NodePatchDescriptors;
-                break;
-            case 'SLOT':
-                // slot
-                descriptors = SlotPatchDescriptors;
-                break;
-            default:
-                // element
-                descriptors = ElementPatchDescriptors;
-        }
-        if (hasOwnProperty.call(descriptors, key)) {
-            const descriptor = descriptors[key];
-            if (hasOwnProperty.call(descriptor, 'value')) {
-                return wrap(descriptor.value);
-            } else {
-                return descriptor!.get!.call(originalTarget);
+        if (!isFunction(originalTarget)) {
+            const { tagName } = originalTarget;
+            let descriptors: PropertyDescriptorMap;
+            switch (tagName) {
+                case undefined:
+                    // node
+                    descriptors = NodePatchDescriptors;
+                    break;
+                case 'SLOT':
+                    // slot
+                    descriptors = SlotPatchDescriptors;
+                    break;
+                default:
+                    // element
+                    descriptors = ElementPatchDescriptors;
             }
-        } else {
-            return wrap(originalTarget[key]);
+            if (hasOwnProperty.call(descriptors, key)) {
+                const descriptor = descriptors[key];
+                if (hasOwnProperty.call(descriptor, 'value')) {
+                    return wrap(descriptor.value);
+                } else {
+                    return descriptor!.get!.call(originalTarget);
+                }
+            }
         }
+        return wrap(originalTarget[key]);
     },
     set(originalTarget: any, key: PropertyKey, value: any): boolean {
         if (key === TargetSlot) {

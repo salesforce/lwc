@@ -23,6 +23,7 @@ import {
     ArrayFilter,
     isTrue,
     ArrayMap,
+    create,
 } from "../language";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
@@ -306,7 +307,7 @@ export const NodePatchDescriptors: PropertyDescriptorMap = {
     },
 };
 
-export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDescriptors, {
+export const ElementPatchDescriptors: PropertyDescriptorMap = assign(create(null), NodePatchDescriptors, {
     querySelector: {
         value: lightDomQuerySelectorValue,
         configurable: true,
@@ -332,7 +333,7 @@ export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDe
     },
 });
 
-export const SlotPatchDescriptors: PropertyDescriptorMap = assign(ElementPatchDescriptors, {
+export const SlotPatchDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
     assignedElements: {
         value: slotAssignedElementsValue,
         configurable: true,
@@ -348,7 +349,6 @@ export const SlotPatchDescriptors: PropertyDescriptorMap = assign(ElementPatchDe
     name: {
         // in browsers that do not support shadow dom, slot's name attribute is not reflective
         get: slotNameGetter,
-        set() { throw new Error('iff'); },
         configurable: true,
         enumerable: true,
     },
