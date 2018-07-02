@@ -1,58 +1,62 @@
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937
     const composedEvents = {
-        blur: true,
-        focus: true,
-        focusin: true,
-        focusout: true,
-        click: true,
-        dblclick: true,
-        mousedown: true,
-        mouseenter: true,
-        mouseleave: true,
-        mousemove: true,
-        mouseout: true,
-        mouseover: true,
-        mouseup: true,
-        wheel: true,
-        beforeinput: true,
-        input: true,
-        keydown: true,
-        keyup: true,
-        compositionstart: true,
-        compositionupdate: true,
-        compositionend: true,
-        touchstart: true,
-        touchend: true,
-        touchmove: true,
-        touchcancel: true,
-        pointerover: true,
-        pointerenter: true,
-        pointerdown: true,
-        pointermove: true,
-        pointerup: true,
-        pointercancel: true,
-        pointerout: true,
-        pointerleave: true,
-        gotpointercapture: true,
-        lostpointercapture: true,
-        dragstart: true,
-        drag: true,
-        dragenter: true,
-        dragleave: true,
-        dragover: true,
-        drop: true,
-        dragend: true,
-        DOMActivate: true,
-        DOMFocusIn: true,
-        DOMFocusOut: true,
-        keypress: true,
+        blur: 1,
+        focus: 1,
+        focusin: 1,
+        focusout: 1,
+        click: 1,
+        dblclick: 1,
+        mousedown: 1,
+        mouseenter: 1,
+        mouseleave: 1,
+        mousemove: 1,
+        mouseout: 1,
+        mouseover: 1,
+        mouseup: 1,
+        wheel: 1,
+        beforeinput: 1,
+        input: 1,
+        keydown: 1,
+        keyup: 1,
+        compositionstart: 1,
+        compositionupdate: 1,
+        compositionend: 1,
+        touchstart: 1,
+        touchend: 1,
+        touchmove: 1,
+        touchcancel: 1,
+        pointerover: 1,
+        pointerenter: 1,
+        pointerdown: 1,
+        pointermove: 1,
+        pointerup: 1,
+        pointercancel: 1,
+        pointerout: 1,
+        pointerleave: 1,
+        gotpointercapture: 1,
+        lostpointercapture: 1,
+        dragstart: 1,
+        drag: 1,
+        dragenter: 1,
+        dragleave: 1,
+        dragover: 1,
+        drop: 1,
+        dragend: 1,
+        DOMActivate: 1,
+        DOMFocusIn: 1,
+        DOMFocusOut: 1,
+        keypress: 1,
     };
+
+    const { hasOwnProperty } = composedEvents;
+
+    // Composed for Native events
     Object.defineProperties(Event.prototype, {
         composed: {
             get() {
                 const { type } = this;
-                return composedEvents[type] !== undefined;
+                return hasOwnProperty.call(composedEvents, type);
             },
             configurable: true,
             enumerable: true,
@@ -62,7 +66,14 @@ export default function apply() {
     (window as any).CustomEvent = function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
         const event = new OriginalCustomEvent(type, eventInitDict);
         // support for composed on custom events
-        (event as any).composed = !!(eventInitDict && (eventInitDict as any).composed);
+        Object.defineProperties(event, {
+            composed: {
+                value: !!(eventInitDict && (eventInitDict as any).composed),
+                configurable: true,
+                enumerable: true,
+                writable: false,
+            },
+        });
         return event;
     };
     (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
