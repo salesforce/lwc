@@ -95,8 +95,8 @@ export function traverseHTML(
         nodeVisitor.enter(node);
     }
 
-    // Node children are accessed differently depending the node type:
-    //  - standard element have their children associated on the node itself
+    // Node children are accessed differently depending on the node type:
+    //  - standard elements have their children associated on the node itself
     //  - while the template node children are present on the content property.
     const children = treeAdapter.getChildNodes(
         treeAdapter.getTemplateContent(node) || node,
