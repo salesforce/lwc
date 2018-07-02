@@ -2627,6 +2627,10 @@ camelcase@^4.1.0:
   version "4.1.0"
   resolved "http://npm.lwcjs.org/camelcase/-/camelcase-4.1.0/d545635be1e33c542649c69173e5de6acfae34dd.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
+camelcase@~5.0.0:
+  version "5.0.0"
+  resolved "http://npm.lwcjs.org/camelcase/-/camelcase-5.0.0/03295527d58bd3cd4aa75363f35b2e8d97be2f42.tgz#03295527d58bd3cd4aa75363f35b2e8d97be2f42"
+
 caniuse-api@^1.5.2:
   version "1.6.1"
   resolved "http://npm.lwcjs.org/caniuse-api/-/caniuse-api-1.6.1/b534e7c734c4f81ec5fbe8aca2ad24354b962c6c.tgz#b534e7c734c4f81ec5fbe8aca2ad24354b962c6c"

@@ -113,6 +113,24 @@ describe('Javascript transform', () => {
             );
         }
     });
+
+    it('allows dynamic imports', async () => {
+        const actual = `
+            export function test() {
+                return import('/test');
+            }
+        `;
+
+        const expected = `
+            export function test() {
+                return import('/test');
+            }
+        `;
+
+        const { code } = await transform(actual, 'foo.js', { namespace: 'x', name: 'foo' });
+        expect(pretify(code)).toBe(pretify(expected));
+
+    });
 });
 
 describe('HTML transform', () => {

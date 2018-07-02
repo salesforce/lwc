@@ -37,11 +37,10 @@ import * as transformPublicFields from '@babel/plugin-proposal-class-properties'
 import * as transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
 
 // Base babel configuration
-// TODO: Need to remove * on the parserOpts plugin - not advised by babel-core
 export const BABEL_CONFIG_BASE = {
     babelrc: false,
     sourceMaps: true,
-    parserOpts: { plugins: ['*'] },
+    parserOpts: { plugins: ['dynamicImport', 'decorators'] },
     presets: [],
 };
 
