@@ -1,6 +1,6 @@
 import { Element, track } from 'engine';
-import mockedImport from '@label/c.mocked';
-import unmockedImport from '@label/c.unmocked';
+import mockedImport from '@salesforce/label/c.mocked';
+import unmockedImport from '@salesforce/label/c.unmocked';
 
 export default class Labels extends Element {
     @track

@@ -1,7 +1,7 @@
 import { createElement } from 'engine';
 import ResourceUrl from 'example-resource-url';
 
-jest.mock('@resource-url/c.mocked', () => {
+jest.mock('@salesforce/resource-url/c.mocked', () => {
     return { default: "value set in test"};
 }, { virtual: true });
 
