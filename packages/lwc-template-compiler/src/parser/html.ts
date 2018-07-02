@@ -35,7 +35,7 @@ export function parseHTML(source: string) {
         });
     };
 
-    const validateClosingTag = (node: parse5.AST.Default.Element)  => {
+    const validateClosingTag = (node: parse5.AST.Default.Element) => {
         if (!node.__location) {
             return;
         }
@@ -95,14 +95,18 @@ export function traverseHTML(
         nodeVisitor.enter(node);
     }
 
-    const children = (
-        treeAdapter.getTagName(node) === 'template' ?
-            treeAdapter.getChildNodes(treeAdapter.getTemplateContent(node)) :
-            treeAdapter.getChildNodes(node)
-    ) || [];
+    // Node children are accessed differently depending the node type:
+    //  - standard element have their children associated on the node itself
+    //  - while the template node children are present on the content property.
+    const children = treeAdapter.getChildNodes(
+        treeAdapter.getTemplateContent(node) || node,
+    );
 
-    for (const child of children) {
-        traverseHTML(child as parse5.AST.Default.Node, visitor);
+    // Traverse the node children if necessary.
+    if (children !== undefined) {
+        for (const child of children) {
+            traverseHTML(child as parse5.AST.Default.Node, visitor);
+        }
     }
 
     if (nodeVisitor && nodeVisitor.exit) {
@@ -110,7 +114,10 @@ export function traverseHTML(
     }
 }
 
-export function getSource(source: string, location: parse5.MarkupData.Location): string {
+export function getSource(
+    source: string,
+    location: parse5.MarkupData.Location,
+): string {
     const { startOffset, endOffset } = location;
     return source.slice(startOffset, endOffset);
 }
