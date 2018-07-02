@@ -6,8 +6,11 @@ const crypto = require('crypto');
 const engineVersion = require('lwc-engine/package.json').version;
 const compilerVersion = require('lwc-compiler/package.json').version;
 const { waitForPromise } = require('./utils');
+const apexScopedImport = require('./transforms/apex-scoped-import');
 const labelScopedImport = require('./transforms/label-scoped-import');
 const resourceScopedImport = require('./transforms/resource-scoped-import');
+const schemaScopedImport = require('./transforms/schema-scoped-import');
+const userScopedImport = require('./transforms/user-scoped-import');
 
 const BABEL_CONFIG = {
     "presets": [
@@ -15,8 +18,11 @@ const BABEL_CONFIG = {
     ],
     "plugins": [
         babelCommonJs,
+        apexScopedImport,
         labelScopedImport,
         resourceScopedImport,
+        schemaScopedImport,
+        userScopedImport,
     ]
 };
 
