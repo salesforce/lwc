@@ -1,5 +1,5 @@
 import { buildCustomElementConstructor } from 'engine';
-import Table from 'benchmark-table-wc';
+import Table from 'benchmark-table-component';
 import Row from 'benchmark-table-component-row';
 
 import { Store } from '../../table-store';
@@ -14,7 +14,7 @@ benchmark(`benchmark-table-wc/clear/1k`, () => {
     let store;
 
     before(async () => {
-        tableElement = document.createElement('benchmark-table');
+        tableElement = document.createElement('benchmark-table-component');
         await insertTableComponent(tableElement);
 
         store = new Store();

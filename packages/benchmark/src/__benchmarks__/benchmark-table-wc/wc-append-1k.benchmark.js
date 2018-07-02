@@ -1,5 +1,5 @@
 import { buildCustomElementConstructor } from 'engine';
-import Table from 'benchmark-table-wc';
+import Table from 'benchmark-table-component';
 import Row from 'benchmark-table-component-row';
 
 import { Store } from '../../table-store';

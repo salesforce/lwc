@@ -1,5 +1,5 @@
 import { buildCustomElementConstructor } from 'engine';
-import Table from 'benchmark-table-wc';
+import Table from 'benchmark-table-component';
 import Row from 'benchmark-table-component-row';
 
 import { Store } from '../../table-store';
@@ -13,7 +13,7 @@ benchmark(`benchmark-table-wc/create/10k`, () => {
     let tableElement;
 
     before(() => {
-        tableElement = document.createElement('benchmark-table-wc');
+        tableElement = document.createElement('benchmark-table-component');
         return insertTableComponent(tableElement);
     });
 
