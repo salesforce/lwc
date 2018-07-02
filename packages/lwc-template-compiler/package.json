@@ -27,6 +27,7 @@
     "babel-types": "^6.26.0",
     "babylon": "^6.17.0",
     "decamelize": "^1.2.0",
+    "camelcase": "~5.0.0",
     "he": "^1.1.1",
     "parse5-with-errors": "^4.0.1"
   }
