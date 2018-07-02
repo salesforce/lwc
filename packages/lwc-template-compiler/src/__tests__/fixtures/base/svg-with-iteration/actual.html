@@ -1,0 +1,7 @@
+<template>
+    <svg>
+        <template for:each={lines} for:item="line">
+            <line key={line.key} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}></line>
+        </template>
+    </svg>
+</template>
