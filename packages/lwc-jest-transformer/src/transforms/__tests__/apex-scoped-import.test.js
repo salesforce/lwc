@@ -43,7 +43,7 @@ describe('@salesforce/apex import', () => {
         import { default as label } from '@salesforce/apex/FooController.fooMethod';
     `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
 
-    test('throws error if renamed multipel default imports', `
+    test('throws error if renamed multiple default imports', `
         import { default as label, foo } from '@salesforce/apex/FooController.fooMethod';
     `, undefined, 'Invalid import from @salesforce/apex/FooController.fooMethod');
 });
