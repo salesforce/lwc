@@ -1,15 +1,17 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull } from "./language";
-import { createVM, appendVM, renderVM, removeVM, getCustomElementVM } from "./vm";
+import { isUndefined, isObject, isNull, defineProperties } from "./language";
+import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import assert from "./assert";
 import { resolveCircularModuleDependency } from "./utils";
+import { getComponentDef } from "./def";
 
-export function customElement(Ctor: ComponentConstructor, options?: Record<string, boolean>): Function {
+export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
     Ctor = resolveCircularModuleDependency(Ctor);
+    const def = getComponentDef(Ctor);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isUndefined(Ctor.forceTagName), `The experimental support for web components does not include the support for \`static forceTagName\` to "${Ctor.forceTagName}" declaration in the class definition for ${Ctor}.`);
     }
-    const normalizedOptions = { fallback: false, mode: 'open', isRoot: true };
+    const normalizedOptions: CreateVMInit = { fallback: false, mode: 'open', isRoot: true };
     if (isObject(options) && !isNull(options)) {
         const { mode, fallback } = (options as any);
         // TODO: for now, we default to open, but eventually it should default to 'closed'
@@ -17,7 +19,7 @@ export function customElement(Ctor: ComponentConstructor, options?: Record<strin
         // fallback defaults to false to favor shadowRoot
         if (fallback === true) { normalizedOptions.fallback = true; }
     }
-    return class extends HTMLElement {
+    class LightningWrapperElement extends HTMLElement {
         constructor() {
             super();
             const tagName = this.tagName.toLocaleLowerCase();
@@ -32,5 +34,9 @@ export function customElement(Ctor: ComponentConstructor, options?: Record<strin
             const vm = getCustomElementVM(this);
             removeVM(vm);
         }
-    };
+    }
+    // adding all public descriptors to the prototype so we don't have to
+    // do it per instance in html-element.ts constructors
+    defineProperties(LightningWrapperElement.prototype, def.descriptors);
+    return LightningWrapperElement;
 }

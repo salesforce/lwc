@@ -4,12 +4,12 @@ import Table from 'benchmark-table-component';
 import { Store } from '../../table-store';
 import { insertTableComponent, destroyTableComponent } from '../../utils';
 
-benchmark(`benchmark-table/clear/1k`, () => {
+benchmark(`benchmark-table-component/clear/1k`, () => {
     let tableElement;
     let store;
 
     before(async () => {
-        tableElement = createElement('benchmark-table', { is: Table });
+        tableElement = createElement('benchmark-table-component', { is: Table });
         await insertTableComponent(tableElement);
 
         store = new Store();

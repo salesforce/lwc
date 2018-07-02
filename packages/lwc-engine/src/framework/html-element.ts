@@ -1,7 +1,7 @@
 import assert from "./assert";
 import { Component, getWrappedComponentsListener } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf } from "./language";
-import { ViewModelReflection, setInternalField, replicateProtoChain } from "./utils";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "./language";
+import { ViewModelReflection, PatchedFlag, setInternalField } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
@@ -110,13 +110,18 @@ function LWCElement(this: Component) {
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
-    let { elmProto } = def;
-    if (elm.constructor.prototype !== BaseCustomElementProto) {
-        // this is slow path for component instances using `is` attribute or `forceTagName`, which
-        // are set to be removed in the near future.
-        elmProto = replicateProtoChain(elmProto, BaseCustomElementProto, elm.constructor.prototype);
+    // registered custom elements will be patched at the proto level already, not need to patch them here.
+    if (isFalse(PatchedFlag in elm)) {
+        if (elm.constructor.prototype !== BaseCustomElementProto) {
+            // this is slow path for component instances using `is` attribute or `forceTagName`, which
+            // are set to be removed in the near future.
+            const { descriptors } = def;
+            defineProperties(elm, descriptors);
+        } else {
+            const { elmProto } = def;
+            setPrototypeOf(elm, elmProto);
+        }
     }
-    setPrototypeOf(elm, elmProto);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
