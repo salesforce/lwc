@@ -1,4 +1,4 @@
-export default function () {
+export default function() {
     const originalComposedGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'composed')!.get!;
     Object.defineProperties(FocusEvent.prototype, {
         composed: {
