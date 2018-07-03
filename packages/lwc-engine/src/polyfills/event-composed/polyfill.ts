@@ -4,10 +4,13 @@ export function PatchedCustomEvent(this: Event, type: string, eventInitDict: Cus
     // support for composed on custom events
     Object.defineProperties(event, {
         composed: {
-            value: !!(eventInitDict && (eventInitDict as any).composed),
+            // We can't use "value" here, because IE11 doesn't like mixing and matching
+            // value with get() from Event.prototype.
+            get() {
+                return !!(eventInitDict && (eventInitDict as any).composed);
+            },
             configurable: true,
             enumerable: true,
-            writable: false,
         },
     });
     return event;
