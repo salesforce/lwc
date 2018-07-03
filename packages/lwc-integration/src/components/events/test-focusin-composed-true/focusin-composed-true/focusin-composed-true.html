@@ -1,0 +1,7 @@
+<template>
+    <input onfocusin={handleFocusIn} type="text" />
+    <input class="custom-focus-in" onfocusin={handleCustomFocusIn} type="text" />
+    <button onclick={handleButtonClick}>Trigger custom focusin</button>
+    <div class="focus-in-composed" if:true={eventIsComposed}>Focus In Composed</div>
+    <div class="custom-focus-in-not-composed" if:true={customEventNotComposed}>Custom Focus In Not Composed</div>
+</template>
