@@ -1,3 +1,18 @@
+const { CustomEvent: OriginalCustomEvent } = (window as any);
+export function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
+    const event = new OriginalCustomEvent(type, eventInitDict);
+    // support for composed on custom events
+    Object.defineProperties(event, {
+        composed: {
+            value: !!(eventInitDict && (eventInitDict as any).composed),
+            configurable: true,
+            enumerable: true,
+            writable: false,
+        },
+    });
+    return event;
+};
+
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937
     const composedEvents = {
@@ -62,19 +77,6 @@ export default function apply() {
             enumerable: true,
         },
     });
-    const { CustomEvent: OriginalCustomEvent } = (window as any);
-    (window as any).CustomEvent = function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
-        const event = new OriginalCustomEvent(type, eventInitDict);
-        // support for composed on custom events
-        Object.defineProperties(event, {
-            composed: {
-                value: !!(eventInitDict && (eventInitDict as any).composed),
-                configurable: true,
-                enumerable: true,
-                writable: false,
-            },
-        });
-        return event;
-    };
+    (window as any).CustomEvent = PatchedCustomEvent;
     (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
 }
