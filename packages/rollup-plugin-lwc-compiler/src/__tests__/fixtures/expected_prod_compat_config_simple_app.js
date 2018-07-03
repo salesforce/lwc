@@ -84,11 +84,11 @@
       v = Proxy.setKey,
       w = Proxy.callKey1;
     if (t) {
-      v(j, "token", "x-foo_foo");
+      v(j, "hostToken", "x-foo_foo-host"), v(j, "shadowToken", "x-foo_foo");
       var x = w(document, "createElement", "style");
       v(x, "type", "text/css"),
         v(u(x, "dataset"), "token", "x-foo_foo"),
-        v(x, "textContent", t("x-foo", "x-foo_foo")),
+        v(x, "textContent", t("x-foo_foo")),
         w(u(document, "head"), "appendChild", x);
     }
     var y = Proxy.setKey,
@@ -129,11 +129,11 @@
       E = Proxy.setKey,
       F = Proxy.callKey1;
     if (s) {
-      E(k, "token", "x-app_app");
+      E(k, "hostToken", "x-app_app-host"), E(k, "shadowToken", "x-app_app");
       var G = F(document, "createElement", "style");
       E(G, "type", "text/css"),
         E(D(G, "dataset"), "token", "x-app_app"),
-        E(G, "textContent", s("x-app", "x-app_app")),
+        E(G, "textContent", s("x-app_app")),
         F(D(document, "head"), "appendChild", G);
     }
     var H = Proxy.callKey1,

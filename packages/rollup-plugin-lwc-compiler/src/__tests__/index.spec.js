@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const rollup = require('rollup');
 const prettier = require('prettier');
-const rollupCompile = require('../src/index');
+const rollupCompile = require('../index');
 
 function pretty(str) {
     return prettier.format(str);
