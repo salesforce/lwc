@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "echo 'Building postcss plugin...' && DIR=`pwd` && cd ../../ && tsc -p $DIR/tsconfig.json",
-    "test": "DIR=`pwd` && cd ../../ && jest $DIR"
+    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR"
   },
   "dependencies": {
     "balanced-match": "^1.0.0",

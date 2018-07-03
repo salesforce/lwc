@@ -7,7 +7,7 @@
   "jsnext:main": "dist/modules/observable-membrane.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "test": "echo 'Testing observable membrane...' && DIR=`pwd` && cd ../../ && jest $DIR",
+    "test": "DIR=`pwd` && cd ../../ && yarn test $DIR",
     "types": "tsc",
     "lint": "eslint src/**/*.ts",
     "build": "rollup -c",
