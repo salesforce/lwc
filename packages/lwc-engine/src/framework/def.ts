@@ -361,6 +361,7 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
 import "../polyfills/event-composed/main";
+import "../polyfills/focuse-event-composed/main";
 import "../polyfills/aria-properties/main";
 
 const HTML_PROPS: PropsDef = create(null);
@@ -427,27 +428,5 @@ let globalInitialization: any = () => {
 
     freeze(BaseElement);
     seal(BaseElement.prototype);
-
-    // Fix for FF not respecting spec'd composed flat
-    // for `focusout` events
-    // This is defined here because we are guaranteed
-    // to have the composed polyfill applied to Event.
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1472887
-    const originalComposedGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'composed')!.get!;
-    Object.defineProperties(FocusEvent.prototype, {
-        composed: {
-            get(this: FocusEvent) {
-                const { type, isTrusted } = this;
-                const composed = originalComposedGetter.call(this);
-                if (isTrusted && (type === 'focusout' || type === 'focusin') && composed === false) {
-                    return true;
-                }
-                return composed;
-            },
-            enumerable: true,
-            configurable: true,
-        },
-    });
-
     globalInitialization = void(0);
 };
