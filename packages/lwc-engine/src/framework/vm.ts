@@ -152,7 +152,7 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-interface ShadowRootInit {
+export interface CreateVMInit {
     delegatesFocus?: boolean;
     mode: "open" | "closed";
     // custom settings for now
@@ -160,7 +160,7 @@ interface ShadowRootInit {
     isRoot?: boolean;
 }
 
-export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: ShadowRootInit) {
+export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }

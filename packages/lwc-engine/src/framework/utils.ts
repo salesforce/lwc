@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty, getOwnPropertyDescriptor, getOwnPropertyNames, ArrayReduce, getPrototypeOf } from "./language";
+import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty } from "./language";
 import { ComponentConstructor } from "./component";
 
 type Callback = () => void;
@@ -10,6 +10,7 @@ export const SPACE_CHAR = 32;
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
 export const ViewModelReflection = createSymbol('ViewModel');
+export const PatchedFlag = createSymbol('PatchedFlag');
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
@@ -89,15 +90,4 @@ export function setInternalField(o: object, fieldName: symbol, value: any) {
 
 export function getInternalField(o: object, fieldName: symbol): any {
     return o[fieldName];
-}
-
-export function replicateProtoChain(proto: object, oldBase: object, newBase: object): object {
-    if (proto === oldBase) {
-        return newBase;
-    }
-    const descriptors: PropertyDescriptorMap = ArrayReduce.call(getOwnPropertyNames(proto), (seed, propName: string): PropertyDescriptorMap => {
-        seed[propName] = getOwnPropertyDescriptor(proto, propName);
-        return seed;
-    }, create(null));
-    return create(replicateProtoChain(getPrototypeOf(proto), oldBase, newBase), descriptors);
 }

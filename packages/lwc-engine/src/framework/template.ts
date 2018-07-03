@@ -92,7 +92,7 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     }
 
     // TODO: add identity to the html functions
-    const { component, context, cmpSlots = EmptySlots, cmpTemplate } = vm;
+    const { component, context, cmpSlots, cmpTemplate } = vm;
     // reset the cache memoizer for template when needed
     if (html !== cmpTemplate) {
         if (!isUndefined(cmpTemplate)) {
