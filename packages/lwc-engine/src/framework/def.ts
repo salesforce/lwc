@@ -427,5 +427,26 @@ let globalInitialization: any = () => {
 
     freeze(BaseElement);
     seal(BaseElement.prototype);
+
+    // Fix for FF not respecting spec'd composed flat
+    // for `focusout` events
+    // This is defined here because we are guaranteed
+    // to have the composed polyfill applied to Event.
+    const originalComposedGetter = Object.getOwnPropertyDescriptor(Event.prototype, 'composed')!.get!;
+    Object.defineProperties(FocusEvent.prototype, {
+        composed: {
+            get(this: FocusEvent) {
+                const { type, isTrusted } = this;
+                const composed = originalComposedGetter.call(this);
+                if (isTrusted && type === 'focusout' && composed === false) {
+                    return true;
+                }
+                return composed;
+            },
+            enumerable: true,
+            configurable: true,
+        },
+    });
+
     globalInitialization = void(0);
 };
