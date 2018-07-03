@@ -67,7 +67,7 @@ const transform: FileTransformer = function(
 
     const fatalError = warnings.find(warning => warning.level === "error");
     if (fatalError) {
-        throw new Error(fatalError.message);
+        throw new Error(`${filename}: ${fatalError.message}`);
     }
 
     return {
