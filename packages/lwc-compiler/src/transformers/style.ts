@@ -49,7 +49,7 @@ function replaceToken(src: string): string {
 
 export default async function transformStyle(
     src: string,
-    _filename: string,
+    filename: string,
     { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const { minify } = outputConfig;
@@ -75,7 +75,7 @@ export default async function transformStyle(
     }
 
     const res = await postcss(plugins).process(src, {
-        from: undefined,
+        from: filename,
     });
 
     let code: string = '';
