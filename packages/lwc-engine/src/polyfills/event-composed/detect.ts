@@ -1,7 +1,6 @@
 // See note below
 import { PatchedCustomEvent } from './polyfill';
 
-
 export default function detect(): boolean {
     const isComposedPresent = Object.getOwnPropertyDescriptor(Event.prototype, 'composed') === undefined;
 

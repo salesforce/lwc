@@ -11,7 +11,7 @@ export function PatchedCustomEvent(this: Event, type: string, eventInitDict: Cus
         },
     });
     return event;
-};
+}
 
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937
