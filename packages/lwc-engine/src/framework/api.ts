@@ -254,8 +254,8 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         sel = attrs.is as string;
     } else if (!isUndefined(forceTagName)) {
         tag = forceTagName;
-        attrs = assign({}, attrs);
-        attrs.is = sel;
+        attrs = assign(create(null), attrs);
+        (attrs as any).is = sel;
     }
 
     data = { hook, key, attrs, on, props, ctor: Ctor };

@@ -11,6 +11,7 @@ import { isNull, isUndefined, isFalse, isTrue } from './language';
 import { parentNodeGetter } from "./dom-api";
 import { VM, OwnerKey } from "./vm";
 import { ViewModelReflection, getInternalField, setInternalField } from "./utils";
+import { patchSlotElementWithRestrictions } from "./restrictions";
 
 const {
     createElement,
@@ -45,6 +46,11 @@ const htmlDomApi: DOMAPI = {
     createElement(tagName: string, uid: number): HTMLElement {
         const element = createElement.call(document, tagName);
         setInternalField(element, OwnerKey, uid);
+        if (process.env.NODE_ENV !== 'production') {
+            if (tagName === 'slot') {
+                patchSlotElementWithRestrictions(element as HTMLSlotElement);
+            }
+        }
         return element;
     },
     createElementNS(namespaceURI: string, qualifiedName: string, uid: number): Element {

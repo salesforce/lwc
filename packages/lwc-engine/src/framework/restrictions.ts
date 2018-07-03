@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, defineProperty, isUndefined, ArraySlice, toString } from "./language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString } from "./language";
 import { Component } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -275,35 +275,19 @@ function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptor
             },
             enumerable: true,
             configurable: true,
+            writable: true,
         },
     };
 }
 
-export function patchNodeWithRestrictions(node: Node) {
-    defineProperties(node, getNodeRestrictionsDescriptors(node));
-}
-
-export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
-    // This routine will prevent access to certain properties on a shadow root instance to guarantee
-    // that all components will work fine in IE11 and other browsers without shadow dom support
-    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
-}
-
-export function patchCustomElementWithRestrictions(elm: HTMLElement) {
-    defineProperties(elm, getCustomElementRestrictionsDescriptors(elm));
-}
-
-export function patchComponentWithRestrictions(cmp: Component) {
-    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
-}
-
-export function patchLightningElementPrototypeWithRestrictions(proto: object) {
+function getLightingElementProtypeRestrictionsDescriptors(proto: object): PropertyDescriptorMap {
     const info = getGlobalHTMLPropertiesInfo();
+    const descriptors = {};
     forEach.call(getOwnPropertyNames(info), (propName: string) => {
         if (propName in proto) {
             return; // no need to redefine something that we are already exposing
         }
-        defineProperty(proto, propName, {
+        descriptors[propName] = {
             get(this: Component) {
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
@@ -329,6 +313,41 @@ export function patchLightningElementPrototypeWithRestrictions(proto: object) {
             },
             // a setter is required here to avoid TypeError's when an attribute is set in a template but only the above getter is defined
             set() {}, // tslint:disable-line
-        });
+        };
     });
+    return descriptors;
+}
+
+function getSlotElementRestrictionsDescriptors(slot: HTMLSlotElement): PropertyDescriptorMap {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    return {};
+}
+
+export function patchNodeWithRestrictions(node: Node) {
+    defineProperties(node, getNodeRestrictionsDescriptors(node));
+}
+
+export function patchShadowRootWithRestrictions(sr: ShadowRoot) {
+    // This routine will prevent access to certain properties on a shadow root instance to guarantee
+    // that all components will work fine in IE11 and other browsers without shadow dom support
+    defineProperties(sr, getShadowRootRestrictionsDescriptors(sr));
+}
+
+export function patchCustomElementWithRestrictions(elm: HTMLElement) {
+    defineProperties(elm, getCustomElementRestrictionsDescriptors(elm));
+}
+
+export function patchComponentWithRestrictions(cmp: Component) {
+    defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
+}
+
+export function patchLightningElementPrototypeWithRestrictions(proto: object) {
+    defineProperties(proto, getLightingElementProtypeRestrictionsDescriptors(proto));
+}
+
+export function patchSlotElementWithRestrictions(slot: HTMLSlotElement) {
+    defineProperties(slot, getSlotElementRestrictionsDescriptors(slot));
 }

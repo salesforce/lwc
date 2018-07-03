@@ -9,18 +9,21 @@ import {
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import {
-    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter,
+    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute,
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
     defineProperty,
     ArrayReduce,
-    ArraySlice,
     isFalse,
     ArrayPush,
     assign,
     isUndefined,
     toString,
+    ArrayFilter,
+    isTrue,
+    ArrayMap,
+    create,
 } from "../language";
 import { getOwnPropertyDescriptor, isNull } from "../language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
@@ -104,7 +107,7 @@ export function shadowRootChildNodes(root: ShadowRoot) {
     return getAllMatches(elm, nativeChildNodesGetter.call(elm));
 }
 
-function getAllMatches(owner: HTMLElement, nodeList: NodeList | Element[]): Element[] {
+function getAllMatches(owner: HTMLElement, nodeList: NodeList | Node[]): Element[] {
     const filteredAndPatched = [];
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
@@ -112,7 +115,7 @@ function getAllMatches(owner: HTMLElement, nodeList: NodeList | Element[]): Elem
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node as HTMLElement));
+            ArrayPush.call(filteredAndPatched, patchShadowDomTraversalMethods(node));
         }
     }
     return filteredAndPatched;
@@ -165,6 +168,30 @@ export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): 
     return getAllMatches(elm, nodeList);
 }
 
+function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
+    const owner = getNodeOwner(slot);
+    if (isNull(owner)) {
+        return [];
+    }
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (!isNodeOwnedBy(owner, child)) {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
+function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
+    return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
+        if (child instanceof Element && child.tagName === 'SLOT') {
+            ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
+        } else {
+            ArrayPush.call(seed, child);
+        }
+        return seed;
+    }, []);
+}
+
 export function getFilteredChildNodes(node: Node): Element[] {
     let children;
     if (!isUndefined(getNodeKey(node))) {
@@ -174,7 +201,7 @@ export function getFilteredChildNodes(node: Node): Element[] {
         const slots = nativeQuerySelectorAll.call(node, 'slot');
         children = ArrayReduce.call(slots, (seed, slot) => {
             if (isNodeOwnedBy(node as HTMLElement, slot)) {
-                ArrayPush.apply(seed, ArraySlice.call(nativeChildNodesGetter.call(slot)));
+                ArrayPush.apply(seed, getFilteredSlotAssignedNodes(slot));
             }
             return seed;
         }, []);
@@ -231,6 +258,28 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);
 }
 
+interface AssignedNodesOptions {
+    flatten?: boolean;
+}
+
+function slotAssignedNodesValue(this: HTMLElement, options?: AssignedNodesOptions): Node[] {
+    const flatten = !isUndefined(options) && isTrue(options.flatten);
+    const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+    return ArrayMap.call(nodes, patchShadowDomTraversalMethods);
+}
+
+function slotAssignedElementsValue(this: HTMLElement, options?: AssignedNodesOptions): Element[] {
+    const flatten = !isUndefined(options) && isTrue(options.flatten);
+    const nodes = flatten ? getFilteredSlotFlattenNodes(this) : getFilteredSlotAssignedNodes(this);
+    const elements: Element[] = ArrayFilter.call(nodes, node => node instanceof Element);
+    return ArrayMap.call(elements, patchShadowDomTraversalMethods);
+}
+
+function slotNameGetter(this: HTMLElement): string {
+    const name = getAttribute.call(this, 'name');
+    return isNull(name) ? '' : name;
+}
+
 export const NodePatchDescriptors: PropertyDescriptorMap = {
     childNodes: {
         get: lightDomChildNodesGetter,
@@ -258,16 +307,18 @@ export const NodePatchDescriptors: PropertyDescriptorMap = {
     },
 };
 
-export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDescriptors, {
+export const ElementPatchDescriptors: PropertyDescriptorMap = assign(create(null), NodePatchDescriptors, {
     querySelector: {
         value: lightDomQuerySelectorValue,
         configurable: true,
         enumerable: true,
+        writable: true,
     },
     querySelectorAll: {
         value: lightDomQuerySelectorAllValue,
         configurable: true,
         enumerable: true,
+        writable: true,
     },
     innerHTML: {
         get: lightDomInnerHTMLGetter,
@@ -277,6 +328,27 @@ export const ElementPatchDescriptors: PropertyDescriptorMap = assign(NodePatchDe
     },
     outerHTML: {
         get: lightDomOuterHTMLGetter,
+        configurable: true,
+        enumerable: true,
+    },
+});
+
+export const SlotPatchDescriptors: PropertyDescriptorMap = assign(create(null), ElementPatchDescriptors, {
+    assignedElements: {
+        value: slotAssignedElementsValue,
+        configurable: true,
+        enumerable: true,
+        writable: true,
+    },
+    assignedNodes: {
+        value: slotAssignedNodesValue,
+        configurable: true,
+        enumerable: true,
+        writable: true,
+    },
+    name: {
+        // in browsers that do not support shadow dom, slot's name attribute is not reflective
+        get: slotNameGetter,
         configurable: true,
         enumerable: true,
     },

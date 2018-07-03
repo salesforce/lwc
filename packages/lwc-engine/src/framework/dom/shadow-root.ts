@@ -54,7 +54,8 @@ export function attachShadow(elm: HTMLElement, options: ShadowRootInit): ShadowR
     if (isUndefined(ArtificialShadowRootPrototype)) {
         // Adding AOM properties to the faux shadow root prototype
         // Note: lazy creation to avoid circular deps
-        ArtificialShadowRootPrototype = create(null, assign(ArtificialShadowRootDescriptors, createShadowRootAOMDescriptorMap()));
+        assign(ArtificialShadowRootDescriptors, createShadowRootAOMDescriptorMap());
+        ArtificialShadowRootPrototype = create(null, ArtificialShadowRootDescriptors);
     }
     const sr = create(ArtificialShadowRootPrototype, {
         mode: {
