@@ -5,6 +5,6 @@ module.exports = {
         '.js': require.resolve('ts-jest/preprocessor.js')
     },
     testMatch: [
-        '<rootDir>/*/**/__tests__/*.spec.(js|ts)'
+        '<rootDir>/**/__tests__/*.spec.(js|ts)'
     ],
 };
