@@ -1,3 +1,4 @@
+import {  stripIndents } from 'common-tags';
 const babel = require('@babel/core');
 const baseConfig = { babelrc: false, filename: 'test.js' };
 
@@ -48,7 +49,9 @@ function pluginTest(plugin, opts = {}) {
         } else if (expected.output) {
             const output = testTransform(actual);
             if (expected.output.code) {
-                expect(output.code).toBe(expected.output.code);
+                const normalizedActual = output && output.code && stripIndents(output.code);
+                const normalizedExpected = stripIndents(expected.output.code);
+                expect(normalizedActual).toBe(normalizedExpected);
             }
             if (expected.output.metadata) {
                 expect(output.metadata).toEqual(expected.output.metadata);

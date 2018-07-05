@@ -3016,6 +3016,10 @@ commitizen@~2.9.6:
     shelljs "0.7.6"
     strip-json-comments "2.0.1"
 
+common-tags@^1.8.0:
+  version "1.8.0"
+  resolved "http://npm.lwcjs.org/common-tags/-/common-tags-1.8.0/8e3153e542d4a39e9b10554434afaaf98956a937.tgz#8e3153e542d4a39e9b10554434afaaf98956a937"
+
 commondir@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lwcjs.org/commondir/-/commondir-1.0.1/ddd800da0c66127393cca5950ea968a3aaf1253b.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"

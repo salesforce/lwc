@@ -60,25 +60,6 @@ function validatePropertyName(property) {
     }
 }
 
-function validatePairSetterGetter(decorators) {
-    decorators.filter(decorator => (
-        isApiDecorator(decorator) &&
-        decorator.type === DECORATOR_TYPES.SETTER
-    )).forEach(({ path }) => {
-        const name = path.parentPath.get('key.name').node;
-
-        const associatedGetter = decorators.find(decorator => (
-            isApiDecorator(decorator) &&
-            decorator.type === DECORATOR_TYPES.GETTER &&
-            path.parentPath.get('key.name').node === name
-        ));
-
-        if (!associatedGetter) {
-            throw path.buildCodeFrameError(`@api set ${name} setter does not have associated getter.`);
-        }
-    });
-}
-
 function validateUniqueness(decorators) {
     const apiDecorators = decorators.filter(isApiDecorator);
 
@@ -120,6 +101,5 @@ module.exports = function validate(klass, decorators) {
         }
     });
 
-    validatePairSetterGetter(decorators);
     validateUniqueness(decorators);
 };
