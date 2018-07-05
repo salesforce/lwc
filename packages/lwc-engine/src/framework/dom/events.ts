@@ -104,7 +104,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
 
             // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
-            const myOwnerKey = getNodeOwnerKey(currentTargetRootNode);
+            const myOwnerKey = getNodeKey(currentTargetRootNode);
 
             // Determining Number 3:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
