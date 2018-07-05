@@ -339,3 +339,74 @@ describe('slot.name', () => {
 
     });
 });
+
+describe('slotted elements', () => {
+    it('should be visible via event.target', () => {
+        expect.assertions(3);
+
+        function htmlChild($api, $cmp) {
+            return [
+                $api.h('button', {
+                    key: 0,
+                }, [ $api.t('click me') ]),
+            ];
+        }
+
+        class XChild extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', this.handleClickOnChild.bind(this));
+            }
+            render() {
+                return htmlChild;
+            }
+            handleClickOnChild(e) {
+                expect(e.target).toBe(this.template.querySelector('button'));
+            }
+        }
+
+        function htmlContainer($api, $cmp, $slotSet) {
+            return [
+                $api.s('', { key: 0 }, [], $slotSet),
+            ];
+        }
+        htmlContainer.slots = [''];
+
+        class XContainer extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', this.handleClickInContainer.bind(this));
+            }
+            render() {
+                return htmlContainer;
+            }
+            handleClickInContainer(e) {
+                expect(e.target).toBe(this.querySelector('x-child'));
+            }
+        }
+
+        function htmlMock($api, $cmp) {
+            return [
+                $api.c('x-container', XContainer, {
+                    key: 0,
+                }, [ $api.c('x-child', XChild, { key: 1 }, []) ]),
+            ];
+        }
+
+        class MyMock extends Element {
+            connectedCallback() {
+                this.template.addEventListener('click', this.handleClickInMock.bind(this));
+            }
+            render() {
+                return htmlMock;
+            }
+            handleClickInMock(e) {
+                expect(e.target).toBe(this.template.querySelector('x-child'));
+            }
+        }
+
+        const elm = createElement('x-mock', { is: MyMock, fallback: true });
+        document.body.appendChild(elm);
+        const child = getHostShadowRoot(elm).querySelector('x-child');
+        const button = getHostShadowRoot(child).querySelector('button');
+        button.click();
+    });
+});
