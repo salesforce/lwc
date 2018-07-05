@@ -9,7 +9,7 @@ declare module 'engine' {
 
     class HTMLElementTheGoodPart {
         dispatchEvent(evt: ComposableEvent): boolean;
-        addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;    
+        addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
         removeEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
         getAttribute(name: string): string | null;
         getBoundingClientRect(): ClientRect;
@@ -19,11 +19,11 @@ declare module 'engine' {
         tabIndex: number
         readonly classList: DOMTokenList;
     }
-    
+
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
         readonly host: Element;
-    } 
+    }
 
     /**
      * Base class for the Lightning Web Component JavaScript class
@@ -49,7 +49,7 @@ declare module 'engine' {
          * Called when a descendant component throws an error in one of its lifecycle hooks
          */
         errorCallback(error: any, stack: string): void;
-        
+
         readonly root: ShadowRootTheGoodPart;
     }
 
@@ -68,5 +68,5 @@ declare module 'engine' {
      * @param getType imperative accessor for the data source
      * @param config configuration object for the accessor
      */
-    export function wire(getType: (config: any) => any, config: any): PropertyDecorator;
+    export function wire(getType: (config?: any) => any, config?: any): PropertyDecorator;
 }

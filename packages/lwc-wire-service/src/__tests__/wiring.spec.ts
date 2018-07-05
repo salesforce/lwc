@@ -66,15 +66,25 @@ describe('WireEventTarget', () => {
         });
 
         describe('config event', () => {
+            it('immediately fires when no static or dynamic config', () => {
+                const listener = jest.fn();
+                const mockWireDef: WireDef = {
+                    adapter: {}
+                };
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, mockWireDef, "test");
+                wireEventTarget.addEventListener(CONFIG, listener);
+                expect(listener).toHaveBeenCalledTimes(1);
+            });
             it('immediately fires when config is statics only', () => {
                 const listener = jest.fn();
-                const mockWireDef = {
+                const mockWireDef: WireDef = {
+                    adapter: {},
                     params: {},
                     static: {
                         test: ["fixed", 'array']
                     }
                 };
-                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, mockWireDef as any, "test");
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, {} as target.Context, mockWireDef, "test");
                 wireEventTarget.addEventListener(CONFIG, listener);
                 expect(listener).toHaveBeenCalledTimes(1);
             });
@@ -83,7 +93,8 @@ describe('WireEventTarget', () => {
                 wireContext[CONTEXT_UPDATED] = { listeners: {}, values: {} };
                 const mockContext = Object.create(null);
                 mockContext[CONTEXT_ID] = wireContext;
-                const mockWireDef = {
+                const mockWireDef: WireDef = {
+                    adapter: {},
                     params: {
                         key: "prop"
                     }
@@ -91,10 +102,10 @@ describe('WireEventTarget', () => {
                 const mockInstallTrap = jest.fn();
                 const originalInstallTrap = dependency.installTrap;
                 (dependency as any).installTrap = mockInstallTrap;
-                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef as any, "test");
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
                 wireEventTarget.addEventListener(CONFIG, () => { /**/ });
                 expect(mockInstallTrap).toHaveBeenCalled();
-                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef as any, "test1");
+                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test1");
                 wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
                 expect(mockInstallTrap).toHaveBeenCalledTimes(1);
                 (dependency as any).installTrap = originalInstallTrap;
@@ -110,7 +121,8 @@ describe('WireEventTarget', () => {
                 const mockContext2 = Object.create(null);
                 mockContext2[CONTEXT_ID] = wireContext2;
 
-                const mockWireDef = {
+                const mockWireDef: WireDef = {
+                    adapter: {},
                     params: {
                         key: "prop"
                     }
@@ -119,10 +131,10 @@ describe('WireEventTarget', () => {
                 const mockInstallTrap = jest.fn();
                 const originalInstallTrap = dependency.installTrap;
                 (dependency as any).installTrap = mockInstallTrap;
-                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext1, mockWireDef as any, "test");
+                const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext1, mockWireDef, "test");
                 wireEventTarget.addEventListener(CONFIG, () => { /**/ });
                 expect(mockInstallTrap).toHaveBeenCalled();
-                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext2, mockWireDef as any, "test");
+                const wireEventTarget1 = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext2, mockWireDef, "test");
                 wireEventTarget1.addEventListener(CONFIG, () => { /**/ });
                 expect(mockInstallTrap).toHaveBeenCalledTimes(2);
                 (dependency as any).installTrap = originalInstallTrap;
@@ -161,8 +173,12 @@ describe('WireEventTarget', () => {
             const mockContext = Object.create(null);
             mockContext[CONTEXT_ID] = Object.create(null);
             mockContext[CONTEXT_ID][CONTEXT_UPDATED] = { listeners: { test: [mockConfigListenerMetadata] } };
-            const mockWireDef = Object.create(null);
-            mockWireDef.params = {test: 'test'};
+            const mockWireDef: WireDef = {
+                adapter: {},
+                params: {
+                    test: 'test'
+                }
+            };
             const wireEventTarget = new target.WireEventTarget({} as Element, {} as ElementDef, mockContext, mockWireDef, "test");
             wireEventTarget.removeEventListener(CONFIG, listener);
             expect(mockContext[CONTEXT_ID][CONTEXT_UPDATED].listeners.test).toHaveLength(0);
@@ -188,7 +204,7 @@ describe('WireEventTarget', () => {
             const mockCmp = {
                 test: (value) => { actual = value; }
             };
-            const wireEventTarget = new target.WireEventTarget(mockCmp as any, {} as ElementDef, {} as target.Context, { method: true } as any, "test");
+            const wireEventTarget = new target.WireEventTarget(mockCmp as any, {} as ElementDef, {} as target.Context, { method: 1 } as WireDef, "test");
             wireEventTarget.dispatchEvent(new target.ValueChangedEvent('value'));
             expect(actual).toBe('value');
         });
