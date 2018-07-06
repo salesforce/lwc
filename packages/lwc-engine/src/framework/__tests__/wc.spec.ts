@@ -1,16 +1,16 @@
-import { Element } from "../main";
+import { LightningElement } from "../main";
 import { buildCustomElementConstructor } from "../wc";
 
 describe('wc', () => {
 
     it('should create a new constructor from LWCElement', () => {
-        class MyComponent extends Element {}
+        class MyComponent extends LightningElement {}
         const WC = buildCustomElementConstructor(MyComponent);
         expect(typeof WC).toBe('function');
     });
 
     it('should define public API in prototype chain', () => {
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             foo() {}
         }
         MyComponent.publicMethods = ['foo'];
@@ -21,7 +21,7 @@ describe('wc', () => {
     });
 
     it('should not support forceTagName', () => {
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             static forceTagName = 'button';
         }
         expect(() => {

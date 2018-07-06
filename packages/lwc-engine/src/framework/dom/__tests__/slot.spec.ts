@@ -1,4 +1,4 @@
-import { Element, getHostShadowRoot } from "../../html-element";
+import { LightningElement, getHostShadowRoot } from "../../html-element";
 import { createElement } from "../../upgrade";
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
@@ -17,7 +17,7 @@ describe('assignedNodes', () => {
             }
             html.slots = [''];
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -64,7 +64,7 @@ describe('assignedNodes', () => {
             }
             html.slots = ['outer', 'inner'];
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -117,7 +117,7 @@ describe('assignedNodes', () => {
             let element;
 
             beforeEach(() => {
-                class AssignedNodesChild extends Element {
+                class AssignedNodesChild extends LightningElement {
                     render() {
                         const html = function($api, $cmp, $slotset) {
                             return [
@@ -133,7 +133,7 @@ describe('assignedNodes', () => {
                     }
                 }
 
-                class AssignedNodes extends Element {
+                class AssignedNodes extends LightningElement {
                     render() {
                         return function($api, $cmp, $slotset) {
                             return [
@@ -210,7 +210,7 @@ describe('assignedNodes', () => {
             let element;
 
             beforeEach(() => {
-                class AssignedNodesChild extends Element {
+                class AssignedNodesChild extends LightningElement {
                     render() {
                         const html = function($api, $cmp, $slotset) {
                             return [
@@ -226,7 +226,7 @@ describe('assignedNodes', () => {
                     }
                 }
 
-                class AssignedNodes extends Element {
+                class AssignedNodes extends LightningElement {
                     render() {
                         return function($api, $cmp, $slotset) {
                             return [
@@ -311,7 +311,7 @@ describe('slot.name', () => {
             }
             html.slots = ['', 'foo'];
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -352,7 +352,7 @@ describe('slotted elements', () => {
             ];
         }
 
-        class XChild extends Element {
+        class XChild extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', this.handleClickOnChild.bind(this));
             }
@@ -371,7 +371,7 @@ describe('slotted elements', () => {
         }
         htmlContainer.slots = [''];
 
-        class XContainer extends Element {
+        class XContainer extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', this.handleClickInContainer.bind(this));
             }
@@ -395,7 +395,7 @@ describe('slotted elements', () => {
             ];
         }
 
-        class MyMock extends Element {
+        class MyMock extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', this.handleClickInMock.bind(this));
             }

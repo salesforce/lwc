@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
 describe('DOM inspection', () => {
@@ -29,7 +29,7 @@ describe('DOM inspection', () => {
     }
     tmpl$1.slots = [""];
 
-    class Parent extends Element {
+    class Parent extends LightningElement {
         render() {
             return tmpl$1;
         }
@@ -57,7 +57,7 @@ describe('DOM inspection', () => {
             ])];
     }
 
-    class Container extends Element {
+    class Container extends LightningElement {
         render() {
             return tmpl$2;
         }

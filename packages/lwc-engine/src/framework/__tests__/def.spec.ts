@@ -1,17 +1,17 @@
-import { Element } from '../main';
+import { LightningElement } from '../main';
 import { getComponentDef } from '../def';
 
 describe('def', () => {
     describe('#getComponentDef()', () => {
         it('should understand empty constructors', () => {
-            const def = class MyComponent extends Element {};
+            const def = class MyComponent extends LightningElement {};
             expect(() => {
                 getComponentDef(def);
             }).not.toThrow();
         });
 
         it('should prevent mutations of important keys but should allow expondos for memoization and polyfills', () => {
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const def = getComponentDef(MyComponent);
             expect(() => {
                 def.name = 'something else';
@@ -27,7 +27,7 @@ describe('def', () => {
         });
 
         it('should understand static publicMethods', () => {
-            class MyComponent extends Element  {
+            class MyComponent extends LightningElement  {
                 foo() {}
                 bar() {}
             }
@@ -36,14 +36,14 @@ describe('def', () => {
         });
 
         it('should understand static wire', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             expect(getComponentDef(MyComponent).wire).toEqual({ x: { type: 'record' } });
         });
 
         it('should infer config and type from public props without explicitly specifying them', () => {
             function foo() {}
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             Object.defineProperties(MyComponent.prototype, {
                 foo: { get: foo, configurable: true }
             });
@@ -68,7 +68,7 @@ describe('def', () => {
 
         it('should provide default html props', () => {
             function foo() {}
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             expect(Object.keys(getComponentDef(MyComponent).props).reduce((reducer, propName) => {
                 reducer[propName] = null;
                 return reducer;
@@ -132,7 +132,7 @@ describe('def', () => {
 
         it('should provide definition for each individual html prop', () => {
             function foo() {}
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             const { props } = getComponentDef(MyComponent);
             // aria multi-capital
             expect(props.ariaActiveDescendant).toEqual({
@@ -161,7 +161,7 @@ describe('def', () => {
 
         it('should inherit props correctly', function() {
             function x() {}
-            class MySuperComponent extends Element {}
+            class MySuperComponent extends LightningElement {}
             Object.defineProperties(MySuperComponent.prototype, {
                 x: { get: x, configurable: true }
             });
@@ -221,7 +221,7 @@ describe('def', () => {
 
         it('should throw if setter is declared without a getter', function() {
             function x() {}
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             Object.defineProperties(MyComponent.prototype, {
                 x: { set: x, configurable: true }
             });
@@ -238,7 +238,7 @@ describe('def', () => {
         });
 
         it('should inherit methods correctly', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 foo() {}
                 bar() {}
             }
@@ -261,7 +261,7 @@ describe('def', () => {
         });
 
         it('should inherit static wire properly', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { y: { type: 'record' } };
@@ -276,7 +276,7 @@ describe('def', () => {
         });
 
         it('should inherit static wire properly when parent defines same property', () => {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.wire = { x: { type: 'record' } };
             class MySubComponent extends MyComponent {}
             MySubComponent.wire = { x: { type: 'subrecord' } };
@@ -288,7 +288,7 @@ describe('def', () => {
         });
 
         it('should handle publicProps with empty object', function() {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.publicProps = {
                 foo: {}
             };
@@ -300,7 +300,7 @@ describe('def', () => {
         });
 
         it('should support html properties with exceptional transformation', function() {
-            class MyComponent extends Element  {}
+            class MyComponent extends LightningElement  {}
             MyComponent.publicProps = {
                 readOnly: {}
             };

@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
 describe('modules/token', () => {
@@ -8,7 +8,7 @@ describe('modules/token', () => {
         ];
         tmpl.shadowToken = 'test';
 
-        class Component extends Element {
+        class Component extends LightningElement {
             render() {
                 return tmpl;
             }
@@ -30,7 +30,7 @@ describe('modules/token', () => {
             $api.h('section', { key: 0 }, [ $api.t('test') ]),
         ];
 
-        class Component extends Element {
+        class Component extends LightningElement {
             tmpl = styledTmpl;
             render() {
                 return this.tmpl;
@@ -65,7 +65,7 @@ describe('modules/token', () => {
         ];
         styledTmplB.shadowToken = 'testB';
 
-        class Component extends Element {
+        class Component extends LightningElement {
             tmpl = styledTmplA;
             render() {
                 return this.tmpl;

@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 import { wrapIframeWindow } from "../iframe";
 
@@ -116,7 +116,7 @@ describe('wrapped iframe window', () => {
             function html($api) {
                 return [$api.h('iframe', { key: 0, src: 'https://salesforce.com' }, [])];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }

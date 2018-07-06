@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import wire from "../wire";
 
 describe('wire.ts', () => {
@@ -7,7 +7,7 @@ describe('wire.ts', () => {
             expect.assertions(3);
 
             const o = { x: 1 };
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect('foo' in this).toBe(true);
@@ -27,7 +27,7 @@ describe('wire.ts', () => {
             expect.assertions(2);
 
             const o = { x: 1 };
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toEqual(o);
@@ -44,7 +44,7 @@ describe('wire.ts', () => {
 
         it('should make wired properties reactive', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                 }
@@ -71,7 +71,7 @@ describe('wire.ts', () => {
 
         it('should make properties of a wired object property reactive', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFooDotX(x) {
                     this.foo.x = x;
                 }
@@ -99,7 +99,7 @@ describe('wire.ts', () => {
         it('should not proxify primitive value', function() {
             expect.assertions(1);
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(1);
@@ -117,7 +117,7 @@ describe('wire.ts', () => {
             expect.assertions(2);
 
             const a = [];
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toEqual(a);
@@ -136,7 +136,7 @@ describe('wire.ts', () => {
             expect.assertions(1);
 
             const d = new Date();
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(d);
@@ -154,7 +154,7 @@ describe('wire.ts', () => {
             expect.assertions(1);
 
             const o = Object.create({});
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(o);
@@ -169,7 +169,7 @@ describe('wire.ts', () => {
         });
 
         it('should not throw an error if wire is observable object', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                 }
@@ -184,7 +184,7 @@ describe('wire.ts', () => {
         });
 
         it('should throw a wire property is mutated during rendering', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     this.foo = 1;
                 }
@@ -200,7 +200,7 @@ describe('wire.ts', () => {
 
     describe('@wire misuse', () => {
         it('should throw when invoking wire without adapter', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     wire();

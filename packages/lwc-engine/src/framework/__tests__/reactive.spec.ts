@@ -1,4 +1,4 @@
-import { createElement, Element, unwrap } from '../main';
+import { createElement, LightningElement, unwrap } from '../main';
 import { reactiveMembrane } from '../membrane';
 
 describe('unwrap', () => {
@@ -17,7 +17,7 @@ describe('unwrap', () => {
         const renderHandler = ($api) => {
             return [$api.h('div', { key: 0 }, [])]
         }
-        class CustomEl extends Element {
+        class CustomEl extends LightningElement {
             query() {
                 return this.template.querySelector('div');
             }
