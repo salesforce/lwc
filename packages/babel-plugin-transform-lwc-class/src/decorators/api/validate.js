@@ -73,7 +73,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
         ));
 
         if (associatedGetter) {
-            console.warn(`\`@api get ${name}\` and \`@api set ${name}\` detected in class declaration. Only the getter needs be decorated with @api.`);
+            console.warn(`\`@api get ${name}\` and \`@api set ${name}\` detected in class declaration. Only the getter needs to be decorated with @api.`);
         }
     });
 }
