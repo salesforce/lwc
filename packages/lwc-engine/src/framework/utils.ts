@@ -57,6 +57,15 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
     }
 }
 
+interface CircularModuleDependency {
+    <T>(): T;
+    readonly __circular__?: any;
+}
+
+export function isCircularModuleDependency(value: any): value is CircularModuleDependency {
+    return hasOwnProperty.call(value, '__circular__');
+}
+
 /**
  * When LWC is used in the context of an Aura application, the compiler produces AMD
  * modules, that doesn't resolve properly circular dependencies between modules. In order
@@ -66,10 +75,11 @@ export function assertValidForceTagName(Ctor: ComponentConstructor) {
  * This method returns the resolved value if it received a factory as argument. Otherwise
  * it returns the original value.
  */
-export function resolveCircularModuleDependency(valueOrFactory: any): any {
-    return hasOwnProperty.call(valueOrFactory, '__circular__') ?
-        valueOrFactory() :
-        valueOrFactory;
+export function resolveCircularModuleDependency(fn: CircularModuleDependency): ComponentConstructor {
+    if (process.env.NODE_ENV !== 'production') {
+        assert.invariant(isFunction(fn), `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+    }
+    return fn();
 }
 
 /**

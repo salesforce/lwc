@@ -2,7 +2,7 @@ import assert from "./assert";
 import { isUndefined, assign, isNull, isObject } from "./language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
-import { resolveCircularModuleDependency, setInternalField, getInternalField, createSymbol } from "./utils";
+import { resolveCircularModuleDependency, setInternalField, getInternalField, createSymbol, isCircularModuleDependency } from "./utils";
 import { setAttribute } from "./dom-api";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
@@ -59,7 +59,10 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         throw new TypeError();
     }
 
-    const Ctor = resolveCircularModuleDependency((options as any).is);
+    let Ctor = (options as any).is as ComponentConstructor;
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
 
     let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'

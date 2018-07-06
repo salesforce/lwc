@@ -6,7 +6,7 @@ import {
 import { evaluateTemplate } from "./template";
 import { isUndefined, isFunction } from "./language";
 import { getComponentStack, VM } from "./vm";
-import { ComponentConstructor, Component } from "./component";
+import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
 import { startMeasure, endMeasure } from "./performance-timing";
 
@@ -119,7 +119,7 @@ export function invokeComponentRenderMethod(vm: VM): VNodes {
     return result || [];
 }
 
-export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | Component, event: Event) {
+export function invokeEventListener(vm: VM, fn: EventListener, thisValue: undefined | ComponentInterface, event: Event) {
     const { context, callHook } = vm;
     const ctx = currentContext;
     establishContext(context);

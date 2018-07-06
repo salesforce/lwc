@@ -8,37 +8,27 @@ import {
 } from "./invoker";
 import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "./language";
 import { invokeServiceHook, Services } from "./services";
-import { PropsDef, WireHash, TrackDef } from './def';
+import { PropsDef, WireHash } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
-import { Template } from "./template";
 
 export type ErrorCallback = (error: any, stack: string) => void;
-export interface Component {
-    readonly classList: DOMTokenList;
-    readonly root: ShadowRoot;
-    render?: () => (void | Template);
-    connectedCallback?: () => void;
-    disconnectedCallback?: () => void;
-    renderedCallback?: () => void;
-    errorCallback?: ErrorCallback;
-    [key: string]: any;
+export interface ComponentInterface {
+    // TODO: complete the entire interface used by the engine
+    setAttribute(attrName: string, value: any): void;
 }
 
 // TODO: review this with the compiler output
 export interface ComponentConstructor {
-    new (): Component;
+    new (): ComponentInterface;
     readonly name: string;
     readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
     readonly publicProps?: PropsDef;
-    readonly track?: TrackDef;
+    readonly track?: string[];
     readonly wire?: WireHash;
     readonly labels?: string[];
     readonly templateUsedProps?: string[];
-    // support for circular
-    <T>(): T;
-    readonly __circular__?: any;
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {

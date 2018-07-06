@@ -1,6 +1,6 @@
 import { VM } from './vm';
 
-export type MeasurementPhase =
+type MeasurementPhase =
     | 'constructor'
     | 'render'
     | 'patch'

@@ -11,7 +11,7 @@ import { parentElementGetter } from "./dom-api";
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
-import { Component } from "./component";
+import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
 import { patchCustomElement } from "./dom/faux";
@@ -36,15 +36,15 @@ export interface VM {
     cmpTrack: Record<string, any>;
     cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
-    callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
-    setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
-    getHook: (cmp: Component, prop: PropertyKey) => any;
+    callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
+    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
     fallback: boolean;
     mode: string;
-    component?: Component;
+    component?: ComponentInterface;
     deps: VM[][];
     toString(): string;
 }
@@ -52,15 +52,15 @@ export interface VM {
 let idx: number = 0;
 let uid: number = 0;
 
-function callHook(cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]): any {
+function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]): any {
     return fn.apply(cmp, args);
 }
 
-function setHook(cmp: Component, prop: PropertyKey, newValue: any) {
+function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
     cmp[prop] = newValue;
 }
 
-function getHook(cmp: Component, prop: PropertyKey): any {
+function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
 
@@ -438,7 +438,7 @@ export function getComponentStack(vm: VM): string {
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
-            ArrayPush.call(wcStack, (currentVm.component as Component).toString());
+            ArrayPush.call(wcStack, (currentVm.component as ComponentInterface).toString());
         }
         // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
@@ -474,7 +474,7 @@ export function getCustomElementVM(elm: HTMLElement): VM {
     return getInternalField(elm, ViewModelReflection) as VM;
 }
 
-export function getComponentVM(component: Component): VM {
+export function getComponentVM(component: ComponentInterface): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
         assert.vm(getInternalField(component, ViewModelReflection));

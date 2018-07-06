@@ -1,6 +1,6 @@
 import assert from "./assert";
 import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString } from "./language";
-import { Component } from "./component";
+import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getShadowRootVM, getNodeKey, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
@@ -249,7 +249,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
     });
 }
 
-function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptorMap {
+function getComponentRestrictionsDescriptors(cmp: ComponentInterface): PropertyDescriptorMap {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
@@ -257,7 +257,7 @@ function getComponentRestrictionsDescriptors(cmp: Component): PropertyDescriptor
     const originalSetAttribute = cmp.setAttribute;
     return {
         setAttribute: {
-            value(this: Component, attrName: string, value: any) {
+            value(this: ComponentInterface, attrName: string, value: any) {
                 // logging errors for experimental and special attributes
                 if (isString(attrName)) {
                     const propName = getPropNameFromAttrName(attrName);
@@ -288,7 +288,7 @@ function getLightingElementProtypeRestrictionsDescriptors(proto: object): Proper
             return; // no need to redefine something that we are already exposing
         }
         descriptors[propName] = {
-            get(this: Component) {
+            get(this: ComponentInterface) {
                 const { error, attribute, readOnly, experimental } = info[propName];
                 const msg: any[] = [];
                 msg.push(`Accessing the global HTML property "${propName}" in ${this} is disabled.`);
@@ -340,7 +340,7 @@ export function patchCustomElementWithRestrictions(elm: HTMLElement) {
     defineProperties(elm, getCustomElementRestrictionsDescriptors(elm));
 }
 
-export function patchComponentWithRestrictions(cmp: Component) {
+export function patchComponentWithRestrictions(cmp: ComponentInterface) {
     defineProperties(cmp, getComponentRestrictionsDescriptors(cmp));
 }
 

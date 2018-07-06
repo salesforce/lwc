@@ -1,10 +1,10 @@
 import assert from "../assert";
-import { isArray, isObject, isUndefined } from "../language";
+import { isArray, isObject, isUndefined, toString } from "../language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { getComponentVM } from "../vm";
 import { reactiveMembrane } from '../membrane';
-import { ComponentConstructor, Component } from "../component";
+import { ComponentConstructor, ComponentInterface } from "../component";
 
 export default function track(target: ComponentConstructor, prop: PropertyKey, descriptor: PropertyDescriptor | undefined): PropertyDescriptor;
 export default function track(target: any, prop?, descriptor?): any {
@@ -27,7 +27,7 @@ export default function track(target: any, prop?, descriptor?): any {
 
 export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enumerable: boolean): PropertyDescriptor {
     return {
-        get(this: Component): any {
+        get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -35,7 +35,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
             observeMutation(this, key);
             return vm.cmpTrack[key];
         },
-        set(this: Component, newValue: any) {
+        set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -48,7 +48,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
                     // Then newValue if newValue is observable (plain object or array)
                     const isObservable = reactiveOrAnyValue !== newValue;
                     if (!isObservable && newValue !== null && (isObject(newValue) || isArray(newValue))) {
-                        assert.logWarning(`Property "${key}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
+                        assert.logWarning(`Property "${toString(key)}" of ${vm} is set to a non-trackable object, which means changes into that object cannot be observed.`);
                     }
                 }
                 vm.cmpTrack[key] = reactiveOrAnyValue;
