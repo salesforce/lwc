@@ -16,8 +16,8 @@ import {
 
 /**
  * Invokes the provided change listeners with the resolved component properties.
- * @param configListenerMetadatas list of config listener metadata (config listeners and their context)
- * @param paramValues values for all wire adapter config params
+ * @param configListenerMetadatas List of config listener metadata (config listeners and their context)
+ * @param paramValues Values for all wire adapter config params
  */
 function invokeConfigListeners(configListenerMetadatas: Set<ConfigListenerMetadata>, paramValues: any) {
     configListenerMetadatas.forEach((metadata) => {
@@ -107,7 +107,7 @@ export function findDescriptor(target: any, propName: PropertyKey, protoSet?: an
  * Gets a property descriptor that monitors the provided property for changes
  * @param cmp The component
  * @param prop The name of the property to be monitored
- * @param callback a function to invoke when the prop's value changes
+ * @param callback A function to invoke when the prop's value changes
  * @return A property descriptor
  */
 function getOverrideDescriptor(cmp: Object, prop: string, callback: () => void) {

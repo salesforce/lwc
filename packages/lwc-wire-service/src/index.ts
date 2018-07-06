@@ -66,6 +66,12 @@ const wireService = {
             const wireTarget = wireTargets[i];
             const wireDef = wireStaticDef[wireTarget];
             const adapterFactory = adapterFactories.get(wireDef.adapter);
+
+            if (process.env.NODE_ENV !== 'production') {
+                assert.isTrue(wireDef.adapter, `@wire on "${wireTarget}": adapter id must be truthy`);
+                assert.isTrue(adapterFactory, `@wire on "${wireTarget}": unknown adapter id: ${String(wireDef.adapter)}`);
+            }
+
             if (adapterFactory) {
                 const wireEventTarget = new WireEventTarget(cmp, def, context, wireDef, wireTarget);
                 adapterFactory({
@@ -105,8 +111,10 @@ export function registerWireService(registerService: (object) => void) {
  * Registers a wire adapter.
  */
 export function register(adapterId: any, adapterFactory: WireAdapterFactory) {
-    assert.isTrue(adapterId, 'adapter id must be truthy');
-    assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
+    if (process.env.NODE_ENV !== 'production') {
+        assert.isTrue(adapterId, 'adapter id must be truthy');
+        assert.isTrue(typeof adapterFactory === 'function', 'adapter factory must be a callable');
+    }
     adapterFactories.set(adapterId, adapterFactory);
 }
 
