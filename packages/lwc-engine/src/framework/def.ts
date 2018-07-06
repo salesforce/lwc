@@ -39,7 +39,7 @@ import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
+import { LightningElement as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
     PatchedFlag,

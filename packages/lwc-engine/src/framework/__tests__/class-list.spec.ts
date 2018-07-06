@@ -1,14 +1,14 @@
-import { createElement, Element } from '../main';
+import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
 describe('class-list', () => {
     describe('integration', () => {
         it('should support outer className', () => {
-            class ChildComponent extends Element {}
+            class ChildComponent extends LightningElement {}
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { className: 'foo' })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -20,11 +20,11 @@ describe('class-list', () => {
         });
 
         it('should support outer classMap', () => {
-            class ChildComponent extends Element {}
+            class ChildComponent extends LightningElement {}
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { classMap: { foo: 1 } })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -36,7 +36,7 @@ describe('class-list', () => {
         });
 
         it('should combine data.className first and then inner classes', () => {
-            class ChildComponent extends Element {
+            class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                 }
@@ -44,7 +44,7 @@ describe('class-list', () => {
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { className: 'bar  baz' })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -56,7 +56,7 @@ describe('class-list', () => {
         });
 
         it('should allow deleting outer classes from within', () => {
-            class ChildComponent extends Element {
+            class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.remove('foo');
                 }
@@ -64,7 +64,7 @@ describe('class-list', () => {
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { className: 'foo' })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -76,7 +76,7 @@ describe('class-list', () => {
         });
 
         it('should dedupe all classes', () => {
-            class ChildComponent extends Element {
+            class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                 }
@@ -84,7 +84,7 @@ describe('class-list', () => {
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { className: 'foo   foo' })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -96,7 +96,7 @@ describe('class-list', () => {
         });
 
         it('should combine outer classMap and inner classes', () => {
-            class ChildComponent extends Element {
+            class ChildComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                 }
@@ -104,7 +104,7 @@ describe('class-list', () => {
             function html($api) {
                 return [$api.c('x-child', ChildComponent, { classMap: { bar: 1 } })];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -116,7 +116,7 @@ describe('class-list', () => {
         });
 
         it('should support toggle', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
                     this.classList.toggle('foo');
@@ -129,7 +129,7 @@ describe('class-list', () => {
         });
 
         it('should support toggle with force', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.toggle('foo', true);
                     this.classList.toggle('bar', false);
@@ -142,7 +142,7 @@ describe('class-list', () => {
 
         it('should support contains', () => {
             expect.assertions(2);
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
 
@@ -157,7 +157,7 @@ describe('class-list', () => {
         it('should support item', () => {
             expect.assertions(2);
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     this.classList.add('foo');
 
@@ -170,7 +170,7 @@ describe('class-list', () => {
         });
 
         it('should update on the next tick when dirty', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 state = { x: 1 };
                 initClassNames() {
                     this.classList.add('foo');
@@ -206,7 +206,7 @@ describe('class-list', () => {
         });
 
         it('should support adding new values to classList via connectedCallback', () => {
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 initClassNames() {
                     this.classList.add('classFromInit');
                 }
@@ -225,7 +225,7 @@ describe('class-list', () => {
         });
 
         it('should support removing values from classList via connectedCallback', () => {
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 initClassNames() {
                     this.classList.add('theOnlyClassThatShouldRemain');
                     this.classList.add('classToRemoveDuringConnectedCb');

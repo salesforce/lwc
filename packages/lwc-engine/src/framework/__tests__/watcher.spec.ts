@@ -1,4 +1,4 @@
-import { createElement, Element } from '../main';
+import { createElement, LightningElement } from '../main';
 
 describe('watcher', () => {
 
@@ -6,7 +6,7 @@ describe('watcher', () => {
 
         it('should not rerender the component if nothing changes', () => {
             let counter = 0;
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 render() {
                     counter++;
                 }
@@ -22,7 +22,7 @@ describe('watcher', () => {
                 $cmp.x;
                 return [];
             }
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 render() {
                     counter++;
                     // TODO: if x is used in render (outside of html), and it is not used inside the compiled template
@@ -45,7 +45,7 @@ describe('watcher', () => {
 
         it('should not rerender the component if a non-reactive prop changes', () => {
             let counter = 0;
-            class MyComponent3 extends Element {
+            class MyComponent3 extends LightningElement {
                 render() {
                     counter++;
                 }
@@ -71,7 +71,7 @@ describe('watcher', () => {
                 }, [], $slotset)];
             }
             html1.slots = ["x"];
-            class Child extends Element {
+            class Child extends LightningElement {
                 render() {
                     counter++;
                     return html1;
@@ -81,7 +81,7 @@ describe('watcher', () => {
                 const r = $cmp.round;
                 return [$api.c('x-child', Child, {}, r === 0 ? [] : [$api.h('p', { key: 0, attrs: { slot: 'x' } }, [])])];
             }
-            class MyComponent4 extends Element {
+            class MyComponent4 extends LightningElement {
                 constructor() {
                     super();
                     this.round = 0;
@@ -112,7 +112,7 @@ describe('watcher', () => {
                 $cmp.state.x;
                 return [];
             }
-            class MyComponent6 extends Element {
+            class MyComponent6 extends LightningElement {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -135,7 +135,7 @@ describe('watcher', () => {
         it('should not rerender the component if a non-reactive state changes', () => {
             let counter = 0;
             let state;
-            class MyComponent7 extends Element {
+            class MyComponent7 extends LightningElement {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -158,7 +158,7 @@ describe('watcher', () => {
             function html($api, $cmp) {
                 $cmp.state.x = 1;
             }
-            class MyComponent8 extends Element {
+            class MyComponent8 extends LightningElement {
                 state = { x: 0 };
                 render() {
                     return html;
@@ -177,7 +177,7 @@ describe('watcher', () => {
                 }
                 return [];
             }
-            class MyComponent9 extends Element {
+            class MyComponent9 extends LightningElement {
                 state = { x: 0 };
                 constructor() {
                     super();
@@ -208,7 +208,7 @@ describe('watcher', () => {
                 $cmp.foo;
                 return [];
             }
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 get foo() {
                     return this.x;
                 }
@@ -235,7 +235,7 @@ describe('watcher', () => {
         it('should allow observing public prop via setter', () => {
             let counter = 0;
             let newValue, oldValue;
-            class MyComponent2 extends Element {
+            class MyComponent2 extends LightningElement {
                 set x(value) {
                     counter++;
                     oldValue = newValue;
@@ -259,7 +259,7 @@ describe('watcher', () => {
     describe('#reactivity()', () => {
         it('should react when a reactive array invokes Array.prototype.push()', () => {
             let counter = 0;
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
 
                 pushToList(value: number) {
@@ -283,7 +283,7 @@ describe('watcher', () => {
         });
         it('should react when a reactive array invokes Array.prototype.pop()', () => {
             let counter = 0;
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
 
                 popFromList() {
@@ -307,7 +307,7 @@ describe('watcher', () => {
         });
         it('should react when a reactive array invokes Array.prototype.unshift()', () => {
             let counter = 0;
-            class MyComponent1 extends Element {
+            class MyComponent1 extends LightningElement {
                 state = { list: [1, 2] };
                 unshiftFromList(value: number) {
                     this.state.list.unshift(value);

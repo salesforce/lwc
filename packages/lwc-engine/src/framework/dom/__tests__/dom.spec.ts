@@ -1,11 +1,11 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 import { getRootNode } from "../node";
 
 describe('dom', () => {
     describe('getRootNode composed true', () => {
         it('should return correct value from child node', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 trigger() {
                     const event = new CustomEvent('foo', {
                         bubbles: true,
@@ -17,7 +17,7 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
@@ -50,7 +50,7 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class Parent extends Element {}
+            class Parent extends LightningElement {}
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
 
@@ -62,7 +62,7 @@ describe('dom', () => {
 
     describe('getRootNode composed false', () => {
         it('should return correct value from child node', () => {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 trigger() {
                     const event = new CustomEvent('foo', {
                         bubbles: true,
@@ -74,7 +74,7 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }
@@ -107,7 +107,7 @@ describe('dom', () => {
         });
 
         it('should return correct value from self', () => {
-            class Parent extends Element {}
+            class Parent extends LightningElement {}
             const elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
 
@@ -150,7 +150,7 @@ describe('dom', () => {
 
         it('should handle event.target on events dispatched on custom elements', function () {
             expect.assertions(1);
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 trigger() {
                     const event = new CustomEvent('foo', {
                         bubbles: true,
@@ -162,7 +162,7 @@ describe('dom', () => {
             }
             MyComponent.publicMethods = ['trigger'];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 handleFoo(evt) {
                     expect(evt.target).toBe(this.template.querySelector('x-foo'));
                 }

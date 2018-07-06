@@ -1,13 +1,13 @@
 import * as api from '../api';
-import { createElement, Element } from '../main';
+import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
 describe('api', () => {
     describe('#c()', () => {
-        class Foo extends Element {}
+        class Foo extends LightningElement {}
 
         it('should call the Ctor factory for circular dependencies', () => {
-            const factory = function() { return class extends Element {
+            const factory = function() { return class extends LightningElement {
                 static forceTagName = 'input';
             }; };
             factory.__circular__ = true;
@@ -69,7 +69,7 @@ describe('api', () => {
         });
 
         it('should support forceTagName static definition to force tagname on root node', () => {
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'input';
             }
             const element = createElement('x-foo', { is: Bar });
@@ -80,7 +80,7 @@ describe('api', () => {
         });
 
         it('should not include is attribute when forceTagName is not present on root', () => {
-            class Bar extends Element {}
+            class Bar extends LightningElement {}
             const element = createElement('x-foo', { is: Bar });
             expect(element.hasAttribute('is')).toBe(false);
         });
@@ -89,12 +89,12 @@ describe('api', () => {
             function html($api) {
                 return [$api.c('button', Bar, { attrs: { is: "x-bar" } })];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
             }
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'input';
             }
             const elm = createElement('x-foo', { is: Foo });
@@ -106,7 +106,7 @@ describe('api', () => {
         });
 
         it('should throw if the forceTagName value is a reserved standard element name', () => {
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'div';
             }
 
@@ -118,7 +118,7 @@ describe('api', () => {
         });
 
         it('should throw if the forceTagName is a custom element name', () => {
-            class Bar extends Element {
+            class Bar extends LightningElement {
                 static forceTagName = 'x-bar';
             }
 
@@ -262,7 +262,7 @@ describe('api', () => {
             function html($api) {
                 return [$api.t('miami')];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
@@ -279,7 +279,7 @@ describe('api', () => {
             function html($api) {
                 return [$api.p('miami')];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
@@ -307,7 +307,7 @@ describe('api', () => {
                 k2 = $api.k(345, "678");
                 return [];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }
@@ -322,7 +322,7 @@ describe('api', () => {
                 const k1 = $api.k(678, {});
                 return [];
             }
-            class Foo extends Element {
+            class Foo extends LightningElement {
                 render() {
                     return html;
                 }

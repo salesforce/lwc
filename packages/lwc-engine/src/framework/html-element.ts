@@ -85,7 +85,7 @@ interface ComponentHooks {
 }
 
 // This should be as performant as possible, while any initialization should be done lazily
-function LWCElement(this: Component) {
+function LightningElement(this: Component) {
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError();
     }
@@ -129,8 +129,8 @@ function LWCElement(this: Component) {
     }
 }
 
-LWCElement.prototype = {
-    constructor: LWCElement,
+LightningElement.prototype = {
+    constructor: LightningElement,
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
@@ -317,4 +317,4 @@ export function createBaseElementStandardPropertyDescriptors(StandardPropertyDes
     return descriptors;
 }
 
-export { LWCElement as Element };
+export { LightningElement };

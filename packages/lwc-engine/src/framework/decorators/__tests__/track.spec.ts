@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import track from "../track";
 import readonly from "../readonly";
 
@@ -8,7 +8,7 @@ describe('track.ts', () => {
             expect.assertions(3);
 
             const o = { x: 1 };
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     expect('foo' in this).toBe(true);
@@ -28,7 +28,7 @@ describe('track.ts', () => {
             expect.assertions(2);
 
             const o = { x: 1 };
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toEqual(o);
@@ -45,7 +45,7 @@ describe('track.ts', () => {
 
         it('should make tracked properties reactive', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                 }
@@ -70,7 +70,7 @@ describe('track.ts', () => {
 
         it('should make properties of a tracked object property reactive', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFooDotX(x) {
                     this.foo.x = x;
                 }
@@ -96,7 +96,7 @@ describe('track.ts', () => {
         it('should not proxify primitive value', function() {
             expect.assertions(1);
 
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(1);
@@ -114,7 +114,7 @@ describe('track.ts', () => {
             expect.assertions(2);
 
             const a = [];
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toEqual(a);
@@ -133,7 +133,7 @@ describe('track.ts', () => {
             expect.assertions(1);
 
             const d = new Date();
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(d);
@@ -151,7 +151,7 @@ describe('track.ts', () => {
             expect.assertions(1);
 
             const o = Object.create({});
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                     expect(this.foo).toBe(o);
@@ -166,7 +166,7 @@ describe('track.ts', () => {
         });
 
         it('should not throw an error if track is observable object', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 injectFoo(v) {
                     this.foo = v;
                 }
@@ -181,7 +181,7 @@ describe('track.ts', () => {
         });
 
         it('should throw a track property is mutated during rendering', function() {
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 render() {
                     this.foo = 1;
                 }
@@ -197,7 +197,7 @@ describe('track.ts', () => {
 
     describe('@track regression', () => {
         test(`#609 - each instance of the same object prototype should have it's own tracked property value`, () => {
-            class XFoo extends Element  {
+            class XFoo extends LightningElement  {
                 constructor() {
                     super();
                     this.counter = 0;
@@ -224,7 +224,7 @@ describe('track.ts', () => {
     });
 
     test(`#609 - instance of the same object prototype should not share values of tracked properties`, () => {
-        class XFoo extends Element  {
+        class XFoo extends LightningElement  {
             constructor() {
                 super();
                 this.counter = 0;
@@ -262,7 +262,7 @@ describe('track.ts', () => {
 
         it('should produce a trackable object', () => {
             let counter = 0;
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 constructor() {
                     super();
                     this.foo = track({ bar: 1 });

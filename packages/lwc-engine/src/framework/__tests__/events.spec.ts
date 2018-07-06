@@ -1,17 +1,17 @@
-import { createElement, Element, unwrap } from '../main';
-import { getHostShadowRoot } from '../html-element';
+import { createElement, unwrap } from '../main';
+import { getHostShadowRoot, LightningElement } from '../html-element';
 
 describe('Composed events', () => {
     it('should be able to consume events from within template', () => {
         let count = 0;
-        class Child extends Element {
+        class Child extends LightningElement {
             triggerFoo() {
                 this.dispatchEvent(new CustomEvent('foo'));
             }
         }
         Child.publicMethods = ['triggerFoo'];
 
-        class ComposedEvents extends Element {
+        class ComposedEvents extends LightningElement {
             triggerChildFoo() {
                 this.template.querySelector('x-custom-event-child').triggerFoo();
             }
@@ -56,7 +56,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -80,7 +80,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -105,7 +105,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -130,7 +130,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -154,7 +154,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -177,7 +177,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
         let cmp;
-        class Foo extends Element {
+        class Foo extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -200,7 +200,7 @@ describe('Events on Custom Elements', () => {
         function html($api) {
             return [$api.h('div', { key: 0}, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 this.template.addEventListener('c-event', function() {
@@ -227,7 +227,7 @@ describe('Events on Custom Elements', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('c-event', function() {
                     count += 1;
@@ -254,7 +254,7 @@ describe('Events on Custom Elements', () => {
         function html1($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('c-event', function() {
                     count += 1;
@@ -272,7 +272,7 @@ describe('Events on Custom Elements', () => {
         function html2($api) {
             return [$api.c('x-child', MyChild, {})];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html2;
             }
@@ -294,7 +294,7 @@ describe('Events on Custom Elements', () => {
         function html1($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             constructor() {
                 super();
                 this.template.addEventListener('c-event', function() {
@@ -313,7 +313,7 @@ describe('Events on Custom Elements', () => {
         function html2($api) {
             return [$api.c('x-child', MyChild, {})];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html2;
             }
@@ -332,7 +332,7 @@ describe('Events on Custom Elements', () => {
 
     it('should add event listeners on component instance', () => {
         const clickSpy = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', clickSpy);
             }
@@ -346,7 +346,7 @@ describe('Events on Custom Elements', () => {
 
     it('should remove event listeners from component instance', () => {
         const clickSpy = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', clickSpy);
             }
@@ -369,7 +369,7 @@ describe('Events on Custom Elements', () => {
     it('should call event handler with undefined context', () => {
         expect.assertions(1);
         let clickSpy;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function () {
                     expect(this).toBe(undefined);
@@ -388,7 +388,7 @@ describe('Events on Custom Elements', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 const cmp = this;
                 this.addEventListener('click', clickSpy);
@@ -419,7 +419,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function () {
                     expect(this).toBe(undefined);
@@ -450,7 +450,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
                     expect(unwrap(evt.target)).toBe(elm);
@@ -474,7 +474,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', function (evt) {
                     expect(unwrap(evt.target)).toBe(elm);
@@ -505,7 +505,7 @@ describe('Events on Custom Elements', () => {
             return [$api.h('div', { key: 0 }, [])];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', (evt) => {
                     const div = this.template.querySelector('div');
@@ -540,7 +540,7 @@ describe('Slotted element events', () => {
             }, [], $slotset)];
         }
         childHTML.slots = ["x"];
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return childHTML;
             }
@@ -558,7 +558,7 @@ describe('Slotted element events', () => {
             }, [])])];
         }
 
-        class SlottedEventTarget extends Element {
+        class SlottedEventTarget extends LightningElement {
             handleClick(evt) {
                 expect(evt.target.tagName.toLowerCase()).toBe('div');
             }
@@ -585,7 +585,7 @@ describe('Component events', () => {
     it('should have correct target when component event gets dispatched within event handler', () => {
         expect.assertions(1);
         let clickSpy;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', (evt) => {
                     this.dispatchEvent(new CustomEvent('foo'));
@@ -606,7 +606,7 @@ describe('Shadow Root events', () => {
     it('should call event handler with correct target', () => {
         expect.assertions(1);
         let clickSpy;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', (evt) => {
                     expect(evt.target).toBe(this.template.querySelector('div'));
@@ -635,7 +635,7 @@ describe('Shadow Root events', () => {
     it('should call event handler with undefined context', () => {
         expect.assertions(1);
         let clickSpy;
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', function () {
                     expect(this).toBe(undefined);
@@ -663,7 +663,7 @@ describe('Shadow Root events', () => {
 
     it('should call template event handlers before component event handlers', () => {
         const calls = [];
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', () => calls.push('component'));
                 this.template.addEventListener('click', () => calls.push('template'));
@@ -692,7 +692,7 @@ describe('Shadow Root events', () => {
     it('should have correct event target when event originates from child component shadow dom', () => {
         expect.assertions(2);
         let childTemplate;
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             constructor() {
                 super();
                 childTemplate = this.template;
@@ -721,7 +721,7 @@ describe('Shadow Root events', () => {
             })];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             handleClick(evt) {
                 expect(evt.target.tagName.toLowerCase()).toBe('correct-nested-root-event-target-child');
                 expect(evt.target).toBe(this.template.querySelector('correct-nested-root-event-target-child'));
@@ -748,9 +748,9 @@ describe('Shadow Root events', () => {
     it('should retarget properly event listener attached on non-root components', () => {
         expect.assertions(2);
 
-        class GrandChild extends Element {}
+        class GrandChild extends LightningElement {}
 
-        class Child extends Element {
+        class Child extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', evt => {
                     expect(evt.target.tagName).toBe('X-GRAND-CHILD');
@@ -767,7 +767,7 @@ describe('Shadow Root events', () => {
             }
         }
 
-        class Root extends Element {
+        class Root extends LightningElement {
             render() {
                 return $api => {
                     return [
@@ -796,7 +796,7 @@ describe('Shadow Root events', () => {
                 }, [])];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 this.template.addEventListener('foo', (evt) => {
@@ -825,7 +825,7 @@ describe('Shadow Root events', () => {
 describe('Removing events from shadowroot', () => {
     it('should remove event correctly', () => {
         const onClick = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.template.addEventListener('click', onClick);
             }
@@ -859,7 +859,7 @@ describe('Removing events from shadowroot', () => {
     it('should only remove shadow root events', () => {
         const onClick = jest.fn();
         const cmpClick = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', cmpClick);
                 this.template.addEventListener('click', onClick);
@@ -896,7 +896,7 @@ describe('Removing events from shadowroot', () => {
 describe('Removing events from cmp', () => {
     it('should remove event correctly', () => {
         const onClick = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', onClick);
             }
@@ -930,7 +930,7 @@ describe('Removing events from cmp', () => {
     it('should only remove shadow root events', () => {
         const onClick = jest.fn();
         const cmpClick = jest.fn();
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             connectedCallback() {
                 this.addEventListener('click', cmpClick);
                 this.template.addEventListener('click', onClick);

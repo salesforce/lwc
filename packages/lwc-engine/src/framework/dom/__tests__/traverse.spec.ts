@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 import { getHostShadowRoot } from "../../html-element";
 
 describe('#LightDom querySelectorAll()', () => {
@@ -14,7 +14,7 @@ describe('#LightDom querySelectorAll()', () => {
             }
             tmpl$1.slots = [""];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return tmpl$1;
                 }
@@ -50,7 +50,7 @@ describe('#LightDom querySelectorAll()', () => {
                     ])];
             }
 
-            class LightdomQuerySelector extends Element {
+            class LightdomQuerySelector extends LightningElement {
                 render() {
                     return tmpl$2;
                 }
@@ -69,7 +69,7 @@ describe('#LightDom querySelectorAll()', () => {
             function html1($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            class Child extends Element {
+            class Child extends LightningElement {
                 render() {
                     return html1;
                 }
@@ -77,7 +77,7 @@ describe('#LightDom querySelectorAll()', () => {
             function html2($api) {
                 return [$api.c('x-child', Child, { key: 0 }, [])];
             }
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return html2;
                 }
@@ -91,7 +91,7 @@ describe('#LightDom querySelectorAll()', () => {
             function html($api) {
                 return [$api.h('p', { key: 0 }, [])];
             }
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
@@ -116,7 +116,7 @@ describe('#LightDom querySelectorAll()', () => {
             }
             tmpl$1.slots = [""];
 
-            class Parent extends Element {
+            class Parent extends LightningElement {
                 render() {
                     return tmpl$1;
                 }
@@ -152,7 +152,7 @@ describe('#LightDom querySelectorAll()', () => {
                     ])];
             }
 
-            class LightdomQuerySelector extends Element {
+            class LightdomQuerySelector extends LightningElement {
                 render() {
                     return tmpl$2;
                 }
@@ -180,7 +180,7 @@ describe('#LightDom querySelector()', () => {
         }
         tmpl$1.slots = [""];
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return tmpl$1;
             }
@@ -216,7 +216,7 @@ describe('#LightDom querySelector()', () => {
                 ])];
         }
 
-        class LightdomQuerySelector extends Element {
+        class LightdomQuerySelector extends LightningElement {
             render() {
                 return tmpl$2;
             }
@@ -232,7 +232,7 @@ describe('#LightDom querySelector()', () => {
         function html1($api) {
             return [$api.h('p', { key: 0 }, [])];
         }
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return html1;
             }
@@ -240,7 +240,7 @@ describe('#LightDom querySelector()', () => {
         function html2($api) {
             return [$api.c('x-child', Child, { key: 0 }, [])];
         }
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return html2;
             }
@@ -254,7 +254,7 @@ describe('#LightDom querySelector()', () => {
         function html($api) {
             return [$api.h('p', { key: 0 }, [])];
         }
-        const def = class MyComponent extends Element {
+        const def = class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -270,7 +270,7 @@ describe('#LightDom querySelector()', () => {
         function html($api) {
             return [$api.h('p', { key: 0 }, [])];
         }
-        const def = class MyComponent extends Element {
+        const def = class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -284,7 +284,7 @@ describe('#LightDom querySelector()', () => {
 describe('#shadowRoot querySelector', () => {
     it('should querySelector on element from template', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -301,7 +301,7 @@ describe('#shadowRoot querySelector', () => {
 
     it('should not reach into child components template when querySelector invoked on child custom element', () => {
         expect.assertions(1);
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             render() {
                 return function($api) {
                     return [$api.h('div', {
@@ -315,7 +315,7 @@ describe('#shadowRoot querySelector', () => {
             return [$api.c('membrane-parent-query-selector-child-custom-element-child', MyChild, {})];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -328,7 +328,7 @@ describe('#shadowRoot querySelector', () => {
 
     it('should querySelectorAll on element from template', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [$api.h('li', { key: 1 }, [])])]; }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -345,7 +345,7 @@ describe('#shadowRoot querySelector', () => {
 
     it('should adopt elements not defined in template as part of the shadow', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -367,7 +367,7 @@ describe('#shadowRoot querySelector', () => {
 
     it('should not throw error if querySelector does not match any elements', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -384,7 +384,7 @@ describe('#shadowRoot querySelector', () => {
 
     it('should return null if querySelector does not match any elements', () => {
         function html($api) { return [$api.h('ul', { key: 0 }, [])]; }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -401,7 +401,7 @@ describe('#shadowRoot querySelector', () => {
         function html($api) {
             return [$api.h('ul', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -419,7 +419,7 @@ describe('#shadowRoot querySelector', () => {
     it('should not expose shadow root on child custom element', () => {
         expect.assertions(1);
         let childTemplate;
-        class MyChild extends Element {
+        class MyChild extends LightningElement {
             constructor() {
                 super();
                 childTemplate = this.template;
@@ -442,7 +442,7 @@ describe('#shadowRoot querySelector', () => {
             })];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             handleClick(evt) {
                 expect(evt.target.parentNode).not.toBe(childTemplate);
             }
@@ -467,7 +467,7 @@ describe('#parentNode and #parentElement', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -485,7 +485,7 @@ describe('#parentNode and #parentElement', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -505,7 +505,7 @@ describe('proxy', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -521,7 +521,7 @@ describe('proxy', () => {
         function html($api) {
             return [$api.h('span', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -539,7 +539,7 @@ describe('proxy', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [$api.h('p', { key: 1 }, [])])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -556,7 +556,7 @@ describe('proxy', () => {
         function html($api) {
             return [$api.h('div', { key: 0 }, [])];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -585,13 +585,13 @@ describe('#childNodes', () => {
         }
         tmpl.slots = [''];
 
-        class HasSlot extends Element {
+        class HasSlot extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -627,13 +627,13 @@ describe('#childNodes', () => {
         }
         tmpl.slots = [''];
 
-        class HasSlot extends Element {
+        class HasSlot extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -652,7 +652,7 @@ describe('#childNodes', () => {
     });
 
     it('should return correct elements for non-slot elements', () => {
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -684,13 +684,13 @@ describe('#childNodes', () => {
                 }, []),
             ]
         }
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -721,13 +721,13 @@ describe('#childNodes', () => {
                 }, [], $slotset),
             ]
         }
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -762,13 +762,13 @@ describe('#childNodes', () => {
                 }, [], $slotset),
             ]
         }
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -801,13 +801,13 @@ describe('#childNodes', () => {
                 $api.t('text'),
             ]
         }
-        class Child extends Element {
+        class Child extends LightningElement {
             render() {
                 return tmpl;
             }
         }
 
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -837,7 +837,7 @@ describe('#childNodes', () => {
             ];
         }
 
-        class Child extends Element {
+        class Child extends LightningElement {
             get dynamicText() {
                 return 'text';
             }
@@ -851,7 +851,7 @@ describe('#childNodes', () => {
                 $api.c('x-child', Child, {}, []),
             ];
         }
-        class Parent extends Element {
+        class Parent extends LightningElement {
 
             render() {
                 return tmplParent;
@@ -865,7 +865,7 @@ describe('#childNodes', () => {
     });
 
     it('should return correct childNodes from shadowRoot', () => {
-        class Parent extends Element {
+        class Parent extends LightningElement {
             render() {
                 return function ($api) {
                     return [
@@ -891,7 +891,7 @@ describe('#childNodes', () => {
 
 describe('assignedSlot', () => {
     it('should return null when custom element is not in slot', () => {
-        class NoSlot extends Element {}
+        class NoSlot extends LightningElement {}
 
         function html($api) {
             return [
@@ -899,7 +899,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -920,7 +920,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -943,7 +943,7 @@ describe('assignedSlot', () => {
 
         slottedHtml.slots = [""];
 
-        class WithSlot extends Element {
+        class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
@@ -963,7 +963,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -979,7 +979,7 @@ describe('assignedSlot', () => {
     });
 
     it('should return correct slot when custom element is slotted', () => {
-        class InsideSlot extends Element {}
+        class InsideSlot extends LightningElement {}
 
         function slottedHtml($api, $cmp, $slotset) {
             return [
@@ -991,7 +991,7 @@ describe('assignedSlot', () => {
 
         slottedHtml.slots = [""];
 
-        class WithSlot extends Element {
+        class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
@@ -1009,7 +1009,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -1037,7 +1037,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -1050,7 +1050,7 @@ describe('assignedSlot', () => {
     });
 
     it('should return null when custom element default slot content', () => {
-        class CustomElement extends Element {
+        class CustomElement extends LightningElement {
 
         }
 
@@ -1066,7 +1066,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
@@ -1079,7 +1079,7 @@ describe('assignedSlot', () => {
     });
 
     it('should return correct slot when text is slotted', () => {
-        class InsideSlot extends Element {}
+        class InsideSlot extends LightningElement {}
 
         function slottedHtml($api, $cmp, $slotset) {
             return [
@@ -1091,7 +1091,7 @@ describe('assignedSlot', () => {
 
         slottedHtml.slots = [""];
 
-        class WithSlot extends Element {
+        class WithSlot extends LightningElement {
             render() {
                 return slottedHtml;
             }
@@ -1107,7 +1107,7 @@ describe('assignedSlot', () => {
             ];
         }
 
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             render() {
                 return html;
             }
