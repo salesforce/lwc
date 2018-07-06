@@ -1,3 +1,4 @@
+import {  stripIndents } from 'common-tags';
 const babel = require('@babel/core');
 const baseConfig = { babelrc: false, filename: 'test.js' };
 
@@ -9,17 +10,6 @@ function transform(plugin, opts = {}) {
     return function(source) {
         return babel.transform(prettify(source), testConfig);
     }
-}
-
-function errorFromObject(obj) {
-    const error = new SyntaxError(obj.message);
-    for (let key in obj) {
-        if (key !== 'message') {
-            error[key] = obj[key];
-        }
-    }
-
-    return error;
 }
 
 function prettify(str) {
@@ -48,7 +38,9 @@ function pluginTest(plugin, opts = {}) {
         } else if (expected.output) {
             const output = testTransform(actual);
             if (expected.output.code) {
-                expect(output.code).toBe(expected.output.code);
+                const normalizedActual = output && output.code && stripIndents(output.code);
+                const normalizedExpected = stripIndents(expected.output.code);
+                expect(normalizedActual).toBe(normalizedExpected);
             }
             if (expected.output.metadata) {
                 expect(output.metadata).toEqual(expected.output.metadata);

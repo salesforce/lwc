@@ -1,4 +1,3 @@
-
 const pluginTest = require('./utils/test-transform').pluginTest(require('../index'));
 
 describe('Transform property', () => {
@@ -10,16 +9,16 @@ describe('Transform property', () => {
     `, {
         output: {
             code: `export default class Test {
-  constructor() {
-    this.test = 1;
-  }
+                    constructor() {
+                        this.test = 1;
+                    }
 
-}
-Test.publicProps = {
-  test: {
-    config: 0
-  }
-};`,
+                    }
+                    Test.publicProps = {
+                    test: {
+                        config: 0
+                    }
+                };`,
         }
     });
 
@@ -34,28 +33,28 @@ Test.publicProps = {
     `, {
         output: {
             code: `export default class Outer {
-  constructor() {
-    var _class, _temp;
+                    constructor() {
+                        var _class, _temp;
 
-    this.outer = void 0;
-    this.a = (_temp = _class = class {
-      constructor() {
-        this.innerA = void 0;
-      }
+                        this.outer = void 0;
+                        this.a = (_temp = _class = class {
+                        constructor() {
+                            this.innerA = void 0;
+                        }
 
-    }, _class.publicProps = {
-      innerA: {
-        config: 0
-      }
-    }, _temp);
-  }
+                        }, _class.publicProps = {
+                        innerA: {
+                            config: 0
+                        }
+                        }, _temp);
+                    }
 
-}
-Outer.publicProps = {
-  outer: {
-    config: 0
-  }
-};`
+                    }
+                    Outer.publicProps = {
+                    outer: {
+                        config: 0
+                    }
+                };`
         }
     });
 
@@ -69,16 +68,16 @@ Outer.publicProps = {
     `, {
         output: {
             code: `export default class Test {
-  get publicGetter() {
-    return 1;
-  }
+                    get publicGetter() {
+                        return 1;
+                    }
 
-}
-Test.publicProps = {
-  publicGetter: {
-    config: 1
-  }
-};`
+                    }
+                    Test.publicProps = {
+                    publicGetter: {
+                        config: 1
+                    }
+                };`
         }
     });
 
@@ -95,39 +94,80 @@ Test.publicProps = {
     `, {
         output: {
             code: `export default class Test {
-  get something() {
-    return this.s;
-  }
+                    get something() {
+                        return this.s;
+                    }
 
-  set something(value) {
-    this.s = value;
-  }
+                    set something(value) {
+                        this.s = value;
+                    }
 
-}
-Test.publicProps = {
-  something: {
-    config: 3
-  }
-};`
+                    }
+                    Test.publicProps = {
+                    something: {
+                        config: 3
+                    }
+                };`
         }
     });
 
-    pluginTest('throws error if setter is not associated with a getter', `
+    pluginTest('@api decorator for public getter should not require a matching setter decorator', `
         import { api } from 'engine';
         export default class Test {
-            @api set publicSetter(value) {
+            set publicAccessor(value) {
                 this.thing = value;
+            }
+            @api get publicAccessor() {
+                return this.thing;
             }
         }
     `, {
-        error: {
-            message: 'test.js: @api set publicSetter setter does not have associated getter.',
-            loc: {
-                line: 2,
-                column: 9
+        output: {
+            code: `export default class Test {
+                    set publicAccessor(value) {
+                        this.thing = value;
+                    }
+
+                    get publicAccessor() {
+                        return this.thing;
+                    }
+
+                    }
+                    Test.publicProps = {
+                        publicAccessor: {
+                        config: 1
+                    }
+                };`
+    }});
+
+    pluginTest('@api decorator for public setter should not require a matching getter decorator', `
+        import { api } from 'engine';
+        export default class Test {
+            @api set publicAccessor(value) {
+                this.thing = value;
+            }
+            get publicAccessor() {
+                return this.value;
             }
         }
-    });
+    `, {
+        output: {
+            code: `export default class Test {
+                    set publicAccessor(value) {
+                        this.thing = value;
+                    }
+
+                    get publicAccessor() {
+                        return this.value;
+                    }
+
+                    }
+                    Test.publicProps = {
+                    publicAccessor: {
+                        config: 2
+                    }
+                };`
+    }});
 
     pluginTest('transform pairs of setter and getter', `
         import { api } from 'engine';
@@ -142,36 +182,36 @@ Test.publicProps = {
     `, {
         output: {
             code: `export default class Test {
-  constructor() {
-    this._a = true;
-    this._b = false;
-  }
+                    constructor() {
+                        this._a = true;
+                        this._b = false;
+                    }
 
-  get a() {
-    return this._a;
-  }
+                    get a() {
+                        return this._a;
+                    }
 
-  set a(value) {
-    this._a = value;
-  }
+                    set a(value) {
+                        this._a = value;
+                    }
 
-  get b() {
-    return this._b;
-  }
+                    get b() {
+                        return this._b;
+                    }
 
-  set b(value) {
-    this._b = value;
-  }
+                    set b(value) {
+                        this._b = value;
+                    }
 
-}
-Test.publicProps = {
-  a: {
-    config: 3
-  },
-  b: {
-    config: 3
-  }
-};`
+                    }
+                    Test.publicProps = {
+                    a: {
+                        config: 3
+                    },
+                    b: {
+                        config: 3
+                    }
+                };`
         }
     })
 
@@ -191,41 +231,41 @@ Test.publicProps = {
     `, {
         output: {
             code: `export default class Text {
-  constructor() {
-    this.publicProp = void 0;
-    this.privateProp = void 0;
-  }
+                    constructor() {
+                        this.publicProp = void 0;
+                        this.privateProp = void 0;
+                    }
 
-  get aloneGet() {}
+                    get aloneGet() {}
 
-  get myget() {}
+                    get myget() {}
 
-  set myget(x) {
-    return 1;
-  }
+                    set myget(x) {
+                        return 1;
+                    }
 
-  m1() {}
+                    m1() {}
 
-  m2() {}
+                    m2() {}
 
-  static get ctorGet() {
-    return 1;
-  }
+                    static get ctorGet() {
+                        return 1;
+                    }
 
-}
-Text.ctor = "ctor";
-Text.publicProps = {
-  publicProp: {
-    config: 0
-  },
-  aloneGet: {
-    config: 1
-  },
-  myget: {
-    config: 3
-  }
-};
-Text.publicMethods = ["m1"];`
+                    }
+                    Text.ctor = "ctor";
+                    Text.publicProps = {
+                    publicProp: {
+                        config: 0
+                    },
+                    aloneGet: {
+                        config: 1
+                    },
+                    myget: {
+                        config: 3
+                    }
+                };
+                Text.publicMethods = ["m1"];`
         }
     });
 
@@ -282,16 +322,16 @@ Text.publicMethods = ["m1"];`
     `, {
         output: {
             code: `export default class Test {
-  constructor() {
-    this.data = void 0;
-  }
+                    constructor() {
+                        this.data = void 0;
+                    }
 
-}
-Test.publicProps = {
-  data: {
-    config: 0
-  }
-};`
+                    }
+                    Test.publicProps = {
+                    data: {
+                        config: 0
+                    }
+                };`
         }
     });
 
@@ -348,16 +388,16 @@ Test.publicProps = {
     `, {
         output: {
             code: `export default class Test {
-  constructor() {
-    this.ariaDescribedBy = void 0;
-  }
+                    constructor() {
+                        this.ariaDescribedBy = void 0;
+                    }
 
-}
-Test.publicProps = {
-  ariaDescribedBy: {
-    config: 0
-  }
-};`
+                    }
+                    Test.publicProps = {
+                    ariaDescribedBy: {
+                        config: 0
+                    }
+                };`
         }
     });
 
