@@ -9,7 +9,7 @@ import {
     DOCUMENT_POSITION_CONTAINS,
 } from "./node";
 import {
-    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute,
+    querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
 } from "./element";
 import { wrapIframeWindow } from "./iframe";
 import {
@@ -36,7 +36,7 @@ export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
     return traverseMembraneWrap(element);
 }
 
-const iFrameContentWindowGetter = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
+const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
 function getNodeOwner(node: Node): HTMLElement | null {
     if (!(node instanceof Node)) {
@@ -183,7 +183,7 @@ function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     return ArrayReduce.call(nativeChildNodesGetter.call(slot), (seed, child) => {
-        if (child instanceof Element && child.tagName === 'SLOT') {
+        if (child instanceof Element && tagNameGetter.call(child) === 'SLOT') {
             ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child as HTMLElement));
         } else {
             ArrayPush.call(seed, child);
@@ -252,7 +252,7 @@ function assignedSlotGetter(this: Node): HTMLElement | null {
      * or they both belong to the same template (default content)
      * we should assume that it is not slotted
      */
-    if (isNull(parentNode) || parentNode.tagName !== 'SLOT' || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
+    if (isNull(parentNode) || tagNameGetter.call(parentNode) !== 'SLOT' || getNodeOwnerKey(parentNode) === getNodeOwnerKey(this)) {
         return null;
     }
     return patchShadowDomTraversalMethods(parentNode as HTMLElement);
@@ -386,8 +386,8 @@ export function patchShadowDomTraversalMethods<T extends Node>(node: T): T {
     // Avoid monkey patching shadow methods twice for perf reasons.
     // If the node has querySelector defined on it, we have already
     // seen it and can move on.
-    if (isFalse(nodeIsPatched(node as Node))) {
-        if ((node as any).tagName === 'IFRAME') {
+    if (isFalse(nodeIsPatched(node as Node)) && node instanceof Element) {
+        if (tagNameGetter.call(node) === 'IFRAME') {
             // We need to patch iframe.contentWindow because raw access to the contentWindow
             // Will break in compat mode
             defineProperty(node, 'contentWindow', contentWindowDescriptor);

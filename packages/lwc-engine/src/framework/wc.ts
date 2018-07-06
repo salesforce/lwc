@@ -1,9 +1,10 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull, defineProperties } from "./language";
+import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase } from "./language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import assert from "./assert";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
+import { elementTagNameGetter } from "./dom-api";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
     if (isCircularModuleDependency(Ctor)) {
@@ -24,7 +25,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
     class LightningWrapperElement extends HTMLElement {
         constructor() {
             super();
-            const tagName = this.tagName.toLocaleLowerCase();
+            const tagName = StringToLowerCase.call(elementTagNameGetter.call(this));
             createVM(tagName, this, Ctor, normalizedOptions);
         }
         connectedCallback() {

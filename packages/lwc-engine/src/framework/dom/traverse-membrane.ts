@@ -1,6 +1,7 @@
 import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../language";
 import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
 import { createSymbol } from "../utils";
+import { tagNameGetter } from "./element";
 const proxies = new WeakMap<object, object>();
 
 // We ONLY want to have DOM nodes and DOM methods
@@ -19,20 +20,18 @@ const traverseMembraneHandler = {
             return originalTarget;
         }
         if (!isFunction(originalTarget)) {
-            const { tagName } = originalTarget;
-            let descriptors: PropertyDescriptorMap;
-            switch (tagName) {
-                case undefined:
-                    // node
-                    descriptors = NodePatchDescriptors;
-                    break;
-                case 'SLOT':
-                    // slot
-                    descriptors = SlotPatchDescriptors;
-                    break;
-                default:
-                    // element
-                    descriptors = ElementPatchDescriptors;
+            let descriptors: PropertyDescriptorMap = NodePatchDescriptors;
+            if (originalTarget instanceof Element) {
+                const tagName = tagNameGetter.call(originalTarget);
+                switch (tagName) {
+                    case 'SLOT':
+                        // slot
+                        descriptors = SlotPatchDescriptors;
+                        break;
+                    default:
+                        // element
+                        descriptors = ElementPatchDescriptors;
+                }
             }
             if (hasOwnProperty.call(descriptors, key)) {
                 const descriptor = descriptors[key];
