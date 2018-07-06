@@ -342,7 +342,7 @@ describe('slot.name', () => {
 
 describe('slotted elements', () => {
     it('should be visible via event.target', () => {
-        expect.assertions(3);
+        expect.assertions(5);
 
         function htmlChild($api, $cmp) {
             return [
@@ -366,7 +366,7 @@ describe('slotted elements', () => {
 
         function htmlContainer($api, $cmp, $slotSet) {
             return [
-                $api.s('', { key: 0 }, [], $slotSet),
+                $api.s('', { key: 0, on: { click: $api.b($cmp.handleClickInSlot) } }, [], $slotSet),
             ];
         }
         htmlContainer.slots = [''];
@@ -380,6 +380,10 @@ describe('slotted elements', () => {
             }
             handleClickInContainer(e) {
                 expect(e.target).toBe(this.querySelector('x-child'));
+            }
+            handleClickInSlot(e) {
+                expect(e.target).toBe(this.querySelector('x-child'));
+                expect(e.currentTarget).toBe(this.template.querySelector('slot'));
             }
         }
 
