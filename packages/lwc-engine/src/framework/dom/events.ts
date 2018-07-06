@@ -104,7 +104,9 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
 
             // Determine Number 2:
             // The easy part: The VM context owner is always the event's currentTarget OwnerKey:
-            const myOwnerKey = getNodeKey(currentTargetRootNode);
+            // NOTE: if the current target is the shadow root, the way we collect the Context owner's key is different because
+            //       currentTargetRootNode is both: shadow root and custom element.
+            const myOwnerKey = (eventContext === EventListenerContext.SHADOW_ROOT_LISTENER) ? getNodeKey(currentTargetRootNode) : getNodeOwnerKey(currentTargetRootNode);
 
             // Determining Number 3:
             // Because we only support bubbling and we are already inside of an event, we know that the original event target
@@ -279,6 +281,7 @@ function domListener(evt: Event) {
             }
         }
     }
+    eventToContextMap.set(evt, 0);
 }
 
 function attachDOMListener(elm: HTMLElement, type: string, wrappedListener: WrappedListener) {
