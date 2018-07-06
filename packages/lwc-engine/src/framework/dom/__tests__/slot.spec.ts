@@ -341,7 +341,7 @@ describe('slot.name', () => {
 });
 
 describe('slotted elements', () => {
-    it('should be visible via event.target', () => {
+    it('should be visible via event.target (imperative)', () => {
         expect.assertions(3);
 
         function htmlChild($api, $cmp) {
@@ -406,6 +406,53 @@ describe('slotted elements', () => {
         const elm = createElement('x-mock', { is: MyMock, fallback: true });
         document.body.appendChild(elm);
         const child = getHostShadowRoot(elm).querySelector('x-child');
+        const button = getHostShadowRoot(child).querySelector('button');
+        button.click();
+    });
+
+    it('should be visible via event.target (declarative)', () => {
+        expect.assertions(1);
+
+        class XChild extends Element {
+            render() {
+                return function($api) {
+                    return [
+                        $api.h('button', { key: 0 }, []),
+                    ];
+                };
+            }
+        }
+
+        class XParent extends Element {
+            render() {
+                return function($api, $cmp, $slotset) {
+                    return [
+                        $api.h('div', { key: 1, on: { click: $api.b($cmp.handleClick) } }, [
+                            $api.s('', { key: 2 }, [], $slotset)
+                        ]),
+                    ];
+                };
+            }
+            handleClick(event) {
+                expect(event.target).toBe(this.querySelector('x-child'));
+            }
+        }
+
+        class XContainer extends Element {
+            render() {
+                return function($api) {
+                    return [
+                        $api.c('x-parent', XParent, { key: 3 }, [
+                            $api.c('x-child', XChild, { key: 4 }, [])
+                        ]),
+                    ];
+                };
+            }
+        }
+
+        const element = createElement('x-container', { is: XContainer, fallback: true });
+        document.body.appendChild(element);
+        const child = getHostShadowRoot(element).querySelector('x-child');
         const button = getHostShadowRoot(child).querySelector('button');
         button.click();
     });
