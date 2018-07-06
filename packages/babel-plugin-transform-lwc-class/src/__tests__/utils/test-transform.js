@@ -12,17 +12,6 @@ function transform(plugin, opts = {}) {
     }
 }
 
-function errorFromObject(obj) {
-    const error = new SyntaxError(obj.message);
-    for (let key in obj) {
-        if (key !== 'message') {
-            error[key] = obj[key];
-        }
-    }
-
-    return error;
-}
-
 function prettify(str) {
     return str.toString()
         .replace(/^\s+|\s+$/, '')
