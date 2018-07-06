@@ -1,5 +1,31 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.23.2...v) (2018-06-14)
+# [](https://github.com/salesforce/lwc/compare/v0.23.2...v) (2018-07-06)
+
+
+### Bug Fixes
+
+* **engine:** [214] no longer sharing shadow targets ([#443](https://github.com/salesforce/lwc/issues/443)) ([#446](https://github.com/salesforce/lwc/issues/446)) ([119df9c](https://github.com/salesforce/lwc/commit/119df9c))
+* **engine:** closes issue [#225](https://github.com/salesforce/lwc/issues/225) - value and checked props are live ([#471](https://github.com/salesforce/lwc/issues/471)) ([473a1b3](https://github.com/salesforce/lwc/commit/473a1b3))
+* **engine:** composed event whitelist ([#462](https://github.com/salesforce/lwc/issues/462)) ([3b57eb7](https://github.com/salesforce/lwc/commit/3b57eb7))
+* **engine:** engine code should never go thru a proxy obj ([#424](https://github.com/salesforce/lwc/issues/424)) ([50fbc52](https://github.com/salesforce/lwc/commit/50fbc52))
+* **engine:** forcing composed: true for focusout events ([#465](https://github.com/salesforce/lwc/issues/465)) ([3c0a6cb](https://github.com/salesforce/lwc/commit/3c0a6cb))
+* **engine:** incorrect key for the owner when retargeting ([#472](https://github.com/salesforce/lwc/issues/472)) ([539386a](https://github.com/salesforce/lwc/commit/539386a))
+* add missing npm dependency. Allow dynamic imports ([#461](https://github.com/salesforce/lwc/issues/461)) ([651494c](https://github.com/salesforce/lwc/commit/651494c))
+* **engine:** issue [#180](https://github.com/salesforce/lwc/issues/180) - getAttribute for data-foo ([#468](https://github.com/salesforce/lwc/issues/468)) ([fcbbd0d](https://github.com/salesforce/lwc/commit/fcbbd0d))
+* **engine:** removing "is" in benchmarks ([#451](https://github.com/salesforce/lwc/issues/451)) ([b86af35](https://github.com/salesforce/lwc/commit/b86af35))
+* **engine:** validate slot names on every rendering ([#470](https://github.com/salesforce/lwc/issues/470)) ([df6e612](https://github.com/salesforce/lwc/commit/df6e612))
+* **lwc-template-compiler:** iteration in SVG element ([#460](https://github.com/salesforce/lwc/issues/460)) ([ff91f08](https://github.com/salesforce/lwc/commit/ff91f08))
+* **test-utils:** convert to cjs module ([#431](https://github.com/salesforce/lwc/issues/431)) ([3e65275](https://github.com/salesforce/lwc/commit/3e65275))
+* **wire-service:** support optional config object on [@wire](https://github.com/wire) ([#473](https://github.com/salesforce/lwc/issues/473)) ([34f0d85](https://github.com/salesforce/lwc/commit/34f0d85)), closes [#181](https://github.com/salesforce/lwc/issues/181) [#149](https://github.com/salesforce/lwc/issues/149)
+
+
+### Features
+
+* CSS variable injection ([#426](https://github.com/salesforce/lwc/issues/426)) ([c8d0f9c](https://github.com/salesforce/lwc/commit/c8d0f9c))
+* **compiler:** do not enforce getter/setter pairs for api decorators ([#474](https://github.com/salesforce/lwc/issues/474)) ([b662c5d](https://github.com/salesforce/lwc/commit/b662c5d))
+* **engine:** api to build custom elements ([#87](https://github.com/salesforce/lwc/issues/87)) ([614e8dd](https://github.com/salesforce/lwc/commit/614e8dd))
+* **engine:** Implements slot assigned nodes/elements ([#442](https://github.com/salesforce/lwc/issues/442)) ([8b26852](https://github.com/salesforce/lwc/commit/8b26852))
+* **jest-transformer:** Add babel transform for new scoped imports  ([#463](https://github.com/salesforce/lwc/issues/463)) ([4893505](https://github.com/salesforce/lwc/commit/4893505))
 
 
 
