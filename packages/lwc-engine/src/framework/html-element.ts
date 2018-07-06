@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { Component, getWrappedComponentsListener } from "./component";
+import { ComponentInterface, getWrappedComponentsListener, ComponentConstructor } from "./component";
 import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "./language";
 import { ViewModelReflection, PatchedFlag, setInternalField } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -35,7 +35,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     return {
         enumerable,
         configurable,
-        get(this: Component) {
+        get(this: ComponentInterface) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -49,7 +49,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             observeMutation(this, propName);
             return get.call(vm.elm);
         },
-        set(this: Component, newValue: any) {
+        set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
                 assert.vm(vm);
@@ -70,7 +70,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     };
 }
 
-function getLinkedElement(cmp: Component): HTMLElement {
+function getLinkedElement(cmp: ComponentInterface): HTMLElement {
     return getComponentVM(cmp).elm;
 }
 
@@ -84,53 +84,52 @@ interface ComponentHooks {
     getHook: VM["getHook"];
 }
 
-// This should be as performant as possible, while any initialization should be done lazily
-function LightningElement(this: Component) {
-    if (isNull(vmBeingConstructed)) {
-        throw new ReferenceError();
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vmBeingConstructed);
-        assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
-    }
-    const vm = vmBeingConstructed;
-    const { elm, def, cmpRoot } = vm;
-    const component = this;
-    vm.component = component;
-    // interaction hooks
-    // We are intentionally hiding this argument from the formal API of LWCElement because
-    // we don't want folks to know about it just yet.
-    if (arguments.length === 1) {
-        const { callHook, setHook, getHook } = arguments[0] as ComponentHooks;
-        vm.callHook = callHook;
-        vm.setHook = setHook;
-        vm.getHook = getHook;
-    }
-    // linking elm, shadow root and component with the VM
-    setInternalField(component, ViewModelReflection, vm);
-    setInternalField(elm, ViewModelReflection, vm);
-    setInternalField(cmpRoot, ViewModelReflection, vm);
-    // registered custom elements will be patched at the proto level already, not need to patch them here.
-    if (isFalse(PatchedFlag in elm)) {
-        if (elm.constructor.prototype !== BaseCustomElementProto) {
-            // this is slow path for component instances using `is` attribute or `forceTagName`, which
-            // are set to be removed in the near future.
-            const { descriptors } = def;
-            defineProperties(elm, descriptors);
-        } else {
-            const { elmProto } = def;
-            setPrototypeOf(elm, elmProto);
+const LightningElement: ComponentConstructor = class BaseLightningElement {
+    constructor() {
+        // This should be as performant as possible, while any initialization should be done lazily
+        if (isNull(vmBeingConstructed)) {
+            throw new ReferenceError();
+        }
+        if (process.env.NODE_ENV !== 'production') {
+            assert.vm(vmBeingConstructed);
+            assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
+        }
+        const vm = vmBeingConstructed;
+        const { elm, def, cmpRoot } = vm;
+        const component = this;
+        vm.component = component;
+        // interaction hooks
+        // We are intentionally hiding this argument from the formal API of LWCElement because
+        // we don't want folks to know about it just yet.
+        if (arguments.length === 1) {
+            const { callHook, setHook, getHook } = arguments[0] as ComponentHooks;
+            vm.callHook = callHook;
+            vm.setHook = setHook;
+            vm.getHook = getHook;
+        }
+        // linking elm, shadow root and component with the VM
+        setInternalField(component, ViewModelReflection, vm);
+        setInternalField(elm, ViewModelReflection, vm);
+        setInternalField(cmpRoot, ViewModelReflection, vm);
+        // registered custom elements will be patched at the proto level already, not need to patch them here.
+        if (isFalse(PatchedFlag in elm)) {
+            if (elm.constructor.prototype !== BaseCustomElementProto) {
+                // this is slow path for component instances using `is` attribute or `forceTagName`, which
+                // are set to be removed in the near future.
+                const { descriptors } = def;
+                defineProperties(elm, descriptors);
+            } else {
+                const { elmProto } = def;
+                setPrototypeOf(elm, elmProto);
+            }
+        }
+        if (process.env.NODE_ENV !== 'production') {
+            patchCustomElementWithRestrictions(elm);
+            patchComponentWithRestrictions(component);
+            patchShadowRootWithRestrictions(cmpRoot);
         }
     }
-    if (process.env.NODE_ENV !== 'production') {
-        patchCustomElementWithRestrictions(elm);
-        patchComponentWithRestrictions(component);
-        patchShadowRootWithRestrictions(cmpRoot);
-    }
-}
 
-LightningElement.prototype = {
-    constructor: LightningElement,
     // HTML Element - The Good Parts
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
@@ -157,8 +156,7 @@ LightningElement.prototype = {
             }
         }
         return dispatchEvent.call(elm, event);
-    },
-
+    }
     addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -168,8 +166,7 @@ LightningElement.prototype = {
         }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.addEventListener(type, wrappedListener, options);
-    },
-
+    }
     removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -177,8 +174,7 @@ LightningElement.prototype = {
         }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
-    },
-
+    }
     setAttributeNS(ns: string, attrName: string, value: any): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -186,24 +182,21 @@ LightningElement.prototype = {
             prepareForValidAttributeMutation(elm, attrName);
         }
         return elm.setAttributeNS.apply(elm, arguments);
-    },
-
+    }
     removeAttributeNS(ns: string, attrName: string): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             prepareForValidAttributeMutation(elm, attrName);
         }
         return elm.removeAttributeNS.apply(elm, arguments);
-    },
-
+    }
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             prepareForValidAttributeMutation(elm, attrName);
         }
         elm.removeAttribute.apply(elm, arguments);
-    },
-
+    }
     setAttribute(attrName: string, value: any): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -211,18 +204,15 @@ LightningElement.prototype = {
             prepareForValidAttributeMutation(elm, attrName);
         }
         return elm.setAttribute.apply(elm, arguments);
-    },
-
+    }
     getAttribute(attrName: string): string | null {
         const elm = getLinkedElement(this);
         return elm.getAttribute.apply(elm, arguments);
-    },
-
+    }
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
         return elm.getAttributeNS.apply(elm, arguments);
-    },
-
+    }
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -230,7 +220,7 @@ LightningElement.prototype = {
             assert.isFalse(isBeingConstructed(vm), `this.getBoundingClientRect() should not be called during the construction of the custom element for ${this} because the element is not yet in the DOM, instead, you can use it in one of the available life-cycle hooks.`);
         }
         return elm.getBoundingClientRect();
-    },
+    }
     querySelector(selector: string): Element | null {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -244,7 +234,7 @@ LightningElement.prototype = {
         }
         // Delegate to custom element querySelector.
         return elm.querySelector(selector);
-    },
+    }
     querySelectorAll(selector: string): Element[] {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -258,11 +248,11 @@ LightningElement.prototype = {
         }
         // Delegate to custom element querySelectorAll.
         return ArraySlice.call(elm.querySelectorAll(selector));
-    },
+    }
     get tagName(): string {
         const elm = getLinkedElement(this);
         return elm.tagName + ''; // avoiding side-channeling
-    },
+    }
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
             const vm = getComponentVM(this);
@@ -270,14 +260,14 @@ LightningElement.prototype = {
             assert.isFalse(isBeingConstructed(vm), `Failed to construct ${vm}: The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback() instead.`);
         }
         return getLinkedElement(this).classList;
-    },
+    }
     get template(): ShadowRoot {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.vm(vm);
         }
         return vm.cmpRoot;
-    },
+    }
     get root(): ShadowRoot {
         // TODO: issue #418
         const vm = getComponentVM(this);
@@ -286,11 +276,11 @@ LightningElement.prototype = {
             assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return vm.cmpRoot;
-    },
+    }
     get shadowRoot(): ShadowRoot | null {
         // from within, the shadowRoot is always in "closed" mode
         return null;
-    },
+    }
     toString(): string {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -300,7 +290,7 @@ LightningElement.prototype = {
         const { tagName } = elm;
         const is = elm.getAttribute('is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
-    },
+    }
 };
 
 /**

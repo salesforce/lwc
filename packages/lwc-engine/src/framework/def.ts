@@ -44,28 +44,29 @@ import {
     EmptyObject,
     PatchedFlag,
     assertValidForceTagName,
-    resolveCircularModuleDependency
+    resolveCircularModuleDependency,
+    isCircularModuleDependency
 } from "./utils";
 import { getCustomElementVM } from "./vm";
 import { BaseCustomElementProto } from "./dom-api";
 
-export interface PropDef {
+interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
     attr: string;
 }
-export interface WireDef {
+interface WireDef {
     method?: number;
     [key: string]: any;
 }
 export interface PropsDef {
     [key: string]: PropDef;
 }
-export interface TrackDef {
+interface TrackDef {
     [key: string]: 1;
 }
-export type PublicMethod = (...args: any[]) => any;
-export interface MethodDef {
+type PublicMethod = (...args: any[]) => any;
+interface MethodDef {
     [key: string]: PublicMethod;
 }
 export interface WireHash {
@@ -86,7 +87,7 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, ErrorCallback, Component
+    ComponentConstructor, ErrorCallback, ComponentInterface
  } from './component';
 import { Template } from "./template";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
@@ -95,7 +96,7 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
-    return resolveCircularModuleDependency(proto);
+    return isCircularModuleDependency(Ctor) ? resolveCircularModuleDependency(proto) : proto;
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
@@ -232,7 +233,7 @@ function createGetter(key: string) {
         fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
             const vm = getCustomElementVM(this);
             const { getHook } = vm;
-            return getHook(vm.component as Component, key);
+            return getHook(vm.component as ComponentInterface, key);
         };
     }
     return fn;
@@ -244,7 +245,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
             const vm = getCustomElementVM(this);
             const { setHook } = vm;
-            setHook(vm.component as Component, key, newValue);
+            setHook(vm.component as ComponentInterface, key, newValue);
         };
     }
     return fn;
@@ -254,7 +255,7 @@ function createMethodCaller(method: PublicMethod): PublicMethod {
     return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { callHook } = vm;
-        return callHook(vm.component as Component, method, ArraySlice.call(arguments));
+        return callHook(vm.component as ComponentInterface, method, ArraySlice.call(arguments));
     };
 }
 

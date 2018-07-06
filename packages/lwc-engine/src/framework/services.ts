@@ -6,8 +6,8 @@ import { VNodeData } from "../3rdparty/snabbdom/types";
 import { ComponentDef } from "./def";
 import { VM } from "./vm";
 
-export type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
-export interface ServiceDef {
+type ServiceCallback = (component: object, data: VNodeData, def: ComponentDef, context: Context) => void;
+interface ServiceDef {
     wiring?: ServiceCallback;
     connected?: ServiceCallback;
     disconnected?: ServiceCallback;

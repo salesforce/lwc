@@ -2,11 +2,13 @@ import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, defineProperties } from "./language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import assert from "./assert";
-import { resolveCircularModuleDependency } from "./utils";
+import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
-    Ctor = resolveCircularModuleDependency(Ctor);
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
     const def = getComponentDef(Ctor);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isUndefined(Ctor.forceTagName), `The experimental support for web components does not include the support for \`static forceTagName\` to "${Ctor.forceTagName}" declaration in the class definition for ${Ctor}.`);
