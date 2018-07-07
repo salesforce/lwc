@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString } from "./language";
+import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase } from "./language";
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
@@ -158,11 +158,11 @@ function assertPublicAttributeCollision(vm: VM, attrName: string) {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    const propName = isString(attrName) ? getPropNameFromAttrName(attrName.toLocaleLowerCase()) : null;
+    const propName = isString(attrName) ? getPropNameFromAttrName(StringToLowerCase.call(attrName)) : null;
     const { def: { props: propsConfig } } = vm;
 
     if (propsConfig && propName && propsConfig[propName]) {
-        assert.logError(`Invalid attribute "${attrName.toLocaleLowerCase()}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
+        assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
     }
 }
 

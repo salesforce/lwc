@@ -6,7 +6,7 @@ import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } 
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
 import { ArrayReduce, isFunction } from "./language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
+import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
 import { prepareForValidAttributeMutation } from "./restrictions";
@@ -251,7 +251,7 @@ const LightningElement: ComponentConstructor = class BaseLightningElement {
     }
     get tagName(): string {
         const elm = getLinkedElement(this);
-        return elm.tagName + ''; // avoiding side-channeling
+        return elementTagNameGetter.call(elm);
     }
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
@@ -287,7 +287,7 @@ const LightningElement: ComponentConstructor = class BaseLightningElement {
             assert.vm(vm);
         }
         const { elm } = vm;
-        const { tagName } = elm;
+        const tagName = elementTagNameGetter.call(elm);
         const is = elm.getAttribute('is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
     }

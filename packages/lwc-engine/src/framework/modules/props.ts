@@ -4,6 +4,7 @@ import { ViewModelReflection, getInternalField } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { getAttrNameFromPropName } from "../attributes";
+import { elementTagNameGetter } from "../dom-api";
 
 const EspecialTagAndPropMap = create(null, {
     input: { value: create(null, { value: { value: 1 }, checked: { value: 1 } }) },
@@ -45,7 +46,7 @@ function update(oldVnode: VNode, vnode: VNode) {
         if (process.env.NODE_ENV !== 'production') {
             if (!(key in elm)) {
                 // TODO: this should never really happen because the compiler should always validate
-                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elm.tagName)}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elementTagNameGetter.call(elm))}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
 

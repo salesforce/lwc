@@ -11,11 +11,13 @@ const {
     removeEventListener,
 } = Element.prototype;
 
-const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 
-const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
+const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
+
+const elementTagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
 const dispatchEvent = 'EventTarget' in window ?
     EventTarget.prototype.dispatchEvent :
@@ -33,6 +35,7 @@ export {
     removeAttributeNS,
     parentNodeGetter,
     parentElementGetter,
+    elementTagNameGetter,
     addEventListener,
     removeEventListener,
 

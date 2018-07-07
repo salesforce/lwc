@@ -13,9 +13,11 @@ const {
     querySelectorAll,
 } = Element.prototype;
 
-const innerHTMLSetter = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
+const innerHTMLSetter: (this: Element, s: string) => void = hasOwnProperty.call(Element.prototype, 'innerHTML') ?
     getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!.set! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!.set!;  // IE11
+
+const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(Element.prototype, 'tagName')!.get!;
 
 export {
     addEventListener,
@@ -29,4 +31,5 @@ export {
     querySelector,
     querySelectorAll,
     innerHTMLSetter,
+    tagNameGetter,
 };

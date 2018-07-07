@@ -72,13 +72,13 @@ function getRootNode(
         findShadowRoot(this);
 }
 
-const textContextSetter = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set;
-const parentNodeGetter = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
-const parentElementGetter = hasOwnProperty.call(Node.prototype, 'parentElement') ?
+const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(Node.prototype, 'textContent')!.set!;
+const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
+const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
     getOwnPropertyDescriptor(Node.prototype, 'parentElement')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'parentElement')!.get!;  // IE11
 
-const childNodesGetter = hasOwnProperty.call(Node.prototype, 'childNodes') ?
+const childNodesGetter: (this: Node) => NodeList = hasOwnProperty.call(Node.prototype, 'childNodes') ?
     getOwnPropertyDescriptor(Node.prototype, 'childNodes')!.get! :
     getOwnPropertyDescriptor(HTMLElement.prototype, 'childNodes')!.get!;  // IE11
 
