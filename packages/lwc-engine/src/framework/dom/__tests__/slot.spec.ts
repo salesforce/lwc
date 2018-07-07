@@ -2,7 +2,7 @@ import { LightningElement, getHostShadowRoot } from "../../html-element";
 import { createElement } from "../../upgrade";
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
-describe('assignedNodes', () => {
+describe('assignedNodes and assignedElements', () => {
     describe('slots fallback (basic)', () => {
         // Initialized before each test
         let element;
@@ -11,6 +11,8 @@ describe('assignedNodes', () => {
             function html($api, $cmp, $slotset) {
                 return [
                     $api.s('', { key: 0 }, [
+                        $api.p('awesome comment'),
+                        $api.t('foo bar baz'),
                         $api.h('div', { key: 1 }, [])
                     ], $slotset)
                 ];
@@ -26,6 +28,8 @@ describe('assignedNodes', () => {
             /*
             <x-assigned-nodes>
                 <slot>
+                    <!-- awesome comment -->
+                    foo bar baz
                     <div />
                 </slot>
             </x-assigned-nodes>
@@ -33,16 +37,30 @@ describe('assignedNodes', () => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
-        it('should not find any slotables', () => {
+        it('should not find any slotables (assignedNodes)', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it('should find flattened slotables', () => {
+        it('should not find any slotables (assignedElements)', () => {
+            document.body.appendChild(element);
+            const slot = getHostShadowRoot(element).querySelector('slot');
+            expect(slot.assignedElements()).toHaveLength(0);
+        });
+
+        it('should find flattened slotables (assignedNodes)', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             const assigned = slot.assignedNodes({ flatten: true });
+            expect(assigned).toHaveLength(3);
+            expect(assigned[2].tagName).toBe('DIV');
+        });
+
+        it('should find flattened slotables (assignedElements)', () => {
+            document.body.appendChild(element);
+            const slot = getHostShadowRoot(element).querySelector('slot');
+            const assigned = slot.assignedElements({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
         });
