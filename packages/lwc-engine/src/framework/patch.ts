@@ -1,4 +1,4 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import { init } from "../3rdparty/snabbdom/snabbdom";
 import { DOMAPI } from "../3rdparty/snabbdom/types";
 import props from "./modules/props";
@@ -7,10 +7,11 @@ import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
-import { isNull, isUndefined, isFalse, isTrue } from '../shared/language';
+import { isNull, isUndefined, isFalse, isTrue } from "../shared/language";
+import { getInternalField } from "../shared/fields";
 import { parentNodeGetter } from "./dom-api";
-import { VM, OwnerKey } from "./vm";
-import { ViewModelReflection, getInternalField, setInternalField } from "./utils";
+import { VM, setNodeOwnerKey } from "./vm";
+import { ViewModelReflection } from "./utils";
 import { patchSlotElementWithRestrictions } from "./restrictions";
 
 const {
@@ -45,7 +46,7 @@ const htmlDomApi: DOMAPI = {
     },
     createElement(tagName: string, uid: number): HTMLElement {
         const element = createElement.call(document, tagName);
-        setInternalField(element, OwnerKey, uid);
+        setNodeOwnerKey(element, uid);
         if (process.env.NODE_ENV !== 'production') {
             if (tagName === 'slot') {
                 patchSlotElementWithRestrictions(element as HTMLSlotElement);
@@ -55,17 +56,17 @@ const htmlDomApi: DOMAPI = {
     },
     createElementNS(namespaceURI: string, qualifiedName: string, uid: number): Element {
         const element = createElementNS.call(document, namespaceURI, qualifiedName);
-        setInternalField(element, OwnerKey, uid);
+        setNodeOwnerKey(element, uid);
         return element;
     },
     createTextNode(text: string, uid: number): Text {
         const textNode = createTextNode.call(document, text);
-        setInternalField(textNode, OwnerKey, uid);
+        setNodeOwnerKey(textNode, uid);
         return textNode;
     },
     createComment(text: string, uid: number): Comment {
         const comment = createComment.call(document, text);
-        setInternalField(comment, OwnerKey, uid);
+        setNodeOwnerKey(comment, uid);
         return comment;
     },
     insertBefore(parent: Node, newNode: Node, referenceNode: Node | null) {
@@ -84,7 +85,7 @@ const htmlDomApi: DOMAPI = {
         const vm: VM | undefined = getInternalField(node, ViewModelReflection);
         if (process.env.NODE_ENV !== 'production') {
             if (!isUndefined(vm) && isTrue(vm.fallback)) {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(vm.elm !== node, `Internal Error: no insertion should be carry on host element directly when running in fallback mode.`);
             }
         }

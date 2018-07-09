@@ -1,4 +1,4 @@
-import assert from "../framework/assert";
+import assert from "../shared/assert";
 import {
     addEventListener,
     removeEventListener,

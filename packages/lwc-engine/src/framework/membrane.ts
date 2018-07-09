@@ -1,4 +1,4 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import { toString } from "../shared/language";
 import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";

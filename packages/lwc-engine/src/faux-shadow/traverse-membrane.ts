@@ -1,6 +1,6 @@
 import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../shared/language";
 import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
-import { createSymbol } from "../framework/utils";
+import { createFieldName } from "../shared/fields";
 import { tagNameGetter } from "./element";
 const proxies = new WeakMap<object, object>();
 
@@ -59,7 +59,7 @@ const traverseMembraneHandler = {
     }
 };
 
-const TargetSlot = createSymbol('targetSlot');
+const TargetSlot = createFieldName('targetSlot');
 
 // TODO: we are using a funky and leaky abstraction here to try to identify if
 // the proxy is a compat proxy, and define the unwrap method accordingly.

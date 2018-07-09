@@ -1,4 +1,4 @@
-import assert from "../assert";
+import assert from "../../shared/assert";
 import { prepareForValidAttributeMutation } from '../restrictions';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../../shared/language';
 import { EmptyObject } from '../utils';

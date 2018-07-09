@@ -1,4 +1,4 @@
-import assert from "../assert";
+import assert from "../../shared/assert";
 import { EmptyObject } from "../utils";
 import { isUndefined } from "../../shared/language";
 import { VNode } from "../../3rdparty/snabbdom/types";

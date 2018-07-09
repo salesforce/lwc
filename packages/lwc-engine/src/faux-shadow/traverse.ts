@@ -1,4 +1,4 @@
-import assert from "../framework/assert";
+import assert from "../shared/assert";
 import { getNodeKey, getNodeOwnerKey } from "../framework/vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,

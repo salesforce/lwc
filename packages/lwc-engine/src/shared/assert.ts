@@ -1,6 +1,4 @@
-import { VM } from "./vm";
-import { VNode } from "../3rdparty/snabbdom/types";
-import { StringSplit } from "../shared/language";
+const StringSplit = String.prototype.split;
 
 const assert = {
     invariant(value: any, msg: string) {
@@ -17,12 +15,6 @@ const assert = {
         if (value) {
             throw new Error(`Assert Violation: ${msg}`);
         }
-    },
-    vnode(vnode: VNode) {
-        assert.isTrue(vnode && "sel" in vnode && "data" in vnode && "children" in vnode && "text" in vnode && "elm" in vnode && "key" in vnode && "nt" in vnode, `${vnode} is not a vnode.`);
-    },
-    vm(vm: VM) {
-        assert.isTrue(vm && "component" in vm, `${vm} is not a vm.`);
     },
     fail(msg: string) {
         throw new Error(msg);

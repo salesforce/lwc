@@ -1,4 +1,4 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -33,7 +33,7 @@ export interface ComponentConstructor {
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
@@ -45,7 +45,7 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
 
 export function linkComponent(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     // wiring service
     const { def: { wire } } = vm;
@@ -59,7 +59,7 @@ export function linkComponent(vm: VM) {
 
 export function clearReactiveListeners(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { deps } = vm;
     const len = deps.length;
@@ -78,7 +78,7 @@ export function clearReactiveListeners(vm: VM) {
 
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
@@ -94,7 +94,7 @@ export function renderComponent(vm: VM): VNodes {
 
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
@@ -105,7 +105,7 @@ const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap()
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners

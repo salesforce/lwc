@@ -1,4 +1,4 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     currentContext,
     establishContext,
@@ -16,7 +16,7 @@ export let vmBeingRendered: VM|null = null;
 export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return vmBeingConstructed === vm;
 }

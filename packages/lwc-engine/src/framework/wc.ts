@@ -1,7 +1,7 @@
 import { ComponentConstructor } from "./component";
 import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
-import assert from "./assert";
+import assert from "../shared/assert";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter } from "./dom-api";

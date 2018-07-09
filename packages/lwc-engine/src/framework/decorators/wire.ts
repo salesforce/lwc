@@ -1,5 +1,5 @@
 import { createTrackedPropertyDescriptor } from "./track";
-import assert from "../assert";
+import assert from "../../shared/assert";
 import { isObject, isUndefined } from "../../shared/language";
 import { DecoratorFunction } from "./decorate";
 import { ComponentConstructor } from "../component";

@@ -1,9 +1,9 @@
-import assert from "../framework/assert";
+import assert from "../shared/assert";
 import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../shared/language";
 import { getNodeKey } from "../framework/vm";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement, isNodeOwnedBy } from "./traverse";
-import { getInternalField, setInternalField, createSymbol } from "../framework/utils";
+import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
@@ -12,8 +12,8 @@ import { unwrap } from "./traverse-membrane";
 
 let ArtificialShadowRootPrototype;
 
-const HostKey = createSymbol('host');
-const ShadowRootKey = createSymbol('shadowRoot');
+const HostKey = createFieldName('host');
+const ShadowRootKey = createFieldName('shadowRoot');
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export function getHost(root: ShadowRoot): HTMLElement {
