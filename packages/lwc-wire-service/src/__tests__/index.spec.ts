@@ -3,6 +3,15 @@ import {
     register
 } from '../index';
 
+import {
+    Element,
+    ElementDef
+} from '../engine';
+
+import {
+    Context,
+} from '../wiring';
+
 describe('wire service', () => {
     describe('registers the service with engine', () => {
         it('uses wiring hook', () => {
@@ -27,25 +36,80 @@ describe('wire service', () => {
             }));
         });
     });
+    describe('wiring process', () => {
+        it('invokes adapter factory once per wire', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const adapterId = () => {};
+            const adapterFactory = jest.fn();
+            register(adapterId, adapterFactory);
+            const mockDef: ElementDef = {
+                wire: {
+                    targetFunction: {
+                        adapter: adapterId,
+                        method: 1
+                    },
+                    targetProperty: {
+                        adapter: adapterId
+                    }
+                }
+            };
+
+            wireService.wiring({} as Element, {}, mockDef, {} as Context);
+            expect(adapterFactory).toHaveBeenCalledTimes(2);
+        });
+        it('throws when adapter id is not truthy', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const mockDef: ElementDef = {
+                wire: {
+                    target: {
+                        adapter: undefined,
+                        method: 1
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": adapter id must be truthy');
+        });
+        it('throws when adapter factory is not found', () => {
+            let wireService;
+            registerWireService((svc) => {
+                wireService = svc;
+            });
+            const mockDef = {
+                wire: {
+                    target: {
+                        adapter: () => {},
+                        method: 1
+                    }
+                }
+            };
+            expect(() => wireService.wiring({} as Element, {}, mockDef, {} as Context)).toThrowError('@wire on "target": unknown adapter id: ');
+        });
+    });
 });
 
 describe('register', () => {
-    // TODO - reject non-function adapter id once we migrate all uses
+    // most common ids are functions and symbols so explicitly test those
     it('accepts function as adapter id', () => {
-        function getAdapter() { /**/ }
-        function getWireAdapter(wireEventTarget) { /**/ }
-        register(getAdapter, getWireAdapter);
+        function adapterId() { /**/ }
+        function adapterFactory(wireEventTarget) { /**/ }
+        register(adapterId, adapterFactory);
     });
-    it('accepts string as adapter id', () => {
-        function getWireAdapter(wireEventTarget) { /**/ }
-        register('getAdapter', getWireAdapter);
+    it('accepts symbol as adapter id', () => {
+        const adapterId = Symbol();
+        function adapterFactory(wireEventTarget) { /**/ }
+        register(adapterId, adapterFactory);
     });
     it('throws when adapter id is not truthy', () => {
-        function getWireAdapter(wireEventTarget) { /**/ }
-        expect(() => register(undefined, getWireAdapter)).toThrowError('adapter id must be truthy');
+        function adapterFactory(wireEventTarget) { /**/ }
+        expect(() => register(undefined, adapterFactory)).toThrowError('adapter id must be truthy');
     });
     it('throws when adapter factory is not a function', () => {
-        function getAdapter() { /**/ }
-        expect(() => register(getAdapter, {} as any)).toThrowError('adapter factory must be a callable');
+        expect(() => register({}, {} as any)).toThrowError('adapter factory must be a callable');
     });
 });

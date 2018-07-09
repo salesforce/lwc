@@ -98,13 +98,17 @@ export class WireEventTarget {
         switch (type) {
             case CONNECT:
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
-                assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                }
                 connectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case DISCONNECT:
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                }
                 disconnectedListeners.push(listener as NoArgumentListener);
                 break;
 
