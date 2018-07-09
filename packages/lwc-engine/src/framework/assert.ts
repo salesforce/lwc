@@ -1,6 +1,6 @@
 import { VM } from "./vm";
 import { VNode } from "../3rdparty/snabbdom/types";
-import { StringSplit } from "./language";
+import { StringSplit } from "../shared/language";
 
 const assert = {
     invariant(value: any, msg: string) {

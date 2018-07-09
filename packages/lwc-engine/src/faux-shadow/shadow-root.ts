@@ -1,13 +1,13 @@
-import assert from "../assert";
-import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
-import { getNodeKey } from "../vm";
+import assert from "../framework/assert";
+import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../shared/language";
+import { getNodeKey } from "../framework/vm";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement, isNodeOwnedBy } from "./traverse";
-import { getInternalField, setInternalField, createSymbol } from "../utils";
-import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
-import { getTextContent } from "../../3rdparty/polymer/text-content";
+import { getInternalField, setInternalField, createSymbol } from "../framework/utils";
+import { getInnerHTML } from "../3rdparty/polymer/inner-html";
+import { getTextContent } from "../3rdparty/polymer/text-content";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
-import { ElementAOMPropertyNames } from "../attributes";
+import { ElementAOMPropertyNames } from "../framework/attributes";
 import { unwrap } from "./traverse-membrane";
 
 let ArtificialShadowRootPrototype;

@@ -4,7 +4,7 @@ import {
     establishContext,
 } from "./context";
 import { evaluateTemplate } from "./template";
-import { isUndefined, isFunction } from "./language";
+import { isUndefined, isFunction } from "../shared/language";
 import { getComponentStack, VM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";

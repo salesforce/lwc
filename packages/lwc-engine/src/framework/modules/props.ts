@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { isUndefined, keys, StringToLowerCase, create } from "../language";
+import { isUndefined, keys, StringToLowerCase, create } from "../../shared/language";
 import { ViewModelReflection, getInternalField } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";

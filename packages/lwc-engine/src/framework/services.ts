@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { isUndefined, isObject, isArray, create, ArrayPush } from "./language";
+import { isUndefined, isObject, isArray, create, ArrayPush } from "../shared/language";
 
 import { Context } from "./context";
 import { VNodeData } from "../3rdparty/snabbdom/types";

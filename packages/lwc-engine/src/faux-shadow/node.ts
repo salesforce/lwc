@@ -5,8 +5,8 @@ import {
     getOwnPropertyDescriptor,
     isTrue,
     defineProperties,
-} from '../language';
-import { getNodeKey } from '../vm';
+} from '../shared/language';
+import { getNodeKey } from '../framework/vm';
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,

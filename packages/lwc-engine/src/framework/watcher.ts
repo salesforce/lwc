@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "./language";
+import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "../shared/language";
 
 interface ReactiveRecord {
     // TODO: this type definition is missing numbers and symbols as keys

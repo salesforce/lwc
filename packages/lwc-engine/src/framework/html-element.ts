@@ -1,14 +1,14 @@
 import assert from "./assert";
 import { ComponentInterface, getWrappedComponentsListener, ComponentConstructor } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "./language";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
 import { ViewModelReflection, PatchedFlag, setInternalField } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getComponentVM, VM, getCustomElementVM } from "./vm";
-import { ArrayReduce, isFunction } from "./language";
+import { ArrayReduce, isFunction } from "../shared/language";
 import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
-import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
+import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { prepareForValidAttributeMutation } from "./restrictions";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning

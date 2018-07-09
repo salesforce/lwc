@@ -2,7 +2,7 @@ import assert from "../assert";
 import {
     isString,
     isUndefined,
-} from '../language';
+} from '../../shared/language';
 import { EmptyObject } from '../utils';
 import { VNode, Module, VNodeStyle } from "../../3rdparty/snabbdom/types";
 import { removeAttribute } from '../dom-api';

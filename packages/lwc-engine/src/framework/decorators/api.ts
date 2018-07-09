@@ -1,10 +1,10 @@
 import assert from "../assert";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
-import { isObject, isNull, isTrue, hasOwnProperty, toString } from "../language";
+import { isObject, isNull, isTrue, hasOwnProperty, toString } from "../../shared/language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { ComponentInterface, ComponentConstructor } from "../component";
 import { VM, getComponentVM } from "../vm";
-import { isUndefined, isFunction } from "../language";
+import { isUndefined, isFunction } from "../../shared/language";
 import { reactiveMembrane } from "../membrane";
 
 const COMPUTED_GETTER_MASK = 1;

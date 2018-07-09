@@ -1,5 +1,5 @@
 import assert from "./assert";
-import { isUndefined, assign, isNull, isObject } from "./language";
+import { isUndefined, assign, isNull, isObject } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
 import { resolveCircularModuleDependency, setInternalField, getInternalField, createSymbol, isCircularModuleDependency } from "./utils";

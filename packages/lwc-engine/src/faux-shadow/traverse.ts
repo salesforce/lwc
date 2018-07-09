@@ -1,5 +1,5 @@
-import assert from "../assert";
-import { getNodeKey, getNodeOwnerKey } from "../vm";
+import assert from "../framework/assert";
+import { getNodeKey, getNodeOwnerKey } from "../framework/vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     childNodesGetter as nativeChildNodesGetter,
@@ -24,12 +24,12 @@ import {
     isTrue,
     ArrayMap,
     create,
-} from "../language";
-import { getOwnPropertyDescriptor, isNull } from "../language";
+} from "../shared/language";
+import { getOwnPropertyDescriptor, isNull } from "../shared/language";
 import { wrap as traverseMembraneWrap, contains as traverseMembraneContains } from "./traverse-membrane";
-import { getOuterHTML } from "../../3rdparty/polymer/outer-html";
-import { getTextContent } from "../../3rdparty/polymer/text-content";
-import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
+import { getOuterHTML } from "../3rdparty/polymer/outer-html";
+import { getTextContent } from "../3rdparty/polymer/text-content";
+import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot } from "./shadow-root";
 
 export function getPatchedCustomElement(element: HTMLElement): HTMLElement {

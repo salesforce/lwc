@@ -1,5 +1,5 @@
 import assert from "../assert";
-import { isArray, isObject, isUndefined, toString } from "../language";
+import { isArray, isObject, isUndefined, toString } from "../../shared/language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { getComponentVM } from "../vm";

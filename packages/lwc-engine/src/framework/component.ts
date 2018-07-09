@@ -6,7 +6,7 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "../shared/language";
 import { invokeServiceHook, Services } from "./services";
 import { PropsDef, WireHash } from './def';
 import { VM } from "./vm";

@@ -1,5 +1,5 @@
 import { createElement, LightningElement } from '../main';
-import { querySelector, querySelectorAll } from "../dom/element";
+import { querySelector, querySelectorAll } from "../../faux-shadow/element";
 
 function createBoundaryComponent(elementsToRender) {
     function html($api, $cmp) {

@@ -1,6 +1,6 @@
 import assert from "../assert";
 import { EmptyObject } from "../utils";
-import { isUndefined } from "../language";
+import { isUndefined } from "../../shared/language";
 import { VNode } from "../../3rdparty/snabbdom/types";
 
 function updateClass(oldVnode: VNode, vnode: VNode) {

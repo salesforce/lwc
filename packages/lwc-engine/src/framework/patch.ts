@@ -7,7 +7,7 @@ import styles from "./modules/styles";
 import classes from "./modules/classes";
 import events from "./modules/events";
 import token from "./modules/token";
-import { isNull, isUndefined, isFalse, isTrue } from './language';
+import { isNull, isUndefined, isFalse, isTrue } from '../shared/language';
 import { parentNodeGetter } from "./dom-api";
 import { VM, OwnerKey } from "./vm";
 import { ViewModelReflection, getInternalField, setInternalField } from "./utils";

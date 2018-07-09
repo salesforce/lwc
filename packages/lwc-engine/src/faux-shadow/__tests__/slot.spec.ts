@@ -1,5 +1,5 @@
-import { LightningElement, getHostShadowRoot } from "../../html-element";
-import { createElement } from "../../upgrade";
+import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
+import { createElement } from "../../framework/upgrade";
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
 describe('assignedNodes and assignedElements', () => {

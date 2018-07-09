@@ -1,4 +1,4 @@
-import { isUndefined } from "../language";
+import { isUndefined } from "../../shared/language";
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
 import { removeAttribute, setAttribute } from "../dom-api";
 

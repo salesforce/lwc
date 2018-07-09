@@ -1,6 +1,6 @@
-import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../language";
+import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../shared/language";
 import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
-import { createSymbol } from "../utils";
+import { createSymbol } from "../framework/utils";
 import { tagNameGetter } from "./element";
 const proxies = new WeakMap<object, object>();
 

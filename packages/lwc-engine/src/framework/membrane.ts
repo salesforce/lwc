@@ -1,8 +1,8 @@
 import assert from "./assert";
-import { toString } from "./language";
+import { toString } from "../shared/language";
 import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
-import { getRawNode } from "./dom/faux";
+import { getRawNode } from "../faux-shadow/faux";
 
 function format(value: any) {
     if (process.env.NODE_ENV !== 'production') {
