@@ -2,8 +2,8 @@ import { LightningElement, getHostShadowRoot } from "../../html-element";
 import { createElement } from "../../upgrade";
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
-describe('assignedNodes', () => {
-    describe('slots fallback (basic)', () => {
+describe('assignedNodes and assignedElements', () => {
+    describe('slots default content', () => {
         // Initialized before each test
         let element;
 
@@ -11,6 +11,8 @@ describe('assignedNodes', () => {
             function html($api, $cmp, $slotset) {
                 return [
                     $api.s('', { key: 0 }, [
+                        $api.p('awesome comment'),
+                        $api.t('foo bar baz'),
                         $api.h('div', { key: 1 }, [])
                     ], $slotset)
                 ];
@@ -26,6 +28,8 @@ describe('assignedNodes', () => {
             /*
             <x-assigned-nodes>
                 <slot>
+                    <!-- awesome comment -->
+                    foo bar baz
                     <div />
                 </slot>
             </x-assigned-nodes>
@@ -33,22 +37,36 @@ describe('assignedNodes', () => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
-        it('should not find any slotables', () => {
+        it('should not find any slotables (assignedNodes)', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
-        it('should find flattened slotables', () => {
+        it('should not find any slotables (assignedElements)', () => {
+            document.body.appendChild(element);
+            const slot = getHostShadowRoot(element).querySelector('slot');
+            expect(slot.assignedElements()).toHaveLength(0);
+        });
+
+        it('should find flattened slotables (assignedNodes)', () => {
             document.body.appendChild(element);
             const slot = getHostShadowRoot(element).querySelector('slot');
             const assigned = slot.assignedNodes({ flatten: true });
+            expect(assigned).toHaveLength(3);
+            expect(assigned[2].tagName).toBe('DIV');
+        });
+
+        it('should find flattened slotables (assignedElements)', () => {
+            document.body.appendChild(element);
+            const slot = getHostShadowRoot(element).querySelector('slot');
+            const assigned = slot.assignedElements({ flatten: true });
             expect(assigned).toHaveLength(1);
             expect(assigned[0].tagName).toBe('DIV');
         });
     });
 
-    describe('slots fallback (slots in slots)', () => {
+    describe('nested slots default content', () => {
         // Initialized before each test
         let element;
 
@@ -111,7 +129,7 @@ describe('assignedNodes', () => {
         });
     });
 
-    describe('slots fallback (slots in slots with assigned slotable)', () => {
+    describe('nested slots assigned content', () => {
         describe('when slotable assigned to outer slot', () => {
             // Initialized before each test
             let element;
@@ -183,7 +201,7 @@ describe('assignedNodes', () => {
                 expect(assigned).toHaveLength(0);
             });
 
-            it('should find flattened slotables (assigned) for the outer slot', () => {
+            it('should find assigned content for the outer slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
@@ -192,7 +210,7 @@ describe('assignedNodes', () => {
                 expect(assigned[0].tagName).toBe('P');
             });
 
-            it.skip('should find flattened slotables (fallback) for the inner slot', () => {
+            it.skip('should find default content for the inner slot', () => {
                 // not possible in fallback mode because if the content of the outer is
                 // slotted correctly, its fallback with the inner is not going to be added
                 // to the dom.
@@ -273,7 +291,7 @@ describe('assignedNodes', () => {
                 expect(assigned[0].tagName).toBe('P');
             });
 
-            it('should find flattened slotables (fallback) for the outer slot', () => {
+            it('should find default content for the outer slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="outer"]');
@@ -282,7 +300,7 @@ describe('assignedNodes', () => {
                 expect(assigned[0].tagName).toBe('P');
             });
 
-            it('should find flattened slotables (fallback) for the inner slot', () => {
+            it('should find assigned content for the inner slot', () => {
                 document.body.appendChild(element);
                 const slot = getHostShadowRoot(getHostShadowRoot(element).querySelector('x-assigned-nodes-child'))
                     .querySelector('[name="inner"]');
