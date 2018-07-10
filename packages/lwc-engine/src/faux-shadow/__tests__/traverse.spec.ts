@@ -1,5 +1,5 @@
-import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from "../../html-element";
+import { createElement, LightningElement } from '../../framework/main';
+import { getHostShadowRoot } from "../../framework/html-element";
 
 describe('#LightDom querySelectorAll()', () => {
     describe('Invoked from within component', () => {

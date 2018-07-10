@@ -1,6 +1,6 @@
-import { createElement, LightningElement } from '../../main';
-import { getHostShadowRoot } from '../../html-element';
-import { h } from '../../api';
+import { createElement, LightningElement } from '../../framework/main';
+import { getHostShadowRoot } from '../../framework/html-element';
+import { h } from '../../framework/api';
 
 describe('root', () => {
     describe('integration', () => {

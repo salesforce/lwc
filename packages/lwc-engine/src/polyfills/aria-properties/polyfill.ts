@@ -9,7 +9,7 @@ const CAMEL_REGEX = /-([a-z])/g;
 
 // Global Aria and Role Properties derived from ARIA and Role Attributes.
 // https://wicg.github.io/aom/spec/aria-reflection.html
-const ElementPrototypeAriaPropertyNames = [
+export const ElementPrototypeAriaPropertyNames = [
     'ariaAutoComplete',
     'ariaChecked',
     'ariaCurrent',

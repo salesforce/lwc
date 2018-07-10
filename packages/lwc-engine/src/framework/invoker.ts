@@ -1,10 +1,10 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     currentContext,
     establishContext,
 } from "./context";
 import { evaluateTemplate } from "./template";
-import { isUndefined, isFunction } from "./language";
+import { isUndefined, isFunction } from "../shared/language";
 import { getComponentStack, VM } from "./vm";
 import { ComponentConstructor, ComponentInterface } from "./component";
 import { VNodes } from "../3rdparty/snabbdom/types";
@@ -16,7 +16,7 @@ export let vmBeingRendered: VM|null = null;
 export let vmBeingConstructed: VM | null = null;
 export function isBeingConstructed(vm: VM): boolean {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return vmBeingConstructed === vm;
 }

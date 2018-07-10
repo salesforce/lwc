@@ -4,7 +4,7 @@ import {
     create,
     forEach,
     isUndefined,
-} from './language';
+} from '../shared/language';
 
 // These properties get added to LWCElement.prototype publicProps automatically
 export const defaultDefHTMLPropertyNames = ['dir', 'id', 'accessKey', 'title', 'lang', 'hidden', 'draggable', 'tabIndex'];

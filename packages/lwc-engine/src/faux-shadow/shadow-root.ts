@@ -1,19 +1,19 @@
-import assert from "../assert";
-import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../language";
-import { getNodeKey } from "../vm";
+import assert from "../shared/assert";
+import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
 import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement, isNodeOwnedBy } from "./traverse";
-import { getInternalField, setInternalField, createSymbol } from "../utils";
-import { getInnerHTML } from "../../3rdparty/polymer/inner-html";
-import { getTextContent } from "../../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
-import { ElementAOMPropertyNames } from "../attributes";
+import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
+import { getInnerHTML } from "../3rdparty/polymer/inner-html";
+import { getTextContent } from "../3rdparty/polymer/text-content";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeKey } from "./node";
+// it is ok to import from the polyfill since they always go hand-to-hand anyways.
+import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { unwrap } from "./traverse-membrane";
 
 let ArtificialShadowRootPrototype;
 
-const HostKey = createSymbol('host');
-const ShadowRootKey = createSymbol('shadowRoot');
+const HostKey = createFieldName('host');
+const ShadowRootKey = createFieldName('shadowRoot');
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
 export function getHost(root: ShadowRoot): HTMLElement {
@@ -32,7 +32,7 @@ export function getShadowRoot(elm: HTMLElement): ShadowRoot {
 
 // Synthetic creation of all AOM property descriptors for Shadow Roots
 function createShadowRootAOMDescriptorMap(): PropertyDescriptorMap {
-    return ArrayReduce.call(ElementAOMPropertyNames, (seed: PropertyDescriptorMap, propName: string) => {
+    return ArrayReduce.call(ElementPrototypeAriaPropertyNames, (seed: PropertyDescriptorMap, propName: string) => {
         let descriptor: PropertyDescriptor | undefined;
         if (isNativeShadowRootAvailable) {
             descriptor = getOwnPropertyDescriptor((window as any).ShadowRoot.prototype, propName);

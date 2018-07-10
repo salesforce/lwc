@@ -1,4 +1,4 @@
-import { getOwnPropertyDescriptor, hasOwnProperty } from "./language";
+import { getOwnPropertyDescriptor, hasOwnProperty } from "../shared/language";
 
 const {
     setAttribute,

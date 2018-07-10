@@ -1,10 +1,10 @@
-import assert from "../assert";
+import assert from "../../shared/assert";
 import { isRendering, vmBeingRendered, isBeingConstructed } from "../invoker";
-import { isObject, isNull, isTrue, hasOwnProperty, toString } from "../language";
+import { isObject, isNull, isTrue, hasOwnProperty, toString } from "../../shared/language";
 import { observeMutation, notifyMutation } from "../watcher";
 import { ComponentInterface, ComponentConstructor } from "../component";
 import { VM, getComponentVM } from "../vm";
-import { isUndefined, isFunction } from "../language";
+import { isUndefined, isFunction } from "../../shared/language";
 import { reactiveMembrane } from "../membrane";
 
 const COMPUTED_GETTER_MASK = 1;
@@ -43,7 +43,7 @@ export default function api(target: ComponentConstructor, propName: PropertyKey,
 let vmBeingUpdated: VM | null = null;
 export function prepareForPropUpdate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     vmBeingUpdated = vm;
 }
@@ -53,7 +53,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -67,7 +67,7 @@ function createPublicPropertyDescriptor(proto: ComponentConstructor, key: Proper
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(key)}`);
             }
             if (isTrue(vm.isRoot) || isBeingConstructed(vm)) {
@@ -114,14 +114,14 @@ function createPublicAccessorDescriptor(Ctor: ComponentConstructor, key: Propert
         get(this: ComponentInterface): any {
             if (process.env.NODE_ENV !== 'production') {
                 const vm = getComponentVM(this);
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             }
             return get.call(this);
         },
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${toString(key)}`);
             }
             if (vm.isRoot || isBeingConstructed(vm)) {

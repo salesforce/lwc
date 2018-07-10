@@ -1,6 +1,6 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "./language";
+import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
@@ -84,7 +84,7 @@ function applyTokenToHost(vm: VM, html: Template): void {
 
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isFunction(html), `evaluateTemplate() second argument must be a function instead of ${html}`);
     }
 

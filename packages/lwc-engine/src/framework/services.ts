@@ -1,5 +1,5 @@
-import assert from "./assert";
-import { isUndefined, isObject, isArray, create, ArrayPush } from "./language";
+import assert from "../shared/assert";
+import { isUndefined, isObject, isArray, create, ArrayPush } from "../shared/language";
 
 import { Context } from "./context";
 import { VNodeData } from "../3rdparty/snabbdom/types";
@@ -41,7 +41,7 @@ export function register(service: ServiceDef) {
 
 export function invokeServiceHook(vm: VM, cbs: ServiceCallback[]) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(isArray(cbs) && cbs.length > 0, `Optimize invokeServiceHook() to be invoked only when needed`);
     }
     const { component, data, def, context } = vm;

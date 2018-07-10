@@ -1,6 +1,6 @@
 import { createElement, register, unwrap } from '../main';
 import { getHostShadowRoot, LightningElement } from '../html-element';
-import assertLogger from '../assert';
+import assertLogger from '../../shared/assert';
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {

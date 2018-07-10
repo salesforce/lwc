@@ -1,11 +1,11 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import { vmBeingRendered, invokeEventListener } from "./invoker";
-import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "./language";
+import { freeze, isArray, isUndefined, isNull, isFunction, isObject, isString, ArrayPush, assign, create, forEach, StringSlice, StringCharCodeAt, isNumber, isTrue, hasOwnProperty } from "../shared/language";
 import { EmptyArray, SPACE_CHAR, ViewModelReflection, resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { renderVM, createVM, appendVM, removeVM, VM, getCustomElementVM, SlotSet, allocateInSlot } from "./vm";
 import { ComponentConstructor } from "./component";
 import { VNode, VNodeData, VNodes, VElement, VComment, VText, Hooks } from "../3rdparty/snabbdom/types";
-import { patchEvent } from "./dom/faux";
+import { patchEvent } from "../faux-shadow/faux";
 
 export interface RenderAPI {
     s(slotName: string, data: VNodeData, children: VNodes, slotset: SlotSet): VNode;
@@ -92,7 +92,7 @@ const hook: Hooks = {
         });
         const vm = getCustomElementVM(elm);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
         }
         if (isTrue(vm.fallback)) {
@@ -106,7 +106,7 @@ const hook: Hooks = {
     update(oldVNode: VNode, vnode: VNode) {
         const vm = getCustomElementVM(vnode.elm as HTMLElement);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             assert.isTrue(isArray(vnode.children), `Invalid vnode for a custom element, it must have children defined.`);
         }
         if (isTrue(vm.fallback)) {
@@ -183,7 +183,7 @@ export function h(sel: string, data: VNodeData, children: VNodes): VElement {
         }
         forEach.call(children, (childVnode: VNode | null | undefined) => {
             if (childVnode != null) {
-                assert.vnode(childVnode);
+                assert.isTrue(childVnode && "sel" in childVnode && "data" in childVnode && "children" in childVnode && "text" in childVnode && "elm" in childVnode && "key" in childVnode && "nt" in childVnode, `${childVnode} is not a vnode.`);
             }
         });
     }
@@ -240,7 +240,7 @@ export function c(sel: string, Ctor: ComponentConstructor, data: VNodeData, chil
         if (arguments.length === 4) {
             forEach.call(children, (childVnode: VNode | null | undefined) => {
                 if (childVnode != null) {
-                    assert.vnode(childVnode);
+                    assert.isTrue(childVnode && "sel" in childVnode && "data" in childVnode && "children" in childVnode && "text" in childVnode && "elm" in childVnode && "key" in childVnode && "nt" in childVnode, `${childVnode} is not a vnode.`);
                 }
             });
         }

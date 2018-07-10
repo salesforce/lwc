@@ -1,4 +1,4 @@
-import { defineProperties } from "../language";
+import { defineProperties } from "../shared/language";
 import { attachShadow } from "./shadow-root";
 import { addCustomElementEventListener, removeCustomElementEventListener } from "./events";
 

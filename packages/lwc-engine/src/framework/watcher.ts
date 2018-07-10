@@ -1,5 +1,5 @@
-import assert from "./assert";
-import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "./language";
+import assert from "../shared/assert";
+import { isUndefined, create, ArrayIndexOf, ArrayPush, isNull, toString } from "../shared/language";
 
 interface ReactiveRecord {
     // TODO: this type definition is missing numbers and symbols as keys
@@ -20,7 +20,7 @@ export function notifyMutation(target: object, key: PropertyKey) {
             for (let i = 0; i < len; i += 1) {
                 const vm = value[i];
                 if (process.env.NODE_ENV !== 'production') {
-                    assert.vm(vm);
+                    assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 }
                 if (!vm.isDirty) {
                     markComponentAsDirty(vm);

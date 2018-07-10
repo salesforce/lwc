@@ -1,4 +1,4 @@
-import assert from "../assert";
+import assert from "../../shared/assert";
 import { reactiveMembrane } from '../membrane';
 
 // when used with exactly one argument, we assume it is a function invocation.

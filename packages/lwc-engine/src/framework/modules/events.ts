@@ -1,4 +1,4 @@
-import { isUndefined } from "../language";
+import { isUndefined } from "../../shared/language";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 
 function handleEvent(event: Event, vnode: VNode) {

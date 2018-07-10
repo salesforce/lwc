@@ -7,7 +7,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     assign,
     freeze,
@@ -28,7 +28,8 @@ import {
     seal,
     forEach,
     getPropertyDescriptor,
-} from "./language";
+    StringIndexOf,
+} from "../shared/language";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
@@ -43,7 +44,6 @@ import { LightningElement as BaseElement, createBaseElementStandardPropertyDescr
 import {
     EmptyObject,
     PatchedFlag,
-    assertValidForceTagName,
     resolveCircularModuleDependency,
     isCircularModuleDependency
 } from "./utils";
@@ -97,6 +97,29 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
     return isCircularModuleDependency(Ctor) ? resolveCircularModuleDependency(proto) : proto;
+}
+
+// According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
+// are not allowed to attached a shadow dom, and therefore, we need to prevent setting forceTagName to
+// those, otherwise we will not be able to use shadowDOM when forceTagName is specified in the future.
+function assertValidForceTagName(Ctor: ComponentConstructor) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const { forceTagName } = Ctor;
+    if (isUndefined(forceTagName)) {
+        return;
+    }
+    const invalidTags = [
+        "article", "aside", "blockquote", "body", "div", "footer", "h1", "h2", "h3", "h4",
+        "h5", "h6", "header", "main", "nav", "p", "section", "span"];
+    if (ArrayIndexOf.call(invalidTags, forceTagName) !== -1) {
+        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. None of the following tag names can be used: ${invalidTags.join(", ")}.`);
+    }
+    if (StringIndexOf.call(forceTagName, '-') !== -1) {
+        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. It cannot have a dash (-) on it because that is reserved for existing custom elements.`);
+    }
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {

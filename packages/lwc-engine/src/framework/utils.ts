@@ -1,6 +1,5 @@
-import assert from "./assert";
-import { create, seal, ArrayPush, isFunction, ArrayIndexOf, isUndefined, StringIndexOf, hasOwnProperty } from "./language";
-import { ComponentConstructor } from "./component";
+import { create, seal, ArrayPush, isFunction, hasOwnProperty } from "../shared/language";
+import { createFieldName } from "../shared/fields";
 
 type Callback = () => void;
 
@@ -9,12 +8,14 @@ export const SPACE_CHAR = 32;
 
 export const EmptyObject = seal(create(null));
 export const EmptyArray = seal([]);
-export const ViewModelReflection = createSymbol('ViewModel');
-export const PatchedFlag = createSymbol('PatchedFlag');
+export const ViewModelReflection = createFieldName('ViewModel');
+export const PatchedFlag = createFieldName('PatchedFlag');
 
 function flushCallbackQueue() {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(nextTickCallbackQueue.length, `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+        if (nextTickCallbackQueue.length === 0) {
+            throw new Error(`Internal Error: If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue.`);
+        }
     }
     const callbacks: Callback[] = nextTickCallbackQueue;
     nextTickCallbackQueue = []; // reset to a new queue
@@ -25,36 +26,15 @@ function flushCallbackQueue() {
 
 export function addCallbackToNextTick(callback: Callback) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isFunction(callback), `addCallbackToNextTick() can only accept a function callback as first argument instead of ${callback}`);
+        if (!isFunction(callback)) {
+            throw new Error(`Internal Error: addCallbackToNextTick() can only accept a function callback`);
+        }
     }
     if (nextTickCallbackQueue.length === 0) {
         Promise.resolve().then(flushCallbackQueue);
     }
     // TODO: eventually, we might want to have priority when inserting callbacks
     ArrayPush.call(nextTickCallbackQueue, callback);
-}
-
-// According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
-// are not allowed to attached a shadow dom, and therefore, we need to prevent setting forceTagName to
-// those, otherwise we will not be able to use shadowDOM when forceTagName is specified in the future.
-export function assertValidForceTagName(Ctor: ComponentConstructor) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    const { forceTagName } = Ctor;
-    if (isUndefined(forceTagName)) {
-        return;
-    }
-    const invalidTags = [
-        "article", "aside", "blockquote", "body", "div", "footer", "h1", "h2", "h3", "h4",
-        "h5", "h6", "header", "main", "nav", "p", "section", "span"];
-    if (ArrayIndexOf.call(invalidTags, forceTagName) !== -1) {
-        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. None of the following tag names can be used: ${invalidTags.join(", ")}.`);
-    }
-    if (StringIndexOf.call(forceTagName, '-') !== -1) {
-        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. It cannot have a dash (-) on it because that is reserved for existing custom elements.`);
-    }
 }
 
 interface CircularModuleDependency {
@@ -75,29 +55,11 @@ export function isCircularModuleDependency(value: any): value is CircularModuleD
  * This method returns the resolved value if it received a factory as argument. Otherwise
  * it returns the original value.
  */
-export function resolveCircularModuleDependency(fn: CircularModuleDependency): ComponentConstructor {
+export function resolveCircularModuleDependency(fn: CircularModuleDependency): any {
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isFunction(fn), `If callbackQueue is scheduled, it is because there must be at least one callback on this pending queue instead of ${nextTickCallbackQueue}.`);
+        if (!isFunction(fn)) {
+            throw new ReferenceError(`Circular module dependency must be a function.`);
+        }
     }
     return fn();
-}
-
-/**
- * In IE11, symbols that we plan to apply everywhere are expensive
- * due to the nature of the symbol polyfill. This method abstract the
- * creation of symbols, so we can fallback to string when native symbols
- * are not supported.
- */
-export function createSymbol(key: string): symbol {
-    // @ts-ignore: using a string as a symbol for perf reasons
-    return typeof Symbol() === 'symbol' ? Symbol(key) : `$$lwc-${key}$$`;
-}
-
-export function setInternalField(o: object, fieldName: symbol, value: any) {
-    // TODO: improve this to use defineProperty(o, fieldName, { value }) or a weakmap
-    o[fieldName] = value;
-}
-
-export function getInternalField(o: object, fieldName: symbol): any {
-    return o[fieldName];
 }

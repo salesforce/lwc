@@ -1,5 +1,5 @@
-import assert from "../assert";
-import { isArray, isObject, isUndefined, toString } from "../language";
+import assert from "../../shared/assert";
+import { isArray, isObject, isUndefined, toString } from "../../shared/language";
 import { isRendering, vmBeingRendered } from "../invoker";
 import { observeMutation, notifyMutation } from "../watcher";
 import { getComponentVM } from "../vm";
@@ -30,7 +30,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
         get(this: ComponentInterface): any {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             }
             observeMutation(this, key);
             return vm.cmpTrack[key];
@@ -38,7 +38,7 @@ export function createTrackedPropertyDescriptor(Ctor: any, key: PropertyKey, enu
         set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${key}`);
             }
             const reactiveOrAnyValue = reactiveMembrane.getProxy(newValue);
