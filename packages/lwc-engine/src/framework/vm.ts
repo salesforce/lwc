@@ -2,8 +2,8 @@ import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse } from "../shared/language";
-import { getInternalField, createFieldName, setInternalField } from "../shared/fields";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty } from "../shared/language";
+import { getInternalField } from "../shared/fields";
 import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
@@ -65,8 +65,10 @@ function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
 
-const OwnerKey = createFieldName('OwnerKey');
-const OwnKey = createFieldName('OwnKey');
+// DO NOT CHANGE this:
+// these two values are used by the faux-shadow implementation to traverse the DOM
+const OwnerKey = '$$OwnerKey$$';
+const OwnKey = '$$OwnKey$$';
 
 function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
@@ -450,19 +452,41 @@ export function getComponentStack(vm: VM): string {
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return getInternalField(node, OwnerKey);
+    return node[OwnerKey];
 }
 
-export function setNodeOwnerKey(node: Node, id: number) {
-    setInternalField(node, OwnerKey, id);
+export function setNodeOwnerKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the owner key
+        defineProperty(node, OwnerKey, {
+            value,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnerKey] = value;
+    }
 }
 
 export function getNodeKey(node: Node): number | undefined {
-    return getInternalField(node, OwnKey);
+    return node[OwnKey];
 }
 
-export function setNodeKey(node: Node, id: number) {
-    setInternalField(node, OwnKey, id);
+export function setNodeKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the own key
+        defineProperty(node, OwnKey, {
+            value,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnKey] = value;
+    }
 }
 
 export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {

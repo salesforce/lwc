@@ -6,7 +6,6 @@ import {
     isTrue,
     defineProperties,
 } from '../shared/language';
-import { getNodeKey } from '../framework/vm';
 
 const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -105,4 +104,17 @@ export function patchNode(node: Node) {
     // TODO: we are nos invoking this yet, but it will be interesting to do
     // so for any element from the template.
     defineProperties(node, NodePatchDescriptors);
+}
+
+// DO NOT CHANGE this:
+// these two values need to be in sync with framework/vm.ts
+const OwnerKey = '$$OwnerKey$$';
+const OwnKey = '$$OwnKey$$';
+
+export function getNodeOwnerKey(node: Node): number | undefined {
+    return node[OwnerKey];
+}
+
+export function getNodeKey(node: Node): number | undefined {
+    return node[OwnKey];
 }

@@ -7,10 +7,9 @@ import {
     getRootNode,
     parentNodeGetter,
 } from "./node";
-import { getNodeOwnerKey, getNodeKey } from "../framework/vm";
 import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString } from "../shared/language";
 import { patchShadowDomTraversalMethods } from "./traverse";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
 
 interface WrappedListener extends EventListener {

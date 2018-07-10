@@ -1,5 +1,4 @@
 import assert from "../shared/assert";
-import { getNodeKey, getNodeOwnerKey } from "../framework/vm";
 import {
     parentNodeGetter as nativeParentNodeGetter,
     childNodesGetter as nativeChildNodesGetter,
@@ -7,6 +6,8 @@ import {
     parentNodeGetter,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINS,
+    getNodeKey,
+    getNodeOwnerKey,
 } from "./node";
 import {
     querySelectorAll as nativeQuerySelectorAll, innerHTMLSetter, getAttribute, tagNameGetter,
