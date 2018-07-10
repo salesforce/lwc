@@ -86,11 +86,11 @@ function getAriaPropertyMap(elm: HTMLElement): AriaPropMap {
 }
 
 function isShadowRoot(elmOrShadow: Element | ShadowRoot): elmOrShadow is ShadowRoot {
-    return 'host' in elmOrShadow;
+    return !(elmOrShadow instanceof Element) && 'host' in elmOrShadow;
 }
 
 function isSignedCustomElement(elmOrShadow: Element | ShadowRoot): elmOrShadow is HTMLElement {
-    return !('host' in elmOrShadow) && getNodeKey(elmOrShadow) !== undefined;
+    return !isShadowRoot(elmOrShadow) && getNodeKey(elmOrShadow) !== undefined;
 }
 
 function getNormalizedAriaPropertyValue(propName: string, value: any): any {
