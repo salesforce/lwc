@@ -70,16 +70,16 @@ describe('DOM inspection', () => {
     describe('#innerHTML', () => {
         it('should implement elm.innerHTML shadow dom semantics', () => {
             const p = getHostShadowRoot(element).querySelector('x-parent');
-            expect(p.innerHTML).toBe('<DIV class=\"first\">Passed Text</DIV>');
-            expect(getHostShadowRoot(p).querySelector('div').innerHTML).toBe('Before[<SLOT name=\"\"></SLOT>]After');
+            expect(p.innerHTML).toBe('<div class=\"first\">Passed Text</div>');
+            expect(getHostShadowRoot(p).querySelector('div').innerHTML).toBe('Before[<slot name=\"\"></slot>]After');
         });
     });
 
     describe('#outerHTML', () => {
         it('should implement elm.outerHTML shadow dom semantics', () => {
             const p = getHostShadowRoot(element).querySelector('x-parent');
-            expect(p.outerHTML).toBe('<X-PARENT><DIV class=\"first\">Passed Text</DIV></X-PARENT>');
-            expect(getHostShadowRoot(p).querySelector('div').outerHTML).toBe('<DIV class=\"portal\">Before[<SLOT name=\"\"></SLOT>]After</DIV>');
+            expect(p.outerHTML).toBe('<x-parent><div class=\"first\">Passed Text</div></x-parent>');
+            expect(getHostShadowRoot(p).querySelector('div').outerHTML).toBe('<div class=\"portal\">Before[<slot name=\"\"></slot>]After</div>');
         });
     });
 

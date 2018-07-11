@@ -9,20 +9,136 @@ declare module 'engine' {
 
     class HTMLElementTheGoodPart {
         dispatchEvent(evt: ComposableEvent): boolean;
-        addEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener(type: string, listener?: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
         getAttribute(name: string): string | null;
         getBoundingClientRect(): ClientRect;
         querySelector(selectors: string): HTMLElement | null
         querySelectorAll(selectors: string): NodeListOf<HTMLElement>
         readonly tagName: string
-        tabIndex: number
         readonly classList: DOMTokenList;
+
+        // Default HTML Properties
+        dir: string;
+        id: string;
+        accessKey: string;
+        title: string;
+        lang: string;
+        hidden: boolean;
+        draggable: boolean;
+        tabIndex: number;
+
+        // Aria Properties
+        ariaAutoComplete: string | null;
+        ariaChecked: string | null;
+        ariaCurrent: string | null;
+        ariaDisabled: string | null;
+        ariaExpanded: string | null;
+        ariaHasPopUp: string | null;
+        ariaHidden: string | null;
+        ariaInvalid: string | null;
+        ariaLabel: string | null;
+        ariaLevel: string | null;
+        ariaMultiLine: string | null;
+        ariaMultiSelectable: string | null;
+        ariaOrientation: string | null;
+        ariaPressed: string | null;
+        ariaReadOnly: string | null;
+        ariaRequired: string | null;
+        ariaSelected: string | null;
+        ariaSort: string | null;
+        ariaValueMax: string | null;
+        ariaValueMin: string | null;
+        ariaValueNow: string | null;
+        ariaValueText: string | null;
+        ariaLive: string | null;
+        ariaRelevant: string | null;
+        ariaAtomic: string | null;
+        ariaBusy: string | null;
+        ariaActiveDescendant: string | null;
+        ariaControls: string | null;
+        ariaDescribedBy: string | null;
+        ariaFlowTo: string | null;
+        ariaLabelledBy: string | null;
+        ariaOwns: string | null;
+        ariaPosInSet: string | null;
+        ariaSetSize: string | null;
+        ariaColCount: string | null;
+        ariaColIndex: string | null;
+        ariaDetails: string | null;
+        ariaErrorMessage: string | null;
+        ariaKeyShortcuts: string | null;
+        ariaModal: string | null;
+        ariaPlaceholder: string | null;
+        ariaRoleDescription: string | null;
+        ariaRowCount: string | null;
+        ariaRowIndex: string | null;
+        ariaRowSpan: string | null;
+        role: string | null;
     }
 
     interface ShadowRootTheGoodPart extends NodeSelector {
         mode: string;
-        readonly host: Element;
+        readonly host: null;
+        readonly firstChild: Node | null,
+        readonly lastChild: Node | null,
+        readonly innerHTML: string,
+        readonly textContent: string,
+        readonly childNodes: Node[],
+        readonly delegatesFocus: boolean,
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+        hasChildNodes(): boolean;
+        compareDocumentPosition(otherNode: Node): number;
+        contains(otherNode: Node): boolean;
+
+        // Aria Properties
+        ariaAutoComplete: string | null;
+        ariaChecked: string | null;
+        ariaCurrent: string | null;
+        ariaDisabled: string | null;
+        ariaExpanded: string | null;
+        ariaHasPopUp: string | null;
+        ariaHidden: string | null;
+        ariaInvalid: string | null;
+        ariaLabel: string | null;
+        ariaLevel: string | null;
+        ariaMultiLine: string | null;
+        ariaMultiSelectable: string | null;
+        ariaOrientation: string | null;
+        ariaPressed: string | null;
+        ariaReadOnly: string | null;
+        ariaRequired: string | null;
+        ariaSelected: string | null;
+        ariaSort: string | null;
+        ariaValueMax: string | null;
+        ariaValueMin: string | null;
+        ariaValueNow: string | null;
+        ariaValueText: string | null;
+        ariaLive: string | null;
+        ariaRelevant: string | null;
+        ariaAtomic: string | null;
+        ariaBusy: string | null;
+        ariaActiveDescendant: string | null;
+        ariaControls: string | null;
+        ariaDescribedBy: string | null;
+        ariaFlowTo: string | null;
+        ariaLabelledBy: string | null;
+        ariaOwns: string | null;
+        ariaPosInSet: string | null;
+        ariaSetSize: string | null;
+        ariaColCount: string | null;
+        ariaColIndex: string | null;
+        ariaDetails: string | null;
+        ariaErrorMessage: string | null;
+        ariaKeyShortcuts: string | null;
+        ariaModal: string | null;
+        ariaPlaceholder: string | null;
+        ariaRoleDescription: string | null;
+        ariaRowCount: string | null;
+        ariaRowIndex: string | null;
+        ariaRowSpan: string | null;
+        role: string | null;
     }
 
     /**
@@ -50,7 +166,8 @@ declare module 'engine' {
          */
         errorCallback(error: any, stack: string): void;
 
-        readonly root: ShadowRootTheGoodPart;
+        readonly template: ShadowRootTheGoodPart;
+        readonly shadowRoot: null;
     }
 
     /**
