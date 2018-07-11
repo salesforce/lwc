@@ -16,7 +16,6 @@ import {
 import { collectImportLocations } from "./import-location-collector";
 import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
-
 export interface BundleReport {
     code: string;
     diagnostics: Diagnostic[];

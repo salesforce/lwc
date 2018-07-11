@@ -1,5 +1,6 @@
 import * as path from "path";
-import { CompilerError } from "../../../../node_modules/lwc-compiler/src/common-interfaces/compiler-error";
+
+import { CompilerError } from "../common-interfaces/compiler-error";
 import { MetadataCollector } from "../bundler/meta-collector";
 import { NormalizedCompilerOptions } from "../compiler/options";
 
