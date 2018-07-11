@@ -49,7 +49,7 @@ const EventPatchDescriptors: PropertyDescriptorMap = {
         get(this: Event): EventTarget {
             const currentTarget: EventTarget = eventCurrentTargetGetter.call(this);
             const originalTarget: EventTarget = eventTargetGetter.call(this);
-            if (isNull(currentTarget)) {
+            if (isNull(currentTarget) || !(currentTarget instanceof Node)) {
                 // the event was inspected asynchronously, in which case we need to return the
                 // top custom element the belongs to the body.
                 let outerMostElement = originalTarget;
