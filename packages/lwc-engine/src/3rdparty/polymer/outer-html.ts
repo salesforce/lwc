@@ -15,7 +15,7 @@ import { getInnerHTML } from "./inner-html";
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#escapingString
 const escapeAttrRegExp = /[&\u00A0"]/g;
 const escapeDataRegExp = /[&\u00A0<>]/g;
-const replace = String.prototype.replace;
+const { replace, toLowerCase } = String.prototype;
 
 function escapeReplace(c) {
     switch (c) {
@@ -75,7 +75,7 @@ export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
         case Node.ELEMENT_NODE: {
             const { tagName, attributes: attrs } = node as Element;
-            let s = '<' + tagName.toLocaleLowerCase();
+            let s = '<' + toLowerCase.call(tagName);
             for (let i = 0, attr; (attr = attrs[i]); i++) {
                 s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
             }
@@ -83,7 +83,7 @@ export function getOuterHTML(node: Node): string {
             if (voidElements.has(tagName)) {
                 return s;
             }
-            return s + getInnerHTML(node) + '</' + tagName.toLocaleLowerCase() + '>';
+            return s + getInnerHTML(node) + '</' + toLowerCase.call(tagName) + '>';
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
