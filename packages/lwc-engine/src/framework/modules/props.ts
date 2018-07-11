@@ -1,12 +1,11 @@
 import assert from "../../shared/assert";
-import { isUndefined, keys, StringToLowerCase, create, toString } from "../../shared/language";
+import { isUndefined, keys, StringToLowerCase, create, toString, isString } from "../../shared/language";
 import { getInternalField } from "../../shared/fields";
 import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { getAttrNameFromPropName } from "../attributes";
 import { elementTagNameGetter } from "../dom-api";
-import { isString } from "../../../../../node_modules/lwc-compiler/src/utils";
 
 const EspecialTagAndPropMap = create(null, {
     input: { value: create(null, { value: { value: 1 }, checked: { value: 1 } }) },
