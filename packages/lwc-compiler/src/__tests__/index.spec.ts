@@ -51,14 +51,14 @@ describe("test index entry points", () => {
     });
 
     test("don't specify basedir", async () => {
-        expect.assertions(1);
         const config = {
             ...COMPILER_CONFIG_BASEDIR
         };
         delete config.baseDir;
 
-        await expect(compile(config)).rejects.toMatchObject({
-            message: "Could not resolve 'foo' (as foo.js) from compiler entry point"
-        });
+        const { success, diagnostics }  = await compile(config);
+        expect(success).toBe(false);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].message).toBe("Could not resolve 'foo' (as foo.js) from compiler entry point");
     });
 });

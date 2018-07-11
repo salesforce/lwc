@@ -1,5 +1,6 @@
 import { compile } from "../compiler";
 import { pretify, readFixture } from "../../__tests__/utils";
+import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 
 const VALID_CONFIG = {
     outputConfig: {
@@ -132,6 +133,92 @@ describe("compiler result", () => {
             },
         });
         expect(success).toBe(true);
+    });
+
+    test('compiler returns diagnostic errors when module resolution encounters an error', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import something from './nothing';`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(success).toBe(false);
+        expect(diagnostics.length).toBe(1);
+
+        const { level, message } = diagnostics[0];
+
+        expect(level).toBe(DiagnosticLevel.Fatal);
+        expect(message).toContain('Could not resolve \'./nothing\' (as nothing.js) from \'foo.js\'');
+    });
+
+    test('compiler returns diagnostic errors when transformation encounters an error in javascript', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `throw`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+
+        expect(success).toBe(false);
+        expect(diagnostics.length).toBe(1);
+
+        const { level, message } = diagnostics[0];
+
+        expect(level).toBe(DiagnosticLevel.Fatal);
+        expect(message).toContain('Unexpected token (1:5)');
+    });
+
+    test('compiler returns diagnostic errors when transformation encounters an error in css', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { Element } from 'engine';
+                export default class Test extends Element {}
+                `,
+                "foo.html": `<template></template>`,
+                "foo.css": `a {`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(success).toBe(false);
+        expect(diagnostics.length).toBe(2);
+
+        // check warning
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
+        expect(diagnostics[0].message).toBe('\'engine\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+
+        // check error
+        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[1].message).toContain('Unclosed block');
+    });
+
+    test('compiler returns diagnostic errors when transformation encounters an error in html', async () => {
+        const config = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { Element } from 'engine';
+                export default class Test extends Element {}
+                `,
+                "foo.html": `<template>`,
+            },
+        };
+        const { success, diagnostics }  = await compile(config);
+        expect(success).toBe(false);
+        expect(diagnostics.length).toBe(2);
+
+        // check warning
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
+        expect(diagnostics[0].message).toBe('\'engine\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+
+        // check error
+        expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
+        expect(diagnostics[1].message).toContain('foo.html: <template> has no matching closing tag.');
     });
 });
 

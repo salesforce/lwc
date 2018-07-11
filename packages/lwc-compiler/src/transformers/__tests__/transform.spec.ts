@@ -86,6 +86,7 @@ describe('Javascript transform', () => {
                 name: 'foo',
             })
         ).rejects.toMatchObject({
+            filename: 'foo.js',
             message: expect.stringContaining('foo.js: Unexpected token (1:5)')
         });
     });
@@ -103,6 +104,7 @@ describe('Javascript transform', () => {
                 },
             })
         ).rejects.toMatchObject({
+            filename: 'foo.js',
             message: expect.stringContaining(
                 'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
             )
@@ -173,6 +175,7 @@ describe('HTML transform', () => {
                 name: 'foo',
             })
         ).rejects.toMatchObject({
+            filename: 'foo.html',
             message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
         });
     });
@@ -186,6 +189,7 @@ describe('CSS transform', () => {
                 name: 'foo',
             })
         ).rejects.toMatchObject({
+            filename: 'foo.css',
             message: expect.stringContaining('foo.css:1:1: Unknown word')
         });
     });
@@ -232,7 +236,8 @@ describe('CSS transform', () => {
                 customProperties: { allowDefinition: false },
             },
         })).rejects.toMatchObject({
-            reason: 'Invalid definition of custom property "--bg-color".'
+            filename: 'foo.css',
+            message: expect.stringContaining('Invalid definition of custom property "--bg-color".'),
         });
     });
 

@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
+import { CompilerError } from "../common-interfaces/compiler-error";
 
 import {
     NormalizedCompilerOptions,
@@ -69,14 +70,24 @@ export async function transformFile(
     const transformer = getTransformer(id);
     const result = await transformer(src, id, options, metadataCollector);
 
+    let compatResult;
     if (options.outputConfig.compat) {
-        const compatPlugin = compatPluginFactory(
-            options.outputConfig.resolveProxyCompat
-        );
-        const compatResult = compatPlugin.transform(result.code);
-        if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
-            throw new Error(
-                "babel transform failed to produce code in compat mode"
+        try {
+            const compatPlugin = compatPluginFactory(
+                options.outputConfig.resolveProxyCompat
+            );
+            compatResult = compatPlugin.transform(result.code);
+            if (isUndefined(compatResult) || isUndefined(compatResult.code)) {
+                throw new CompilerError(
+                    "babel transform failed to produce code in compat mode",
+                    id
+                );
+            }
+        } catch (e) {
+            throw new CompilerError(
+                e.message,
+                id,
+                e.loc
             );
         }
         return { code: compatResult.code, map: null };
