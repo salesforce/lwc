@@ -8,6 +8,6 @@ describe('custom element text content', () => {
     });
 
     it('should return correct innerHTML', function () {
-        assert.equal(browser.getText('p'), '<DIV>Slot</DIV>');
+        assert.equal(browser.getText('p'), '<div>Slot</div>');
     });
 });

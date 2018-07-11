@@ -75,7 +75,7 @@ export function getOuterHTML(node: Node): string {
     switch (node.nodeType) {
         case Node.ELEMENT_NODE: {
             const { tagName, attributes: attrs } = node as Element;
-            let s = '<' + tagName;
+            let s = '<' + tagName.toLocaleLowerCase();
             for (let i = 0, attr; (attr = attrs[i]); i++) {
                 s += ' ' + attr.name + '="' + escapeAttr(attr.value) + '"';
             }
@@ -83,7 +83,7 @@ export function getOuterHTML(node: Node): string {
             if (voidElements.has(tagName)) {
                 return s;
             }
-            return s + getInnerHTML(node) + '</' + tagName + '>';
+            return s + getInnerHTML(node) + '</' + tagName.toLocaleLowerCase() + '>';
         }
         case Node.TEXT_NODE: {
             const { data, parentNode } = node as Text;
