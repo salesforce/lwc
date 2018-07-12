@@ -17,6 +17,7 @@ export interface BundleMetadata {
     importLocations: ModuleImportLocation[];
     classMembers: ClassMember[];
     declarationLoc?: Location;
+    doc?: string;
 }
 
 export class MetadataCollector {
@@ -26,6 +27,7 @@ export class MetadataCollector {
     private importLocations: ModuleImportLocation[] = [];
     private classMembers: ClassMember[] = [];
     private declarationLoc?: Location;
+    private doc?: string;
 
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
@@ -45,12 +47,17 @@ export class MetadataCollector {
         this.declarationLoc = declarationLoc;
     }
 
+    public setDoc(doc?: string) {
+        this.doc = doc;
+    }
+
     public getMetadata(): BundleMetadata {
         return {
             decorators: this.decorators,
             importLocations: this.importLocations,
             classMembers: this.classMembers,
             declarationLoc: this.declarationLoc,
+            doc: this.doc,
         };
     }
 }

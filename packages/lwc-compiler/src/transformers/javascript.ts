@@ -34,6 +34,7 @@ export default function(
             metadata.classMembers.forEach(c => metadataCollector.collectClassMember(c));
         }
         metadataCollector.setDeclarationLoc(metadata.declarationLoc);
+        metadataCollector.setDoc(metadata.doc);
     }
 
     return {
