@@ -1,4 +1,4 @@
-import { isNull, hasOwnProperty, ArrayMap, isFunction } from "../shared/language";
+import { isNull, hasOwnProperty, ArrayMap, isFunction, getOwnPropertyDescriptor, isFalse, isUndefined } from "../shared/language";
 import { ElementPatchDescriptors, NodePatchDescriptors, SlotPatchDescriptors } from "./traverse";
 import { createFieldName } from "../shared/fields";
 import { tagNameGetter } from "./element";
@@ -18,6 +18,10 @@ const traverseMembraneHandler = {
     get(originalTarget: any, key: PropertyKey): any {
         if (key === TargetSlot) {
             return originalTarget;
+        }
+        const descriptor = getOwnPropertyDescriptor(originalTarget, key);
+        if (!isUndefined(descriptor) && isFalse(descriptor.configurable)) {
+            return originalTarget[key];
         }
         if (!isFunction(originalTarget)) {
             let descriptors: PropertyDescriptorMap = NodePatchDescriptors;
