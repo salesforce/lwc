@@ -11,6 +11,13 @@ const {
     removeEventListener,
 } = Element.prototype;
 
+const {
+    insertBefore,
+    removeChild,
+    appendChild,
+    hasChildNodes,
+} = Node.prototype;
+
 const parentNodeGetter: (this: Node) => Node | null = getOwnPropertyDescriptor(Node.prototype, 'parentNode')!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = hasOwnProperty.call(Node.prototype, 'parentElement') ?
@@ -38,6 +45,11 @@ export {
     elementTagNameGetter,
     addEventListener,
     removeEventListener,
+
+    insertBefore,
+    removeChild,
+    appendChild,
+    hasChildNodes,
 
     BaseCustomElementProto,
 };

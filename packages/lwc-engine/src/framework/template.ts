@@ -93,6 +93,8 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     // reset the cache memoizer for template when needed
     if (html !== cmpTemplate) {
         if (!isUndefined(cmpTemplate)) {
+            // It is important to reset the content to avoid reusing similar elements generated from a different
+            // template, because they could have similar IDs, and snabbdom just rely on the IDs.
             resetShadowRoot(vm);
         }
         vm.cmpTemplate = html;
