@@ -19,8 +19,8 @@ const traverseMembraneHandler = {
         if (key === TargetSlot) {
             return originalTarget;
         }
-        const descriptor = getOwnPropertyDescriptor(originalTarget, key);
-        if (!isUndefined(descriptor) && isFalse(descriptor.configurable)) {
+        const propertyDescriptor = getOwnPropertyDescriptor(originalTarget, key);
+        if (!isUndefined(propertyDescriptor) && isFalse(propertyDescriptor.configurable)) {
             return originalTarget[key];
         }
         if (!isFunction(originalTarget)) {
