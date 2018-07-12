@@ -2,6 +2,7 @@ import * as postcss from "postcss";
 import * as cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
+import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions, CustomPropertiesResolution } from "../compiler/options";
 import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
@@ -74,9 +75,14 @@ export default async function transformStyle(
         );
     }
 
-    const res = await postcss(plugins).process(src, {
-        from: filename,
-    });
+    let res;
+    try {
+        res = await postcss(plugins).process(src, {
+            from: filename,
+        });
+    } catch (e) {
+        throw new CompilerError(e.message, filename, e.loc);
+    }
 
     let code: string = '';
     if (res.css && res.css.length) {
