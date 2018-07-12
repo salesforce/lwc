@@ -3,6 +3,7 @@ const moduleImports = require("@babel/helper-module-imports");
 const { findClassMethod, getEngineImportSpecifiers, isComponentClass, isDefaultExport } = require('./utils');
 const { GLOBAL_ATTRIBUTE_MAP, LWC_PACKAGE_EXPORTS, LWC_COMPONENT_PROPERTIES } = require('./constants');
 const CLASS_PROPERTY_OBSERVED_ATTRIBUTES = 'observedAttributes';
+const CLASS_PROPERTY_FORCE_TAG_NAME = 'forceTagName';
 
 module.exports = function ({ types: t }) {
     return {
@@ -26,6 +27,8 @@ module.exports = function ({ types: t }) {
                 throw path.buildCodeFrameError(
                     `Invalid static property "observedAttributes". "observedAttributes" cannot be used to track attribute changes. Define setters for ${observedAttributeNames.join(', ')} instead.`
                 );
+            } else if (isForceTagNameStaticProperty(path)) {
+                console.warn(`It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on "forceTagName" as it will be deprecated in the near future.`);
             }
         },
         Class(path, state) {
@@ -53,6 +56,11 @@ module.exports = function ({ types: t }) {
     function isObservedAttributesStaticProperty(classPropertyPath) {
         const { static: isStaticProperty, key: { name: propertyName } } = classPropertyPath.node;
         return (isStaticProperty && propertyName === CLASS_PROPERTY_OBSERVED_ATTRIBUTES);
+    }
+
+    function isForceTagNameStaticProperty(classPropertyPath) {
+        const { static: isStaticProperty, key: { name: propertyName } } = classPropertyPath.node;
+        return (isStaticProperty && propertyName === CLASS_PROPERTY_FORCE_TAG_NAME);
     }
 
     function getBaseName({ file }) {

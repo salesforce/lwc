@@ -2,5 +2,11 @@
   "metadata": {
     "templateUsedIds": ["rows"],
     "templateDependencies": ["ns-row"]
-  }
+  },
+  "warnings": [{
+    "length": 11,
+    "level": "warning",
+    "message": "It has been determined that there are valid workarounds for the accessibility issues that this escape hatch was created for. Please refactor your component to not rely on \"is\" as it will be deprecated in the near future.",
+    "start": 68
+  }]
 }
