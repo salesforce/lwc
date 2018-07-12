@@ -1,7 +1,9 @@
 import {
     ApiDecorator,
     TrackDecorator,
-    WireDecorator
+    WireDecorator,
+    Location,
+    ClassMember
 } from "babel-plugin-transform-lwc-class";
 
 import { ModuleImportLocation } from "./import-location-collector";
@@ -13,6 +15,8 @@ export type MetadataDecorators = Array<
 export interface BundleMetadata {
     decorators: MetadataDecorators;
     importLocations: ModuleImportLocation[];
+    classMembers: ClassMember[];
+    declarationLoc?: Location;
 }
 
 export class MetadataCollector {
@@ -20,6 +24,8 @@ export class MetadataCollector {
         ApiDecorator | TrackDecorator | WireDecorator
     > = [];
     private importLocations: ModuleImportLocation[] = [];
+    private classMembers: ClassMember[] = [];
+    private declarationLoc?: Location;
 
     public collectDecorator(
         decorator: ApiDecorator | TrackDecorator | WireDecorator
@@ -31,10 +37,20 @@ export class MetadataCollector {
         this.importLocations.push(...importLocations);
     }
 
+    public collectClassMember(classMember: ClassMember) {
+        this.classMembers.push(classMember);
+    }
+
+    public setDeclarationLoc(declarationLoc?: Location) {
+        this.declarationLoc = declarationLoc;
+    }
+
     public getMetadata(): BundleMetadata {
         return {
             decorators: this.decorators,
-            importLocations: this.importLocations
+            importLocations: this.importLocations,
+            classMembers: this.classMembers,
+            declarationLoc: this.declarationLoc,
         };
     }
 }

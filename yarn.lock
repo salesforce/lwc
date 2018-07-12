@@ -2990,12 +2990,6 @@ commander@~2.13.0:
   version "2.13.0"
   resolved "http://npm.lwcjs.org/commander/-/commander-2.13.0/6964bca67685df7c1f1430c584f07d7597885b9c.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
 
-comment-parser@^0.5.0:
-  version "0.5.0"
-  resolved "http://npm.lwcjs.org/comment-parser/-/comment-parser-0.5.0/e833701804308eedef96c0b5029375b07f4eba1e.tgz#e833701804308eedef96c0b5029375b07f4eba1e"
-  dependencies:
-    readable-stream "^2.0.4"
-
 commitizen@~2.9.6:
   version "2.9.6"
   resolved "http://npm.lwcjs.org/commitizen/-/commitizen-2.9.6/c0d00535ef264da7f63737edfda4228983fa2291.tgz#c0d00535ef264da7f63737edfda4228983fa2291"

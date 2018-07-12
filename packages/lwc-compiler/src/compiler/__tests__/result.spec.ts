@@ -222,7 +222,7 @@ describe("compiler result", () => {
     });
 });
 
-describe("comiler metadata", () => {
+describe("compiler metadata", () => {
     it("decorators and import locations", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
@@ -270,7 +270,49 @@ describe("comiler metadata", () => {
                     ]
                 }
             ],
-            importLocations: []
+            importLocations: [],
+            classMembers: [
+                {
+                    name: "publicProp",
+                    type: "property",
+                    decorator: "api",
+                    loc: {
+                        start: { column: 4, line: 6 },
+                        end: { column: 15, line: 7 },
+                    },
+                },
+                {
+                    name: "publicMethod",
+                    type: "method",
+                    decorator: "api",
+                    loc: {
+                        start: { column: 4, line: 9 },
+                        end: { column: 5, line: 12 },
+                    },
+                },
+                {
+                    name: "wiredProp",
+                    type: "property",
+                    decorator: "wire",
+                    loc: {
+                        start: { column: 4, line: 14 },
+                        end: { column: 14, line: 15 },
+                    },
+                },
+                {
+                    name: "wiredMethod",
+                    type: "method",
+                    decorator: "wire",
+                    loc: {
+                        start: { column: 4, line: 17 },
+                        end: { column: 5, line: 19 },
+                    },
+                }
+            ],
+            declarationLoc: {
+                start: {column: 0, line: 5},
+                end: {column: 1, line: 20},
+            }
         });
     });
 });

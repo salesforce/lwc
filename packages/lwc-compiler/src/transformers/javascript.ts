@@ -30,6 +30,10 @@ export default function(
 
     if (metadataCollector) {
         metadata.decorators.forEach(d => metadataCollector.collectDecorator(d));
+        if (metadata.classMembers) {
+            metadata.classMembers.forEach(c => metadataCollector.collectClassMember(c));
+        }
+        metadataCollector.setDeclarationLoc(metadata.declarationLoc);
     }
 
     return {
