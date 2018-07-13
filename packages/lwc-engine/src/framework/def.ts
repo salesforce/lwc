@@ -95,17 +95,8 @@ import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
 const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 function getCtorProto(Ctor: any): any {
-    let proto = getPrototypeOf(Ctor);
-    // covering the cases where the ref is circular in AMD
-    if (isCircularModuleDependency(proto)) {
-        const p = resolveCircularModuleDependency(proto);
-        // escape hatch for Locker and other abstractions to provide their own base class instead
-        // of our Base class without having to leak it to user-land. If the circular function returns
-        // itself, that's the signal that we have hit the end of the proto chain, which must always
-        // be base.
-        proto = p === proto ? BaseElement : p;
-    }
-    return proto;
+    const proto = getPrototypeOf(Ctor);
+    return isCircularModuleDependency(proto) ? resolveCircularModuleDependency(proto) : proto;
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
