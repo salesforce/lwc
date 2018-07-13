@@ -331,5 +331,17 @@ describe('def', () => {
             // make sure it picks the props from LightingElement
             expect(getComponentDef(B).props.title).toBeDefined();
         });
+
+        it('should allow escape hatch for Locker and other systems to provide their own base class to mimic LightningElement', () => {
+            // circular artifact for LightingElement
+            function CircularA() {
+                return CircularA; // because it returns itself, the engine knows what to do.
+            }
+            CircularA.__circular__ = true;
+
+            class B extends CircularA {}
+            // make sure it picks the props from LightingElement
+            expect(getComponentDef(B).props.title).toBeDefined();
+        });
     });
 });
