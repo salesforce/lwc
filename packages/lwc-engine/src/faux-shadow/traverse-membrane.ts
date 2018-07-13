@@ -19,6 +19,12 @@ const traverseMembraneHandler = {
         if (key === TargetSlot) {
             return originalTarget;
         }
+
+        // We don't want to introduce shadow targets to this membrane,
+        // so if user is trying to access something that is non-configurable,
+        // we just return the unwrapped value to the user. One use case for
+        // this is accessing element.constructor.prototype. Other use cases
+        // may exist.
         const propertyDescriptor = getOwnPropertyDescriptor(originalTarget, key);
         if (!isUndefined(propertyDescriptor) && isFalse(propertyDescriptor.configurable)) {
             return originalTarget[key];
