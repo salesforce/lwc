@@ -2231,7 +2231,26 @@ describe('html-element', () => {
             const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
 
             expect(childElm.getAttribute('title')).toBe('child title');
-        })
+        });
+    });
+
+    describe('integration', () => {
+        describe('with locker', () => {
+            it('should support manual construction', () => {
+                const seed = {};
+                function SecureBase() {
+                    if (this instanceof SecureBase) {
+                        LightningElement.prototype.constructor.call(this);
+                    } else {
+                        return LightningElement;
+                    }
+                }
+                SecureBase.__circular__ = true;
+                class Foo extends SecureBase {}
+                const elm = createElement('x-parent', { is: Foo });
+                document.body.appendChild(elm);
+            });
+        });
     });
 
 });
