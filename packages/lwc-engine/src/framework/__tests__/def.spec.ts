@@ -312,4 +312,24 @@ describe('def', () => {
             });
         });
     });
+    describe('circular references', () => {
+        it('should be resolved on for __proto__', () => {
+            class A extends LightningElement  {}
+            A.publicProps = {
+                a: {}
+            };
+
+            // circular artifact for A
+            function CircularA() {
+                return A;
+            }
+            CircularA.__circular__ = true;
+
+            class B extends CircularA {}
+            // make sure it picks the props from A
+            expect(getComponentDef(B).props.a).toEqual(getComponentDef(A).props.a);
+            // make sure it picks the props from LightingElement
+            expect(getComponentDef(B).props.title).toBeDefined();
+        });
+    });
 });

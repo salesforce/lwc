@@ -96,7 +96,7 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
-    return isCircularModuleDependency(Ctor) ? resolveCircularModuleDependency(proto) : proto;
+    return isCircularModuleDependency(proto) ? resolveCircularModuleDependency(proto) : proto;
 }
 
 // According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
