@@ -1,7 +1,13 @@
-import { TargetSlot, ArrayPush, ArrayConcat } from './shared';
-
-const { create, getPrototypeOf, getOwnPropertyNames, getOwnPropertySymbols } = Object;
-const { isArray } = Array;
+import {
+    TargetSlot,
+    ArrayPush,
+    ArrayConcat,
+    isArray,
+    ObjectCreate,
+    getPrototypeOf,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
+} from './shared';
 
 interface DevToolFormatter {
     header: (object: any, config: any) => any;
@@ -28,7 +34,7 @@ function extract(objectOrArray: any): any {
         });
     }
 
-    const obj = create(getPrototypeOf(objectOrArray));
+    const obj = ObjectCreate(getPrototypeOf(objectOrArray));
     const names = getOwnPropertyNames(objectOrArray);
     return ArrayConcat.call(names, getOwnPropertySymbols(objectOrArray))
         .reduce((seed: any, key: PropertyKey) => {

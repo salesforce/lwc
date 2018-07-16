@@ -1,16 +1,20 @@
 import { ReactiveMembrane } from './../reactive-membrane';
 
+function doNothing(v) {
+    /* do nothing */
+}
+
 describe('distortion', () => {
     it('should use distorted value', () => {
         const o = { x: 1 };
         const target = new ReactiveMembrane((value) => {
             if (typeof value === 'number') {
-                return value * 2
+                return value * 2;
             }
             return value;
         }, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const wet = target.getProxy(o);
@@ -22,16 +26,16 @@ describe('distortion', () => {
         const memberAccessSpy = jest.fn();
         const target = new ReactiveMembrane((value) => {
             if (typeof value === 'number') {
-                return value * 2
+                return value * 2;
             }
             return value;
         }, {
-            propertyMemberChange: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
             propertyMemberAccess: memberAccessSpy,
         });
 
         const wet = target.getProxy(o);
-        wet.x;
+        doNothing(wet.x);
         expect(memberAccessSpy).toHaveBeenLastCalledWith(o, 'x');
     });
 
@@ -40,12 +44,12 @@ describe('distortion', () => {
         const memberChangeSpy = jest.fn();
         const target = new ReactiveMembrane((value) => {
             if (typeof value === 'number') {
-                return value * 2
+                return value * 2;
             }
             return value;
         }, {
             propertyMemberChange: memberChangeSpy,
-            propertyMemberAccess: () => {},
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const wet = target.getProxy(o);
@@ -58,8 +62,8 @@ describe('ReactiveHandler', () => {
     it('should always return the same proxy', () => {
         const o = { x: 1 };
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const first = target.getProxy(o);
@@ -70,8 +74,8 @@ describe('ReactiveHandler', () => {
     it('should not try to make date object reactive', function() {
         const date = new Date();
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const state = target.getProxy({});
@@ -81,8 +85,8 @@ describe('ReactiveHandler', () => {
     it('should not try to make inherited object reactive', function() {
         const foo = Object.create({});
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const state = target.getProxy({});
@@ -92,8 +96,8 @@ describe('ReactiveHandler', () => {
     it('should never rewrap a previously produced proxy', () => {
         const o = { x: 1 };
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const first = target.getProxy(o);
         const second = target.getProxy(first);
@@ -103,8 +107,8 @@ describe('ReactiveHandler', () => {
     it('should rewrap unknown proxy', () => {
         const o = { x: 1 };
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const first = new Proxy(o, {});
         const second = target.getProxy(first);
@@ -115,19 +119,19 @@ describe('ReactiveHandler', () => {
             foo: {}
         });
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const property = target.getProxy(o);
         expect(() => {
-            property.foo;
+            doNothing(property.foo);
         }).not.toThrow();
     });
     it('should handle freezing proxy correctly', function() {
         const o = { foo: 'bar' };
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const property = target.getProxy(o);
         expect(() => {
@@ -136,11 +140,11 @@ describe('ReactiveHandler', () => {
     });
     it('should maintain equality', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
-        const a = {
+        const a: any = {
             foo: {
                 self: null
             }
@@ -153,8 +157,8 @@ describe('ReactiveHandler', () => {
     });
     it('should understand property desc with getter', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const obj = {
@@ -176,8 +180,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle has correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -188,8 +192,8 @@ describe('ReactiveHandler', () => {
     });
     it('should delete writable properties correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = [{ foo: 'bar' }];
 
@@ -200,8 +204,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle extensible correctly when target is extensible', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const hello = {
             hello: 'world'
@@ -216,8 +220,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle preventExtensions correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -236,8 +240,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle defineProperty correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -251,11 +255,11 @@ describe('ReactiveHandler', () => {
     });
     it('should assign correct value on original object with defineProperty correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const other = {};
-        const obj = {
+        const obj: any = {
             foo: 'bar',
             other
         };
@@ -268,8 +272,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle defineProperty correctly with undefined non-configurable descriptor', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -284,8 +288,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle defineProperty correctly when descriptor is non-configurable', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -301,8 +305,8 @@ describe('ReactiveHandler', () => {
     });
     it('should not allow deleting non-configurable property', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -320,8 +324,8 @@ describe('ReactiveHandler', () => {
     });
     it('should not allow re-defining non-configurable property', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             foo: 'bar'
@@ -342,8 +346,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle preventExtensions', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             nested: {
@@ -363,8 +367,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle preventExtensions when original target has non-configurable property', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {};
         const nested = {};
@@ -383,8 +387,8 @@ describe('ReactiveHandler', () => {
     });
     it('should not throw an exception when preventExtensions is called on proxy and property is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = [
             { text: 'Learn JavaScript' },
@@ -394,13 +398,13 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.preventExtensions(proxy);
         expect(() => {
-            proxy[0];
+            doNothing(proxy[0]);
         }).not.toThrow();
     });
     it('should not throw an exception when array proxy is frozen and property is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = [
             { text: 'Learn JavaScript' },
@@ -410,14 +414,14 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.freeze(proxy);
         expect(() => {
-            proxy[0];
+            doNothing(proxy[0]);
         }).not.toThrow();
     });
 
     it('should not throw an exception when object proxy is frozen and property is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {
             first: { text: 'Learn JavaScript' }
@@ -425,15 +429,15 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.freeze(proxy);
         expect(() => {
-            proxy.first;
+            doNothing(proxy.first);
         }).not.toThrow();
         expect(proxy.first).toEqual(todos.first);
     });
 
     it('should not throw an exception when object proxy is frozen and property with undefined value is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {
             first: undefined
@@ -441,15 +445,15 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.freeze(proxy);
         expect(() => {
-            proxy.first;
+            doNothing(proxy.first);
         }).not.toThrow();
         expect(proxy.first).toEqual(todos.first);
     });
 
     it('should not throw an exception when object proxy is frozen and property with null value is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {
             first: null
@@ -457,15 +461,15 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.freeze(proxy);
         expect(() => {
-            proxy.first;
+            doNothing(proxy.first);
         }).not.toThrow();
         expect(proxy.first).toEqual(todos.first);
     });
 
     it('should not throw an exception when object proxy is frozen and property with getter is accessed', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {};
         Object.defineProperty(todos, 'first', {
@@ -476,14 +480,14 @@ describe('ReactiveHandler', () => {
         const proxy = target.getProxy(todos);
         Object.freeze(proxy);
         expect(() => {
-            proxy.first;
+            doNothing(proxy.first);
         }).not.toThrow();
         expect(proxy.first).toEqual({ text: 'Learn JavaScript' });
     });
     it('should not throw when using hasOwnProperty on nested frozen property', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = { frozen: { foo: { bar: true } } };
         const proxy = target.getProxy(obj);
@@ -495,8 +499,8 @@ describe('ReactiveHandler', () => {
     });
     it('should not throw when using hasOwnProperty on frozen property', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = { foo: 'bar' };
         const proxy = target.getProxy(obj);
@@ -511,8 +515,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle defineProperty with writable false and undefined value', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {};
         Object.defineProperty(todos, 'first', {
@@ -528,8 +532,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle defineProperty for getter with writable false and no value', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const todos = {};
         Object.defineProperty(todos, 'first', {
@@ -546,8 +550,8 @@ describe('ReactiveHandler', () => {
     });
     it('should freeze objects correctly when object has symbols', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const sym = Symbol();
         const symValue = { sym: 'value' };
@@ -561,8 +565,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle Object.getOwnPropertyNames correctly', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const obj = {
             a: 'b'
@@ -572,8 +576,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle Object.getOwnPropertyNames when object has symbol', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const sym = Symbol();
         const obj = {
@@ -585,8 +589,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle Object.getOwnPropertySymbols when object has symbol', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const sym = Symbol();
         const obj = {
@@ -597,8 +601,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle Object.getOwnPropertySymbols when object has symbol and key', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const sym = Symbol();
         const obj = {
@@ -610,8 +614,8 @@ describe('ReactiveHandler', () => {
     });
     it('should handle Object.keys when object has symbol and key', function() {
         const target = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
         const sym = Symbol();
         const obj = {
@@ -624,8 +628,8 @@ describe('ReactiveHandler', () => {
 
     it('should maintain equality', () => {
         const membrane = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const obj = {};
@@ -634,8 +638,8 @@ describe('ReactiveHandler', () => {
 
     it('should allow deep mutations', () => {
         const membrane = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
-            propertyMemberAccess: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const obj = membrane.getProxy({});
@@ -651,7 +655,7 @@ describe('ReactiveHandler', () => {
         const changeSpy = jest.fn();
         const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: changeSpy,
-            propertyMemberAccess: () => {},
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const wet = membrane.getProxy(obj);
@@ -669,7 +673,7 @@ describe('ReactiveHandler', () => {
         const changeSpy = jest.fn();
         const membrane = new ReactiveMembrane((value) => value, {
             propertyMemberChange: changeSpy,
-            propertyMemberAccess: () => {},
+            propertyMemberAccess: () => { /* do nothing */ },
         });
 
         const wet = membrane.getProxy(obj);
@@ -684,12 +688,12 @@ describe('ReactiveHandler', () => {
         };
         const accessSpy = jest.fn();
         const membrane = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
             propertyMemberAccess: accessSpy,
         });
 
         const wet = membrane.getProxy(obj);
-        wet.foo;
+        doNothing(wet.foo);
         expect(accessSpy).toHaveBeenCalledTimes(1);
         expect(accessSpy).toHaveBeenCalledWith(obj, 'foo');
     });
@@ -702,12 +706,12 @@ describe('ReactiveHandler', () => {
         };
         const accessSpy = jest.fn();
         const membrane = new ReactiveMembrane((value) => value, {
-            propertyMemberChange: () => {},
+            propertyMemberChange: () => { /* do nothing */ },
             propertyMemberAccess: accessSpy,
         });
 
         const wet = membrane.getProxy(obj);
-        wet.foo.bar;
+        doNothing(wet.foo.bar);
         expect(accessSpy).toHaveBeenCalledTimes(2);
         expect(accessSpy).toHaveBeenLastCalledWith(obj.foo, 'bar');
     });
