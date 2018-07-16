@@ -5,6 +5,11 @@ const {
     create: ObjectCreate,
     defineProperty: ObjectDefineProperty,
     defineProperties: ObjectDefineProperties,
+    isExtensible,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
+    preventExtensions,
 } = Object;
 
 const {
@@ -18,9 +23,15 @@ export {
     ArrayConcat,
     ArrayMap,
     isArray,
+    getPrototypeOf,
     ObjectCreate,
     ObjectDefineProperty,
     ObjectDefineProperties,
+    isExtensible,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
+    preventExtensions,
 };
 
 const ObjectDotPrototype = Object.prototype;
@@ -52,6 +63,7 @@ export const unwrap = getKey ?
     : (replicaOrAny: any): any => (replicaOrAny && replicaOrAny[TargetSlot]) || replicaOrAny;
 
 export function isObservable(value: any): boolean {
+    // intentionally checking for null and undefined
     if (value == null) {
         return false;
     }
@@ -65,33 +77,4 @@ export function isObservable(value: any): boolean {
 
 export function isObject(obj: any): obj is object {
     return typeof obj === 'object';
-}
-
-export function isFunction(obj: any): obj is Function {
-    return typeof obj === 'function';
-}
-
-export function logWarning(msg: string) {
-    try {
-        throw new Error(msg);
-    } catch (e) {
-        const stackTraceLines: string[] = e.stack.split('\n');
-        console.group(`Warning: ${msg}`); // tslint:disable-line
-        stackTraceLines.filter((trace) => {
-             // Chrome adds the error message as the first item in the stack trace
-             // So we filter it out to prevent logging it twice.
-            return trace.replace('Error: ', '') !== msg;
-        })
-        .forEach((trace) => {
-            // We need to format this as a string,
-            // because Safari will detect that the string
-            // is a stack trace line item and will format it as so
-            console.log('%s', trace.trim()); // tslint:disable-line
-        });
-        console.groupEnd(); // tslint:disable-line
-    }
-}
-
-export function isNull(obj: any): obj is null {
-    return obj === null;
 }

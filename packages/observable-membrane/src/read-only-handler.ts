@@ -2,6 +2,11 @@ import {
     isUndefined,
     TargetSlot,
     isObservable,
+    ArrayConcat,
+    ObjectDefineProperty,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
 } from './shared';
 
 import {
@@ -9,17 +14,6 @@ import {
     observeMutation,
     ReactiveMembraneShadowTarget,
 } from './reactive-membrane';
-
-const {
-    getOwnPropertyDescriptor,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    defineProperty,
-} = Object;
-
-const {
-    concat: ArrayConcat,
-} = Array.prototype;
 
 function wrapDescriptor(membrane: ReactiveMembrane, descriptor: PropertyDescriptor): PropertyDescriptor {
     if ('value' in descriptor) {
@@ -47,14 +41,14 @@ export class ReadOnlyHandler {
     set(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, value: any): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot set "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+            throw new Error(`Invalid mutation: Cannot set "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }
     deleteProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot delete "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+            throw new Error(`Invalid mutation: Cannot delete "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }
@@ -97,7 +91,7 @@ export class ReadOnlyHandler {
             // This is our last chance to lock the value.
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/getOwnPropertyDescriptor#Invariants
             desc = wrapDescriptor(membrane, desc);
-            defineProperty(shadowTarget, key, desc);
+            ObjectDefineProperty(shadowTarget, key, desc);
         }
         return shadowDescriptor || desc;
     }
@@ -111,7 +105,7 @@ export class ReadOnlyHandler {
     defineProperty(shadowTarget: ReactiveMembraneShadowTarget, key: PropertyKey, descriptor: PropertyDescriptor): boolean {
         if (process.env.NODE_ENV !== 'production') {
             const { originalTarget } = this;
-            throw new Error(`Invalid mutation: Cannot defineProperty "${key}" on "${originalTarget}". "${originalTarget}" is read-only.`);
+            throw new Error(`Invalid mutation: Cannot defineProperty "${key.toString()}" on "${originalTarget}". "${originalTarget}" is read-only.`);
         }
         return false;
     }

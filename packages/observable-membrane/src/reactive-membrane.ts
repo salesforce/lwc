@@ -15,17 +15,17 @@ if (process.env.NODE_ENV !== 'production') {
     initDevFormatter();
 }
 
-export interface ReactiveState {
+interface ReactiveState {
     readOnly: any;
     reactive: any;
     shadowTarget: ReactiveMembraneShadowTarget;
 }
 
-export type ReactiveMembraneShadowTarget = Object | any[];
-export type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
-export type ReactiveMembraneDistortionCallback = (value: any) => any;
+export type ReactiveMembraneShadowTarget = object | any[];
+type ReactiveMembraneEventHander = (obj: any, key: PropertyKey) => void;
+type ReactiveMembraneDistortionCallback = (value: any) => any;
 
-export interface ReactiveMembraneEventHandlerMap {
+interface ReactiveMembraneEventHandlerMap {
     propertyMemberChange: ReactiveMembraneEventHander;
     propertyMemberAccess: ReactiveMembraneEventHander;
     [key: string]: ReactiveMembraneEventHander;

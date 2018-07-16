@@ -4,6 +4,15 @@ import {
     TargetSlot,
     unwrap,
     isObservable,
+    ArrayConcat,
+    isArray,
+    ObjectDefineProperty,
+    getPrototypeOf,
+    isExtensible,
+    getOwnPropertyDescriptor,
+    getOwnPropertyNames,
+    getOwnPropertySymbols,
+    preventExtensions,
 } from './shared';
 
 import {
@@ -12,21 +21,6 @@ import {
     observeMutation,
     ReactiveMembraneShadowTarget,
 } from './reactive-membrane';
-
-const { isArray } = Array;
-const {
-    getPrototypeOf,
-    isExtensible,
-    getOwnPropertyDescriptor,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    defineProperty,
-    preventExtensions,
-} = Object;
-
-const {
-    concat: ArrayConcat,
-} = Array.prototype;
 
 // Unwrap property descriptors
 // We only need to unwrap if value is specified
@@ -57,7 +51,7 @@ function lockShadowTarget(membrane: ReactiveMembrane, shadowTarget: ReactiveMemb
         if (!descriptor.configurable) {
             descriptor = wrapDescriptor(membrane, descriptor);
         }
-        defineProperty(shadowTarget, key, descriptor);
+        ObjectDefineProperty(shadowTarget, key, descriptor);
     });
 
     preventExtensions(shadowTarget);
@@ -158,7 +152,7 @@ export class ReactiveProxyHandler {
             // This is our last chance to lock the value.
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/getOwnPropertyDescriptor#Invariants
             desc = wrapDescriptor(membrane, desc);
-            defineProperty(shadowTarget, key, desc);
+            ObjectDefineProperty(shadowTarget, key, desc);
         }
         return shadowDescriptor || desc;
     }
@@ -183,9 +177,9 @@ export class ReactiveProxyHandler {
             const originalDescriptor = getOwnPropertyDescriptor(originalTarget, key) as PropertyDescriptor;
             descriptor.value = originalDescriptor.value;
         }
-        defineProperty(originalTarget, key, unwrapDescriptor(descriptor));
+        ObjectDefineProperty(originalTarget, key, unwrapDescriptor(descriptor));
         if (configurable === false) {
-            defineProperty(shadowTarget, key, wrapDescriptor(membrane, descriptor));
+            ObjectDefineProperty(shadowTarget, key, wrapDescriptor(membrane, descriptor));
         }
 
         notifyMutation(membrane, originalTarget, key);

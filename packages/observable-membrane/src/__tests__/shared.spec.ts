@@ -17,7 +17,9 @@ describe('#isObservable', function() {
     });
 
     it('should return false for functions', function() {
-        const reactive = isObservable(function() {});
+        const reactive = isObservable(function() {
+            // do nothing
+        });
         expect(!reactive);
     });
 
