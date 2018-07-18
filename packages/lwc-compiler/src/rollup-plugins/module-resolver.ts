@@ -70,6 +70,9 @@ export default function({
                         importer,
                     );
                 }
+                console.log('-----> importee: ', importee);
+                console.log('-----> absPath: ', absPath);
+                console.log('-----> importer: ', importer);
                 throw new CompilerError(
                     `Could not resolve '${importee}' (as ${absPath}) from compiler entry point`,
                     importer,
