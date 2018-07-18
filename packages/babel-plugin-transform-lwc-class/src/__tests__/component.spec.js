@@ -145,7 +145,7 @@ describe('metadata', () => {
                 decorators: [],
                 classMembers: [],
                 declarationLoc: { start: { line: 3, column: 0 }, end: { line: 4, column: 1 }},
-                doc: 'Foo doc',
+                doc: '* Foo doc',
             }
         }
     });
@@ -163,7 +163,7 @@ describe('metadata', () => {
                 decorators: [],
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 6 }, start: { column: 0, line: 5 } },
-                doc: "Foo doc",
+                doc: "*\n* Foo doc",
             }
         }
     });
@@ -182,7 +182,7 @@ describe('metadata', () => {
                 decorators: [],
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 7 }, start: { column: 0, line: 6 } },
-                doc: 'multi\nline',
+                doc: '*\n* multi\n* line',
             }
         }
     });
@@ -199,7 +199,7 @@ describe('metadata', () => {
                 decorators: [],
                 classMembers: [],
                 declarationLoc: { end: { column: 1, line: 5 }, start: { column: 0, line: 4 } },
-                doc: "last",
+                doc: "* last",
             },
         }
     });
@@ -214,6 +214,7 @@ describe('metadata', () => {
             metadata: {
                 decorators: [],
                 classMembers: [],
+                doc: "*",
                 declarationLoc: {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
@@ -272,7 +273,7 @@ describe('metadata', () => {
                     end: { column: 1, line: 4 },
                     start: { column: 0, line: 3 }
                 },
-                doc: "{ one: \"1\", two: '2', array: [1, 2, 3]}",
+                doc: "* { one: \"1\", two: '2', array: [1, 2, 3]}",
             }
         }
     });
@@ -329,7 +330,7 @@ describe('metadata', () => {
                                 start: { line: 5, column: 24 },
                                 end: { line: 5, column: 40 }
                             },
-                            doc: "property-comment",
+                            doc: "* property-comment",
                             decorator: "api"
                         },
                         {
@@ -339,7 +340,7 @@ describe('metadata', () => {
                                 start: { line: 6, column: 22 },
                                 end: { line: 6, column: 44 }
                             },
-                            doc: "method-comment",
+                            doc: "* method-comment",
                             decorator: "api"
                         },
                         {

@@ -222,7 +222,7 @@ describe("compiler result", () => {
     });
 });
 
-describe("comiler metadata", () => {
+describe("compiler metadata", () => {
     it("decorators and import locations", async () => {
         const { result: { code, metadata } } = await compile({
             name: "foo",
@@ -270,7 +270,128 @@ describe("comiler metadata", () => {
                     ]
                 }
             ],
-            importLocations: []
+            importLocations: [],
+            classMembers: [
+                {
+                    name: "publicProp",
+                    type: "property",
+                    decorator: "api",
+                    loc: {
+                        start: { column: 4, line: 6 },
+                        end: { column: 15, line: 7 },
+                    },
+                },
+                {
+                    name: "publicMethod",
+                    type: "method",
+                    decorator: "api",
+                    loc: {
+                        start: { column: 4, line: 9 },
+                        end: { column: 5, line: 12 },
+                    },
+                },
+                {
+                    name: "wiredProp",
+                    type: "property",
+                    decorator: "wire",
+                    loc: {
+                        start: { column: 4, line: 14 },
+                        end: { column: 14, line: 15 },
+                    },
+                },
+                {
+                    name: "wiredMethod",
+                    type: "method",
+                    decorator: "wire",
+                    loc: {
+                        start: { column: 4, line: 17 },
+                        end: { column: 5, line: 19 },
+                    },
+                }
+            ],
+            declarationLoc: {
+                start: {column: 0, line: 5},
+                end: {column: 1, line: 20},
+            }
+        });
+    });
+
+    it("doc", async () => {
+        const { result: { code, metadata } } = await compile({
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { Element, api } from 'engine';
+                /** class jsdoc */
+                export default class Test extends Element {
+                    /** prop1 */
+                    @api prop1;
+
+                    /** prop2 */
+                    @api get prop2() {
+                    }
+
+                    /** method1 */
+                    @api method1() {}
+                }
+                `,
+                "foo.html": "<template>foo</template>",
+            },
+        });
+
+        expect(metadata).toEqual({
+            decorators: [
+                {
+                    type: "api",
+                    targets: [
+                        { type: "property", name: "prop1" },
+                        { type: "method", name: "method1" }
+                    ]
+                }
+            ],
+            importLocations: [
+                {
+                    location: { length: 6, start: 18 },
+                     name: "engine"
+                }
+            ],
+            classMembers: [
+                {
+                    name: "prop1",
+                    type: "property",
+                    decorator: "api",
+                    doc: "* prop1",
+                    loc: {
+                        start: { column: 20, line: 5 },
+                        end: { column: 31, line: 5 },
+                    },
+                },
+                {
+                    name: "prop2",
+                    type: "property",
+                    decorator: "api",
+                    doc: "* prop2",
+                    loc: {
+                        start: { column: 20, line: 8 },
+                        end: { column: 21, line: 9 },
+                    },
+                },
+                {
+                    name: "method1",
+                    type: "method",
+                    decorator: "api",
+                    doc: "* method1",
+                    loc: {
+                        start: { column: 20, line: 12 },
+                        end: { column: 37, line: 12 },
+                    },
+                },
+            ],
+            declarationLoc: {
+                start: {column: 16, line: 3},
+                end: {column: 17, line: 13},
+            },
+            doc: "* class jsdoc",
         });
     });
 });
