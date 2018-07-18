@@ -1,13 +1,13 @@
-import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
 import { createElement } from "../../framework/upgrade";
 import { compileTemplate } from 'test-utils';
+import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
 
 interface LightningSlotElement extends HTMLSlotElement {
     assignedElements(options?: object): Element[];
 }
 
 describe.skip('slotchange event', () => {
-    describe('declarative binding', () {
+    describe('declarative binding', () => {
         // Initialized before each test
         let element;
 
@@ -39,7 +39,7 @@ describe.skip('slotchange event', () => {
         });
     });
 
-    describe('programmatic binding', () {
+    describe('programmatic binding', () => {
         // Initialized before each test
         let element;
 

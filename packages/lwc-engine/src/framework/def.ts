@@ -137,10 +137,6 @@ function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
 }
 
 function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
-    if (globalInitialization) {
-        // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-        globalInitialization();
-    }
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
 
@@ -401,58 +397,55 @@ const globalElmDescriptors: PropertyDescriptorMap = create(null, {
     [PatchedFlag]: {}
 });
 
-let globalInitialization: any = () => {
-    // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-    forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
-        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-        // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
-        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-        if (!isUndefined(descriptor)) {
-            const attrName = getAttrNameFromPropName(propName);
-            HTML_PROPS[propName] = {
-                config: 3,
-                type: 'any',
-                attr: attrName,
-            };
-            const globalElmDescriptor = globalElmDescriptors[propName] = {
-                get: createGetter(propName),
-                set: createSetter(propName),
-                enumerable: true,
-                configurable: true,
-            };
-            defineProperty(globalElmProto, propName, globalElmDescriptor);
-            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-        }
-    });
-    forEach.call(defaultDefHTMLPropertyNames, (propName) => {
-        // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-        // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
-        // this category, so, better to be sure.
-        const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
-        if (!isUndefined(descriptor)) {
-            const attrName = getAttrNameFromPropName(propName);
-            HTML_PROPS[propName] = {
-                config: 3,
-                type: 'any',
-                attr: attrName,
-            };
-            const globalElmDescriptor = globalElmDescriptors[propName] = {
-                get: createGetter(propName),
-                set: createSetter(propName),
-                enumerable: true,
-                configurable: true,
-            };
-            defineProperty(globalElmProto, propName, globalElmDescriptor);
-            GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
-        }
-    });
-    defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
-
-    if (process.env.NODE_ENV !== 'production') {
-        patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
+    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+    // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
+    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+    if (!isUndefined(descriptor)) {
+        const attrName = getAttrNameFromPropName(propName);
+        HTML_PROPS[propName] = {
+            config: 3,
+            type: 'any',
+            attr: attrName,
+        };
+        const globalElmDescriptor = globalElmDescriptors[propName] = {
+            get: createGetter(propName),
+            set: createSetter(propName),
+            enumerable: true,
+            configurable: true,
+        };
+        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
     }
+});
+forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
+    // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
+    // this category, so, better to be sure.
+    const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
+    if (!isUndefined(descriptor)) {
+        const attrName = getAttrNameFromPropName(propName);
+        HTML_PROPS[propName] = {
+            config: 3,
+            type: 'any',
+            attr: attrName,
+        };
+        const globalElmDescriptor = globalElmDescriptors[propName] = {
+            get: createGetter(propName),
+            set: createSetter(propName),
+            enumerable: true,
+            configurable: true,
+        };
+        defineProperty(globalElmProto, propName, globalElmDescriptor);
+        GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
+    }
+});
 
-    freeze(BaseElement);
-    seal(BaseElement.prototype);
-    globalInitialization = void(0);
-};
+defineProperties(BaseElement.prototype, createBaseElementStandardPropertyDescriptors(GLOBAL_PROPS_DESCRIPTORS));
+
+if (process.env.NODE_ENV !== 'production') {
+    patchLightningElementPrototypeWithRestrictions(BaseElement.prototype);
+}
+
+freeze(BaseElement);
+seal(BaseElement.prototype);
