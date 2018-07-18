@@ -1,4 +1,4 @@
-# Raptor Restrictions
+ # Raptor Restrictions
 
 This document describes a series of restrictions, and limitations of Raptor Elements, and why they are in place. This is mostly intended for authors of LWC components.
 
@@ -46,6 +46,7 @@ These are the restrictions that we are imposing up top of the standard set of re
 
 * [x] `this.addEventListener(elm, type, options)` is discouraged if `options` is present because passive and once are not supported at the moment.
 * [x] `this.attachShadow()` is executed in the super during construction, and cannot be invoked more than once on the same element.
+* [ ] enable `this.getElementByTagName`.
 
 ### Slots
 
@@ -57,6 +58,8 @@ These are the restrictions that we are imposing up top of the standard set of re
 * [x] `this.template.ownerDocument` is disallowed. This is to prevent accessing the global document via dot notation.`);
 * [x] methods `appendChild`, `removeChild`, `replaceChild`, `cloneNode`, `insertBefore`, `getElementById`, `getSelection`, `elementFromPoint` and `elementsFromPoint` are disallowed.
 * [x] `this.template.addEventListener(elm, type, options)` is discouraged if `options` is present because passive and once are not supported at the moment.
+* [ ] enable `this.template.getElementByTagName`.
+* [ ] `this.template.firstChild` and `this.template.lastChild` are disallowed to support auto-insertion of styles when needed.
 
 All Raptor components are aligned with the idea of a closed shadow root. Users don't have a way to create the shadowRoot, or attach it, that's done by the engine. And as part of the process, we do enforce it to be `closed` otherwise specified. The design goal of a `closed` mode is to disallow any access to content of the custom element from an outside world. As a result, the following APIs are subject to this kind of constraints, and cannot be used by consumers:
 
