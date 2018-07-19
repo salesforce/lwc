@@ -2,7 +2,6 @@ const { isApiDecorator } = require('./shared');
 const {
     AMBIGUOUS_PROP_SET,
     DISALLOWED_PROP_SET,
-    GLOBAL_ATTRIBUTE_MAP,
     LWC_PACKAGE_EXPORTS: { TRACK_DECORATOR },
     DECORATOR_TYPES
 } = require('../../constants');
@@ -60,7 +59,7 @@ function validatePropertyName(property) {
     }
 }
 
-function validatePairSetterGetter(decorators) {
+function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
     decorators.filter(decorator => (
         isApiDecorator(decorator) &&
         decorator.type === DECORATOR_TYPES.SETTER
@@ -73,8 +72,8 @@ function validatePairSetterGetter(decorators) {
             path.parentPath.get('key.name').node === name
         ));
 
-        if (!associatedGetter) {
-            throw path.buildCodeFrameError(`@api set ${name} setter does not have associated getter.`);
+        if (associatedGetter) {
+            console.warn(`\`@api get ${name}\` and \`@api set ${name}\` detected in class declaration. Only the getter needs to be decorated with @api.`);
         }
     });
 }
@@ -120,6 +119,6 @@ module.exports = function validate(klass, decorators) {
         }
     });
 
-    validatePairSetterGetter(decorators);
+    validateSingleApiDecoratorOnSetterGetterPair(decorators);
     validateUniqueness(decorators);
 };

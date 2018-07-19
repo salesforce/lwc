@@ -89,29 +89,31 @@ class FlameChart {
 }
 
 describe('performance-timing', () => {
-    let engine: any;
+    let createElement: any;
+    let LightningElement: any;
     let flamechart: FlameChart;
 
     beforeEach(() => {
         // Make sure to reset module cache between each test to ensure to reset the uid.
         jest.resetModules();
-        engine = require('../main.ts');
+        createElement = require('../main.ts').createElement;
+        LightningElement = require('../main.ts').LightningElement;
 
         flamechart = new FlameChart();
         flamechart.injectPolyfill();
     });
 
     it('captures component constructor', () => {
-        class Foo extends engine.Element {}
+        class Foo extends LightningElement {}
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
 
         expect(flamechart.toString()).toMatchSnapshot();
     });
 
     it('captures all lifecycle hooks', () => {
-        class Foo extends engine.Element {
+        class Foo extends LightningElement {
             // tslint:disable-next-line:no-empty
             connectedCallback() {}
 
@@ -122,7 +124,7 @@ describe('performance-timing', () => {
             disconnectedCallback() {}
         }
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
         document.body.removeChild(elm);
 
@@ -130,7 +132,7 @@ describe('performance-timing', () => {
     });
 
     it('captures nested component tree', () => {
-        class Bar extends engine.Element {
+        class Bar extends LightningElement {
             render() {
                 return ($api: any) => [
                     $api.h('span', { key: 0 }, [])
@@ -138,7 +140,7 @@ describe('performance-timing', () => {
             }
         }
 
-        class Foo extends engine.Element {
+        class Foo extends LightningElement {
             render() {
                 return ($api: any) => [
                     $api.c('x-bar', Bar, {}),
@@ -147,20 +149,20 @@ describe('performance-timing', () => {
             }
         }
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
 
         expect(flamechart.toString()).toMatchSnapshot();
     });
 
     it('recovers from errors', () => {
-        class Foo extends engine.Element {
+        class Foo extends LightningElement {
             render() {
                 throw new Error('Nooo!');
             }
         }
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
 
         try {
             document.body.appendChild(elm);
@@ -172,13 +174,13 @@ describe('performance-timing', () => {
     });
 
     it('captures error callback', () => {
-        class Bar extends engine.Element {
+        class Bar extends LightningElement {
             render() {
                 throw new Error('Noo!');
             }
         }
 
-        class Foo extends engine.Element {
+        class Foo extends LightningElement {
             render() {
                 return ($api: any) => [
                     $api.c('x-bar', Bar, {}),
@@ -189,7 +191,7 @@ describe('performance-timing', () => {
             errorCallback() {}
         }
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
 
         expect(flamechart.toString()).toMatchSnapshot();
@@ -199,7 +201,7 @@ describe('performance-timing', () => {
         let bar: Bar;
         let baz: Baz;
 
-        class Bar extends engine.Element {
+        class Bar extends LightningElement {
             state: boolean = false;
 
             connectedCallback() {
@@ -217,7 +219,7 @@ describe('performance-timing', () => {
             };
         }
 
-        class Baz extends engine.Element {
+        class Baz extends LightningElement {
             state: boolean = false;
 
             connectedCallback() {
@@ -235,7 +237,7 @@ describe('performance-timing', () => {
             };
         }
 
-        class Foo extends engine.Element {
+        class Foo extends LightningElement {
             render() {
                 return ($api: any) => {
                     return [
@@ -246,7 +248,7 @@ describe('performance-timing', () => {
             }
         }
 
-        const elm = engine.createElement('x-foo', { is: Foo });
+        const elm = createElement('x-foo', { is: Foo });
         document.body.appendChild(elm);
 
         flamechart.reset();

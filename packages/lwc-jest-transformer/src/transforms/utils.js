@@ -1,7 +1,43 @@
 const babelTemplate = require('@babel/template').default;
 
+const defaultTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = FALLBACK_DATA;
+    }
+`);
+
+const resolvedPromiseTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = function() { return Promise.resolve(); };
+    }
+`);
+
+const schemaObjectTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME };
+    }
+`);
+
+const schemaObjectAndFieldTemplate = babelTemplate(`
+    let RESOURCE_NAME;
+    try {
+        RESOURCE_NAME = require(IMPORT_SOURCE).default;
+    } catch (e) {
+        RESOURCE_NAME = { objectApiName: OBJECT_API_NAME, fieldApiName: FIELD_API_NAME };
+    }
+`);
+
 /*
- * For certain schemas (@label for example), transform a default import
+ * Transform a default import
  * statement into a try/catch that attempts to `require` the original import
  * and falls back to assigning the variable to a string of the path that was
  * attempted to be imported.
@@ -12,43 +48,79 @@ const babelTemplate = require('@babel/template').default;
  *
  * Example:
  *
- * import myImport from '@label/c.specialLabel';
+ * import myImport from '@salesforce/label/c.specialLabel';
  *
  * Will get transformed to:
  *
  * let myImport;
  * try {
- *     myImport = require(@label/c.specialLabel);
+ *     myImport = require(@salesforce/label/c.specialLabel);
  * } catch (e) {
  *     myImport = c.specialLabel;
  * }
  */
-function defaultSchemaImportTransform(t, path, importIdentifier) {
-    const tmpl = babelTemplate(`
-        let RESOURCE_NAME;
-        try {
-            RESOURCE_NAME = require(IMPORT_SOURCE).default;
-        } catch (e) {
-            RESOURCE_NAME = RESOURCE_PATH;
-        }
-    `);
+function stringScopedImportTransform(t, path, importIdentifier, fallbackData) {
+    const { importSource, resourceName } = getImportInfo(path);
 
-    const importSource = path.get('source.value').node;
-    const importSpecifiers = path.get('specifiers');
-    if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
-        throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@label/c.foo'"`);
-    }
+    // if no fallback value provided, use the resource path from the import statement
+    fallbackData = fallbackData || importSource.substring(importIdentifier.length);
 
-    const resourceName = importSpecifiers[0].get('local').node.name;
-    const resourcePath = importSource.substring(importIdentifier.length);
-
-    path.replaceWithMultiple(tmpl({
+    path.replaceWithMultiple(defaultTemplate({
         RESOURCE_NAME: t.identifier(resourceName),
         IMPORT_SOURCE: t.stringLiteral(importSource),
-        RESOURCE_PATH: t.stringLiteral(resourcePath)
+        FALLBACK_DATA: t.stringLiteral(fallbackData)
     }));
 }
 
+function resolvedPromiseScopedImportTransform(t, path) {
+    const { importSource, resourceName } = getImportInfo(path);
+
+    path.replaceWithMultiple(resolvedPromiseTemplate({
+        RESOURCE_NAME: t.identifier(resourceName),
+        IMPORT_SOURCE: t.stringLiteral(importSource),
+    }));
+}
+
+function schemaScopedImportTransform(t, path, importIdentifier) {
+    const { importSource, resourceName } = getImportInfo(path);
+
+    const resourcePath = importSource.substring(importIdentifier.length + 1);
+    const idx = resourcePath.indexOf('.');
+
+    if (idx === -1) {
+        path.replaceWithMultiple(schemaObjectTemplate({
+            RESOURCE_NAME: t.identifier(resourceName),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            OBJECT_API_NAME: t.stringLiteral(resourcePath),
+        }));
+    } else {
+        path.replaceWithMultiple(schemaObjectAndFieldTemplate({
+            RESOURCE_NAME: t.identifier(resourceName),
+            IMPORT_SOURCE: t.stringLiteral(importSource),
+            OBJECT_API_NAME: t.stringLiteral(resourcePath.substring(0, idx)),
+            FIELD_API_NAME: t.stringLiteral(resourcePath.substring(idx + 1)),
+        }));
+    }
+}
+
+function getImportInfo(path) {
+    const importSource = path.get('source.value').node;
+    const importSpecifiers = path.get('specifiers');
+
+    if (importSpecifiers.length !== 1 || !importSpecifiers[0].isImportDefaultSpecifier()) {
+        throw path.buildCodeFrameError(`Invalid import from ${importSource}. Only import the default using the following syntax: "import foo from '@salesforce/label/c.foo'"`);
+    }
+
+    const resourceName = importSpecifiers[0].get('local').node.name;
+
+    return {
+        importSource,
+        resourceName,
+    };
+}
+
 module.exports = {
-    defaultSchemaImportTransform
+    stringScopedImportTransform,
+    resolvedPromiseScopedImportTransform,
+    schemaScopedImportTransform,
 };

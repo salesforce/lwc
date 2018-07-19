@@ -1,9 +1,9 @@
-import { createElement, Element } from '../main';
+import { createElement, LightningElement } from '../main';
 
 describe('upgrade', () => {
     describe('#createElement()', () => {
         it('should support constructors with circular dependencies', () => {
-            const factory = () => class extends Element { };
+            const factory = () => class extends LightningElement { };
             factory.__circular__ = true;
 
             expect(
@@ -17,7 +17,7 @@ describe('upgrade', () => {
                 x: any,
                 y: any;
             };
-            const def = class MyComponent extends Element {
+            const def = class MyComponent extends LightningElement {
                 x: any;
                 y: any;
                 constructor() {
@@ -39,7 +39,7 @@ describe('upgrade', () => {
         });
 
         it('should proxify any value before setting a property', () => {
-            const def = class MyComponent extends Element {};
+            const def = class MyComponent extends LightningElement {};
             def.publicProps = { x: 1 };
             const elm = createElement('x-foo', { is: def });
             const o = { foo: 1 };

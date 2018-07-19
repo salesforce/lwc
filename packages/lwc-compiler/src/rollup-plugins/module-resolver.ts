@@ -1,4 +1,6 @@
 import * as path from "path";
+
+import { CompilerError } from "../common-interfaces/compiler-error";
 import { MetadataCollector } from "../bundler/meta-collector";
 import { NormalizedCompilerOptions } from "../compiler/options";
 
@@ -63,9 +65,15 @@ export default function({
                 !isTemplateCss(importee, importer)
             ) {
                 if (importer) {
-                    throw new Error(`Could not resolve '${importee}' (as ${absPath}) from '${importer}'`);
+                    throw new CompilerError(
+                        `Could not resolve '${importee}' (as ${absPath}) from '${importer}'`,
+                        importer,
+                    );
                 }
-                throw new Error(`Could not resolve '${importee}' (as ${absPath}) from compiler entry point`);
+                throw new CompilerError(
+                    `Could not resolve '${importee}' (as ${absPath}) from compiler entry point`,
+                    importer,
+                );
             }
             return absPath;
         },

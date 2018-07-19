@@ -13,9 +13,8 @@ import {
     validateNormalizedOptions
 } from "../compiler/options";
 
-import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
-
 import { collectImportLocations } from "./import-location-collector";
+import { Diagnostic, DiagnosticLevel } from "../diagnostics/diagnostic";
 
 export interface BundleReport {
     code: string;
@@ -84,18 +83,32 @@ export async function bundle(
         plugins.push(rollupMinify());
     }
 
-    const rollupBundler = await rollup({
-        input: name,
-        plugins,
-        onwarn: handleRollupWarning(diagnostics)
-    });
+    let code;
+    try {
+        const rollupBundler = await rollup({
+            input: name,
+            plugins,
+            onwarn: handleRollupWarning(diagnostics)
+        });
 
-    const { code } = await rollupBundler.generate({
-        amd: { id: namespace + "-" + name },
-        interop: false,
-        strict: false,
-        format
-    });
+        const result = await rollupBundler.generate({
+            amd: { id: namespace + "-" + name },
+            interop: false,
+            strict: false,
+            format
+        });
+        code = result.code;
+
+    } catch (e) {
+        // populate diagnostics
+        const {  message, filename } = e;
+
+        diagnostics.push({
+            filename,
+            level: DiagnosticLevel.Fatal,
+            message,
+        });
+    }
 
     metadataCollector.collectImportLocations(
         collectImportLocations(code) || []

@@ -1,4 +1,4 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     invokeComponentConstructor,
     invokeComponentRenderMethod,
@@ -6,44 +6,34 @@ import {
     vmBeingRendered,
     invokeEventListener,
 } from "./invoker";
-import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "./language";
+import { isArray, ArrayIndexOf, ArraySplice, isObject, isFunction, isUndefined } from "../shared/language";
 import { invokeServiceHook, Services } from "./services";
-import { PropsDef, WireHash, TrackDef } from './def';
+import { PropsDef, WireHash } from './def';
 import { VM } from "./vm";
 import { VNodes } from "../3rdparty/snabbdom/types";
-import { Template } from "./template";
 
 export type ErrorCallback = (error: any, stack: string) => void;
-export interface Component {
-    readonly classList: DOMTokenList;
-    readonly root: ShadowRoot;
-    render?: () => (void | Template);
-    connectedCallback?: () => void;
-    disconnectedCallback?: () => void;
-    renderedCallback?: () => void;
-    errorCallback?: ErrorCallback;
-    [key: string]: any;
+export interface ComponentInterface {
+    // TODO: complete the entire interface used by the engine
+    setAttribute(attrName: string, value: any): void;
 }
 
 // TODO: review this with the compiler output
 export interface ComponentConstructor {
-    new (): Component;
+    new (): ComponentInterface;
     readonly name: string;
     readonly forceTagName?: keyof HTMLElementTagNameMap;
     readonly publicMethods?: string[];
     readonly publicProps?: PropsDef;
-    readonly track?: TrackDef;
+    readonly track?: string[];
     readonly wire?: WireHash;
     readonly labels?: string[];
     readonly templateUsedProps?: string[];
-    // support for circular
-    <T>(): T;
-    readonly __circular__?: any;
 }
 
 export function createComponent(vm: VM, Ctor: ComponentConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     // create the component instance
     invokeComponentConstructor(vm, Ctor);
@@ -55,7 +45,7 @@ export function createComponent(vm: VM, Ctor: ComponentConstructor) {
 
 export function linkComponent(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     // wiring service
     const { def: { wire } } = vm;
@@ -69,7 +59,7 @@ export function linkComponent(vm: VM) {
 
 export function clearReactiveListeners(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { deps } = vm;
     const len = deps.length;
@@ -88,7 +78,7 @@ export function clearReactiveListeners(vm: VM) {
 
 export function renderComponent(vm: VM): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(vm.isDirty, `${vm} is not dirty.`);
     }
 
@@ -104,7 +94,7 @@ export function renderComponent(vm: VM): VNodes {
 
 export function markComponentAsDirty(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isFalse(vm.isDirty, `markComponentAsDirty() for ${vm} should not be called when the component is already dirty.`);
         assert.isFalse(isRendering, `markComponentAsDirty() for ${vm} cannot be called during rendering of ${vmBeingRendered}.`);
     }
@@ -115,7 +105,7 @@ const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap()
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (!isFunction(listener)) {
         throw new TypeError(); // avoiding problems with non-valid listeners

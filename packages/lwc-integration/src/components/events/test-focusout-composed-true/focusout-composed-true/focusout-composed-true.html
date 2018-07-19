@@ -1,0 +1,7 @@
+<template>
+    <input onfocusout={handleFocusOut} type="text" />
+    <input class="custom-focus-out" onfocusout={handleCustomFocusOut} type="text" />
+    <button onclick={handleButtonClick}>Trigger custom focusout</button>
+    <div class="focus-out-composed" if:true={eventIsComposed}>Focus Out Composed</div>
+    <div class="custom-focus-out-not-composed" if:true={customEventNotComposed}>Custom Focus Out Not Composed</div>
+</template>

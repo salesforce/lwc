@@ -1,9 +1,10 @@
-import assert from "./assert";
+import assert from "../shared/assert";
 import { getComponentDef } from "./def";
 import { createComponent, linkComponent, renderComponent, clearReactiveListeners, ComponentConstructor, ErrorCallback, markComponentAsDirty } from "./component";
 import { patchChildren } from "./patch";
-import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse } from "./language";
-import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray, getInternalField, createSymbol } from "./utils";
+import { ArrayPush, isUndefined, isNull, ArrayUnshift, ArraySlice, create, isTrue, isObject, keys, isFalse, defineProperty } from "../shared/language";
+import { getInternalField } from "../shared/fields";
+import { ViewModelReflection, addCallbackToNextTick, EmptyObject, EmptyArray } from "./utils";
 import { invokeServiceHook, Services } from "./services";
 import { invokeComponentCallback } from "./invoker";
 import { parentElementGetter } from "./dom-api";
@@ -11,10 +12,10 @@ import { parentElementGetter } from "./dom-api";
 import { VNodeData, VNodes } from "../3rdparty/snabbdom/types";
 import { Template } from "./template";
 import { ComponentDef } from "./def";
-import { Component } from "./component";
+import { ComponentInterface } from "./component";
 import { Context } from "./context";
 import { startMeasure, endMeasure } from "./performance-timing";
-import { patchCustomElement } from "./dom/faux";
+import { patchCustomElement } from "../faux-shadow/faux";
 
 const isNativeShadowRootAvailable = typeof (window as any).ShadowRoot !== "undefined";
 
@@ -36,15 +37,15 @@ export interface VM {
     cmpTrack: Record<string, any>;
     cmpTemplate?: Template;
     cmpRoot: ShadowRoot;
-    callHook: (cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
-    setHook: (cmp: Component, prop: PropertyKey, newValue: any) => void;
-    getHook: (cmp: Component, prop: PropertyKey) => any;
+    callHook: (cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]) => any;
+    setHook: (cmp: ComponentInterface, prop: PropertyKey, newValue: any) => void;
+    getHook: (cmp: ComponentInterface, prop: PropertyKey) => any;
     isScheduled: boolean;
     isDirty: boolean;
     isRoot: boolean;
     fallback: boolean;
     mode: string;
-    component?: Component;
+    component?: ComponentInterface;
     deps: VM[][];
     toString(): string;
 }
@@ -52,23 +53,26 @@ export interface VM {
 let idx: number = 0;
 let uid: number = 0;
 
-function callHook(cmp: Component | undefined, fn: (...args: any[]) => any, args?: any[]): any {
+function callHook(cmp: ComponentInterface | undefined, fn: (...args: any[]) => any, args?: any[]): any {
     return fn.apply(cmp, args);
 }
 
-function setHook(cmp: Component, prop: PropertyKey, newValue: any) {
+function setHook(cmp: ComponentInterface, prop: PropertyKey, newValue: any) {
     cmp[prop] = newValue;
 }
 
-function getHook(cmp: Component, prop: PropertyKey): any {
+function getHook(cmp: ComponentInterface, prop: PropertyKey): any {
     return cmp[prop];
 }
 
-export const OwnerKey = createSymbol('OwnerKey');
+// DO NOT CHANGE this:
+// these two values are used by the faux-shadow implementation to traverse the DOM
+const OwnerKey = '$$OwnerKey$$';
+const OwnKey = '$$OwnKey$$';
 
 function addInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(vm.idx === 0, `${vm} is already locked to a previously generated idx.`);
     }
     vm.idx = ++idx;
@@ -92,7 +96,7 @@ function addInsertionIndex(vm: VM) {
 
 function removeInsertionIndex(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(vm.idx > 0, `${vm} is not locked to a previously generated idx.`);
     }
     vm.idx = 0;
@@ -116,7 +120,7 @@ function removeInsertionIndex(vm: VM) {
 
 export function renderVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (vm.isDirty) {
         rehydrate(vm);
@@ -125,7 +129,7 @@ export function renderVM(vm: VM) {
 
 export function appendVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (vm.idx !== 0) {
         return; // already appended
@@ -135,7 +139,7 @@ export function appendVM(vm: VM) {
 
 export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (vm.idx === 0) {
         return; // already removed
@@ -152,7 +156,7 @@ export function removeVM(vm: VM) {
     patchShadowRoot(vm, []);
 }
 
-interface ShadowRootInit {
+export interface CreateVMInit {
     delegatesFocus?: boolean;
     mode: "open" | "closed";
     // custom settings for now
@@ -160,7 +164,7 @@ interface ShadowRootInit {
     isRoot?: boolean;
 }
 
-export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: ShadowRootInit) {
+export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConstructor, options: CreateVMInit) {
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(elm instanceof HTMLElement, `VM creation requires a DOM element instead of ${elm}.`);
     }
@@ -211,7 +215,7 @@ export function createVM(tagName: string, elm: HTMLElement, Ctor: ComponentConst
 
 function rehydrate(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.isTrue(vm.elm instanceof HTMLElement, `rehydration can only happen after ${vm} was patched the first time.`);
     }
     if (vm.idx > 0 && vm.isDirty) {
@@ -224,7 +228,7 @@ function rehydrate(vm: VM) {
 
 function patchErrorBoundaryVm(errorBoundaryVm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(errorBoundaryVm);
+        assert.isTrue(errorBoundaryVm && "component" in errorBoundaryVm, `${errorBoundaryVm} is not a vm.`);
         assert.isTrue(errorBoundaryVm.elm instanceof HTMLElement, `rehydration can only happen after ${errorBoundaryVm} was patched the first time.`);
         assert.isTrue(errorBoundaryVm.isDirty, "rehydration recovery should only happen if vm has updated");
     }
@@ -242,7 +246,7 @@ function patchErrorBoundaryVm(errorBoundaryVm: VM) {
 
 function patchShadowRoot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { cmpRoot, children: oldCh } = vm;
     vm.children = children; // caching the new children collection
@@ -284,7 +288,7 @@ function patchShadowRoot(vm: VM, children: VNodes) {
 
 function processPostPatchCallbacks(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { rendered } = Services;
     if (rendered) {
@@ -360,7 +364,7 @@ function recoverFromLifeCycleError(failedVm: VM, errorBoundaryVm: VM, error: any
 
 function forceResetShadowContent(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const parentElm: ShadowRoot | Element = vm.fallback ? vm.elm : vm.cmpRoot;
     parentElm.innerHTML = "";
@@ -368,7 +372,7 @@ function forceResetShadowContent(vm: VM) {
 
 export function resetShadowRoot(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { cmpRoot, children: oldCh } = vm;
     vm.children = EmptyArray;
@@ -387,7 +391,7 @@ export function resetShadowRoot(vm: VM) {
 
 export function scheduleRehydration(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     if (!vm.isScheduled) {
         vm.isScheduled = true;
@@ -400,7 +404,7 @@ export function scheduleRehydration(vm: VM) {
 
 function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm } = vm;
     // TODO: bug #435 - shadowDOM will preventing this walking process, we
@@ -411,7 +415,7 @@ function getErrorBoundaryVMFromParentElement(vm: VM): VM | undefined {
 
 function getErrorBoundaryVMFromOwnElement(vm: VM): VM | undefined {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     const { elm } = vm;
     return getErrorBoundaryVM(elm);
@@ -438,7 +442,7 @@ export function getComponentStack(vm: VM): string {
     do {
         const currentVm: VM | undefined = getInternalField(elm, ViewModelReflection);
         if (!isUndefined(currentVm)) {
-            ArrayPush.call(wcStack, (currentVm.component as Component).toString());
+            ArrayPush.call(wcStack, (currentVm.component as ComponentInterface).toString());
         }
         // TODO: bug #435 - shadowDOM will preventing this walking process, we
         // need to find a different way to find the right boundary
@@ -448,15 +452,41 @@ export function getComponentStack(vm: VM): string {
 }
 
 export function getNodeOwnerKey(node: Node): number | undefined {
-    return getInternalField(node, OwnerKey);
+    return node[OwnerKey];
+}
+
+export function setNodeOwnerKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the owner key
+        defineProperty(node, OwnerKey, {
+            value,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnerKey] = value;
+    }
 }
 
 export function getNodeKey(node: Node): number | undefined {
-    const vm: VM | undefined = getInternalField(node, ViewModelReflection);
-    if (isUndefined(vm)) {
-        return;
+    return node[OwnKey];
+}
+
+export function setNodeKey(node: Node, value: number) {
+    if (process.env.NODE_ENV !== 'production') {
+        // in dev-mode, we are more restrictive about what you can do with the own key
+        defineProperty(node, OwnKey, {
+            value,
+            enumerable: true,
+            configurable: false,
+            writable: false,
+        });
+    } else {
+        // in prod, for better perf, we just let it roll
+        node[OwnKey] = value;
     }
-    return vm.uid;
 }
 
 export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
@@ -469,15 +499,17 @@ export function getShadowRootHost(sr: ShadowRoot): HTMLElement | null {
 
 export function getCustomElementVM(elm: HTMLElement): VM {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(getInternalField(elm, ViewModelReflection));
+        const vm = getInternalField(elm, ViewModelReflection);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return getInternalField(elm, ViewModelReflection) as VM;
 }
 
-export function getComponentVM(component: Component): VM {
+export function getComponentVM(component: ComponentInterface): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(getInternalField(component, ViewModelReflection));
+        const vm = getInternalField(component, ViewModelReflection);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return getInternalField(component, ViewModelReflection) as VM;
 }
@@ -485,7 +517,8 @@ export function getComponentVM(component: Component): VM {
 export function getShadowRootVM(root: ShadowRoot): VM {
     // TODO: this eventually should not rely on the symbol, and should use a Weak Ref
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(getInternalField(root, ViewModelReflection));
+        const vm = getInternalField(root, ViewModelReflection);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
     }
     return getInternalField(root, ViewModelReflection) as VM;
 }
@@ -495,7 +528,7 @@ export function getShadowRootVM(root: ShadowRoot): VM {
 // and get the allocation to be cached by in the elm instead of in the VM
 export function allocateInSlot(vm: VM, children: VNodes) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vm);
+        assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         assert.invariant(isObject(vm.cmpSlots), `When doing manual allocation, there must be a cmpSlots object available.`);
     }
     const { cmpSlots: oldSlots } = vm;

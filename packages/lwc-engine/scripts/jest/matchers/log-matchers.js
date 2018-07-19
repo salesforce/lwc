@@ -1,4 +1,4 @@
-const { default: assert } = require('../../../src/framework/assert');
+const { default: assert } = require('../../../src/shared/assert');
 
 function createMatcher(methodName) {
     return function matcher(fn, expectedMessage) {

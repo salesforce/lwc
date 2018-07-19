@@ -98,23 +98,27 @@ export class WireEventTarget {
         switch (type) {
             case CONNECT:
                 const connectedListeners = this._context[CONTEXT_ID][CONTEXT_CONNECTED];
-                assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.isFalse(connectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("connect") with the same listener');
+                }
                 connectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case DISCONNECT:
                 const disconnectedListeners = this._context[CONTEXT_ID][CONTEXT_DISCONNECTED];
-                assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                if (process.env.NODE_ENV !== 'production') {
+                    assert.isFalse(disconnectedListeners.includes(listener as NoArgumentListener), 'must not call addEventListener("disconnect") with the same listener');
+                }
                 disconnectedListeners.push(listener as NoArgumentListener);
                 break;
 
             case CONFIG:
                 const params = this._wireDef.params;
                 const statics = this._wireDef.static;
-                const paramsKeys = Object.keys(params);
+                let paramsKeys: string[];
 
-                // no dynamic params, only static, so fire config once
-                if (paramsKeys.length === 0) {
+                // no dynamic params. fire config once with static params (if present).
+                if (!params || (paramsKeys = Object.keys(params)).length === 0) {
                     const config = statics || {};
                     listener.call(undefined, config);
                     return;

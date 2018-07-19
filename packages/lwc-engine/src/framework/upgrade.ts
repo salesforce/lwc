@@ -1,13 +1,14 @@
-import assert from "./assert";
-import { isUndefined, assign, isNull, isObject } from "./language";
+import assert from "../shared/assert";
+import { isUndefined, assign, isNull, isObject } from "../shared/language";
 import { createVM, removeVM, appendVM, renderVM, getCustomElementVM, getNodeKey } from "./vm";
 import { ComponentConstructor } from "./component";
-import { resolveCircularModuleDependency, setInternalField, getInternalField, createSymbol } from "./utils";
+import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
+import { setInternalField, getInternalField, createFieldName } from "../shared/fields";
 import { setAttribute } from "./dom-api";
 
 const { removeChild, appendChild, insertBefore, replaceChild } = Node.prototype;
-const ConnectingSlot = createSymbol('connecting');
-const DisconnectingSlot = createSymbol('disconnecting');
+const ConnectingSlot = createFieldName('connecting');
+const DisconnectingSlot = createFieldName('disconnecting');
 
 function callNodeSlot(node: Node, slot: symbol): Node {
     if (process.env.NODE_ENV !== 'production') {
@@ -59,7 +60,10 @@ export function createElement(sel: string, options: any = {}): HTMLElement {
         throw new TypeError();
     }
 
-    const Ctor = resolveCircularModuleDependency((options as any).is);
+    let Ctor = (options as any).is as ComponentConstructor;
+    if (isCircularModuleDependency(Ctor)) {
+        Ctor = resolveCircularModuleDependency(Ctor);
+    }
 
     let { mode, fallback } = (options as any);
     // TODO: for now, we default to open, but eventually it should default to 'closed'

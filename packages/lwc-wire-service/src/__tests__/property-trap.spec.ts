@@ -37,12 +37,21 @@ describe('findDescriptor', () => {
 });
 
 describe('installTrap', () => {
+    const context = {
+        listeners: {
+            prop1: []
+        },
+        values: {
+            prop1: ''
+        }
+    } as ConfigContext;
+
     it('defaults to original value when setter installed', () => {
         class Target {
             prop1 = 'initial';
         }
         const cmp = new Target();
-        installTrap(cmp, 'prop1', {} as ConfigContext);
+        installTrap(cmp, 'prop1', context);
         expect(cmp.prop1).toBe('initial');
     });
     it('updates original property when installed setter invoked', () => {
@@ -51,7 +60,7 @@ describe('installTrap', () => {
             prop1;
         }
         const cmp = new Target();
-        installTrap(cmp, 'prop1', {} as ConfigContext);
+        installTrap(cmp, 'prop1', context);
         cmp.prop1 = expected;
         expect(cmp.prop1).toBe(expected);
     });
@@ -61,7 +70,7 @@ describe('installTrap', () => {
         }
         const original = Object.getOwnPropertyDescriptor(Target.prototype, 'prop1');
         const cmp = new Target();
-        installTrap(cmp, 'prop1', {} as ConfigContext);
+        installTrap(cmp, 'prop1', context);
         const descriptor = Object.getOwnPropertyDescriptor(cmp, 'prop1');
         if (descriptor && original) {
             expect(descriptor.set).not.toBe(original.set);
@@ -77,7 +86,7 @@ describe('installTrap', () => {
             get prop1() { return ''; }
         }
         const cmp = new Target();
-        installTrap(cmp, 'prop1', {} as ConfigContext);
+        installTrap(cmp, 'prop1', context);
         cmp.prop1 = expected;
         expect(setter).toHaveBeenCalledTimes(1);
         expect(setter).toHaveBeenCalledWith(expected);

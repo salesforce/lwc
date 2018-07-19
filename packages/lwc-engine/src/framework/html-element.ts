@@ -1,14 +1,15 @@
-import assert from "./assert";
-import { Component, getWrappedComponentsListener } from "./component";
-import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf } from "./language";
-import { ViewModelReflection, setInternalField, replicateProtoChain } from "./utils";
+import assert from "../shared/assert";
+import { ComponentInterface, getWrappedComponentsListener } from "./component";
+import { isObject, getOwnPropertyNames, ArraySlice, isNull, isTrue, create, setPrototypeOf, isFalse, defineProperties } from "../shared/language";
+import { setInternalField } from "../shared/fields";
+import { ViewModelReflection, PatchedFlag } from "./utils";
 import { vmBeingConstructed, isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getComponentVM, VM, getCustomElementVM } from "./vm";
-import { ArrayReduce, isFunction } from "./language";
+import { getComponentVM, VM, getCustomElementVM, setNodeKey } from "./vm";
+import { ArrayReduce, isFunction } from "../shared/language";
 import { observeMutation, notifyMutation } from "./watcher";
-import { dispatchEvent, BaseCustomElementProto } from "./dom-api";
+import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
-import { lightDomQuerySelectorAll, lightDomQuerySelector } from "./dom/faux";
+import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
 import { prepareForValidAttributeMutation } from "./restrictions";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
@@ -35,10 +36,10 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     return {
         enumerable,
         configurable,
-        get(this: Component) {
+        get(this: ComponentInterface) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             }
             if (isBeingConstructed(vm)) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -49,10 +50,10 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
             observeMutation(this, propName);
             return get.call(vm.elm);
         },
-        set(this: Component, newValue: any) {
+        set(this: ComponentInterface, newValue: any) {
             const vm = getComponentVM(this);
             if (process.env.NODE_ENV !== 'production') {
-                assert.vm(vm);
+                assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
                 assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm}.${propName}`);
                 assert.isFalse(isBeingConstructed(vm), `Failed to construct '${this}': The result must not have attributes.`);
                 assert.invariant(!isObject(newValue) || isNull(newValue), `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`);
@@ -70,7 +71,7 @@ function getHTMLPropDescriptor(propName: string, descriptor: PropertyDescriptor)
     };
 }
 
-function getLinkedElement(cmp: Component): HTMLElement {
+function getLinkedElement(cmp: ComponentInterface): HTMLElement {
     return getComponentVM(cmp).elm;
 }
 
@@ -84,17 +85,17 @@ interface ComponentHooks {
     getHook: VM["getHook"];
 }
 
-// This should be as performant as possible, while any initialization should be done lazily
-function LWCElement(this: Component) {
+const LightningElement = function BaseLightningElement(this: ComponentInterface) {
+    // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         throw new ReferenceError();
     }
     if (process.env.NODE_ENV !== 'production') {
-        assert.vm(vmBeingConstructed);
+        assert.isTrue(vmBeingConstructed && "cmpRoot" in vmBeingConstructed, `${vmBeingConstructed} is not a vm.`);
         assert.invariant(vmBeingConstructed.elm instanceof HTMLElement, `Component creation requires a DOM element to be associated to ${vmBeingConstructed}.`);
     }
     const vm = vmBeingConstructed;
-    const { elm, def, cmpRoot } = vm;
+    const { elm, def, cmpRoot, uid } = vm;
     const component = this;
     vm.component = component;
     // interaction hooks
@@ -110,23 +111,29 @@ function LWCElement(this: Component) {
     setInternalField(component, ViewModelReflection, vm);
     setInternalField(elm, ViewModelReflection, vm);
     setInternalField(cmpRoot, ViewModelReflection, vm);
-    let { elmProto } = def;
-    if (elm.constructor.prototype !== BaseCustomElementProto) {
-        // this is slow path for component instances using `is` attribute or `forceTagName`, which
-        // are set to be removed in the near future.
-        elmProto = replicateProtoChain(elmProto, BaseCustomElementProto, elm.constructor.prototype);
+    setNodeKey(elm, uid);
+    // registered custom elements will be patched at the proto level already, not need to patch them here.
+    if (isFalse(PatchedFlag in elm)) {
+        if (elm.constructor.prototype !== BaseCustomElementProto) {
+            // this is slow path for component instances using `is` attribute or `forceTagName`, which
+            // are set to be removed in the near future.
+            const { descriptors } = def;
+            defineProperties(elm, descriptors);
+        } else {
+            const { elmProto } = def;
+            setPrototypeOf(elm, elmProto);
+        }
     }
-    setPrototypeOf(elm, elmProto);
     if (process.env.NODE_ENV !== 'production') {
         patchCustomElementWithRestrictions(elm);
         patchComponentWithRestrictions(component);
         patchShadowRootWithRestrictions(cmpRoot);
     }
-}
+};
 
-LWCElement.prototype = {
-    constructor: LWCElement,
-    // HTML Element - The Good Parts
+// HTML Element - The Good Parts
+LightningElement.prototype = {
+    constructor: LightningElement,
     dispatchEvent(event: ComposableEvent): boolean {
         const elm = getLinkedElement(this);
         const vm = getComponentVM(this);
@@ -153,27 +160,24 @@ LWCElement.prototype = {
         }
         return dispatchEvent.call(elm, event);
     },
-
     addEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             assert.invariant(!isRendering, `${vmBeingRendered}.render() method has side effects on the state of ${vm} by adding an event listener for "${type}".`);
             assert.invariant(isFunction(listener), `Invalid second argument for this.template.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`);
         }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.addEventListener(type, wrappedListener, options);
     },
-
     removeEventListener(type: string, listener: EventListener, options?: boolean | AddEventListenerOptions) {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         }
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
-
     setAttributeNS(ns: string, attrName: string, value: any): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -182,7 +186,6 @@ LWCElement.prototype = {
         }
         return elm.setAttributeNS.apply(elm, arguments);
     },
-
     removeAttributeNS(ns: string, attrName: string): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -190,7 +193,6 @@ LWCElement.prototype = {
         }
         return elm.removeAttributeNS.apply(elm, arguments);
     },
-
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -198,7 +200,6 @@ LWCElement.prototype = {
         }
         elm.removeAttribute.apply(elm, arguments);
     },
-
     setAttribute(attrName: string, value: any): void {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -207,17 +208,14 @@ LWCElement.prototype = {
         }
         return elm.setAttribute.apply(elm, arguments);
     },
-
     getAttribute(attrName: string): string | null {
         const elm = getLinkedElement(this);
         return elm.getAttribute.apply(elm, arguments);
     },
-
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
         return elm.getAttributeNS.apply(elm, arguments);
     },
-
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
@@ -256,7 +254,7 @@ LWCElement.prototype = {
     },
     get tagName(): string {
         const elm = getLinkedElement(this);
-        return elm.tagName + ''; // avoiding side-channeling
+        return elementTagNameGetter.call(elm);
     },
     get classList(): DOMTokenList {
         if (process.env.NODE_ENV !== 'production') {
@@ -269,7 +267,7 @@ LWCElement.prototype = {
     get template(): ShadowRoot {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         }
         return vm.cmpRoot;
     },
@@ -277,7 +275,7 @@ LWCElement.prototype = {
         // TODO: issue #418
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
             assert.logWarning(`"this.root" access in ${vm.component} has been deprecated and will be removed. Use "this.template" instead.`);
         }
         return vm.cmpRoot;
@@ -289,10 +287,10 @@ LWCElement.prototype = {
     toString(): string {
         const vm = getComponentVM(this);
         if (process.env.NODE_ENV !== 'production') {
-            assert.vm(vm);
+            assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
         }
         const { elm } = vm;
-        const { tagName } = elm;
+        const tagName = elementTagNameGetter.call(elm);
         const is = elm.getAttribute('is');
         return `<${tagName.toLowerCase()}${ is ? ' is="${is}' : '' }>`;
     },
@@ -312,4 +310,4 @@ export function createBaseElementStandardPropertyDescriptors(StandardPropertyDes
     return descriptors;
 }
 
-export { LWCElement as Element };
+export { LightningElement };

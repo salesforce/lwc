@@ -72,7 +72,7 @@ describe('Javascript transform', () => {
                 ],
             },
         ]);
-        expect(metadata.doc).toBe('Foo doc');
+        expect(metadata.doc).toBe('* Foo doc');
         expect(metadata.declarationLoc).toEqual({
             start: { line: 4, column: 12 },
             end: { line: 14, column: 13 },
@@ -80,24 +80,20 @@ describe('Javascript transform', () => {
     });
 
     it('should throw when processing an invalid javascript file', async () => {
-        expect.assertions(1);
-        try {
-            await transform(`const`, 'foo.js', {
+        await expect(
+            transform(`const`, 'foo.js', {
                 namespace: 'x',
                 name: 'foo',
-            });
-        } catch (error) {
-            // TODO: Figure out how to disable error message code snippet for failing token.
-            expect(
-                error.message.indexOf('foo.js: Unexpected token (1:5)'),
-            ).toBeGreaterThanOrEqual(0);
-        }
+            })
+        ).rejects.toMatchObject({
+            filename: 'foo.js',
+            message: expect.stringContaining('foo.js: Unexpected token (1:5)')
+        });
     });
 
     it('should throw if invalid resolveProxyCompat value is specified in compat mode', async () => {
-        expect.assertions(1);
-        try {
-            const result = await transform(`debugger`, 'foo.js', {
+        await expect(
+            transform(`debugger`, 'foo.js', {
                 namespace: 'x',
                 name: 'foo',
                 outputConfig: {
@@ -106,12 +102,31 @@ describe('Javascript transform', () => {
                         badkey: 'hello',
                     },
                 },
-            });
-        } catch (error) {
-            expect(error.message).toBe(
-                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"',
-            );
-        }
+            })
+        ).rejects.toMatchObject({
+            filename: 'foo.js',
+            message: expect.stringContaining(
+                'Unexpected resolveProxyCompat option, expected property "module", "global" or "independent"'
+            )
+        });
+    });
+
+    it('allows dynamic imports', async () => {
+        const actual = `
+            export function test() {
+                return import('/test');
+            }
+        `;
+
+        const expected = `
+            export function test() {
+                return import('/test');
+            }
+        `;
+
+        const { code } = await transform(actual, 'foo.js', { namespace: 'x', name: 'foo' });
+        expect(pretify(code)).toBe(pretify(expected));
+
     });
 });
 
@@ -154,32 +169,29 @@ describe('HTML transform', () => {
     });
 
     it('should throw when processing an invalid HTML file', async () => {
-        expect.assertions(1);
-        try {
-            await transform(`<html`, 'foo.html', {
+        await expect(
+            transform(`<html`, 'foo.html', {
                 namespace: 'x',
                 name: 'foo',
-            });
-        } catch (error) {
-            // TODO: Figure out how to disable error message code snippet for failing token.
-            expect(
-                error.message.indexOf('Invalid HTML syntax: eof-in-tag.'),
-            ).toBe(0);
-        }
+            })
+        ).rejects.toMatchObject({
+            filename: 'foo.html',
+            message: expect.stringContaining('foo.html: Invalid HTML syntax: eof-in-tag.')
+        });
     });
 });
 
 describe('CSS transform', () => {
     it('should throw when processing an invalid CSS file', async () => {
-        expect.assertions(1);
-        try {
-            await transform(`<`, 'foo.css', {
+        await expect(
+            transform(`<`, 'foo.css', {
                 namespace: 'x',
                 name: 'foo',
-            });
-        } catch (error) {
-            expect(error.message).toBe('<css input>:1:1: Unknown word');
-        }
+            })
+        ).rejects.toMatchObject({
+            filename: 'foo.css',
+            message: expect.stringContaining('foo.css:1:1: Unknown word')
+        });
     });
 
     it('should apply transformation for stylesheet file', async () => {
@@ -224,7 +236,8 @@ describe('CSS transform', () => {
                 customProperties: { allowDefinition: false },
             },
         })).rejects.toMatchObject({
-            reason: 'Invalid definition of custom property "--bg-color".'
+            filename: 'foo.css',
+            message: expect.stringContaining('Invalid definition of custom property "--bg-color".'),
         });
     });
 

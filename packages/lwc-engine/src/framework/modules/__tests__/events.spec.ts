@@ -1,4 +1,4 @@
-import { createElement, Element } from '../../main';
+import { createElement, LightningElement } from '../../main';
 
 describe('module/events', () => {
     it('attaches click event handler to element', function() {
@@ -10,7 +10,7 @@ describe('module/events', () => {
                 ])
             ];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -45,7 +45,7 @@ describe('module/events', () => {
                 ];
             }
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 component = this;
@@ -89,7 +89,7 @@ describe('module/events', () => {
                 ];
             }
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 component = this;
@@ -121,7 +121,7 @@ describe('module/events', () => {
                 ])
             ];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -144,13 +144,13 @@ describe('module/events', () => {
 
     it('attaches click event handler to custom element', function() {
         let result: Event[] = [], cmp;
-        class MyChild extends Element {}
+        class MyChild extends LightningElement {}
         function html($api) {
             return [
                 $api.c('x-child', MyChild, {on: {click(ev: Event) { result.push(ev); }}})
             ];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;
@@ -167,13 +167,13 @@ describe('module/events', () => {
 
     it('attaches custom event handler to custom element', function() {
         let result: Event[] = [], cmp;
-        class MyChild extends Element {}
+        class MyChild extends LightningElement {}
         function html($api) {
             return [
                 $api.c('x-child', MyChild, {on: {test(ev: Event) { result.push(ev); }}})
             ];
         }
-        class MyComponent extends Element {
+        class MyComponent extends LightningElement {
             constructor() {
                 super();
                 cmp = this;

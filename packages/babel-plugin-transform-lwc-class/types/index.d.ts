@@ -1,7 +1,8 @@
 export interface Metadata {
-    doc?: string;
-    declarationLoc?: Location;
     decorators: Array<ApiDecorator | TrackDecorator | WireDecorator>;
+    classMembers?: Array<ClassMember>;
+    declarationLoc?: Location;
+    doc?: string;
 }
 
 export interface ApiDecorator {
@@ -36,9 +37,17 @@ export interface WireDecoratorTarget {
     type: DecoratorTargetType;
 }
 
+export interface ClassMember {
+    name: string;
+    type: DecoratorTargetType;
+    decorator?: string;
+    doc?: string;
+    loc?: Location;
+}
+
 export type DecoratorTargetType = DecoratorTargetProperty | DecoratorTargetMethod;
 export type DecoratorTargetProperty = 'property';
-export type DecoratorTargetMethod = 'property';
+export type DecoratorTargetMethod = 'method';
 
 export interface Location {
     start: Position;

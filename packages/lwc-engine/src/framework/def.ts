@@ -7,7 +7,7 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 
-import assert from "./assert";
+import assert from "../shared/assert";
 import {
     assign,
     freeze,
@@ -28,7 +28,8 @@ import {
     seal,
     forEach,
     getPropertyDescriptor,
-} from "./language";
+    StringIndexOf,
+} from "../shared/language";
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
@@ -39,32 +40,33 @@ import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
 import apiDecorator from "./decorators/api";
-import { Element as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
+import { LightningElement as BaseElement, createBaseElementStandardPropertyDescriptors } from "./html-element";
 import {
     EmptyObject,
-    assertValidForceTagName,
-    resolveCircularModuleDependency
+    PatchedFlag,
+    resolveCircularModuleDependency,
+    isCircularModuleDependency
 } from "./utils";
 import { getCustomElementVM } from "./vm";
 import { BaseCustomElementProto } from "./dom-api";
 
-export interface PropDef {
+interface PropDef {
     config: number;
     type: string; // TODO: make this an enum
     attr: string;
 }
-export interface WireDef {
+interface WireDef {
     method?: number;
     [key: string]: any;
 }
 export interface PropsDef {
     [key: string]: PropDef;
 }
-export interface TrackDef {
+interface TrackDef {
     [key: string]: 1;
 }
-export type PublicMethod = (...args: any[]) => any;
-export interface MethodDef {
+type PublicMethod = (...args: any[]) => any;
+interface MethodDef {
     [key: string]: PublicMethod;
 }
 export interface WireHash {
@@ -76,6 +78,7 @@ export interface ComponentDef {
     track: TrackDef;
     props: PropsDef;
     methods: MethodDef;
+    descriptors: PropertyDescriptorMap;
     elmProto: object;
     connectedCallback?: () => void;
     disconnectedCallback?: () => void;
@@ -84,7 +87,7 @@ export interface ComponentDef {
     errorCallback?: ErrorCallback;
 }
 import {
-    ComponentConstructor, ErrorCallback, Component
+    ComponentConstructor, ErrorCallback, ComponentInterface
  } from './component';
 import { Template } from "./template";
 import { patchLightningElementPrototypeWithRestrictions } from "./restrictions";
@@ -93,7 +96,30 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 function getCtorProto(Ctor: any): any {
     const proto = getPrototypeOf(Ctor);
-    return resolveCircularModuleDependency(proto);
+    return isCircularModuleDependency(proto) ? resolveCircularModuleDependency(proto) : proto;
+}
+
+// According to the WC spec (https://dom.spec.whatwg.org/#dom-element-attachshadow), certain elements
+// are not allowed to attached a shadow dom, and therefore, we need to prevent setting forceTagName to
+// those, otherwise we will not be able to use shadowDOM when forceTagName is specified in the future.
+function assertValidForceTagName(Ctor: ComponentConstructor) {
+    if (process.env.NODE_ENV === 'production') {
+        // this method should never leak to prod
+        throw new ReferenceError();
+    }
+    const { forceTagName } = Ctor;
+    if (isUndefined(forceTagName)) {
+        return;
+    }
+    const invalidTags = [
+        "article", "aside", "blockquote", "body", "div", "footer", "h1", "h2", "h3", "h4",
+        "h5", "h6", "header", "main", "nav", "p", "section", "span"];
+    if (ArrayIndexOf.call(invalidTags, forceTagName) !== -1) {
+        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. None of the following tag names can be used: ${invalidTags.join(", ")}.`);
+    }
+    if (StringIndexOf.call(forceTagName, '-') !== -1) {
+        throw new RangeError(`Invalid static forceTagName property set to "${forceTagName}" in component ${Ctor}. It cannot have a dash (-) on it because that is reserved for existing custom elements.`);
+    }
 }
 
 function isElementComponent(Ctor: any, protoSet?: any[]): boolean {
@@ -166,6 +192,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         render,
     } = proto;
     let superElmProto = globalElmProto;
+    let superElmDescriptors = globalElmDescriptors;
     const superProto = getCtorProto(Ctor);
     const superDef: ComponentDef | null = superProto !== BaseElement ? getComponentDef(superProto) : null;
     if (!isNull(superDef)) {
@@ -178,10 +205,12 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         errorCallback  = errorCallback || superDef.errorCallback;
         render = render || superDef.render;
         superElmProto = superDef.elmProto;
+        superElmDescriptors = superDef.descriptors;
     }
 
     const localKeyDescriptors = createCustomElementDescriptorMap(props, methods);
     const elmProto = create(superElmProto, localKeyDescriptors);
+    const descriptors = assign(create(null), superElmDescriptors, localKeyDescriptors);
     props = assign(create(null), HTML_PROPS, props);
 
     const def: ComponentDef = {
@@ -190,6 +219,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         track,
         props,
         methods,
+        descriptors,
         elmProto,
         connectedCallback,
         disconnectedCallback,
@@ -226,7 +256,7 @@ function createGetter(key: string) {
         fn = cachedGetterByKey[key] = function(this: HTMLElement): any {
             const vm = getCustomElementVM(this);
             const { getHook } = vm;
-            return getHook(vm.component as Component, key);
+            return getHook(vm.component as ComponentInterface, key);
         };
     }
     return fn;
@@ -238,7 +268,7 @@ function createSetter(key: string) {
         fn = cachedSetterByKey[key] = function(this: HTMLElement, newValue: any): any {
             const vm = getCustomElementVM(this);
             const { setHook } = vm;
-            setHook(vm.component as Component, key, newValue);
+            setHook(vm.component as ComponentInterface, key, newValue);
         };
     }
     return fn;
@@ -248,7 +278,7 @@ function createMethodCaller(method: PublicMethod): PublicMethod {
     return function(this: HTMLElement): any {
         const vm = getCustomElementVM(this);
         const { callHook } = vm;
-        return callHook(vm.component as Component, method, ArraySlice.call(arguments));
+        return callHook(vm.component as ComponentInterface, method, ArraySlice.call(arguments));
     };
 }
 
@@ -355,11 +385,19 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
 import "../polyfills/event-composed/main";
+import "../polyfills/focus-event-composed/main";
 import "../polyfills/aria-properties/main";
 
 const HTML_PROPS: PropsDef = create(null);
 const GLOBAL_PROPS_DESCRIPTORS: PropertyDescriptorMap = create(null);
 const globalElmProto: object = create(BaseCustomElementProto);
+const globalElmDescriptors: PropertyDescriptorMap = create(null, {
+    // this symbol is used as a flag for html-element.ts to determine if
+    // the element needs some patches of the proto chain of not. Which
+    // helps for the cases when a Web Component is created via the global
+    // registry.
+    [PatchedFlag]: {}
+});
 
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
@@ -374,12 +412,13 @@ let globalInitialization: any = () => {
                 type: 'any',
                 attr: attrName,
             };
-            defineProperty(globalElmProto, propName, {
+            const globalElmDescriptor = globalElmDescriptors[propName] = {
                 get: createGetter(propName),
                 set: createSetter(propName),
                 enumerable: true,
                 configurable: true,
-            });
+            };
+            defineProperty(globalElmProto, propName, globalElmDescriptor);
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
         }
     });
@@ -395,12 +434,13 @@ let globalInitialization: any = () => {
                 type: 'any',
                 attr: attrName,
             };
-            defineProperty(globalElmProto, propName, {
+            const globalElmDescriptor = globalElmDescriptors[propName] = {
                 get: createGetter(propName),
                 set: createSetter(propName),
                 enumerable: true,
                 configurable: true,
-            });
+            };
+            defineProperty(globalElmProto, propName, globalElmDescriptor);
             GLOBAL_PROPS_DESCRIPTORS[propName] = descriptor;
         }
     });

@@ -1,4 +1,4 @@
-import { getOwnPropertyNames, getOwnPropertyDescriptor, defineProperty, isFunction, isUndefined } from "../language";
+import { getOwnPropertyNames, getOwnPropertyDescriptor, defineProperty, isFunction, isUndefined } from "../../shared/language";
 
 export type DecoratorFunction = (Ctor: any, key: PropertyKey, descriptor: PropertyDescriptor | undefined) => PropertyDescriptor;
 export type DecoratorMap = Record<string, DecoratorFunction>;

@@ -1,5 +1,7 @@
 import * as path from "path";
 import compile from "lwc-template-compiler";
+
+import { CompilerError } from "../common-interfaces/compiler-error";
 import { NormalizedCompilerOptions } from "../compiler/options";
 import { FileTransformer } from "./transformer";
 
@@ -63,11 +65,23 @@ const transform: FileTransformer = function(
     filename: string,
     options: NormalizedCompilerOptions
 ) {
-    const { code, metadata, warnings } = compile(src, {});
 
-    const fatalError = warnings.find(warning => warning.level === "error");
-    if (fatalError) {
-        throw new Error(fatalError.message);
+    let code;
+    let metadata;
+
+    try {
+        const result = compile(src, {});
+        const warnings = result.warnings;
+
+        code = result.code;
+        metadata = result.metadata;
+
+        const fatalError = warnings.find(warning => warning.level === "error");
+        if (fatalError) {
+            throw new CompilerError(`${filename}: ${fatalError.message}`, filename);
+        }
+    } catch (e) {
+        throw new CompilerError(e.message, filename, e.loc);
     }
 
     return {

@@ -1,4 +1,4 @@
-import { createElement, Element } from "../main";
+import { createElement, LightningElement } from "../main";
 import * as target from '../services';
 
 function resetServices() {
@@ -64,7 +64,7 @@ describe('services', () => {
                     d++;
                 }
             });
-            class MyComponent extends Element {}
+            class MyComponent extends LightningElement {}
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -91,7 +91,7 @@ describe('services', () => {
             function html() {
                 return [];
             }
-            class MyComponent extends Element {
+            class MyComponent extends LightningElement {
                 connectedCallback() {
                     lifecycleLog.push('component connected callback');
                 }
