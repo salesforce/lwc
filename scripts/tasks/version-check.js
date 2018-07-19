@@ -10,7 +10,7 @@ const PACKAGES = glob.sync('*/package.json', {
     cwd: PACKAGES_DIR,
 });
 
-let isVersionInSync = true;
+let areVersionsInSync = true;
 for (const location of PACKAGES) {
     const {
         name,
@@ -29,11 +29,11 @@ for (const location of PACKAGES) {
             ].join(' ');
 
             console.error(error);
-            isVersionInSync = false;
+            areVersionsInSync = false;
         }
     }
 }
 
-if (!isVersionInSync) {
+if (!areVersionsInSync) {
     process.exit(1);
 }

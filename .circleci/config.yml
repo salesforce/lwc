@@ -23,6 +23,10 @@ jobs:
           key: yarn-v4-{{ checksum "yarn.lock" }}
 
       - run:
+          name: Validation package versions
+          command: node ./scripts/tasks/version-check.js
+
+      - run:
           name: Run Linting
           command: yarn lint
 
