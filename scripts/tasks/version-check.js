@@ -24,8 +24,9 @@ for (const location of PACKAGES) {
             !semver.satisfies(devDependencies[dep], peerDependencies[dep])
         ) {
             const error = [
-                `Peer dependency version mismatch of ${dep} in ${name}.`,
+                `Peer and dev versions of ${dep} in ${name} are out of sync.`,
                 `(Expected: ${peerDependencies[dep]}, Actual: ${devDependencies[dep]})`,
+                `Please update the peer dependency version.`,
             ].join(' ');
 
             console.error(error);
