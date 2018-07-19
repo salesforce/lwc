@@ -693,33 +693,6 @@ describe('html-element', () => {
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
             });
-        }),
-
-        it('should correctly set child attribute ', () => {
-            let childTitle = null;
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            class Child extends LightningElement {
-                renderedCallback() {
-                    childTitle = this.getAttribute('title');
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            parentElm.setAttribute('title', 'parent title');
-            document.body.appendChild(parentElm);
-
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
-            expect(childElm.getAttribute('title')).toBe('child title');
         });
     });
 
@@ -2206,7 +2179,7 @@ describe('html-element', () => {
             })
         }),
 
-        it('should correctly set child attribute ', () => {
+        it('should correctly set child attribute', () => {
             let childTitle = null;
 
             class Parent extends LightningElement {
