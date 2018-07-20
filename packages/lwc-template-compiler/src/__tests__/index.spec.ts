@@ -68,7 +68,7 @@ describe('compileToFunction', () => {
         `);
 
         functionMatchCode(renderFn, `
-            const _xFoo = components["x-foo"];
+            const _xFoo = modules["x-foo"];
 
             function tmpl($api, $cmp, $slotset, $ctx) {
               const {
