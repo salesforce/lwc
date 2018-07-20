@@ -6,7 +6,7 @@ import assertLogger from '../../shared/assert';
 
 describe('html-element', () => {
     describe('#setAttributeNS()', () => {
-        it.only('should set attribute on host element when element is nested in template', () => {
+        it('should set attribute on host element when element is nested in template', () => {
             class Child extends LightningElement {
                 setFoo() {
                     this.setAttributeNS('x', 'foo', 'bar');
