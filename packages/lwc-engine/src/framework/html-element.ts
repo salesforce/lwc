@@ -10,7 +10,7 @@ import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
-import { prepareForValidAttributeMutation } from "./restrictions";
+import { unlockAttribute, lockAttribute } from "./restrictions";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -178,43 +178,69 @@ LightningElement.prototype = {
         const wrappedListener = getWrappedComponentsListener(vm, listener);
         vm.elm.removeEventListener(type, wrappedListener, options);
     },
-    setAttributeNS(ns: string, attrName: string, value: any): void {
+    setAttributeNS(ns: string, attrName: string, value: any) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
-            prepareForValidAttributeMutation(elm, attrName);
+            unlockAttribute(elm, attrName);
         }
-        return elm.setAttributeNS.apply(elm, arguments);
+        elm.setAttributeNS.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
     },
-    removeAttributeNS(ns: string, attrName: string): void {
+    removeAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            prepareForValidAttributeMutation(elm, attrName);
+            unlockAttribute(elm, attrName);
         }
-        return elm.removeAttributeNS.apply(elm, arguments);
+        elm.removeAttributeNS.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
     },
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
-            prepareForValidAttributeMutation(elm, attrName);
+            unlockAttribute(elm, attrName);
         }
         elm.removeAttribute.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
     },
-    setAttribute(attrName: string, value: any): void {
+    setAttribute(attrName: string, value: any) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
-            prepareForValidAttributeMutation(elm, attrName);
+            unlockAttribute(elm, attrName);
         }
-        return elm.setAttribute.apply(elm, arguments);
+        elm.setAttribute.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
     },
     getAttribute(attrName: string): string | null {
         const elm = getLinkedElement(this);
-        return elm.getAttribute.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            unlockAttribute(elm, attrName);
+        }
+        const value = elm.getAttribute.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
+        return value;
     },
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
-        return elm.getAttributeNS.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            unlockAttribute(elm, attrName);
+        }
+        const value = elm.getAttributeNS.apply(elm, arguments);
+        if (process.env.NODE_ENV !== 'production') {
+            lockAttribute(elm, attrName);
+        }
+        return value;
     },
     getBoundingClientRect(): ClientRect {
         const elm = getLinkedElement(this);

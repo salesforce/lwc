@@ -672,15 +672,34 @@ describe('html-element', () => {
 
         it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
             jest.spyOn(assertLogger, 'logError');
-            class MyComponent extends LightningElement {}
-            const elm = createElement('x-foo', {is: MyComponent});
-            elm.setAttribute('tabindex', '0');
+            class Child extends LightningElement {}
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
+            class Parent extends LightningElement {
+                render() {
+                    return html;
+                }
+                renderedCallback() {
+                    this.template.querySelector('x-child').setAttribute('tabindex', 0);
+                }
+            }
+            const elm = createElement('x-foo', {is: Parent});
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
+        });
+
+        it('should not throw when accessing attribute in root elements', () => {
+            class Parent extends LightningElement {}
+            const elm = createElement('x-foo', {is: Parent});
+            document.body.appendChild(elm);
+            elm.setAttribute('tabindex', 1);
         });
 
         it('should delete existing attribute prior rendering', () => {
