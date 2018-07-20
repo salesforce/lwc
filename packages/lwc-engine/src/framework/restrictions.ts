@@ -161,7 +161,7 @@ function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     const propName = isString(attrName) ? getPropNameFromAttrName(StringToLowerCase.call(attrName)) : null;
     const { elm, def: { props: propsConfig } } = vm;
 
-    if (!isUndefined(getNodeOwnerKey(elm)) && !isAttributeUnlocked(elm, attrName) && propsConfig && propName && propsConfig[propName]) {
+    if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName) && propsConfig && propName && propsConfig[propName]) {
         assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
     }
 }
@@ -172,7 +172,7 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (!isUndefined(getNodeOwnerKey(elm)) && !isAttributeUnlocked(elm, attrName)) {
+    if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
 }
@@ -180,12 +180,12 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
 let controlledElement: Element | null = null;
 let controlledAttributeName: string | void;
 
-function isAttributeUnlocked(elm: Element, attrName: string): boolean {
+function isAttributeLocked(elm: Element, attrName: string): boolean {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    return elm === controlledElement && attrName === controlledAttributeName;
+    return elm !== controlledElement || attrName !== controlledAttributeName;
 }
 
 export function lockAttribute(elm: Element, key: string) {
