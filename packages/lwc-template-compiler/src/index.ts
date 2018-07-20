@@ -4,6 +4,7 @@ import { mergeConfig, Config } from './config';
 import parse from './parser';
 import generate from './codegen';
 
+import { TEMPLATE_COMPONENT_PARAMETER } from './shared/constants';
 import { CompilationMetadata, CompilationWarning } from './shared/types';
 
 export default function compiler(
@@ -50,4 +51,32 @@ export default function compiler(
             templateDependencies: state.dependencies,
         },
     };
+}
+
+export function compileToFunction(source: string): Function {
+    const options = mergeConfig({});
+    options.format = 'function';
+
+    const state = new State(source, options);
+
+    const parsingResults = parse(source, state);
+
+    for (const { message, level } of parsingResults.warnings) {
+        if (level === 'error') {
+            throw new Error(message);
+        } else if (level === 'warning') {
+            /* tslint:disable-next-line:no-console */
+            console.warn(message);
+        } else {
+            /* tslint:disable-next-line:no-console */
+            console.log(message);
+        }
+    }
+
+    if (!parsingResults.root) {
+        throw new Error(`Invalid template`);
+    }
+
+    const { code } = generate(parsingResults.root, state);
+    return new Function(TEMPLATE_COMPONENT_PARAMETER, code);
 }
