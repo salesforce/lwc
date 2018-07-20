@@ -1,4 +1,4 @@
-export const TEMPLATE_COMPONENT_PARAMETER: string = 'components';
+export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
 
 export const TEMPLATE_FUNCTION_NAME: string = 'tmpl';
 

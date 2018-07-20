@@ -6,11 +6,11 @@ import {
     generateTemplateMetadata,
 } from '../helpers';
 
-function importFromComponentName(name: string): t.ImportDeclaration {
-    const localComponentIdentifier = identifierFromComponentName(name);
+function moduleNameToImport(name: string): t.ImportDeclaration {
+    const localIdentifier = identifierFromComponentName(name);
 
     return t.importDeclaration(
-        [t.importDefaultSpecifier(localComponentIdentifier)],
+        [t.importDefaultSpecifier(localIdentifier)],
         t.stringLiteral(name),
     );
 }
@@ -20,7 +20,7 @@ export function format(
     state: State,
 ): t.Program {
     const imports = state.dependencies.map(cmpClassName =>
-        importFromComponentName(cmpClassName),
+        moduleNameToImport(cmpClassName),
     );
     const metadata = generateTemplateMetadata(state);
 

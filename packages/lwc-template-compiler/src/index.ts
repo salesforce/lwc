@@ -4,7 +4,7 @@ import { mergeConfig, Config } from './config';
 import parse from './parser';
 import generate from './codegen';
 
-import { TEMPLATE_COMPONENT_PARAMETER } from './shared/constants';
+import { TEMPLATE_MODULES_PARAMETER } from './shared/constants';
 import { CompilationMetadata, CompilationWarning } from './shared/types';
 
 export default function compiler(
@@ -78,5 +78,5 @@ export function compileToFunction(source: string): Function {
     }
 
     const { code } = generate(parsingResults.root, state);
-    return new Function(TEMPLATE_COMPONENT_PARAMETER, code);
+    return new Function(TEMPLATE_MODULES_PARAMETER, code);
 }

@@ -7,17 +7,17 @@ import {
 } from '../helpers';
 import {
     TEMPLATE_FUNCTION_NAME,
-    TEMPLATE_COMPONENT_PARAMETER,
+    TEMPLATE_MODULES_PARAMETER,
 } from '../../shared/constants';
 
-function lookupFromComponentName(name: string): t.VariableDeclaration {
-    const localComponentIdentifier = identifierFromComponentName(name);
+function moduleNameToLookup(name: string): t.VariableDeclaration {
+    const localIdentifier = identifierFromComponentName(name);
 
     return t.variableDeclaration('const', [
         t.variableDeclarator(
-            localComponentIdentifier,
+            localIdentifier,
             t.memberExpression(
-                t.identifier(TEMPLATE_COMPONENT_PARAMETER),
+                t.identifier(TEMPLATE_MODULES_PARAMETER),
                 t.stringLiteral(name),
                 true,
             ),
@@ -30,7 +30,7 @@ export function format(
     state: State,
 ): t.Program {
     const lookups = state.dependencies.map(cmpClassName =>
-        lookupFromComponentName(cmpClassName),
+        moduleNameToLookup(cmpClassName),
     );
     const metadata = generateTemplateMetadata(state);
 
