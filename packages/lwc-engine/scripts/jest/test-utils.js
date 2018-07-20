@@ -3,7 +3,7 @@ const { compileToFunction } = require('lwc-template-compiler');
 const TEMPLATE_CACHE = Object.create(null);
 
 /**
- * Compiles a template string and returns the instanciated function.
+ * Compiles a template string and returns the instantiated function.
  *
  * @param {string} source The template string
  * @param {object=} config The template configuration
