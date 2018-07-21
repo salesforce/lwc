@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-18)
+# [](https://github.com/salesforce/lwc/compare/v0.24.3-alpha...v) (2018-07-21)
+
+
+
+<a name="0.24.3-alpha"></a>
+## [0.24.3-alpha](https://github.com/salesforce/lwc/compare/v0.24.2...v0.24.3-alpha) (2018-07-21)
+
+
+### Bug Fixes
+
+* **engine:** closes [#524](https://github.com/salesforce/lwc/issues/524) relax attribute mutation assertion ([#525](https://github.com/salesforce/lwc/issues/525)) ([0fad9ab](https://github.com/salesforce/lwc/commit/0fad9ab))
 
 
 
@@ -505,7 +515,12 @@
 
 
 <a name="0.17.5"></a>
-## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.5) (2017-12-26)
+## [0.17.5](https://github.com/salesforce/lwc/compare/v0.17.3...v0.17.5) (2017-12-26)
+
+
+
+<a name="0.17.3"></a>
+## [0.17.3](https://github.com/salesforce/lwc/compare/v0.17.2...v0.17.3) (2017-12-16)
 
 
 
