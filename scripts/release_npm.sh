@@ -20,7 +20,7 @@ fi
 
 # Command to push the packages
 CMD_PREPARE="yarn prepare"
-CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' --skip-git --yes ${CANARY} --repo-version ${PACKAGE_VERSION}"
+CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' --skip-git --yes ${CANARY} --repo-version ${PACKAGE_VERSION} --new-version ${PACKAGE_VERSION} --non-interactive"
 
 # Run
 $CMD_PREPARE && $CMD_PUBLISH_PACKAGES;
