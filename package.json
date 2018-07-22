@@ -11,13 +11,12 @@
     "test:integration": "yarn run build && lerna exec --scope lwc-integration -- yarn sauce",
     "test:performance": "lerna exec --scope benchmark -- best --runner remote",
     "build": "lerna run build --ignore benchmark --ignore lwc-integration",
-    "release": "yarn prepare && lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' && yarn changelog",
+    "release:ci:npm": "./scripts/release_npm.sh",
+    "release:manual": "lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' --skip-git",
     "release:beta": "yarn prepare && lerna publish --force-publish=* --registry='https://npm.lwcjs.org' --canary=beta --yes",
     "release:internal": "yarn prepare && lerna publish --exact --force-publish=* --skip-git --repo-version `node -pe \"require('./lerna.json').version\"` --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
     "release:internalbeta": "yarn prepare && lerna publish --canary=beta --skip-git --yes --registry='https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'",
-    "changelog": "yarn changelog:generate && yarn changelog:publish",
-    "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "changelog:publish": "git add CHANGELOG.md && git commit -m 'docs(changelog): publish release changelog' && git push"
+    "changelog:generate": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "husky": {
     "hooks": {
