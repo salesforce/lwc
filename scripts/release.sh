@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Get the package version
 [ ! -z "$1" ] && PACKAGE_VERSION="$1" || PACKAGE_VERSION=$NPM_PACKAGE_VERSION;
 
 if [ -f $PACKAGE_VERSION ]; then
@@ -7,14 +8,21 @@ if [ -f $PACKAGE_VERSION ]; then
         exit 1;
 fi
 
+# Get the current version
+version=`lerna ls --scope lwc-engine`
+
+if [[ $version = *"${PACKAGE_VERSION}"* ]]; then
+  echo "Version already available, skipping release."
+  exit 0;
+fi
+
+# Lets begin the release
 CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry='https://npm.lwcjs.org' --skip-git --yes --repo-version ${PACKAGE_VERSION}"
 CMD_CHANGELOG="yarn changelog:generate"
 CMD_PREPARE="yarn prepare"
 CMD_GIT_ADD="git add CHANGELOG.md lerna.json packages/*"
 CMD_GIT_COMMIT="git commit -m 'release: v${PACKAGE_VERSION}'"
 CMD_GIT_PUSH="git push"
-
-echo $PUBLISH_PACKAGES
 
 if $CMD_PREPARE; then
     if [ -f $CMD_PACKAGE_VERSION ]; then
