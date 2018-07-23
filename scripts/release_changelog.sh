@@ -2,7 +2,7 @@
 
 # Normalize params
 [ ! -z "$1" ] && PACKAGE_VERSION="$1" || PACKAGE_VERSION=$NPM_PACKAGE_VERSION;
-[ ! -z "$2" ] && CANARY="--canary=beta";
+[ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--canary=beta" || CANARY="";
 
 if [ -f $PACKAGE_VERSION ]; then
         echo "You must specify a version to create the changelog"
