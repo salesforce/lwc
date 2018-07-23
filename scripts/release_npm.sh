@@ -24,4 +24,4 @@ CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry https:/
 
 # Run
 echo $CMD_PUBLISH_PACKAGES;
-#$CMD_PUBLISH_PACKAGES;
+$CMD_PUBLISH_PACKAGES;
