@@ -2,7 +2,7 @@
 
 # Normalize params
 [ ! -z "$1" ] && PACKAGE_VERSION="$1" || PACKAGE_VERSION=$NPM_PACKAGE_VERSION;
-[ ! -z "$2" ] && CANARY="--canary=beta" || CANARY="";
+[ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--canary=beta" || CANARY="";
 
 if [ -f $PACKAGE_VERSION ]; then
         echo "You must specify a version to release"
@@ -24,4 +24,4 @@ CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry https:/
 
 # Run
 echo $CMD_PUBLISH_PACKAGES;
-$CMD_PUBLISH_PACKAGES;
+#$CMD_PUBLISH_PACKAGES;
