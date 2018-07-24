@@ -6926,6 +6926,20 @@ lwc-jest-transformer@0.17.15:
     babel-template "^6.26.0"
     deasync "0.1.12"
 
+lwc-template-compiler@0.24.2:
+  version "0.24.2"
+  resolved "http://npm.lwcjs.org/lwc-template-compiler/-/lwc-template-compiler-0.24.2/48ae51f752f6a55b5c1e9bdcad82ff50a6c13789.tgz#48ae51f752f6a55b5c1e9bdcad82ff50a6c13789"
+  dependencies:
+    babel-generator "^6.26.1"
+    babel-template "^6.26.0"
+    babel-traverse "^6.26.0"
+    babel-types "^6.26.0"
+    babylon "^6.17.0"
+    camelcase "~5.0.0"
+    decamelize "^1.2.0"
+    he "^1.1.1"
+    parse5-with-errors "^4.0.1"
+
 macaddress@^0.2.8:
   version "0.2.8"
   resolved "http://npm.lwcjs.org/macaddress/-/macaddress-0.2.8/5904dc537c39ec6dbefeae902327135fa8511f12.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"

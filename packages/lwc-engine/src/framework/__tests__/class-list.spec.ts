@@ -1,3 +1,5 @@
+import { compileTemplate } from 'test-utils';
+
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
@@ -5,14 +7,22 @@ describe('class-list', () => {
     describe('integration', () => {
         it('should support outer className', () => {
             class ChildComponent extends LightningElement {}
-            function html($api) {
-                return [$api.c('x-child', ChildComponent, { className: 'foo' })];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child class="foo"></x-child>
+                </template>`,
+                {
+                    modules: { 'x-child': ChildComponent }
+                }
+            );
+
             class MyComponent extends LightningElement {
                 render() {
                     return html;
                 }
             }
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             const childElm = getHostShadowRoot(elm).querySelector('x-child');

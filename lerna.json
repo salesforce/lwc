@@ -1,6 +1,5 @@
 {
   "lerna": "2.9.0",
-  "version": "0.24.2",
   "commands": {
     "publish": {
       "forcePublish": "*"
@@ -8,5 +7,6 @@
   },
   "exact": true,
   "npmClient": "yarn",
-  "useWorkspaces": true
+  "useWorkspaces": true,
+  "version": "0.24.11"
 }

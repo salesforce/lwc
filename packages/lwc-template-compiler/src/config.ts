@@ -1,3 +1,5 @@
+export type Format = 'module' | 'function';
+
 export interface Config {
     /**
      * Enable computed member expression in the template. eg:
@@ -10,10 +12,20 @@ export interface Config {
 
 export interface ResolvedConfig {
     computedMemberExpression: boolean;
+
+    /**
+     * Internal configuration for the output format of the template. Accepts:
+     *  * "module": generates a ES module, and use import statements to reference component
+     *    constructor.
+     *  * "inline": generates a function, and requires component constructor to be passed
+     *    as parameter.
+     */
+    format: Format;
 }
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: ResolvedConfig = {
     computedMemberExpression: false,
+    format: 'module',
 };
 
 const REQUIRED_OPTION_NAMES = new Set([]);

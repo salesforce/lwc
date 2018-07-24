@@ -1,5 +1,10 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-18)
+# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-23)
+
+
+### Bug Fixes
+
+* **engine:** closes [#524](https://github.com/salesforce/lwc/issues/524) relax attribute mutation assertion ([#525](https://github.com/salesforce/lwc/issues/525)) ([0fad9ab](https://github.com/salesforce/lwc/commit/0fad9ab))
 
 
 

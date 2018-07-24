@@ -3,7 +3,7 @@ import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, 
 import { ComponentInterface } from "./component";
 import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
-import { getShadowRootVM, getNodeKey, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
+import { getShadowRootVM, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
 import {
     getAttribute,
     setAttribute,
@@ -108,7 +108,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
 function getAttributePatched(this: HTMLElement, attrName: string): string | null {
     if (process.env.NODE_ENV !== 'production') {
         const vm = getCustomElementVM(this);
-        assertPublicAttributeCollision(vm, attrName);
+        assertAttributeReflectionCapability(vm, attrName);
     }
 
     return getAttribute.apply(this, ArraySlice.call(arguments));
@@ -117,8 +117,8 @@ function getAttributePatched(this: HTMLElement, attrName: string): string | null
 function setAttributePatched(this: HTMLElement, attrName: string, newValue: any) {
     const vm = getCustomElementVM(this);
     if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
+        assertAttributeMutationCapability(vm, attrName);
+        assertAttributeReflectionCapability(vm, attrName);
     }
     setAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -127,8 +127,8 @@ function setAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attrNam
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
+        assertAttributeMutationCapability(vm, attrName);
+        assertAttributeReflectionCapability(vm, attrName);
     }
     setAttributeNS.apply(this, ArraySlice.call(arguments));
 }
@@ -137,8 +137,8 @@ function removeAttributePatched(this: HTMLElement, attrName: string) {
     const vm = getCustomElementVM(this);
     // marking the set is needed for the AOM polyfill
     if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
+        assertAttributeMutationCapability(vm, attrName);
+        assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttribute.apply(this, ArraySlice.call(arguments));
 }
@@ -147,68 +147,63 @@ function removeAttributeNSPatched(this: HTMLElement, attrNameSpace: string, attr
     const vm = getCustomElementVM(this);
 
     if (process.env.NODE_ENV !== 'production') {
-        assertTemplateMutationViolation(vm, attrName);
-        assertPublicAttributeCollision(vm, attrName);
+        assertAttributeMutationCapability(vm, attrName);
+        assertAttributeReflectionCapability(vm, attrName);
     }
     removeAttributeNS.apply(this, ArraySlice.call(arguments));
 }
 
-function assertPublicAttributeCollision(vm: VM, attrName: string) {
+function assertAttributeReflectionCapability(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
     const propName = isString(attrName) ? getPropNameFromAttrName(StringToLowerCase.call(attrName)) : null;
-    const { def: { props: propsConfig } } = vm;
+    const { elm, def: { props: propsConfig } } = vm;
 
-    if (propsConfig && propName && propsConfig[propName]) {
+    if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName) && propsConfig && propName && propsConfig[propName]) {
         assert.logError(`Invalid attribute "${StringToLowerCase.call(attrName)}" for ${vm}. Instead access the public property with \`element.${propName};\`.`);
     }
 }
 
-function assertTemplateMutationViolation(vm: VM, attrName: string) {
+function assertAttributeMutationCapability(vm: VM, attrName: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
     const { elm } = vm;
-    if (!isAttributeChangeControlled(attrName) && !isUndefined(getNodeOwnerKey(elm))) {
+    if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
-    // attribute change control must be released every time its value is checked
-    resetAttributeChangeControl();
 }
 
-let controlledAttributeChange: boolean = false;
+let controlledElement: Element | null = null;
 let controlledAttributeName: string | void;
 
-function isAttributeChangeControlled(attrName: string): boolean {
+function isAttributeLocked(elm: Element, attrName: string): boolean {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    return controlledAttributeChange && attrName === controlledAttributeName;
+    return elm !== controlledElement || attrName !== controlledAttributeName;
 }
 
-function resetAttributeChangeControl() {
+export function lockAttribute(elm: Element, key: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    controlledAttributeChange = false;
+    controlledElement = null;
     controlledAttributeName = undefined;
 }
 
-export function prepareForValidAttributeMutation(elm: Element, key: string) {
+export function unlockAttribute(elm: Element, key: string) {
     if (process.env.NODE_ENV === 'production') {
         // this method should never leak to prod
         throw new ReferenceError();
     }
-    if (!isUndefined(getNodeKey(elm))) {
-        // TODO: we should guarantee that the methods of the element are all patched
-        controlledAttributeChange = true;
-        controlledAttributeName = key;
-    }
+    controlledElement = elm;
+    controlledAttributeName = key;
 }
 
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {

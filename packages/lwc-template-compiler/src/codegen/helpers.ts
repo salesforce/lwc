@@ -1,8 +1,10 @@
 import * as t from 'babel-types';
 import * as toCamelCase from 'camelcase';
 
+import State from '../state';
 import { isElement } from '../shared/ir';
 import { IRElement } from '../shared/types';
+import { TEMPLATE_FUNCTION_NAME } from '../shared/constants';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toCamelCase(name)}`);
@@ -21,14 +23,6 @@ export function getMemberExpressionRoot(
     }
 
     return current as t.Identifier;
-}
-
-export function importFromComponentName(name: string): t.ImportDeclaration {
-    const localComponentIdentifier = identifierFromComponentName(name);
-    return t.importDeclaration(
-        [t.importDefaultSpecifier(localComponentIdentifier)],
-        t.stringLiteral(name),
-    );
 }
 
 export function objectToAST(
@@ -80,4 +74,28 @@ export function destructuringAssignmentFromObject(
             target,
         ),
     ]);
+}
+
+export function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
+    const metadataExpressions: t.ExpressionStatement[] = [];
+
+    // Generate the slots property on template function if slots are defined in the template:
+    //      tmpl.slots = ['', 'x']
+    if (state.slots.length) {
+        const slotsProperty = t.memberExpression(
+            t.identifier(TEMPLATE_FUNCTION_NAME),
+            t.identifier('slots'),
+        );
+
+        const slotsArray = t.arrayExpression(
+            state.slots.map((slot) => t.stringLiteral(slot)),
+        );
+
+        const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
+        metadataExpressions.push(
+            t.expressionStatement(slotsMetadata),
+        );
+    }
+
+    return metadataExpressions;
 }
