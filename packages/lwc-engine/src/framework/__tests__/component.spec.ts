@@ -1,3 +1,5 @@
+import { compileTemplate } from 'test-utils';
+
 import { createElement, LightningElement } from '../main';
 import { getHostShadowRoot } from '../html-element';
 
@@ -10,15 +12,20 @@ describe('component', function() {
                     return this.value;
                 }
             }
-
             MyComponent.publicProps = {
                 breakfast: {
                     config: 1
                 }
             };
-            function html($api) {
-                return [$api.c('x-component', MyComponent, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyComponent }
+                }
+            );
             class Parent extends LightningElement {
                 value = 'salad';
                 get lunch() {
@@ -29,7 +36,6 @@ describe('component', function() {
                     return html;
                 }
             }
-
             Parent.publicProps = {
                 lunch: {
                     config: 1
@@ -39,7 +45,7 @@ describe('component', function() {
             const elm = createElement('x-foo', { is: Parent });
             document.body.appendChild(elm);
             expect(elm.lunch).toBe('salad');
-            expect(getHostShadowRoot(elm).querySelector('x-component').breakfast).toBe('pancakes');
+            expect(getHostShadowRoot(elm).querySelector('x-child').breakfast).toBe('pancakes');
         });
 
         it('should allow calling public getters when element is accessed by querySelector', function() {
@@ -54,9 +60,15 @@ describe('component', function() {
                     config: 0
                 }
             };
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 callChildM() {
                     value = this.template.querySelector('x-child').m;
@@ -93,9 +105,11 @@ describe('component', function() {
         });
 
         it('should be render reactive', function() {
-            function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h('div', { key: 0 }, [$api.d($cmp.validity)])];
-            }
+            const html = compileTemplate(
+                `<template>
+                    <div>{validity}</div>
+                </template>`
+            );
             class MyComponent extends LightningElement  {
                 state = { value: 0 };
 
@@ -172,9 +186,15 @@ describe('component', function() {
                     config: 3
                 }
             };
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 render() {
                     return html;
@@ -185,6 +205,7 @@ describe('component', function() {
                 }
             }
             MyComponent.publicMethods = ['run'];
+
             const elm = createElement('x-foo', { is: MyComponent });
             document.body.appendChild(elm);
             expect(elm.run()).toBe('eggs');
@@ -335,16 +356,12 @@ describe('component', function() {
     describe('styles', function() {
         it('should handle string styles', function() {
             let calledCSSText = false;
-            function html($api, $cmp) {
-                return [$api.h(
-                    "section",
-                    {
-                        key: 0,
-                        style: $cmp.state.customStyle
-                    },
-                    []
-                )];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <section style={state.customStyle}></section>
+                </template>`,
+            );
             class MyComponent extends LightningElement  {
                 state = {
                     customStyle: 'color: red'
@@ -373,16 +390,12 @@ describe('component', function() {
 
         it('should handle undefined properly', function() {
             let calledCSSTextWithUndefined = false;
-            function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h(
-                    "section",
-                    {
-                        key: 0,
-                        style: $cmp.state.customStyle
-                    },
-                    []
-                )];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <section style={state.customStyle}></section>
+                </template>`,
+            );
             class MyComponent extends LightningElement  {
                 state = {
                     customStyle: undefined
@@ -412,16 +425,11 @@ describe('component', function() {
         });
 
         it('should handle null properly', function() {
-            function html($api, $cmp) {
-                return [$api.h(
-                    "section",
-                    {
-                        key: 0,
-                        style: $cmp.state.customStyle
-                    },
-                    []
-                )];
-            }
+            const html = compileTemplate(
+                `<template>
+                    <section style={state.customStyle}></section>
+                </template>`,
+            );
             class MyComponent extends LightningElement  {
                 state = {
                     customStyle: null
@@ -438,16 +446,11 @@ describe('component', function() {
         });
 
         it('should diff between style objects and strings correctly', function() {
-            function html($api, $cmp, $slotset, $ctx) {
-                return [$api.h(
-                    "section",
-                    {
-                        key: 0,
-                        style: $cmp.customStyle
-                    },
-                    []
-                )];
-            }
+            const html = compileTemplate(
+                `<template>
+                    <section style={customStyle}></section>
+                </template>`,
+            );
             class MyComponent extends LightningElement  {
                 customStyle: {
                     color: 'red'
@@ -559,9 +562,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 callChildM() {
                     this.template.querySelector('x-child').m();
@@ -588,9 +597,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 getChildAttribute() {
                     this.template.querySelector('x-child').getAttribute('title');
@@ -616,9 +631,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 setChildAttribute() {
                     this.template.querySelector('x-child').setAttribute('title', 'foo');
@@ -644,9 +665,15 @@ describe('component', function() {
                 }
             }
             MyChild.publicMethods = ['m'];
-            function html($api) {
-                return [$api.c('x-child', MyChild, {})];
-            }
+
+            const html = compileTemplate(
+                `<template>
+                    <x-child></x-child>
+                </template>`,
+                {
+                    modules: { "x-child": MyChild }
+                }
+            );
             class MyComponent extends LightningElement  {
                 removeChildAttribute() {
                     this.template.querySelector('x-child').removeAttribute('title');

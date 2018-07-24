@@ -1,3 +1,5 @@
+import { compileTemplate } from 'test-utils';
+
 import { createElement, register, unwrap } from '../main';
 import { getHostShadowRoot, LightningElement } from '../html-element';
 import assertLogger from '../../shared/assert';
@@ -12,11 +14,19 @@ describe('html-element', () => {
             }
             Child.publicMethods = ['setFoo'];
 
+            const html = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
             class Parent extends LightningElement {
                 render() {
-                    return ($api) => {
-                        return [$api.c('x-child', Child, {})]
-                    }
+                    return html;
                 }
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });

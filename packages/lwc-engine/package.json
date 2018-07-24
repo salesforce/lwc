@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
+    "lwc-template-compiler": "0.24.2",
     "rollup": "0.60.1",
     "rollup-plugin-inject": "^1.4.1",
     "rollup-plugin-node-resolve": "^3.0.2",
