@@ -23,5 +23,7 @@ CMD_PREPARE="yarn prepare"
 CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry https://npm.lwcjs.org --yes --skip-git ${CANARY} --repo-version ${PACKAGE_VERSION} --npm-client npm"
 
 # Run
+echo $CMD_PREPARE;
+$CMD_PREPARE;
 echo $CMD_PUBLISH_PACKAGES;
 $CMD_PUBLISH_PACKAGES;
