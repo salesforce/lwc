@@ -1,24 +1,8 @@
-const { CustomEvent: OriginalCustomEvent } = (window as any);
-export function PatchedCustomEvent(this: Event, type: string, eventInitDict: CustomEventInit<any>): Event {
-    const event = new OriginalCustomEvent(type, eventInitDict);
-    // support for composed on custom events
-    Object.defineProperties(event, {
-        composed: {
-            // We can't use "value" here, because IE11 doesn't like mixing and matching
-            // value with get() from Event.prototype.
-            get() {
-                return !!(eventInitDict && (eventInitDict as any).composed);
-            },
-            configurable: true,
-            enumerable: true,
-        },
-    });
-    return event;
-}
+import { assign, create } from '../../shared/language';
 
 export default function apply() {
     // https://github.com/w3c/webcomponents/issues/513#issuecomment-224183937
-    const composedEvents = {
+    const composedEvents = assign(create(null), {
         blur: 1,
         focus: 1,
         focusin: 1,
@@ -65,21 +49,17 @@ export default function apply() {
         DOMFocusIn: 1,
         DOMFocusOut: 1,
         keypress: 1,
-    };
-
-    const { hasOwnProperty } = composedEvents;
+    });
 
     // Composed for Native events
     Object.defineProperties(Event.prototype, {
         composed: {
             get() {
                 const { type } = this;
-                return hasOwnProperty.call(composedEvents, type);
+                return composedEvents[type] === 1;
             },
             configurable: true,
             enumerable: true,
         },
     });
-    (window as any).CustomEvent = PatchedCustomEvent;
-    (window as any).CustomEvent.prototype = OriginalCustomEvent.prototype;
 }
