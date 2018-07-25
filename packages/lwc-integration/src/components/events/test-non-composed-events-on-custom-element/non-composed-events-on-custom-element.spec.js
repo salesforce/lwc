@@ -1,6 +1,7 @@
 const assert = require('assert');
-describe('Composed events', () => {
-    const URL = 'http://localhost:4567/composed-events';
+
+describe('Non-composed events', () => {
+    const URL = 'http://localhost:4567/non-composed-events-on-custom-element';
 
     before(() => {
         browser.url(URL);
