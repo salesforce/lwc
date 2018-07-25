@@ -287,4 +287,40 @@ describe('CSS transform', () => {
 
         expect(pretify(code)).toBe(pretify(expected));
     });
+
+    it('should escape grave accents', async () => {
+        const actual = `/* Comment with grave accents \`#\` */`;
+        const expected = `
+            function style(token) {
+                return \`/* Comment with grave accents \\\`#\\\` */\`;
+            }
+
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('should escape backslash', async () => {
+        const actual = '.foo { content: "\\\\"; }';
+        const expected = `
+            function style(token) {
+                return \`.foo[\${token}] { content: "\\\\\\\\"; }\`;
+            }
+
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
 });
