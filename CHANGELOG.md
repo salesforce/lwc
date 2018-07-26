@@ -1,10 +1,18 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-23)
+# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-26)
 
 
 ### Bug Fixes
 
+* **ci:** run prepare before release ([#531](https://github.com/salesforce/lwc/issues/531)) ([c2379c7](https://github.com/salesforce/lwc/commit/c2379c7))
 * **engine:** closes [#524](https://github.com/salesforce/lwc/issues/524) relax attribute mutation assertion ([#525](https://github.com/salesforce/lwc/issues/525)) ([0fad9ab](https://github.com/salesforce/lwc/commit/0fad9ab))
+* **engine:** refactor condition to apply event-composed polyfill ([#534](https://github.com/salesforce/lwc/issues/534)) ([84fbfd0](https://github.com/salesforce/lwc/commit/84fbfd0))
+* Escape backtick and backslash in CSS ([#536](https://github.com/salesforce/lwc/issues/536)) ([237d88b](https://github.com/salesforce/lwc/commit/237d88b)), closes [#530](https://github.com/salesforce/lwc/issues/530)
+
+
+### Features
+
+* **lwc-template-compiler:** Add new compiler API compileToFunction ([#528](https://github.com/salesforce/lwc/issues/528)) ([9cd6952](https://github.com/salesforce/lwc/commit/9cd6952))
 
 
 

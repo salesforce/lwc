@@ -1,6 +1,6 @@
 {
   "name": "observable-membrane",
-  "version": "0.24.11",
+  "version": "0.24.12",
   "description": "Observable Membrane implementation for LWC",
   "main": "dist/commonjs/observable-membrane.js",
   "module": "dist/modules/observable-membrane.js",
