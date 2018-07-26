@@ -313,6 +313,9 @@ describe('template', () => {
     describe('token', () => {
         it('adds the host token to the host element if template has a token', () => {
             const styledTmpl = () => [];
+            styledTmpl.style = function() {}
+            // TODO: eventually these tokens should be attached to the style function
+            styledTmpl.shadowToken = 'token';
             styledTmpl.hostToken = 'token-host';
 
             class Component extends LightningElement {
@@ -338,7 +341,10 @@ describe('template', () => {
                     }, [])
                 ]),
             ];
+            styledTmpl.style = function() {}
+            // TODO: eventually these tokens should be attached to the style function
             styledTmpl.shadowToken = 'token';
+            styledTmpl.hostToken = 'token-host';
 
             class Component extends LightningElement {
                 render() {
@@ -355,6 +361,9 @@ describe('template', () => {
 
         it('removes the host token from the host element when changing template', () => {
             const styledTmpl = () => [];
+            styledTmpl.style = function() {}
+            // TODO: eventually these tokens should be attached to the style function
+            styledTmpl.shadowToken = 'token';
             styledTmpl.hostToken = 'token-host';
 
             const unstyledTmpl = () => [];
@@ -383,9 +392,15 @@ describe('template', () => {
 
         it('swaps the host token when replacing the template with a different token', () => {
             const styledTmplA = () => [];
+            styledTmplA.style = function() {}
+            // TODO: eventually these tokens should be attached to the style function
+            styledTmplA.shadowToken = 'tokenA';
             styledTmplA.hostToken = 'tokenA-host';
 
             const styledTmplB = () => [];
+            styledTmplB.style = function() {}
+            // TODO: eventually these tokens should be attached to the style function
+            styledTmplB.shadowToken = 'tokenB';
             styledTmplB.hostToken = 'tokenB-host';
 
             class Component extends LightningElement {

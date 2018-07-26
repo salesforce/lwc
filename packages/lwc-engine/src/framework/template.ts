@@ -1,13 +1,13 @@
 import assert from "../shared/assert";
 import * as api from "./api";
-import { isArray, isFunction, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach } from "../shared/language";
+import { isArray, isFunction, isTrue, isObject, isUndefined, create, ArrayIndexOf, toString, hasOwnProperty, forEach, ArrayUnshift } from "../shared/language";
 import { VNode, VNodes } from "../3rdparty/snabbdom/types";
 import { RenderAPI } from "./api";
 import { Context } from "./context";
 import { SlotSet, VM, resetShadowRoot } from "./vm";
 import { EmptyArray } from "./utils";
 import { ComponentInterface } from "./component";
-import { removeAttribute, setAttribute } from "./dom-api";
+import { evaluateCSS, StyleFunction, applyStyleTokens, resetStyleTokens } from "./style";
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, ctx: Context): undefined | VNodes;
@@ -23,6 +23,13 @@ export interface Template {
      * This attribute is used for style encapsulation when the engine runs in fallback mode.
      */
     shadowToken?: string;
+
+    /**
+     * Optional function that produces the CSS associated to the HTML if any.
+     * This function will be invoked by the engine with different values depending
+     * on the mode that the component is running on.
+     */
+    style?: StyleFunction;
 }
 
 const EmptySlots: SlotSet = create(null);
@@ -60,28 +67,6 @@ function validateFields(vm: VM, html: any) {
     });
 }
 
-/**
- * Apply/Update the styling token applied to the host element.
- */
-function applyTokenToHost(vm: VM, html: Template): void {
-    const { context, elm } = vm;
-
-    const oldToken = context.hostToken;
-    const newToken = html.hostToken;
-
-    // Remove the token currently applied to the host element if different than the one associated
-    // with the current template
-    if (!isUndefined(oldToken)) {
-        removeAttribute.call(elm, oldToken);
-    }
-    // If the template has a token apply the token to the host element
-    if (!isUndefined(newToken)) {
-        setAttribute.call(elm, newToken, '');
-    }
-    context.hostToken = html.hostToken;
-    context.shadowToken = html.shadowToken;
-}
-
 export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm && "cmpRoot" in vm, `${vm} is not a vm.`);
@@ -100,8 +85,17 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         // Populate context with template information
         context.tplCache = create(null);
 
-        // TODO: tokens are only needed in fallback mode
-        applyTokenToHost(vm, html);
+        const { style } = html;
+        resetStyleTokens(vm);
+        if (!isUndefined(style)) {
+            if (isTrue(vm.fallback)) {
+                applyStyleTokens(vm, html as any); // TODO: for now passing `html`, but eventually passing `style`
+            }
+            // caching style vnode so it can be reused on every render
+            context.styleVNode = evaluateCSS(vm, style);
+        } else {
+            context.styleVNode = undefined;
+        }
 
         if (process.env.NODE_ENV !== 'production') {
             // one time operation for any new template returned by render()
@@ -117,6 +111,10 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
         validateSlots(vm, html);
     }
     const vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
+
+    const { styleVNode } = context;
+    // inserting the style tag at the top always
+    ArrayUnshift.call(vnodes, isUndefined(styleVNode) ? null : styleVNode);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(isArray(vnodes), `Compiler should produce html functions that always return an array.`);
