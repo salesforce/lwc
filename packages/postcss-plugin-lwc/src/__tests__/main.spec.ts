@@ -1,9 +1,9 @@
 import { process } from './shared';
 
 describe('default export (postcss plugin)', () => {
-    it('assert token option', () => {
-        expect(() => process('', { })).toThrow(
-            /token option must be a string but instead received undefined/,
+    it('assert hostSelector option', () => {
+        expect(() => process('', { } as any)).toThrow(
+            /hostSelector option must be a string but instead received undefined/,
         );
     });
 

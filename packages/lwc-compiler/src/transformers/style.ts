@@ -1,3 +1,4 @@
+import * as path from "path";
 import postcss from "postcss";
 import cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
@@ -8,15 +9,22 @@ import { FileTransformerResult } from "./transformer";
 import { isUndefined } from "../utils";
 
 /**
- * A placeholder string used to locate the style scoping token generated during
+ * The javascript identifiers used to build the style factory function.
+ */
+const HOST_SELECTOR_IDENTIFIER = 'hostSelector';
+const SHADOW_SELECTOR_IDENTIFIER = 'shadowSelector';
+
+/**
+ * A placeholder string used to locate the style scoping selectors generated during
  * the CSS transformation.
  */
-const TOKEN_PLACEHOLDER = '__TOKEN__';
+const HOST_SELECTOR_PLACEHOLDER = '__HOST_TOKEN__';
+const SHADOW_SELECTOR_PLACEHOLDER = '__TOKEN__';
 
 /** The default stylesheet content if no source has been provided. */
 const EMPTY_CSS_OUTPUT = `
-const style = undefined;
-export default style;
+const stylesheet = undefined;
+export default stylesheet;
 `;
 
 /** The javascript identifier used when custom properties get resolved from a module. */
@@ -55,14 +63,15 @@ function transformVar(resolution: CustomPropertiesResolution) {
  * lookup.
  */
 function replaceToken(src: string): string {
-    const placeholderRegexp = new RegExp(TOKEN_PLACEHOLDER, 'g');
-    return src.replace(placeholderRegexp, '${token}');
+    const hostRegexp = new RegExp(HOST_SELECTOR_PLACEHOLDER, 'g');
+    const shadowRegexp = new RegExp(SHADOW_SELECTOR_PLACEHOLDER, 'g');
+    return src.replace(hostRegexp, '${' + HOST_SELECTOR_IDENTIFIER + '}').replace(shadowRegexp, '${' + SHADOW_SELECTOR_IDENTIFIER + '}');
 }
 
 export default async function transformStyle(
     src: string,
     filename: string,
-    { stylesheetConfig, outputConfig }: NormalizedCompilerOptions
+    { name, namespace, stylesheetConfig, outputConfig }: NormalizedCompilerOptions
 ): Promise<FileTransformerResult> {
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
@@ -90,7 +99,8 @@ export default async function transformStyle(
 
     postcssPlugins.push(
         postcssPluginLwc({
-            token: TOKEN_PLACEHOLDER,
+            hostSelector: HOST_SELECTOR_PLACEHOLDER,
+            shadowSelector: SHADOW_SELECTOR_PLACEHOLDER,
             customProperties: {
                 allowDefinition: customProperties.allowDefinition,
                 transformVar: transformVar(customProperties.resolution),
@@ -117,11 +127,20 @@ export default async function transformStyle(
             code += `import ${CUSTOM_PROPERTIES_IDENTIFIER} from '${customProperties.resolution.name}';\n`;
         }
 
+        // Use the module namespace, name and file name to generate a unique attribute name to scope
+        // the styles.
+        const scopingAttribute = `${namespace}-${name}_${path.basename(filename, path.extname(filename))}`;
+
         code += [
-            'function style(token) {',
-            '   return `' + replaceToken(res.css) + '`;',
+            'function factory(' + HOST_SELECTOR_IDENTIFIER + ', ' + SHADOW_SELECTOR_IDENTIFIER + ') {',
+            '    return `' + replaceToken(res.css) + '`;',
             '}',
-            'export default style;'
+            '',
+            'export default {',
+            '    factory,',
+            `    hostAttribute: '${scopingAttribute}-host',`,
+            `    shadowAttribute: '${scopingAttribute}',`,
+            '};',
         ].join('\n');
     } else {
         code = EMPTY_CSS_OUTPUT;

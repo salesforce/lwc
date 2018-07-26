@@ -1,8 +1,8 @@
-import { process, FILE_NAME, DEFAULT_TAGNAME, DEFAULT_TOKEN } from './shared';
+import { PluginConfig } from '../config';
+import { process, FILE_NAME, DEFAULT_CONFIG } from './shared';
 
-const NO_CUSTOM_PROPERTY_CONFIG = {
-    tagName: DEFAULT_TAGNAME,
-    token: DEFAULT_TOKEN,
+const NO_CUSTOM_PROPERTY_CONFIG: PluginConfig = {
+    ...DEFAULT_CONFIG,
     customProperties: {
         allowDefinition: false,
     },

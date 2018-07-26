@@ -1,7 +1,8 @@
 export type VarTransformer = (name: string, fallback: string) => string;
 
 export interface PluginConfig {
-    token: string;
+    hostSelector: string;
+    shadowSelector: string;
     customProperties?: {
         allowDefinition?: boolean;
         transformVar?: VarTransformer;
@@ -14,9 +15,15 @@ export function validateConfig(options: PluginConfig) {
         throw new TypeError('Expected options with tagName and token properties');
     }
 
-    if (!options.token || typeof options.token !== 'string') {
+    if (!options.hostSelector || typeof options.hostSelector !== 'string') {
         throw new TypeError(
-            `token option must be a string but instead received ${typeof options.token}`,
+            `hostSelector option must be a string but instead received ${typeof options.hostSelector}`,
+        );
+    }
+
+    if (!options.shadowSelector || typeof options.shadowSelector !== 'string') {
+        throw new TypeError(
+            `shadowSelector option must be a string but instead received ${typeof options.shadowSelector}`,
         );
     }
 }
