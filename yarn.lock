@@ -7560,6 +7560,10 @@ object.pick@^1.3.0:
   dependencies:
     isobject "^3.0.1"
 
+observable-membrane@0.25.0:
+  version "0.25.0"
+  resolved "http://npm.lwcjs.org/observable-membrane/-/observable-membrane-0.25.0/d0f20e1c98c5425396fd021bc320eb96874508e2.tgz#d0f20e1c98c5425396fd021bc320eb96874508e2"
+
 on-finished@~2.3.0:
   version "2.3.0"
   resolved "http://npm.lwcjs.org/on-finished/-/on-finished-2.3.0/20f1336481b083cd75337992a16971aa2d906947.tgz#20f1336481b083cd75337992a16971aa2d906947"
