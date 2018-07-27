@@ -6,10 +6,10 @@ import { getRawNode } from "../faux-shadow/faux";
 
 function valueDistortion(value: any) {
     if (process.env.NODE_ENV !== 'production') {
-        // For now, if we determine that value is a piercing membrane
-        // we want to throw a big error.
+        // For now, if we determine that value is a traverse membrane we want to
+        // throw a big error.
         if (getRawNode(value) !== value) {
-            throw new ReferenceError(`Invalid attempt to get access to a piercing membrane ${toString(value)} via a reactive membrane.`);
+            throw new ReferenceError(`Invalid attempt to get access to a traverse membrane ${toString(value)} via a reactive membrane.`);
         }
     }
     return value;
@@ -37,7 +37,7 @@ export const unwrap = function(value: any): any {
      if (unwrapped !== value) {
          return unwrapped;
      }
-     // piercing membrane is not that important, it goes second
+     // traverse membrane is not that important, it goes second
      unwrapped = getRawNode(value);
      if (unwrapped !== value) {
          return unwrapped;
