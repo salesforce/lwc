@@ -284,8 +284,11 @@ function domListener(evt: Event) {
 
     eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
     invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
-    eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
-    invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
+    if (isFalse(interrupted)) {
+        // doing the second iteration only if the first one didn't interrupt the event propagation
+        eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
+        invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
+    }
     eventToContextMap.set(evt, 0);
 }
 
