@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { toString } from "../shared/language";
-import ObservableMembrane from "observable-membrane";
+import ObservableMembrane = require('observable-membrane');
 import { observeMutation, notifyMutation } from "./watcher";
 import { getRawNode } from "../faux-shadow/faux";
 
