@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
 import { getPropertyDescriptor, defineProperties, getOwnPropertyNames, forEach, assign, isString, isUndefined, ArraySlice, toString, StringToLowerCase } from "../shared/language";
 import { ComponentInterface } from "./component";
-import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName } from "./attributes";
+import { getGlobalHTMLPropertiesInfo, getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 import { isBeingConstructed, isRendering, vmBeingRendered } from "./invoker";
 import { getShadowRootVM, getCustomElementVM, VM, getNodeOwnerKey } from "./vm";
 import {
@@ -175,35 +175,6 @@ function assertAttributeMutationCapability(vm: VM, attrName: string) {
     if (!isUndefined(getNodeOwnerKey(elm)) && isAttributeLocked(elm, attrName)) {
         assert.logError(`Invalid operation on Element ${vm}. Elements created via a template should not be mutated using DOM APIs. Instead of attempting to update this element directly to change the value of attribute "${attrName}", you can update the state of the component, and let the engine to rehydrate the element accordingly.`);
     }
-}
-
-let controlledElement: Element | null = null;
-let controlledAttributeName: string | void;
-
-function isAttributeLocked(elm: Element, attrName: string): boolean {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    return elm !== controlledElement || attrName !== controlledAttributeName;
-}
-
-export function lockAttribute(elm: Element, key: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    controlledElement = null;
-    controlledAttributeName = undefined;
-}
-
-export function unlockAttribute(elm: Element, key: string) {
-    if (process.env.NODE_ENV === 'production') {
-        // this method should never leak to prod
-        throw new ReferenceError();
-    }
-    controlledElement = elm;
-    controlledAttributeName = key;
 }
 
 function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDescriptorMap {

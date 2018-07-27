@@ -1,5 +1,5 @@
 import assert from "../../shared/assert";
-import { unlockAttribute, lockAttribute } from '../restrictions';
+import { unlockAttribute, lockAttribute } from '../attributes';
 import { isUndefined, keys, StringCharCodeAt, isNull } from '../../shared/language';
 import { EmptyObject } from '../utils';
 import { Module, VNode } from "../../3rdparty/snabbdom/types";
@@ -34,9 +34,7 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
         const cur = attrs[key];
         const old = (oldAttrs as any)[key];
         if (old !== cur) {
-            if (process.env.NODE_ENV !== 'production') {
-                unlockAttribute(elm, key);
-            }
+            unlockAttribute(elm, key);
             if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
                 // Assume xml namespace
                 elm.setAttributeNS(xmlNS, key, cur as string);
@@ -48,9 +46,7 @@ function updateAttrs(oldVnode: VNode, vnode: VNode) {
             } else {
                 elm.setAttribute(key, cur as string);
             }
-            if (process.env.NODE_ENV !== 'production') {
-                lockAttribute(elm, key);
-            }
+            lockAttribute(elm, key);
         }
     }
 }

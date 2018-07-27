@@ -1,16 +1,18 @@
 import { ComponentConstructor } from "./component";
-import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase } from "../shared/language";
+import { isUndefined, isObject, isNull, defineProperties, StringToLowerCase, getOwnPropertyNames } from "../shared/language";
 import { createVM, appendVM, renderVM, removeVM, getCustomElementVM, CreateVMInit } from "./vm";
 import assert from "../shared/assert";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter } from "./dom-api";
+import { getPropNameFromAttrName } from "./attributes";
+import { isAttributeLocked } from "./attributes";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
     if (isCircularModuleDependency(Ctor)) {
         Ctor = resolveCircularModuleDependency(Ctor);
     }
-    const def = getComponentDef(Ctor);
+    const { props, descriptors } = getComponentDef(Ctor);
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isUndefined(Ctor.forceTagName), `The experimental support for web components does not include the support for \`static forceTagName\` to "${Ctor.forceTagName}" declaration in the class definition for ${Ctor}.`);
     }
@@ -37,9 +39,32 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor, option
             const vm = getCustomElementVM(this);
             removeVM(vm);
         }
+        attributeChangedCallback(attrName, oldValue, newValue) {
+            if (oldValue === newValue) {
+                // ignoring similar values for better perf
+                return;
+            }
+            const propName = getPropNameFromAttrName(attrName);
+            if (isUndefined(props[propName])) {
+                // ignoring unknown attributes
+                return;
+            }
+            if (!isAttributeLocked(this, attrName)) {
+                // ignoring changes triggered by the engine itself during:
+                // * diffing when public props are attempting to reflect to the DOM
+                // * component via `this.setAttribute()`, should never update the prop.
+                // Both cases, the the setAttribute call is always wrap by the unlocking
+                // of the attribute to be changed
+                return;
+            }
+            // reflect attribute change to the corresponding props when changed
+            // from outside.
+            this[propName] = newValue;
+        }
+        static observedAttributes = getOwnPropertyNames(props);
     }
     // adding all public descriptors to the prototype so we don't have to
     // do it per instance in html-element.ts constructors
-    defineProperties(LightningWrapperElement.prototype, def.descriptors);
+    defineProperties(LightningWrapperElement.prototype, descriptors);
     return LightningWrapperElement;
 }

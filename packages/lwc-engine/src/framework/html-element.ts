@@ -10,7 +10,7 @@ import { observeMutation, notifyMutation } from "./watcher";
 import { dispatchEvent, BaseCustomElementProto, elementTagNameGetter } from "./dom-api";
 import { patchComponentWithRestrictions, patchCustomElementWithRestrictions, patchShadowRootWithRestrictions } from "./restrictions";
 import { lightDomQuerySelectorAll, lightDomQuerySelector } from "../faux-shadow/faux";
-import { unlockAttribute, lockAttribute } from "./restrictions";
+import { unlockAttribute, lockAttribute } from "./attributes";
 
 const GlobalEvent = Event; // caching global reference to avoid poisoning
 
@@ -182,64 +182,44 @@ LightningElement.prototype = {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
-            unlockAttribute(elm, attrName);
         }
+        unlockAttribute(elm, attrName);
         elm.setAttributeNS.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
     },
     removeAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
-        if (process.env.NODE_ENV !== 'production') {
-            unlockAttribute(elm, attrName);
-        }
+        unlockAttribute(elm, attrName);
         elm.removeAttributeNS.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
     },
     removeAttribute(attrName: string) {
         const elm = getLinkedElement(this);
-        if (process.env.NODE_ENV !== 'production') {
-            unlockAttribute(elm, attrName);
-        }
+        unlockAttribute(elm, attrName);
         elm.removeAttribute.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
     },
     setAttribute(attrName: string, value: any) {
         const elm = getLinkedElement(this);
         if (process.env.NODE_ENV !== 'production') {
             assert.isFalse(isBeingConstructed(getComponentVM(this)), `Failed to construct '${this}': The result must not have attributes.`);
-            unlockAttribute(elm, attrName);
         }
+        unlockAttribute(elm, attrName);
         elm.setAttribute.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
     },
     getAttribute(attrName: string): string | null {
         const elm = getLinkedElement(this);
-        if (process.env.NODE_ENV !== 'production') {
-            unlockAttribute(elm, attrName);
-        }
+        unlockAttribute(elm, attrName);
         const value = elm.getAttribute.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
         return value;
     },
     getAttributeNS(ns: string, attrName: string) {
         const elm = getLinkedElement(this);
-        if (process.env.NODE_ENV !== 'production') {
-            unlockAttribute(elm, attrName);
-        }
+        unlockAttribute(elm, attrName);
         const value = elm.getAttributeNS.apply(elm, arguments);
-        if (process.env.NODE_ENV !== 'production') {
-            lockAttribute(elm, attrName);
-        }
+        lockAttribute(elm, attrName);
         return value;
     },
     getBoundingClientRect(): ClientRect {
