@@ -1,4 +1,4 @@
-import { Element, api } from 'engine';
+import { Element, api, buildCustomElementConstructor } from 'engine';
 
 // TODO: this does not work. @diego will fix it!
 import ComponentWithX from 'wc-with-attribute-x';
