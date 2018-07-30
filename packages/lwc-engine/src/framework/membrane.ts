@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { toString } from "../shared/language";
-import * as ObservableMembrane from "observable-membrane";
+import ObservableMembrane from "observable-membrane";
 import { observeMutation, notifyMutation } from "./watcher";
 import { getRawNode } from "../faux-shadow/faux";
 
@@ -15,9 +15,10 @@ function valueDistortion(value: any) {
     return value;
 }
 
-// Workaround for the following ts compiler error:
+// Super hacky workaround for the following ts compiler error:
 // error TS2351: Cannot use 'new' with an expression whose type lacks a call or construct signature.
-const _ObservableMembrane: any = ObservableMembrane;
+let _ObservableMembrane = ObservableMembrane;
+_ObservableMembrane = require("observable-membrane"); // tslint:disable-line
 export const reactiveMembrane = new _ObservableMembrane({
     valueObserved: observeMutation,
     valueMutated: notifyMutation,
