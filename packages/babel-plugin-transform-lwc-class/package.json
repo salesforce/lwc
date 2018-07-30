@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-transform-lwc-class",
   "description": "Babel plugin to transform a LWC class",
-  "version": "0.24.1",
+  "version": "0.24.12",
   "main": "src/index.js",
   "typings": "types/index.d.ts",
   "license": "MIT",
@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@babel/helper-module-imports": "7.0.0-beta.49",
-    "@babel/plugin-proposal-class-properties": "7.0.0-beta.49",
-    "comment-parser": "^0.5.0"
+    "@babel/plugin-proposal-class-properties": "7.0.0-beta.49"
   },
   "devDependencies": {
     "common-tags": "^1.8.0"

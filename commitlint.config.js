@@ -7,6 +7,7 @@ module.exports = {
             2,
             'always',
             [
+                'release',
                 'build',
                 'chore',
                 'ci',

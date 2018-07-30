@@ -23,6 +23,17 @@ export default style;
 const CUSTOM_PROPERTIES_IDENTIFIER = 'customProperties';
 
 /**
+ * Escape CSS string to injected in a javascript string literal. This method escapes:
+ *  - grave accent to avoid conflict with the template string
+ *  - back slash to avoid unexpected string escape in the generated CSS
+ */
+function escapeString(src: string): string {
+    return src.replace(/[`\\]/g, (char: string) => {
+        return '\\' + char;
+    });
+}
+
+/**
  * Transform the var() function to a javascript call expression with the name and fallback value.
  */
 function transformVar(resolution: CustomPropertiesResolution) {
@@ -75,9 +86,11 @@ export default async function transformStyle(
         );
     }
 
+    const escapedSource = escapeString(src);
+
     let res;
     try {
-        res = await postcss(plugins).process(src, {
+        res = await postcss(plugins).process(escapedSource, {
             from: filename,
         });
     } catch (e) {

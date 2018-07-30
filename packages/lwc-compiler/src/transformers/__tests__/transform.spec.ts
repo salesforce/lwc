@@ -72,7 +72,7 @@ describe('Javascript transform', () => {
                 ],
             },
         ]);
-        expect(metadata.doc).toBe('Foo doc');
+        expect(metadata.doc).toBe('* Foo doc');
         expect(metadata.declarationLoc).toEqual({
             start: { line: 4, column: 12 },
             end: { line: 14, column: 13 },
@@ -283,6 +283,42 @@ describe('CSS transform', () => {
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('should escape grave accents', async () => {
+        const actual = `/* Comment with grave accents \`#\` */`;
+        const expected = `
+            function style(token) {
+                return \`/* Comment with grave accents \\\`#\\\` */\`;
+            }
+
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('should escape backslash', async () => {
+        const actual = '.foo { content: "\\\\"; }';
+        const expected = `
+            function style(token) {
+                return \`.foo[\${token}] { content: "\\\\\\\\"; }\`;
+            }
+
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            namespace: 'x',
+            name: 'foo',
         });
 
         expect(pretify(code)).toBe(pretify(expected));

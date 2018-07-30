@@ -1,3 +1,5 @@
+import { compileTemplate } from 'test-utils';
+
 import { createElement, register, unwrap } from '../main';
 import { getHostShadowRoot, LightningElement } from '../html-element';
 import assertLogger from '../../shared/assert';
@@ -12,11 +14,19 @@ describe('html-element', () => {
             }
             Child.publicMethods = ['setFoo'];
 
+            const html = compileTemplate(`
+                <template>
+                    <x-child></x-child>
+                </template>
+            `, {
+                modules: {
+                    'x-child': Child
+                }
+            });
+
             class Parent extends LightningElement {
                 render() {
-                    return ($api) => {
-                        return [$api.c('x-child', Child, {})]
-                    }
+                    return html;
                 }
             }
             const element = createElement('should-set-attribute-on-host-element-when-element-is-nested-in-template', { is: Parent });
@@ -305,8 +315,6 @@ describe('html-element', () => {
         });
 
         it('should log warning when element is not connected', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-
             class Foo extends LightningElement {
                 dispatch(evt) {
                     this.dispatchEvent(evt);
@@ -315,15 +323,15 @@ describe('html-element', () => {
             Foo.publicMethods = ['dispatch'];
 
             const elm = createElement('x-foo', { is: Foo });
-            elm.dispatch(new CustomEvent('warning'));
 
-            expect(assertLogger.logWarning).toBeCalledWith('Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).');
-            assertLogger.logWarning.mockRestore();
+            expect(() => (
+                elm.dispatch(new CustomEvent('warning'))
+            )).toLogWarning(
+                'Unreachable event "warning" dispatched from disconnected element <x-foo>. Events can only reach the parent element after the element is connected (via connectedCallback) and before the element is disconnected(via disconnectedCallback).'
+            );
         });
 
         it('should not log warning when element is connected', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-
             class Foo extends LightningElement {
                 dispatch(evt) {
                     this.dispatchEvent(evt);
@@ -334,15 +342,12 @@ describe('html-element', () => {
             const elm = createElement('x-foo', { is: Foo });
             document.body.appendChild(elm);
 
-            elm.dispatch(new CustomEvent('warning'));
-
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
+            expect(() => (
+                elm.dispatch(new CustomEvent('warning'))
+            )).not.toLogWarning();
         });
 
         it('should log warning when event name contains non-alphanumeric lowercase characters', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-
             class Foo extends LightningElement {
                 connectedCallback() {
                     this.dispatchEvent(new CustomEvent('foo1-$'));
@@ -350,30 +355,30 @@ describe('html-element', () => {
             }
 
             const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
 
-            expect(assertLogger.logWarning).toBeCalled();
-            assertLogger.logWarning.mockRestore();
+            expect(() => (
+                document.body.appendChild(elm)
+            )).toLogWarning(
+                `Invalid event type "foo1-$" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
+            );
         });
 
         it('should log warning when event name does not start with alphabetic lowercase characters', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-
             class Foo extends LightningElement {
                 connectedCallback() {
                     this.dispatchEvent(new CustomEvent('123'));
                 }
             }
             const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
 
-            expect(assertLogger.logWarning).toBeCalled();
-            assertLogger.logWarning.mockRestore();
+            expect(() => (
+                document.body.appendChild(elm)
+            )).toLogWarning(
+                `Invalid event type "123" dispatched in element <x-foo>. Event name should only contain lowercase alphanumeric characters.`
+            );
         });
 
         it('should not log warning for alphanumeric lowercase event name', function() {
-            jest.spyOn(assertLogger, 'logWarning');
-
             class Foo extends LightningElement {
                 connectedCallback() {
                     this.dispatchEvent(new CustomEvent('foo1234abc'));
@@ -381,10 +386,10 @@ describe('html-element', () => {
             }
 
             const elm = createElement('x-foo', { is: Foo });
-            document.body.appendChild(elm);
 
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
+            expect(() => (
+                document.body.appendChild(elm)
+            )).not.toLogWarning();
         });
 
         it('should get native click event in host', function () {
@@ -521,23 +526,23 @@ describe('html-element', () => {
 
     describe('#tracked', () => {
         it('should not warn if component has untracked state property', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends LightningElement {
                 state = {};
             }
-            const element = createElement('x-foo', { is: MyComponent });
-            expect(assertLogger.logWarning).not.toHaveBeenCalled();
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                createElement('x-foo', { is: MyComponent })
+            )).not.toLogWarning();
         });
         it('should not warn if component has tracked state property', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends LightningElement {
                 state = {};
             }
             MyComponent.track = { state: 1 };
-            const element = createElement('x-foo-tracked-state', { is: MyComponent });
-            expect(assertLogger.logWarning).not.toHaveBeenCalled();
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                createElement('x-foo-tracked-state', { is: MyComponent })
+            )).not.toLogWarning();
         });
         it('should be mutable during construction', () => {
             let state;
@@ -624,6 +629,7 @@ describe('html-element', () => {
 
         }),
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code changes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
             function html($api, $cmp) {
@@ -647,6 +653,7 @@ describe('html-element', () => {
             assertLogger.logError.mockRestore();
         });
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
             function html($api, $cmp) {
@@ -670,17 +677,37 @@ describe('html-element', () => {
             assertLogger.logError.mockRestore();
         });
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log error message when attribute is set via elm.setAttribute if reflective property is defined', () => {
             jest.spyOn(assertLogger, 'logError');
-            class MyComponent extends LightningElement {}
-            const elm = createElement('x-foo', {is: MyComponent});
-            elm.setAttribute('tabindex', '0');
+            class Child extends LightningElement {}
+            function html($api, $cmp) {
+                return [
+                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
+                ];
+            }
+            class Parent extends LightningElement {
+                render() {
+                    return html;
+                }
+                renderedCallback() {
+                    this.template.querySelector('x-child').setAttribute('tabindex', 0);
+                }
+            }
+            const elm = createElement('x-foo', {is: Parent});
             document.body.appendChild(elm);
 
             return Promise.resolve().then( () => {
                 expect(assertLogger.logError).toBeCalled();
                 assertLogger.logError.mockRestore();
             });
+        });
+
+        it('should not throw when accessing attribute in root elements', () => {
+            class Parent extends LightningElement {}
+            const elm = createElement('x-foo', {is: Parent});
+            document.body.appendChild(elm);
+            elm.setAttribute('tabindex', 1);
         });
 
         it('should delete existing attribute prior rendering', () => {
@@ -693,33 +720,6 @@ describe('html-element', () => {
             return Promise.resolve().then( () => {
                 expect(elm.getAttribute('title')).not.toBe('parent title');
             });
-        }),
-
-        it('should correctly set child attribute ', () => {
-            let childTitle = null;
-            function html($api, $cmp) {
-                return [
-                    $api.c('x-child', Child, { attrs: { title: 'child title' }})
-                ];
-            }
-            class Parent extends LightningElement {
-                render() {
-                    return html;
-                }
-            }
-
-            class Child extends LightningElement {
-                renderedCallback() {
-                    childTitle = this.getAttribute('title');
-                }
-            }
-
-            const parentElm = createElement('x-parent', { is: Parent });
-            parentElm.setAttribute('title', 'parent title');
-            document.body.appendChild(parentElm);
-
-            const childElm = getHostShadowRoot(parentElm).querySelector('x-child');
-            expect(childElm.getAttribute('title')).toBe('child title');
         });
     });
 
@@ -1046,7 +1046,6 @@ describe('html-element', () => {
         });
 
         it('should not log a warning when setting tracked value to null', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends LightningElement {
                 state = {};
                 connectedCallback() {
@@ -1056,13 +1055,13 @@ describe('html-element', () => {
             }
             MyComponent.track = { state: 1 };
             const elm = createElement('x-foo-tracked-null', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                document.body.appendChild(elm)
+            )).not.toLogWarning();
         });
 
         it('should not log a warning when initializing api value to null', function() {
-            jest.spyOn(assertLogger, 'logWarning');
             class MyComponent extends LightningElement {
                 foo = null;
             }
@@ -1072,9 +1071,10 @@ describe('html-element', () => {
                 }
             };
             const elm = createElement('x-foo-init-api', { is: MyComponent });
-            document.body.appendChild(elm);
-            expect(assertLogger.logWarning).not.toBeCalled();
-            assertLogger.logWarning.mockRestore();
+
+            expect(() => (
+                document.body.appendChild(elm)
+            )).not.toLogWarning();
         });
     });
 
@@ -2138,6 +2138,7 @@ describe('html-element', () => {
 
         }),
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code changes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
             class Parent extends LightningElement {
@@ -2160,6 +2161,7 @@ describe('html-element', () => {
             assertLogger.logError.mockRestore();
         })
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should log console error when user land code removes attribute via querySelector', () => {
             jest.spyOn(assertLogger, 'logError');
             class Parent extends LightningElement {
@@ -2181,6 +2183,7 @@ describe('html-element', () => {
             assertLogger.logError.mockRestore();
         })
 
+        // TODO: This test log multiple errors. We should fix this before migrating to expect().toLogError()
         it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
             jest.spyOn(assertLogger, 'logError');
             class MyComponent extends LightningElement {}
@@ -2206,7 +2209,7 @@ describe('html-element', () => {
             })
         }),
 
-        it('should correctly set child attribute ', () => {
+        it('should correctly set child attribute', () => {
             let childTitle = null;
 
             class Parent extends LightningElement {

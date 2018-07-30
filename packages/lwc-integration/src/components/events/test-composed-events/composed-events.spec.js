@@ -1,16 +1,18 @@
 const assert = require('assert');
 describe('Composed events', () => {
     const URL = 'http://localhost:4567/composed-events';
-    let element;
 
     before(() => {
         browser.url(URL);
     });
 
-    it('should have the right value', function () {
-        const element = browser.element('x-child');
-        element.click();
-        const receiveEventElement = browser.element('.event-received-indicator');
-        assert.ok(receiveEventElement);
+    it('should dispatch Event on the custom element', function () {
+        browser.element('x-child').click();
+        assert.ok(browser.element('.event-received-indicator'));
+    });
+
+    it('should dispatch CustomEvent on the custom element', function () {
+        browser.element('x-child').click();
+        assert.ok(browser.element('.custom-event-received-indicator'));
     });
 });

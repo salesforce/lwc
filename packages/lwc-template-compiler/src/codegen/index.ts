@@ -34,7 +34,6 @@ import Stack from '../shared/stack';
 
 import {
     identifierFromComponentName,
-    importFromComponentName,
     objectToAST,
     getMemberExpressionRoot,
     isTemplate,
@@ -45,6 +44,24 @@ import {
 } from './helpers';
 
 import CodeGen from './codegen';
+
+import { format as formatModule } from './formatters/module';
+import { format as formatFunction } from './formatters/function';
+
+const TEMPLATE_FUNCTION = template(
+    `function ${TEMPLATE_FUNCTION_NAME}(
+        ${TEMPLATE_PARAMS.API},
+        ${TEMPLATE_PARAMS.INSTANCE},
+        ${TEMPLATE_PARAMS.SLOT_SET},
+        ${TEMPLATE_PARAMS.CONTEXT}
+    ) {
+        APIS;
+        SLOTS;
+        CONTEXT;
+        return STATEMENT;
+    }`,
+    { sourceType: 'module' },
+);
 
 function transform(
     root: IRNode,
@@ -437,49 +454,7 @@ function transform(
     return (stack.peek() as t.ArrayExpression).elements[0] as t.Expression;
 }
 
-/**
- * Generate metadata that will be attached to the template function
- */
-function generateTemplateMetadata(state: State): t.ExpressionStatement[] {
-    const metadataExpressions: t.ExpressionStatement[] = [];
-
-    // Generate the slots property on template function if slots are defined in the template
-    // tmpl.slots = ['', 'x']
-    if (state.slots.length) {
-        const slotsProperty = t.memberExpression(
-            t.identifier(TEMPLATE_FUNCTION_NAME),
-            t.identifier('slots'),
-        );
-
-        const slotsArray = t.arrayExpression(
-            state.slots.map((slot) => t.stringLiteral(slot)),
-        );
-
-        const slotsMetadata = t.assignmentExpression('=', slotsProperty, slotsArray);
-        metadataExpressions.push(
-            t.expressionStatement(slotsMetadata),
-        );
-    }
-
-    return metadataExpressions;
-}
-
-const TEMPLATE_FUNCTION = template(
-    `export default function ${TEMPLATE_FUNCTION_NAME}(
-        ${TEMPLATE_PARAMS.API},
-        ${TEMPLATE_PARAMS.INSTANCE},
-        ${TEMPLATE_PARAMS.SLOT_SET},
-        ${TEMPLATE_PARAMS.CONTEXT}
-    ) {
-        APIS;
-        SLOTS;
-        CONTEXT;
-        return STATEMENT;
-    }`,
-    { sourceType: 'module' },
-);
-
-export default function(templateRoot: IRElement, state: State): CompilationOutput {
+function generateTemplateFunction(templateRoot: IRElement, state: State): t.FunctionDeclaration {
     const codeGen = new CodeGen();
     const statement = transform(templateRoot, codeGen, state);
 
@@ -525,24 +500,29 @@ export default function(templateRoot: IRElement, state: State): CompilationOutpu
         );
     }
 
-    const content = TEMPLATE_FUNCTION({
+    return TEMPLATE_FUNCTION({
         APIS: apis,
         SLOTS: slots,
         CONTEXT: context,
         STATEMENT:  statement,
-    }) as t.ExportDefaultDeclaration;
+    }) as t.FunctionDeclaration;
+}
 
-    const intro = state.dependencies.map((cmpClassName) => (
-        importFromComponentName(cmpClassName)
-    ));
+function format({ config }: State) {
+    switch (config.format) {
+        case 'function':
+            return formatFunction;
 
-    const outro = generateTemplateMetadata(state);
+        default:
+            return formatModule;
+    }
+}
 
-    const program = t.program([
-        ...intro,
-        content,
-        ...outro,
-    ]);
+export default function(templateRoot: IRElement, state: State): CompilationOutput {
+    const templateFunction = generateTemplateFunction(templateRoot, state);
+
+    const formatter = format(state);
+    const program = formatter(templateFunction, state);
 
     const { code } = generate(program);
     return {
