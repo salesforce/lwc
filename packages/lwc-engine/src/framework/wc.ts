@@ -5,8 +5,7 @@ import assert from "../shared/assert";
 import { resolveCircularModuleDependency, isCircularModuleDependency } from "./utils";
 import { getComponentDef } from "./def";
 import { elementTagNameGetter } from "./dom-api";
-import { getPropNameFromAttrName } from "./attributes";
-import { isAttributeLocked } from "./attributes";
+import { getPropNameFromAttrName, isAttributeLocked } from "./attributes";
 
 export function buildCustomElementConstructor(Ctor: ComponentConstructor, options?: ShadowRootInit): Function {
     if (isCircularModuleDependency(Ctor)) {
