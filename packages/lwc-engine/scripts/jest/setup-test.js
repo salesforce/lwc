@@ -4,7 +4,7 @@ const { CONSOLE_WHITELIST } = require('./test-whitelist');
 const { toLogError, toLogWarning } = require('./matchers/log-matchers');
 
 // Extract original methods from console
-const { warn, error, log } = console;
+const { warn, error } = console;
 
 const consoleOverride = methodName => () => {
     const message = [
