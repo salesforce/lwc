@@ -61,7 +61,7 @@ function update(oldVnode: VNode, vnode: VNode) {
                     prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
                 }
                 elm[key] = cur;
-            } else {
+            } else if (process.env.NODE_ENV !== 'production') {
                 // setting undefined value initial is probably a mistake by the consumer,
                 // unless that the component author is accepting undefined, but we can't
                 // know that as of today, this is some basic heuristics to give them some
