@@ -87,10 +87,12 @@ export function evaluateTemplate(vm: VM, html: Template): Array<VNode|null> {
 
         const { style } = html;
         resetStyleTokens(vm);
+        if (isTrue(vm.fallback)) {
+            // TODO: for now passing `html`, but eventually passing `style`
+            // TODO: move this block inside the following condition
+            applyStyleTokens(vm, html as any);
+        }
         if (!isUndefined(style)) {
-            if (isTrue(vm.fallback)) {
-                applyStyleTokens(vm, html as any); // TODO: for now passing `html`, but eventually passing `style`
-            }
             // caching style vnode so it can be reused on every render
             context.styleVNode = evaluateCSS(vm, style);
         } else {
