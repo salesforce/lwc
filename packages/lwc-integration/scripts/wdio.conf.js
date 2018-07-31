@@ -43,8 +43,10 @@ const wdSuites = suites.reduce((seed, suite) => {
 }, {});
 
 let excludeFiles;
-if (mode === 'compat') {
-    excludeFiles = wdSuites.wc;
+if (/compat/.test(mode)) {
+    excludeFiles = [
+        ...wdSuites.wc,
+    ]
 }
 
 const config = {
