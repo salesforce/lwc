@@ -11,6 +11,7 @@ export default class WiredPropSuite extends Element {
         elm.setAttribute('title', 'something');
         elm.setAttribute('x', 2);
         this._elm = elm;
+        this.template.querySelector('.test').appendChild(elm);
     }
     @api get programmatic() {
         return this._elm;
