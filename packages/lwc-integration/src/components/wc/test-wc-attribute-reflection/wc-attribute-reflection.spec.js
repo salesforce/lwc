@@ -8,45 +8,83 @@ describe('Web Component reflection', () => {
     });
 
     it('should reflect all attributes during initialization', () => {
-        const programmaticWc = browser.execute(() => {
-            return document.querySelector('wc-attribute-reflection').programmatic;
+        const {
+            value: {
+                attrs,
+                props,
+            },
+        } = browser.execute(() => {
+            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            return {
+                attrs: {
+                    title: element.getAttribute('title'),
+                    x: element.getAttribute('x'),
+                },
+                props: {
+                    title: element.title,
+                    x: element.x,
+                },
+            };
         });
 
-        assert.equal(programmaticWc.getAttribute('title'), 'something');
-        assert.equal(programmaticWc.getAttribute('x'), '2');
-
-        const { value: title } = browser.execute(() => {
-            return document.querySelector('wc-attribute-reflection').programmatic.title;
-        });
-
-        const { value: x } = browser.execute(() => {
-            return document.querySelector('wc-attribute-reflection').programmatic.x;
-        });
-
-        assert.equal(title, 'something');
-        assert.equal(x, 2);
+        assert.equal(attrs.title, 'something');
+        assert.equal(attrs.x, '2');
+        assert.equal(props.title, 'something');
+        assert.equal(props.x, 2);
     });
 
-    // it('should not reflect custom props when changed from within', () => {
-    //     const element = browser.element('wc-attribute-reflection');
-    //     console.log(element);
-    //     const programmatic = element.programmatic;
-    //     programmatic.run();
-    //     assert.equal(programmatic.getAttribute('title'), 'else');
-    //     assert.equal(programmatic.getAttribute('x'), '3');
-    //     assert.equal(programmatic.title, 'else');
-    //     assert.equal(programmatic.x, 2);
-    // });
+    it('should not reflect custom props when changed from within', () => {
+        const {
+            value: {
+                attrs,
+                props,
+            },
+        } = browser.execute(() => {
+            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            element.run();
+            return {
+                attrs: {
+                    title: element.getAttribute('title'),
+                    x: element.getAttribute('x'),
+                },
+                props: {
+                    title: element.title,
+                    x: element.x,
+                },
+            };
+        });
 
-    // it('should reflect all attributes when changed from outside', () => {
-    //     const element = browser.element('wc-attribute-reflection');
-    //     const { programmatic } = element;
-    //     programmatic.setAttribute('x', 4);
-    //     programmatic.setAttribute('title', 'cubano');
-    //     assert.equal(programmatic.getAttribute('title'), 'cubano');
-    //     assert.equal(programmatic.getAttribute('x'), '4');
-    //     assert.equal(programmatic.title, 'cubano');
-    //     assert.equal(programmatic.x, 4);
-    // });
+        assert.equal(attrs.title, 'else');
+        assert.equal(attrs.x, '3');
+        assert.equal(props.title, 'else');
+        assert.equal(props.x, 2);
+    });
 
+    it('should reflect all attributes when changed from outside', () => {
+        const {
+            value: {
+                attrs,
+                props,
+            },
+        } = browser.execute(() => {
+            var element = document.querySelector('wc-attribute-reflection').programmatic;
+            element.setAttribute('x', 4);
+            element.setAttribute('title', 'cubano');
+            return {
+                attrs: {
+                    title: element.getAttribute('title'),
+                    x: element.getAttribute('x'),
+                },
+                props: {
+                    title: element.title,
+                    x: element.x,
+                },
+            };
+        });
+
+        assert.equal(attrs.title, 'cubano');
+        assert.equal(attrs.x, '4');
+        assert.equal(props.title, 'cubano');
+        assert.equal(props.x, 4);
+    });
 });
