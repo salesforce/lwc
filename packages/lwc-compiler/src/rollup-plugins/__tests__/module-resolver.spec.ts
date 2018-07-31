@@ -1,4 +1,5 @@
 import { compile } from "../../compiler/compiler";
+import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 import { pretify, readFixture } from "../../__tests__/utils";
 
 const VALID_CONFIG = {
@@ -117,23 +118,12 @@ describe("module resolver", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `
-                import { Element } from 'engine';
-                import { nested } from './lib/foo';
-                export default class Test extends Element {
-                    get mytitle() { return nested; }
-                }`,
-                "foo.html": `<template><p>Component Template {mytitle}</p></template>`,
+                "foo.js": `import { nested } from './lib/foo';`,
                 "lib/foo.js": `export function nested(){ return null;}`
-            },
-            outputConfig: {
-                env: { NODE_ENV: "development" },
-                minify: false,
-                compat: false
             }
         };
 
-        const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        const { result, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(true);
         expect(result).toBeDefined();
     });
@@ -143,24 +133,13 @@ describe("module resolver", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `
-                import { Element } from 'engine';
-                import { nested } from './lib/foo';
-                export default class Test extends Element {
-                    get mytitle() { return nested; }
-                }`,
-                "foo.html": `<template><p>Component Template</p></template>`,
-            },
-            outputConfig: {
-                env: { NODE_ENV: "development" },
-                minify: false,
-                compat: false
+                "foo.js": `import { nested } from './lib/foo';`,
             }
         };
 
-        const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        expect(diagnostics[1].level).toBe(0);
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
     });
 
     test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
@@ -168,22 +147,13 @@ describe("module resolver", () => {
             name: "modules/foo",
             namespace: "x",
             files: {
-                "foo.js": `
-                import { Element } from 'engine';
-                export default class Test extends Element {}`,
-                "foo.html": `<template><p>Component Template</p></template>`,
-            },
-            outputConfig: {
-                env: { NODE_ENV: "development" },
-                minify: false,
-                compat: false
+                "foo.js": ``,
             }
         };
 
-        const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
         expect(success).toBe(false);
-        console.log(diagnostics);
-        expect(diagnostics[0].level).toBe(0);
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
     });
 
 });
