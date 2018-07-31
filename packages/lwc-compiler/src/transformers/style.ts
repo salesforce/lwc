@@ -67,14 +67,14 @@ export default async function transformStyle(
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
 
-    const plugins = [];
+    const postcssPlugins: postcss.AcceptedPlugin[] = [];
 
     // The minification plugin should be the first plugin to run.
     // The LWC plugins produces invalid CSS since it transforms all the var function with actual
     // javascript function call. The mification plugin produces invalid CSS when it runs after
     // the LWC plugin.
     if (minify) {
-        plugins.unshift(
+        postcssPlugins.unshift(
             cssnano({
                 svgo: false,
                 preset: ['default']
@@ -82,7 +82,7 @@ export default async function transformStyle(
         );
     }
 
-    plugins.push(
+    postcssPlugins.push(
         postcssPluginLwc({
             token: TOKEN_PLACEHOLDER,
             customProperties: {
@@ -96,7 +96,7 @@ export default async function transformStyle(
 
     let res;
     try {
-        res = await postcss(plugins).process(escapedSource, {
+        res = await postcss(postcssPlugins).process(escapedSource, {
             from: filename,
         });
     } catch (e) {
