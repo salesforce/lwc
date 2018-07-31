@@ -66,15 +66,12 @@ export default function({
             ) {
                 if (importer) {
                     throw new CompilerError(
-                        `Could not resolve '${importee}' (as ${absPath}) from '${importer}'`,
+                        `${importee} failed to be resolved from ${importer}`,
                         importer,
                     );
                 }
-                console.log('-----> importee: ', importee);
-                console.log('-----> absPath: ', absPath);
-                console.log('-----> importer: ', importer);
                 throw new CompilerError(
-                    `Could not resolve '${importee}' (as ${absPath}) from compiler entry point`,
+                    `Failed to resolve entry for module ${importee}`,
                     importer,
                 );
             }

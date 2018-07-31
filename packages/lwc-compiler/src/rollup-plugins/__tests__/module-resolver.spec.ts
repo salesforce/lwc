@@ -157,18 +157,18 @@ describe("module resolver", () => {
         );
     });
 
-    test.only("compiler should resolve bundle with nested resource name after as the component name", async () => {
+    test("compiler should resolve bundle with nested resource name after as the component name", async () => {
         const COMPILER_CONFIG_BASEDIR = {
             name: "foo",
             namespace: "x",
             files: {
-                "good/foo.js": `
+                "foo.js": `
                 import { Element } from 'engine';
-                import { nested } from './good/foo';
+                import { nested } from './lib/foo';
                 export default class Test extends Element {
                     get mytitle() { return nested; }
                 }`,
-                "good/foo.html": `<template><p>Component Template</p></template>`,
+                "foo.html": `<template><p>Component Template</p></template>`,
                 "lib/foo.js": `export function nested(){ return null;}`
             },
             outputConfig: {
@@ -179,9 +179,56 @@ describe("module resolver", () => {
         };
 
         const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
-        console.log('diagnostics---> ', diagnostics);
         expect(success).toBe(true);
         expect(result).toBeDefined();
+    });
+
+    test("compiler should report fatal diagnostic if local import cannot be resolved", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `
+                import { Element } from 'engine';
+                import { nested } from './lib/foo';
+                export default class Test extends Element {
+                    get mytitle() { return nested; }
+                }`,
+                "foo.html": `<template><p>Component Template</p></template>`,
+            },
+            outputConfig: {
+                env: { NODE_ENV: "development" },
+                minify: false,
+                compat: false
+            }
+        };
+
+        const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        expect(diagnostics[1].level).toBe(0);
+    });
+
+    test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "modules/foo",
+            namespace: "x",
+            files: {
+                "foo.js": `
+                import { Element } from 'engine';
+                export default class Test extends Element {}`,
+                "foo.html": `<template><p>Component Template</p></template>`,
+            },
+            outputConfig: {
+                env: { NODE_ENV: "development" },
+                minify: false,
+                compat: false
+            }
+        };
+
+        const { diagnostics, result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        console.log(diagnostics);
+        expect(diagnostics[0].level).toBe(0);
     });
 
 });
