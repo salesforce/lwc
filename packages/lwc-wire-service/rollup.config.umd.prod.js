@@ -1,10 +1,12 @@
 /* eslint-env node */
 
 const path = require('path');
-const rollupReplacePlugin = require('rollup-plugin-replace');
+const babel = require("@babel/core");
+const minify = require("babel-preset-minify");
 const typescript = require('rollup-plugin-typescript');
+const rollupReplacePlugin = require('rollup-plugin-replace');
 const rollupCompatPlugin = require('rollup-plugin-compat').default;
-const babelMinify = require('babel-minify');
+
 const { version } = require('./package.json');
 const { generateTargetName } = require('./rollup.config.util');
 
@@ -14,11 +16,18 @@ const outputDir = path.resolve(__dirname, 'dist/umd');
 const banner = (`/* proxy-compat-disable */`);
 const footer = `/** version: ${version} */`;
 
+const minifyBabelConfig = {
+    babelrc: false,
+    comments: false,
+    presets: [minify],
+};
+
 function inlineMinifyPlugin() {
     return {
         transformBundle(code) {
-            return babelMinify(code);
-        }
+            const result = babel.transform(code, minifyBabelConfig);
+            return result.code;
+        },
     };
 }
 
@@ -32,7 +41,6 @@ function rollupConfig(config) {
         isCompat && rollupCompatPlugin({ polyfills: false, disableProxyTransform: true }),
         prod && inlineMinifyPlugin({})
     ].filter(Boolean);
-
 
     return {
         input: input,

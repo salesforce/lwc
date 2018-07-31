@@ -1,8 +1,10 @@
 /* eslint-env node */
 
 const path = require('path');
+const babel = require("@babel/core");
+const minify = require("babel-preset-minify");
 const typescript = require('rollup-plugin-typescript');
-const babelMinify = require('babel-minify');
+
 const { version } = require('./package.json');
 
 const input = path.resolve(__dirname, 'src/main.ts');
@@ -15,19 +17,18 @@ const name = 'ObservableMembrane';
 const banner = (`/**\n * Copyright (C) 2017 salesforce.com, inc.\n */`);
 const footer = `/** version: ${version} */`;
 
-const baseRollupConfig = {
-    input,
-    name,
-    banner,
-    footer,
+const minifyBabelConfig = {
+    babelrc: false,
+    comments: false,
+    presets: [minify],
 };
-
 
 function inlineMinifyPlugin() {
     return {
         transformBundle(code) {
-            return babelMinify(code);
-        }
+            const result = babel.transform(code, minifyBabelConfig);
+            return result.code;
+        },
     };
 }
 
@@ -47,16 +48,21 @@ function rollupConfig({ formats, prod }) {
         ].join('');
 
         return {
-            name: 'ObservableMembrane',
+            name,
             format,
+
             file: path.join(targetDirectory, targetName),
-        }
+
+            banner,
+            footer,
+        };
     });
 
-    return Object.assign({}, baseRollupConfig, {
+    return {
+        input,
         output,
-        plugins
-    });
+        plugins,
+    };
 }
 
 module.exports = [
