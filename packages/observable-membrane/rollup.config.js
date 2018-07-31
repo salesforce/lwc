@@ -19,6 +19,7 @@ const footer = `/** version: ${version} */`;
 
 const minifyBabelConfig = {
     babelrc: false,
+    comments: false,
     presets: [minify],
 };
 
