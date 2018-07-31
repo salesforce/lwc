@@ -67,7 +67,22 @@ export default async function transformStyle(
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
 
-    const plugins = [
+    const plugins = [];
+
+    // The minification plugin should be the first plugin to run.
+    // The LWC plugins produces invalid CSS since it transforms all the var function with actual
+    // javascript function call. The mification plugin produces invalid CSS when it runs after
+    // the LWC plugin.
+    if (minify) {
+        plugins.unshift(
+            cssnano({
+                svgo: false,
+                preset: ['default']
+            })
+        );
+    }
+
+    plugins.push(
         postcssPluginLwc({
             token: TOKEN_PLACEHOLDER,
             customProperties: {
@@ -75,16 +90,7 @@ export default async function transformStyle(
                 transformVar: transformVar(customProperties.resolution),
             }
         })
-    ];
-
-    if (minify) {
-        plugins.push(
-            cssnano({
-                svgo: false,
-                preset: ['default']
-            })
-        );
-    }
+    );
 
     const escapedSource = escapeString(src);
 
