@@ -123,7 +123,7 @@ describe("module resolver", () => {
                 export default class Test extends Element {
                     get mytitle() { return nested; }
                 }`,
-                "foo.html": `<template><p>Component Template</p></template>`,
+                "foo.html": `<template><p>Component Template {mytitle}</p></template>`,
                 "lib/foo.js": `export function nested(){ return null;}`
             },
             outputConfig: {

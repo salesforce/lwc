@@ -59,6 +59,6 @@ describe("test index entry points", () => {
         const { success, diagnostics }  = await compile(config);
         expect(success).toBe(false);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0].message).toBe("Could not resolve 'foo' (as foo.js) from compiler entry point");
+        expect(diagnostics[0].message).toBe("Failed to resolve entry for module foo");
     });
 });
