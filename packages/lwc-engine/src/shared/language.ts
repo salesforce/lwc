@@ -27,6 +27,7 @@ const {
     map: ArrayMap,
     forEach,
     reduce: ArrayReduce,
+    some: ArraySome,
 } = Array.prototype;
 
 const {
@@ -62,6 +63,7 @@ export {
     preventExtensions,
     isExtensible,
 
+    ArraySome,
     ArrayReduce,
     ArraySlice,
     ArraySplice,

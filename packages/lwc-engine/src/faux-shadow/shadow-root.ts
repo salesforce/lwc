@@ -1,7 +1,7 @@
 import assert from "../shared/assert";
-import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, } from "../shared/language";
+import { isNull, create, assign, isUndefined, toString, getOwnPropertyDescriptor, ArrayReduce, ArraySome } from "../shared/language";
 import { addShadowRootEventListener, removeShadowRootEventListener } from "./events";
-import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, getPatchedCustomElement, isNodeOwnedBy } from "./traverse";
+import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNodes, isNodeOwnedBy } from "./traverse";
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
@@ -9,6 +9,7 @@ import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeKey } f
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { unwrap } from "./traverse-membrane";
+import { querySelectorAll as nativeQuerySelectorAll } from "./element";
 
 let ArtificialShadowRootPrototype;
 
@@ -160,7 +161,8 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
                 const isRoot = isUndefined(getNodeKey(host));
                 if (isNull(node) && !isRoot) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (getPatchedCustomElement(host).querySelector(selector)) {
+                    const nativeNodeList = nativeQuerySelectorAll.call(host, selector);
+                    if (ArraySome.call(nativeNodeList, (n) => !isNodeOwnedBy(host, n))) {
                         assert.logWarning(`this.template.querySelector() can only return elements from the template declaration of ${toString(host)}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelector() instead.`);
                     }
                 }
@@ -178,7 +180,8 @@ const ArtificialShadowRootDescriptors: PropertyDescriptorMap = {
                 const isRoot = isUndefined(getNodeKey(host));
                 if (nodeList.length === 0 && !isRoot) {
                     // note: we don't show errors for root elements since their light dom is always empty in fallback mode
-                    if (getPatchedCustomElement(host).querySelector(selector)) {
+                    const nativeNodeList = nativeQuerySelectorAll.call(host, selector);
+                    if (ArraySome.call(nodeList, (n) => !isNodeOwnedBy(host, n))) {
                         assert.logWarning(`this.template.querySelectorAll() can only return elements from template declaration of ${toString(host)}. It seems that you are looking for elements that were passed via slots, in which case you should use this.querySelectorAll() instead.`);
                     }
                 }
