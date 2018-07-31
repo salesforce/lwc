@@ -5,7 +5,7 @@ import { shadowRootQuerySelector, shadowRootQuerySelectorAll, shadowRootChildNod
 import { getInternalField, setInternalField, createFieldName } from "../shared/fields";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getTextContent } from "../3rdparty/polymer/text-content";
-import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeKey } from "./node";
+import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY } from "./node";
 // it is ok to import from the polyfill since they always go hand-to-hand anyways.
 import { ElementPrototypeAriaPropertyNames } from "../polyfills/aria-properties/polyfill";
 import { unwrap } from "./traverse-membrane";
