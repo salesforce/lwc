@@ -42,6 +42,13 @@ const wdSuites = suites.reduce((seed, suite) => {
     return seed;
 }, {});
 
+let excludeFiles;
+if (/compat/.test(mode)) {
+    excludeFiles = [
+        ...wdSuites.wc,
+    ]
+}
+
 const config = {
     //
     // ==================
@@ -57,7 +64,7 @@ const config = {
     ],
     suites: wdSuites,
     // Patterns to exclude.
-    exclude: [
+    exclude: excludeFiles || [
         // 'path/to/excluded/files'
     ],
     //
