@@ -1,5 +1,30 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-26)
+# [](https://github.com/salesforce/lwc/compare/v0.25.1-alpha11...v) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha11"></a>
+## [0.25.1-alpha11](https://github.com/salesforce/lwc/compare/v0.25.1-alpha10...v0.25.1-alpha11) (2018-07-30)
+
+
+### Bug Fixes
+
+* **engine:** wrapping assert for dev-only ([#544](https://github.com/salesforce/lwc/issues/544)) ([751904b](https://github.com/salesforce/lwc/commit/751904b))
+
+
+
+<a name="0.25.1-alpha06"></a>
+## [0.25.1-alpha06](https://github.com/salesforce/lwc/compare/v0.25.1-alpha05...v0.25.1-alpha06) (2018-07-27)
+
+
+### Bug Fixes
+
+* **engine:** closes issue [#538](https://github.com/salesforce/lwc/issues/538) to support remove listener during invoke  ([#541](https://github.com/salesforce/lwc/issues/541)) ([19121d1](https://github.com/salesforce/lwc/commit/19121d1))
+
+
+
+<a name="0.24.13-alpha01"></a>
+## [0.24.13-alpha01](https://github.com/salesforce/lwc/compare/v0.24.12-alpha06...v0.24.13-alpha01) (2018-07-26)
 
 
 ### Bug Fixes
