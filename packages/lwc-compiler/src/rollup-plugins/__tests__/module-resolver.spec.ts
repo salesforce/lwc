@@ -119,7 +119,7 @@ describe("module resolver", () => {
             namespace: "x",
             files: {
                 "foo.js": `import { nested } from './lib/foo';`,
-                "lib/foo.js": `export function nested(){ return null;}`
+                "lib/foo.js": ``,
             }
         };
 
