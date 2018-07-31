@@ -112,52 +112,7 @@ describe("module resolver", () => {
         );
     });
 
-    test("compiler should resolve bundle nested resource name after as the component name", async () => {
-        const noOutputConfig = {
-            ...VALID_CONFIG,
-            files: {
-                "class_and_template.js": `
-                import { Element } from 'engine';
-                export default class Test extends Element {}`,
-                "class_and_template.html": `<template><p>Component Template</p></template>`,
-                "lib/nested.js": `export function inner() { return null; }`
-            }
-        };
-
-        const { success, result } = await compile(noOutputConfig);
-        expect(success).toBe(true);
-        expect(pretify(result.code)).toMatch(
-            pretify(`define('x-class_and_template', ['engine'], function (engine) {
-                const style = undefined;
-                function tmpl($api, $cmp, $slotset, $ctx) {
-                const {
-                t: api_text,
-                h: api_element
-                } = $api;
-                return [api_element(\"p\", {
-                key: 1
-                }, [api_text(\"Component Template\")])];
-                }
-                if (style) {
-                tmpl.hostToken = 'x-class_and_template_class_and_template-host';
-                tmpl.shadowToken = 'x-class_and_template_class_and_template';
-                const style$$1 = document.createElement('style');
-                style$$1.type = 'text/css';
-                style$$1.dataset.token = 'x-class_and_template_class_and_template';
-                style$$1.textContent = style('x-class_and_template_class_and_template');
-                document.head.appendChild(style$$1);
-                }
-                class Test extends engine.Element {
-                render() {
-                return tmpl;
-                }
-                }
-                return Test;
-                });`)
-        );
-    });
-
-    test("compiler should resolve bundle with nested resource name after as the component name", async () => {
+    test("compiler should resolve bundle with local import", async () => {
         const COMPILER_CONFIG_BASEDIR = {
             name: "foo",
             namespace: "x",
