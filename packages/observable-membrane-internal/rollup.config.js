@@ -41,7 +41,7 @@ function rollupConfig({ formats, prod }) {
         const targetDirectory = format === 'umd' ? umdDirectory :  format === 'es' ? modulesDirectory : commonJSDirectory;
 
         const targetName = [
-            'observable-membrane',
+            'observable-membrane-internal',
             prod ? '.min' : '',
             '.js'
         ].join('');
