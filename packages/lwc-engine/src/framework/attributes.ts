@@ -278,3 +278,20 @@ export function getAttrNameFromPropName(propName: string): string {
     }
     return PropNameToAttrNameMap[propName];
 }
+
+let controlledElement: Element | null = null;
+let controlledAttributeName: string | void;
+
+export function isAttributeLocked(elm: Element, attrName: string): boolean {
+    return elm !== controlledElement || attrName !== controlledAttributeName;
+}
+
+export function lockAttribute(elm: Element, key: string) {
+    controlledElement = null;
+    controlledAttributeName = undefined;
+}
+
+export function unlockAttribute(elm: Element, key: string) {
+    controlledElement = elm;
+    controlledAttributeName = key;
+}

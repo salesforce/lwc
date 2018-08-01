@@ -33,10 +33,6 @@ import { getTextContent } from "../3rdparty/polymer/text-content";
 import { getInnerHTML } from "../3rdparty/polymer/inner-html";
 import { getHost, getShadowRoot } from "./shadow-root";
 
-export function getPatchedCustomElement(element: HTMLElement): HTMLElement {
-    return traverseMembraneWrap(element);
-}
-
 const iFrameContentWindowGetter: (this: HTMLIFrameElement) => Window = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow')!.get!;
 
 function getNodeOwner(node: Node): HTMLElement | null {

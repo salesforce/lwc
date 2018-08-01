@@ -95,7 +95,7 @@
       z = Proxy.callKey2,
       A = Proxy.getKey,
       B = Proxy.concat,
-      C = (function(a) {
+      C = /*#__PURE__*/ (function(a) {
         function c() {
           var a, d;
           b(this, c);
@@ -138,7 +138,7 @@
     }
     var H = Proxy.callKey1,
       I = Proxy.setKey,
-      J = (function(a) {
+      J = /*#__PURE__*/ (function(a) {
         function c() {
           var a;
           return (
