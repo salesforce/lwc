@@ -1,5 +1,101 @@
 import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
 import { createElement } from "../../framework/upgrade";
+import { compileTemplate } from 'test-utils';
+
+interface LightningSlotElement extends HTMLSlotElement {
+    assignedElements(): Element[];
+}
+
+describe.skip('slotchange event', () => {
+    // Initialized before each test
+    let element;
+
+    beforeEach(() => {
+        class Child extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <slot></slot>
+                    </template>
+                `);
+            }
+        }
+
+        class Parent extends LightningElement {
+            things;
+            constructor() {
+                super();
+                this.things = ['foo'];
+            }
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <template for:each={things} for:item="thing">
+                                <span key={thing}>{thing}</span>
+                            </template>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child }
+                });
+            }
+            setThings(things) {
+                this.things = things;
+            }
+        }
+        Parent.publicMethods = ['setThings'];
+        Parent.track = { things: 1 };
+
+        element = createElement('x-parent', { is: Parent });
+    });
+
+    it('should dispatch on initial render', () => {
+        expect.assertions(1);
+
+        const shadowRoot = getHostShadowRoot(element);
+        shadowRoot.addEventListener('slotchange', event => {
+            const slot = event.target as LightningSlotElement;
+            expect(slot.assignedElements().length).toBe(1);
+        });
+        document.body.appendChild(element);
+    });
+
+    it('should not be composed', () => {
+        expect.assertions(1);
+
+        element.addEventListener('slotchange', () => {
+            // Host element should not get the event
+            expect(false);
+        });
+        document.body.appendChild(element);
+        expect(true);
+    });
+
+    it('should dispatch when adding slotables', () => {
+        expect.assertions(1);
+
+        document.body.appendChild(element);
+        const shadowRoot = getHostShadowRoot(element);
+        shadowRoot.addEventListener('slotchange', () => {
+            const slot = event.target as LightningSlotElement;
+            expect(slot.assignedElements().length).toBe(2);
+        });
+        element.setThings(['foo', 'bar']);
+    });
+
+    it('should dispatch when removing slotables', () => {
+        expect.assertions(1);
+
+        document.body.appendChild(element);
+        const shadowRoot = getHostShadowRoot(element);
+        shadowRoot.addEventListener('slotchange', () => {
+            const slot = event.target as LightningSlotElement;
+            expect(slot.assignedElements().length).toBe(0);
+        });
+        element.setThings([]);
+    });
+});
 
 // https://html.spec.whatwg.org/multipage/scripting.html#the-slot-element
 describe('assignedNodes and assignedElements', () => {
