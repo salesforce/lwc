@@ -18,7 +18,7 @@ const CONSOLE_WHITELIST = [
     '#childNodes should return correct elements for slots rendering default content',
     '#shadowRoot querySelector should adopt elements not defined in template as part of the shadow',
     '#shadowRootQuerySelector should not throw error if querySelector does not match any elements',
-    '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements'
+    '#shadowRootQuerySelector should not throw error if querySelectorAll does not match any elements',
     '#shadowRootQuerySelector should return null if querySelector does not match any elements',
     'api #c() should coerce style to string when is object',
     'api #h() should coerce style to string when is object',
@@ -26,7 +26,7 @@ const CONSOLE_WHITELIST = [
     'assignedSlot should return correct slot when text is slotted',
     'component public computed props should call setter function when used directly from DOM',
     'component public methods should allow calling getAttribute on child when referenced with querySelector',
-    'component public methods should allow calling removeAttribute on child when referenced with querySelector'
+    'component public methods should allow calling removeAttribute on child when referenced with querySelector',
     'component public methods should allow calling setAttribute on child when referenced with querySelector',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods connectedCallback should unmount boundary child and its subtree if boundary child throws inside connectedCallback',
     'error boundary component errors occured inside boundary wrapped child`s lifecycle methods error boundary failures in rendering alternative view should rethrow error to the parent error boundary when child boundary fails to render alternative view',
