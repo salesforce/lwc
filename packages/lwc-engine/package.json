@@ -28,6 +28,6 @@
     }
   },
   "dependencies": {
-    "observable-membrane": "0.24.14"
+    "observable-membrane-internal": "0.24.14"
   }
 }

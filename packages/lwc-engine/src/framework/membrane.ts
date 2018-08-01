@@ -1,6 +1,6 @@
 import assert from "../shared/assert";
 import { toString } from "../shared/language";
-import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane";
+import { ReactiveMembrane, unwrap as observableUnwrap } from "observable-membrane-internal";
 import { observeMutation, notifyMutation } from "./watcher";
 import { getRawNode } from "../faux-shadow/faux";
 
