@@ -1,4 +1,5 @@
 import { compile } from "../../compiler/compiler";
+import { DiagnosticLevel } from "../../diagnostics/diagnostic";
 import { pretify, readFixture } from "../../__tests__/utils";
 
 const VALID_CONFIG = {
@@ -111,4 +112,48 @@ describe("module resolver", () => {
                 });`)
         );
     });
+
+    test("compiler should resolve bundle with local import", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { nested } from './lib/foo';`,
+                "lib/foo.js": ``,
+            }
+        };
+
+        const { result, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(true);
+        expect(result).toBeDefined();
+    });
+
+    test("compiler should report fatal diagnostic if local import cannot be resolved", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "foo",
+            namespace: "x",
+            files: {
+                "foo.js": `import { nested } from './lib/foo';`,
+            }
+        };
+
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+    });
+
+    test("compiler should report fatal diagnostic when invalid entry path is specified", async () => {
+        const COMPILER_CONFIG_BASEDIR = {
+            name: "modules/foo",
+            namespace: "x",
+            files: {
+                "foo.js": ``,
+            }
+        };
+
+        const { diagnostics, success } = await compile(COMPILER_CONFIG_BASEDIR);
+        expect(success).toBe(false);
+        expect(diagnostics[0].level).toBe(DiagnosticLevel.Fatal);
+    });
+
 });
