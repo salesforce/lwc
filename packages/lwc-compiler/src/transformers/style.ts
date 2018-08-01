@@ -69,8 +69,7 @@ export default async function transformStyle(
 
     const postcssPlugins: postcss.AcceptedPlugin[] = [];
 
-    // The minification plugin should be the first plugin to run.
-    // The LWC plugins produces invalid CSS since it transforms all the var function with actual
+    // The LWC plugin produces invalid CSS since it transforms all the var function with actual
     // javascript function call. The mification plugin produces invalid CSS when it runs after
     // the LWC plugin.
     if (minify) {
