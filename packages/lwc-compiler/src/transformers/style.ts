@@ -67,18 +67,13 @@ export default async function transformStyle(
     const { minify } = outputConfig;
     const { customProperties } = stylesheetConfig;
 
-    const plugins = [
-        postcssPluginLwc({
-            token: TOKEN_PLACEHOLDER,
-            customProperties: {
-                allowDefinition: customProperties.allowDefinition,
-                transformVar: transformVar(customProperties.resolution),
-            }
-        })
-    ];
+    const postcssPlugins: postcss.AcceptedPlugin[] = [];
 
+    // The LWC plugin produces invalid CSS since it transforms all the var function with actual
+    // javascript function call. The mification plugin produces invalid CSS when it runs after
+    // the LWC plugin.
     if (minify) {
-        plugins.push(
+        postcssPlugins.push(
             cssnano({
                 svgo: false,
                 preset: ['default']
@@ -86,11 +81,21 @@ export default async function transformStyle(
         );
     }
 
+    postcssPlugins.push(
+        postcssPluginLwc({
+            token: TOKEN_PLACEHOLDER,
+            customProperties: {
+                allowDefinition: customProperties.allowDefinition,
+                transformVar: transformVar(customProperties.resolution),
+            }
+        })
+    );
+
     const escapedSource = escapeString(src);
 
     let res;
     try {
-        res = await postcss(plugins).process(escapedSource, {
+        res = await postcss(postcssPlugins).process(escapedSource, {
             from: filename,
         });
     } catch (e) {

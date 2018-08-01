@@ -264,6 +264,7 @@ describe('CSS transform', () => {
             color: var(--bg-color);
             font-size: var(--font-size, 16px);
             margin: var(--margin-small, var(--margin-medium, 20px));
+            border-bottom: 1px solid var(--lwc-border);
         }`;
 
         const expected = `
@@ -274,6 +275,7 @@ describe('CSS transform', () => {
                     color: \${customProperties(\`--bg-color\`)};
                     font-size: \${customProperties(\`--font-size\`, \`16px\`)};
                     margin: \${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};
+                    border-bottom: 1px solid \${customProperties(\`--lwc-border\`)};
                 }\`;
             }
             export default style;
@@ -283,6 +285,35 @@ describe('CSS transform', () => {
             stylesheetConfig: {
                 customProperties: { resolution: { type: 'module', name: '@customProperties' } },
             },
+        });
+
+        expect(pretify(code)).toBe(pretify(expected));
+    });
+
+    it('should transform var functions properly when minification is enabled', async () => {
+        const actual = `div {
+            color: var(--bg-color);
+            font-size: var(--font-size, 16px);
+            margin: var(--margin-small, var(--margin-medium, 20px));
+            border-bottom: 1px solid var(--lwc-border);
+        }`;
+
+        const expected = `
+            import customProperties from '@customProperties';
+
+            function style(token) {
+                return \`div[\${token}]{color:\${customProperties(\`--bg-color\`)};font-size:\${customProperties(\`--font-size\`, \`16px\`)};margin:\${customProperties(\`--margin-small\`, \`\${customProperties(\`--margin-medium\`, \`20px\`)}\`)};border-bottom:1px solid \${customProperties(\`--lwc-border\`)}}\`;
+            }
+            export default style;
+        `;
+
+        const { code } = await transform(actual, 'foo.css', {
+            stylesheetConfig: {
+                customProperties: { resolution: { type: 'module', name: '@customProperties' } },
+            },
+            outputConfig: {
+                minify: true
+            }
         });
 
         expect(pretify(code)).toBe(pretify(expected));

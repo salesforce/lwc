@@ -150,7 +150,7 @@ describe("compiler result", () => {
         const { level, message } = diagnostics[0];
 
         expect(level).toBe(DiagnosticLevel.Fatal);
-        expect(message).toContain('Could not resolve \'./nothing\' (as nothing.js) from \'foo.js\'');
+        expect(message).toContain('./nothing failed to be resolved from foo.js');
     });
 
     test('compiler returns diagnostic errors when transformation encounters an error in javascript', async () => {

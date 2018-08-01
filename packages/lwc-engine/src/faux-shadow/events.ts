@@ -7,7 +7,7 @@ import {
     getRootNode,
     parentNodeGetter,
 } from "./node";
-import { ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString } from "../shared/language";
+import { ArraySlice, ArraySplice, ArrayIndexOf, create, ArrayPush, isUndefined, isFunction, getOwnPropertyDescriptor, defineProperties, isNull, toString, forEach, defineProperty, isFalse } from "../shared/language";
 import { patchShadowDomTraversalMethods } from "./traverse";
 import { compareDocumentPosition, DOCUMENT_POSITION_CONTAINED_BY, getNodeOwnerKey, getNodeKey } from "./node";
 import { getHost } from "./shadow-root";
@@ -257,31 +257,37 @@ function domListener(evt: Event) {
     const currentTarget = eventCurrentTargetGetter.call(evt);
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
-    const len = listeners.length;
-    evt.stopImmediatePropagation = function() {
-        interrupted = true;
-        stopImmediatePropagation.call(evt);
-    };
+    defineProperty(evt, 'stopImmediatePropagation', {
+        value() {
+            interrupted = true;
+            stopImmediatePropagation.call(evt);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
     patchEvent(evt);
-    eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
-    for (let i = 0; i < len; i += 1) {
-        if (listeners[i].placement === EventListenerContext.SHADOW_ROOT_LISTENER) {
-            // all handlers on the custom element should be called with undefined 'this'
-            listeners[i].call(undefined, evt);
-            if (interrupted) {
-                return;
+    // in case a listener adds or removes other listeners during invocation
+    const bookkeeping: WrappedListener[] = ArraySlice.call(listeners);
+
+    function invokeListenersByPlacement(placement: EventListenerContext) {
+        forEach.call(bookkeeping, (listener: WrappedListener) => {
+            if (isFalse(interrupted) && listener.placement === placement) {
+                // making sure that the listener was not removed from the original listener queue
+                if (ArrayIndexOf.call(listeners, listener) !== -1) {
+                    // all handlers on the custom element should be called with undefined 'this'
+                    listener.call(undefined, evt);
+                }
             }
-        }
+        });
     }
-    eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
-    for (let i = 0; i < len; i += 1) {
-        if (listeners[i].placement === EventListenerContext.CUSTOM_ELEMENT_LISTENER) {
-            // all handlers on the custom element should be called with undefined 'this'
-            listeners[i].call(undefined, evt);
-            if (interrupted) {
-                return;
-            }
-        }
+
+    eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
+    invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
+    if (isFalse(interrupted)) {
+        // doing the second iteration only if the first one didn't interrupt the event propagation
+        eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
+        invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
     }
     eventToContextMap.set(evt, 0);
 }

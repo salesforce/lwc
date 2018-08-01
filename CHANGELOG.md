@@ -1,5 +1,71 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.2...v) (2018-07-26)
+# [](https://github.com/salesforce/lwc/compare/v0.25.1-alpha18...v) (2018-08-01)
+
+
+### Bug Fixes
+
+* **compiler:** correct module-resolver error messages [@bug](https://github.com/bug) W-5192589@ ([#551](https://github.com/salesforce/lwc/issues/551)) ([d1e93cc](https://github.com/salesforce/lwc/commit/d1e93cc))
+
+
+
+<a name="0.25.1-alpha18"></a>
+## [0.25.1-alpha18](https://github.com/salesforce/lwc/compare/v0.25.1-alpha17...v0.25.1-alpha18) (2018-08-01)
+
+
+### Bug Fixes
+
+* **engine:** never access props from proxies ([#546](https://github.com/salesforce/lwc/issues/546)) ([d0cf318](https://github.com/salesforce/lwc/commit/d0cf318))
+* **lwc-compiler:** invalid CSS generation when minified is enabled ([#552](https://github.com/salesforce/lwc/issues/552)) ([f19ebb1](https://github.com/salesforce/lwc/commit/f19ebb1))
+
+
+
+<a name="0.25.1-alpha17"></a>
+## [0.25.1-alpha17](https://github.com/salesforce/lwc/compare/v0.25.1-alpha16...v0.25.1-alpha17) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha16"></a>
+## [0.25.1-alpha16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha15...v0.25.1-alpha16) (2018-07-31)
+
+
+### Bug Fixes
+
+* update babel-minify to fix minification issue ([#545](https://github.com/salesforce/lwc/issues/545)) ([3c68a69](https://github.com/salesforce/lwc/commit/3c68a69))
+
+
+
+<a name="0.25.1-alpha15"></a>
+## [0.25.1-alpha15](https://github.com/salesforce/lwc/compare/v0.25.1-alpha14...v0.25.1-alpha15) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha14"></a>
+## [0.25.1-alpha14](https://github.com/salesforce/lwc/compare/v0.25.1-alpha13...v0.25.1-alpha14) (2018-07-31)
+
+
+
+<a name="0.25.1-alpha11"></a>
+## [0.25.1-alpha11](https://github.com/salesforce/lwc/compare/v0.25.1-alpha10...v0.25.1-alpha11) (2018-07-30)
+
+
+### Bug Fixes
+
+* **engine:** wrapping assert for dev-only ([#544](https://github.com/salesforce/lwc/issues/544)) ([751904b](https://github.com/salesforce/lwc/commit/751904b))
+
+
+
+<a name="0.25.1-alpha06"></a>
+## [0.25.1-alpha06](https://github.com/salesforce/lwc/compare/v0.25.1-alpha05...v0.25.1-alpha06) (2018-07-27)
+
+
+### Bug Fixes
+
+* **engine:** closes issue [#538](https://github.com/salesforce/lwc/issues/538) to support remove listener during invoke  ([#541](https://github.com/salesforce/lwc/issues/541)) ([19121d1](https://github.com/salesforce/lwc/commit/19121d1))
+
+
+
+<a name="0.24.13-alpha01"></a>
+## [0.24.13-alpha01](https://github.com/salesforce/lwc/compare/v0.24.12-alpha06...v0.24.13-alpha01) (2018-07-26)
 
 
 ### Bug Fixes
