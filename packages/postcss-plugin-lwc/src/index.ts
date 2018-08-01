@@ -1,4 +1,4 @@
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 import { PostCSSRuleNode } from 'postcss-selector-parser';
 
 import selectorScopingTransform from './selector-scoping/transform';

@@ -15,11 +15,7 @@ function valueDistortion(value: any) {
     return value;
 }
 
-// Super hacky workaround for the following ts compiler error:
-// error TS2351: Cannot use 'new' with an expression whose type lacks a call or construct signature.
-let _ObservableMembrane = ObservableMembrane;
-_ObservableMembrane = require("observable-membrane"); // tslint:disable-line
-export const reactiveMembrane = new _ObservableMembrane({
+export const reactiveMembrane = new ObservableMembrane({
     valueObserved: observeMutation,
     valueMutated: notifyMutation,
     valueDistortion,

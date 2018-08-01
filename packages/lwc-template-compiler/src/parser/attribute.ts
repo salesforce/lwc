@@ -1,5 +1,5 @@
 import * as parse5 from 'parse5-with-errors';
-import * as camelcase from 'camelcase';
+import camelcase from 'camelcase';
 
 import {
     EXPRESSION_SYMBOL_END,

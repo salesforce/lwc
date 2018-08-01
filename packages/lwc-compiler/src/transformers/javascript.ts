@@ -1,5 +1,5 @@
 import * as babel from "@babel/core";
-import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
+import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
 
 import { BABEL_CONFIG_BASE, BABEL_PLUGINS_BASE } from "../babel-plugins";
 import { NormalizedCompilerOptions } from "../compiler/options";

@@ -1,5 +1,5 @@
 import * as path from "path";
-import * as lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
+import lwcClassTransformPlugin from "babel-plugin-transform-lwc-class";
 import { CompilerError } from "../common-interfaces/compiler-error";
 
 import {
