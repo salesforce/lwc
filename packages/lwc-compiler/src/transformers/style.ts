@@ -73,7 +73,7 @@ export default async function transformStyle(
     // javascript function call. The mification plugin produces invalid CSS when it runs after
     // the LWC plugin.
     if (minify) {
-        postcssPlugins.unshift(
+        postcssPlugins.push(
             cssnano({
                 svgo: false,
                 preset: ['default']
