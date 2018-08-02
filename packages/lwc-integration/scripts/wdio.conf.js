@@ -97,7 +97,7 @@ const config = {
         //
         browserName: 'chrome',
         platform: 'Windows 10',
-        version: '61.0',
+        version: '68.0',
         chromeOptions: {
                 //binary: CHROME_BIN_PATH,
                 args: [
