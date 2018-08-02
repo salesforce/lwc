@@ -33,8 +33,8 @@
 *     modules: false,
 * };
 */
-import * as transformPublicFields from '@babel/plugin-proposal-class-properties';
-import * as transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
+import transformPublicFields from '@babel/plugin-proposal-class-properties';
+import transformObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
 
 // Base babel configuration
 export const BABEL_CONFIG_BASE = {

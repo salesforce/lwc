@@ -1,4 +1,4 @@
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 
 import lwcPlugin from '../index';
 import { PluginConfig } from '../config';

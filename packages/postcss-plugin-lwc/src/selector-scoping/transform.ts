@@ -1,6 +1,6 @@
 /* tslint:disable:no-duplicate-imports */
 
-import * as parser from 'postcss-selector-parser';
+import parser from 'postcss-selector-parser';
 import {
     attribute,
     combinator,

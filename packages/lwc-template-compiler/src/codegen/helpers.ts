@@ -1,5 +1,5 @@
 import * as t from 'babel-types';
-import * as toCamelCase from 'camelcase';
+import toCamelCase from 'camelcase';
 
 import State from '../state';
 import { isElement } from '../shared/ir';

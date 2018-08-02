@@ -1,5 +1,5 @@
-import * as postcss from "postcss";
-import * as cssnano from "cssnano";
+import postcss from "postcss";
+import cssnano from "cssnano";
 import postcssPluginLwc from "postcss-plugin-lwc";
 
 import { CompilerError } from "../common-interfaces/compiler-error";

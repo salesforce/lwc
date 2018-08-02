@@ -1,5 +1,5 @@
 import { rollup } from "rollup";
-import * as rollupPluginReplace from "rollup-plugin-replace";
+import rollupPluginReplace from "rollup-plugin-replace";
 
 import { MetadataCollector, BundleMetadata } from "./meta-collector";
 import rollupModuleResolver from "../rollup-plugins/module-resolver";

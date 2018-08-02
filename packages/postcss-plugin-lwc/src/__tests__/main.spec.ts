@@ -1,4 +1,4 @@
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 
 import { transformSelector } from '../index';
 import { process, DEFAULT_TOKEN } from './shared';

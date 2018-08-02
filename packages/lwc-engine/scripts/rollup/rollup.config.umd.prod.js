@@ -33,7 +33,12 @@ function rollupConfig(config){
     const { format, target, prod } = config;
     let plugins = [
         nodeResolve(),
-        rollupTypescriptPlugin({ typescript, target, module: 'es6', sourceMap: false }),
+        rollupTypescriptPlugin({
+            typescript,
+            target, module: 'es6',
+            sourceMap: false,
+            include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
+        }),
         replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
         prod && inlineMinifyPlugin({})
     ].filter(p => p);
