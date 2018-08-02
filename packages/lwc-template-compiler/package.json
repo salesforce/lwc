@@ -1,6 +1,6 @@
 {
   "name": "lwc-template-compiler",
-  "version": "0.24.14",
+  "version": "0.24.15",
   "description": "Template compiler package",
   "main": "dist/commonjs/index.js",
   "typings": "dist/types/",
