@@ -1,5 +1,6 @@
 const path = require('path');
-const typescript = require('rollup-plugin-typescript');
+const typescript = require('typescript');
+const rollupTypescriptPlugin = require('rollup-plugin-typescript');
 const replace = require('rollup-plugin-replace');
 const nodeResolve = require('rollup-plugin-node-resolve');
 
@@ -31,7 +32,11 @@ function rollupConfig(config) {
         },
         plugins: [
             nodeResolve(),
-            typescript({ target: target, typescript: require('typescript') })
+            rollupTypescriptPlugin({
+                target,
+                typescript,
+                include: [ '*.ts', '**/*.ts', '/**/node_modules/**/*.js' ],
+            })
         ]
     }
 }
