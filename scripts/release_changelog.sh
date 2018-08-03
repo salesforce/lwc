@@ -8,12 +8,12 @@ if [ -z "${PACKAGE_VERSION}" ]; then
         exit 1;
 fi
 
-if [ -n "${CANARY}" ]; then
+if [ -n "${CANARY}" ] && [ "${CANARY}" != "null" ]; then
     echo "Prerelease version, no changelog needed"
     exit 0;
 fi
 
-if git rev-parse $PACKAGE_VERSION >/dev/null 2>&1
+if git rev-parse v$PACKAGE_VERSION >/dev/null 2>&1
 then
     echo "Release already exists, skipping changelog"
     exit 0;
