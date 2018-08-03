@@ -1,15 +1,14 @@
 #!/bin/bash
 
-# Normalize params
-[ ! -z "$1" ] && PACKAGE_VERSION="$1" || PACKAGE_VERSION=$NPM_PACKAGE_VERSION;
-[ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--canary=beta" || CANARY="";
+PACKAGE_VERSION="$1";
+CANARY="$2";
 
-if [ -f $PACKAGE_VERSION ]; then
+if [ -z "${PACKAGE_VERSION}" ]; then
         echo "You must specify a version to create the changelog"
         exit 1;
 fi
 
-if [ ! -z $CANARY ]; then
+if [ -n "${CANARY}" ]; then
     echo "Prerelease version, no changelog needed"
     exit 0;
 fi
@@ -17,6 +16,7 @@ fi
 if git rev-parse $PACKAGE_VERSION >/dev/null 2>&1
 then
     echo "Release already exists, skipping changelog"
+    exit 0;
 else
     yarn changelog:generate
 fi

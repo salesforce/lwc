@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Normalize params
-[ ! -z "$1" ] && PACKAGE_VERSION="$1" || PACKAGE_VERSION=$NPM_PACKAGE_VERSION;
+PACKAGE_VERSION="$1"
 [ ! -z "$2" ] && [ "$2" != "null" ] && CANARY="--canary=beta" || CANARY="";
 
-if [ -f $PACKAGE_VERSION ]; then
+if [ -z "${PACKAGE_VERSION}" ]; then
         echo "You must specify a version to release"
         echo "Comand options: semver [--prerelease] (ex: 0.12.1 --prelease)"
         exit 1;
