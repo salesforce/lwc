@@ -1,5 +1,5 @@
 import assert from "../../shared/assert";
-import { isUndefined, keys, StringToLowerCase, create } from "../../shared/language";
+import { isUndefined, keys, create } from "../../shared/language";
 import { getInternalField } from "../../shared/fields";
 import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
