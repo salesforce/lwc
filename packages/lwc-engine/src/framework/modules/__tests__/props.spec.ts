@@ -183,9 +183,7 @@ describe('module/props', () => {
         expect(newVnode.elm.foo).toBeUndefined();
     });
 
-    // Should NOT PASS until we eliminate backwards-compatibility support for
-    // https://github.com/salesforce/lwc/pull/490
-    it.skip('should consider initially undefined values', () => {
+    it('should consider initially undefined values', () => {
         const elm = document.createElement('div');
         elm.foo = 1;
         const oldVnode = { data: {} };
@@ -193,17 +191,5 @@ describe('module/props', () => {
 
         target.update(oldVnode, newVnode);
         expect(newVnode.elm.foo).toBeUndefined();
-    });
-
-    // Should PASS until we eliminate backwards-compatibility support for
-    // https://github.com/salesforce/lwc/pull/490
-    it('should not consider initially undefined values', () => {
-        const elm = document.createElement('div');
-        elm.foo = 1;
-        const oldVnode = { data: {} };
-        const newVnode = { data: { props: { foo: undefined } }, elm };
-
-        target.update(oldVnode, newVnode);
-        expect(newVnode.elm.foo).toBe(1);
     });
 });
