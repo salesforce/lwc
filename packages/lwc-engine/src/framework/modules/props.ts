@@ -13,8 +13,9 @@ const EspecialTagAndPropMap = create(null, {
 });
 
 function isLiveBindingProp(sel: string, key: string): boolean {
-    // checked and value properties are considered especial, and even if the old tracked value is equal to the new tracked value
-    // we still check against the element's corresponding value to be sure.
+    // For special whitelisted properties (e.g., `checked` and `value`), we
+    // check against the actual property value on the DOM element instead of
+    // relying on tracked property values.
     return sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[sel];
 }
 
@@ -56,7 +57,6 @@ function update(oldVnode: VNode, vnode: VNode) {
             if (isCustomElement) {
                 prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
             }
-            // touching the dom if the prop really changes.
             elm[key] = cur;
         }
     }
