@@ -5,7 +5,6 @@ import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
 import { VNode, Module } from "../../3rdparty/snabbdom/types";
 import { getAttrNameFromPropName } from "../attributes";
-import { elementTagNameGetter } from "../dom-api";
 
 const EspecialTagAndPropMap = create(null, {
     input: { value: create(null, { value: { value: 1 }, checked: { value: 1 } }) },
@@ -30,24 +29,25 @@ function update(oldVnode: VNode, vnode: VNode) {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        assert.invariant(isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','), `vnode.data.props cannot change shape.`);
+        assert.invariant(
+            isUndefined(oldProps) || keys(oldProps).join(',') === keys(props).join(','),
+            'vnode.data.props cannot change shape.'
+        );
     }
 
-    let key: string;
-    let cur: any;
     const elm = vnode.elm as Element;
     const vm = getInternalField(elm, ViewModelReflection);
     const isFirstPatch = isUndefined(oldProps);
     const isCustomElement = !isUndefined(vm);
     const { sel } = vnode;
 
-    for (key in props) {
-        cur = props[key];
+    for (const key in props) {
+        const cur: any = props[key];
 
         if (process.env.NODE_ENV !== 'production') {
             if (!(key in elm)) {
                 // TODO: this should never really happen because the compiler should always validate
-                assert.fail(`Unknown public property "${key}" of element <${StringToLowerCase.call(elementTagNameGetter.call(elm))}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
+                assert.fail(`Unknown public property "${key}" of element <${sel}>. This is likely a typo on the corresponding attribute "${getAttrNameFromPropName(key)}".`);
             }
         }
 
