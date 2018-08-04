@@ -1,5 +1,5 @@
 import assert from "../../shared/assert";
-import { isUndefined, keys, StringToLowerCase, create, toString, isString } from "../../shared/language";
+import { isUndefined, keys, StringToLowerCase, create } from "../../shared/language";
 import { getInternalField } from "../../shared/fields";
 import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
@@ -51,38 +51,12 @@ function update(oldVnode: VNode, vnode: VNode) {
             }
         }
 
-        if (isFirstPatch) {
-            // TODO: this check for undefined should not be in place after 216
-            // in which case initial undefined values will be set just like any
-            // other non-undefined value, and it is a responsibility of the author
-            // and consumer to provide the right values.
-            if (!isUndefined(cur)) {
-                if (isCustomElement) {
-                    prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
-                }
-                elm[key] = cur;
-            } else if (process.env.NODE_ENV !== 'production') {
-                // setting undefined value initial is probably a mistake by the consumer,
-                // unless that the component author is accepting undefined, but we can't
-                // know that as of today, this is some basic heuristics to give them some
-                // warnings.
-                if (isCustomElement) {
-                    if (!isUndefined(elm[key]) && vm.def.props[key].config === 0) {
-                        // component does not have a getter or setter
-                        assert.logWarning(`Possible insufficient validation for property "${toString(key)}" in ${toString(vm)}. If the value is set to \`undefined\`, the component is not normalizing it.`);
-                    }
-                } else {
-                    if (isString(elm[key])) {
-                        assert.logWarning(`Invalid initial \`undefined\` value for for property "${toString(key)}" in Element ${toString(elm)}, it will be casted to String.`);
-                    }
-                }
-            }
-        } else if (cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])) {
-            // if the current value is different to the previous value...
+        // if it is the first time this element is patched, or the current value is different to the previous value...
+        if (isFirstPatch || cur !== (isLiveBindingProp(sel as string, key) ? elm[key] : (oldProps as any)[key])) {
             if (isCustomElement) {
                 prepareForPropUpdate(vm); // this is just in case the vnode is actually a custom element
             }
-            // touching the dom only when the prop value is really changing.
+            // touching the dom if the prop really changes.
             elm[key] = cur;
         }
     }
