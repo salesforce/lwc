@@ -1,5 +1,5 @@
 import _xFoo from 'x-foo';
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
 function style(token) {
     return `[${token}-host] {
@@ -37,7 +37,7 @@ if (style) {
     document.head.appendChild(style$$1);
 }
 
-class Styled extends Element {
+class Styled extends LightningElement {
   render() {
     return tmpl;
   }

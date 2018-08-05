@@ -19,10 +19,10 @@ describe("module resolver", () => {
             ...VALID_CONFIG,
             files: {
                 "class_and_template.js": `
-                import { Element } from 'engine';
+                import { LightningElement } from 'lwc';
                 import mytemplate from './class_and_template.html';
 
-                export default class Test extends Element {
+                export default class Test extends LightningElement {
                     render() {
                         return mytemplate;
                     }
@@ -34,7 +34,7 @@ describe("module resolver", () => {
         const { success, result } = await compile(noOutputConfig);
         expect(success).toBe(true);
         expect(pretify(result.code)).toMatch(
-            pretify(`define('x-class_and_template', ['engine'], function (engine) {
+            pretify(`define('x-class_and_template', ['lwc'], function (lwc) {
                 const style = undefined;
                 function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
@@ -54,7 +54,7 @@ describe("module resolver", () => {
                 style$$1.textContent = style('x-class_and_template_class_and_template');
                 document.head.appendChild(style$$1);
                 }
-                class Test extends engine.Element {
+                class Test extends lwc.LightningElement {
                 render() {
                 return tmpl;
                 }
@@ -68,10 +68,10 @@ describe("module resolver", () => {
             ...VALID_CONFIG,
             files: {
                 "class_and_template.js": `
-                import { Element } from 'engine';
+                import { LightningElement } from 'lwc';
                 import mytemplate from './anotherTemplate.html';
 
-                export default class Test extends Element {
+                export default class Test extends LightningElement {
                     render() {
                         return mytemplate;
                     }
@@ -83,7 +83,7 @@ describe("module resolver", () => {
         const { success, result } = await compile(noOutputConfig);
         expect(success).toBe(true);
         expect(pretify(result.code)).toBe(
-            pretify(`define('x-class_and_template', ['engine'], function (engine) {
+            pretify(`define('x-class_and_template', ['lwc'], function (lwc) {
                 const style = undefined;
                 function tmpl($api, $cmp, $slotset, $ctx) {
                 const {
@@ -103,7 +103,7 @@ describe("module resolver", () => {
                 style$$1.textContent = style('x-class_and_template_anotherTemplate');
                 document.head.appendChild(style$$1);
                 }
-                class Test extends engine.Element {
+                class Test extends lwc.LightningElement {
                 render() {
                 return tmpl;
                 }

@@ -120,9 +120,9 @@ describe("compiler result", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `import { Element } from 'engine';
+                "foo.js": `import { LightningElement } from 'lwc';
                 import { main } from './utils/util.js';
-                export default class Test extends Element {
+                export default class Test extends LightningElement {
                     get myimport() {
                         return main();
                     }
@@ -177,8 +177,8 @@ describe("compiler result", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `import { Element } from 'engine';
-                export default class Test extends Element {}
+                "foo.js": `import { LightningElement } from 'lwc';
+                export default class Test extends LightningElement {}
                 `,
                 "foo.html": `<template></template>`,
                 "foo.css": `a {`,
@@ -190,7 +190,7 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'engine\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
@@ -202,8 +202,8 @@ describe("compiler result", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `import { Element } from 'engine';
-                export default class Test extends Element {}
+                "foo.js": `import { LightningElement } from 'lwc';
+                export default class Test extends LightningElement {}
                 `,
                 "foo.html": `<template>`,
             },
@@ -214,7 +214,7 @@ describe("compiler result", () => {
 
         // check warning
         expect(diagnostics[0].level).toBe(DiagnosticLevel.Warning);
-        expect(diagnostics[0].message).toBe('\'engine\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
+        expect(diagnostics[0].message).toBe('\'lwc\' is imported by foo.js, but could not be resolved – treating it as an external dependency');
 
         // check error
         expect(diagnostics[1].level).toBe(DiagnosticLevel.Fatal);
@@ -321,9 +321,9 @@ describe("compiler metadata", () => {
             name: "foo",
             namespace: "x",
             files: {
-                "foo.js": `import { Element, api } from 'engine';
+                "foo.js": `import { LightningElement, api } from 'lwc';
                 /** class jsdoc */
-                export default class Test extends Element {
+                export default class Test extends LightningElement {
                     /** prop1 */
                     @api prop1;
 
@@ -351,8 +351,8 @@ describe("compiler metadata", () => {
             ],
             importLocations: [
                 {
-                    location: { length: 6, start: 18 },
-                     name: "engine"
+                    location: { length: 3, start: 18 },
+                     name: "lwc"
                 }
             ],
             classMembers: [

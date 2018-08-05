@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 import externalDep from 'another-module';
 
 const style = undefined;
@@ -24,7 +24,7 @@ if (style) {
     document.head.appendChild(style$$1);
 }
 
-class Foo extends Element {
+class Foo extends LightningElement {
     constructor(...args) {
         var _temp;
 

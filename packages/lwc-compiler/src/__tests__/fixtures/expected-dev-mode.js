@@ -1,4 +1,4 @@
-define('x-class_and_template', ['engine'], function (engine) {
+define('x-class_and_template', ['lwc'], function (lwc) {
 
 const style = undefined;
 
@@ -24,7 +24,7 @@ if (style) {
 }
 
 const Test = 1;
-class ClassAndTemplate extends engine.Element {
+class ClassAndTemplate extends lwc.LightningElement {
     constructor() {
         super();
         this.t = Test;
