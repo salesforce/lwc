@@ -48,7 +48,7 @@ const DISALLOWED_PROP_SET = new Set([
 ]);
 
 const LWC_PACKAGE_ALIAS = 'lwc';
-const LWC_PACKAGE_LEGACY = 'engine';
+const LWC_PACKAGE_ALIAS_LEGACY = 'engine';
 
 const LWC_PACKAGE_EXPORTS = {
     BASE_COMPONENT_LEGACY: 'Element',
@@ -80,7 +80,7 @@ module.exports = {
     GLOBAL_ATTRIBUTE_MAP,
 
     LWC_PACKAGE_ALIAS,
-    LWC_PACKAGE_LEGACY,
+    LWC_PACKAGE_ALIAS_LEGACY,
     LWC_PACKAGE_EXPORTS,
 
     LWC_COMPONENT_PROPERTIES,

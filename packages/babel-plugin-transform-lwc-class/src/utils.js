@@ -42,17 +42,12 @@ function staticClassProperty(types, name, expression) {
 }
 
 function getEngineImportsStatements(path) {
-    const programPath = path.isProgram() ?
-        path :
-        path.findParent(node => node.isProgram());
+    const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
 
-    return programPath.get('body').filter(node => (
-        node.isImportDeclaration() &&
-        (
-            node.get('source').isStringLiteral({ value: LWC_PACKAGE_ALIAS }) ||
-            node.get('source').isStringLiteral({ value: LWC_PACKAGE_ALIAS_LEGACY })
-        )
-    ));
+    return programPath.get('body').filter(node => {
+        const source = node.get('source');
+        return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }) || source.isStringLiteral({ value: LWC_PACKAGE_ALIAS_LEGACY }))
+    });
 }
 
 function getEngineImportSpecifiers(path) {
