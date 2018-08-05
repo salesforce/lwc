@@ -91,7 +91,7 @@ _Note: the render() method might also expect a promise of the dynamic element._
 ### Proposal 3: Promise Based Template
 
 ```js
-import { Element } from "engine";
+import { LighntningElement } from "lwc";
 import { Bar } from "x-bar";
 
 export default class Foo extends Element {

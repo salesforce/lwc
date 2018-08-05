@@ -47,10 +47,12 @@ const DISALLOWED_PROP_SET = new Set([
     'is', 'class', 'slot', 'style'
 ]);
 
-const LWC_PACKAGE_ALIAS = 'engine';
+const LWC_PACKAGE_ALIAS = 'lwc';
+const LWC_PACKAGE_LEGACY = 'engine';
 
 const LWC_PACKAGE_EXPORTS = {
-    BASE_COMPONENT: 'Element',
+    BASE_COMPONENT_LEGACY: 'Element',
+    BASE_COMPONENT: 'LightningElement',
     API_DECORATOR: 'api',
     TRACK_DECORATOR: 'track',
     WIRE_DECORATOR: 'wire',
@@ -78,6 +80,7 @@ module.exports = {
     GLOBAL_ATTRIBUTE_MAP,
 
     LWC_PACKAGE_ALIAS,
+    LWC_PACKAGE_LEGACY,
     LWC_PACKAGE_EXPORTS,
 
     LWC_COMPONENT_PROPERTIES,

@@ -3,11 +3,11 @@ const pluginTest = require('./utils/test-transform').pluginTest(
 );
 
 describe('Element import', () => {
-    pluginTest('throws if using default import on engine', `
-        import engine from 'engine';
+    pluginTest('throws if using default import on lwc', `
+        import engine from 'lwc';
     `, {
         error: {
-            message: `test.js: Invalid import. "engine" doesn't have default export.`,
+            message: `test.js: Invalid import. "lwc" doesn't have default export.`,
             loc: {
                 line: 1,
                 column: 7,
@@ -15,12 +15,12 @@ describe('Element import', () => {
         }
     });
 
-    pluginTest('throws if using namespace import on engine', `
-        import * as engine from 'engine';
-        export default class extends engine.Element {}
+    pluginTest('throws if using namespace import on lwc', `
+        import * as engine from 'lwc';
+        export default class extends engine.LightningElement {}
     `, {
         error: {
-            message: `test.js: Invalid import. Namespace imports are not allowed on "engine", instead use named imports "import { Element } from 'engine'".`,
+            message: `test.js: Invalid import. Namespace imports are not allowed on "lwc", instead use named imports "import { LightningElement } from 'lwc'".`,
             loc: {
                 line: 1,
                 column: 7,
@@ -29,9 +29,9 @@ describe('Element import', () => {
     });
 
     pluginTest('throw an error if the component class is anonymous', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
 
-        export default class extends Element {}
+        export default class extends LightningElement {}
     `, {
         error: {
             message: `test.js: LWC component class can't be an anonymous.`,
@@ -43,13 +43,13 @@ describe('Element import', () => {
     });
 
     pluginTest('allow to remap the import to Element', `
-        import { Element as Component } from 'engine';
+        import { LightningElement as Component } from 'lwc';
 
         export default class Test extends Component {}
     `, {
         output: {
             code: `import _tmpl from "./test.html";
-import { Element as Component } from 'engine';
+import { LightningElement as Component } from 'lwc';
 export default class Test extends Component {
   render() {
     return _tmpl;
@@ -62,7 +62,7 @@ export default class Test extends Component {
 
 describe('observedAttributes array', () => {
     pluginTest('throws if user defined observedAttributes', `
-        import { Element as Component } from 'engine';
+        import { Element as Component } from 'lwc';
 
         export default class Test extends Component {
             static observedAttributes = ['foo', 'title', 'tabindex'];
@@ -80,13 +80,13 @@ describe('observedAttributes array', () => {
 
 describe('render method', () => {
     pluginTest('inject render method', `
-        import { Element } from "engine";
-        export default class Test extends Element {}
+        import { LightningElement } from "lwc";
+        export default class Test extends LightningElement {}
     `, {
         output: {
             code: `import _tmpl from "./test.html";
-import { Element } from "engine";
-export default class Test extends Element {
+import { LightningElement } from "lwc";
+export default class Test extends LightningElement {
   render() {
     return _tmpl;
   }
@@ -96,14 +96,14 @@ export default class Test extends Element {
     });
 
     pluginTest(`keep the render method if present`, `
-        import { Element } from "engine";
-        export default class Test extends Element {
+        import { LightningElement } from "lwc";
+        export default class Test extends LightningElement {
             render() {}
         }
     `, {
         output: {
-            code: `import { Element } from "engine";
-export default class Test extends Element {
+            code: `import { LightningElement } from "lwc";
+export default class Test extends LightningElement {
   render() {}
 
 }`
@@ -111,19 +111,19 @@ export default class Test extends Element {
     });
 
     pluginTest('only inject render in the exported class', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
 
-        class Test1 extends Element {}
+        class Test1 extends LightningElement {}
 
-        export default class Test2 extends Element {}
+        export default class Test2 extends LightningElement {}
     `, {
         output: {
             code: `import _tmpl from "./test.html";
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
-class Test1 extends Element {}
+class Test1 extends LightningElement {}
 
-export default class Test2 extends Element {
+export default class Test2 extends LightningElement {
   render() {
     return _tmpl;
   }
@@ -135,9 +135,9 @@ export default class Test2 extends Element {
 
 describe('metadata', () => {
     pluginTest('class jsdoc single line (and declarationLoc)', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /** Foo doc */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -151,11 +151,11 @@ describe('metadata', () => {
     });
 
     pluginTest('class jsdoc', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /**
          * Foo doc
          */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -169,12 +169,12 @@ describe('metadata', () => {
     });
 
     pluginTest('class jsdoc multiline', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /**
          * multi
          * line
          */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -188,10 +188,10 @@ describe('metadata', () => {
     });
 
     pluginTest('class jsdoc multi comments', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /** first */
         /** last */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -205,9 +205,9 @@ describe('metadata', () => {
     });
 
     pluginTest('class jsdoc empty', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /** */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -224,9 +224,9 @@ describe('metadata', () => {
     });
 
     pluginTest('class no-jsdoc /**/', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /* not a jsdoc */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -242,9 +242,9 @@ describe('metadata', () => {
     });
 
     pluginTest('class no-jsdoc //', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         // not a jsdoc
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -260,9 +260,9 @@ describe('metadata', () => {
     });
 
     pluginTest('json in comment', `
-        import { Element } from 'engine';
+        import { LightningElement } from 'lwc';
         /** { one: "1", two: '2', array: [1, 2, 3]} */
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
         }
     `, {
         output: {
@@ -281,9 +281,9 @@ describe('metadata', () => {
     pluginTest(
         "tooling metadata",
         `
-        import { Element, api, track } from 'engine';
+        import { LightningElement, api, track } from 'lwc';
         // not a jsdoc
-        export default class Foo extends Element {
+        export default class Foo extends LightningElement {
             @track state;
             /** property-comment */ @api publicProp;
             /** method-comment */ @api publicMethod() {}

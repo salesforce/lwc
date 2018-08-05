@@ -24,7 +24,8 @@
   },
   "lwc": {
     "modules": {
-      "engine": "dist/modules/es2017/engine.js"
+      "engine": "dist/modules/es2017/engine.js",
+      "lwc": "dist/modules/es2017/engine.js"
     }
   },
   "dependencies": {

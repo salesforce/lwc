@@ -25,7 +25,7 @@ At this point, any component definition and any other library can import `"ns-fo
 
 ```js
 import { x, y } from "ns-foo";
-import { Element } from "engine";
+import { LightningElement } from "lwc";
 
 export default class Foo extends Element {
     someValue = x;
