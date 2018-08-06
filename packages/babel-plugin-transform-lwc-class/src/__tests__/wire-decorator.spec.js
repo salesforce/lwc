@@ -2,7 +2,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(require('../inde
 
 describe('Transform property', () => {
     pluginTest('transforms wired field', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
@@ -32,7 +32,7 @@ Test.wire = {
     });
 
     pluginTest('transforms multiple dynamic params', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop", key2: "$prop", key3: "fixed", key4: ["fixed", 'array']})
@@ -64,7 +64,7 @@ Test.wire = {
     });
 
     pluginTest('decorator expects wire adapter as first parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         export default class Test {
             @wire() wiredProp;
         }
@@ -79,7 +79,7 @@ Test.wire = {
     });
 
     pluginTest('decorator accepts a function identifier as first parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, {}) wiredProp;
@@ -104,7 +104,7 @@ Test.wire = {
     });
 
     pluginTest('decorator accepts a default import function identifier as first parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import getFoo from 'foo';
         export default class Test {
             @wire(getFoo, {}) wiredProp;
@@ -129,7 +129,7 @@ Test.wire = {
     })
 
     pluginTest('decorator accepts an optional config object as second parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo) wiredProp;
@@ -152,7 +152,7 @@ Test.wire = {
         });
 
     pluginTest('decorator expects an imported identifier as first parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         const ID = "adapterId"
         export default class Test {
             @wire(ID, {}) wiredProp;
@@ -168,7 +168,7 @@ Test.wire = {
     });
 
     pluginTest('decorator expects an object as second parameter', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, '$prop', ['fixed', 'array']) wiredProp
@@ -184,7 +184,7 @@ Test.wire = {
     });
 
     pluginTest('throws when wired property is combined with @api', `
-        import { api, wire } from 'engine';
+        import { api, wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @api
@@ -202,7 +202,7 @@ Test.wire = {
     });
 
     pluginTest('throws when wired property is combined with @track', `
-        import { track, wire } from 'engine';
+        import { track, wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @track
@@ -220,7 +220,7 @@ Test.wire = {
     });
 
     pluginTest('throws when using 2 wired decorators', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop1", key2: ["fixed", 'array']})
@@ -238,7 +238,7 @@ Test.wire = {
     });
 
     pluginTest('should not throw when using 2 separate wired decorators', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
@@ -282,7 +282,7 @@ Test.wire = {
 
 describe('Transform method', () => {
     pluginTest('transforms wired method', `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})
@@ -311,7 +311,7 @@ Test.wire = {
     });
 
     pluginTest('throws when wired method is combined with @api', `
-        import { api, wire } from 'engine';
+        import { api, wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @api
@@ -333,7 +333,7 @@ describe('Metadata', () => {
     pluginTest(
         'gather track metadata',
         `
-        import { wire } from 'engine';
+        import { wire } from 'lwc';
         import { getFoo } from 'data-service';
         export default class Test {
             @wire(getFoo, { key1: "$prop1", key2: ["fixed"]})

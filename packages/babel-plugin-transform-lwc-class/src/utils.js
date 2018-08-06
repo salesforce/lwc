@@ -1,4 +1,4 @@
-const { LWC_PACKAGE_ALIAS } = require('./constants');
+const { LWC_PACKAGE_ALIAS, LWC_PACKAGE_ALIAS_LEGACY, LWC_PACKAGE_EXPORTS } = require('./constants');
 
 function findClassMethod(path, name, properties = {}) {
     path.assertClassBody();
@@ -42,14 +42,12 @@ function staticClassProperty(types, name, expression) {
 }
 
 function getEngineImportsStatements(path) {
-    const programPath = path.isProgram() ?
-        path :
-        path.findParent(node => node.isProgram());
+    const programPath = path.isProgram() ? path : path.findParent(node => node.isProgram());
 
-    return programPath.get('body').filter(node => (
-        node.isImportDeclaration() &&
-        node.get('source').isStringLiteral({ value: LWC_PACKAGE_ALIAS })
-    ));
+    return programPath.get('body').filter(node => {
+        const source = node.get('source');
+        return node.isImportDeclaration() && (source.isStringLiteral({ value: LWC_PACKAGE_ALIAS }) || source.isStringLiteral({ value: LWC_PACKAGE_ALIAS_LEGACY }))
+    });
 }
 
 function getEngineImportSpecifiers(path) {
@@ -62,7 +60,7 @@ function getEngineImportSpecifiers(path) {
         // Validate engine import specifier
         if (specifier.isImportNamespaceSpecifier()) {
             throw specifier.buildCodeFrameError(
-                `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { Element } from '${LWC_PACKAGE_ALIAS}'".`,
+                `Invalid import. Namespace imports are not allowed on "${LWC_PACKAGE_ALIAS}", instead use named imports "import { ${LWC_PACKAGE_EXPORTS.BASE_COMPONENT} } from '${LWC_PACKAGE_ALIAS}'".`,
             );
         } else if (specifier.isImportDefaultSpecifier()) {
             throw specifier.buildCodeFrameError(

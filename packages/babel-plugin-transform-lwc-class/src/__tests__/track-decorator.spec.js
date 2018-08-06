@@ -4,7 +4,7 @@ const pluginTest = require('./utils/test-transform').pluginTest(
 
 describe('Transform property', () => {
     pluginTest('transform track decorator field', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         export default class Test {
             @track record;
         }
@@ -23,7 +23,7 @@ Test.track = {
     });
 
     pluginTest('transform track decorator preserve intial value', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         export default class Test {
             @track record = {
                 value: 'test'
@@ -47,7 +47,7 @@ Test.track = {
 
 
     pluginTest('throws if track decorator is applied to a getter', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         export default class Test {
             @track get record() {
                 return 'test';
@@ -64,7 +64,7 @@ Test.track = {
     });
 
     pluginTest('throws if track decorator is applied to a setter', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         export default class Test {
             _record;
 
@@ -83,7 +83,7 @@ Test.track = {
     });
 
     pluginTest('throws if track decorator is applied to a class method', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         export default class Test {
             _record;
 
@@ -106,8 +106,8 @@ describe('Metadata', () => {
     pluginTest(
         'gather metadata',
         `
-        import { Element, track } from 'engine';
-        export default class Test extends Element {
+        import { LightningElement, track } from 'lwc';
+        export default class Test extends LightningElement {
             @track state;
         }
     `,

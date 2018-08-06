@@ -1,4 +1,4 @@
-define('x-class_and_template', ['proxy-compat/getKey', 'proxy-compat/setKey', 'proxy-compat/callKey1', 'babel-compat/helpers/classCallCheck', 'babel-compat/helpers/createClass', 'babel-compat/helpers/possibleConstructorReturn', 'babel-compat/helpers/inherits', 'engine'], function (__getKey, __setKey, __callKey1, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, engine) {
+define('x-class_and_template', ['proxy-compat/getKey', 'proxy-compat/setKey', 'proxy-compat/callKey1', 'babel-compat/helpers/classCallCheck', 'babel-compat/helpers/createClass', 'babel-compat/helpers/possibleConstructorReturn', 'babel-compat/helpers/inherits', 'lwc'], function (__getKey, __setKey, __callKey1, _classCallCheck, _createClass, _possibleConstructorReturn, _inherits, lwc) {
 
 var style = undefined;
 
@@ -46,7 +46,7 @@ function (_Element) {
     }]);
 
     return ClassAndTemplate;
-}(engine.Element);
+}(lwc.LightningElement);
 
 __setKey(ClassAndTemplate, "style", __getKey(tmpl, "style"));
 

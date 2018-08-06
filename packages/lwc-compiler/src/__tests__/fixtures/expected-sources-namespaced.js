@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
 const style = undefined;
 
@@ -24,7 +24,7 @@ if (style) {
 }
 
 const Test = 1;
-class ClassAndTemplate extends Element {
+class ClassAndTemplate extends LightningElement {
     constructor() {
         super();
         this.t = Test;

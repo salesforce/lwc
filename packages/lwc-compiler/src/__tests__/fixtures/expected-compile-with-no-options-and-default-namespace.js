@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
 const style = undefined;
 
@@ -23,7 +23,7 @@ if (style) {
     document.head.appendChild(style$$1);
 }
 
-class Default extends Element {
+class Default extends LightningElement {
   render() {
     return tmpl;
   }

@@ -1,4 +1,4 @@
-define('myns-relative_import', ['engine'], function (engine) {
+define('myns-relative_import', ['lwc'], function (lwc) {
 
 const style = undefined;
 
@@ -31,7 +31,7 @@ function inner() {
     return sibling();
 }
 
-class RelativeImport extends engine.Element {
+class RelativeImport extends lwc.LightningElement {
     constructor() {
         super();
         this.x = test();

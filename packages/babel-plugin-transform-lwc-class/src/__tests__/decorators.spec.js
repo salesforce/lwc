@@ -9,7 +9,7 @@ describe('decorators', () => {
         }
     `, {
         error: {
-            message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "engine"',
+            message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
             loc: {
                 line: 10,
                 column: 0
@@ -24,7 +24,7 @@ describe('decorators', () => {
         }
     `, {
         error: {
-            message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "engine"',
+            message: 'test.js: Invalid decorator usage. Supported decorators (api, wire, track) should be imported from "lwc"',
             loc: {
                 line: 10,
                 column: 0
@@ -33,7 +33,7 @@ describe('decorators', () => {
     });
 
     pluginTest('throws if a decorator is used as a function', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         track(true)
     `, {
         error: {
@@ -46,7 +46,7 @@ describe('decorators', () => {
     });
 
     pluginTest('throws if a decorator is dereferenced', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         const trock = track;
         export default class Test {
             @trock field
@@ -62,7 +62,7 @@ describe('decorators', () => {
     });
 
     pluginTest('throws if a decorator is not used on class properties', `
-        import { track } from 'engine';
+        import { track } from 'lwc';
         @track
         class foo {}
     `, {

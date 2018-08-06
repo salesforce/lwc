@@ -1,5 +1,5 @@
-import { Element } from "engine";
-export default class Cmp1 extends Element {
+import { LightningElement } from "lwc";
+export default class Cmp1 extends LightningElement {
     constructor() {
         super();
     }

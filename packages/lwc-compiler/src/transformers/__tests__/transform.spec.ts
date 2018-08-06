@@ -18,14 +18,14 @@ describe('transform', () => {
 describe('Javascript transform', () => {
     it('should apply transformation for valid javascript file', async () => {
         const actual = `
-            import { Element } from 'engine';
-            export default class Foo extends Element {}
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
         `;
 
         const expected = `
             import _tmpl from "./foo.html";
-            import { Element } from 'engine';
-            export default class Foo extends Element {
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {
                 render() {
                     return _tmpl;
                 }
@@ -41,9 +41,9 @@ describe('Javascript transform', () => {
 
     it('outputs proper metadata', async () => {
         const content = `
-            import { Element, api } from 'engine';
+            import { LightningElement, api } from 'lwc';
             /** Foo doc */
-            export default class Foo extends Element {
+            export default class Foo extends LightningElement {
                 _privateTodo;
                 @api get todo () {
                     return this._privateTodo;
