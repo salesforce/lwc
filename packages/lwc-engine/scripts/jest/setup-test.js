@@ -38,7 +38,7 @@ afterEach(() => {
             if (!didTestLogged) {
                 const message = [
                     `This test used to used to log a warning or an error, but don't log anymore.`,
-                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold('test-withelist.js')}"`,
+                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold('test-whitelist.js')}"`,
                 ].join('\n');
 
                 throw new Error(message);
