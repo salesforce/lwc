@@ -17,4 +17,7 @@ module.exports = {
     },
     snapshotSerializers: [require.resolve('lwc-jest-serializer')],
     testMatch: [ '**/__tests__/**/?(*.)(spec|test).js' ],
+
+    // temp workaround until this is released - https://github.com/facebook/jest/pull/6792
+    testURL: "http://localhost/",
 };
