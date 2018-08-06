@@ -1,5 +1,25 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.1-alpha24...v) (2018-08-02)
+# [](https://github.com/salesforce/lwc/compare/v0.24.17-alpha02...v) (2018-08-06)
+
+
+
+<a name="0.24.17-alpha02"></a>
+## [0.24.17-alpha02](https://github.com/salesforce/lwc/compare/v0.24.17-alpha01...v0.24.17-alpha02) (2018-08-06)
+
+
+### Bug Fixes
+
+* upgrade compat dependencies (add setPrototypeOf) ([#559](https://github.com/salesforce/lwc/issues/559)) ([b982bd8](https://github.com/salesforce/lwc/commit/b982bd8))
+
+
+### Features
+
+* allow both "lwc" and "engine" sources ([#560](https://github.com/salesforce/lwc/issues/560)) ([501586c](https://github.com/salesforce/lwc/commit/501586c))
+
+
+
+<a name="0.24.16"></a>
+## [0.24.16](https://github.com/salesforce/lwc/compare/v0.25.1-alpha24...v0.24.16) (2018-08-02)
 
 
 
