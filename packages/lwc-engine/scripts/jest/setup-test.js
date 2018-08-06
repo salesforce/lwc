@@ -4,43 +4,65 @@ const { CONSOLE_WHITELIST } = require('./test-whitelist');
 const { toLogError, toLogWarning } = require('./matchers/log-matchers');
 
 // Extract original methods from console
-const { warn, error } = console;
+const {
+    warn: originalWarn,
+    error: originalError,
+} = console;
 
-const consoleOverride = methodName => () => {
-    const message = [
-        `Expect test not to call ${chalk.red.bold(
-            `console.${methodName}()`,
-        )}.\n`,
-        `If the message expected, make sure you asserts against those logs in the tests.\n`,
-        `Use instead: ${chalk.green.bold(
-            `expect(<function>).toLogError(<message>)`,
-        )} or ${chalk.green.bold(
-            `expect(<function>).toLogWarning(<message>)`,
-        )}`,
-    ].join('\n');
-
-    throw new Error(message);
-};
-
+let currentSpec;
 jasmine.getEnv().addReporter({
-    // Hook called before the "it" or "test" function and the associated "beforeEach"
-    // functions get invoked.
     specStarted(spec) {
-        const { fullName } = spec;
-
-        const isWhitelistedTest = CONSOLE_WHITELIST.includes(fullName);
-        if (!isWhitelistedTest) {
-            console.warn = consoleOverride('warn');
-            console.error = consoleOverride('error');
-        }
+        currentSpec = spec;
     },
-
-    // Hook called before the "it" or "test" function and the associated "afterEach"
-    // functions get invoked.
     specDone() {
-        console.warn = warn;
-        console.error = error;
+        currentSpec = null;
     },
+});
+
+beforeEach(() => {
+    console.warn = jest.spyOn(console, 'warn');
+    console.error = jest.spyOn(console, 'error');
+});
+
+afterEach(() => {
+    const { fullName } = currentSpec;
+
+    const isWhitelistedTest = CONSOLE_WHITELIST.includes(fullName);
+    const didTestLogged = [
+        ...console.warn.mock.calls,
+        ...console.error.mock.calls,
+    ].length > 0;
+
+    try {
+        if (isWhitelistedTest) {
+            if (!didTestLogged) {
+                const message = [
+                    `This test used to used to log a warning or an error, but don't log anymore.`,
+                    `Please remove "${chalk.green.bold(fullName)}" from "${chalk.green.bold('test-whitelist.js')}"`,
+                ].join('\n');
+
+                throw new Error(message);
+            }
+        } else {
+            if (didTestLogged) {
+                const message = [
+                    `Expect test not to log an error or a warning.\n`,
+                    `If the message expected, make sure you asserts against those logs in the tests.\n`,
+                    `Use instead: ${chalk.green.bold(
+                        `expect(<function>).toLogError(<message>)`,
+                    )} or ${chalk.green.bold(
+                        `expect(<function>).toLogWarning(<message>)`,
+                    )}`,
+                ].join('\n');
+
+                throw new Error(message);
+            }
+        }
+    } finally {
+        // Make sure to reset the original console methods after each tests
+        console.warn = originalWarn;
+        console.error = originalError;
+    }
 });
 
 // Register custom console matchers in jasmine
