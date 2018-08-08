@@ -13,8 +13,8 @@ function getLwcPath(path) {
     }
 
     if (lwcMap[path]) {
-        // handle magic LWC imports
-        if (path === 'engine') {
+        // Handle magic LWC imports
+        if (path === 'lwc' || /* deprecated */ path === 'engine') {
             return require.resolve('lwc-engine');
         } else if (path === 'wire-service') {
             return require.resolve('lwc-wire-service');
