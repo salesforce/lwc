@@ -5,8 +5,8 @@ This is the implementation of Raptor's wire service. It enables declarative bind
 A common usage is for a component to declare the data it requires. For example, a component may load data of type `todo` like so:
 
 ```js
-import { Element, api, wire } from 'engine';
-export default class WiredComponent extends Element {
+import { LightningElement, api, wire } from 'lwc';
+export default class WiredComponent extends LightningElement {
     @api todoId;
     @wire('todo', { id: '$todoId' })
     todo

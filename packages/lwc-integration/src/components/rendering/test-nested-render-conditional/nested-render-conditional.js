@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class NestedRenderConditional extends Element {
+export default class NestedRenderConditional extends LightningElement {
     @track toggle = true;
 
     handleClick() {

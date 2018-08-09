@@ -1,6 +1,6 @@
-import { Element } from "engine";
+import { LightningElement } from "lwc";
 const Test = 1;
-export default class ClassAndTemplate extends Element {
+export default class ClassAndTemplate extends LightningElement {
     t = Test;
     constructor() {
         super();

@@ -1,3 +1,3 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class RecordLayoutRow extends Element {}
+export default class RecordLayoutRow extends LightningElement {}

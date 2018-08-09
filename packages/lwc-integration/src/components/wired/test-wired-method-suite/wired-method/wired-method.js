@@ -1,7 +1,7 @@
-import { Element, api, track, wire } from 'engine';
+import { LightningElement, api, track, wire } from "lwc";
 import { getTodo } from 'todo';
 
-export default class WiredMethod extends Element {
+export default class WiredMethod extends LightningElement {
     @api todoId;
     @track state = { error: undefined, todo: undefined };
 

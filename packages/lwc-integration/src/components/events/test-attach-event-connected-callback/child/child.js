@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
 
     handleClick() {
         let e = new CustomEvent('cstm', {bubbles: true, composed: true});

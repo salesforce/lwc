@@ -1,4 +1,4 @@
-import { buildCustomElementConstructor } from 'engine';
+import { buildCustomElementConstructor } from 'lwc';
 import Table from 'benchmark-table-component';
 import Row from 'benchmark-table-component-row';
 

@@ -1,4 +1,4 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
 function getType(recordId, recordUi) {
     const record = recordUi.records[recordId];
@@ -12,7 +12,7 @@ function getType(recordId, recordUi) {
     return masterRecordTypeId;
 }
 
-export default class ObjectKeys extends Element {
+export default class ObjectKeys extends LightningElement {
     state = {
         test: 1,
         type: 'default',

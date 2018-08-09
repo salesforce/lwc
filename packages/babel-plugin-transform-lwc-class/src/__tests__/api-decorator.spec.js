@@ -607,8 +607,8 @@ describe('Metadata', () => {
     pluginTest(
         'gather metadata deprecated',
         `
-        import { Element, api } from 'lwc';
-        export default class Foo extends Element {
+        import { LightningElement, api } from 'lwc';
+        export default class Foo extends LightningElement {
             _privateTodo;
             @api get todo () {
                 return this._privateTodo;

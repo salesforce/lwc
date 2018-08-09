@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ArrayPush extends Element {
+export default class ArrayPush extends LightningElement {
     @track foo = { title: 'proxy' };
     get plainPush() {
         const array = [1, 2];

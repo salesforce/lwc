@@ -1,4 +1,4 @@
-import { Element, api } from "engine";
+import { LightningElement, api } from "lwc";
 import { echo } from "./lib";
 
 function pause(time) {
@@ -7,7 +7,7 @@ function pause(time) {
     ));
 }
 
-export default class Foo extends Element {
+export default class Foo extends LightningElement {
     @api me = "foo";
 
     get computedClass() {

@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class SimpleListContainer extends Element {
+export default class SimpleListContainer extends LightningElement {
     @api label = 'default label';
     @api header = 'default header';
     @track min = 20;

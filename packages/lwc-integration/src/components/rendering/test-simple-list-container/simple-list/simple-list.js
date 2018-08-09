@@ -1,4 +1,4 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
 const DefaultMinValue = 5;
 const DefaultMaxValue = 35;
@@ -11,7 +11,7 @@ function produceNewData(min, max) {
     return base.slice(min, max);
 }
 
-export default class SimpleList extends Element {
+export default class SimpleList extends LightningElement {
     normalizedMin = DefaultMinValue;
     normalizedMax = DefaultMaxValue;
 

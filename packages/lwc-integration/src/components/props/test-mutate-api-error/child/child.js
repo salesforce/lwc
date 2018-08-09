@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
     @api foo;
     @track errorMessage = '';
 

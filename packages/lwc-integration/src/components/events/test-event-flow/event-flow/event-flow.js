@@ -1,7 +1,7 @@
-import { Element, api, track, unwrap } from 'engine';
+import { LightningElement, api, track, unwrap } from "lwc";
 import { EVENT, GUID_TO_NAME_MAP } from '../EVENT';
 
-export default class EventFlow extends Element {
+export default class EventFlow extends LightningElement {
     // Expose these "constants" to the test suite
     @api get EVENT() {
         return {

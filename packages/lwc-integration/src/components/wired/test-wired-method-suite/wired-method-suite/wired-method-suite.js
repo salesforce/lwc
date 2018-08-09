@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class WiredMethodSuite extends Element {
+export default class WiredMethodSuite extends LightningElement {
     @track state = {
         todoId: 0
     };

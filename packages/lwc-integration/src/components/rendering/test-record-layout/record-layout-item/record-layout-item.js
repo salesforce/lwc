@@ -1,6 +1,6 @@
-import { Element, api } from 'engine';
+import { LightningElement, api } from "lwc";
 
-export default class RecordLayoutItem extends Element {
+export default class RecordLayoutItem extends LightningElement {
     @api mode;
     @api fieldLabel;
     @api fieldApiName;

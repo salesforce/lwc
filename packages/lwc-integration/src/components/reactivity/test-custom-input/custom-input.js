@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class CustomInput extends Element {
+export default class CustomInput extends LightningElement {
     @track value = 30;
     @track checked = true;
 

@@ -1,7 +1,7 @@
 /**
  * Lightning Web Components core module
  */
-declare module 'engine' {
+declare module 'lwc' {
 
     interface ComposableEvent extends Event {
         composed: boolean

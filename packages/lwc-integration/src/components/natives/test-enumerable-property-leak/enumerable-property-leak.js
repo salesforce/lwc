@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class EnumerablePropertyLeak extends Element {
+export default class EnumerablePropertyLeak extends LightningElement {
     get objectEnumerableProperties() {
         const properties = [];
 

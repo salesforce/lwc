@@ -1,3 +1,3 @@
-import { Element } from 'engine';
+import { LightningElement } from 'engine';
 
-export default class Bar extends Element {}
+export default class Bar extends LightningElement {}

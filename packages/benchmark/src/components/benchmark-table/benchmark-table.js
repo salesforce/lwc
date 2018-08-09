@@ -1,6 +1,6 @@
-import { Element, api } from 'engine';
+import { LightningElement, api } from 'lwc';
 
-export default class Table extends Element {
+export default class Table extends LightningElement {
     @api rows = [];
 
     handleSelect() {

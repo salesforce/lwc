@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class NestedBoundaryHost extends Element {
+export default class NestedBoundaryHost extends LightningElement {
     @track state = { error: false, title: "initial" };
 
     errorCallback(error) {

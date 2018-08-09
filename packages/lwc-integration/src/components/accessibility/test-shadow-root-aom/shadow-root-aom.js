@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ShadowRootAom extends Element {
+export default class ShadowRootAom extends LightningElement {
     connectedCallback() {
         this.root.ariaLabel = 'internallabel';
     }

@@ -1,5 +1,5 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class SlotRenderElements extends Element {
+export default class SlotRenderElements extends LightningElement {
 
 }

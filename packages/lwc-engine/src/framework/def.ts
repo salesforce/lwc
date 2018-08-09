@@ -142,7 +142,7 @@ function createComponentDef(Ctor: ComponentConstructor): ComponentDef {
         globalInitialization();
     }
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends Element from "engine". You probably forgot to add the extend clause on the class declaration.`);
+        assert.isTrue(isElementComponent(Ctor), `${Ctor} is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration.`);
 
         // local to dev block
         const ctorName = Ctor.name;

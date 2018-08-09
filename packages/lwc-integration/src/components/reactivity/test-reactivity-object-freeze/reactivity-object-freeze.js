@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class ReactivityObjectFreeze extends Element {
+export default class ReactivityObjectFreeze extends LightningElement {
     state = {
         title: 'Welcome to Raptor fiddle!',
         todos: [

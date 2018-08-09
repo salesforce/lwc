@@ -1,4 +1,4 @@
-import { Element, register } from 'engine';
+import { LightningElement, register } from "lwc";
 
 register({
     piercing: (component, data, def, context, target, key, value, callback) => {
@@ -14,7 +14,7 @@ register({
     }
 })
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
     connectedCallback() {
         const event = {
             type: 'custom'

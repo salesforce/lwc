@@ -1,6 +1,6 @@
-import { Element } from 'engine'
+import { LightningElement } from "lwc"
 
-export default class ChildRenderThrow extends Element {
+export default class ChildRenderThrow extends LightningElement {
     constructor() {
         super();
     }

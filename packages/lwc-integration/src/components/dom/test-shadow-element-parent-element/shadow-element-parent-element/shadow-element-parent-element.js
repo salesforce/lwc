@@ -1,6 +1,6 @@
-import { Element, track, unwrap } from 'engine';
+import { LightningElement, track, unwrap } from "lwc";
 
-export default class ShadowElementParentElement extends Element {
+export default class ShadowElementParentElement extends LightningElement {
     @track parentIsRoot = false;
 
     renderedCallback() {

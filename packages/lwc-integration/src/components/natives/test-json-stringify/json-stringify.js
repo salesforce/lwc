@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class JsonStringify extends Element {
+export default class JsonStringify extends LightningElement {
     get objectStringify() {
         const arr = new Proxy({
             x: 'x',

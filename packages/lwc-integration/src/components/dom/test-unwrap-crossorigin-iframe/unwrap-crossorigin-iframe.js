@@ -1,6 +1,6 @@
-import { Element, api, track, unwrap } from 'engine';
+import { LightningElement, api, track, unwrap } from "lwc";
 
-export default class UnwrapCrossOriginIframe extends Element {
+export default class UnwrapCrossOriginIframe extends LightningElement {
     @track
     errorMessage = 'no error';
 

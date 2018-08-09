@@ -1,3 +1,3 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class Issue572 extends Element {}
+export default class Issue572 extends LightningElement {}

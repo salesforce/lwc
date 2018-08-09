@@ -1,9 +1,9 @@
-import { Element, api, buildCustomElementConstructor } from 'engine';
+import { LightningElement, api, buildCustomElementConstructor } from "lwc";
 
 // TODO: this does not work. @diego will fix it!
 import ComponentWithX from 'wc-with-attribute-x';
 
-export default class WiredPropSuite extends Element {
+export default class WiredPropSuite extends LightningElement {
     renderedCallback() {
         const WC = buildCustomElementConstructor(ComponentWithX);
         customElements.define('x-foo', WC);

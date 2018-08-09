@@ -52,9 +52,9 @@ export default class MyComponent extends Element {
 ### Detecting changes to attributes
 Today, component authors can.. listen to attribute changes by defining `attributeChangedCallback` coupled with a static `observedAttributes` property:
 ```
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
-export default class MyComponent extends Element {
+export default class MyComponent extends LightningElement {
     attributeChangedCallback(attrName, oldValue, nextValue) {
         // some logic here
     }
@@ -66,9 +66,9 @@ export default class MyComponent extends Element {
 With getters and setters defined on the Element prototype, it becomes possible instead for component authors to define their own setters to listen to component changes. It also avoids inheritance-related hazards with `attributeChangedCallback` usage.
 
 ```
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
-export default class MyComponent extends Element {
+export default class MyComponent extends LightningElement {
     @track privateTitle;
 
     @api
@@ -114,8 +114,8 @@ export default class MyComponent extends Element { }
 If a component author does define a custom getter/setter for an attribute, then the attribute _will not_ be reflected by default:
 
 ```
-import { Element } from 'engine';
-export default class MyComponent extends Element {
+import { LightningElement } from 'lwc';
+export default class MyComponent extends LightningElement {
     @track privateTitle;
 
     @api
@@ -144,8 +144,8 @@ export default class MyComponent extends Element {
 In order to enable attribute reflection for that property, component author can use `setAttribute` directly in their getter/setter:
 
 ```
-import { Element } from 'engine';
-export default class MyComponent extends Element {
+import { LightningElement } from 'lwc';
+export default class MyComponent extends LightningElement {
     @track privateTitle;
 
     @api
@@ -182,8 +182,8 @@ export default class MyComponent extends Element {
 Defining getters and setters for all possible data- and aria- attributes is not possible, especially since data- attributes are arbitrary. Also, because component authors have access to `@api` to expose setters, `data-` attributes are unnecessary. With this proposal, it will be _impossible_ for component authors to listen and use values from `data-` and `aria-` attributes. They will, however, still reflect out to the DOM:
 
 ```
-import { Element } from 'engine';
-export default class MyComponent extends Element {
+import { LightningElement } from 'lwc';
+export default class MyComponent extends LightningElement {
     @api
     get dataFoo() {
         console.log('here');

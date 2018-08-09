@@ -1,7 +1,7 @@
-import { Element, api, track, unwrap } from 'engine';
+import { LightningElement, api, track, unwrap } from "lwc";
 import { EVENT } from '../EVENT';
 
-export default class Parent extends Element {
+export default class Parent extends LightningElement {
     log(guid) {
         this.dispatchEvent(new CustomEvent('log', {
             bubbles: true,
