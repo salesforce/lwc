@@ -63,10 +63,11 @@ describe('rollup in prod_compat mode', () => {
     });
 });
 
+const globalModules = { lwc: 'Engine' };
 function doRollup(input, options = {}) {
     return rollup.rollup({
         input,
-        external: [ 'engine' ],
+        external: (id) => id in globalModules,
         plugins: [ rollupCompile(options) ],
         onwarn(warn) {
             if (warn && warn.code !== 'UNRESOLVED_IMPORT') {
@@ -77,7 +78,7 @@ function doRollup(input, options = {}) {
         bundle.generate({
             format: 'iife',
             name: 'test',
-            output: { globals: { engine: 'engine' } }
+            output: { globals: globalModules }
         })
     ));
 }
