@@ -1,7 +1,6 @@
 import { LightningElement, getHostShadowRoot } from "../../framework/html-element";
 import { createElement } from "../../framework/upgrade";
 import { compileTemplate } from 'test-utils';
-import { getHost } from "../../../../../node_modules/lwc-engine/src/faux-shadow/shadow-root";
 
 interface LightningSlotElement extends HTMLSlotElement {
     assignedElements(): Element[];
