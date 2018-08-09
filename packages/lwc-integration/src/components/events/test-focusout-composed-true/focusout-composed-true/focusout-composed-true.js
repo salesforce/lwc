@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class FocusOutComposedTrue extends Element {
+export default class FocusOutComposedTrue extends LightningElement {
     @track eventIsComposed = false;
     @track customEventNotComposed = false;
 

@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class Issue763 extends Element {
+export default class Issue763 extends LightningElement {
     @api propItems = [{
         title: 'first'
     }, {

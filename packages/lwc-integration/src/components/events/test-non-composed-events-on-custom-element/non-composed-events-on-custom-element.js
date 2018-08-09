@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ComposedEvents extends Element {
+export default class ComposedEvents extends LightningElement {
     @track eventReceived = false;
     @track customEventReceived = false;
 

@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
     @track eventTargetIsPTag = false;
     handleClick(evt) {
         this.eventTargetIsPTag = evt.target.tagName === 'P';

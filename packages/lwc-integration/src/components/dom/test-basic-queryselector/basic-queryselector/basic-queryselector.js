@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class QuerySelector extends Element {
+export default class QuerySelector extends LightningElement {
     @track querySelectorMessage;
     @track querySelectorAllMessage;
 

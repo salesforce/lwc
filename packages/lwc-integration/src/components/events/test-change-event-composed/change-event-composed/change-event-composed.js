@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ChangeEventComposed extends Element {
+export default class ChangeEventComposed extends LightningElement {
     @track notComposed = false;
     handleChange(evt) {
         this.notComposed = evt.composed === false;

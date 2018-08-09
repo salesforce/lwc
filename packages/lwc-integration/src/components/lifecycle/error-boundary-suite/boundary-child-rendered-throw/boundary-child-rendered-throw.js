@@ -1,6 +1,6 @@
-import { Element, track } from 'engine'
+import { LightningElement, track } from "lwc"
 
-export default class BoundaryChildRenderedThrow extends Element {
+export default class BoundaryChildRenderedThrow extends LightningElement {
     @track state = {};
 
     errorCallback(error) {

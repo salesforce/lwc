@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ObjectValues extends Element {
+export default class ObjectValues extends LightningElement {
     // Plain Object
     // ============
 

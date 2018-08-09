@@ -1,5 +1,5 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class GrandChild extends Element {
+export default class GrandChild extends LightningElement {
 
 }

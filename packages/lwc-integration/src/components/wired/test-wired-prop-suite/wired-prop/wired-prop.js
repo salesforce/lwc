@@ -1,6 +1,6 @@
-import { Element, api, wire } from 'engine';
+import { LightningElement, api, wire } from "lwc";
 import { getTodo } from 'todo';
-export default class WiredProp extends Element {
+export default class WiredProp extends LightningElement {
     @api todoId;
 
     @wire(getTodo, { id: '$todoId' })

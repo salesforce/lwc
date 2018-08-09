@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class IframeCompat extends Element {
+export default class IframeCompat extends LightningElement {
     @track
     errorMessage = 'no error';
 

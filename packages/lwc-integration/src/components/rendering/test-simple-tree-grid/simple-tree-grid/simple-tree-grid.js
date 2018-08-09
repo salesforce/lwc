@@ -1,7 +1,7 @@
-import { Element, track } from "engine";
+import { LightningElement, track } from "lwc";
 import data from "./hardcoded-data";
 
-export default class TreeContainer extends Element {
+export default class TreeContainer extends LightningElement {
     @track
     myData = data;
 

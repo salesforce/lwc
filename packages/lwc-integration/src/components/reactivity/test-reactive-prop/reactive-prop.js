@@ -1,7 +1,7 @@
 
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ReactiveProp extends Element {
+export default class ReactiveProp extends LightningElement {
     @track trackHasOwnProp = {};
     @track trackDefineProp = {};
     @track trackDeletedProp = { inner: true };

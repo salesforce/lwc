@@ -1,5 +1,5 @@
-import { Element, api, track } from "engine";
-export default class CompatSimple extends Element {
+import { LightningElement, api, track } from "lwc";
+export default class CompatSimple extends LightningElement {
     @track
     state = { computed: "default" };
 

@@ -1,4 +1,4 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
 function argumentsIterate() {
     const res = [];
@@ -12,7 +12,7 @@ function argumentsTest() {
     return arguments[0].foo;
 }
 
-export default class FunctionArguments extends Element {
+export default class FunctionArguments extends LightningElement {
     @track message = '';
     connectedCallback() {
         this.message = argumentsTest({ foo: 'bar' });

@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class AsyncEventCurrentTarget extends Element {
+export default class AsyncEventCurrentTarget extends LightningElement {
     @track currentTargetIsNull = false;
     handleClick(evt) {
         setTimeout(() => {

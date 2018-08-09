@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class App extends Element {
+export default class App extends LightningElement {
     @track childOuterHTML;
 
     renderedCallback() {

@@ -1,7 +1,7 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 import { EVENT } from '../EVENT';
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
     log(guid) {
         this.dispatchEvent(new CustomEvent('log', {
             bubbles: true,

@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class ReactiveObjectLog extends Element {
+export default class ReactiveObjectLog extends LightningElement {
     @track foo = null;
     @track errorMessage;
     connectedCallback() {

@@ -1,6 +1,6 @@
-import { Element, api } from 'engine'
+import { LightningElement, api } from "lwc"
 
-export default class Child extends Element {
+export default class Child extends LightningElement {
     constructor() {
         super();
     }

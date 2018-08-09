@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class RootQuerySelector extends Element {
+export default class RootQuerySelector extends LightningElement {
     @track
     state = {
         error: undefined

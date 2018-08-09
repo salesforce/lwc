@@ -1,5 +1,5 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class TestFormTag extends Element {
+export default class TestFormTag extends LightningElement {
 
 }

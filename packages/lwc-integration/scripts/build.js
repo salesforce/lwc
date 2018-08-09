@@ -77,7 +77,7 @@ function entryPointResolverPlugin() {
 const globalModules = {
     'compat-polyfills/downgrade': 'window',
     'compat-polyfills/polyfills': 'window',
-    'engine': 'Engine',
+    'lwc': 'Engine',
     'wire-service': 'WireService',
     'todo': 'Todo'
 };

@@ -1,6 +1,6 @@
-import { Element, api } from 'engine';
+import { LightningElement, api } from "lwc";
 
-export default class EmptySlotIterator extends Element {
+export default class EmptySlotIterator extends LightningElement {
     @api get items() {
         return ['foo', 'bar'];
     }

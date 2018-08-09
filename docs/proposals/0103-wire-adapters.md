@@ -16,9 +16,9 @@ This RFC defines a protocol for wire adapters so new wire adapters may be author
 A component demonstrating consumption of the `todo` wire adapter and then requesting a refresh of the data stream.
 
 ```js
-import { Element, wire } from 'engine';
+import { LightningElement, wire } from 'lwc';
 import { getTodo, refreshTodo } from 'todo-wire-adapter';
-export default class TodoViewer extends Element {
+export default class TodoViewer extends LightningElement {
     @api id;
 
     // Wire identifier is the imported callable getTodo
@@ -196,9 +196,9 @@ There are known use cases where adapters will use DOM Events to retrieve data fr
 The component code changes slightly.
 
 ```js
-import { Element, wire } from 'engine';
+import { LightningElement, wire } from 'lwc';
 import { getTodo, refreshTodo } from 'todo-wire-adapter';
-export default class TodoViewer extends Element {
+export default class TodoViewer extends LightningElement {
     @api id;
 
     @wire(getTodo, { id: '$id' })

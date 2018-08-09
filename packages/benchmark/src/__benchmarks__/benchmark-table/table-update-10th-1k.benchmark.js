@@ -1,4 +1,4 @@
-import { createElement } from 'engine';
+import { createElement } from 'lwc';
 import Table from 'benchmark-table';
 
 import { Store } from '../../table-store';

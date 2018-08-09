@@ -1,5 +1,5 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class AomSetter extends Element {
+export default class AomSetter extends LightningElement {
 
 }

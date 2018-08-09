@@ -40,9 +40,9 @@ How then does the compiler know to set `tabindex` as `tabIndex` on the element?
 ```
 
 ```js
-import { Element } from 'engine';
+import { LightningElement } from 'lwc';
 
-class MyCustomElement extends Element {
+class MyCustomElement extends LightningElement {
     // runtime warning stating that tabindex setter will never be called by the template. Consider renaming.
     @api set tabindex(value) {
 

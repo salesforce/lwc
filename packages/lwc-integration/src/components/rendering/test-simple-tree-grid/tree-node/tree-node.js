@@ -1,6 +1,6 @@
-import { Element, api, track } from 'engine';
+import { LightningElement, api, track } from "lwc";
 
-export default class Tree1 extends Element {
+export default class Tree1 extends LightningElement {
     @api treeData;
     @api collapsedNodes = [];
     @track

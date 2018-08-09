@@ -1,3 +1,3 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class TitleProp extends Element {}
+export default class TitleProp extends LightningElement {}

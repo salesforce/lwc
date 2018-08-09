@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class RootParent extends Element {
+export default class RootParent extends LightningElement {
     @track state = {
         'boundary-child-constructor-throw': false,
         'boundary-child-render-throw': false,

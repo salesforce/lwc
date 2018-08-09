@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class MutateApiError extends Element {
+export default class MutateApiError extends LightningElement {
     get getFoo() {
         return {
             x: 1

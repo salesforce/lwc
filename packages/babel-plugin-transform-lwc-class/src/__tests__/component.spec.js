@@ -42,7 +42,7 @@ describe('Element import', () => {
         }
     });
 
-    pluginTest('allow to remap the import to Element', `
+    pluginTest('allow to remap the import to LightningElement', `
         import { LightningElement as Component } from 'lwc';
 
         export default class Test extends Component {}
@@ -62,7 +62,7 @@ export default class Test extends Component {
 
 describe('observedAttributes array', () => {
     pluginTest('throws if user defined observedAttributes', `
-        import { Element as Component } from 'lwc';
+        import { LightningElement as Component } from 'lwc';
 
         export default class Test extends Component {
             static observedAttributes = ['foo', 'title', 'tabindex'];

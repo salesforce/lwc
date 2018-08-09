@@ -1,6 +1,6 @@
-import { Element, api } from 'engine';
+import { LightningElement, api } from "lwc";
 
-export default class MyComponent extends Element {
+export default class MyComponent extends LightningElement {
     @api
     get x() {
         return this._x;

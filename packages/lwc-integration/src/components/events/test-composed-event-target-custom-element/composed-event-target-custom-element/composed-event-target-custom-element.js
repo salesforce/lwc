@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class NestedTemplateEventTarget extends Element {
+export default class NestedTemplateEventTarget extends LightningElement {
     @track
     evtTargetIsXChild = false;
 

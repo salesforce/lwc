@@ -1,7 +1,7 @@
-import { Element, createElement, track } from 'engine';
+import { LightningElement, createElement, track } from "lwc";
 import Child from './my-child/my-child';
 
-export default class AttributesSuite extends Element {
+export default class AttributesSuite extends LightningElement {
 
     @track state = { title: "Title value from parent's state" };
 

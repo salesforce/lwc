@@ -1,6 +1,6 @@
-import { Element, track } from 'engine';
+import { LightningElement, track } from "lwc";
 
-export default class InjectStyle extends Element {
+export default class InjectStyle extends LightningElement {
     @track dimensions;
 
     renderedCallback() {

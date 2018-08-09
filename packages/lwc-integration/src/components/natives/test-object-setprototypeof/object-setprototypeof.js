@@ -1,6 +1,6 @@
-import { Element } from 'engine';
+import { LightningElement } from "lwc";
 
-export default class ObjectSetPrototypeOf extends Element {
+export default class ObjectSetPrototypeOf extends LightningElement {
     get isArrayPrototype() {
         const obj = {};
         Object.setPrototypeOf(obj, []);

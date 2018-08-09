@@ -1,6 +1,6 @@
 exports.app = function (cmpName) {
     return `
-        import { createElement } from 'engine';
+        import { createElement } from 'lwc';
         import Cmp from '${cmpName}';
         var element = createElement('${cmpName}', { is: Cmp });
         document.body.appendChild(element);
@@ -10,7 +10,7 @@ exports.app = function (cmpName) {
 exports.todoApp = function (cmpName) {
     return `
         import { registerWireService, register as registerAdapter, ValueChangedEvent } from 'wire-service';
-        import { createElement, register } from 'engine';
+        import { createElement, register } from 'lwc';
         import Cmp from '${cmpName}';
         import { getTodo, getObservable } from 'todo';
 
