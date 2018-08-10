@@ -1,5 +1,21 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v) (2018-08-07)
+# [](https://github.com/salesforce/lwc/compare/v0.25.2-alpha01...v) (2018-08-10)
+
+
+
+<a name="0.25.2-alpha01"></a>
+## [0.25.2-alpha01](https://github.com/salesforce/lwc/compare/v0.24.20...v0.25.2-alpha01) (2018-08-09)
+
+
+### Bug Fixes
+
+* allow test resolver to resolve lwc ([#565](https://github.com/salesforce/lwc/issues/565)) ([1f6653d](https://github.com/salesforce/lwc/commit/1f6653d))
+* renaming engine and named imports ([#567](https://github.com/salesforce/lwc/issues/567)) ([c0da00d](https://github.com/salesforce/lwc/commit/c0da00d))
+
+
+
+<a name="0.24.20"></a>
+## [0.24.20](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v0.24.20) (2018-08-07)
 
 
 
