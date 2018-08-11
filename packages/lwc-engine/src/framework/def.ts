@@ -384,8 +384,8 @@ export function getComponentDef(Ctor: ComponentConstructor): ComponentDef {
 
 // Initialization Routines
 import "../polyfills/proxy-concat/main";
+import "../polyfills/click-event-composed/main"; // must come before event-composed
 import "../polyfills/event-composed/main";
-import "../polyfills/click-event-composed/main";
 import "../polyfills/custom-event-composed/main";
 import "../polyfills/focus-event-composed/main";
 import "../polyfills/aria-properties/main";
