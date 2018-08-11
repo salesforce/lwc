@@ -10,7 +10,7 @@ export default function detect(): boolean {
     // Assigning a throwaway click event here to suppress a ts error when we
     // pass clickEvent into the composed getter below. The error is:
     // [ts] Variable 'clickEvent' is used before being assigned.
-    let clickEvent: MouseEvent = new MouseEvent('click');
+    let clickEvent: Event = new Event('click');
 
     const button = document.createElement('button');
     button.addEventListener('click', event => clickEvent = event);
