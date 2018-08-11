@@ -1,11 +1,23 @@
-import { LightningElement } from '../../../framework/html-element';
-import { createElement } from '../../../framework/upgrade';
 import { compileTemplate } from 'test-utils';
+import { LightningElement, createElement } from '../../../framework/main';
 import applyPolyfill from '../polyfill';
 
+// TODO: https://github.com/salesforce/lwc/pull/568#discussion_r208827386
+// While Jest creates a new window object between each test file evaluation, the
+// jsdom code is not reevaluated. Which mean that the patched
+// HTMLElement.prototype.click will remain patched for all the tests that happen
+// to run in the same worker. This is a growing pain that we have today because
+// it introduces an uncertainty in the way tests run. We really need to speak
+// about to mitigate this issue in the future.
 applyPolyfill();
 
-describe.only('click-event-composed polyfill', () => {
+describe('click-event-composed polyfill', () => {
+    const html = compileTemplate(`
+        <template>
+            <button onclick={handleClick}>click me</button>
+        </template>
+    `);
+
     it('should patch click events for listeners bound to the host element', () => {
         expect.assertions(2);
 
@@ -21,11 +33,7 @@ describe.only('click-event-composed polyfill', () => {
                 this.template.querySelector('button').click();
             }
             render() {
-                return compileTemplate(`
-                    <template>
-                        <button onclick={handleClick}>click me</button>
-                    </template>
-                `);
+                return html;
             }
             handleClick(event: MouseEvent) {
                 if (event instanceof MouseEvent) {
@@ -58,11 +66,7 @@ describe.only('click-event-composed polyfill', () => {
                 button.click();
             }
             render() {
-                return compileTemplate(`
-                    <template>
-                        <button onclick={handleClick}>click me</button>
-                    </template>
-                `);
+                return html;
             }
             handleClick(event: MouseEvent) {
                 if (event instanceof MouseEvent) {
