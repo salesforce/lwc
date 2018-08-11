@@ -33,9 +33,9 @@ import {
 import {
     getGlobalHTMLPropertiesInfo,
     getAttrNameFromPropName,
-    ElementAOMPropertyNames,
     defaultDefHTMLPropertyNames,
 } from "./attributes";
+import { ElementPrototypeAriaPropertyNames } from '../polyfills/aria-properties/polyfill';
 import decorate, { DecoratorMap } from "./decorators/decorate";
 import wireDecorator from "./decorators/wire";
 import trackDecorator from "./decorators/track";
@@ -402,7 +402,7 @@ const globalElmDescriptors: PropertyDescriptorMap = create(null, {
 
 let globalInitialization: any = () => {
     // Note: this routine is just to solve the circular dependencies mess introduced by rollup.
-    forEach.call(ElementAOMPropertyNames, (propName: string) => {
+    forEach.call(ElementPrototypeAriaPropertyNames, (propName: string) => {
         // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
         // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
         const descriptor = getPropertyDescriptor(HTMLElement.prototype, propName);
