@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.3-alpha11...v) (2018-08-11)
+# [](https://github.com/salesforce/lwc/compare/v0.25.3...v) (2018-08-12)
+
+
+### Bug Fixes
+
+* make [@api](https://github.com/api) decorator spec compliant ([#572](https://github.com/salesforce/lwc/issues/572)) ([deeb6bb](https://github.com/salesforce/lwc/commit/deeb6bb))
+
+
+
+<a name="0.25.3"></a>
+## [0.25.3](https://github.com/salesforce/lwc/compare/v0.25.3-alpha11...v0.25.3) (2018-08-11)
 
 
 
