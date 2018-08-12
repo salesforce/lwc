@@ -60,10 +60,7 @@ function validatePropertyName(property) {
 }
 
 function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
-    decorators.filter(decorator => (
-        isApiDecorator(decorator) &&
-        decorator.type === DECORATOR_TYPES.SETTER
-    )).forEach(({ path }) => {
+    decorators.filter(decorator => (isApiDecorator(decorator) && decorator.type === DECORATOR_TYPES.SETTER)).forEach(({ path }) => {
         const name = path.parentPath.get('key.name').node;
 
         const associatedGetter = decorators.find(decorator => (
@@ -73,7 +70,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(decorators) {
         ));
 
         if (associatedGetter) {
-            console.warn(`\`@api get ${name}\` and \`@api set ${name}\` detected in class declaration. Only the getter needs to be decorated with @api.`);
+            console.warn(`\`@api get ${name}\` and \`@api set ${name}\` detected in class declaration. Only one of the two needs to be decorated with @api.`);
         }
     });
 }
