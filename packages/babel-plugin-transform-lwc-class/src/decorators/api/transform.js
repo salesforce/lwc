@@ -21,7 +21,6 @@ function getPropertyBitmask(type) {
     }
 }
 
-//
 function getSiblingGetSetPair(propertyPath, propertyName, type) {
     const siblingType = type === 'getter' ? 'set' : 'get';
     const klassBody = propertyPath.parentPath.get('body');
