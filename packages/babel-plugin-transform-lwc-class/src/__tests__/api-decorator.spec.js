@@ -135,7 +135,7 @@ describe('Transform property', () => {
                     }
                     Test.publicProps = {
                         publicAccessor: {
-                        config: 1
+                        config: 3
                     }
                 };`
     }});
@@ -164,7 +164,7 @@ describe('Transform property', () => {
                     }
                     Test.publicProps = {
                     publicAccessor: {
-                        config: 2
+                        config: 3
                     }
                 };`
     }});

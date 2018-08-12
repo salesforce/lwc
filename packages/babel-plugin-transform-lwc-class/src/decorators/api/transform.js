@@ -21,6 +21,22 @@ function getPropertyBitmask(type) {
     }
 }
 
+//
+function getSiblingGetSetPair(propertyPath, propertyName, type) {
+    const siblingType = type === 'getter' ? 'set' : 'get';
+    const klassBody = propertyPath.parentPath.get('body');
+    const siblingNode = klassBody.find((classMethodPath) => (
+        classMethodPath !== propertyPath &&
+        classMethodPath.isClassMethod({ kind: siblingType }) &&
+        classMethodPath.node.key.name === propertyName)
+    );
+
+    if (siblingNode) {
+        const decoratorType = siblingType === 'get' ? DECORATOR_TYPES.GETTER :DECORATOR_TYPES.SETTER;
+        return { type: decoratorType, path: siblingNode };
+    }
+}
+
 /** Returns the public props configuration of a class based on a list decorators. */
 function computePublicPropsConfig(decorators) {
     return decorators.reduce((acc, { path, type }) => {
@@ -32,6 +48,14 @@ function computePublicPropsConfig(decorators) {
         }
 
         acc[propertyName].config |= getPropertyBitmask(type);
+
+        // With the latest decorator spec a decorator only need to be in one of the getter/setter pair
+        // We need to add the proper bitmask for the sibling getter/setter if exists
+        const siblingPair = getSiblingGetSetPair(property, propertyName, type);
+        if (siblingPair) {
+            acc[propertyName].config |= getPropertyBitmask(siblingPair.type);
+        }
+
         return acc;
     }, {});
 }
