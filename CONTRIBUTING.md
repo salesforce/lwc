@@ -50,14 +50,8 @@ yarn build:prod
 
 ## Integration Testing
 
-When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. To run integration tests in headless chrome, run the following command from the lwc-integration directory:
+When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/apapko/contribute-update/packages/lwc-integration/README.md) to learn more about integration testing.
 
-```bash
-cd packages/lwc-integration
-yarn local:<mode>
-```
-
-Supported mode types: `dev | prod | compat | prod_compat`
 
 ## Unit Testing LWC
 
