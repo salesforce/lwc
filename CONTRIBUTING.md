@@ -7,8 +7,8 @@ Please familiarize yourself with the [project philosophy][project-philosophy].
 ## Requirements
 
  * Node 8.x
- * NPM 5.x
- * Yarn >= 0.27.5
+ * NPM 6.x
+ * Yarn >= 1.6
 
 ## Installation
 
@@ -31,6 +31,7 @@ If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: u
 ### 3) Start the server
 
 ```bash
+cd packages/lwc-integration/
 yarn start
 ```
 
@@ -41,10 +42,29 @@ Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 
 ## Building LWC
 
-When using `yarn start`, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
+When using `yarn start` from packages/lwc-integration, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
 
 ```bash
-yarn run build
+yarn build:prod
+```
+
+## Integration Testing LWC
+
+When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/apapko/contribute-update/packages/lwc-integration/README.md) to learn more about integration testing.
+
+
+## Unit Testing LWC
+
+When developing lwc, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the follwing command from the root directory:
+
+```bash
+yarn test
+```
+
+Additionally, the testing can be started in 'watch' mode which allows for automatic test re-runs on save:
+
+```bash
+yarn test --watch
 ```
 
 ## Editor Configurations
