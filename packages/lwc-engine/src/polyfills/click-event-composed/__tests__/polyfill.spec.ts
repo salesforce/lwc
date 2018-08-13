@@ -1,5 +1,5 @@
 import { compileTemplate } from 'test-utils';
-import { LightningElement, createElement } from '../../../framework/main';
+import { createElement, LightningElement } from '../../../framework/main';
 import applyPolyfill from '../polyfill';
 
 // TODO: https://github.com/salesforce/lwc/pull/568#discussion_r208827386

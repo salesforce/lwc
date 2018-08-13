@@ -1,5 +1,4 @@
-import { addEventListener, removeEventListener } from '../../framework/dom-api';
-
+const { addEventListener, removeEventListener } = Element.prototype;
 const originalClickDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'click');
 
 function handleClick(event) {
@@ -14,8 +13,13 @@ function handleClick(event) {
 
 export default function apply() {
     HTMLElement.prototype.click = function() {
-        addEventListener.call(this, 'click', handleClick, true);
-        originalClickDescriptor!.value!.call(this);
-        removeEventListener.call(this, 'click', handleClick, true);
+        addEventListener.call(this, 'click', handleClick);
+        try {
+            originalClickDescriptor!.value!.call(this);
+        } catch (ex) {
+            throw ex;
+        } finally {
+            removeEventListener.call(this, 'click', handleClick);
+        }
     };
 }
