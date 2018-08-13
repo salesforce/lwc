@@ -31,7 +31,7 @@ If this fails with an error about *UNABLE_TO_GET_ISSUER_CERT_LOCALLY*, *Error: u
 ### 3) Start the server
 
 ```bash
-cd packages/lwc-intergation/
+cd packages/lwc-integration/
 yarn start
 ```
 
@@ -42,15 +42,15 @@ Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 
 ## Building LWC
 
-When using `yarn start` from packages/lwc-intergation, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
+When using `yarn start` from packages/lwc-integration, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
 
 ```bash
 yarn build:prod
 ```
 
-## Intergation Testing
+## Integration Testing
 
-When developing lwc, utilize integration testing to ensure functionality is correctly reflected in the browser. To run integration test in headless chrome, run the following command from the lwc-integration directory:
+When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. To run integration tests in headless chrome, run the following command from the lwc-integration directory:
 
 ```bash
 cd packages/lwc-integration
