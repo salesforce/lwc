@@ -48,7 +48,7 @@ When using `yarn start` from packages/lwc-integration, lwc will build in dev-mod
 yarn build:prod
 ```
 
-## Integration Testing
+## Integration Testing LWC
 
 When developing lwc, use integration testing to ensure functionality is correctly reflected in the browser. Please refer to the following [documentation](https://github.com/salesforce/lwc/blob/apapko/contribute-update/packages/lwc-integration/README.md) to learn more about integration testing.
 
