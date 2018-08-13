@@ -42,28 +42,15 @@ Load the examples in a browser: [http://localhost:8080/](http://localhost:8080/)
 
 ## Building LWC
 
-When using `yarn start` from packages/intergation, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
+When using `yarn start` from packages/lwc-intergation, lwc will build in dev-mode with a watcher, but if you wish to compile lwc in production mode, you can use the following command:
 
 ```bash
-yarn run build
+yarn build:prod
 ```
 
-## Unit Testing LWC
+## Intergation Testing
 
-When developing lwc, utilize unit testing to ensure your functinality has test coverage. To run the tests use the follwing command:
-
-```bash
-yarn test
-```
-Additionally, the testing can be started in 'watch' mode which allows for automatic test re-run on save:
-
-```bash
-yarn test --watch
-```
-
-## Intergation Testing LWC
-
-When developing lwc, utilize integration testing to ensure functionality is correctly reflected when used in the browser. To run integration test in headless chrome, run the following command from lwc-integration directory:
+When developing lwc, utilize integration testing to ensure functionality is correctly reflected in the browser. To run integration test in headless chrome, run the following command from the lwc-integration directory:
 
 ```bash
 cd packages/lwc-integration
@@ -71,6 +58,20 @@ yarn local:<mode>
 ```
 
 Supported mode types: `dev | prod | compat | prod_compat`
+
+## Unit Testing LWC
+
+When developing lwc, utilize [jest](https://jestjs.io/en/) unit testing to provide test coverage for new functionality. To run the jest tests use the follwing command from the root directory:
+
+```bash
+yarn test
+```
+
+Additionally, the testing can be started in 'watch' mode which allows for automatic test re-runs on save:
+
+```bash
+yarn test --watch
+```
 
 ## Editor Configurations
 
