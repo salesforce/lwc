@@ -187,17 +187,15 @@ describe('assignedNodes and assignedElements', () => {
         let element;
 
         beforeEach(() => {
-            function html($api, $cmp, $slotset) {
-                return [
-                    // Does not use compileTemplate because we want to preserve
-                    // comment nodes to make assertions for assignedNodes().
-                    $api.s('', { key: 0 }, [
-                        $api.p('awesome comment'),
-                        $api.t('foo bar baz'),
-                        $api.h('div', { key: 1 }, [])
-                    ], $slotset)
-                ];
-            }
+            const html = compileTemplate(`
+                <template>
+                    <slot>
+                        foo
+                        <div></div>
+                        bar
+                    </slot>
+                </template>
+            `);
             html.slots = [''];
 
             class MyComponent extends LightningElement {
@@ -206,21 +204,12 @@ describe('assignedNodes and assignedElements', () => {
                 }
             }
 
-            /*
-            <x-assigned-nodes>
-                <slot>
-                    <!-- awesome comment -->
-                    foo bar baz
-                    <div />
-                </slot>
-            </x-assigned-nodes>
-            */
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
         it('should not find any slotables (assignedNodes)', () => {
             document.body.appendChild(element);
-            const slot = getHostShadowRoot(element).querySelector('slot');
+            const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             expect(slot.assignedNodes()).toHaveLength(0);
         });
 
@@ -235,7 +224,7 @@ describe('assignedNodes and assignedElements', () => {
             const slot = getHostShadowRoot(element).querySelector('slot') as LightningSlotElement;
             const assigned = slot.assignedNodes({ flatten: true });
             expect(assigned).toHaveLength(3);
-            expect(assigned[2].tagName).toBe('DIV');
+            expect(assigned[1].tagName).toBe('DIV');
         });
 
         it('should find flattened slotables (assignedElements)', () => {
