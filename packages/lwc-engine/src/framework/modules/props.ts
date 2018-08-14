@@ -1,5 +1,5 @@
 import assert from "../../shared/assert";
-import { isUndefined, keys, create } from "../../shared/language";
+import { create, hasOwnProperty, isUndefined, keys } from "../../shared/language";
 import { getInternalField } from "../../shared/fields";
 import { ViewModelReflection } from "../utils";
 import { prepareForPropUpdate } from "../decorators/api";
@@ -16,7 +16,10 @@ function isLiveBindingProp(sel: string, key: string): boolean {
     // For special whitelisted properties (e.g., `checked` and `value`), we
     // check against the actual property value on the DOM element instead of
     // relying on tracked property values.
-    return sel in EspecialTagAndPropMap && key in EspecialTagAndPropMap[sel];
+    return (
+        hasOwnProperty.call(EspecialTagAndPropMap, sel) &&
+        hasOwnProperty.call(EspecialTagAndPropMap[sel], key)
+    );
 }
 
 function update(oldVnode: VNode, vnode: VNode) {
