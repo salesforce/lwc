@@ -15,6 +15,9 @@ module.exports = {
     transform: {
         '^.+\\.(js|html|css)$': require.resolve('lwc-jest-transformer'),
     },
+    setupFiles: [
+        require.resolve('./setup'),
+    ],
     snapshotSerializers: [require.resolve('lwc-jest-serializer')],
     testMatch: [ '**/__tests__/**/?(*.)(spec|test).js' ],
 

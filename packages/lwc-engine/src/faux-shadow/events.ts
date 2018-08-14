@@ -252,15 +252,25 @@ function getWrappedCustomElementListener(elm: HTMLElement, listener: EventListen
 }
 
 function domListener(evt: Event) {
-    let interrupted = false;
-    const { type, stopImmediatePropagation } = evt;
+    let immediatePropagationStopped = false;
+    let propagationStopped = false;
+    const { type, stopImmediatePropagation, stopPropagation } = evt;
     const currentTarget = eventCurrentTargetGetter.call(evt);
     const listenerMap = getEventMap(currentTarget);
     const listeners = listenerMap![type] as WrappedListener[]; // it must have listeners at this point
     defineProperty(evt, 'stopImmediatePropagation', {
         value() {
-            interrupted = true;
+            immediatePropagationStopped = true;
             stopImmediatePropagation.call(evt);
+        },
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
+    defineProperty(evt, 'stopPropagation', {
+        value() {
+            propagationStopped = true;
+            stopPropagation.call(evt);
         },
         writable: true,
         enumerable: true,
@@ -272,7 +282,7 @@ function domListener(evt: Event) {
 
     function invokeListenersByPlacement(placement: EventListenerContext) {
         forEach.call(bookkeeping, (listener: WrappedListener) => {
-            if (isFalse(interrupted) && listener.placement === placement) {
+            if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
                 // making sure that the listener was not removed from the original listener queue
                 if (ArrayIndexOf.call(listeners, listener) !== -1) {
                     // all handlers on the custom element should be called with undefined 'this'
@@ -284,7 +294,7 @@ function domListener(evt: Event) {
 
     eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
     invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
-    if (isFalse(interrupted)) {
+    if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
         // doing the second iteration only if the first one didn't interrupt the event propagation
         eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
         invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
