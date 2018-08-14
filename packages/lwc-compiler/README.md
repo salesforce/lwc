@@ -166,8 +166,3 @@ export interface NormalizedOutputConfig extends OutputConfig {
 }
 ```
 
-### Compiler Output Example:
-
-```js
-
-```
