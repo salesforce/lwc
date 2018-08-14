@@ -1,5 +1,36 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v) (2018-08-07)
+# [](https://github.com/salesforce/lwc/compare/v0.24.21-alpha1...v) (2018-08-14)
+
+
+
+<a name="0.24.21-alpha1"></a>
+## [0.24.21-alpha1](https://github.com/salesforce/lwc/compare/v0.25.2-alpha01...v0.24.21-alpha1) (2018-08-14)
+
+
+### Bug Fixes
+
+* **engine:** support stopPropagation on the tpl ([#571](https://github.com/salesforce/lwc/issues/571)) ([#580](https://github.com/salesforce/lwc/issues/580)) ([7cd65ee](https://github.com/salesforce/lwc/commit/7cd65ee)), closes [#566](https://github.com/salesforce/lwc/issues/566)
+
+
+### Features
+
+* **engine:** polyfill for non-composed click events ([#568](https://github.com/salesforce/lwc/issues/568)) ([#579](https://github.com/salesforce/lwc/issues/579)) ([a2c3032](https://github.com/salesforce/lwc/commit/a2c3032))
+
+
+
+<a name="0.25.2-alpha01"></a>
+## [0.25.2-alpha01](https://github.com/salesforce/lwc/compare/v0.24.20...v0.25.2-alpha01) (2018-08-09)
+
+
+### Bug Fixes
+
+* allow test resolver to resolve lwc ([#565](https://github.com/salesforce/lwc/issues/565)) ([1f6653d](https://github.com/salesforce/lwc/commit/1f6653d))
+* renaming engine and named imports ([#567](https://github.com/salesforce/lwc/issues/567)) ([c0da00d](https://github.com/salesforce/lwc/commit/c0da00d))
+
+
+
+<a name="0.24.20"></a>
+## [0.24.20](https://github.com/salesforce/lwc/compare/v0.24.19-alpha03...v0.24.20) (2018-08-07)
 
 
 
