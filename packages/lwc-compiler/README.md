@@ -1,16 +1,16 @@
 # LWC Compiler
 
-LWC Compiler is an open source project that can be used to compile a single Lightning Web Component bundle. There are several transformational phases that takes place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
+LWC Compiler is an open source project that can be used to compile a single Lightning Web Component bundle. There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
 
-*Replace* - replace the unneeded boolean expression ( NODE.env.mode === ‘production’ )
+*Replace* - replace code ( ex: NODE.env.mode === ‘production’ will be replaced with true or false depending on the mode ).
 
 *Module Resolution* - ensure that each local import in the component can be resolved. 
 
-*Transformation* - apply LWC specific transformation to js, html, and css files
+*Transformation* - apply LWC specific transformation to js, html, and css files.
 
-*Compat* - apply the compatibility transformation ( ex: polyfills for older browsers )
+*Compat* - apply the compatibility transformation ( ex: polyfills for older browsers ).
 
-*Minify* - apply minification for ‘production’ mode  code
+*Minify* - apply minification for ‘production’ mode  code.
 
 These transformation may or may not be applied depending on the mode values specified in the compiler configuration object.
 The compiler supports 4 modes of invocation: 'dev', 'prod', 'compat', 'prod_compat'.
