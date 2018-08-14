@@ -2,13 +2,13 @@
 
 LWC Compiler is an open source project that can be used to compile a single Lightning Web Component bundle. There are several transformational phases that take place during compilation followed by a bundling phase. The Compiler utilizes [Rollup.js](https://rollupjs.org/guide/en) and its plugin system, which enables us  to change its  behaviour at key points in the bundling process. LWC compilation pipeline consists of the following plugins:
 
-*Replace* - replace code ( ex: NODE.env.mode === ‘production’ will be replaced with true or false depending on the mode ).
+*Replace* - replace code (ex: process.env.NODE === ‘production’ will be replaced with true or false depending on the mode).
 
 *Module Resolution* - ensure that each local import in the component can be resolved. 
 
 *Transformation* - apply LWC specific transformation to js, html, and css files.
 
-*Compat* - apply the compatibility transformation ( ex: polyfills for older browsers ).
+*Compat* - apply the compatibility transformation (ex: polyfills for older browsers).
 
 *Minify* - apply minification for ‘production’ mode  code.
 
@@ -85,7 +85,7 @@ const config = {
 }
 ```
 
-The compiler configuration object is always normalized to apply necessary defaults. However, the bundle configuration is a required input, which specifies a module name, namespace, type of the platform ( used to determine linting rules ), and a map of files to be compiled. Please note that the file value should be a string. If no outputConfig specified, compiler will produce a single result item with the following default output configuration:
+The compiler configuration object is always normalized to apply necessary defaults. However, the bundle configuration is a required input, which specifies a module name, namespace, type of the platform (used to determine linting rules), and a map of files to be compiled. Please note that the file value should be a string. If no outputConfig specified, compiler will produce a single result item with the following default output configuration:
 
 ```ts
 {
