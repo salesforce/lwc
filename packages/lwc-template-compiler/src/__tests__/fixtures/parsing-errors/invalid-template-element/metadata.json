@@ -1,0 +1,8 @@
+{
+  "warnings": [{
+    "level": "error",
+    "message": "Invalid template tag. A directive is expected to be associated with the template tag.",
+    "start": 15,
+    "length": 39
+  }]
+}

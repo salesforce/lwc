@@ -127,11 +127,10 @@ export default function parse(source: string, state: State): {
 
                 const element = createElement(elementNode.tagName, node);
                 element.attrsList = elementNode.attrs;
+
                 if (!root) {
-                    validateRoot(element);
                     root = element;
                 } else {
-                    validateTagName(element);
                     element.parent = parent;
                     parent.children.push(element);
                 }
@@ -151,6 +150,7 @@ export default function parse(source: string, state: State): {
             exit() {
                 const element = stack.pop() as IRElement;
                 applyAttributes(element);
+                validateElement(element);
 
                 parent = stack[stack.length - 1];
             },
@@ -219,23 +219,6 @@ export default function parse(source: string, state: State): {
             warnAt(`Missing root template tag`);
         } else {
             return templateTag as parse5.AST.Default.Element;
-        }
-    }
-
-    function validateRoot(element: IRElement) {
-        if (element.tag !== 'template') {
-            return warnOnElement(`Expected root tag to be template, found ${element.tag}`, element.__original);
-        }
-
-        if (element.attrsList.length) {
-            return warnOnElement(`Root template doesn't allow attributes`, element.__original);
-        }
-    }
-
-    function validateTagName(element: IRElement) {
-        const { tag } = element;
-        if (HTML_TAG_BLACKLIST[tag]) {
-            return warnOnElement(`Forbidden tag found in template: '<${tag}>' tag is not allowed.`, element.__original);
         }
     }
 
@@ -512,6 +495,47 @@ export default function parse(source: string, state: State): {
                 removeAttribute(element, name);
             }
         });
+    }
+
+    function validateElement(element: IRElement) {
+        const { tag } = element;
+        const node = element.__original as parse5.AST.Default.Element;
+        const isRoot = !element.parent;
+
+        if (isRoot) {
+            if (tag !== 'template') {
+                return warnOnElement(`Expected root tag to be template, found ${tag}`, node);
+            }
+
+            const hasAttributes = node.attrs.length !== 0;
+            if (hasAttributes) {
+                return warnOnElement(`Root template doesn't allow attributes`, node);
+            }
+        }
+
+        if (tag === 'template') {
+            // We check if the template element has some modifier applied to it. Directly checking if one of the
+            // IRElement property is impossible. For example when an error occurs during the parsing of the if
+            // expression, the `element.if` property remains undefined. It would results in 2 warnings instead of 1:
+            //      - Invalid if expression
+            //      - Unexpected template element
+            //
+            // Checking if the original HTMLElement has some attributes applied is a good enough for now.
+            const hasAttributes = node.attrs.length !== 0;
+            if (!isRoot && !hasAttributes) {
+                warnOnElement(
+                    'Invalid template tag. A directive is expected to be associated with the template tag.',
+                    node,
+                );
+            }
+        } else {
+            if (HTML_TAG_BLACKLIST[tag]) {
+                return warnOnElement(
+                    `Forbidden tag found in template: '<${tag}>' tag is not allowed.`,
+                    node,
+                );
+            }
+        }
     }
 
     function parseTemplateExpression(node: IRNode, sourceExpression: string) {
