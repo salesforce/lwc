@@ -11,3 +11,13 @@ export const markEnd = jest.fn().mockImplementation(() => {});
 export const time = jest.fn().mockImplementation(() => 0);
 
 export const interaction = jest.fn();
+
+module.exports = {
+    perfStart,
+    perfEnd,
+    mark,
+    markStart,
+    markEnd,
+    time,
+    interaction,
+};
