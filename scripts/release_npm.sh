@@ -21,7 +21,7 @@ fi
 # Command to push the packages
 CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
 CMD_PREPARE="yarn prepare"
-CMD_PUBLISH_PACKAGES="lerna publish --repo-version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org ${CANARY} --npm-client npm"
+CMD_PUBLISH_PACKAGES="lerna publish --repo-version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org ${CANARY} --npm-client npm --no-verify-access --no-verify-registry"
 
 # Run
 echo $CMD_UPDATE_VERSION;
