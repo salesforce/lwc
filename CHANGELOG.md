@@ -1,5 +1,32 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.24.21-alpha1...v) (2018-08-14)
+# [](https://github.com/salesforce/lwc/compare/v0.24.22...v) (2018-08-15)
+
+
+### Bug Fixes
+
+* **engine:** invert condition to apply click-event-composed polyfill ([#590](https://github.com/salesforce/lwc/issues/590)) ([dc506e4](https://github.com/salesforce/lwc/commit/dc506e4))
+
+
+
+<a name="0.24.22"></a>
+## [0.24.22](https://github.com/salesforce/lwc/compare/v0.24.22-alpha4...v0.24.22) (2018-08-15)
+
+
+
+<a name="0.24.22-alpha4"></a>
+## [0.24.22-alpha4](https://github.com/salesforce/lwc/compare/v0.24.22-alpha3...v0.24.22-alpha4) (2018-08-15)
+
+
+### Bug Fixes
+
+* **build:** update version before building dist files to publish ([#585](https://github.com/salesforce/lwc/issues/585)) ([#586](https://github.com/salesforce/lwc/issues/586)) ([22c789d](https://github.com/salesforce/lwc/commit/22c789d))
+* disable verify when using auth token ([#587](https://github.com/salesforce/lwc/issues/587)) ([54e764f](https://github.com/salesforce/lwc/commit/54e764f))
+* remove npm client configuration ([2ef46bc](https://github.com/salesforce/lwc/commit/2ef46bc))
+
+
+
+<a name="0.24.22-alpha2"></a>
+## [0.24.22-alpha2](https://github.com/salesforce/lwc/compare/v0.24.22-alpha1...v0.24.22-alpha2) (2018-08-14)
 
 
 
