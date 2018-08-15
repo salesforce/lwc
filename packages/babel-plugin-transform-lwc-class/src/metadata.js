@@ -27,6 +27,7 @@ module.exports = function ({ types: t }) {
                                 metadata.doc = comment;
                             }
                             const decorator = extractLWCDecorator(path.node);
+                            console.log('extracted decorators', decorator + ' for ', name);
                             if (decorator) {
                                 metadata.decorator = decorator;
                             }

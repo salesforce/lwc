@@ -92,22 +92,12 @@ describe('Transform property', () => {
             }
         }
     `, {
-        output: {
-            code: `export default class Test {
-                    get something() {
-                        return this.s;
-                    }
-
-                    set something(value) {
-                        this.s = value;
-                    }
-
-                    }
-                    Test.publicProps = {
-                    something: {
-                        config: 3
-                    }
-                };`
+        error: {
+            message: '@api get something and @api set something',
+            loc: {
+                line: 2,
+                column: 9
+            }
         }
     });
 
@@ -175,9 +165,9 @@ describe('Transform property', () => {
             _a = true;
             _b = false;
             @api get a () { return this._a; }
-            @api set a (value) { this._a = value; }
+            set a (value) { this._a = value; }
             @api get b () { return this._b; }
-            @api set b (value) { this._b = value; }
+            set b (value) { this._b = value; }
         }
     `, {
         output: {
@@ -222,7 +212,7 @@ describe('Transform property', () => {
             privateProp;
             @api get aloneGet(){}
             @api get myget(){}
-            @api set myget(x){ return 1; }
+            set myget(x){ return 1; }
             @api m1(){}
             m2(){}
             static ctor = "ctor";
@@ -470,8 +460,9 @@ describe('Transform property', () => {
             @api foo = 1;
 
             _internal = 1;
-            @api get foo() { return 'foo' };
-            @api set foo(val) { this._internal = val };
+            @api
+            get foo() { return 'foo' };
+            set foo(val) { this._internal = val };
         }
     `, {
         error: {
@@ -533,17 +524,19 @@ Test.publicMethods = ["foo"];`
     });
 });
 
-describe('Metadata', () => {
-    pluginTest(
+describe.only('Metadata', () => {
+    pluginTest.only(
         'gather metadata',
         `
         import { LightningElement, api } from 'lwc';
         export default class Foo extends LightningElement {
             _privateTodo;
-            @api get todo () {
+
+            get todo () {
                 return this._privateTodo;
             }
-            @api set todo (val) {
+            @api
+            set todo (val) {
                 return this._privateTodo = val;
             }
 
@@ -580,8 +573,8 @@ describe('Metadata', () => {
                             type: "property",
                             name: "index",
                             loc: {
-                                start: { line: 10, column: 0 },
-                                end: { line: 11, column: 6 }
+                                start: { line: 11, column: 0 },
+                                end: { line: 12, column: 6 }
                             },
                             decorator: "api"
                         },
@@ -589,15 +582,15 @@ describe('Metadata', () => {
                             type: "method",
                             name: "publicMethod",
                             loc: {
-                                start: { line: 12, column: 0 },
-                                end: { line: 12, column: 22 }
+                                start: { line: 13, column: 0 },
+                                end: { line: 13, column: 22 }
                             },
                             decorator: "api"
                         }
                     ],
                     declarationLoc: {
                         start: { column: 0, line: 2 },
-                        end: { column: 1, line: 13 }
+                        end: { column: 1, line: 14 }
                     }
                 }
             }
@@ -613,7 +606,7 @@ describe('Metadata', () => {
             @api get todo () {
                 return this._privateTodo;
             }
-            @api set todo (val) {
+            set todo (val) {
                 return this._privateTodo = val;
             }
 
