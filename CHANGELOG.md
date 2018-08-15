@@ -1,5 +1,32 @@
 <a name=""></a>
-# [](https://github.com/salesforce/lwc/compare/v0.25.3...v) (2018-08-12)
+# [](https://github.com/salesforce/lwc/compare/v0.25.5-alpha...v) (2018-08-15)
+
+
+### Bug Fixes
+
+* **build:** update version before building dist files to publish ([#585](https://github.com/salesforce/lwc/issues/585)) ([bd5da03](https://github.com/salesforce/lwc/commit/bd5da03))
+* disable verify when using auth token ([#587](https://github.com/salesforce/lwc/issues/587)) ([2a3ec2a](https://github.com/salesforce/lwc/commit/2a3ec2a))
+* remove npm client configuration ([10ef9be](https://github.com/salesforce/lwc/commit/10ef9be))
+
+
+
+<a name="0.25.5-alpha"></a>
+## [0.25.5-alpha](https://github.com/salesforce/lwc/compare/v0.25.4...v0.25.5-alpha) (2018-08-14)
+
+
+### Bug Fixes
+
+* **engine:** support stopPropagation on the tpl ([#571](https://github.com/salesforce/lwc/issues/571)) ([7e729c8](https://github.com/salesforce/lwc/commit/7e729c8)), closes [#566](https://github.com/salesforce/lwc/issues/566)
+
+
+### Features
+
+* **engine:** polyfill for non-composed click events ([#568](https://github.com/salesforce/lwc/issues/568)) ([d15b77b](https://github.com/salesforce/lwc/commit/d15b77b))
+
+
+
+<a name="0.25.4"></a>
+## [0.25.4](https://github.com/salesforce/lwc/compare/v0.25.3...v0.25.4) (2018-08-12)
 
 
 ### Bug Fixes
