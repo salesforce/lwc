@@ -12,64 +12,6 @@ describe.skip('slotchange event', () => {
         let element;
 
         beforeEach(() => {
-            class Child extends LightningElement {
-                constructor() {
-                    super();
-                    this._assignedElementsCount = -1;
-                    this._slotChangeCount = 0;
-                }
-                render() {
-                    return compileTemplate(`
-                        <template>
-                            <slot onslotchange={handleSlotChange}></slot>
-                        </template>
-                    `);
-                }
-                handleSlotChange(event) {
-                    this._slotChangeCount += 1;
-                    this._assignedElementsCount = event.assignedElements().length;
-                }
-                get assignedElementsCount() {
-                    return this._assignedElementsCount;
-                }
-                get slotChangeCount() {
-                    return this._slotChangeCount;
-                }
-            }
-            Child.publicProps = {
-                assignedElementsCount: {
-                    config: 1, // readonly
-                },
-                slotChangeCount: {
-                    config: 1, // readonly
-                },
-            };
-
-            class Parent extends LightningElement {
-                constructor() {
-                    super();
-                    this.things = ['foo'];
-                }
-                render() {
-                    return compileTemplate(`
-                        <template>
-                            <x-child>
-                                <template for:each={things} for:item="thing">
-                                    <span key={thing}>{thing}</span>
-                                </template>
-                            </x-child>
-                        </template>
-                    `, {
-                        modules: { 'x-child': Child }
-                    });
-                }
-                setThings(things) {
-                    this.things = things;
-                }
-            }
-            Parent.publicMethods = ['setThings'];
-            Parent.track = { things: 1 };
-
             element = createElement('x-parent', { is: Parent });
         });
 
@@ -101,43 +43,43 @@ describe.skip('slotchange event', () => {
         // Initialized before each test
         let element;
 
+        class Child extends LightningElement {
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <slot></slot>
+                    </template>
+                `);
+            }
+        }
+
+        class Parent extends LightningElement {
+            things;
+            constructor() {
+                super();
+                this.things = ['foo'];
+            }
+            render() {
+                return compileTemplate(`
+                    <template>
+                        <x-child>
+                            <template for:each={things} for:item="thing">
+                                <span key={thing}>{thing}</span>
+                            </template>
+                        </x-child>
+                    </template>
+                `, {
+                    modules: { 'x-child': Child }
+                });
+            }
+            setThings(things) {
+                this.things = things;
+            }
+        }
+        Parent.publicMethods = ['setThings'];
+        Parent.track = { things: 1 };
+
         beforeEach(() => {
-            class Child extends LightningElement {
-                render() {
-                    return compileTemplate(`
-                        <template>
-                            <slot></slot>
-                        </template>
-                    `);
-                }
-            }
-
-            class Parent extends LightningElement {
-                things;
-                constructor() {
-                    super();
-                    this.things = ['foo'];
-                }
-                render() {
-                    return compileTemplate(`
-                        <template>
-                            <x-child>
-                                <template for:each={things} for:item="thing">
-                                    <span key={thing}>{thing}</span>
-                                </template>
-                            </x-child>
-                        </template>
-                    `, {
-                        modules: { 'x-child': Child }
-                    });
-                }
-                setThings(things) {
-                    this.things = things;
-                }
-            }
-            Parent.publicMethods = ['setThings'];
-            Parent.track = { things: 1 };
-
             element = createElement('x-parent', { is: Parent });
         });
 
@@ -186,24 +128,24 @@ describe('assignedNodes and assignedElements', () => {
         // Initialized before each test
         let element;
 
-        beforeEach(() => {
-            const html = compileTemplate(`
-                <template>
-                    <slot>
-                        foo
-                        <div></div>
-                        bar
-                    </slot>
-                </template>
-            `);
-            html.slots = [''];
+        const html = compileTemplate(`
+            <template>
+                <slot>
+                    foo
+                    <div></div>
+                    bar
+                </slot>
+            </template>
+        `);
+        html.slots = [''];
 
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
+        class MyComponent extends LightningElement {
+            render() {
+                return html;
             }
+        }
 
+        beforeEach(() => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
@@ -251,12 +193,13 @@ describe('assignedNodes and assignedElements', () => {
         `);
         html.slots = ['outer', 'inner'];
 
-        beforeEach(() => {
-            class MyComponent extends LightningElement {
-                render() {
-                    return html;
-                }
+        class MyComponent extends LightningElement {
+            render() {
+                return html;
             }
+        }
+
+        beforeEach(() => {
             element = createElement('x-assigned-nodes', { is: MyComponent });
         });
 
@@ -294,40 +237,40 @@ describe('assignedNodes and assignedElements', () => {
             // Initialized before each test
             let element;
 
-            beforeEach(() => {
-                const childHtml = compileTemplate(`
-                    <template>
-                        <slot name="outer">
-                            <slot name="inner">
-                                <div></div>
-                            </slot>
+            const childHtml = compileTemplate(`
+                <template>
+                    <slot name="outer">
+                        <slot name="inner">
+                            <div></div>
                         </slot>
-                    </template>
-                `);
-                childHtml.slots = ['outer', 'inner'];
+                    </slot>
+                </template>
+            `);
+            childHtml.slots = ['outer', 'inner'];
 
-                class AssignedNodesChild extends LightningElement {
-                    render() {
-                        return childHtml;
-                    }
+            class AssignedNodesChild extends LightningElement {
+                render() {
+                    return childHtml;
                 }
+            }
 
-                const parentHtml = compileTemplate(`
-                    <template>
-                        <x-assigned-nodes-child>
-                            <p slot="outer"></p>
-                        </x-assigned-nodes-child>
-                    </template>
-                `, {
-                    modules: { 'x-assigned-nodes-child': AssignedNodesChild }
-                });
+            const parentHtml = compileTemplate(`
+                <template>
+                    <x-assigned-nodes-child>
+                        <p slot="outer"></p>
+                    </x-assigned-nodes-child>
+                </template>
+            `, {
+                modules: { 'x-assigned-nodes-child': AssignedNodesChild }
+            });
 
-                class AssignedNodesParent extends LightningElement {
-                    render() {
-                        return parentHtml;
-                    }
+            class AssignedNodesParent extends LightningElement {
+                render() {
+                    return parentHtml;
                 }
+            }
 
+            beforeEach(() => {
                 element = createElement('x-assigned-nodes', { is: AssignedNodesParent });
             });
 
@@ -377,40 +320,40 @@ describe('assignedNodes and assignedElements', () => {
             // Initialized before each test
             let element;
 
-            beforeEach(() => {
-                const childHtml = compileTemplate(`
-                    <template>
-                        <slot name="outer">
-                            <slot name="inner">
-                                <div></div>
-                            </slot>
+            const childHtml = compileTemplate(`
+                <template>
+                    <slot name="outer">
+                        <slot name="inner">
+                            <div></div>
                         </slot>
-                    </template>
-                `);
-                childHtml.slots = ['outer', 'inner'];
+                    </slot>
+                </template>
+            `);
+            childHtml.slots = ['outer', 'inner'];
 
-                class AssignedNodesChild extends LightningElement {
-                    render() {
-                        return childHtml;
-                    }
+            class AssignedNodesChild extends LightningElement {
+                render() {
+                    return childHtml;
                 }
+            }
 
-                const parentHtml = compileTemplate(`
-                    <template>
-                        <x-assigned-nodes-child>
-                            <p slot="inner"></p>
-                        </x-assigned-nodes-child>
-                    </template>
-                `, {
-                    modules: { 'x-assigned-nodes-child': AssignedNodesChild }
-                });
+            const parentHtml = compileTemplate(`
+                <template>
+                    <x-assigned-nodes-child>
+                        <p slot="inner"></p>
+                    </x-assigned-nodes-child>
+                </template>
+            `, {
+                modules: { 'x-assigned-nodes-child': AssignedNodesChild }
+            });
 
-                class AssignedNodesParent extends LightningElement {
-                    render() {
-                        return parentHtml;
-                    }
+            class AssignedNodesParent extends LightningElement {
+                render() {
+                    return parentHtml;
                 }
+            }
 
+            beforeEach(() => {
                 element = createElement('x-assigned-nodes', { is: AssignedNodesParent });
             });
 
