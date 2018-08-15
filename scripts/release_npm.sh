@@ -19,10 +19,13 @@ if [[ $version = *"${PACKAGE_VERSION}"* ]]; then
 fi
 
 # Command to push the packages
+CMD_UPDATE_VERSION="lerna version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push"
 CMD_PREPARE="yarn prepare"
-CMD_PUBLISH_PACKAGES="lerna publish --exact --force-publish=* --registry https://npm.lwcjs.org --yes --skip-git ${CANARY} --repo-version ${PACKAGE_VERSION} --npm-client npm"
+CMD_PUBLISH_PACKAGES="lerna publish --repo-version ${PACKAGE_VERSION} --yes --exact --force-publish --no-git-tag-version --no-push --registry https://npm.lwcjs.org ${CANARY} --npm-client npm"
 
 # Run
+echo $CMD_UPDATE_VERSION;
+$CMD_UPDATE_VERSION;
 echo $CMD_PREPARE;
 $CMD_PREPARE;
 echo $CMD_PUBLISH_PACKAGES;
